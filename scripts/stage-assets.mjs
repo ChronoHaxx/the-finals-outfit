@@ -19,6 +19,7 @@
 import { readFileSync, existsSync, mkdirSync, copyFileSync, writeFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
+import { collectAssetRefs } from "./lib/asset-refs.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const publicDir = resolve(ROOT, "public");
@@ -28,19 +29,7 @@ const outDir = join(outRoot, version);
 
 const items = JSON.parse(readFileSync(resolve(ROOT, "src/data/items.json"), "utf8"));
 
-// The viewer hardcodes the base body; it is required and appears in no catalog entry.
-const referenced = new Set(["models/body/SK_Body_M.glb"]);
-for (const item of items) {
-  if (!/^https?:\/\//.test(item.imageUrl)) referenced.add(item.imageUrl.replace(/^\/+/, ""));
-  if (item.model?.gltfPath) referenced.add(item.model.gltfPath.replace(/^\/+/, ""));
-  const region = item.model?.material?.regionMapPath;
-  if (region) referenced.add(region.replace(/^\/+/, ""));
-  for (const layer of item.decal?.layers ?? []) {
-    for (const p of [layer.colorPath, layer.maskPath]) {
-      if (p) referenced.add(p.replace(/^\/+/, ""));
-    }
-  }
-}
+const referenced = collectAssetRefs(items);
 
 let copied = 0;
 let bytes = 0;

@@ -1,5 +1,6 @@
 import { readFileSync, existsSync } from "node:fs";
 import { Agent, request as httpsRequest } from "node:https";
+import { collectAssetRefs } from "./lib/asset-refs.mjs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { CatalogSchema, SponsorsSchema } from "../src/lib/item.ts";
@@ -60,14 +61,10 @@ if (itemsResult.success && sponsorsResult.success) {
   // because a well-formed path pointing at nothing is exactly what local validation
   // cannot see. CI passes ASSETS_BASE, so a broken path fails the build rather than
   // shipping a 404.
-  const referenced = new Set<string>();
-  // The viewer hardcodes the base body; it is required but appears in no catalog entry.
-  referenced.add("models/body/SK_Body_M.glb");
-
-  const missing = { icons: [] as string[], models: [] as string[], textures: [] as string[] };
-  const note = (bucket: string[], p: string) => {
-    if (!existsSync(resolve(publicDir, p))) bucket.push(p);
-  };
+  // Shared with stage-assets.mjs on purpose — see scripts/lib/asset-refs.mjs. When the
+  // two derived their own lists, both missed the same six schema fields and the
+  // validator vouched for an upload that was 6,245 files short.
+  const referenced = collectAssetRefs(items) as Set<string>;
 
   for (const item of items) {
     if (item.sponsor && !sponsorIds.has(item.sponsor)) {
@@ -76,36 +73,20 @@ if (itemsResult.success && sponsorsResult.success) {
     if (item.source === "Sponsor" && !item.sponsor) {
       warnings.push(`item '${item.id}' has source=Sponsor but no sponsor id`);
     }
-
-    if (/^https?:\/\//.test(item.imageUrl)) {
-      // absolute remote image — not ours to check
-    } else if (item.imageUrl.startsWith("/")) {
+    // Shape only. Presence is checked below, over the complete reference set rather
+    // than over the handful of fields this loop happens to name.
+    if (!/^https?:\/\//.test(item.imageUrl) && item.imageUrl.startsWith("/")) {
       errors.push(
         `item '${item.id}' imageUrl '${item.imageUrl}' must be base-relative (no leading slash)`,
       );
-    } else {
-      referenced.add(item.imageUrl);
-      note(missing.icons, item.imageUrl);
-    }
-
-    if (item.model?.gltfPath) {
-      referenced.add(item.model.gltfPath);
-      note(missing.models, item.model.gltfPath);
-    }
-    for (const p of [
-      item.model?.material?.regionMapPath,
-      ...(item.decal?.layers ?? []).flatMap((l) => [l.colorPath, l.maskPath]),
-    ]) {
-      if (!p) continue;
-      referenced.add(p);
-      note(missing.textures, p);
     }
   }
 
-  for (const [kind, paths] of Object.entries(missing)) {
-    if (paths.length === 0) continue;
+  const missingLocally = [...referenced].filter((p) => !existsSync(resolve(publicDir, p)));
+  if (missingLocally.length > 0) {
     warnings.push(
-      `${paths.length} ${kind} not present locally (served off-repo? e.g. ${paths.slice(0, 3).join(", ")})`,
+      `${missingLocally.length} of ${referenced.size} referenced assets not present locally ` +
+        `(served off-repo? e.g. ${missingLocally.slice(0, 3).join(", ")})`,
     );
   }
 
