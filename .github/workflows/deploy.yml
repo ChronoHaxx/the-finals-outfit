@@ -1,0 +1,73 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Deliberately unfiltered. A `branches:` filter matches a literal ref name and does
+  # not follow a default-branch rename, so a rename silently stops deploying and the
+  # site goes stale with no failure anywhere. The branch check moved into the job,
+  # where it reads the repository's CURRENT default branch.
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Validate catalog
+        env:
+          # Presence is checked against the real host, not the checkout — a CI checkout
+          # has no assets at all. Without this the validator can only check path SHAPE,
+          # and a well-formed path pointing at nothing ships as a 404.
+          ASSETS_BASE: ${{ vars.ASSETS_BASE }}
+        run: npm run validate:catalog
+
+      - name: Build
+        env:
+          # Serve from /<repo>/ on github.io; override if a custom domain is set.
+          VITE_BASE: /${{ github.event.repository.name }}/
+          # Where every asset is served from. Nothing extracted is committed, so with
+          # this unset the site builds and deploys but renders no artwork.
+          VITE_ASSETS_BASE: ${{ vars.ASSETS_BASE }}
+          # Optional: serve 3D models from somewhere other than ASSETS_BASE. Unset ->
+          # models come from ASSETS_BASE like everything else.
+          VITE_MODELS_BASE: ${{ vars.MODELS_BASE }}
+        run: npm run build
+
+      - name: Copy 404.html for SPA fallback
+        run: cp dist/index.html dist/404.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

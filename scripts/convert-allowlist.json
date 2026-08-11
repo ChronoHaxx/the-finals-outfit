@@ -1,0 +1,7 @@
+{
+  "comment": "Controls what `npm run discover:assets` emits for conversion. `sets`: \"all\" for every cosmetic set folder, or a curated array of set names (e.g. [\"ActionHero\",\"Ninja\"]) to bound the batch. `hairs`/`heads`: include all hairstyles / Face_* heads. Narrow this if the full ~900-mesh Blender run is too long; convert in chunks with `npm run convert:meshes 0:200`.",
+  "sets": "all",
+  "hairs": true,
+  "heads": true,
+  "accessories": true
+}

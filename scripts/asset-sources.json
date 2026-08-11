@@ -1,0 +1,23 @@
+{
+  "comment": "Hand-authored subset of dump meshes to convert .uemodel -> .glb (M6 can regenerate this as asset-sources.generated.json). `src` is relative to the dump Characters/ folder (FINALS_DUMP env or the default in convert-meshes.py); `dst` is relative to public/models/. dst names match MODEL_BY_PIECE in import-catalog.ts. PBR maps (BaseColor/Normal/OcclusionCurvatureMaterialID/ColorMask) are auto-discovered from the mesh's sibling folder by suffix; override with an optional `textures: {baseColor,normal,occlusion,colorMask}` (dump-relative paths). Multi-material assets (e.g. heads) may instead set `materials: [{match, textures, alpha}]` to map textures per material by name-substring. `alpha`: 'mask' | 'blend' for masked/translucent pieces.",
+  "assets": [
+    { "src": "Body/SK_Body_M.uemodel", "dst": "body/SK_Body_M.glb", "baseColorDir": "Body", "baseColor": ["T_BaseBody_Male_Medium_Color.png", "T_BaseBody_Male_Dark_Color.png"] },
+    { "src": "ActionHero/Assets/SentinelTop/SK_ActionHero_SentinelTop_M.uemodel", "dst": "cosmetics/actionhero-sentinel-top.glb" },
+    { "src": "ActionHero/Assets/SentinelBoots/SK_ActionHero_SentinelBoots_M.uemodel", "dst": "cosmetics/actionhero-sentinel-boots.glb" },
+    { "src": "ActionHero/Assets/SentinelGloves/SK_ActionHero_SentinelGloves_M.uemodel", "dst": "cosmetics/actionhero-sentinel-gloves.glb" },
+    { "src": "ActionHero/Assets/SentinelPants/SK_ActionHero_SentinelPants_M.uemodel", "dst": "cosmetics/actionhero-sentinel-pants.glb" },
+
+    { "src": "Heads/Face_01/Base/Head_Face_01_Base.uemodel", "dst": "heads/face-01.glb",
+      "comment": "per-material: order matters (eyeshell before eyes, since 'eyes' is a prefix of 'eyeshell'). Eye/eyelash textures are shared under the Pioneer content root (../../Pioneer).",
+      "materials": [
+        { "match": "eyeshell", "hide": true },
+        { "match": "eyeedge", "hide": true },
+        { "match": "eyelash", "alpha": "mask", "textures": { "baseColor": "../../Pioneer/Characters/Heads/Shared/Eyelash/T_Universal_Eyelashes_D.png" } },
+        { "match": "eyes", "textures": { "baseColor": "../../Pioneer/Characters/Heads/Shared/Eyes/Textures/T_EyeBall_Composited.png", "normal": "../../Pioneer/Characters/Heads/Shared/Eyes/Textures/T_EYE_NORMALS.png" } },
+        { "match": "teeth", "textures": { "baseColor": "Heads/Shared/Mouth/teeth_color_map.png", "normal": "Heads/Shared/Mouth/teeth_normal_map.png" } },
+        { "match": "head", "comment": "NO alpha: the D texture's alpha is a UE data mask (~0.8 over the face), not coverage — linking it makes the skin translucent (blotchy nose/eyes)", "textures": { "baseColor": "Heads/Face_01/Base/Textures/T_Face_01_Base_D.png", "normal": "Heads/Face_01/Base/Textures/T_Face_01_Base_N.png" } },
+        { "match": "body", "textures": { "baseColor": "Heads/Face_01/Base/Textures/T_Face_01_Base_D.png", "normal": "Heads/Face_01/Base/Textures/T_Face_01_Base_N.png" } }
+      ] },
+    { "src": "Hairs/BobStraight/SM_BobStraight.uemodel", "dst": "hair/bobstraight.glb", "alpha": "blend" }
+  ]
+}

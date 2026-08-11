@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0b0e" />
+    <title>the-finals-outfit — Cosmetic Outfit Builder</title>
+    <meta name="description" content="Fan-made cosmetic outfit builder for THE FINALS. Compose a look and share it by URL." />
+    <meta property="og:title" content="the-finals-outfit" />
+    <meta property="og:description" content="Fan-made cosmetic outfit builder for THE FINALS. Compose a look and share it by URL." />
+    <meta property="og:type" content="website" />
+  </head>
+  <body class="bg-neutral-950 text-neutral-100 antialiased">
+    <!--
+      Static shell, replaced by React on mount. The bundle is ~420 KB gzipped and on a
+      cold visit nothing rendered for about ten seconds — an empty #root is a blank
+      page, and a blank page is indistinguishable from a broken one. This is plain
+      markup in the HTML document, so it paints on first byte with no JS and no
+      network round trip.
+    -->
+    <div id="root">
+      <div style="min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;font-family:ui-sans-serif,system-ui,sans-serif;color:#a3a3a3;text-align:center;padding:1.5rem">
+        <div style="font-size:1.125rem;font-weight:600;color:#f5f5f5">Cosmetic outfit builder</div>
+        <div style="font-size:0.875rem">Loading the catalog…</div>
+        <noscript style="font-size:0.875rem;color:#fca5a5">
+          This builder needs JavaScript to run.
+        </noscript>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

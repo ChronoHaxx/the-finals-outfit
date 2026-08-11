@@ -1,0 +1,1914 @@
+{
+ "bodycosmetics-makeup-cuteanime-01": {
+  "score": 64,
+  "category": "color-wrong",
+  "issue": "Render shows heavy black winged eyeliner with mauve shadow while the icon is a soft rosy-pink anime eye makeup, so the pink tone is largely missing.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-cutecat-01": {
+  "score": 81,
+  "category": "good",
+  "issue": "Pink cheek whiskers and pink nose cat motif are present and correctly placed matching the icon.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-cybergoth-01": {
+  "score": 82,
+  "category": "good",
+  "issue": "Black lips and dark smoky eyeliner match the icon's goth look.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-cybergoth-02": {
+  "score": 80,
+  "category": "good",
+  "issue": "Green metallic lips and green glitter eyeliner match the icon.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-cyberskin-01": {
+  "score": 78,
+  "category": "good",
+  "issue": "Purple eyeshadow, dark lips and the vertical chin/brow cyber markings all match the icon.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-dede-01": {
+  "score": 66,
+  "category": "color-too-light",
+  "issue": "The subtle reddish-brown eyeshadow visible in the icon is nearly absent in the render, leaving the eyes looking bare.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-elegantknight-01": {
+  "score": 45,
+  "category": "color-wrong",
+  "issue": "The icon's bright gold eye band renders as dark smoky black/grey, losing the gold color entirely.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-eyeshadowblack-01": {
+  "score": 80,
+  "category": "good",
+  "issue": "Black dripping smoky eyeshadow motif matches the icon though the render is a bit heavier.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-eyeshadowgold-01": {
+  "score": 82,
+  "category": "good",
+  "issue": "Gold shimmer eyeshadow with running drips matches the icon.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-eyeshadowred-01": {
+  "score": 77,
+  "category": "good",
+  "issue": "Red eyeshadow band across the eyes matches the icon, slightly more spread and saturated.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-eyeshadowyellow-01": {
+  "score": 82,
+  "category": "good",
+  "issue": "Yellow eyeshadow with black liner matches the icon.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-face-14-base-01": {
+  "score": 79,
+  "category": "good",
+  "issue": "Grey smoky eyeshadow base matches the icon.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-firefightersoot-01": {
+  "score": 75,
+  "category": "good",
+  "issue": "Smudged soot across the face matches the icon, though the render soot reads warmer/browner than the icon's grey.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-gems-01": {
+  "score": 76,
+  "category": "good",
+  "issue": "Gem dots, stars and mauve lips match the icon, but framing crops the top forehead where the central gem cluster sits.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-glitterblue-01": {
+  "score": 78,
+  "category": "good",
+  "issue": "Blue/purple glitter eyeshadow matches the icon, spread wider in the render.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-glitterglam-01": {
+  "score": 82,
+  "category": "good",
+  "issue": "Gold glitter eyeshadow with red lips matches the icon.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-glitterglam-02": {
+  "score": 79,
+  "category": "good",
+  "issue": "Pink eyeshadow with red lips matches the icon.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-glitterglam-03": {
+  "score": 80,
+  "category": "good",
+  "issue": "Warm peach eyeshadow with magenta-pink lips matches the icon.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-glitterglam-04": {
+  "score": 79,
+  "category": "good",
+  "issue": "Grey smoky eyeshadow with neutral lips matches the icon.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-goblin-01": {
+  "score": 55,
+  "category": "wrong-print",
+  "issue": "The icon's crisp blue vertical warpaint stripes render as diffuse blotchy semi-transparent smears spread across most of the face, losing the stripe pattern.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-05T18:28"
+ },
+ "bodycosmetics-makeup-americanfootball-01": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-americanfootball-02": {
+  "score": 84,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-americanfootball-03": {
+  "score": 82,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-ancientwarrior-01": {
+  "score": 24,
+  "category": "missing-print",
+  "issue": "Greek-key meander motif and teal/maroon colours are absent from the face; the design only appears as a faint band at the base of the neck",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-ancientwarrior-ivada-01": {
+  "score": 24,
+  "category": "missing-print",
+  "issue": "IVADA text and Greek-key motif are absent from the face; only a brown collar band shows at the base of the neck",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-antifacialrecognition-01": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-archer-01": {
+  "score": 82,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-bride-01": {
+  "score": 82,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-bruises-01": {
+  "score": 80,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-bruises-02": {
+  "score": 80,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-bruises-03": {
+  "score": 82,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-camouflageblackgreen-01": {
+  "score": 76,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-camouflagegreen-01": {
+  "score": 76,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-camouflagegreenyellow-01": {
+  "score": 78,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-camouflageredgrey-01": {
+  "score": 78,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-cashball-01": {
+  "score": 72,
+  "category": "good",
+  "issue": "split-face war paint and under-eye stripes present, though the silver half reads more matte-white than metallic",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-cashballvolpe-01": {
+  "score": 78,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-clown-01": {
+  "score": 88,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-cozywinter-01": {
+  "score": 80,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-cpop-01": {
+  "score": 80,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-demonlady-01": {
+  "score": 62,
+  "category": "missing-part",
+  "issue": "Torso, arms and legs are painted the correct salmon-pink but the head is left unpainted while the icon paints the whole face red-pink.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-discosilver-01": {
+  "score": 32,
+  "category": "material-flat",
+  "issue": "The silver disco mirror-tile metallic mosaic is absent; the body renders as plain pale skin with no reflective tiles and the head is unpainted.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-easterndemon-01": {
+  "score": 60,
+  "category": "missing-part",
+  "issue": "Body is painted the correct red-pink but the head is left unpainted while the icon paints the whole face.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-elfprincessdark-01": {
+  "score": 33,
+  "category": "color-wrong",
+  "issue": "The black-and-white dark-elf paint is missing; the body renders as bare pale skin and the head is unpainted.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-glitterglam-01": {
+  "score": 60,
+  "category": "framing",
+  "issue": "Icon is a gold-glitter hands close-up our body cam cannot reproduce; body shows only a faint glitter tint.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-goblin-01": {
+  "score": 58,
+  "category": "framing",
+  "issue": "Icon is a blue-painted hands close-up our framing cannot show; the body is left unpainted.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-metallicblack-01": {
+  "score": 30,
+  "category": "color-wrong",
+  "issue": "The metallic-black skin is missing; the body renders as plain pale skin instead of shiny black and the head is unpainted.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-metallicblackgold-01": {
+  "score": 30,
+  "category": "color-wrong",
+  "issue": "The metallic black-and-gold finish is missing; the body renders as plain pale skin.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-metallicgold-01": {
+  "score": 44,
+  "category": "material-flat",
+  "issue": "Renders as matte tan skin with no metallic sheen; too light and flat versus the bright shiny gold icon.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-ogre-01": {
+  "score": 62,
+  "category": "missing-part",
+  "issue": "Body is painted the correct ogre yellow-green but the head is left unpainted while the icon paints the face.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-oilyhands-01": {
+  "score": 58,
+  "category": "framing",
+  "issue": "Icon is a grey oily-hands close-up our body cam cannot show; the body is unpainted.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-orfpink-01": {
+  "score": 68,
+  "category": "framing",
+  "issue": "Icon is a pink-hands close-up; our body is convincingly pink but the hand framing cannot be reproduced.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-orfyellow-01": {
+  "score": 68,
+  "category": "framing",
+  "issue": "Icon is a yellow-hands close-up; our body is convincingly yellow but the hand framing cannot be reproduced.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-runnyfingersblack-01": {
+  "score": 58,
+  "category": "framing",
+  "issue": "Icon is a black-fingertip hands close-up our framing cannot show; the body is unpainted.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-runnyfingersgold-01": {
+  "score": 58,
+  "category": "framing",
+  "issue": "Icon is a gold-fingertip hands close-up our framing cannot show; the body is unpainted.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-sweat-01": {
+  "score": 45,
+  "category": "material-flat",
+  "issue": "The wet sweaty sheen is missing; the body renders as plain matte skin.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-techwearsymbols-01": {
+  "score": 45,
+  "category": "missing-print",
+  "issue": "A grey base is applied but the black DXZ techwear symbol print is absent.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-undead-01": {
+  "score": 40,
+  "category": "color-wrong",
+  "issue": "The undead grey pallor is missing; the body renders as normal skin and the head is unpainted.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-vampire-01": {
+  "score": 42,
+  "category": "missing-part",
+  "issue": "The white vampire face makeup (black eyes, red lips) is not shown; the head is left unpainted and the body pallor is faint.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-bodypaint-wraith-01": {
+  "score": 42,
+  "category": "missing-part",
+  "issue": "The white face with black eye-drip makeup is not shown; the head is left unpainted and the body reads as bare skin.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-geishagoth-01": {
+  "score": 28,
+  "category": "missing-part",
+  "issue": "Icon paints the face white with red eyeshadow and red lips; render leaves the head unpainted and shows only faint splotchy body patches.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-oilybody-01": {
+  "score": 30,
+  "category": "missing-part",
+  "issue": "Icon gives an oily grey metallic sheen across the face; render's head is bare skin and the body shows only faint patches.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-scifibody-01": {
+  "score": 30,
+  "category": "missing-part",
+  "issue": "Icon paints the face white with black sci-fi lines and a dark lower mask; render leaves the head unpainted with only faint body splotches.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-scifibody-02": {
+  "score": 32,
+  "category": "missing-part",
+  "issue": "Icon whitens the face with small forehead marks; render's head is unpainted and body paint reads as faint patches only.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-scifibody-03": {
+  "score": 32,
+  "category": "missing-part",
+  "issue": "Icon greys the face with dark lips and neck/collar lines; render leaves the head unpainted.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-makeup-scifibody-04": {
+  "score": 30,
+  "category": "missing-part",
+  "issue": "Icon paints the face white with dripping line motifs and dark lips; render's head is unpainted with only faint body patches.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-06T00:16"
+ },
+ "bodycosmetics-earrings-star-01": {
+  "score": 26,
+  "category": "wrong-mesh",
+  "issue": "Render shows a small white curled blob along the jaw instead of the pink star-outline hoop; shape and colour both wrong.",
+  "fixable": "blender",
+  "rev": "census",
+  "at": "2026-07-06T14:03"
+ },
+ "bodycosmetics-earrings-tabsospuze-01": {
+  "score": 42,
+  "category": "wrong-mesh",
+  "issue": "Silver metal reads but the soda pull-tab shape is collapsed into an unreadable squiggle.",
+  "fixable": "blender",
+  "rev": "census",
+  "at": "2026-07-06T14:03"
+ },
+ "bodycosmetics-earrings-yingyang-01": {
+  "score": 75,
+  "category": "good",
+  "issue": "Black/white two-tone yin-yang stud present; swirl/dot detail soft at this scale.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-06T14:03"
+ },
+ "bodycosmetics-makeup-gold-01": {
+  "score": 62,
+  "category": "material-flat",
+  "issue": "Gold paint renders as matte pale-yellow with a pink tint instead of metallic gold, though placement on cheeks/nose/chin is roughly correct.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-goth-01": {
+  "score": 76,
+  "category": "good",
+  "issue": "Dark lined eyes and glossy black lips present, matching the goth look.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-gothstreamer-01": {
+  "score": 85,
+  "category": "good",
+  "issue": "Purple eyeshadow, under-eye hearts and purple lips all present and placed correctly.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-jester-01": {
+  "score": 87,
+  "category": "good",
+  "issue": "White base with harlequin eye diamonds and black upturned smile lips match the icon.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-punk-01": {
+  "score": 82,
+  "category": "good",
+  "issue": "Smoky dark eyeshadow and bold red lips match.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-rockstar-01": {
+  "score": 87,
+  "category": "good",
+  "issue": "Pink/cyan/black lightning-bolt design, pink lips and chin drips all match.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-skull-01": {
+  "score": 12,
+  "category": "missing-print",
+  "issue": "Skull face paint is entirely absent - render shows a bare unpainted face.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-skull-02": {
+  "score": 85,
+  "category": "good",
+  "issue": "Grungy distressed skull with dark sockets, painted teeth and red drips matches.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-skull-03": {
+  "score": 84,
+  "category": "good",
+  "issue": "Grungy weathered skull with dark eye sockets and vertical painted teeth matches.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-skull-04": {
+  "score": 88,
+  "category": "good",
+  "issue": "Sugar-skull with purple flower petals around the eyes, cheek filigree and purple lips matches.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-skull-05": {
+  "score": 87,
+  "category": "good",
+  "issue": "Classic skull with black sockets, nose triangle and stitched teeth grin matches.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-sporty-01": {
+  "score": 80,
+  "category": "good",
+  "issue": "Dripping eye-black smudges under both eyes match; lips read slightly more purple than the icon's pink.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-supporterospuze-01": {
+  "score": 85,
+  "category": "good",
+  "issue": "Yellow OSPUZE lettering over a dark face base matches.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-tanukifacepaint": {
+  "score": 85,
+  "category": "good",
+  "issue": "Tanuki mask - orange forehead fur, dark eye patches, black nose and white muzzle all present.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-vikingwarpaint-01": {
+  "score": 76,
+  "category": "good",
+  "issue": "Dark smeared war paint on forehead and cheeks matches the smudged motif.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-makeup-witchpurple-01": {
+  "score": 85,
+  "category": "good",
+  "issue": "Bright purple eyeshadow and magenta lips match.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-bodypaint-90sskateboarder-01": {
+  "score": 45,
+  "category": "framing",
+  "issue": "Icon is a hand close-up of taped fingers our body cam can't show; render shows only a generic dark forearm gradient.",
+  "fixable": "gated",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-bodypaint-armsblack-01": {
+  "score": 62,
+  "category": "framing",
+  "issue": "Arms/hands render dark toward black matching the theme, but the icon is a hand close-up so full detail can't be verified.",
+  "fixable": "gated",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-bodypaint-bodytight-01": {
+  "score": 28,
+  "category": "color-wrong",
+  "issue": "Icon is a bright-green body tight but the render shows a dark forearm gradient with no green at all.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-bodypaint-bruises-02": {
+  "score": 42,
+  "category": "framing",
+  "issue": "Icon is a hand close-up of bruised knuckles our body cam can't show; render shows only a generic dark forearm gradient.",
+  "fixable": "gated",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-barricadespike-01": {
+  "score": 85,
+  "category": "good",
+  "issue": "grey faceted metal pyramid/spike stud matches the icon in shape, colour and material",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-beetlegold-01": {
+  "score": 30,
+  "category": "artifact",
+  "issue": "gold colour is right but the scarab-beetle mesh is collapsed into a flat horizontal smear, shape unreadable",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-bullet-01": {
+  "score": 72,
+  "category": "good",
+  "issue": "small gold bullet-casing stud present with correct gold colour and placement; base detailing lost at this scale",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-candycane-01": {
+  "score": 48,
+  "category": "missing-print",
+  "issue": "candy-cane stick shape present but the red diagonal stripes are missing so it reads solid white",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-cashbox-01": {
+  "score": 72,
+  "category": "good",
+  "issue": "yellow cube shape and colour match; the white mountain logo on the face is faint",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-cashcoin-01": {
+  "score": 62,
+  "category": "other",
+  "issue": "gold cash-coin with a square-hole hint is present but sits nearly edge-on so the round disc reads as a thin sliver",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-chain-01": {
+  "score": 68,
+  "category": "good",
+  "issue": "silver twisted rope-chain tassel present and correct material; flower stud top not clearly read",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-chain-01-gold": {
+  "score": 68,
+  "category": "good",
+  "issue": "gold twisted rope-chain tassel present with correct gold material",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-chain-02": {
+  "score": 80,
+  "category": "good",
+  "issue": "black star stud plus silver rope-chain tassel both present and matching the icon",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-christmasball-01": {
+  "score": 32,
+  "category": "color-wrong",
+  "issue": "ball shape correct but rendered plain untextured white; missing the green base, gold band and star decoration",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-defenseknife-01": {
+  "score": 58,
+  "category": "missing-print",
+  "issue": "grey dagger blade shape is present but the red hilt/outline accents from the icon are missing",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-dotstud": {
+  "score": 50,
+  "category": "color-wrong",
+  "issue": "dot stud shape and placement correct but rendered white instead of the gold/copper of the icon",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-dragonkoi-01": {
+  "score": 46,
+  "category": "color-wrong",
+  "issue": "koi/dragon creature shape roughly present but rendered white instead of gold, and small",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-dragontooth-01": {
+  "score": 52,
+  "category": "color-too-light",
+  "issue": "tooth/fang shape present but rendered plain white instead of the icon's textured cream-gold",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-elfearring": {
+  "score": 73,
+  "category": "good",
+  "issue": "filigree ear-wrap matches silhouette and placement; metal reads slightly warm/cream vs the icon's silver",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-elfearring-blue": {
+  "score": 48,
+  "category": "color-wrong",
+  "issue": "ear-wrap shape and placement correct but rendered cream instead of the icon's blue/teal metal",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-firehorse-01": {
+  "score": 22,
+  "category": "wrong-mesh",
+  "issue": "gold horse-head with flame mane is absent; renders as a lumpy tan stick/log form",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-gem-01": {
+  "score": 76,
+  "category": "good",
+  "issue": "green gemstone with gold bail/hook present, correct colours",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-gingerbread-01": {
+  "score": 40,
+  "category": "color-wrong",
+  "issue": "gingerbread-man silhouette roughly present but rendered grey/untextured instead of orange with white icing",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-goblinearring-01": {
+  "score": 72,
+  "category": "good",
+  "issue": "dark textured metal spike-hoop matches shape, colour and material",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-heart-01": {
+  "score": 50,
+  "category": "wrong-mesh",
+  "issue": "Red/gold element reads as a flattened lozenge disc rather than the icon's puffy heart shape.",
+  "fixable": "blender",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-hoopsthick-01": {
+  "score": 48,
+  "category": "color-too-light",
+  "issue": "Thick hoop renders solid white instead of the icon's pink/magenta gradient.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-jadechinese-01": {
+  "score": 75,
+  "category": "good",
+  "issue": "Green jade teardrop drop on gold hook matches shape and colour.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-leaf-01": {
+  "score": 75,
+  "category": "good",
+  "issue": "Autumn maple-leaf shape with yellow-orange colour reads correctly.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-logofinals-01": {
+  "score": 75,
+  "category": "good",
+  "issue": "Silver THE FINALS logo plate seen edge-on due to pose but material and colour match.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-logofinals-01-gold": {
+  "score": 75,
+  "category": "good",
+  "issue": "Gold THE FINALS logo plate seen edge-on due to pose but material and colour match.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-mascotorf-01": {
+  "score": 76,
+  "category": "good",
+  "issue": "Round yellow mascot-face disc with printed features and white rim matches.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-miniature-ak-01": {
+  "score": 77,
+  "category": "good",
+  "issue": "Miniature AK rifle with grey metal and wood/orange furniture matches.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-namatama-default-01": {
+  "score": 80,
+  "category": "good",
+  "issue": "White egg character with small face and yellow accent matches.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-namatama-evilgood-01": {
+  "score": 40,
+  "category": "metal-grey",
+  "issue": "Egg character renders dark charcoal grey instead of the icon's gold/brass metal.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-panda-01": {
+  "score": 22,
+  "category": "not-visible",
+  "issue": "Panda stud earring is absent/not visible on the earlobe in our render.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-pearl": {
+  "score": 76,
+  "category": "good",
+  "issue": "White spherical pearl stud matches colour and shape.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-pumpkin-01": {
+  "score": 60,
+  "category": "color-wrong",
+  "issue": "Carved jack-o-lantern reads muddy dark brown instead of the icon's vivid orange.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-safetypin-01": {
+  "score": 80,
+  "category": "good",
+  "issue": "Silver safety-pin shape and metal material match.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-skull-01": {
+  "score": 48,
+  "category": "color-wrong",
+  "issue": "Skull renders dark muddy grey instead of the icon's bone/ivory white.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-skull-01-greenemissive": {
+  "score": 40,
+  "category": "emissive-missing",
+  "issue": "Skull renders dull dark grey with no green glow versus the icon's bright emissive green.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-snowflake-01": {
+  "score": 75,
+  "category": "good",
+  "issue": "White snowflake pendant seen edge-on due to pose but shape and colour match.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-sourapple-01": {
+  "score": 76,
+  "category": "good",
+  "issue": "Green apple with stem matches shape and colour.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-spider-01": {
+  "score": 52,
+  "category": "color-wrong",
+  "issue": "Spider renders uniform dark grey, missing the icon's pale body and pink spots.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "bodycosmetics-earrings-springrusty-01": {
+  "score": 80,
+  "category": "good",
+  "issue": "Rusty copper coiled-spring earring matches shape, coil detail and colour.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-06T22:00"
+ },
+ "attachment-3dpaperglasses-paper": {
+  "score": 12,
+  "category": "wrong-mesh",
+  "issue": "the red/blue-lens cardboard 3D glasses fail to render - only a faint temple arm appears, the frame front and lenses are absent",
+  "fixable": "blender",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachment-retroroundglasses-metallic-gold": {
+  "score": 73,
+  "category": "color-wrong",
+  "issue": "gold round metal frame matches but lenses render clear/frosted instead of the icon's dark tinted glass",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachment-retroroundglasses-metallic-iseult": {
+  "score": 64,
+  "category": "color-wrong",
+  "issue": "frame reads pale lavender instead of the icon's saturated blue and lenses lack the pink tint",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachment-roundsunglasses-metallic-biker": {
+  "score": 48,
+  "category": "color-wrong",
+  "issue": "frame renders thick black instead of thin gold metal and the amber gradient lens tint is missing",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachment-roundsunglasses-metallic-dissun": {
+  "score": 48,
+  "category": "color-wrong",
+  "issue": "frame renders black instead of thin silver metal and the red/maroon gradient lens tint is missing",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachment-roundsunglasses-metallic-gold": {
+  "score": 50,
+  "category": "color-wrong",
+  "issue": "frame rims read black (only temples show gold) instead of full gold metal and the purple lens tint is missing",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachment-roundsunglasses-metallic-redglass": {
+  "score": 44,
+  "category": "color-wrong",
+  "issue": "defining red glass lenses render clear and frame reads black instead of rose/silver metal",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachment-shootingglasses-a-metal": {
+  "score": 90,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachments-alienglasses-01": {
+  "score": 54,
+  "category": "color-wrong",
+  "issue": "alien almond-eye silhouette matches but frame renders white instead of neon green and lenses are clear instead of dark",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachments-aviatorsunglasses-metal": {
+  "score": 58,
+  "category": "color-wrong",
+  "issue": "aviator shape matches but frame reads black instead of gold metal and lenses lack the red/pink tint",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachments-aviatorsunglasses-plastic": {
+  "score": 58,
+  "category": "color-wrong",
+  "issue": "aviator shape matches but frame reads black (only accents yellow) instead of full yellow and lenses lack the dark tint",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachments-gamingglasses": {
+  "score": 68,
+  "category": "color-wrong",
+  "issue": "black rectangular gaming frame matches but lenses render clear instead of the icon's amber/orange gaming tint",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachments-militaryglasses": {
+  "score": 66,
+  "category": "color-wrong",
+  "issue": "black rectangular frame matches but lenses render frosted-clear instead of the icon's dark tint",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachments-newyearglasses-plastic": {
+  "score": 48,
+  "category": "color-wrong",
+  "issue": "NEW YEAR text-glasses shape present but whole item renders untextured white - gold/silver lettering and black frames not applied",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachments-retroroundglasses-metallic-black": {
+  "score": 40,
+  "category": "color-wrong",
+  "issue": "frame renders white instead of the icon's black metal (colorway inverted) and lens tint missing",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachments-retroroundglasses-metallic-silver": {
+  "score": 45,
+  "category": "color-wrong",
+  "issue": "frame renders dark/near-black instead of the icon's pale silver metal (colorway inverted)",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachments-retroroundglasses-metallic-vale-9917": {
+  "score": 48,
+  "category": "color-wrong",
+  "issue": "frame renders white instead of silver/rose metal and the pink lens tint is missing",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "attachments-roundglasses-plastic": {
+  "score": 45,
+  "category": "color-wrong",
+  "issue": "thick round frame renders untextured white instead of the icon's red plastic",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "military-militarymechanicweldinggoggles-pla-3cbf": {
+  "score": 88,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "military-tacticalglasses-metallic-gangnam": {
+  "score": 88,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "military-tacticalglasses-metallic-yellowospuze": {
+  "score": 83,
+  "category": "good",
+  "issue": "Wraparound sport shape and yellow lens tint match; frame reads white/opaque vs the icon's thin silver but identity is faithful.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "military-tacticalglassessplit-metallic-spor-f551": {
+  "score": 55,
+  "category": "color-wrong",
+  "issue": "Lens renders clear/transparent but the icon has a distinct green tint.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "military-tacticalglassessplit-plastic-alfaacta": {
+  "score": 45,
+  "category": "color-wrong",
+  "issue": "Render defaults to white frame with clear lens; icon has a dark frame and pink/red-orange tinted lens.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "military-tacticalglassessplit-plastic-black": {
+  "score": 42,
+  "category": "color-wrong",
+  "issue": "Frame renders white and lens clear; icon shows a dark/black frame with red-tinted lens.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "military-tacticalglassessplit-plastic-darkblack": {
+  "score": 42,
+  "category": "color-wrong",
+  "issue": "Frame renders white with clear lens instead of the icon's black frame and dark tinted lens.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "military-tacticalglassessplit-plastic-sportevent": {
+  "score": 52,
+  "category": "color-wrong",
+  "issue": "Lens renders clear; icon has a dark smoke-grey tint.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "scifi-hackergoggles-metal": {
+  "score": 20,
+  "category": "wrong-mesh",
+  "issue": "Visor is grossly oversized and ballooned into a giant chrome band, and the green accent stripe is missing.",
+  "fixable": "blender",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "scifi-hackergoggles-metal-apesquad": {
+  "score": 20,
+  "category": "wrong-mesh",
+  "issue": "Same oversized/ballooned chrome band mesh; missing the purple accent stripe seen in the icon.",
+  "fixable": "blender",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "sport-glasses-metal": {
+  "score": 64,
+  "category": "color-wrong",
+  "issue": "Gold aviator frame matches but the lens renders clear/light instead of the icon's dark tint.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "steampunk-monocle-gold-blackglass": {
+  "score": 82,
+  "category": "good",
+  "issue": "Gold frame, dark glass and hanging gold chain all match the icon.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "steampunk-monocle-silver-clearglass": {
+  "score": 70,
+  "category": "color-wrong",
+  "issue": "Silver frame and chain match but the lens renders opaque grey rather than the icon's clear glass.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-angularsunglasses-gold-redglass": {
+  "score": 55,
+  "category": "color-wrong",
+  "issue": "Gold angular frame matches but the lens renders clear instead of the icon's red tint.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-angularsunglasses-metal": {
+  "score": 50,
+  "category": "color-wrong",
+  "issue": "Frame renders black with clear lenses; icon has a thin silver metal frame and dark tinted lenses.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-brokencasualglasses-metallic": {
+  "score": 76,
+  "category": "good",
+  "issue": "Thick dark square frame with a cracked/broken lens and bridge accent match the icon.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-casualglasses-metallic": {
+  "score": 80,
+  "category": "good",
+  "issue": "Dark square thick frame with clear lenses matches the icon.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-casualglasses-metallic-blackfinals": {
+  "score": 85,
+  "category": "good",
+  "issue": "Yellow thick square frame and clear lenses match the icon.",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-casualglasses-metallic-holtow": {
+  "score": 58,
+  "category": "color-wrong",
+  "issue": "Black frame matches but the lens renders clear instead of the icon's red/salmon tint.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-casualglasses-plastic": {
+  "score": 62,
+  "category": "color-wrong",
+  "issue": "Teal frame matches but the lens renders clear instead of the icon's amber/brown tint.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-casualglasses-plastic-brown": {
+  "score": 60,
+  "category": "color-wrong",
+  "issue": "Brown/taupe frame roughly matches but the lens renders clear instead of the icon's dark green tint.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-performerglasses-metallic": {
+  "score": 63,
+  "category": "color-wrong",
+  "issue": "Gold double-bridge aviator frame matches but the lens renders clear instead of the icon's brown/amber tint.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-pokerglasses-blackyellow": {
+  "score": 62,
+  "category": "color-wrong",
+  "issue": "Aviator frame shape matches but lenses render clear/silver instead of the icon's red-orange gradient tint.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-pokerglasses-plastic": {
+  "score": 65,
+  "category": "color-too-light",
+  "issue": "Frame matches but lenses are clear/mirror instead of the icon's dark tinted lenses.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-pokerglasses-plastic-vaiiyarain": {
+  "score": 52,
+  "category": "missing-print",
+  "issue": "Lenses render clear, missing the icon's red splatter/rain pattern print.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-pokerglasses-plastic-vaiiyas7sp": {
+  "score": 52,
+  "category": "color-wrong",
+  "issue": "Lenses render clear and frame is black, but icon has a silver/white frame with red-orange gradient lenses.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-vaporwaveglasses-ospuzes6": {
+  "score": 48,
+  "category": "missing-print",
+  "issue": "Shield mesh matches but lens is clear, missing the icon's yellow pixel S2/OSPUZE print.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-vaporwaveglasses-plastic": {
+  "score": 62,
+  "category": "color-wrong",
+  "issue": "Lens renders clear and frame is grey; icon has a purple frame and purple-tinted lens.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-vaporwaveglasses-plastic-blackurban": {
+  "score": 40,
+  "category": "color-wrong",
+  "issue": "Frame renders white with a clear lens, but icon has a black frame, dark tinted lens and white temple print.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-vaporwaveglasses-plastic-cnss7sp": {
+  "score": 50,
+  "category": "missing-print",
+  "issue": "Lens renders clear, missing the icon's holographic rainbow/iridescent mirrored tint.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-vaporwaveglasses-plastic-ospuze": {
+  "score": 48,
+  "category": "missing-print",
+  "issue": "Lens renders clear, missing the icon's yellow tint with OSPUZE lens print.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-vaporwaveglasses-plastic-ospuzes-f6d5": {
+  "score": 58,
+  "category": "color-too-light",
+  "issue": "Yellow temple accents present but lens renders clear instead of the icon's dark tinted lens.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "streetwear-vaporwaveglasses-redalfaacta": {
+  "score": 38,
+  "category": "color-wrong",
+  "issue": "Frame renders white with clear lens, but icon has a red frame, red-tinted lens and ALFA print.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "winter-goggles-plastic-whitered": {
+  "score": 15,
+  "category": "wrong-mesh",
+  "issue": "Goggle lens/frame is absent over the eyes; only dark black strap fragments render at the sides, vs icon's white-framed red-lens goggles.",
+  "fixable": "blender",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "cns-base": {
+  "score": 18,
+  "category": "wrong-mesh",
+  "issue": "Renders a blank white default head, missing the icon's blue faceted face and grey side ear hardware.",
+  "fixable": "blender",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-blankface": {
+  "score": 22,
+  "category": "color-wrong",
+  "issue": "Featureless silhouette matches but renders matte white instead of the icon's glossy black mask with orange LED star display.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-blankface-ballisticgel": {
+  "score": 18,
+  "category": "material-flat",
+  "issue": "Renders opaque matte white, missing the icon's translucent amber ballistic-gel material with skull visible inside.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-blankface-shinysilver": {
+  "score": 35,
+  "category": "material-flat",
+  "issue": "Featureless silhouette matches but surface is matte white instead of the icon's mirror-polished chrome silver.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-blankface-whitevalentines": {
+  "score": 48,
+  "category": "emissive-missing",
+  "issue": "White base matches but the icon's red/pink LED heart-eyes display is missing.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-01-base": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-02-base": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-03-base": {
+  "score": 84,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-04-base": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-05-base": {
+  "score": 58,
+  "category": "artifact",
+  "issue": "Beige decode patches sit on both eyebrows, breaking them into blotches absent from the icon.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-06-base": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-07-base": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-08-base": {
+  "score": 84,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-09-base": {
+  "score": 60,
+  "category": "artifact",
+  "issue": "Beige decode patch breaks up the right eyebrow, not present in the icon.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-10-base": {
+  "score": 84,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-11-base": {
+  "score": 24,
+  "category": "material-flat",
+  "issue": "Anime head renders as untextured flat white with skin albedo missing and eyes floating in red sockets; icon has peachy skin, dark brows and amber eyes.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-12-base": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-13-base": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-14-base": {
+  "score": 78,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-15-base": {
+  "score": 52,
+  "category": "artifact",
+  "issue": "Eyebrows render as jagged shard clumps and the forehead is peppered with speckle noise.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-16-base": {
+  "score": 83,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-18-base": {
+  "score": 52,
+  "category": "artifact",
+  "issue": "Eyebrows render as jagged shard clumps with forehead speckle noise, unlike the clean furrowed brows in the icon.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-19-base": {
+  "score": 70,
+  "category": "artifact",
+  "issue": "Beige decode patch on the right eyebrow breaks it up; otherwise faithful.",
+  "fixable": "in-repo",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-20-base": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-21-base": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-22-base": {
+  "score": 84,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-23-base": {
+  "score": 84,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "head-face-24-base": {
+  "score": 85,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census-r2",
+  "at": "2026-07-11T00:02"
+ },
+ "military-rebreather-rubber-cns": {
+  "score": 45,
+  "category": "color-wrong",
+  "issue": "Mask body renders pale blue but the icon's rubber base is black, and the glowing CNS side text is absent.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "military-rebreather-rubber-kcp": {
+  "score": 80,
+  "category": "good",
+  "issue": "Black rubber base, straps and canister shape match.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "military-rebreather-rubber-trentila": {
+  "score": 52,
+  "category": "color-wrong",
+  "issue": "Green trentila accents are present but the base renders pale blue instead of the icon's black rubber.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "monsters-easterndemonmask-plastic-red": {
+  "score": 55,
+  "category": "missing-part",
+  "issue": "Red sculpt, nose ring and tusks match, but the large curved oni horns are absent/truncated.",
+  "fixable": "blender",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "samurai-facemask-base": {
+  "score": 88,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "samurai-facemask-base-cns": {
+  "score": 38,
+  "category": "emissive-missing",
+  "issue": "Mask renders plain black with silver teeth; the icon's glowing cyan circuit pattern is entirely missing.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "samurai-facemask-base-cnspurple": {
+  "score": 35,
+  "category": "emissive-missing",
+  "issue": "Mask renders pale white with only purple teeth; the icon's glowing magenta circuit pattern and dark purple base are missing.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "samurai-facemaskhorns-metal-cnsglitch": {
+  "score": 40,
+  "category": "emissive-missing",
+  "issue": "Mask renders plain navy with a solid white eye band; the icon's purple glitch grid and magenta glowing eye bar are missing.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "scifi-phantommask-metal": {
+  "score": 15,
+  "category": "wrong-mesh",
+  "issue": "Render shows an open white exo-jaw framework with visible skin, not the icon's solid blue horned oni faceplate with glowing eyes.",
+  "fixable": "blender",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "scifi-phantommask-metal-vanguard": {
+  "score": 16,
+  "category": "wrong-mesh",
+  "issue": "Render shows a white/gold exo-jaw framework, not the icon's solid white horned oni faceplate with gold accents and glowing eyes.",
+  "fixable": "blender",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-fencermask-cotton": {
+  "score": 32,
+  "category": "artifact",
+  "issue": "Fencing-mask silhouette is right but the surface decodes into smeared vertical stripes instead of the grey metal mesh.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-fencermask-led-alliance": {
+  "score": 87,
+  "category": "good",
+  "issue": "Glossy black mask, side mesh panel and green Alliance arrow LED all match.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-fencermask-nylon-black": {
+  "score": 28,
+  "category": "artifact",
+  "issue": "Surface decodes into smeared vertical grey/white stripes instead of the black glossy mask with red LED line.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-fencermask-nylon-geng": {
+  "score": 28,
+  "category": "artifact",
+  "issue": "Surface decodes into smeared black/white vertical stripes; the black mask base and yellow GenG logo are lost.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-fencermask-nylon-led": {
+  "score": 28,
+  "category": "artifact",
+  "issue": "Surface decodes into smeared black/white vertical stripes instead of the black mask with magenta LED text.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-fencermask-nylon-led-dissun": {
+  "score": 28,
+  "category": "artifact",
+  "issue": "Surface decodes into smeared black/white vertical stripes instead of the black mask with pink LED text.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-luchadorfacemask-nylon-greentrentila": {
+  "score": 85,
+  "category": "good",
+  "issue": "White luchador hood with green flame eye patterns matches.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-luchadorfacemask-nylon-red": {
+  "score": 55,
+  "category": "wrong-print",
+  "issue": "Red hood matches but the gold filigree eye pattern renders washed tan with white blotches instead of crisp gold.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-umpiremask-cashball-ltm": {
+  "score": 50,
+  "category": "color-wrong",
+  "issue": "Catcher-cage mesh matches but renders all white instead of the icon's blue cashball colouring.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-umpiremask-leather": {
+  "score": 85,
+  "category": "good",
+  "issue": "Black metal cage and black leather padding match.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-umpiremask-leather-blackyellow": {
+  "score": 84,
+  "category": "good",
+  "issue": "Black cage with yellow leather accents matches.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "sport-umpiremask-leather-vaiiya": {
+  "score": 80,
+  "category": "good",
+  "issue": "Black/white leather cage mask matches.",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "streetwear-balaclava-cotton-black": {
+  "score": 86,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "streetwear-balaclava-cotton-white": {
+  "score": 86,
+  "category": "good",
+  "issue": "matches",
+  "fixable": "none",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "streetwear-balaclava-cotton-yellowospuze": {
+  "score": 58,
+  "category": "missing-print",
+  "issue": "Yellow base matches but the black OSPUZE logo across the lower face is missing.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "streetwear-balaclava-leopard": {
+  "score": 35,
+  "category": "missing-print",
+  "issue": "Fabric renders plain tan with faint vertical smears; the leopard spot pattern is absent.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "streetwear-balaclava-zebra": {
+  "score": 30,
+  "category": "missing-print",
+  "issue": "Fabric renders as blank grey/white cloth; the black zebra stripe pattern is absent.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "streetwear-bandanacap-cotton-blackfinals": {
+  "score": 24,
+  "category": "color-wrong",
+  "issue": "Bandana renders blank pale-white instead of black, and the yellow Alliance A cap logo and V-pattern are missing.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "streetwear-bandanacap-cotton-blackwhite": {
+  "score": 30,
+  "category": "missing-print",
+  "issue": "Cap reads dark but the bandana renders blank pale instead of the grey geometric camo pattern.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ },
+ "streetwear-demonledmask-plastic-blackwhite": {
+  "score": 52,
+  "category": "emissive-missing",
+  "issue": "Horns, mesh grille and panels match, but the glowing blue LED pixel eyes render as flat static white.",
+  "fixable": "in-repo",
+  "rev": "census",
+  "at": "2026-07-11T15:16"
+ }
+}
