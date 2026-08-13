@@ -161,10 +161,11 @@ the shared slot-policy module from H1 instead.
    against the current checks before the fix.
 2. `npm run verify -- --dry` runs clean, and the new per-aspect counts are
    reported alongside the old ones.
-3. Body-culling failures are ~13 rather than 117, and any *new* failures created
-   by H2 are listed by name.
+3. Body-culling failures are 55 rather than 117 — 13 meshes with no mask under
+   the allowlist (H1) plus 42 masks found empty by H2 — and the new H2 failures
+   are listed by name.
 4. `CHECK_VERSION` is bumped for every aspect whose logic changed —
-   `bodyCulling`, `geometry`, `transform` — so existing verdicts expire rather
-   than being inherited from a check that no longer exists.
+   `bodyCulling`, `geometry`, `transform`, `bindings` (M2) — so existing verdicts
+   expire rather than being inherited from a check that no longer exists.
 5. No threshold is widened to make anything green. If a check fails broadly after
    a fix, report it and stop.
