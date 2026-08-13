@@ -17,8 +17,14 @@ export async function deriveQueue(items, store, root, { aspects = ASPECTS } = {}
       const mark = getMark(store, key, aspect);
       let state = "absent";
       if (mark) {
-        const current = await inputHash(item, aspect, root);
-        state = mark.inputs === current ? "current" : "stale";
+        // inputs: null (seeded human marks) means the judgement was made against assets
+        // with no declared inputs — it can never read as current, only stale.
+        if (mark.inputs == null) {
+          state = "stale";
+        } else {
+          const current = await inputHash(item, aspect, root);
+          state = mark.inputs === current ? "current" : "stale";
+        }
       }
       out.push({ itemId: item.id, key, aspect, state, scope });
     }

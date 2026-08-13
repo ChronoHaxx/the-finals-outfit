@@ -39,3 +39,12 @@ test("a matching hash reads as current; changing the mesh makes it stale", async
   q = await deriveQueue(items, store, root, { aspects: ["geometry"] });
   assert.equal(q[0].state, "stale");
 });
+
+test("a mark with inputs: null derives as stale, never current", async () => {
+  const store = await loadStore(join(root, "none.json"));
+  const item = items[0];
+  const { key } = (await import("../../scripts/lib/verification/inputs.mjs")).aspectKey(item, "geometry");
+  setMark(store, key, "geometry", { mark: "pass", by: "human", at: "2026-07-05", inputs: null });
+  const q = await deriveQueue(items, store, root, { aspects: ["geometry"] });
+  assert.equal(q[0].state, "stale");
+});

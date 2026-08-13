@@ -4,7 +4,7 @@
 // judgements were made against assets that have since been re-baked — importing them as
 // passes would manufacture exactly the stale green checkmarks this system exists to stop.
 // A failure is safe to import: the worst case is re-checking something already fixed.
-import { aspectKey, inputHash } from "./inputs.mjs";
+import { aspectKey } from "./inputs.mjs";
 import { setMark } from "./store.mjs";
 
 const CATEGORY_TO_ASPECT = {
@@ -25,8 +25,11 @@ export async function seedFromCensus(items, store, root, verdicts) {
     if (v.category === "framing") {
       const { key } = aspectKey(item, "colour");
       setMark(store, key, "colour", {
+        // inputs: null — these human aspects have no declared inputs, so a hash would
+        // never expire. null derives as permanently stale instead: the judgement stays
+        // visible but can never read as current against re-baked assets.
         mark: "notCheckable", by: "human", at: v.at?.slice(0, 10) ?? "2026-07-05",
-        inputs: await inputHash(item, "bindings", root),
+        inputs: null,
         note: v.issue ?? "icon cannot be framed by the body camera",
       });
       written++;
@@ -39,7 +42,7 @@ export async function seedFromCensus(items, store, root, verdicts) {
     const { key } = aspectKey(item, aspect);
     setMark(store, key, aspect, {
       mark: "fail", by: "human", at: v.at?.slice(0, 10) ?? "2026-07-05",
-      inputs: await inputHash(item, "bindings", root),
+      inputs: null, // see above: no declared inputs, so permanently stale, never current
       note: v.issue ?? `census: ${v.category}`,
     });
     written++;

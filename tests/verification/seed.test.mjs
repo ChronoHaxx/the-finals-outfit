@@ -19,13 +19,24 @@ test("colour categories seed a colour fail carrying the reviewer's note", async 
   assert.match(m.note, /grey/);
 });
 
+test("seeded marks carry inputs: null — they can never read as current", async () => {
+  const store = await loadStore("/nonexistent.json");
+  await seedFromCensus([item], store, process.cwd(), {
+    a: { category: "color-wrong", issue: "grey", score: 40 },
+  });
+  const { key } = aspectKey(item, "colour");
+  assert.equal(getMark(store, key, "colour").inputs, null);
+});
+
 test("framing becomes notCheckable, not a failure", async () => {
   const store = await loadStore("/nonexistent.json");
   await seedFromCensus([item], store, process.cwd(), {
     a: { category: "framing", issue: "icon is a hand close-up", score: 45 },
   });
   const { key } = aspectKey(item, "colour");
-  assert.equal(getMark(store, key, "colour").mark, "notCheckable");
+  const m = getMark(store, key, "colour");
+  assert.equal(m.mark, "notCheckable");
+  assert.equal(m.inputs, null);
 });
 
 test("a `good` verdict seeds nothing — it predates every current asset", async () => {
