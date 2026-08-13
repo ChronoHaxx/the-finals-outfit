@@ -11,7 +11,7 @@ export const ASPECTS = Object.freeze(["transform", "geometry", "uv", "bindings",
 // Bump when a check's LOGIC changes, so improving a check re-runs it instead of silently
 // inheriting verdicts made by the old one.
 export const CHECK_VERSION = Object.freeze({
-  transform: 2, geometry: 1, uv: 1, bindings: 1, bodyCulling: 1,
+  transform: 3, geometry: 1, uv: 1, bindings: 1, bodyCulling: 1,
 });
 
 const MESH_SCOPED = new Set(["transform", "geometry", "uv", "bodyCulling"]);

@@ -18,5 +18,7 @@ export async function worldBounds(absGlbPath) {
   if (!scene) return null;
   const b = getBounds(scene);
   const extent = [0, 1, 2].map((i) => b.max[i] - b.min[i]);
-  return { min: b.min, max: b.max, extent, centreY: (b.min[1] + b.max[1]) / 2 };
+  const skinned = doc.getRoot().listMeshes().flatMap((m) => m.listPrimitives())
+    .some((p) => p.getAttribute("JOINTS_0"));
+  return { min: b.min, max: b.max, extent, centreY: (b.min[1] + b.max[1]) / 2, skinned };
 }

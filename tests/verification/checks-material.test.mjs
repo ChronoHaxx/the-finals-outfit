@@ -48,6 +48,17 @@ test("an oversized socketed accessory fails — wrapper scale lost", async () =>
   assert.match(r.note, /wrapper scale lost/i);
 });
 
+test("a skinned socketed mesh is n/a — bind pose spans the skeleton, not the object", async () => {
+  const r = await transform("public/models/cosmetics/streetwear-smart-watch.glb", "wrist");
+  assert.equal(r.mark, "na", r.note);
+  assert.match(r.note, /skinned/i);
+});
+
+test("a large headwear static passes within its own bound", async () => {
+  const r = await transform("public/models/cosmetics/mexico-mariachi-sombrero.glb", "headwear");
+  assert.equal(r.mark, "pass", r.note);
+});
+
 test("a body-authored slot is n/a", async () => {
   const r = await transform("public/models/body/SK_Body_M.glb", "upperBody");
   assert.equal(r.mark, "na");
