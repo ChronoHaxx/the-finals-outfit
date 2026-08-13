@@ -11,7 +11,7 @@ export const ASPECTS = Object.freeze(["transform", "geometry", "uv", "bindings",
 // Bump when a check's LOGIC changes, so improving a check re-runs it instead of silently
 // inheriting verdicts made by the old one.
 export const CHECK_VERSION = Object.freeze({
-  transform: 4, geometry: 2, uv: 1, bindings: 1, bodyCulling: 2,
+  transform: 4, geometry: 2, uv: 1, bindings: 2, bodyCulling: 2,
 });
 
 const MESH_SCOPED = new Set(["transform", "geometry", "uv", "bodyCulling"]);
@@ -49,9 +49,12 @@ function inputPaths(item, aspect, root) {
       // answer, one that expires too eagerly costs a re-run.
       return [...mesh, resolve(root, "src", "rig", "CharacterRig.ts")];
     case "bodyCulling":
+      // The body mesh is NOT an input: the check never reads it, so hashing it only
+      // expires marks on unrelated body edits. The slot-policy module IS — the check's
+      // allowlist comes from it, so a policy change must expire every mark.
       return [
         ...mesh,
-        pub("models/body/SK_Body_M.glb"),
+        resolve(root, "src", "lib", "body-mask-slots.json"),
         ...(item.model?.gltfPath ? [pub(item.model.gltfPath.replace(/\.glb$/, ".bodymask.png"))] : []),
       ];
     case "bindings":
