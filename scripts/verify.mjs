@@ -10,6 +10,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { ASPECTS, aspectKey, inputHash } from "./lib/verification/inputs.mjs";
 import { loadStore, saveStore, setMark } from "./lib/verification/store.mjs";
 import { deriveQueue } from "./lib/verification/queue.mjs";
+import { seedFromCensus } from "./lib/verification/seed-census.mjs";
 import { check as geometry } from "./lib/verification/checks/geometry.mjs";
 import { check as uv } from "./lib/verification/checks/uv.mjs";
 import { check as transform } from "./lib/verification/checks/transform.mjs";
@@ -31,10 +32,18 @@ async function runOne(aspect, item, root) {
   }
 }
 
-export async function runVerification({ root = ROOT, dry = false, aspects = ASPECTS, limit = Infinity } = {}) {
+export async function runVerification({ root = ROOT, dry = false, aspects = ASPECTS, limit = Infinity, seedCensus = false } = {}) {
   const items = JSON.parse(await readFile(resolve(root, "src/data/items.json"), "utf8"));
   const byId = new Map(items.map((i) => [i.id, i]));
   const store = await loadStore(STORE);
+
+  if (seedCensus) {
+    const verdicts = JSON.parse(
+      await readFile(resolve(root, "scripts/visual-diff/verdicts.generated.json"), "utf8"),
+    );
+    const n = await seedFromCensus(items, store, root, verdicts);
+    console.log(`seeded ${n} human marks from the census`);
+  }
 
   const queue = (await deriveQueue(items, store, root, { aspects }))
     .filter((e) => e.state !== "current")
@@ -86,5 +95,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     dry: process.argv.includes("--dry"),
     aspects: aspect ? [aspect] : ASPECTS,
     limit: Number(arg("limit", Infinity)),
+    seedCensus: process.argv.includes("--seed-census"),
   }));
 }
