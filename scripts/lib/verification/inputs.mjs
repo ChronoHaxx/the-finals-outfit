@@ -11,7 +11,7 @@ export const ASPECTS = Object.freeze(["transform", "geometry", "uv", "bindings",
 // Bump when a check's LOGIC changes, so improving a check re-runs it instead of silently
 // inheriting verdicts made by the old one.
 export const CHECK_VERSION = Object.freeze({
-  transform: 3, geometry: 1, uv: 1, bindings: 1, bodyCulling: 2,
+  transform: 4, geometry: 2, uv: 1, bindings: 1, bodyCulling: 2,
 });
 
 const MESH_SCOPED = new Set(["transform", "geometry", "uv", "bodyCulling"]);
@@ -40,8 +40,14 @@ function inputPaths(item, aspect, root) {
   switch (aspect) {
     case "geometry":
     case "uv":
-    case "transform":
       return mesh;
+    case "transform":
+      // The rig's routing heuristic, per-slot bones and ancestor-scale handling all live
+      // in CharacterRig.ts — any edit to it can invalidate transform verdicts, so the rig
+      // joins the input set. This over-approximates (any rig edit expires every transform
+      // mark); that is the correct trade — a mark that fails to expire is a silent wrong
+      // answer, one that expires too eagerly costs a re-run.
+      return [...mesh, resolve(root, "src", "rig", "CharacterRig.ts")];
     case "bodyCulling":
       return [
         ...mesh,
