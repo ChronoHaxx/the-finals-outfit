@@ -2,6 +2,10 @@
 // Catches the census's `wrong-mesh` and `missing-part` classes at their cheapest —
 // a collapsed or empty mesh is detectable without rendering anything.
 //
+// LIMITATION: this cannot detect a MISSING part, only an empty or absurdly-scaled mesh —
+// a mesh that lost a piece still has plenty of triangles and passes. Do not read more
+// into a pass than it claims.
+//
 // Bounds come from worldBounds() (world-space, dequantized) — accessor bounds alone are
 // ~100x too large for statics, whose wrapper nodes carry the compensating dequant scale.
 // Revised per spec.
@@ -28,12 +32,18 @@ export async function check(absGlbPath) {
   if (!prims.length) return { mark: "fail", note: "no primitives" };
 
   let tris = 0;
+  let trianglePrims = 0;
   for (const p of prims) {
+    // glTF mode 4 = TRIANGLES. LINES/POINTS primitives are not renderable triangles and
+    // must not satisfy the "has geometry" test.
+    if (p.getMode() !== 4) continue;
+    trianglePrims++;
     const pos = p.getAttribute("POSITION");
     if (!pos) return { mark: "fail", note: "primitive has no POSITION" };
     const idx = p.getIndices();
     tris += (idx ? idx.getCount() : pos.getCount()) / 3;
   }
+  if (!trianglePrims) return { mark: "fail", note: "no triangle primitives" };
   if (tris < 1) return { mark: "fail", note: "zero triangles" };
 
   let b;
