@@ -11,7 +11,7 @@ export const ASPECTS = Object.freeze(["transform", "geometry", "uv", "bindings",
 // Bump when a check's LOGIC changes, so improving a check re-runs it instead of silently
 // inheriting verdicts made by the old one.
 export const CHECK_VERSION = Object.freeze({
-  transform: 3, geometry: 1, uv: 1, bindings: 1, bodyCulling: 1,
+  transform: 3, geometry: 1, uv: 1, bindings: 1, bodyCulling: 2,
 });
 
 const MESH_SCOPED = new Set(["transform", "geometry", "uv", "bodyCulling"]);
@@ -24,8 +24,12 @@ export function aspectKey(item, aspect) {
     return { scope: "skin", key: set ? `${mesh}|${set.albedo}` : `${mesh}|${item.id}` };
   }
   // Transform depends on the slot it is equipped into (a mesh socketed to the ear behaves
-  // differently from the same mesh on the wrist), so the slot joins the key.
-  return { scope: "mesh", key: aspect === "transform" ? `${mesh}|${item.slot}` : mesh };
+  // differently from the same mesh on the wrist), so the slot joins the key. Body culling
+  // does too: the CHECK branches on item.slot (the runtime's mask policy is per-slot), so
+  // keying on the mesh alone would let the first catalogue occurrence decide for all of
+  // them — and reordering the catalogue would change the answer.
+  const slotSensitive = aspect === "transform" || aspect === "bodyCulling";
+  return { scope: "mesh", key: slotSensitive ? `${mesh}|${item.slot}` : mesh };
 }
 
 // Absolute paths of the files an aspect depends on. `root` is the repo root.

@@ -39,3 +39,10 @@ test("transform is mesh-scoped but slot-sensitive", () => {
   assert.equal(a.scope, "mesh");
   assert.notEqual(a.key, b.key);
 });
+
+test("bodyCulling keys are slot-sensitive — one mesh across two slots is two verdicts", () => {
+  const a = aspectKey({ ...shirtRed, slot: "upperBody" }, "bodyCulling");
+  const b = aspectKey({ ...shirtRed, slot: "wrist" }, "bodyCulling");
+  assert.equal(a.scope, "mesh");
+  assert.notEqual(a.key, b.key);
+});

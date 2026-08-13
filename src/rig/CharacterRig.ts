@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { Slot } from "../lib/slots";
+import BODY_MASK_SLOTS from "../lib/body-mask-slots.json";
 import { disposeObject3D } from "./dispose";
 import { BodyDecalManager, type RigDecal } from "./BodyDecals";
 
@@ -498,13 +499,10 @@ export class CharacterRig {
   }
 
   // Slots whose pieces wrap the body and may ship a generated coverage mask.
-  private static readonly BODYMASK_SLOTS = new Set<Slot>([
-    "upperBody",
-    "outerwear",
-    "lowerBody",
-    "feet",
-    "hands",
-  ]);
+  // Single source of truth: src/lib/body-mask-slots.json — the verification check
+  // imports the same module, so the two can never disagree. (`face` is in the set but
+  // is handled by its own branch above, which also registers head decal targets.)
+  private static readonly BODYMASK_SLOTS = new Set<Slot>(BODY_MASK_SLOTS as Slot[]);
   private bodyHideUrls = new Map<Slot | "face", string>();
   private refreshBodyHides(): void {
     this.decals.setBodyHideMasks([...this.bodyHideUrls.values()]);
