@@ -48,3 +48,20 @@ test("a mark with inputs: null derives as stale, never current", async () => {
   const q = await deriveQueue(items, store, root, { aspects: ["geometry"] });
   assert.equal(q[0].state, "stale");
 });
+
+test("a needs-human mark derives needs-human regardless of hash freshness", async () => {
+  const store = await loadStore(join(root, "none.json"));
+  const item = items[0];
+  const { key } = (await import("../../scripts/lib/verification/inputs.mjs")).aspectKey(item, "geometry");
+  setMark(store, key, "geometry", {
+    mark: "needs-human", by: "agent", at: "2026-08-13",
+    inputs: await inputHash(item, "geometry", root), // fresh hash — must NOT read as current
+  });
+
+  let q = await deriveQueue(items, store, root, { aspects: ["geometry"] });
+  assert.equal(q[0].state, "needs-human");
+
+  writeFileSync(glb, "DIFFERENTBYTES"); // stale hash — still needs-human, not stale
+  q = await deriveQueue(items, store, root, { aspects: ["geometry"] });
+  assert.equal(q[0].state, "needs-human");
+});

@@ -8,7 +8,7 @@ import { readFile } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { ASPECTS, aspectKey, inputHash } from "./lib/verification/inputs.mjs";
-import { loadStore, saveStore, setMark } from "./lib/verification/store.mjs";
+import { loadStore, saveStore, setMark, getMark } from "./lib/verification/store.mjs";
 import { deriveQueue } from "./lib/verification/queue.mjs";
 import { seedFromCensus } from "./lib/verification/seed-census.mjs";
 import { check as geometry } from "./lib/verification/checks/geometry.mjs";
@@ -45,12 +45,19 @@ export async function runVerification({ root = ROOT, dry = false, aspects = ASPE
     console.log(`seeded ${n} human marks from the census`);
   }
 
-  const queue = (await deriveQueue(items, store, root, { aspects }))
-    .filter((e) => e.state !== "current")
+  const queue = await deriveQueue(items, store, root, { aspects });
+
+  // needs-human entries are a STANDING section, not work: a human owes a decision, and
+  // the machine must not re-check them (a re-run could silently resolve the mark). They
+  // are reported separately so they never inflate the machine-actionable count.
+  const needsHuman = queue.filter((e) => e.state === "needs-human")
+    .map((e) => ({ ...e, note: getMark(store, e.key, e.aspect)?.note }));
+  const work = queue
+    .filter((e) => e.state !== "current" && e.state !== "needs-human")
     .slice(0, limit);
 
   const entries = [];
-  for (const e of queue) {
+  for (const e of work) {
     const item = byId.get(e.itemId);
     const result = await runOne(e.aspect, item, root);
     setMark(store, e.key, e.aspect, {
@@ -64,7 +71,7 @@ export async function runVerification({ root = ROOT, dry = false, aspects = ASPE
   }
 
   if (!dry) await saveStore(storePath, store);
-  return { checked: entries.length, entries, written: !dry };
+  return { checked: entries.length, entries, needsHuman, written: !dry };
 }
 
 function summarise(report) {
@@ -77,6 +84,12 @@ function summarise(report) {
   console.log(`checked ${report.checked} entries${report.written ? "" : " (dry run — nothing written)"}\n`);
   for (const [aspect, t] of [...byAspect].sort()) {
     console.log(`  ${aspect.padEnd(13)} pass ${String(t.pass).padStart(5)}   fail ${String(t.fail).padStart(5)}   n/a ${String(t.na).padStart(5)}   needs-human ${String(t["needs-human"] ?? 0).padStart(5)}`);
+  }
+  // The needs-human section is STANDING, separate from the work queue above: a human
+  // owes a decision on each of these, and the machine will not touch them until then.
+  if (report.needsHuman?.length) {
+    console.log(`\nneeds-human (standing — a human owes a decision):`);
+    for (const e of report.needsHuman) console.log(`  [${e.aspect}] ${e.itemId} — ${e.note ?? "no note"}`);
   }
   const fails = report.entries.filter((e) => e.mark === "fail");
   if (fails.length) {

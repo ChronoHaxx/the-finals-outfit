@@ -17,9 +17,14 @@ export async function deriveQueue(items, store, root, { aspects = ASPECTS } = {}
       const mark = getMark(store, key, aspect);
       let state = "absent";
       if (mark) {
-        // inputs: null (seeded human marks) means the judgement was made against assets
-        // with no declared inputs — it can never read as current, only stale.
-        if (mark.inputs == null) {
+        // A needs-human mark is a standing judgement: a human still owes a decision, so it
+        // derives its own state regardless of hash freshness and must never read as current
+        // (a current entry is filtered out of the work queue and would vanish unresolved).
+        if (mark.mark === "needs-human") {
+          state = "needs-human";
+        } else if (mark.inputs == null) {
+          // inputs: null (seeded human marks) means the judgement was made against assets
+          // with no declared inputs — it can never read as current, only stale.
           state = "stale";
         } else {
           const current = await inputHash(item, aspect, root);
