@@ -338,11 +338,14 @@ export class CharacterRig {
     // socket-attached in-engine — so for those slots we re-parent onto the matching bone
     // (re-parenting moves them out of gltf.scene, so they're tracked for disposal).
     const attached: THREE.Mesh[] = [];
+    const eyeAnchor = item.slot === "eyewear" ? this.eyeWorldCenter() : null;
     for (const mesh of statics) {
       mesh.frustumCulled = false;
       applyMat(mesh);
       // Origin-authored statics (socket-attached in-engine — glasses, masks, earrings,
-      // wings) sit at ~y=0 IN WORLD SPACE; pin them to the slot's bone. Body-authored
+      // wings) often sit at ~y=0 IN WORLD SPACE; this is only a routing heuristic, not proof
+      // that the exported mesh has the game's socket offset. Pin candidates to the slot's bone
+      // while preserving their authored transform. Body-authored
       // statics (hair, helmets whose NODE carries the placement/scale) already sit at
       // their part and must stay under root — re-parenting them to a bone would discard
       // the node transform chain (a 0.35m helmet rendered 2m tall this way). The test
@@ -357,13 +360,18 @@ export class CharacterRig {
         // re-parenting: quantized GLBs carry the dequant scale on WRAPPER nodes, and
         // bone.add() alone would discard it (watch meshes ballooned to 2.5m this way).
         mesh.updateWorldMatrix(true, false);
-        if (item.slot === "facewear" || item.slot === "headwear") {
+        if (
+          item.slot === "earrings" ||
+          item.slot === "eyewear" ||
+          item.slot === "facewear" ||
+          item.slot === "headwear"
+        ) {
           // Head masks (hannya etc.) are authored at the ORIGIN facing world-forward. The plain
           // decompose+add (below) is right for a watch — it wants the wrist bone's rotation — but
-          // here it multiplies the head bone's REST rotation onto the mask, tilting it off the
-          // face (verified: hannya rendered up-left, clipped). Socket to the head at the authored
-          // offset while KEEPING the authored world orientation (counter the bone rotation), so
-          // the mask sits on the face and still follows the posed head.
+          // head-attached statics must not inherit the arbitrary REST rotation of a facial socket:
+          // that turns earrings on their side and can put glasses behind the face. Socket them at
+          // the authored offset while KEEPING the authored world orientation (counter the bone
+          // rotation), so they sit correctly and still follow the posed head.
           const wp = new THREE.Vector3();
           const wq = new THREE.Quaternion();
           const ws = new THREE.Vector3();
@@ -380,6 +388,17 @@ export class CharacterRig {
           mesh.matrixWorld.decompose(mesh.position, mesh.quaternion, mesh.scale);
         }
         bone.add(mesh);
+        if (eyeAnchor) {
+          mesh.updateWorldMatrix(true, false);
+          mesh.geometry.computeBoundingBox();
+          const center = mesh.geometry.boundingBox?.getCenter(new THREE.Vector3());
+          if (center) {
+            const currentWorld = center.applyMatrix4(mesh.matrixWorld);
+            const targetLocal = bone.worldToLocal(eyeAnchor.clone());
+            const currentLocal = bone.worldToLocal(currentWorld);
+            mesh.position.add(targetLocal.sub(currentLocal));
+          }
+        }
         attached.push(mesh);
       }
     }
@@ -577,6 +596,29 @@ export class CharacterRig {
 
   // Load a piece's garment print decals (cap 4 — each costs a texture unit in the patched
   // shader). Failures skip the decal rather than failing the equip.
+  // Origin-authored eyewear has no actor/socket transform in the extracted static mesh. Derive
+  // its anchor from the equipped head's visible eyeball geometry instead of inventing a world
+  // coordinate (rooted, body-space eyewear such as GamingGlasses never enters this path).
+  private eyeWorldCenter(): THREE.Vector3 | null {
+    const face = this.equipped.get("face")?.scene;
+    if (!face) return null;
+    face.updateWorldMatrix(true, true);
+    const box = new THREE.Box3();
+    let found = false;
+    face.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      const label = [mesh.name, ...mats.map((m) => m.name)].join(" ");
+      if (!/eye/i.test(label) || /shell|edge|lash|brow/i.test(label)) return;
+      const part = new THREE.Box3().setFromObject(mesh);
+      if (part.isEmpty()) return;
+      box.union(part);
+      found = true;
+    });
+    return found ? box.getCenter(new THREE.Vector3()) : null;
+  }
+
   private async loadGarmentDecals(mat?: RigMaterial): Promise<GarmentDecalTex[]> {
     if (!mat?.garmentDecals?.length) return [];
     const out: GarmentDecalTex[] = [];

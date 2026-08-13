@@ -1515,6 +1515,11 @@
     "model": {
       "gltfPath": "models/earring/barricadespike-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/barricadespike-01.barricadespike-01.attachment.albedo.webp",
+          "normal": "models/earring/barricadespike-01.barricadespike-01.attachment.normal.webp",
+          "orm": "models/earring/barricadespike-01.barricadespike-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#e8e8e8"
         ]
@@ -1530,6 +1535,11 @@
     "model": {
       "gltfPath": "models/earring/beetlegold-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/beetlegold-01.beetlegold-01.attachment.albedo.webp",
+          "normal": "models/earring/beetlegold-01.beetlegold-01.attachment.normal.webp",
+          "orm": "models/earring/beetlegold-01.beetlegold-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#c9a23c"
         ]
@@ -1545,6 +1555,11 @@
     "model": {
       "gltfPath": "models/earring/bullet-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/bullet-01.bullet-01.attachment.albedo.webp",
+          "normal": "models/earring/bullet-01.bullet-01.attachment.normal.webp",
+          "orm": "models/earring/bullet-01.bullet-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#d8d8d8"
         ]
@@ -1590,6 +1605,11 @@
     "model": {
       "gltfPath": "models/earring/cashcoin-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/cashcoin-01.cashcoin-01.attachment.albedo.webp",
+          "normal": "models/earring/cashcoin-01.cashcoin-01.attachment.normal.webp",
+          "orm": "models/earring/cashcoin-01.cashcoin-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#c8c8c8"
         ]
@@ -1605,6 +1625,11 @@
     "model": {
       "gltfPath": "models/earring/chain-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/chain-01.chain-01.attachment.albedo.webp",
+          "normal": "models/earring/chain-01.chain-01.attachment.normal.webp",
+          "orm": "models/earring/chain-01.chain-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#b8b8b8"
         ]
@@ -1638,6 +1663,11 @@
     "model": {
       "gltfPath": "models/earring/chain-02.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/chain-02.chain-02.attachment.albedo.webp",
+          "normal": "models/earring/chain-02.chain-02.attachment.normal.webp",
+          "orm": "models/earring/chain-02.chain-02.attachment.orm.webp"
+        },
         "regionColors": [
           "#b8b8b8"
         ]
@@ -1728,6 +1758,11 @@
     "model": {
       "gltfPath": "models/earring/elfearring-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/elfearring-01.elfearring-01.attachment.albedo.webp",
+          "normal": "models/earring/elfearring-01.elfearring-01.attachment.normal.webp",
+          "orm": "models/earring/elfearring-01.elfearring-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#e8e8e8"
         ]
@@ -1765,6 +1800,11 @@
     "model": {
       "gltfPath": "models/earring/firehorse-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/firehorse-01.firehorse-01.attachment.albedo.webp",
+          "normal": "models/earring/firehorse-01.firehorse-01.attachment.normal.webp",
+          "orm": "models/earring/firehorse-01.firehorse-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#c8c8c8"
         ]
@@ -1780,6 +1820,11 @@
     "model": {
       "gltfPath": "models/earring/gem-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/gem-01.gem-01.attachment.albedo.webp",
+          "normal": "models/earring/gem-01.gem-01.attachment.normal.webp",
+          "orm": "models/earring/gem-01.gem-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#b8b8b8"
         ]
@@ -1810,6 +1855,11 @@
     "model": {
       "gltfPath": "models/earring/goblinearring-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/goblinearring-01.goblinearring-01.attachment.albedo.webp",
+          "normal": "models/earring/goblinearring-01.goblinearring-01.attachment.normal.webp",
+          "orm": "models/earring/goblinearring-01.goblinearring-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#b8b8b8"
         ]
@@ -1825,6 +1875,11 @@
     "model": {
       "gltfPath": "models/earring/heart-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/heart-01.heart-01.attachment.albedo.webp",
+          "normal": "models/earring/heart-01.heart-01.attachment.normal.webp",
+          "orm": "models/earring/heart-01.heart-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#b8b8b8"
         ]
@@ -1862,6 +1917,11 @@
     "model": {
       "gltfPath": "models/earring/jadechinese-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/jadechinese-01.jadechinese-01.attachment.albedo.webp",
+          "normal": "models/earring/jadechinese-01.jadechinese-01.attachment.normal.webp",
+          "orm": "models/earring/jadechinese-01.jadechinese-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#b8b8b8"
         ]
@@ -1892,6 +1952,11 @@
     "model": {
       "gltfPath": "models/earring/logofinals-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/logofinals-01.logofinals-01.attachment.albedo.webp",
+          "normal": "models/earring/logofinals-01.logofinals-01.attachment.normal.webp",
+          "orm": "models/earring/logofinals-01.logofinals-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#a8a8a8"
         ]
@@ -1925,6 +1990,11 @@
     "model": {
       "gltfPath": "models/earring/mascotorf-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/mascotorf-01.mascotorf-01.attachment.albedo.webp",
+          "normal": "models/earring/mascotorf-01.mascotorf-01.attachment.normal.webp",
+          "orm": "models/earring/mascotorf-01.mascotorf-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#a8a8a8"
         ]
@@ -1940,6 +2010,11 @@
     "model": {
       "gltfPath": "models/earring/miniature-ak-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/miniature-ak-01.miniature-ak-01.attachment.albedo.webp",
+          "normal": "models/earring/miniature-ak-01.miniature-ak-01.attachment.normal.webp",
+          "orm": "models/earring/miniature-ak-01.miniature-ak-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#a8a8a8"
         ]
@@ -1955,6 +2030,11 @@
     "model": {
       "gltfPath": "models/earring/namatama-default-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/namatama-default-01.namatama-default-01.attachment.albedo.webp",
+          "normal": "models/earring/namatama-default-01.namatama-default-01.attachment.normal.webp",
+          "orm": "models/earring/namatama-default-01.namatama-default-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#f8f8f8"
         ]
@@ -1970,6 +2050,11 @@
     "model": {
       "gltfPath": "models/earring/namatama-evilgood-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/namatama-evilgood-01.namatama-evilgood-01.attachment.albedo.webp",
+          "normal": "models/earring/namatama-evilgood-01.namatama-evilgood-01.attachment.normal.webp",
+          "orm": "models/earring/namatama-evilgood-01.namatama-evilgood-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#989898"
         ]
@@ -1985,6 +2070,11 @@
     "model": {
       "gltfPath": "models/earring/panda-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/panda-01.panda-01.attachment.albedo.webp",
+          "normal": "models/earring/panda-01.panda-01.attachment.normal.webp",
+          "orm": "models/earring/panda-01.panda-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#e8e8e8"
         ]
@@ -2059,6 +2149,11 @@
     "model": {
       "gltfPath": "models/earring/skull-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/skull-01.skull-01.attachment.albedo.webp",
+          "normal": "models/earring/skull-01.skull-01.attachment.normal.webp",
+          "orm": "models/earring/skull-01.skull-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -2107,6 +2202,11 @@
     "model": {
       "gltfPath": "models/earring/sourapple-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/sourapple-01.sourapple-01.attachment.albedo.webp",
+          "normal": "models/earring/sourapple-01.sourapple-01.attachment.normal.webp",
+          "orm": "models/earring/sourapple-01.sourapple-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#b8b8b8"
         ]
@@ -2122,6 +2222,11 @@
     "model": {
       "gltfPath": "models/earring/spider-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/spider-01.spider-01.attachment.albedo.webp",
+          "normal": "models/earring/spider-01.spider-01.attachment.normal.webp",
+          "orm": "models/earring/spider-01.spider-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#b8b8b8"
         ]
@@ -2137,6 +2242,11 @@
     "model": {
       "gltfPath": "models/earring/springrusty-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/springrusty-01.springrusty-01.attachment.albedo.webp",
+          "normal": "models/earring/springrusty-01.springrusty-01.attachment.normal.webp",
+          "orm": "models/earring/springrusty-01.springrusty-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#a8a8a8"
         ]
@@ -2168,6 +2278,11 @@
     "model": {
       "gltfPath": "models/earring/tabsospuze-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/tabsospuze-01.tabsospuze-01.attachment.albedo.webp",
+          "normal": "models/earring/tabsospuze-01.tabsospuze-01.attachment.normal.webp",
+          "orm": "models/earring/tabsospuze-01.tabsospuze-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#b8b8b8"
         ]
@@ -2183,6 +2298,11 @@
     "model": {
       "gltfPath": "models/earring/yingyang-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/earring/yingyang-01.yingyang-01.attachment.albedo.webp",
+          "normal": "models/earring/yingyang-01.yingyang-01.attachment.normal.webp",
+          "orm": "models/earring/yingyang-01.yingyang-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#e8e8e8"
         ]
@@ -2912,6 +3032,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-3-dpaper-glasses.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-3-dpaper-glasses.3dpaperglasses.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-3-dpaper-glasses.3dpaperglasses.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-3-dpaper-glasses.3dpaperglasses.attachment.orm.webp"
+        },
         "regionColors": [
           "#989898"
         ]
@@ -3174,6 +3299,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-gaming-glasses.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-gaming-glasses.gamingglasses.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-gaming-glasses.gamingglasses.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-gaming-glasses.gamingglasses.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -3189,6 +3319,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-military-glasses.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-military-glasses.militaryglasses.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-military-glasses.militaryglasses.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-military-glasses.militaryglasses.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -5499,6 +5634,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-ancient-mask.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-ancient-mask.ancientmask.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-ancient-mask.ancientmask.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-ancient-mask.ancientmask.attachment.orm.webp"
+        },
         "regionColors": [
           "#787888"
         ]
@@ -5517,6 +5657,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-ancient-mask.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-ancient-mask.ivada.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-ancient-mask.ivada.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-ancient-mask.ivada.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -5532,6 +5677,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-asian-mask.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-asian-mask.asianmask.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-asian-mask.asianmask.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-asian-mask.asianmask.attachment.orm.webp"
+        },
         "regionColors": [
           "#888888"
         ]
@@ -5550,6 +5700,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-asian-mask.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-asian-mask.black.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-asian-mask.black.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-asian-mask.black.attachment.orm.webp"
+        },
         "regionColors": [
           "#888888"
         ]
@@ -5601,6 +5756,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-ballistic-mask-02.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-ballistic-mask-02.ballisticmask-02.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-ballistic-mask-02.ballisticmask-02.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-ballistic-mask-02.ballisticmask-02.attachment.orm.webp"
+        },
         "regionColors": [
           "#181818"
         ]
@@ -5616,6 +5776,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-cardboard-box-mask.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-cardboard-box-mask.cardboardboxmask.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-cardboard-box-mask.cardboardboxmask.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-cardboard-box-mask.cardboardboxmask.attachment.orm.webp"
+        },
         "regionColors": [
           "#987858"
         ]
@@ -5631,6 +5796,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-dino-cardboard-mask.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-dino-cardboard-mask.dinocardboardmask.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-dino-cardboard-mask.dinocardboardmask.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-dino-cardboard-mask.dinocardboardmask.attachment.orm.webp"
+        },
         "regionColors": [
           "#585828"
         ]
@@ -5661,6 +5831,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-fox-mask-02.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-fox-mask-02.foxmask-02.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-fox-mask-02.foxmask-02.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-fox-mask-02.foxmask-02.attachment.orm.webp"
+        },
         "regionColors": [
           "#181818"
         ]
@@ -5794,6 +5969,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-key-art-mask.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-key-art-mask.red.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-key-art-mask.red.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-key-art-mask.red.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -5917,6 +6097,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-mask-gasmask-02.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-mask-gasmask-02.white.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-mask-gasmask-02.white.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-mask-gasmask-02.white.attachment.orm.webp"
+        },
         "regionColors": [
           "#888888"
         ]
@@ -5936,6 +6121,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-mask-gas-mask-03.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-mask-gas-mask-03.vaiiya.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-mask-gas-mask-03.vaiiya.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-mask-gas-mask-03.vaiiya.attachment.orm.webp"
+        },
         "regionColors": [
           "#383838"
         ]
@@ -5966,6 +6156,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-mask-hahoe-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-mask-hahoe-01.fnesport.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-mask-hahoe-01.fnesport.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-mask-hahoe-01.fnesport.attachment.orm.webp"
+        },
         "regionColors": [
           "#989898"
         ]
@@ -6047,6 +6242,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-mask-paint-ball-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-mask-paint-ball-01.plastic-esportkz.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-mask-paint-ball-01.plastic-esportkz.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-mask-paint-ball-01.plastic-esportkz.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -6080,6 +6280,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-mask-welding-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-mask-welding-01.pink.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-mask-welding-01.pink.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-mask-welding-01.pink.attachment.orm.webp"
+        },
         "regionColors": [
           "#f898d8"
         ]
@@ -6098,6 +6303,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-mask-welding-02.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-mask-welding-02.brazil.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-mask-welding-02.brazil.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-mask-welding-02.brazil.attachment.orm.webp"
+        },
         "regionColors": [
           "#383838"
         ]
@@ -6113,6 +6323,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-pinata-mask.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-pinata-mask.pinatamask.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-pinata-mask.pinatamask.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-pinata-mask.pinatamask.attachment.orm.webp"
+        },
         "regionColors": [
           "#c85888"
         ]
@@ -6128,6 +6343,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-sea-monster-mask.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-sea-monster-mask.seamonstermask.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-sea-monster-mask.seamonstermask.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-sea-monster-mask.seamonstermask.attachment.orm.webp"
+        },
         "regionColors": [
           "#387858"
         ]
@@ -6143,6 +6363,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-skull-mask-blank.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-skull-mask-blank.skullmaskblank.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-skull-mask-blank.skullmaskblank.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-skull-mask-blank.skullmaskblank.attachment.orm.webp"
+        },
         "regionColors": [
           "#787878"
         ]
@@ -6161,6 +6386,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-skull-mask-blank.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-skull-mask-blank.geng.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-skull-mask-blank.geng.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-skull-mask-blank.geng.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -6212,6 +6442,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-gas-mask-wrap.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-gas-mask-wrap.gasmaskwrap.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-gas-mask-wrap.gasmaskwrap.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-gas-mask-wrap.gasmaskwrap.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -6234,6 +6469,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-mogul-mask-no-hear.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-mogul-mask-no-hear.mogulmask-nohear.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-mogul-mask-no-hear.mogulmask-nohear.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-mogul-mask-no-hear.mogulmask-nohear.attachment.orm.webp"
+        },
         "regionColors": [
           "#888888"
         ]
@@ -6249,6 +6489,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-mogul-mask-no-see.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-mogul-mask-no-see.mogulmask-nosee.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-mogul-mask-no-see.mogulmask-nosee.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-mogul-mask-no-see.mogulmask-nosee.attachment.orm.webp"
+        },
         "regionColors": [
           "#888888"
         ]
@@ -6264,6 +6509,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-mogul-mask-no-speak.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-mogul-mask-no-speak.mogulmask-nospeak.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-mogul-mask-no-speak.mogulmask-nospeak.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-mogul-mask-no-speak.mogulmask-nospeak.attachment.orm.webp"
+        },
         "regionColors": [
           "#787888"
         ]
@@ -11364,6 +11614,11 @@
       "material": {
         "emissiveMap": "models/cosmetics/halloween-pumpkin-head.emissive.webp",
         "emissiveIntensity": 2,
+        "bakedSet": {
+          "albedo": "models/cosmetics/halloween-pumpkin-head.pumpkinhead.attachment.albedo.webp",
+          "normal": "models/cosmetics/halloween-pumpkin-head.pumpkinhead.attachment.normal.webp",
+          "orm": "models/cosmetics/halloween-pumpkin-head.pumpkinhead.attachment.orm.webp"
+        },
         "regionColors": [
           "#f85818"
         ]
@@ -35074,6 +35329,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-foam-glove.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-foam-glove.foamglove.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-foam-glove.foamglove.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-foam-glove.foamglove.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -35093,6 +35353,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-foam-glove.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-foam-glove.ospuze.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-foam-glove.ospuze.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-foam-glove.ospuze.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -47597,6 +47862,11 @@
     "model": {
       "gltfPath": "models/cosmetics/streetwear-cute-tech-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/streetwear-cute-tech-helmet.cutetechhelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/streetwear-cute-tech-helmet.cutetechhelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/streetwear-cute-tech-helmet.cutetechhelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -47613,6 +47883,11 @@
     "model": {
       "gltfPath": "models/cosmetics/fancydress-flower-crown.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/fancydress-flower-crown.flowercrown.attachment.albedo.webp",
+          "normal": "models/cosmetics/fancydress-flower-crown.flowercrown.attachment.normal.webp",
+          "orm": "models/cosmetics/fancydress-flower-crown.flowercrown.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -47632,6 +47907,11 @@
     "model": {
       "gltfPath": "models/cosmetics/robots-robotic-orb-head.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/robots-robotic-orb-head.blackivada.attachment.albedo.webp",
+          "normal": "models/cosmetics/robots-robotic-orb-head.blackivada.attachment.normal.webp",
+          "orm": "models/cosmetics/robots-robotic-orb-head.blackivada.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -47667,6 +47947,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-alien-antenna.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-alien-antenna.alienantenna.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-alien-antenna.alienantenna.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-alien-antenna.alienantenna.attachment.orm.webp"
+        },
         "regionColors": [
           "#989898"
         ]
@@ -47682,6 +47967,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-ballistic-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-ballistic-helmet.ballistichelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-ballistic-helmet.ballistichelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-ballistic-helmet.ballistichelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -47701,6 +47991,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-ballistic-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-ballistic-helmet.alfaacta.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-ballistic-helmet.alfaacta.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-ballistic-helmet.alfaacta.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -47719,6 +48014,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-ballistic-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-ballistic-helmet.blackvolpe.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-ballistic-helmet.blackvolpe.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-ballistic-helmet.blackvolpe.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -47737,6 +48037,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-ballistic-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-ballistic-helmet.visordown.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-ballistic-helmet.visordown.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-ballistic-helmet.visordown.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -47756,6 +48061,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-ballistic-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-ballistic-helmet.visordownalfaacta.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-ballistic-helmet.visordownalfaacta.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-ballistic-helmet.visordownalfaacta.attachment.orm.webp"
+        },
         "regionColors": [
           "#383838"
         ]
@@ -47771,6 +48081,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-batting-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-batting-helmet.battinghelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-batting-helmet.battinghelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-batting-helmet.battinghelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#383838"
         ]
@@ -47786,6 +48101,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-clown-hat.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-clown-hat.clownhat.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-clown-hat.clownhat.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-clown-hat.clownhat.attachment.orm.webp"
+        },
         "regionColors": [
           "#888898"
         ]
@@ -47819,6 +48139,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-demon-horns.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-demon-horns.demonhorns.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-demon-horns.demonhorns.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-demon-horns.demonhorns.attachment.orm.webp"
+        },
         "regionColors": [
           "#989898"
         ]
@@ -48267,6 +48592,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-rubber-duck-head-punk.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-rubber-duck-head-punk.rubberduckheadpunk.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-rubber-duck-head-punk.rubberduckheadpunk.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-rubber-duck-head-punk.rubberduckheadpunk.attachment.orm.webp"
+        },
         "regionColors": [
           "#b88828"
         ]
@@ -48300,6 +48630,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-sailor-hat-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-sailor-hat-01.black.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-sailor-hat-01.black.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-sailor-hat-01.black.attachment.orm.webp"
+        },
         "regionColors": [
           "#888898"
         ]
@@ -48318,6 +48653,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-sailor-hat-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-sailor-hat-01.green.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-sailor-hat-01.green.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-sailor-hat-01.green.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -48336,6 +48676,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-sailor-hat-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-sailor-hat-01.red.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-sailor-hat-01.red.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-sailor-hat-01.red.attachment.orm.webp"
+        },
         "regionColors": [
           "#888898"
         ]
@@ -48486,6 +48831,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-skateboard-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-skateboard-helmet.skateboardhelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-skateboard-helmet.skateboardhelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-skateboard-helmet.skateboardhelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -48952,6 +49302,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-valentines-headband-2025.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-valentines-headband-2025.valentinesheadband2025.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-valentines-headband-2025.valentinesheadband2025.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-valentines-headband-2025.valentinesheadband2025.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -49086,6 +49441,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-axolotl-head.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-axolotl-head.axolotlhead.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-axolotl-head.axolotlhead.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-axolotl-head.axolotlhead.attachment.orm.webp"
+        },
         "regionColors": [
           "#f8d8d8"
         ]
@@ -49147,6 +49507,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-bycocket-hat.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-bycocket-hat.wool.albedo.webp",
+          "normal": "models/cosmetics/attachments-bycocket-hat.wool.normal.webp",
+          "orm": "models/cosmetics/attachments-bycocket-hat.wool.orm.webp"
+        },
         "regionMapPath": "models/cosmetics/attachments-bycocket-hat.regionmap.png",
         "regionColors": [
           "#697663",
@@ -49220,6 +49585,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-conical-hat.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-conical-hat.conicalhat.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-conical-hat.conicalhat.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-conical-hat.conicalhat.attachment.orm.webp"
+        },
         "regionColors": [
           "#c8c8d8"
         ]
@@ -49235,6 +49605,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-crystal-ball-head.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-crystal-ball-head.crystalballhead.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-crystal-ball-head.crystalballhead.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-crystal-ball-head.crystalballhead.attachment.orm.webp"
+        },
         "regionColors": [
           "#f8f8f8"
         ]
@@ -49250,6 +49625,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-diving-helmet-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-diving-helmet-01.divinghelmet-01.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-diving-helmet-01.divinghelmet-01.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-diving-helmet-01.divinghelmet-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#483828"
         ]
@@ -49265,6 +49645,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-dragon-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-dragon-helmet.dragonhelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-dragon-helmet.dragonhelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-dragon-helmet.dragonhelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#382828"
         ]
@@ -49322,6 +49707,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-gaming-headset.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-gaming-headset.gamingheadset.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-gaming-headset.gamingheadset.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-gaming-headset.gamingheadset.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -49337,6 +49727,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-halloween-headband-2025.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-halloween-headband-2025.halloweenheadband2025.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-halloween-headband-2025.halloweenheadband2025.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-halloween-headband-2025.halloweenheadband2025.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -49352,6 +49747,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-halloween-knife-headband.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-halloween-knife-headband.halloweenknifeheadband.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-halloween-knife-headband.halloweenknifeheadband.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-halloween-knife-headband.halloweenknifeheadband.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -49382,6 +49782,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-kettle-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-kettle-helmet.kettlehelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-kettle-helmet.kettlehelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-kettle-helmet.kettlehelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#888888"
         ]
@@ -49397,6 +49802,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-love-bomb-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-love-bomb-helmet.lovebombhelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-love-bomb-helmet.lovebombhelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-love-bomb-helmet.lovebombhelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#383838"
         ]
@@ -49412,6 +49822,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-lumbar-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-lumbar-helmet.lumbarhelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-lumbar-helmet.lumbarhelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-lumbar-helmet.lumbarhelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -49442,6 +49857,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-melon-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-melon-helmet.melonhelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-melon-helmet.melonhelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-melon-helmet.melonhelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -49457,6 +49877,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-milk-can-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-milk-can-helmet.milkcanhelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-milk-can-helmet.milkcanhelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-milk-can-helmet.milkcanhelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#786868"
         ]
@@ -49472,6 +49897,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-orf-head-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-orf-head-01.orfhead-01.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-orf-head-01.orfhead-01.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-orf-head-01.orfhead-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#f8e878"
         ]
@@ -49487,6 +49917,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-orf-head-02.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-orf-head-02.orfhead-02.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-orf-head-02.orfhead-02.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-orf-head-02.orfhead-02.attachment.orm.webp"
+        },
         "regionColors": [
           "#f898c8"
         ]
@@ -49502,6 +49937,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-orf-head-03.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-orf-head-03.orfhead-03.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-orf-head-03.orfhead-03.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-orf-head-03.orfhead-03.attachment.orm.webp"
+        },
         "regionColors": [
           "#483828"
         ]
@@ -49573,6 +50013,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-rose-crown.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-rose-crown.rosecrown.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-rose-crown.rosecrown.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-rose-crown.rosecrown.attachment.orm.webp"
+        },
         "regionColors": [
           "#888888"
         ]
@@ -49588,6 +50033,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-sci-fi-helmet-03.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-sci-fi-helmet-03.scifihelmet-03.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-sci-fi-helmet-03.scifihelmet-03.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-sci-fi-helmet-03.scifihelmet-03.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -49603,6 +50053,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-sci-fi-helmet-alt.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-sci-fi-helmet-alt.scifihelmet-alt.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-sci-fi-helmet-alt.scifihelmet-alt.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-sci-fi-helmet-alt.scifihelmet-alt.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -49786,6 +50241,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-valentines-headband-arrow.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-valentines-headband-arrow.valentinesheadbandarrow.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-valentines-headband-arrow.valentinesheadbandarrow.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-valentines-headband-arrow.valentinesheadbandarrow.attachment.orm.webp"
+        },
         "regionColors": [
           "#989898"
         ]
@@ -49801,6 +50261,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-wolf-head.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-wolf-head.wolfhead.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-wolf-head.wolfhead.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-wolf-head.wolfhead.attachment.orm.webp"
+        },
         "regionColors": [
           "#686868"
         ]
@@ -51038,6 +51503,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-disco-ball-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-disco-ball-helmet.discoballhelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-disco-ball-helmet.discoballhelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-disco-ball-helmet.discoballhelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#a8a8a8"
         ]
@@ -51305,6 +51775,11 @@
     "model": {
       "gltfPath": "models/cosmetics/fromtencent-asian-spirit-horn.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/fromtencent-asian-spirit-horn.asianspirithorn.attachment.albedo.webp",
+          "normal": "models/cosmetics/fromtencent-asian-spirit-horn.asianspirithorn.attachment.normal.webp",
+          "orm": "models/cosmetics/fromtencent-asian-spirit-horn.asianspirithorn.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -52352,6 +52827,11 @@
     "model": {
       "gltfPath": "models/cosmetics/medieval-skeleton-warrior-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/medieval-skeleton-warrior-helmet.metal.attachment.albedo.webp",
+          "normal": "models/cosmetics/medieval-skeleton-warrior-helmet.metal.attachment.normal.webp",
+          "orm": "models/cosmetics/medieval-skeleton-warrior-helmet.metal.attachment.orm.webp"
+        },
         "regionMapPath": "models/cosmetics/medieval-skeleton-warrior-helmet.regionmap.png",
         "regionColors": [
           "#888888"
@@ -53443,6 +53923,11 @@
     "model": {
       "gltfPath": "models/cosmetics/military-cardboard-helmet.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/military-cardboard-helmet.cardboardhelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/military-cardboard-helmet.cardboardhelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/military-cardboard-helmet.cardboardhelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#c8a888"
         ]
@@ -63345,6 +63830,11 @@
     "model": {
       "gltfPath": "models/cosmetics/tech-computer-head.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/tech-computer-head.computerhead.attachment.albedo.webp",
+          "normal": "models/cosmetics/tech-computer-head.computerhead.attachment.normal.webp",
+          "orm": "models/cosmetics/tech-computer-head.computerhead.attachment.orm.webp"
+        },
         "regionColors": [
           "#c8b8a8"
         ]
@@ -63364,6 +63854,11 @@
     "model": {
       "gltfPath": "models/cosmetics/tech-computer-head.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/tech-computer-head.broken.attachment.albedo.webp",
+          "normal": "models/cosmetics/tech-computer-head.broken.attachment.normal.webp",
+          "orm": "models/cosmetics/tech-computer-head.broken.attachment.orm.webp"
+        },
         "regionColors": [
           "#484848"
         ]
@@ -63382,6 +63877,11 @@
       "material": {
         "emissiveMap": "models/cosmetics/tech-sci-fi-helmet.emissive.webp",
         "emissiveIntensity": 2,
+        "bakedSet": {
+          "albedo": "models/cosmetics/tech-sci-fi-helmet.scifihelmet.attachment.albedo.webp",
+          "normal": "models/cosmetics/tech-sci-fi-helmet.scifihelmet.attachment.normal.webp",
+          "orm": "models/cosmetics/tech-sci-fi-helmet.scifihelmet.attachment.orm.webp"
+        },
         "regionColors": [
           "#585858"
         ]
@@ -63736,6 +64236,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-boom-box-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-boom-box-01.pink.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-boom-box-01.pink.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-boom-box-01.pink.attachment.orm.webp"
+        },
         "regionColors": [
           "#888898"
         ]
@@ -72439,6 +72944,11 @@
     "model": {
       "gltfPath": "models/cosmetics/military-cardboard-pants.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/military-cardboard-pants.cardboardpants.attachment.albedo.webp",
+          "normal": "models/cosmetics/military-cardboard-pants.cardboardpants.attachment.normal.webp",
+          "orm": "models/cosmetics/military-cardboard-pants.cardboardpants.attachment.orm.webp"
+        },
         "regionColors": [
           "#282828"
         ]
@@ -93711,6 +94221,11 @@
     "model": {
       "gltfPath": "models/cosmetics/military-ammo-backpack.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/military-ammo-backpack.arctic.attachment.albedo.webp",
+          "normal": "models/cosmetics/military-ammo-backpack.arctic.attachment.normal.webp",
+          "orm": "models/cosmetics/military-ammo-backpack.arctic.attachment.orm.webp"
+        },
         "regionColors": [
           "#383838"
         ]
@@ -93727,6 +94242,11 @@
     "model": {
       "gltfPath": "models/cosmetics/military-ammo-backpack.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/military-ammo-backpack.ammobackpack.attachment.albedo.webp",
+          "normal": "models/cosmetics/military-ammo-backpack.ammobackpack.attachment.normal.webp",
+          "orm": "models/cosmetics/military-ammo-backpack.ammobackpack.attachment.orm.webp"
+        },
         "regionColors": [
           "#383828"
         ]
@@ -93741,6 +94261,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-demon-wings.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-demon-wings.demonwings.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-demon-wings.demonwings.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-demon-wings.demonwings.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -94078,6 +94603,11 @@
     "model": {
       "gltfPath": "models/cosmetics/attachments-dragonfly-wings.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/attachments-dragonfly-wings.dragonflywings.attachment.albedo.webp",
+          "normal": "models/cosmetics/attachments-dragonfly-wings.dragonflywings.attachment.normal.webp",
+          "orm": "models/cosmetics/attachments-dragonfly-wings.dragonflywings.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -95275,6 +95805,11 @@
     "model": {
       "gltfPath": "models/cosmetics/halloween-bat-wings.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/halloween-bat-wings.batwings.attachment.albedo.webp",
+          "normal": "models/cosmetics/halloween-bat-wings.batwings.attachment.normal.webp",
+          "orm": "models/cosmetics/halloween-bat-wings.batwings.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -110746,6 +111281,11 @@
     "model": {
       "gltfPath": "models/cosmetics/fancydress-diamond-ring.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/fancydress-diamond-ring.diamondring.attachment.albedo.webp",
+          "normal": "models/cosmetics/fancydress-diamond-ring.diamondring.attachment.normal.webp",
+          "orm": "models/cosmetics/fancydress-diamond-ring.diamondring.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -115933,6 +116473,11 @@
     "model": {
       "gltfPath": "models/cosmetics/military-cardboard-combat-vest.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/military-cardboard-combat-vest.cardboardcombatvest.attachment.albedo.webp",
+          "normal": "models/cosmetics/military-cardboard-combat-vest.cardboardcombatvest.attachment.normal.webp",
+          "orm": "models/cosmetics/military-cardboard-combat-vest.cardboardcombatvest.attachment.orm.webp"
+        },
         "regionColors": [
           "#9898a8"
         ]
@@ -140541,6 +141086,11 @@
     "model": {
       "gltfPath": "models/cosmetics/fancydress-bracelet-bride.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/fancydress-bracelet-bride.cottagecore.attachment.albedo.webp",
+          "normal": "models/cosmetics/fancydress-bracelet-bride.cottagecore.attachment.normal.webp",
+          "orm": "models/cosmetics/fancydress-bracelet-bride.cottagecore.attachment.orm.webp"
+        },
         "regionColors": [
           "#e8c898"
         ]
@@ -140906,6 +141456,11 @@
     "model": {
       "gltfPath": "models/cosmetics/fancydress-bracelet-bride.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/cosmetics/fancydress-bracelet-bride.flowerbracelet.attachment.albedo.webp",
+          "normal": "models/cosmetics/fancydress-bracelet-bride.flowerbracelet.attachment.normal.webp",
+          "orm": "models/cosmetics/fancydress-bracelet-bride.flowerbracelet.attachment.orm.webp"
+        },
         "regionColors": [
           "#b83848"
         ]
@@ -142894,6 +143449,11 @@
     "model": {
       "gltfPath": "models/watch/hackersmart-01.glb",
       "material": {
+        "bakedSet": {
+          "albedo": "models/watch/hackersmart-01.hackersmart-01.attachment.albedo.webp",
+          "normal": "models/watch/hackersmart-01.hackersmart-01.attachment.normal.webp",
+          "orm": "models/watch/hackersmart-01.hackersmart-01.attachment.orm.webp"
+        },
         "regionColors": [
           "#484848"
         ]

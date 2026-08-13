@@ -69,6 +69,18 @@ export function readMI(dir) {
     const p = e?.ParameterValue?.ObjectPath;
     if (n && typeof p === "string") textures[n] = p;
   }
+  // FModel emits the layered Texture2DArray parameters under two vocabularies.
+  // Older exports use the descriptive names; a large part of the character dump uses
+  // the compact material-instance names C/N/M. Normalize both at this boundary so the
+  // baker cannot silently fall back to zero detail slices.
+  const arrayAliases = {
+    TextureArray_C: "TextureArray_Colors",
+    TextureArray_N: "TextureArray_Normals",
+    TextureArray_M: "TextureArray_Masks",
+  };
+  for (const [source, canonical] of Object.entries(arrayAliases)) {
+    if (!textures[canonical] && textures[source]) textures[canonical] = textures[source];
+  }
   return { name: obj.Name ?? basename(dir), parentName, nLayers, scalars, vectors, textures };
 }
 

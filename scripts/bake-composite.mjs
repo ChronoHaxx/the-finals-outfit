@@ -155,10 +155,14 @@ function sample(raw, u, v, wrap) {
 }
 
 // Tangent-space normal: decode XY, reconstruct Z (= the proven fixNormalMaps approach; the
-// dump packs cavity/AO into B, so never trust it). Returns unit [x,y,z].
+// dump packs cavity/AO into B, so never trust it). Unreal stores tangent normals in the
+// DirectX convention, while the glTF/three.js tangent basis is OpenGL; flip G at this
+// boundary. BAKE_NORMAL_GREEN_FLIP=0 retains the pre-fix decode for an attributed A/B render.
+const NORMAL_GREEN_FLIP = process.env.BAKE_NORMAL_GREEN_FLIP !== "0";
 function decodeNormal(rgba) {
   const x = (rgba[0] / 255) * 2 - 1;
-  const y = (rgba[1] / 255) * 2 - 1;
+  const y0 = (rgba[1] / 255) * 2 - 1;
+  const y = NORMAL_GREEN_FLIP ? -y0 : y0;
   const z = Math.sqrt(Math.max(0, 1 - x * x - y * y));
   return [x, y, z];
 }

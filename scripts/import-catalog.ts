@@ -856,6 +856,79 @@ function convertEmissiveTex(gltfPath: string, skinDir: string): Promise<string |
   return p;
 }
 
+// Attachments use a different master material from garments. Their MI has no OCM/region map:
+// CR is authored colour in RGB with roughness in A, while NOM is XY normal in RG with metalness
+// in A (the MI often calls this slot NOH). Convert that family into the same finished texture
+// contract as the layered baker so CharacterRig does not fall back to a single icon tint.
+const attachmentPbrCache = new Map<string, Promise<Material["bakedSet"] | undefined>>();
+function findAttachmentMap(skinDir: string, suffix: RegExp): string | undefined {
+  try {
+    const file = readdirSync(skinDir).find((f) => suffix.test(f));
+    return file ? join(skinDir, file) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+function convertAttachmentPbr(gltfPath: string, skinDir: string): Promise<Material["bakedSet"] | undefined> {
+  const cr = findAttachmentMap(skinDir, /^T_.*_CR\.png$/i);
+  const nom = findAttachmentMap(skinDir, /^T_.*_(?:NOM|NOH)\.png$/i);
+  if (!cr || !nom) return Promise.resolve(undefined);
+  const skinKey = slugify(basename(skinDir));
+  const relBase = gltfPath.replace(/\.glb$/, `.${skinKey}.attachment`);
+  const key = `${relBase}|${cr}|${nom}`;
+  let p = attachmentPbrCache.get(key);
+  if (!p) {
+    p = (async () => {
+      const base = await sharp(longPath(cr)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+      const normal = await sharp(longPath(nom))
+        .resize(base.info.width, base.info.height, { fit: "fill" })
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      const px = base.info.width * base.info.height;
+      const albedoRel = `${relBase}.albedo.webp`;
+      const normalRel = `${relBase}.normal.webp`;
+      const ormRel = `${relBase}.orm.webp`;
+      const albedoAbs = resolve(ROOT, "public", albedoRel);
+      const normalAbs = resolve(ROOT, "public", normalRel);
+      const ormAbs = resolve(ROOT, "public", ormRel);
+      mkdirSync(dirname(albedoAbs), { recursive: true });
+
+      // Preserve the CR's encoded RGB as colour; its alpha is data, not coverage.
+      await sharp(longPath(cr)).removeAlpha().webp({ quality: 90 }).toFile(albedoAbs);
+
+      const nOut = Buffer.alloc(px * 3);
+      const ormOut = Buffer.alloc(px * 3);
+      for (let i = 0; i < px; i++) {
+        const bi = i * base.info.channels;
+        const ni = i * normal.info.channels;
+        const x = (normal.data[ni] / 255) * 2 - 1;
+        // UE attachment normals are DirectX; the glTF/three tangent basis is OpenGL.
+        const y = -((normal.data[ni + 1] / 255) * 2 - 1);
+        const z = Math.sqrt(Math.max(0, 1 - x * x - y * y));
+        const oi = i * 3;
+        nOut[oi] = Math.round((x + 1) * 127.5);
+        nOut[oi + 1] = Math.round((y + 1) * 127.5);
+        nOut[oi + 2] = Math.round((z + 1) * 127.5);
+        ormOut[oi] = 255; // attachment family has no AO map; keep neutral occlusion.
+        ormOut[oi + 1] = base.data[bi + 3] ?? 255; // CR alpha = roughness.
+        ormOut[oi + 2] = normal.data[ni + 3] ?? 255; // NOM alpha = metalness.
+      }
+      await sharp(nOut, { raw: { width: base.info.width, height: base.info.height, channels: 3 } })
+        .webp({ lossless: true })
+        .toFile(normalAbs);
+      await sharp(ormOut, { raw: { width: base.info.width, height: base.info.height, channels: 3 } })
+        .webp({ lossless: true })
+        .toFile(ormAbs);
+      return { albedo: albedoRel, normal: normalRel, orm: ormRel };
+    })().catch(() => undefined);
+    attachmentPbrCache.set(key, p);
+  }
+  return p;
+}
+
+type MaterialPath = "layered bake" | "attachment CR/NOM" | "region-tint" | "plain";
+
 // Build the per-skin material block: the piece-shared region map (if build-regions emitted it)
 // + a color per part. Each part's color is the real BaseColorOverlay of the material layer its
 // MaterialID selects (the skin's thumbnail is only a fallback for parts with no active layer).
@@ -863,6 +936,7 @@ async function buildMaterial(
   gltfPath: string,
   skinDir: string,
   iconAbs: string,
+  pathOut?: { path: MaterialPath },
 ): Promise<Material | undefined> {
   const regionMapPath = gltfPath.replace(/\.glb$/, ".regionmap.png");
   const rmAbs = resolve(ROOT, "public", regionMapPath);
@@ -881,8 +955,12 @@ async function buildMaterial(
   // Layered-composite baked set (scripts/bake-composite.mjs): if this skin has a baked
   // per-skin albedo/normal/orm, the runtime swaps it in and skips the region-tint path. We
   // still emit the region colors below as a debug/fallback record.
-  const bakedSet = lookupBakedSet(gltfPath, skinDir);
+  const layeredSet = lookupBakedSet(gltfPath, skinDir);
+  const attachmentSet = layeredSet ? undefined : await convertAttachmentPbr(gltfPath, skinDir);
+  const bakedSet = layeredSet ?? attachmentSet;
   if (bakedSet) material.bakedSet = bakedSet;
+  if (pathOut && layeredSet) pathOut.path = "layered bake";
+  else if (pathOut && attachmentSet) pathOut.path = "attachment CR/NOM";
   if (existsSync(rmAbs) && existsSync(regionsAbs)) {
     const { count, bodyIndex, blues, meanLuma } = JSON.parse(readFileSync(regionsAbs, "utf8")) as {
       count: number;
@@ -901,6 +979,7 @@ async function buildMaterial(
         (k === bodyIndex ? icon[0] : icon[1] ?? icon[0]) ?? mi!.colorA ?? "#808080";
       material.regionMapPath = regionMapPath;
       material.regionColors = decoded.colors.map((c, k) => c ?? fb(k));
+      if (pathOut && !bakedSet) pathOut.path = "region-tint";
       // Raw authored colors, pre any display blend op — the calibration re-fit input.
       material.regionOverlays = decoded.raw.map((c, k) => c ?? fb(k));
       // Per-part PBR derived from each layer's params (cloth-gated — see deriveRegionPbr).
@@ -982,6 +1061,7 @@ async function buildMaterial(
       material.metalness = p.metal;
     }
   }
+  if (pathOut && !pathOut.path) pathOut.path = "plain";
   return Object.keys(material).length ? material : undefined;
 }
 
@@ -1527,7 +1607,7 @@ async function main() {
 
   const items: Item[] = [];
   const iconJobs: { src: string; destAbs: string }[] = [];
-  const materialJobs: { model: NonNullable<Item["model"]>; skinDir: string; iconAbs: string }[] = [];
+  const materialJobs: { itemId: string; model: NonNullable<Item["model"]>; skinDir: string; iconAbs: string }[] = [];
   const decalJobs: { item: Item; slot: Slot; skinDir: string; iconAbs: string }[] = [];
   const perSlot: Record<string, number> = Object.fromEntries(SLOTS.map((s) => [s, 0]));
   const skipped: Record<string, number> = {};
@@ -1547,7 +1627,7 @@ async function main() {
         item.model = { gltfPath };
         // The skin's MaterialInstance + texture arrays live in the icon's folder; the icon
         // itself is the ground-truth colorway source.
-        materialJobs.push({ model: item.model, skinDir: dirname(hit.absPath), iconAbs: hit.absPath });
+        materialJobs.push({ itemId: item.id, model: item.model, skinDir: dirname(hit.absPath), iconAbs: hit.absPath });
         // Heads pair the shared body material to the face's tone (sibling MI_Body_*.json).
         if (item.slot === "face") {
           const bodySkin = await parseBodySkinMI(dirname(hit.absPath));
@@ -1585,12 +1665,37 @@ async function main() {
   // ColorMask under public/models + the skin's MaterialInstance from the dump).
   if (materialJobs.length) {
     console.log(`Building materials for ${materialJobs.length} pieces …`);
+    const materialPaths = new Map<string, MaterialPath>();
     await pool(materialJobs, ICON_CONCURRENCY, async (job) => {
-      const mat = await buildMaterial(job.model.gltfPath, job.skinDir, job.iconAbs);
+      const pathOut = { path: "plain" as MaterialPath };
+      const mat = await buildMaterial(job.model.gltfPath, job.skinDir, job.iconAbs, pathOut);
       if (mat) job.model.material = mat;
+      materialPaths.set(job.itemId, pathOut.path);
     });
     const withMat = materialJobs.filter((j) => j.model.material).length;
     console.log(`  attached material to ${withMat}/${materialJobs.length}.`);
+    const pathCounts = Object.fromEntries(
+      (["layered bake", "attachment CR/NOM", "region-tint", "plain"] as MaterialPath[]).map((path) => [
+        path,
+        [...materialPaths.values()].filter((p) => p === path).length,
+      ]),
+    );
+    console.log(`  material paths: ${JSON.stringify(pathCounts)}`);
+    const reportPath = process.env.MATERIAL_PATH_REPORT;
+    if (reportPath) {
+      mkdirSync(dirname(resolve(reportPath)), { recursive: true });
+      writeFileSync(
+        resolve(reportPath),
+        JSON.stringify(
+          {
+            counts: pathCounts,
+            items: Object.fromEntries([...materialPaths.entries()].sort(([a], [b]) => a.localeCompare(b))),
+          },
+          null,
+          2,
+        ) + "\n",
+      );
+    }
     console.log(`  garment print decals converted: ${garmentDecalCache.size}`);
   }
 
