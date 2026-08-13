@@ -1,6 +1,9 @@
 # Per-item verification matrix — design
 
-Status: **approved in conversation 2026-08-13**, not yet planned or implemented.
+Status: **approved in conversation 2026-08-13**; implemented as
+`2026-08-13-verification-matrix-plan.md`, with one deliberate deviation below
+(the store is path-keyed, not hash-keyed) amended into this design by the
+remediation round (`2026-08-13-verification-matrix-remediation.md`).
 
 ## The problem this solves
 
@@ -75,25 +78,32 @@ marks arrive through dev mode, which calls a script. A file that can be edited b
 hand starts drifting, and this workspace has already lost a dashboard twice to
 hand-maintained state.
 
-### Marks are keyed by input hash, not by item
+### Marks are keyed by the input path, not by item
 
 Most catalog items are colourways of a shared mesh: **2,531 items resolve to 847
 distinct meshes**, three skins per mesh on average, over 1,968 distinct baked
 material sets.
 
-The four mesh-level aspects therefore need **847 checks, not 2,531**. This
-requires no special-casing, because the hash already expresses it: if geometry's
-`inputs` is the GLB's hash, every skin of a shirt produces the same hash, and a
-verdict recorded against that hash applies to all of them automatically. Store
-marks against `(aspect, inputs-hash)` and project them onto items for display.
+The mesh-level aspects therefore need **847 checks, not 2,531** — and this needs
+no special-casing, because the identity IS the path: mesh-scoped aspects are
+stored under the GLB path, and transform and body culling under `GLB|slot`,
+since both depend on the slot they are equipped into. Skin-scoped aspects
+(bindings) are stored under `GLB|albedo`. Every skin of a shirt shares one
+mesh-level verdict automatically; there is no projection layer.
+
+This is a deliberate amendment of the original hash-keyed design, made in the
+remediation round. The input hash still lives in the mark — it is the `inputs`
+field, and `stale` is still **derived, never stored**: a mark whose recomputed
+hash no longer matches is stale, and nothing rewrites the file to record
+staleness, so a re-bake does not produce a 2,866-line diff. Path-keying delivers
+the same expiry guarantee, is **conservative on a rename** (a renamed mesh reads
+as absent, never wrongly current), and is simpler — the key is readable in the
+store without recomputing anything. The hash remains the source of staleness;
+the path is the source of identity.
 
 A variation that changes only its material inherits every mesh-level verdict and
 carries its own colour, surface, bindings and effects marks. Adding a new
 colourway of an existing mesh costs four checks, not eight.
-
-`stale` is **derived, never stored**: a mark whose recomputed hash no longer
-matches is stale. Nothing rewrites the file to record staleness, so a re-bake
-does not produce a 2,866-line diff.
 
 Rejected alternative: one file per item under `_docs/`. Better merge behaviour,
 but 2,866 files, no easier to query, and this is a single-author repo.
