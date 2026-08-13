@@ -28,6 +28,51 @@ test("a baked set pointing at a missing file fails and names it", async () => {
   assert.match(r.note, /nope\.albedo\.webp/);
 });
 
+test("a present but undecodable map fails — existence is not readability", async () => {
+  const root = mkdtempSync(join(tmpdir(), "vbnd-"));
+  const dir = join(root, "public", "models", "cosmetics");
+  mkdirSync(dir, { recursive: true });
+  // Albado and orm are real images; the normal is a zero-byte file that exists but
+  // cannot decode. Current check only decodes the albedo, so this passes today.
+  const raw = Buffer.alloc(4 * 4 * 3);
+  for (let i = 0; i < raw.length; i++) raw[i] = i % 251;
+  await sharp(raw, { raw: { width: 4, height: 4, channels: 3 } }).png().toFile(join(dir, "a.albedo.png"));
+  await sharp(raw, { raw: { width: 4, height: 4, channels: 3 } }).png().toFile(join(dir, "a.orm.png"));
+  writeFileSync(join(dir, "a.normal.webp"), "");
+  const r = await bindings({
+    id: "x",
+    model: { gltfPath: "models/cosmetics/x.glb", material: { bakedSet: {
+      albedo: "models/cosmetics/a.albedo.png",
+      normal: "models/cosmetics/a.normal.webp",
+      orm: "models/cosmetics/a.orm.png",
+    } } },
+  }, root);
+  assert.equal(r.mark, "fail");
+  assert.match(r.note, /a\.normal\.webp/);
+});
+
+test("a uniform albedo is needs-human, not a failure — flat materials can be legitimate", async () => {
+  const root = mkdtempSync(join(tmpdir(), "vbnd-"));
+  const dir = join(root, "public", "models", "cosmetics");
+  mkdirSync(dir, { recursive: true });
+  // Uniform grey albedo (zero variance); normal and orm are readable but also uniform —
+  // only the albedo flatness is being judged here.
+  const flat = Buffer.alloc(4 * 4 * 3, 128);
+  await sharp(flat, { raw: { width: 4, height: 4, channels: 3 } }).png().toFile(join(dir, "a.albedo.png"));
+  await sharp(flat, { raw: { width: 4, height: 4, channels: 3 } }).png().toFile(join(dir, "a.normal.webp"));
+  await sharp(flat, { raw: { width: 4, height: 4, channels: 3 } }).png().toFile(join(dir, "a.orm.png"));
+  const r = await bindings({
+    id: "x",
+    model: { gltfPath: "models/cosmetics/x.glb", material: { bakedSet: {
+      albedo: "models/cosmetics/a.albedo.png",
+      normal: "models/cosmetics/a.normal.webp",
+      orm: "models/cosmetics/a.orm.png",
+    } } },
+  }, root);
+  assert.equal(r.mark, "needs-human");
+  assert.match(r.note, /uniform/i);
+});
+
 test("a mesh with no bodymask fails, and says so", async () => {
   const r = await bodyCulling({ id: "x", slot: "upperBody", model: { gltfPath: "models/cosmetics/definitely-not-real.glb" } }, ROOT);
   assert.equal(r.mark, "fail");

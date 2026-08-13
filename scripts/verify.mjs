@@ -70,13 +70,13 @@ export async function runVerification({ root = ROOT, dry = false, aspects = ASPE
 function summarise(report) {
   const byAspect = new Map();
   for (const e of report.entries) {
-    const t = byAspect.get(e.aspect) ?? { pass: 0, fail: 0, na: 0 };
+    const t = byAspect.get(e.aspect) ?? { pass: 0, fail: 0, na: 0, "needs-human": 0 };
     t[e.mark] = (t[e.mark] ?? 0) + 1;
     byAspect.set(e.aspect, t);
   }
   console.log(`checked ${report.checked} entries${report.written ? "" : " (dry run — nothing written)"}\n`);
   for (const [aspect, t] of [...byAspect].sort()) {
-    console.log(`  ${aspect.padEnd(13)} pass ${String(t.pass).padStart(5)}   fail ${String(t.fail).padStart(5)}   n/a ${String(t.na).padStart(5)}`);
+    console.log(`  ${aspect.padEnd(13)} pass ${String(t.pass).padStart(5)}   fail ${String(t.fail).padStart(5)}   n/a ${String(t.na).padStart(5)}   needs-human ${String(t["needs-human"] ?? 0).padStart(5)}`);
   }
   const fails = report.entries.filter((e) => e.mark === "fail");
   if (fails.length) {

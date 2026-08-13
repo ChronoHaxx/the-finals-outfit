@@ -6,7 +6,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
 
-export const MARKS = Object.freeze(["pass", "fail", "na", "notCheckable"]);
+export const MARKS = Object.freeze(["pass", "fail", "na", "notCheckable", "needs-human"]);
 
 export async function loadStore(path) {
   try {

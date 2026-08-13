@@ -23,10 +23,25 @@ export async function check(item, root) {
   }
   if (missing.length) return { mark: "fail", note: `missing: ${missing.join(", ")}` };
 
+  // Existence is not readability: a zero-byte or corrupt map passes access() but will
+  // never decode at runtime, so every referenced map must actually open.
+  for (const r of rel) {
+    try {
+      await sharp(resolve(root, "public", r)).metadata();
+    } catch {
+      return { mark: "fail", note: `unreadable: ${r}` };
+    }
+  }
+
   try {
     const stats = await sharp(resolve(root, "public", set.albedo)).stats();
     const flat = stats.channels.every((c) => c.stdev < MIN_STDDEV);
-    if (flat) return { mark: "fail", note: "albedo is uniform — neutral fallback, not a baked garment" };
+    if (flat) {
+      // Not a failure: a solid plastic or metal surface can legitimately be near-uniform
+      // (poker glasses, a wedding veil). Distinct mark so the report separates "broken"
+      // from "possibly fine, needs a human eye".
+      return { mark: "needs-human", note: "albedo is uniform — possible flat material, needs human review" };
+    }
   } catch (e) {
     return { mark: "fail", note: `albedo unreadable: ${e.message}` };
   }
