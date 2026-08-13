@@ -1,32 +1,34 @@
-// Transform: is this mesh authored where the rig expects for its slot?
+// Transform: is this mesh where the rig expects for its slot?
 //
-// Statics for socketed slots (earrings, eyewear, facewear, headwear, wrist) are authored at
-// the ORIGIN and re-parented onto a bone at runtime. Body-authored statics already sit at
-// their part. Getting this wrong renders a 0.35m helmet 2m tall, or puts glasses behind the
-// face — both observed. The check is that the mesh sits in the half the rig assumes.
+// CharacterRig routes per mesh, not per slot: `Math.abs(cy) < 0.4 ? staticBone(slot) : null`,
+// and its own comment calls that "only a routing heuristic, not proof that the exported mesh
+// has the game's socket offset." Both authoring conventions render correctly, so centreY
+// cannot distinguish a defect from a convention — the diagnostic signals are scale (a lost
+// wrapper scale balloons statics to metres) and placement off the body entirely. The
+// convention is recorded in the note because the rig routes on it.
 //
-// Revised per spec: bounds are world-space via worldBounds(), because statics carry a
-// compensating dequant scale on wrapper nodes that plain accessor bounds would miss.
+// Bounds are world-space via worldBounds(): statics carry a compensating dequant scale on
+// wrapper nodes that plain accessor bounds would miss.
 import { worldBounds } from "./bounds.mjs";
 
 const SOCKETED = new Set(["earrings", "eyewear", "facewear", "headwear", "wrist"]);
-// Origin-authored means the mesh centre sits near y=0 rather than up at head height.
-const ORIGIN_BAND_M = 0.35;
-// A watch that lost its wrapper scale rendered 2.5m (CharacterRig).
-const MAX_ACCESSORY_M = 0.5;
+const MAX_ACCESSORY_M = 0.5;   // a watch that lost its wrapper scale rendered 2.5m
+const PLAUSIBLE_Y = [-0.5, 2.5]; // anywhere on or near a 2m body, either convention
 
 export async function check(absGlbPath, slot) {
   if (!SOCKETED.has(slot)) return { mark: "na", note: `slot '${slot}' is body-authored` };
   let b;
   try { b = await worldBounds(absGlbPath); } catch (e) { return { mark: "fail", note: `unreadable: ${e.message}` }; }
-  if (!b) return { mark: "fail", note: "no scene" };
-  if (!Number.isFinite(b.centreY)) return { mark: "fail", note: "non-finite bounds" };
+  if (!b || !Number.isFinite(b.centreY)) return { mark: "fail", note: "non-finite bounds" };
 
   const biggest = Math.max(...b.extent);
   if (biggest > MAX_ACCESSORY_M) {
     return { mark: "fail", note: `accessory is ${biggest.toFixed(2)}m across — wrapper scale lost?` };
   }
-  return Math.abs(b.centreY) <= ORIGIN_BAND_M
-    ? { mark: "pass", note: `origin-authored, ${biggest.toFixed(3)}m across` }
-    : { mark: "fail", note: `socketed but centre y=${b.centreY.toFixed(2)}m — not origin-authored` };
+  if (b.centreY < PLAUSIBLE_Y[0] || b.centreY > PLAUSIBLE_Y[1]) {
+    return { mark: "fail", note: `centre y=${b.centreY.toFixed(2)}m is off-body` };
+  }
+  // Both conventions are valid; record which one, because the rig routes on it.
+  const convention = Math.abs(b.centreY) < 0.4 ? "origin-authored" : "body-authored";
+  return { mark: "pass", note: `${convention}, ${biggest.toFixed(3)}m across, centre y=${b.centreY.toFixed(2)}m` };
 }
