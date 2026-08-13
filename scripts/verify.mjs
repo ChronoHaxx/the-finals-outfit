@@ -32,10 +32,10 @@ async function runOne(aspect, item, root) {
   }
 }
 
-export async function runVerification({ root = ROOT, dry = false, aspects = ASPECTS, limit = Infinity, seedCensus = false } = {}) {
+export async function runVerification({ root = ROOT, dry = false, aspects = ASPECTS, limit = Infinity, seedCensus = false, storePath = STORE } = {}) {
   const items = JSON.parse(await readFile(resolve(root, "src/data/items.json"), "utf8"));
   const byId = new Map(items.map((i) => [i.id, i]));
-  const store = await loadStore(STORE);
+  const store = await loadStore(storePath);
 
   if (seedCensus) {
     const verdicts = JSON.parse(
@@ -63,7 +63,7 @@ export async function runVerification({ root = ROOT, dry = false, aspects = ASPE
     entries.push({ ...e, mark: result.mark, note: result.note });
   }
 
-  if (!dry) await saveStore(STORE, store);
+  if (!dry) await saveStore(storePath, store);
   return { checked: entries.length, entries, written: !dry };
 }
 
