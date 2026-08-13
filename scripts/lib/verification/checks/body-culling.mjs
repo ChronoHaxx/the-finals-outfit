@@ -24,15 +24,16 @@ export async function check(item, root) {
   if (!MASK_SLOTS.has(item.slot)) return { mark: "na", note: `slot '${item.slot}' never registers a body mask` };
 
   const mask = resolve(root, "public", glb.replace(/\.glb$/, ".bodymask.png"));
-  let stats;
+  let pixels;
   try {
-    stats = await sharp(mask).stats();
+    // Drop the alpha channel EXPLICITLY (removeAlpha), then scan the raw colour bytes.
+    // Slicing by index would keep alpha for a two-channel gray+alpha PNG — channels
+    // [gray, alpha] — and pass an empty mask on its alpha (max [0, 255]).
+    pixels = await sharp(mask).removeAlpha().raw().toBuffer();
   } catch {
     return { mark: "fail", note: "no bodymask — body renders through this garment" };
   }
-  // Coverage is measured on the COLOUR channels only — an all-black mask with opaque
-  // alpha (channel maxima [0,0,0,255]) hides nothing and must not pass.
-  const covers = stats.channels.slice(0, 3).some((c) => c.max > 0);
+  const covers = pixels.some((v) => v > 0);
   return covers
     ? { mark: "pass", note: "bodymask present and non-empty" }
     : { mark: "fail", note: "mask is empty — hides nothing" };
