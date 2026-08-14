@@ -213,6 +213,27 @@ few bespoke shaders are not: the lava and lava-lamp materials expose *no*
 parameters at all, so nothing can be inferred and only eyeballed approximation is
 available.
 
+**Multi-part pieces are flattened to one material.** A helmet is one mesh with two
+primitives — shell (6,570 tris, `MI_Helmet_Helmet`) and visor (976 tris,
+`MI_Helmet_Visor`) — but `CharacterRig` assigns the baked set to *every* material
+on the mesh:
+
+```js
+for (const m of mats) { std.map = baked.map; ... }   // src/rig/CharacterRig.ts:807
+```
+
+So the visor is painted with the shell's texture. **5 of 40** sampled cosmetics
+have more than one material, and all of them lose the distinction. The bake is
+the other half of it: `readMI` takes the first material instance carrying layered
+parameters, so a piece's second material is never even read.
+
+**Every mesh is double-sided.** 40 of 40 sampled cosmetics have `doubleSided:
+true` on every material, applied blanket at conversion. That is correct for
+chainmail, cloth and hair cards, and wrong for a closed solid — through a
+helmet's visor opening you see the interior of the far side of the shell, which
+reads as stray geometry inside the item. It also costs fill rate everywhere.
+Both are visible on `racing-helmet-carbonfiber`.
+
 **`M_LEDScreen` is a third material family and nothing reads it.** The racing
 helmet's visor is its own material instance parented to `M_LEDScreen`, separate
 from the helmet shell, and it carries an animated sprite sheet rather than a
