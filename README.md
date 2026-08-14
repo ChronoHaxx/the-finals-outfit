@@ -149,7 +149,17 @@ possible to measure, once this exists.
 **2. Dev mode.** A gated in-app surface for inspecting and marking a single item:
 swap parameters, toggle culling, see the icon side by side. `?tune=1` already
 does a narrow version of this for five PBR factors (see `MaterialTuner.tsx`).
-Widening it is what makes verification cheap instead of a batch-render round trip.
+
+**What is actually wrong with it, from using it rather than reading it** — the
+panel is `absolute right-0 top-0 h-full w-[300px]` and sits *over* the canvas at
+`z-20` with no way to collapse it, so it permanently occludes roughly a third of
+the viewport, including part of the model it exists to inspect. Five global PBR
+multipliers is also a thin surface: the parameters that decide what a garment
+looks like are per-layer and per-region, and none of them are reachable.
+
+So the first two requirements are concrete: **do not cover the model**, and
+**reach the parameters that actually matter**. Everything else in this item is
+still speculative and should be specced from use, not from the source.
 
 **3. Mesh culling.** Two separate problems that need separate treatment.
 
@@ -226,6 +236,30 @@ uninterpretable.
 **7. Emotes.** Deliberately last. The rig poses a shared skeleton but has no
 animation playback, so this is the only item that needs a genuinely new
 subsystem rather than an extension of one.
+
+### Why the detail normals are switched off
+
+`bake-composite.mjs` sets `normalStrength` and `macroNormalStrength` to `0`, and
+that is **correct, not a fudge** — though the reason was only established on
+2026-08-14 and the source comments blamed the symptom rather than the cause.
+
+The garment materials tile their detail normal aggressively: the Sentinel Top's
+layers declare `DetailTiling` of **20**, and layers 4 and 6–8 declare **60**. In
+engine that is fine, because the tiled map is sampled per-pixel at screen
+resolution — the whole point of tiling is that the detail can be finer than any
+atlas.
+
+This pipeline bakes into a fixed **1024px** UV0 atlas, so a 20× tile gets about
+51 pixels and a 60× tile about 17. Fine fabric weave aliases into coarse
+quilting. Measured directly: re-baking the Sentinel Top with the authored
+strengths restored changes 26% of the rendered pixels and covers the garment,
+belt and shoulder pads in a visible waffle.
+
+**So this is an architectural limit of baking to UV0, not a tuning problem, and
+no constant fixes it.** Real surface detail needs the tiled normal applied at
+*runtime* with its own texture repeat, the way the game does it — a second
+normal sampled per-pixel rather than folded into the atlas. Baking at 4096 would
+soften the aliasing at 16× the memory and still not reproduce it.
 
 ### Known gaps
 
