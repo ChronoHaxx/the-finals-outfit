@@ -213,6 +213,26 @@ few bespoke shaders are not: the lava and lava-lamp materials expose *no*
 parameters at all, so nothing can be inferred and only eyeballed approximation is
 available.
 
+**`M_LEDScreen` is a third material family and nothing reads it.** The racing
+helmet's visor is its own material instance parented to `M_LEDScreen`, separate
+from the helmet shell, and it carries an animated sprite sheet rather than a
+static map:
+
+```
+textures  Animation, ColorRamp, Normal, Roughness
+scalars   AnimationTrack, FrameCount, TrackCount, Brightness,
+          ColorSHiftSpeed, AnimationSpeed, FlickerSpeed,
+          UVScale, UVOffsetV, VerticalFade, HorizontalFade
+```
+
+`bake-composite` reads **one** material instance per skin and takes the first
+that carries layered parameters, so a piece whose parts use different masters
+loses all but one of them. The visor is skipped entirely, which is why the helmet
+renders with a plain dark band where the icon shows an orange LED pattern.
+
+Note this one **does** have a static reference: the icon shows a frame of the
+animation, so the still appearance is checkable even though the motion is not.
+
 **Note this breaks the verification method.** A still frame cannot show whether
 motion is right, and the official icons are static too — so for animated effects
 there is no ground truth in any source we hold. These need their own status
