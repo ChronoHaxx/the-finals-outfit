@@ -215,16 +215,28 @@ function layerParams(mi, L, globalTiling) {
   };
 }
 
-// A scheme swatch (ColorA/B/C, LINEAR rgb) is a default PLACEHOLDER when it's near-white,
-// near-black, or a pure saturated primary (red/green/blue) — the per-instance default palette.
-// Blending a real overlay toward such a swatch washes it out (the SentinelTop pauldrons baked
-// white because their dark overlay was blended toward a red/white placeholder scheme).
+// A scheme swatch (ColorA/B/C, LINEAR rgb) is a default PLACEHOLDER when it's near-white or a
+// pure saturated primary (red/green/blue) — the per-instance default palette. Blending a real
+// overlay toward such a swatch washes it out (the SentinelTop pauldrons baked white because
+// their dark overlay was blended toward a red/white placeholder scheme).
+//
+// NEAR-BLACK IS NOT A PLACEHOLDER, and testing for it cost 96 of 1,968 baked albedos.
+// Black is the most common authored garment colour in this game — carbon fibre, leather,
+// tactical — and it is not a plausible engine default in a palette whose other defaults are
+// pure red, green and blue. Treating it as unset discarded the real colour: the racing
+// helmet's ColorA is rgb(0.010, 0.010, 0.010), its actual carbon weave, and rejecting it left
+// two layers authored white-with-maskStrength-1 untinted, so the helmet baked WHITE. The
+// region-tint path reads the same ColorA and correctly emits #1a1a1a, which is the proof the
+// source data was fine. See _docs/2026-08-14-white-patches.md.
+//
+// The SentinelTop case stays covered by the `ovMin > 0.85` gate at the call site: only a
+// near-white "tint me" overlay is ever blended, so a dark overlay can no longer be washed out
+// regardless of what the scheme contains.
 function isPlaceholderSwatch(c) {
   if (!c) return true;
   const mx = Math.max(c[0], c[1], c[2]);
   const mn = Math.min(c[0], c[1], c[2]);
   if (mn > 0.85) return true; // near-white
-  if (mx < 0.05) return true; // near-black
   const mid = c[0] + c[1] + c[2] - mx - mn;
   return mx > 0.85 && mid < 0.15 && mn < 0.15; // pure primary (FF0000 etc.)
 }
@@ -241,9 +253,18 @@ function schemeColor(maskRgba, mi) {
   const cC = mi.vectors.ColorC;
   const wg = maskRgba[1] / 255;
   const wb = maskRgba[2] / 255;
-  const a = cA ? [cA.r, cA.g, cA.b] : [0, 0, 0];
-  const b = cB ? [cB.r, cB.g, cB.b] : a;
-  const c = cC ? [cC.r, cC.g, cC.b] : a;
+  // Substitute per-swatch rather than discarding the whole scheme. A skin often carries one
+  // real colour and leaves the other two as the engine's default primaries — the racing helmet
+  // is ColorA black with ColorB pure green and ColorC pure blue. Falling back to the first real
+  // swatch keeps ColorA usable while stopping a placeholder green/blue being painted into any
+  // region the mask routes to B or C.
+  const raw = (v) => (v ? [v.r, v.g, v.b] : null);
+  const [rA, rB, rC] = [raw(cA), raw(cB), raw(cC)];
+  const fallback = [rA, rB, rC].find((v) => v && !isPlaceholderSwatch(v)) ?? [0, 0, 0];
+  const pick = (v) => (v && !isPlaceholderSwatch(v) ? v : fallback);
+  const a = pick(rA);
+  const b = pick(rB);
+  const c = pick(rC);
   let out = a.slice(); // ColorA is the base (mask red / no other channel)
   out = mix3(out, b, wg); // ColorB where the mask's green channel is on
   out = mix3(out, c, wb); // ColorC where the mask's blue channel is on
