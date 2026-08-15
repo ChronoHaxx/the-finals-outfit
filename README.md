@@ -136,6 +136,16 @@ lighting. `?debugAlbedo=1` already renders unlit albedo, which is what separates
 the two questions. **Build the light rigs and environments as data, not as
 hardcoded scene code** — items 2 and 6 both need exactly this machinery.
 
+**A first attempt on 2026-08-15 produced nothing usable, for a reason worth
+recording.** Comparing the mean colour of a render against the mean colour of an
+icon is invalid while the render includes the bare body: 45k item pixels in the
+icon against 488k in the render, most of them skin, so skin tone dominates and
+the means are not comparable. **Any measurement here must isolate the item's
+pixels first** — render the piece against a known background, or mask by the
+item's own coverage. One directional signal survived: lit luminance 94.7 against
+unlit 111.5, so our lighting *darkens* the albedo, and the icon at 120.5 is
+brighter than both. Consistent with the hypothesis; not evidence for it.
+
 **1. Per-item verification matrix.** `scripts/visual-diff/` scores each item's
 render against its official icon, and `verdicts.generated.json` already records a
 score, a category and a fix-class for 239 of them. The gap is granularity and
@@ -208,12 +218,40 @@ conversion step can do. Per mesh, and machine-checkable.
 property of a **combination**, not of an item, so it cannot be tracked per item
 and should be sampled across common pairings instead.
 
-*Back faces* — the cheapest of the three and not yet done. Every mesh is
-`doubleSided: true`, applied blanket at conversion, so a closed solid renders its
-own interior through any opening. Correct only for the flat things: chainmail,
-cloth, hair cards. A per-piece decision at conversion time would fix the visual
-and cut fill rate across every mesh in the scene. `?inspect=1` badges it amber
-per material, so the scale of it is now visible without a query.
+*Back faces* — every mesh is `doubleSided: true`, applied blanket at conversion,
+so a closed solid renders its own interior through any opening. Correct only for
+the flat things: chainmail, cloth, hair cards. `?inspect=1` badges it amber per
+material, so the scale is visible without a query.
+
+**Two geometric heuristics were tried on 2026-08-15 and both failed. Do not try a
+third.**
+
+*Boundary-edge ratio* — "a closed shell has no open edges". Implemented and
+tested: the racing helmet classified as **open**, because a helmet legitimately
+has a neck aperture, so it kept its back faces and the defect survived. The
+signal does not separate the case that matters.
+
+*Volume-to-area shape factor* — "a sheet encloses nothing, a shell encloses
+space". Measured over real assets and the ranges **overlap**, so no threshold
+exists:
+
+```
+SOLID  helmet shell   0.0071      SHEET  knight cape       0.0262
+SOLID  rubber gloves  0.0266      SHEET  sleeve chainmail  0.0526
+SOLID  body           0.0282      SHEET  chainmail skirt   0.0793
+```
+
+**The game ships the answer, as it did for the clipping rules.** UE materials
+carry a `TwoSided` flag, and the dump exports it: of 318 master materials under
+`MaterialLibrary`, **40 declare it** — `M_CharacterGlass_01/02`,
+`M_CharacterGemstones`, `M_CharacterBallisticGel`, `M_CharacterDetailAlpha`,
+`M_Charachter_CelShaded` and similar. UE's default is `false`, so the remaining
+~278 masters should be single-sided and only those 40 stay double.
+
+The work is therefore: resolve each item's material to its master through the
+parent chain, read `TwoSided`, and carry it to the runtime — not invent a
+geometric test. Same shape as the `hideSlots` finding, and the third time on this
+project that the shipped data beat inference.
 
 **The game already ships the rules for both, and this repo already extracts
 them.** `scripts/customization.generated.json` holds the per-item customisation
