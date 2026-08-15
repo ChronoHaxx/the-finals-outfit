@@ -1,0 +1,53 @@
+White-patch scan
+================
+Input: public/models/**/*.albedo.webp
+Rule: >0.5% of pixels have R/G/B > 245 and mean byte brightness < 170
+Albedos scanned: 2474
+Albedos flagged: 40
+
+Flagged albedos (descending near-white pixel incidence):
+- public/models/cosmetics/casual-tall-sneakers.canvas_orf.albedo.webp | near-white=25.10% (263222/1048576) | mean=162.7 | review=legitimate: matching icons show white soles, toes, and laces
+- public/models/cosmetics/cute-devil-horns.leather.albedo.webp | near-white=24.74% (259452/1048576) | mean=111.6 | review=legitimate: matching icon has a white head/base around the orange horns
+- public/models/cosmetics/casual-tall-sneakers.canvas.albedo.webp | near-white=22.15% (232269/1048576) | mean=134.1 | review=legitimate: matching icons show white soles, toes, and laces
+- public/models/cosmetics/casual-tall-sneakers.canvas_camoenorino.albedo.webp | near-white=22.14% (232151/1048576) | mean=140.9 | review=legitimate: matching icons show white soles, toes, and laces
+- public/models/cosmetics/casual-tall-sneakers.canvas_sponsorengimo.albedo.webp | near-white=22.08% (231548/1048576) | mean=133.6 | review=legitimate: matching icons show white soles, toes, and laces
+- public/models/cosmetics/casual-tall-sneakers.canvas_black.albedo.webp | near-white=22.06% (231266/1048576) | mean=118.6 | review=legitimate: matching icons show white soles, toes, and laces
+- public/models/cosmetics/cowboy-low-boots.leather_wedding.albedo.webp | near-white=20.20% (211862/1048576) | mean=168.9 | review=legitimate: wedding icon is an intentionally white boot
+- public/models/cosmetics/mexico-mariachi-sombrero.wool.albedo.webp | near-white=19.93% (208969/1048576) | mean=129.4 | review=legitimate: matching icon is an intentional black-and-white sombrero
+- public/models/cosmetics/streetwear-oversized-bomber-jacket.innernylon.albedo.webp | near-white=17.75% (186136/1048576) | mean=145.8 | review=legitimate: matching icon includes a white under-layer and bright trim
+- public/models/cosmetics/casual-sandals-with-socks.cotton_alien.albedo.webp | near-white=6.69% (70185/1048576) | mean=123.7 | review=legitimate: matching alien icon has bright stars, buckles, and socks
+- public/models/cosmetics/military-assault-pants.polyester_moolahcamo.albedo.webp | near-white=6.00% (62917/1048576) | mean=122.6 | review=legitimate: matching icon is an intentional white/black camouflage variant
+- public/models/cosmetics/scifi-tech-bomber-jacket.nylon_dragon.albedo.webp | near-white=5.67% (59468/1048576) | mean=96.1 | review=legitimate: matching icon has white piping, panels, and hardware on the red jacket
+- public/models/cosmetics/streetwear-commando-jacket.canvas.albedo.webp | near-white=4.88% (51122/1048576) | mean=148.1 | review=legitimate: matching icons show white/grey hardware and two-tone camouflage panels
+- public/models/cosmetics/medieval-elf-skirt-belt.leather_black.albedo.webp | near-white=4.38% (45973/1048576) | mean=31.0 | review=legitimate: albedo islands are white belt hardware; no current catalog icon exists for this legacy asset
+- public/models/cosmetics/medieval-elf-skirt-belt.leather.albedo.webp | near-white=4.31% (45188/1048576) | mean=40.7 | review=legitimate: albedo islands are white belt hardware; no current catalog icon exists for this legacy asset
+- public/models/cosmetics/traditional-lunar-dress.pastelgreen.albedo.webp | near-white=3.22% (33798/1048576) | mean=160.6 | review=legitimate: matching icon has white embroidery, closures, and under-layer detail
+- public/models/cosmetics/space-alien-boots.canvas_whiteblack.albedo.webp | near-white=3.17% (33261/1048576) | mean=133.4 | review=legitimate: matching icons show white straps, soles, and the white/black colourway
+- public/models/cosmetics/space-alien-boots.canvas_blackivada.albedo.webp | near-white=3.17% (33226/1048576) | mean=125.4 | review=legitimate: matching icons show white straps, soles, and the white/black colourway
+- public/models/cosmetics/space-alien-boots.canvas_blackorange.albedo.webp | near-white=3.16% (33183/1048576) | mean=77.0 | review=legitimate: matching icons show white straps, soles, and the white/black colourway
+- public/models/cosmetics/space-alien-boots.canvas_tsm.albedo.webp | near-white=3.16% (33118/1048576) | mean=110.5 | review=legitimate: matching icons show white straps, soles, and the white/black colourway
+- public/models/cosmetics/space-alien-boots.canvas.albedo.webp | near-white=3.16% (33085/1048576) | mean=82.2 | review=legitimate: matching icons show white straps, soles, and the white/black colourway
+- public/models/earring/miniature-ak-01.miniature-ak-01.attachment.albedo.webp | near-white=2.74% (7179/262144) | mean=119.7 | review=legitimate: metal hardware is white/silver in the matching miniature-AK icon
+- public/models/cosmetics/streetwear-commando-jacket.canvas_trentila.albedo.webp | near-white=2.63% (27575/1048576) | mean=135.8 | review=legitimate: matching icons show white/grey hardware and two-tone camouflage panels
+- public/models/cosmetics/military-sniper-pants.windbreaker_dayofthedead.albedo.webp | near-white=2.55% (26742/1048576) | mean=73.8 | review=legitimate: matching icon has intentional white skull/lettering details
+- public/models/cosmetics/military-assault-vest.polyester_red.albedo.webp | near-white=2.55% (26725/1048576) | mean=79.8 | review=legitimate: matching icon has intentional white straps and vest hardware
+- public/models/cosmetics/sport-roller-derby-hand-guards.nylon_brazilultimate.albedo.webp | near-white=2.19% (22915/1048576) | mean=163.8 | review=legitimate: matching icons show white hand/edge details and bright team patches
+- public/models/cosmetics/sport-roller-derby-hand-guards.nylon_brazil.albedo.webp | near-white=2.15% (22514/1048576) | mean=149.5 | review=legitimate: matching icons show white hand/edge details and bright team patches
+- public/models/cosmetics/traditional-lunar-bolero-short-sleeve.dark.albedo.webp | near-white=1.66% (17412/1048576) | mean=79.3 | review=legitimate: albedo islands are white embroidery/trim; no current catalog icon exists for this legacy asset
+- public/models/cosmetics/traditional-lunar-bolero-short-sleeve.pastelgreen.albedo.webp | near-white=1.65% (17287/1048576) | mean=141.9 | review=legitimate: albedo islands are white embroidery/trim; no current catalog icon exists for this legacy asset
+- public/models/cosmetics/streetwear-tech-gloves.nylon_teamsecret.albedo.webp | near-white=1.39% (14604/1048576) | mean=63.2 | review=legitimate: matching icon has a white/silver team label and glove details
+- public/models/cosmetics/medieval-elf-quiver.leather_dark.albedo.webp | near-white=1.30% (13610/1048576) | mean=70.9 | review=legitimate: matching icons show white arrow fletching and decorative glyphs
+- public/models/cosmetics/medieval-elf-quiver.leather.albedo.webp | near-white=1.29% (13476/1048576) | mean=97.8 | review=legitimate: matching icons show white arrow fletching and decorative glyphs
+- public/models/cosmetics/military-tactical-helmet.plastic_dissun.albedo.webp | near-white=1.18% (12391/1048576) | mean=82.7 | review=legitimate: matching icons keep the visible helmet dark; white islands are hidden mask/attachment parts
+- public/models/cosmetics/military-combat-vest.denim_starsstripes.albedo.webp | near-white=1.11% (11675/1048576) | mean=115.2 | review=legitimate: matching icon is an intentional stars-and-stripes variant
+- public/models/cosmetics/sport-roller-derby-hand-guards.nylon_ospuze.albedo.webp | near-white=1.09% (11440/1048576) | mean=79.2 | review=legitimate: matching icons show white hand/edge details and bright team patches
+- public/models/cosmetics/military-beret.wool_arenasecurity.albedo.webp | near-white=0.94% (9811/1048576) | mean=151.9 | review=legitimate: matching icon keeps the beret dark; the bright patterned island is not a visible white patch
+- public/models/cosmetics/streetwear-cargo-pants.canvas_blackwhite.albedo.webp | near-white=0.64% (6678/1048576) | mean=155.2 | review=legitimate: matching icons are intentional black/white, orange/green, and yellow/black variants
+- public/models/cosmetics/streetwear-cargo-pants.canvas_orangegreen.albedo.webp | near-white=0.59% (6199/1048576) | mean=138.1 | review=legitimate: matching icons are intentional black/white, orange/green, and yellow/black variants
+- public/models/cosmetics/streetwear-cargo-pants.canvas_cb2a.albedo.webp | near-white=0.57% (5967/1048576) | mean=130.5 | review=legitimate: matching icons are intentional black/white, orange/green, and yellow/black variants
+- public/models/cosmetics/sport-roller-derby-hand-guards.nylon_ospuzeyellow.albedo.webp | near-white=0.50% (5277/1048576) | mean=107.0 | review=legitimate: matching icons show white hand/edge details and bright team patches
+
+Interpretation: a flag is a screening result, not proof of a defect; compare each item with its icon.
+Icon review: 40/40 flagged items are confirmed legitimate white/two-tone detail or non-visible UV islands.
+Still broken: none identified among the flagged items.
+Provenance: these are the baked albedos present on disk at scan time. The ignored outputs cannot be attributed to a particular commit range without bake metadata.

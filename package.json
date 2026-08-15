@@ -18,6 +18,7 @@
     "build:regions": "node scripts/build-regions.mjs",
     "build:hair-coverage": "node scripts/build-hair-coverage.mjs",
     "bake:composite": "node scripts/bake-composite.mjs",
+    "scan:white-patches": "node scripts/scan-white-patches.mjs",
     "publish:models": "node scripts/publish-models.mjs",
     "visual:render": "node scripts/visual-diff/render.mjs",
     "visual:compare": "node scripts/visual-diff/compare.mjs",
