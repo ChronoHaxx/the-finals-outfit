@@ -160,7 +160,16 @@ looks like are per-layer and per-region, and none of them are reachable.
 So the first two requirements are concrete: **do not cover the model**, and
 **reach the parameters that actually matter**.
 
-**The third came from a real failure on 2026-08-15, and it reframes the item.**
+**The inspector half of this shipped on 2026-08-15**: `?inspect=1` mounts
+`MeshInspector.tsx`, which reports the live three.js scene — every mesh, its
+materials, triangle counts, which texture each map slot actually holds, and
+whether a material is double-sided — plus hide/show and a back-face toggle per
+mesh. It docks to the window edge, so the model is never covered. What remains of
+this item is the *marking* surface: recording a verdict against the matrix from
+inside the app.
+
+**The third requirement came from a real failure on 2026-08-15, and it reframed
+the item.**
 Looking at a rendered helmet, the owner asked whether the visor was a separate
 mesh — because something looked wrong inside it. Answering took terminal queries
 through `gltf-transform`, and the answer was two defects nobody had reported:
@@ -198,6 +207,13 @@ conversion step can do. Per mesh, and machine-checkable.
 *Garment-vs-garment clipping* — a coat sleeve through an undersuit. This is a
 property of a **combination**, not of an item, so it cannot be tracked per item
 and should be sampled across common pairings instead.
+
+*Back faces* — the cheapest of the three and not yet done. Every mesh is
+`doubleSided: true`, applied blanket at conversion, so a closed solid renders its
+own interior through any opening. Correct only for the flat things: chainmail,
+cloth, hair cards. A per-piece decision at conversion time would fix the visual
+and cut fill rate across every mesh in the scene. `?inspect=1` badges it amber
+per material, so the scale of it is now visible without a query.
 
 **The game already ships the rules for both, and this repo already extracts
 them.** `scripts/customization.generated.json` holds the per-item customisation
