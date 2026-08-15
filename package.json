@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "node --test",
+    "test": "tsx --test",
     "verify": "node scripts/verify.mjs",
     "dev": "vite",
     "build": "tsc -b && vite build",

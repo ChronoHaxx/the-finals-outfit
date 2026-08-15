@@ -106,6 +106,24 @@ interface EquippedHandle {
   underLayerMeshes?: THREE.SkinnedMesh[]; // its skinned meshes (skeletons disposed on unequip)
 }
 
+// Inspector-only material copies own their texture references. Material.clone() keeps texture
+// objects shared, which would let disposeObject3D() tear down a source texture still used by an
+// unselected sibling. Copying the texture slots here makes the override a real, disposable owner.
+function cloneMaterialForInspector(source: THREE.Material): THREE.Material {
+  const clone = source.clone();
+  const cloneFields = clone as unknown as Record<string, unknown>;
+  for (const key of Object.keys(cloneFields)) {
+    const value = cloneFields[key] as THREE.Texture | undefined;
+    if (value?.isTexture) cloneFields[key] = value.clone();
+  }
+  clone.userData = { ...source.userData };
+  for (const [key, value] of Object.entries(clone.userData)) {
+    const texture = value as THREE.Texture | undefined;
+    if (texture?.isTexture) clone.userData[key] = texture.clone();
+  }
+  return clone;
+}
+
 export class CharacterRig {
   private static tintUid = 0; // monotonic id for per-material program cache keys
   // 1×1 white map for pieces baked without any albedo texture (a large class of garments
@@ -127,6 +145,10 @@ export class CharacterRig {
   private bodyScene: THREE.Object3D | null = null;
   private bodyMaterials: THREE.MeshStandardMaterial[] = [];
   private equipped = new Map<Slot, EquippedHandle>();
+  // Mesh UUID -> material copies made by the dev inspector. Values stay attached to their mesh
+  // and are therefore released by disposeObject3D() with the scene; this map only prevents a
+  // second copy on every toggle and is cleared when that scene leaves the rig.
+  private inspectorMaterialOverrides = new Map<string, Set<THREE.Material>>();
 
   private readonly texLoader = new THREE.TextureLoader();
   private readonly decals: BodyDecalManager;
@@ -1211,8 +1233,10 @@ export class CharacterRig {
     if (handle.underLayerScene) {
       this.root.remove(handle.underLayerScene);
       for (const mesh of handle.underLayerMeshes ?? []) mesh.skeleton.dispose();
+      this.forgetInspectorOverrides(handle.underLayerScene);
       disposeObject3D(handle.underLayerScene);
     }
+    this.forgetInspectorOverrides(handle.scene);
     this.equipped.delete(slot);
   }
 
@@ -1290,11 +1314,43 @@ export class CharacterRig {
     this.root.traverse((o) => {
       if (o.uuid !== uuid) return;
       const mesh = o as THREE.Mesh;
-      for (const m of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      const sourceMaterials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      const overrides = this.inspectorMaterialOverrides.get(uuid) ?? new Set<THREE.Material>();
+      const materials = sourceMaterials.map((source) => {
+        // GLTFLoader reuses one Three.js material for every primitive that references the same
+        // glTF material. A side toggle is a mesh-local diagnostic, so copy only when another
+        // mesh still points at the source; an unshared material can be changed in place.
+        if (overrides.has(source)) return source;
+        if (!this.isMaterialSharedOutsideMesh(mesh, source)) return source;
+        const copy = cloneMaterialForInspector(source);
+        overrides.add(copy);
+        return copy;
+      });
+      if (materials.some((material, i) => material !== sourceMaterials[i])) {
+        mesh.material = Array.isArray(mesh.material) ? materials : materials[0];
+        this.inspectorMaterialOverrides.set(uuid, overrides);
+      }
+      for (const m of materials) {
         m.side = side === "double" ? THREE.DoubleSide : THREE.FrontSide;
         m.needsUpdate = true;
       }
     });
+  }
+
+  private isMaterialSharedOutsideMesh(mesh: THREE.Mesh, material: THREE.Material): boolean {
+    let shared = false;
+    this.root.traverse((o) => {
+      if (shared || o === mesh) return;
+      const other = o as THREE.Mesh;
+      if (!other.isMesh) return;
+      const materials = Array.isArray(other.material) ? other.material : [other.material];
+      if (materials.includes(material)) shared = true;
+    });
+    return shared;
+  }
+
+  private forgetInspectorOverrides(root: THREE.Object3D): void {
+    root.traverse((o) => this.inspectorMaterialOverrides.delete(o.uuid));
   }
 
   dispose(): void {
@@ -1305,10 +1361,12 @@ export class CharacterRig {
     for (const slot of [...this.equipped.keys()]) this.unequip(slot);
     if (this.bodyScene) {
       this.root.remove(this.bodyScene);
+      this.forgetInspectorOverrides(this.bodyScene);
       disposeObject3D(this.bodyScene);
       this.bodyScene = null;
     }
     this.skeleton = null;
     this.bonesByName.clear();
+    this.inspectorMaterialOverrides.clear();
   }
 }
