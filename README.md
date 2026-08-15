@@ -158,8 +158,31 @@ multipliers is also a thin surface: the parameters that decide what a garment
 looks like are per-layer and per-region, and none of them are reachable.
 
 So the first two requirements are concrete: **do not cover the model**, and
-**reach the parameters that actually matter**. Everything else in this item is
-still speculative and should be specced from use, not from the source.
+**reach the parameters that actually matter**.
+
+**The third came from a real failure on 2026-08-15, and it reframes the item.**
+Looking at a rendered helmet, the owner asked whether the visor was a separate
+mesh — because something looked wrong inside it. Answering took terminal queries
+through `gltf-transform`, and the answer was two defects nobody had reported:
+the piece is two primitives with two materials that the runtime flattens to one,
+and every mesh in the catalogue is double-sided so the shell's interior renders
+through the visor opening.
+
+**Neither was visible to any check, and neither was answerable from the app.** So
+dev mode is not primarily a slider panel — it is **an inspector for what is
+actually being rendered**, closer to a scene outliner than a tuner:
+
+- the mesh tree: primitives, their materials, triangle and vertex counts
+- per-material state — `doubleSided`, `alphaMode`, which maps are actually bound,
+  and **which texture the runtime ended up assigning**, which is not always the
+  one the asset declares
+- isolate or hide a primitive, and toggle back-face culling, to see what a part
+  contributes
+- the item's baked textures viewable directly, beside the model
+
+The test for this item is simple: **the owner should be able to answer "what am I
+looking at" without an agent running a query.** Every question that needed a
+terminal to answer is a requirement.
 
 **3. Mesh culling.** Two separate problems that need separate treatment.
 
