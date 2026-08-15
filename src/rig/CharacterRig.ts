@@ -74,6 +74,29 @@ export interface RigItem {
   underLayerFallbackUrl?: string;
 }
 
+// Shapes returned by CharacterRig.inspect() — the dev inspector's view of the live scene.
+export interface InspectMaterial {
+  name: string;
+  side: "front" | "back" | "double";
+  transparent: boolean;
+  alphaTest: number;
+  maps: Record<string, string | null>;
+}
+export interface InspectMesh {
+  uuid: string;
+  name: string;
+  skinned: boolean;
+  visible: boolean;
+  triangles: number;
+  vertices: number;
+  materials: InspectMaterial[];
+}
+export interface InspectGroup {
+  label: string; // slot name, or "body"
+  id: string; // catalog item id
+  meshes: InspectMesh[];
+}
+
 interface EquippedHandle {
   id: string;
   scene: THREE.Object3D; // the cosmetic gltf.scene we added to root
@@ -1191,6 +1214,87 @@ export class CharacterRig {
       disposeObject3D(handle.underLayerScene);
     }
     this.equipped.delete(slot);
+  }
+
+  // What is ACTUALLY in the scene, for the dev inspector. Reports the live three.js objects
+  // rather than the catalog's description of them, because the two can disagree — a piece with
+  // two primitives gets one baked texture assigned to both (see applyMaterial's baked branch),
+  // and that divergence is invisible from the catalog alone.
+  inspect(): InspectGroup[] {
+    const groups: InspectGroup[] = [];
+
+    const readMesh = (mesh: THREE.Mesh | THREE.SkinnedMesh): InspectMesh => {
+      const g = mesh.geometry;
+      const idx = g.index;
+      const pos = g.attributes.position;
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      return {
+        uuid: mesh.uuid,
+        name: mesh.name || "(unnamed)",
+        skinned: (mesh as THREE.SkinnedMesh).isSkinnedMesh === true,
+        visible: mesh.visible,
+        triangles: Math.round((idx ? idx.count : (pos?.count ?? 0)) / 3),
+        vertices: pos?.count ?? 0,
+        materials: mats.map((m) => {
+          const std = m as THREE.MeshStandardMaterial;
+          // A texture's origin: TextureLoader keeps the HTMLImageElement, so `src` is the URL
+          // the rig fetched. A texture that came in with the GLB has no src — worth showing,
+          // since "from the mesh file" vs "assigned by the rig" is the question being asked.
+          const mapOf = (t: THREE.Texture | null | undefined) =>
+            t ? ((t.image as { src?: string } | undefined)?.src ?? "(embedded in mesh)") : null;
+          return {
+            name: std.name || "(unnamed)",
+            side: std.side === THREE.DoubleSide ? "double" : std.side === THREE.BackSide ? "back" : "front",
+            transparent: !!std.transparent,
+            alphaTest: std.alphaTest ?? 0,
+            maps: {
+              map: mapOf(std.map),
+              normalMap: mapOf(std.normalMap),
+              roughnessMap: mapOf(std.roughnessMap),
+              metalnessMap: mapOf(std.metalnessMap),
+              alphaMap: mapOf(std.alphaMap),
+              emissiveMap: mapOf(std.emissiveMap),
+            },
+          };
+        }),
+      };
+    };
+
+    const collect = (label: string, id: string, roots: THREE.Object3D[]): void => {
+      const meshes: InspectMesh[] = [];
+      for (const r of roots)
+        r.traverse((o) => {
+          const m = o as THREE.Mesh;
+          if (m.isMesh) meshes.push(readMesh(m));
+        });
+      if (meshes.length) groups.push({ label, id, meshes });
+    };
+
+    if (this.bodyScene) collect("body", "body", [this.bodyScene]);
+    for (const [slot, h] of this.equipped) {
+      const roots: THREE.Object3D[] = [h.scene, ...h.statics];
+      if (h.underLayerScene) roots.push(h.underLayerScene);
+      collect(slot, h.id, roots);
+    }
+    return groups;
+  }
+
+  // Inspector actions. Kept on the rig so the panel never reaches into three directly.
+  setMeshVisible(uuid: string, visible: boolean): void {
+    this.root.traverse((o) => {
+      if (o.uuid === uuid) o.visible = visible;
+    });
+  }
+
+  setMeshSide(uuid: string, side: "front" | "double"): void {
+    this.root.traverse((o) => {
+      if (o.uuid !== uuid) return;
+      const mesh = o as THREE.Mesh;
+      for (const m of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+        m.side = side === "double" ? THREE.DoubleSide : THREE.FrontSide;
+        m.needsUpdate = true;
+      }
+    });
   }
 
   dispose(): void {

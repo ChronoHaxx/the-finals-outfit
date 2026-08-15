@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { CharacterRig, type RigMaterial, type RigDecal } from "../rig/CharacterRig";
 import MaterialTuner from "./MaterialTuner";
+import MeshInspector from "./MeshInspector";
 import { createGltfLoader } from "../rig/loaders";
 import { useBuildStore, effectiveBuild } from "../store/useBuildStore";
 import { getItemById } from "../lib/catalog";
@@ -28,10 +29,11 @@ interface DevParams {
   pose?: "a" | "idle";
   noBaked: boolean;
   tune: boolean;
+  inspect: boolean;
 }
 function readDevParams(): DevParams {
   if (!import.meta.env.DEV || typeof window === "undefined")
-    return { debugAlbedo: false, noBaked: false, tune: false };
+    return { debugAlbedo: false, noBaked: false, tune: false, inspect: false };
   const p = new URLSearchParams(window.location.search);
   const cam = p.get("cam")?.split(",").map(Number);
   const fov = Number(p.get("fov"));
@@ -45,6 +47,9 @@ function readDevParams(): DevParams {
     noBaked: p.get("nobaked") === "1",
     // ?tune=1 mounts the DEV MaterialTuner (icon-vs-render slider panel).
     tune: p.get("tune") === "1",
+    // ?inspect=1 mounts the DEV MeshInspector. Unlike the tuner it takes its own
+    // column rather than overlaying the canvas, so the model is never occluded.
+    inspect: p.get("inspect") === "1",
   };
 }
 const DEV = readDevParams();
@@ -425,6 +430,7 @@ export default function CharacterViewer() {
           {error}
         </div>
       )}
+      {DEV.inspect && ready && <MeshInspector rig={rig} />}
     </div>
   );
 }
