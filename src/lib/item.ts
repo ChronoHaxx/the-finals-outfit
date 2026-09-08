@@ -121,6 +121,37 @@ export const MaterialSchema = z.object({
 });
 export type Material = z.infer<typeof MaterialSchema>;
 
+// A cosmetic can contain different source shaders (for example a layered helmet shell
+// and an LED visor). Bind by the exported material name, never by the whole mesh.
+export const MaterialBindingSchema = MaterialSchema.extend({
+  family: z.enum(["layered", "attachment", "glass", "led", "unknown"]),
+  doubleSided: z.boolean().optional(),
+  glass: z.object({
+    color: HexColorSchema,
+    opacity: z.number().min(0).max(1),
+    roughness: z.number().min(0).max(1),
+    normal: z.string().regex(/^[\w./-]+\.webp$/).optional(),
+  }).optional(),
+  ledScreen: z.object({
+    animation: z.string().regex(/^[\w./-]+\.webp$/),
+    colorRamp: z.string().regex(/^[\w./-]+\.webp$/).optional(),
+    normal: z.string().regex(/^[\w./-]+\.webp$/).optional(),
+    tint: HexColorSchema.optional(),
+    brightness: z.number().min(0).max(10000),
+    frameCount: z.number().int().min(1).max(4096),
+    trackCount: z.number().int().min(1).max(4096),
+    pixelWidth: z.number().positive().max(4096).optional(),
+    pixelHeight: z.number().positive().max(4096).optional(),
+    animationTrack: z.number().int().min(0),
+    animationSpeed: z.number().min(0),
+    uvScale: z.number().positive(),
+    uvOffsetU: z.number().optional(),
+    uvOffsetV: z.number(),
+    captureTime: z.number().min(0).optional(),
+  }).optional(),
+});
+export type MaterialBinding = z.infer<typeof MaterialBindingSchema>;
+
 // 3D preview data. Optional: most catalog items are icon-only until their mesh
 // is converted from the datamined .uemodel source (see scripts/convert-meshes.py).
 // gltfPath is base-relative under public/models/ (no leading slash) so it resolves
@@ -149,6 +180,7 @@ export const ModelSchema = z.object({
   // Per-skin material/dye data (region-tint approximation). Absent for items whose
   // mesh has no ColorMask (heads, hair) — those render with their baked materials.
   material: MaterialSchema.optional(),
+  materialBindings: z.record(z.string().min(1), MaterialBindingSchema).optional(),
   // Outerwear only: a colour-coordinated default undersuit (a catalog item id). Open/vented
   // coats are designed to layer over an undersuit (their back is genuinely open mesh); when no
   // Upper Body is equipped we show this colour-matched top so the opening reads as intentional

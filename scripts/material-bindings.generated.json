@@ -1,0 +1,1031 @@
+{
+  "items": 2531,
+  "bound": 2531,
+  "familyCounts": {
+    "layered": 1918,
+    "unknown": 797,
+    "glass": 61,
+    "attachment": 169,
+    "led": 24
+  },
+  "resolutionCounts": {
+    "slot-name": 1976,
+    "unresolved-skin": 106,
+    "embedded": 388,
+    "source-identity": 318,
+    "unique-remainder": 108,
+    "slot-suffix": 25
+  },
+  "unresolved": [
+    {
+      "itemId": "actionhero-sentinelhelmet-metal-blackdissun",
+      "materialName": "MI_SentinelHelmet_SentinelHelmet",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "actionhero-sentinelhelmet-metal-blackdissun",
+      "materialName": "MI_SentinelHelmet_SentinelHelmetVisor",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "assets-roboticorbhead-blackivada",
+      "materialName": "MI_RoboticOrbHead",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "assets-roboticorbhead-blackivada",
+      "materialName": "MI_RoboticOrbNeck_UEMat01",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "assets-roboticorbhead-whitevaiiya",
+      "materialName": "MI_RoboticOrbHead",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "assets-roboticorbhead-whitevaiiya",
+      "materialName": "MI_RoboticOrbNeck_UEMat01",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-ballistichelmet-blackvolpe",
+      "materialName": "MI_BallisticHelmet",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-ballistichelmet-blackvolpe",
+      "materialName": "MI_Visor",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-mask-gasmask-02-white",
+      "materialName": "MI_Gasmask_02",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-mask-gasmask-02-white",
+      "materialName": "MI_Gasmask_02_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-mask-gasmask-03-vaiiya",
+      "materialName": "MI_Gasmask_03",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-mask-gasmask-03-vaiiya",
+      "materialName": "MI_Gasmask_03_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-mask-paintball-01-plastic-esportkz",
+      "materialName": "MI_PaintBallMask_01",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-mask-paintball-01-plastic-esportkz",
+      "materialName": "MI_PaintBallMask_01_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-retroroundglasses-metallic-gold",
+      "materialName": "MI_RetroRoundGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-retroroundglasses-metallic-gold",
+      "materialName": "MI_RetroRoundGlasses_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-retroroundglasses-metallic-iseult",
+      "materialName": "MI_RetroRoundGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-retroroundglasses-metallic-iseult",
+      "materialName": "MI_RetroRoundGlasses_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-roundsunglasses-metallic-biker",
+      "materialName": "MI_RoundGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-roundsunglasses-metallic-biker",
+      "materialName": "MI_RoundSunglasses_Glass_Purple",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-roundsunglasses-metallic-dissun",
+      "materialName": "MI_RoundGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-roundsunglasses-metallic-dissun",
+      "materialName": "MI_RoundSunglasses_Glass_Purple",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-roundsunglasses-metallic-redglass",
+      "materialName": "MI_RoundGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-roundsunglasses-metallic-redglass",
+      "materialName": "MI_RoundSunglasses_Glass_Purple",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-sailorhat-01-headwear",
+      "materialName": "MI_SailorHat_01_A",
+      "reason": "attachment material has no resolved CR/NOM texture pair; preserved embedded material"
+    },
+    {
+      "itemId": "attachment-sailorhat-black-headwear",
+      "materialName": "MI_SailorHat_01_A",
+      "reason": "attachment material has no resolved CR/NOM texture pair; preserved embedded material"
+    },
+    {
+      "itemId": "attachment-sailorhat-green-headwear",
+      "materialName": "MI_SailorHat_01_A",
+      "reason": "attachment material has no resolved CR/NOM texture pair; preserved embedded material"
+    },
+    {
+      "itemId": "attachment-sailorhat-red-headwear",
+      "materialName": "MI_SailorHat_01_A",
+      "reason": "attachment material has no resolved CR/NOM texture pair; preserved embedded material"
+    },
+    {
+      "itemId": "attachment-seamonstermask",
+      "materialName": "MI_SeaMonsterCards",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-seamonstermask",
+      "materialName": "MI_SeaMonsterMask",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-skullhelmet-carbonfibre-blackteeth",
+      "materialName": "MI_SkullHelmet",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachment-tophat-wool",
+      "materialName": "MI_TopHat_Buckle_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "attachments-retroroundglasses-metallic-black",
+      "materialName": "MI_RetroRoundGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachments-retroroundglasses-metallic-black",
+      "materialName": "MI_RetroRoundGlasses_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachments-retroroundglasses-metallic-silver",
+      "materialName": "MI_RetroRoundGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachments-retroroundglasses-metallic-silver",
+      "materialName": "MI_RetroRoundGlasses_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "attachments-retroroundglasses-metallic-vale-9917",
+      "materialName": "MI_RetroRoundGlasses",
+      "reason": "layered material has no matching bake or dye parameters; preserved embedded material"
+    },
+    {
+      "itemId": "attachments-scifihelmet-alt-02-teamsecret",
+      "materialName": "MI_SciFiHelmet_Alt_02_Screen",
+      "reason": "LED material has no resolved animation texture; displayed as a dark screen"
+    },
+    {
+      "itemId": "attachments-scifihelmet-alt-envy",
+      "materialName": "MI_SciFiHelmet_Alt",
+      "reason": "layered material has no matching bake or dye parameters; preserved embedded material"
+    },
+    {
+      "itemId": "attachments-tophat-silk-green",
+      "materialName": "MI_TopHat_Buckle_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "bodycosmetics-makeup-skull-01",
+      "materialName": "MI_Earrings_Skull_01_A",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "cute-devilhorns-leather",
+      "materialName": "MI_DevilHorns_DevilHeadband",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "cute-devilhorns-leather",
+      "materialName": "MI_DevilHorns_Light_Heat_01",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "fancydress-bowlerhat-cotton-green",
+      "materialName": "MI_BowlerHat_Buckle_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "fancydress-bowlerhat-suede-black",
+      "materialName": "MI_BowlerHat_Buckle_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "fancydress-weddingdressgown-lace",
+      "materialName": "MI_WeddingDressGown_WeddingDressBodiceLace",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "fancydress-weddingdressgown-lace",
+      "materialName": "MI_WeddingDressGown_WeddingDressGown",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "fancydress-weddingdressgown-lace",
+      "materialName": "MI_WeddingDressGown_WeddingDressSkirtLace",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "fancydress-weddingdressgown-lace",
+      "materialName": "MI_WeddingDressGown_WeddingDressSkirtTop",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "fancydress-weddingveil-gold",
+      "materialName": "MI_WeddingVeil_WeddingdressTiara",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "fancydress-weddingveil-gold",
+      "materialName": "MI_WeddingVeil_WeddingdressVeil",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "fancydress-weddingveil-gold",
+      "materialName": "MI_WeddingVeil_WeddingdressVeilGems",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "hairs-curtainfade-black",
+      "materialName": "MI_CurtainFade_Metallic_Gold",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "hairs-curtainfade-blackgold",
+      "materialName": "MI_CurtainFade_Metallic_Gold",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "hairs-curtainfade-chocolatebrown",
+      "materialName": "MI_CurtainFade_Metallic_Gold",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "hairs-curtainfade-coolbrown",
+      "materialName": "MI_CurtainFade_Metallic_Gold",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "hairs-curtainfade-iseult",
+      "materialName": "MI_CurtainFade_Metallic_Gold",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "hairs-curtainfade-saltpepper",
+      "materialName": "MI_CurtainFade_Metallic_Gold",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "hairs-ponytaillow-02-black",
+      "materialName": "M_Silver_PonytailLow_02",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "hairs-ponytaillow-02-black",
+      "materialName": "MI_PonytailLow_02_Blonde",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "hairs-ponytaillow-02-blue",
+      "materialName": "M_Silver_PonytailLow_02",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "hairs-ponytaillow-02-blue",
+      "materialName": "MI_PonytailLow_02_Blonde",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "hairs-smallbun-black",
+      "materialName": "MI_SmallBun_Metallic_Gold",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "hairs-smallbun-blackgold",
+      "materialName": "MI_SmallBun_Metallic_Gold",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "hairs-smallbun-blackgreystreaks",
+      "materialName": "MI_SmallBun_Metallic_Gold",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "head-blankface-ballisticgel",
+      "materialName": "MI_BlankFace_CodeScreen",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-blankface-shinysilver",
+      "materialName": "MI_BlankFace_CodeScreen",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-blankface-whitevalentines",
+      "materialName": "MI_BlankFace_CodeScreen",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-face-14-base",
+      "materialName": "MI_Head_Face_15_Base_EyeEdge",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-face-14-base",
+      "materialName": "MI_Head_Face_15_Base_EyeShell",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-face-14-base",
+      "materialName": "MI_Head_HeadMaster_Base_Teeth",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-face-26-base",
+      "materialName": "MI_Head_Face_19_Base_Eyelashes",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-face-26-base",
+      "materialName": "MI_Head_Face_19_Base_Eyes",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-face-26-base",
+      "materialName": "MI_Head_Face_19_Base_EyeShell",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-face-26-base",
+      "materialName": "MI_Head_HeadMaster_Base_Teeth",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-face-27-base",
+      "materialName": "MI_Head_Face_05_Base_EyeEdge",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-face-27-base",
+      "materialName": "MI_Head_Face_05_Base_Eyes",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "head-face-27-base",
+      "materialName": "MI_Head_Face_05_Base_EyeShell",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "heads-face-17-base",
+      "materialName": "MI_Head_Face_03_Base_Eyelashes",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "heads-face-17-base",
+      "materialName": "MI_Head_Face_03_Base_EyeShell",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "heads-face-17-base",
+      "materialName": "MI_Head_HeadMaster_Base_Teeth",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "military-marinehelmet-plastic-green",
+      "materialName": "MI_MarineHelmet_MarineHelmet",
+      "reason": "layered material has no matching bake or dye parameters; preserved embedded material"
+    },
+    {
+      "itemId": "military-militarymechanicjacketnotshirt-lea-57e1",
+      "materialName": "MI_MilitaryMechanicJacketNoTshirt_MilitaryMechanicJacketNoTshir",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "military-militarymechanicweldinggoggles-pla-3cbf",
+      "materialName": "MI_MilitaryMechanicWeldingGoggles_MilitaryMechanicWeldingGoggle",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "military-tacticalglassessplit-plastic-alfaacta",
+      "materialName": "MI_TacticalGlassesSplit_TacticalGlasses_Frame",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "military-tacticalglassessplit-plastic-alfaacta",
+      "materialName": "MI_TacticalGlassesSplit_TacticalGlasses_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "military-tacticalglassessplit-plastic-black",
+      "materialName": "MI_TacticalGlassesSplit_TacticalGlasses_Frame",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "military-tacticalglassessplit-plastic-black",
+      "materialName": "MI_TacticalGlassesSplit_TacticalGlasses_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "military-tacticalglassessplit-plastic-darkblack",
+      "materialName": "MI_TacticalGlassesSplit_TacticalGlasses_Frame",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "military-tacticalglassessplit-plastic-darkblack",
+      "materialName": "MI_TacticalGlassesSplit_TacticalGlasses_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "military-tacticalglassessplit-plastic-sportevent",
+      "materialName": "MI_TacticalGlassesSplit_TacticalGlasses_Frame",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "military-tacticalglassessplit-plastic-sportevent",
+      "materialName": "MI_TacticalGlassesSplit_TacticalGlasses_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "municipal-helicopterhelmet-plastic-arctic",
+      "materialName": "MI_HelicopterHelmet_Color_Visor",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "municipal-helicopterhelmet-plastic-arctic",
+      "materialName": "MI_HelicopterHelmet_HelicopterHelmet",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "municipal-helicopterhelmet-plastic-arctic",
+      "materialName": "MI_HelicopterHelmet_Transparent_Visor",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "robots-aquariumhelmet-metal",
+      "materialName": "M_Bubbles_Helmet",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "samurai-facemask-base-cns",
+      "materialName": "MI_FaceMask_FaceMask",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "samurai-strawhat-wood",
+      "materialName": "MI_StrawHat_StrawEdge",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "samurai-strawhat-wood",
+      "materialName": "MI_StrawHat_StrawHat",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "scifi-cyberjacket-windbreaker",
+      "materialName": "MI_CyberJacket_CyberJacket",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "scifi-cybershorts-windbreaker",
+      "materialName": "MI_CyberShorts_CyberShorts",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "space-astronauthelmet-ssgblack",
+      "materialName": "MI_AstronautHelmet_AstronautHelmet",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "space-astronauthelmet-ssgblack",
+      "materialName": "MI_AstronautHelmet_AstronautHelmetVisor",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "sport-footballjersey-polyester-yellowblack",
+      "materialName": "MI_FootballJersey_CoatName",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "sport-footballjersey-polyester-yellowblack",
+      "materialName": "MI_FootballJersey_FootballJersey",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "sport-footballjersey-polyester-yellowpurple",
+      "materialName": "MI_FootballJersey_CoatName",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "sport-footballjersey-polyester-yellowpurple",
+      "materialName": "MI_FootballJersey_FootballJersey",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-angularsunglasses-metal",
+      "materialName": "MI_AngularSunglasses",
+      "reason": "layered material has no matching bake or dye parameters; preserved embedded material"
+    },
+    {
+      "itemId": "streetwear-aviatorjacket-leather-black",
+      "materialName": "MI_AviatorJacket_AviatorJacketSecond",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-aviatorjacket-leather-black",
+      "materialName": "MI_Character_HolographicMaterial_Holtow",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-aviatorjacket-leather-spacegame",
+      "materialName": "MI_AviatorJacket_AviatorJacketSecond",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-aviatorjacket-leather-spacegame",
+      "materialName": "MI_Character_HolographicMaterial_Holtow",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-aviatorjacket-leatherworn-holtow",
+      "materialName": "MI_AviatorJacket_AviatorJacketSecond",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-aviatorjacket-leatherworn-holtow",
+      "materialName": "MI_Character_HolographicMaterial_Holtow",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-aviatorjacket-nylon-brown",
+      "materialName": "MI_AviatorJacket_AviatorJacketSecond",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-aviatorjacket-nylon-brown",
+      "materialName": "MI_Character_HolographicMaterial_Holtow",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-aviatorjacket-nylon-yellowospuze",
+      "materialName": "MI_AviatorJacket_AviatorJacketSecond",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-aviatorjacket-nylon-yellowospuze",
+      "materialName": "MI_Character_HolographicMaterial_Holtow",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-alfaacta",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-alienpatch",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-black",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-blackospuze",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-blackspikes",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-blackurban",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-blackwhite",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-blue",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-cashball",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-cb2a",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-closedbeta",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-cns",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-embarkpartner",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-enorino",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-greenorange",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-greywhite",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-hunter",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-ospuzeyellow",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-skillissue",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-thefinalsblack",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-vaiiyas7sp",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-vaiiyawhite",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-whitered",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-cotton-yellowblack",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-leopard",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-polyester-ospuzeltm",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-polyester-ospuzestar-7518",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-polyester-ospuzestar-8e5e",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-satin-gangnam",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-silk-lunarnewyearsnake",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-baseballcap-zebra",
+      "materialName": "MI_BaseballCapLEDStrip",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-canvas-black",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-canvas-browncamo",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-canvas-camogreen",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-canvas-holographic",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-canvas-moolah",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-canvas-namatama",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-canvas-print",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-canvas-sponsoriseult",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-canvas-sportsevent",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-canvas-thefinals",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-buckethat-nylon",
+      "materialName": "MI_BucketHat_Moolah_01_A",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-casualglasses-metallic-holtow",
+      "materialName": "MI_CasualGlasses_CasualGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-casualglasses-metallic-holtow",
+      "materialName": "MI_RoundSunglasses_Glass_Purple",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-consolebackpack-canvas-orf",
+      "materialName": "MI_ConsoleBackpack_ConsoleBackpack",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-consolebackpack-canvas-orf",
+      "materialName": "MI_ConsoleBackpack_ConsoleBackpackScreen",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-demonledmask-plastic-blackwhite",
+      "materialName": "MI_DemonLedMask_DemonLedMask",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-demonledmask-plastic-blackwhite",
+      "materialName": "MI_DemonLedMask_Visor",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-innernylon-d6b1",
+      "materialName": "MI_Character_HolographicMaterial_ISEULT",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-innernylon-d6b1",
+      "materialName": "MI_OversizedBomberJacket_OversizedBomberJacket_Shell",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-nylon-cnss7sp",
+      "materialName": "MI_Character_HolographicMaterial_ISEULT",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-nylon-cnss7sp",
+      "materialName": "MI_OversizedBomberJacket_OversizedBomberJacket_Shell",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-nylon-majo-f1ca",
+      "materialName": "MI_Character_HolographicMaterial_ISEULT",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-nylon-majo-f1ca",
+      "materialName": "MI_OversizedBomberJacket_OversizedBomberJacket_Shell",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-nylon-redurban",
+      "materialName": "MI_Character_HolographicMaterial_ISEULT",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-nylon-redurban",
+      "materialName": "MI_OversizedBomberJacket_OversizedBomberJacket_Shell",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-nylon-vanguard",
+      "materialName": "MI_Character_HolographicMaterial_ISEULT",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-nylon-vanguard",
+      "materialName": "MI_OversizedBomberJacket_OversizedBomberJacket_Shell",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-satin-ghost",
+      "materialName": "MI_Character_HolographicMaterial_ISEULT",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-satin-ghost",
+      "materialName": "MI_OversizedBomberJacket_OversizedBomberJacket_Shell",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-satin-oran-3de3",
+      "materialName": "MI_Character_HolographicMaterial_ISEULT",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-satin-oran-3de3",
+      "materialName": "MI_OversizedBomberJacket_OversizedBomberJacket_Shell",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-silk-lunar-a53a",
+      "materialName": "MI_Character_HolographicMaterial_ISEULT",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-oversizedbomberjacket-silk-lunar-a53a",
+      "materialName": "MI_OversizedBomberJacket_OversizedBomberJacket_Shell",
+      "reason": "source material slot not resolved"
+    },
+    {
+      "itemId": "streetwear-pokerglasses-blackyellow",
+      "materialName": "MI_PokerGlasses_PokerGlasses",
+      "reason": "layered material has no matching bake or dye parameters; preserved embedded material"
+    },
+    {
+      "itemId": "streetwear-pokerglasses-plastic-vaiiyarain",
+      "materialName": "MI_PokerGlasses_PokerGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-pokerglasses-plastic-vaiiyarain",
+      "materialName": "MI_PokerGlasses_PokerLenses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-pokerglasses-plastic-vaiiyas7sp",
+      "materialName": "MI_PokerGlasses_PokerGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-pokerglasses-plastic-vaiiyas7sp",
+      "materialName": "MI_PokerGlasses_PokerLenses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-vaporwaveglasses-plastic-blackurban",
+      "materialName": "MI_VaporWaveGlasses_VaporWaveGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-vaporwaveglasses-plastic-blackurban",
+      "materialName": "MI_VaporWaveGlasses_VaporWaveLenses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-vaporwaveglasses-plastic-ospuze",
+      "materialName": "MI_VaporWaveGlasses_VaporWaveGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-vaporwaveglasses-plastic-ospuze",
+      "materialName": "MI_VaporWaveGlasses_VaporWaveLenses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-vaporwaveglasses-plastic-ospuzes-f6d5",
+      "materialName": "MI_VaporWaveGlasses_VaporWaveGlasses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-vaporwaveglasses-plastic-ospuzes-f6d5",
+      "materialName": "MI_VaporWaveGlasses_VaporWaveLenses",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "streetwear-vaporwaveglasses-redalfaacta",
+      "materialName": "MI_VaporWaveGlasses_VaporWaveGlasses",
+      "reason": "layered material has no matching bake or dye parameters; preserved embedded material"
+    },
+    {
+      "itemId": "watches-sundial-01-trentila",
+      "materialName": "MI_SunDial_01_A",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "watches-sundial-01-trentila",
+      "materialName": "MI_SunDial_01_A_Pin",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "watches-vayiiasmart-01-ultimate",
+      "materialName": "MI_VayiiaSmart_01",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "watches-vayiiasmart-01-ultimate",
+      "materialName": "MI_VayiiaSmart_01_Screen",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "winter-goggles-plastic-whitered",
+      "materialName": "MI_Goggles",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "winter-goggles-plastic-whitered",
+      "materialName": "MI_Goggles_Glass",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "workuniforms-catearsmaid-linen",
+      "materialName": "MI_CatEarsMaid_MaidHeadBand",
+      "reason": "unresolved-skin"
+    },
+    {
+      "itemId": "workuniforms-catearsmaid-linen",
+      "materialName": "MI_CatEarsMaid_MaidHeadDressStrings",
+      "reason": "unresolved-skin"
+    }
+  ]
+}

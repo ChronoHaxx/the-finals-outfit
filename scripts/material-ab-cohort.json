@@ -1,0 +1,17 @@
+[
+  { "id": "bodycosmetics-earrings-christmasball-01", "category": "color-wrong" },
+  { "id": "bodycosmetics-earrings-beetlegold-01", "category": "artifact" },
+  { "id": "attachment-3dpaperglasses-paper", "category": "attachment-control" },
+  { "id": "attachments-gamingglasses", "category": "attachment-control" },
+  { "id": "bodycosmetics-makeup-cuteanime-01", "category": "color-wrong" },
+  { "id": "bodycosmetics-makeup-ancientwarrior-01", "category": "missing-print" },
+  { "id": "bodycosmetics-bodypaint-techwearsymbols-01", "category": "missing-print" },
+  { "id": "bodycosmetics-bodypaint-discosilver-01", "category": "material-flat" },
+  { "id": "head-blankface-shinysilver", "category": "material-flat" },
+  { "id": "sport-fencermask-cotton", "category": "artifact" },
+  { "id": "actionhero-sentineltop-nylon-yellow", "category": "layered-garment" },
+  { "id": "actionhero-sentinelpants-nylon-yellow", "category": "layered-garment" },
+  { "id": "casual-basictshirt-cotton-esportgeng", "category": "missing-print" },
+  { "id": "casual-longcoat-satin", "category": "material-flat" },
+  { "id": "casual-longcoat-leather-camo", "category": "color-wrong" }
+]

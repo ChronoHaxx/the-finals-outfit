@@ -24,8 +24,17 @@ import {
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join, basename } from "node:path";
 import sharp from "sharp";
-import { CatalogSchema, type Item, type Material, type Decal } from "../src/lib/item.ts";
+import { CatalogSchema, type Item, type Material, type MaterialBinding, type Decal } from "../src/lib/item.ts";
 import { SLOTS, type Slot } from "../src/lib/slots.ts";
+import { composeMaterialBindings, type ImportMaterialSlot } from "./lib/import-material-bindings.ts";
+// @ts-expect-error plain-JS source resolver shared with the material baker
+import { resolveMaterialBindings } from "./lib/material-instances.mjs";
+// @ts-expect-error plain-JS source parser shared with the material baker
+import { readMI } from "./lib/layered-mi.mjs";
+// @ts-expect-error plain-JS source texture emitter shared with the material baker
+import { buildSourceMaterialBinding } from "./lib/material-textures.mjs";
+// @ts-expect-error plain-JS source attachment converter
+import { buildAttachmentMaterialBinding } from "./lib/attachment-material.mjs";
 // @ts-expect-error plain-JS module shared with the calibration scripts (not typechecked)
 import { applyColorModel, srgbToLinear, linearToOklab } from "./lib/color-model.mjs";
 
@@ -41,6 +50,10 @@ const OUT_ITEMS = resolve(ROOT, "src/data/items.json");
 const REPORT = resolve(ROOT, "scripts/import-report.txt");
 const ICON_SIZE = 256;
 const ICON_CONCURRENCY = 8;
+// Refresh only the material binding contract on the existing catalog. This also
+// avoids reconverting icons, decals and unrelated body/under-layer metadata.
+const MATERIALS_ONLY = process.argv.includes("--materials-only");
+const MATERIAL_CATALOG_SOURCE = process.argv.find((arg) => arg.startsWith("--catalog-source="))?.slice("--catalog-source=".length);
 // REGIONS_DEBUG=1 logs each piece's decoded region blues/layers/colors (audit the dye decode).
 const REGIONS_DEBUG = process.env.REGIONS_DEBUG === "1";
 // The MaterialID (OCM blue) encodes the layer SLOT in a fixed 8-slot space (blue ≈ slot/8*255,
@@ -809,6 +822,108 @@ function lookupBakedSet(gltfPath: string, skinDir: string): Material["bakedSet"]
   return manifest ? manifest[basename(skinDir).toLowerCase()] : undefined;
 }
 
+type MaterialJob = { itemId: string; model: NonNullable<Item["model"]>; skinDir: string; iconAbs: string };
+const glbMaterialNamesCache = new Map<string, string[]>();
+const materialBindingsCache = new Map<string, Record<string, Record<string, MaterialBinding>> | null>();
+
+function glbMaterialNames(gltfPath: string): string[] {
+  const cached = glbMaterialNamesCache.get(gltfPath);
+  if (cached) return cached;
+  const data = readFileSync(resolve(ROOT, "public", gltfPath));
+  if (data.readUInt32LE(0) !== 0x46546c67 || data.readUInt32LE(16) !== 0x4e4f534a)
+    throw new Error(`Cannot read GLB materials: ${gltfPath}`);
+  const gltf = JSON.parse(data.toString("utf8", 20, 20 + data.readUInt32LE(12))) as {
+    materials?: { name?: string }[];
+    meshes?: { primitives?: { material?: number }[] }[];
+  };
+  const used = new Set((gltf.meshes ?? []).flatMap((mesh) => (mesh.primitives ?? []).map((primitive) => primitive.material)));
+  const names = (gltf.materials ?? []).flatMap((material, index) => used.has(index) && material.name ? [material.name] : []);
+  glbMaterialNamesCache.set(gltfPath, names);
+  return names;
+}
+
+function lookupMaterialBindings(gltfPath: string, skinDir: string): Record<string, MaterialBinding> | undefined {
+  const abs = resolve(ROOT, "public", gltfPath.replace(/\.glb$/, ".materials.json"));
+  let manifest = materialBindingsCache.get(abs);
+  if (manifest === undefined) {
+    manifest = existsSync(abs) ? JSON.parse(readFileSync(abs, "utf8")) : null;
+    materialBindingsCache.set(abs, manifest ?? null);
+  }
+  return manifest?.[basename(skinDir).toLowerCase()];
+}
+
+// Resolve every exported material independently. The old material block remains
+// useful for color diagnostics and undersuit selection, but the runtime uses this
+// exact-name map exclusively whenever it exists.
+async function assignMaterialBindings(jobs: MaterialJob[], items: Item[]): Promise<void> {
+  const unresolved: { itemId: string; materialName: string; reason: string }[] = [];
+  const resolutionCounts: Record<string, number> = {};
+  const familyCounts: Record<string, number> = {};
+  let bound = 0;
+  for (const job of jobs) {
+    const materialNames = glbMaterialNames(job.model.gltfPath);
+    const resolved = resolveMaterialBindings({ gltfPath: job.model.gltfPath, skinDir: job.skinDir, dumpRoot: CHAR_ROOT });
+    const sourceBindings: Record<string, MaterialBinding> = {};
+    for (const slot of resolved) {
+      if (!materialNames.includes(slot.materialName) || /unresolved|ambiguous/.test(slot.resolution ?? "")) continue;
+      sourceBindings[slot.materialName] = await buildSourceMaterialBinding(slot.mi, {
+        dumpRoot: CHAR_ROOT,
+        modelsRoot: resolve(ROOT, "public/models"),
+      });
+      const attachment = await buildAttachmentMaterialBinding(slot.mi, { dumpRoot: CHAR_ROOT, modelsRoot: resolve(ROOT, "public/models") });
+      if (attachment) sourceBindings[slot.materialName] = { ...sourceBindings[slot.materialName], ...attachment };
+    }
+    const slots: ImportMaterialSlot[] = resolved.map((slot: {
+      materialName: string;
+      mi?: { name?: string; family?: MaterialBinding["family"]; doubleSided?: boolean; complete?: boolean };
+      resolution?: string;
+    }) => ({
+      materialName: slot.materialName,
+      sourceName: slot.mi?.name,
+      family: slot.mi?.family ?? "unknown",
+      doubleSided: slot.mi?.doubleSided,
+      complete: slot.mi?.complete,
+      resolution: slot.resolution,
+    }));
+    for (const slot of slots) {
+      const resolution = slot.resolution ?? "unknown";
+      resolutionCounts[resolution] = (resolutionCounts[resolution] ?? 0) + 1;
+    }
+    const { bindings, issues } = composeMaterialBindings({
+      materialNames,
+      slots,
+      sourceBindings,
+      sidecar: lookupMaterialBindings(job.model.gltfPath, job.skinDir),
+      legacy: job.model.material,
+      primarySourceName: readMI(job.skinDir)?.name,
+    });
+    if (materialNames.length) {
+      job.model.materialBindings = bindings;
+      bound++;
+      for (const binding of Object.values(bindings)) familyCounts[binding.family] = (familyCounts[binding.family] ?? 0) + 1;
+    } else {
+      unresolved.push({ itemId: job.itemId, materialName: "", reason: "GLB has no named material primitives" });
+    }
+    unresolved.push(...issues.map((issue) => ({ itemId: job.itemId, ...issue })));
+    if ((bound + 1) % 500 === 0) console.log(`  …resolved ${bound + 1}/${jobs.length} material jobs`);
+  }
+  const jobsById = new Set(jobs.map((job) => job.itemId));
+  for (const item of items) {
+    if (item.model && !jobsById.has(item.id))
+      unresolved.push({ itemId: item.id, materialName: "", reason: "catalog model has no matching dump icon/source job" });
+  }
+  const report = resolve(process.env.MATERIAL_BINDING_REPORT ?? resolve(ROOT, "scripts/material-bindings.generated.json"));
+  mkdirSync(dirname(report), { recursive: true });
+  writeFileSync(report, JSON.stringify({
+    items: jobs.length,
+    bound,
+    familyCounts,
+    resolutionCounts,
+    unresolved: unresolved.sort((a, b) => a.itemId.localeCompare(b.itemId) || a.materialName.localeCompare(b.materialName) || a.reason.localeCompare(b.reason)),
+  }, null, 2) + "\n");
+  console.log(`  material bindings: ${bound}/${jobs.length} items, ${unresolved.length} unresolved diagnostics -> ${report}`);
+}
+
 // Self-illuminated mesh cosmetics: the dump ships a `T_<piece>_Emissive` map next to the mesh
 // (pumpkin face, blankface LED, gas-mask lenses). The convert-time Blender emissive bake is
 // "best-effort" and unreliable (stale / silent-fail), so copy the map to public and let the rig
@@ -856,6 +971,79 @@ function convertEmissiveTex(gltfPath: string, skinDir: string): Promise<string |
   return p;
 }
 
+// Attachments use a different master material from garments. Their MI has no OCM/region map:
+// CR is authored colour in RGB with roughness in A, while NOM is XY normal in RG with metalness
+// in A (the MI often calls this slot NOH). Convert that family into the same finished texture
+// contract as the layered baker so CharacterRig does not fall back to a single icon tint.
+const attachmentPbrCache = new Map<string, Promise<Material["bakedSet"] | undefined>>();
+function findAttachmentMap(skinDir: string, suffix: RegExp): string | undefined {
+  try {
+    const file = readdirSync(skinDir).find((f) => suffix.test(f));
+    return file ? join(skinDir, file) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+function convertAttachmentPbr(gltfPath: string, skinDir: string): Promise<Material["bakedSet"] | undefined> {
+  const cr = findAttachmentMap(skinDir, /^T_.*_CR\.png$/i);
+  const nom = findAttachmentMap(skinDir, /^T_.*_(?:NOM|NOH)\.png$/i);
+  if (!cr || !nom) return Promise.resolve(undefined);
+  const skinKey = slugify(basename(skinDir));
+  const relBase = gltfPath.replace(/\.glb$/, `.${skinKey}.attachment`);
+  const key = `${relBase}|${cr}|${nom}`;
+  let p = attachmentPbrCache.get(key);
+  if (!p) {
+    p = (async () => {
+      const base = await sharp(longPath(cr)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+      const normal = await sharp(longPath(nom))
+        .resize(base.info.width, base.info.height, { fit: "fill" })
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      const px = base.info.width * base.info.height;
+      const albedoRel = `${relBase}.albedo.webp`;
+      const normalRel = `${relBase}.normal.webp`;
+      const ormRel = `${relBase}.orm.webp`;
+      const albedoAbs = resolve(ROOT, "public", albedoRel);
+      const normalAbs = resolve(ROOT, "public", normalRel);
+      const ormAbs = resolve(ROOT, "public", ormRel);
+      mkdirSync(dirname(albedoAbs), { recursive: true });
+
+      // Preserve the CR's encoded RGB as colour; its alpha is data, not coverage.
+      await sharp(longPath(cr)).removeAlpha().webp({ quality: 90 }).toFile(albedoAbs);
+
+      const nOut = Buffer.alloc(px * 3);
+      const ormOut = Buffer.alloc(px * 3);
+      for (let i = 0; i < px; i++) {
+        const bi = i * base.info.channels;
+        const ni = i * normal.info.channels;
+        const x = (normal.data[ni] / 255) * 2 - 1;
+        // UE attachment normals are DirectX; the glTF/three tangent basis is OpenGL.
+        const y = -((normal.data[ni + 1] / 255) * 2 - 1);
+        const z = Math.sqrt(Math.max(0, 1 - x * x - y * y));
+        const oi = i * 3;
+        nOut[oi] = Math.round((x + 1) * 127.5);
+        nOut[oi + 1] = Math.round((y + 1) * 127.5);
+        nOut[oi + 2] = Math.round((z + 1) * 127.5);
+        ormOut[oi] = 255; // attachment family has no AO map; keep neutral occlusion.
+        ormOut[oi + 1] = base.data[bi + 3] ?? 255; // CR alpha = roughness.
+        ormOut[oi + 2] = normal.data[ni + 3] ?? 255; // NOM alpha = metalness.
+      }
+      await sharp(nOut, { raw: { width: base.info.width, height: base.info.height, channels: 3 } })
+        .webp({ lossless: true })
+        .toFile(normalAbs);
+      await sharp(ormOut, { raw: { width: base.info.width, height: base.info.height, channels: 3 } })
+        .webp({ lossless: true })
+        .toFile(ormAbs);
+      return { albedo: albedoRel, normal: normalRel, orm: ormRel };
+    })().catch(() => undefined);
+    attachmentPbrCache.set(key, p);
+  }
+  return p;
+}
+
+type MaterialPath = "layered bake" | "attachment CR/NOM" | "region-tint" | "plain";
+
 // Build the per-skin material block: the piece-shared region map (if build-regions emitted it)
 // + a color per part. Each part's color is the real BaseColorOverlay of the material layer its
 // MaterialID selects (the skin's thumbnail is only a fallback for parts with no active layer).
@@ -863,6 +1051,7 @@ async function buildMaterial(
   gltfPath: string,
   skinDir: string,
   iconAbs: string,
+  pathOut?: { path: MaterialPath },
 ): Promise<Material | undefined> {
   const regionMapPath = gltfPath.replace(/\.glb$/, ".regionmap.png");
   const rmAbs = resolve(ROOT, "public", regionMapPath);
@@ -881,8 +1070,12 @@ async function buildMaterial(
   // Layered-composite baked set (scripts/bake-composite.mjs): if this skin has a baked
   // per-skin albedo/normal/orm, the runtime swaps it in and skips the region-tint path. We
   // still emit the region colors below as a debug/fallback record.
-  const bakedSet = lookupBakedSet(gltfPath, skinDir);
+  const layeredSet = lookupBakedSet(gltfPath, skinDir);
+  const attachmentSet = layeredSet ? undefined : await convertAttachmentPbr(gltfPath, skinDir);
+  const bakedSet = layeredSet ?? attachmentSet;
   if (bakedSet) material.bakedSet = bakedSet;
+  if (pathOut && layeredSet) pathOut.path = "layered bake";
+  else if (pathOut && attachmentSet) pathOut.path = "attachment CR/NOM";
   if (existsSync(rmAbs) && existsSync(regionsAbs)) {
     const { count, bodyIndex, blues, meanLuma } = JSON.parse(readFileSync(regionsAbs, "utf8")) as {
       count: number;
@@ -901,6 +1094,7 @@ async function buildMaterial(
         (k === bodyIndex ? icon[0] : icon[1] ?? icon[0]) ?? mi!.colorA ?? "#808080";
       material.regionMapPath = regionMapPath;
       material.regionColors = decoded.colors.map((c, k) => c ?? fb(k));
+      if (pathOut && !bakedSet) pathOut.path = "region-tint";
       // Raw authored colors, pre any display blend op — the calibration re-fit input.
       material.regionOverlays = decoded.raw.map((c, k) => c ?? fb(k));
       // Per-part PBR derived from each layer's params (cloth-gated — see deriveRegionPbr).
@@ -982,6 +1176,7 @@ async function buildMaterial(
       material.metalness = p.metal;
     }
   }
+  if (pathOut && !pathOut.path) pathOut.path = "plain";
   return Object.keys(material).length ? material : undefined;
 }
 
@@ -1525,9 +1720,11 @@ async function main() {
   const hits = walk();
   console.log(`Found ${hits.length} T_UI_*.png icons.`);
 
-  const items: Item[] = [];
+  const items: Item[] = MATERIALS_ONLY ? JSON.parse(readFileSync(MATERIAL_CATALOG_SOURCE ? resolve(MATERIAL_CATALOG_SOURCE) : OUT_ITEMS, "utf8")) : [];
+  if (MATERIALS_ONLY) CatalogSchema.parse(items); // validate without changing existing field order
+  const existingItems = new Map(items.map((item) => [item.id, item]));
   const iconJobs: { src: string; destAbs: string }[] = [];
-  const materialJobs: { model: NonNullable<Item["model"]>; skinDir: string; iconAbs: string }[] = [];
+  const materialJobs: MaterialJob[] = [];
   const decalJobs: { item: Item; slot: Slot; skinDir: string; iconAbs: string }[] = [];
   const perSlot: Record<string, number> = Object.fromEntries(SLOTS.map((s) => [s, 0]));
   const skipped: Record<string, number> = {};
@@ -1538,23 +1735,27 @@ async function main() {
       skipped[c.reason] = (skipped[c.reason] ?? 0) + 1;
       continue;
     }
-    const { item, pieceKey } = c.draft;
+    const { pieceKey } = c.draft;
+    const item = MATERIALS_ONLY ? existingItems.get(c.draft.item.id) : c.draft.item;
+    if (!item) continue;
 
     // attach a mesh only if its converted .glb already exists on disk
-    if (pieceKey && MODEL_BY_PIECE[pieceKey]) {
-      const gltfPath = MODEL_BY_PIECE[pieceKey];
+    const gltfPath = MATERIALS_ONLY ? item.model?.gltfPath : pieceKey ? MODEL_BY_PIECE[pieceKey] : undefined;
+    if (gltfPath) {
       if (existsSync(resolve(ROOT, "public", gltfPath))) {
-        item.model = { gltfPath };
+        if (!MATERIALS_ONLY) item.model = { gltfPath };
         // The skin's MaterialInstance + texture arrays live in the icon's folder; the icon
         // itself is the ground-truth colorway source.
-        materialJobs.push({ model: item.model, skinDir: dirname(hit.absPath), iconAbs: hit.absPath });
+        materialJobs.push({ itemId: item.id, model: item.model!, skinDir: dirname(hit.absPath), iconAbs: hit.absPath });
         // Heads pair the shared body material to the face's tone (sibling MI_Body_*.json).
-        if (item.slot === "face") {
+        if (!MATERIALS_ONLY && item.slot === "face") {
           const bodySkin = await parseBodySkinMI(dirname(hit.absPath));
           if (bodySkin) item.model.bodySkin = bodySkin;
         }
       }
     }
+
+    if (MATERIALS_ONLY) continue;
 
     // 2D body cosmetics with no mesh -> a decal composited onto the body/head.
     if (!item.model && DECAL_SLOTS.has(item.slot)) {
@@ -1567,6 +1768,15 @@ async function main() {
       src: hit.absPath,
       destAbs: resolve(PUBLIC_ITEMS, item.slot, `${item.id}.webp`),
     });
+  }
+
+  if (MATERIALS_ONLY) {
+    console.log(`Resolving materials for ${materialJobs.length} existing catalog models …`);
+    await assignMaterialBindings(materialJobs, items);
+    CatalogSchema.parse(items);
+    writeFileSync(OUT_ITEMS, JSON.stringify(items, null, 2) + "\n");
+    console.log(`Wrote material bindings -> ${OUT_ITEMS}`);
+    return;
   }
 
   // Wipe the generated decals dir up-front: BOTH the material jobs (garment print decals
@@ -1585,12 +1795,37 @@ async function main() {
   // ColorMask under public/models + the skin's MaterialInstance from the dump).
   if (materialJobs.length) {
     console.log(`Building materials for ${materialJobs.length} pieces …`);
+    const materialPaths = new Map<string, MaterialPath>();
     await pool(materialJobs, ICON_CONCURRENCY, async (job) => {
-      const mat = await buildMaterial(job.model.gltfPath, job.skinDir, job.iconAbs);
+      const pathOut = { path: "plain" as MaterialPath };
+      const mat = await buildMaterial(job.model.gltfPath, job.skinDir, job.iconAbs, pathOut);
       if (mat) job.model.material = mat;
+      materialPaths.set(job.itemId, pathOut.path);
     });
     const withMat = materialJobs.filter((j) => j.model.material).length;
     console.log(`  attached material to ${withMat}/${materialJobs.length}.`);
+    const pathCounts = Object.fromEntries(
+      (["layered bake", "attachment CR/NOM", "region-tint", "plain"] as MaterialPath[]).map((path) => [
+        path,
+        [...materialPaths.values()].filter((p) => p === path).length,
+      ]),
+    );
+    console.log(`  material paths: ${JSON.stringify(pathCounts)}`);
+    const reportPath = process.env.MATERIAL_PATH_REPORT;
+    if (reportPath) {
+      mkdirSync(dirname(resolve(reportPath)), { recursive: true });
+      writeFileSync(
+        resolve(reportPath),
+        JSON.stringify(
+          {
+            counts: pathCounts,
+            items: Object.fromEntries([...materialPaths.entries()].sort(([a], [b]) => a.localeCompare(b))),
+          },
+          null,
+          2,
+        ) + "\n",
+      );
+    }
     console.log(`  garment print decals converted: ${garmentDecalCache.size}`);
   }
 
@@ -1639,6 +1874,7 @@ async function main() {
   assignSeasons(items);
   assignRealUnderLayers(items);
   recolorSolidMetals(items);
+  await assignMaterialBindings(materialJobs, items);
 
   // validate before writing — fail loudly if a draft violates the schema
   const parsed = CatalogSchema.safeParse(items);

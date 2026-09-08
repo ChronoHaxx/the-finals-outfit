@@ -16,11 +16,11 @@ export default function PreviewPane() {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
-      <div className="aspect-[3/4] w-full overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950">
+      <div className="min-h-0 w-full flex-1 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950">
         <CharacterViewer />
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex shrink-0 items-center justify-between">
         <h2 className="text-sm font-medium text-neutral-300">
           Your build <span className="text-neutral-500">({equipped.length})</span>
         </h2>
@@ -35,11 +35,11 @@ export default function PreviewPane() {
       </div>
 
       {equipped.length === 0 ? (
-        <p className="text-sm text-neutral-500">
+        <p className="hidden shrink-0 text-sm text-neutral-500 lg:block">
           Pick cosmetics from the slots on the right to build a look.
         </p>
       ) : (
-        <ul className="grid grid-cols-2 gap-2 overflow-y-auto sm:grid-cols-3">
+        <ul className="grid max-h-16 shrink-0 grid-cols-2 gap-2 overflow-y-auto overscroll-contain sm:grid-cols-3 lg:max-h-32">
           {equipped.map(({ slot, item }) => (
             <li key={slot}>
               <button
