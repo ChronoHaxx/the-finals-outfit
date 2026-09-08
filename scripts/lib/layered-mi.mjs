@@ -108,7 +108,7 @@ function contentDiscovery(dumpRoot) {
 export function resolveDumpPath(objectPath, dumpRoot) {
   const rel = objectPath
     .replace(/^\/Game\/Discovery\//i, "")
-    .replace(/\.\d+$/, ""); // strip the trailing `.0` object index
+    .replace(/\.[^./]+$/, ""); // object index (.0) or named master-default reference (.TextureName)
   return join(contentDiscovery(dumpRoot), rel);
 }
 

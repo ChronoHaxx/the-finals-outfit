@@ -18,7 +18,9 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join, basename } from "node:path";
 import sharp from "sharp";
-import { readMI, texturePath, arraySlices, baseMaterialOf } from "./lib/layered-mi.mjs";
+import { texturePath, arraySlices, baseMaterialOf } from "./lib/layered-mi.mjs";
+import { resolveSkinMaterialSlots } from "./lib/material-instances.mjs";
+import { buildSourceMaterialBinding } from "./lib/material-textures.mjs";
 import {
   COLOR_MODEL,
   applyOp,
@@ -295,13 +297,13 @@ function resolvePiece(piece) {
   const asset = assets.find((a) => a.dst === dst);
   if (!asset) throw new Error(`no asset-sources entry with dst '${dst}'`);
   const pieceDir = dirname(asset.src); // dump-relative, e.g. "Casual/Assets/LongCoat"
-  return { slug, pieceDir, glbRel };
+  return { slug, pieceDir, glbRel, meshJson: resolve(DUMP, asset.src.replace(/\.uemodel$/i, ".json")) };
 }
 
 // --- bake one skin -----------------------------------------------------------
-async function bakeSkin(slug, pieceDir, skinName) {
+async function bakeSkin(slug, pieceDir, skinName, selectedMI, materialSuffix = "") {
   const skinDir = resolve(DUMP, pieceDir, "Skins", skinName);
-  const mi = readMI(skinDir);
+  const mi = selectedMI;
   if (!mi) {
     console.warn(`  ${skinName}: no MI — skip`);
     return null;
@@ -475,7 +477,7 @@ async function bakeSkin(slug, pieceDir, skinName) {
     }
   }
 
-  const outBase = `${slug}.${skinKey}`;
+  const outBase = `${slug}.${skinKey}${materialSuffix}`;
   const dstDir = resolve(MODELS, "cosmetics");
   mkdirSync(dstDir, { recursive: true });
   await Promise.all([
@@ -501,7 +503,7 @@ async function bakeSkin(slug, pieceDir, skinName) {
 }
 
 async function bakePiece(pieceKey, skinFilter) {
-  const { slug, pieceDir } = resolvePiece(pieceKey);
+  const { slug, pieceDir, meshJson } = resolvePiece(pieceKey);
   const skinsRoot = resolve(DUMP, pieceDir, "Skins");
   let skins = readdirSync(skinsRoot, { withFileTypes: true })
     .filter((d) => d.isDirectory())
@@ -512,14 +514,54 @@ async function bakePiece(pieceKey, skinFilter) {
 
   console.log(`baking ${slug} (${pieceDir}) @ ${RES}px albedo/orm, ${NORMAL_RES}px normal — skins: ${skins.join(", ")}`);
   const bakedFile = resolve(MODELS, "cosmetics", `${slug}.baked.json`);
+  const bindingsFile = resolve(MODELS, "cosmetics", `${slug}.materials.json`);
   // Always merge into the existing manifest so baking a subset of skins (even with --force)
   // never drops the entries of skins not baked this run.
   const baked = existsSync(bakedFile) ? JSON.parse(readFileSync(bakedFile, "utf8")) : {};
+  const materialBindings = existsSync(bindingsFile) ? JSON.parse(readFileSync(bindingsFile, "utf8")) : {};
   for (const skin of skins) {
-    const r = await bakeSkin(slug, pieceDir, skin);
-    if (r) baked[r.skinKey] = r.set;
+    const skinDir = resolve(DUMP, pieceDir, "Skins", skin);
+    const slots = resolveSkinMaterialSlots(meshJson, skinDir, DUMP);
+    if (!slots.length) {
+      console.warn(`  ${skin}: no source material slots — leaving existing bake unchanged`);
+      continue;
+    }
+    const bindings = {};
+    // Once this skin has a resolved slot inventory, only a successful single-slot
+    // bake below can repopulate its legacy entry. Failed/changed families must not
+    // resurrect an old global texture set during catalog import.
+    delete baked[skin.toLowerCase()];
+    for (const slot of slots) {
+      if (slot.resolution === "unresolved-skin") {
+        console.warn(`  ${skin}/${slot.materialName}: ambiguous skin assignment — retaining embedded material`);
+        bindings[slot.materialName] = { family: "unknown", ...(typeof slot.mi?.doubleSided === "boolean" ? { doubleSided: slot.mi.doubleSided } : {}) };
+        continue;
+      }
+      const binding = await buildSourceMaterialBinding(slot.mi, { dumpRoot: DUMP, modelsRoot: MODELS });
+      if (slot.mi?.family === "layered") {
+        // Each primitive's MI is a separate bake input, including its own parent
+        // parameters and texture arrays. A single-layered + LED/glass piece still
+        // needs an explicit name binding: the old global set painted its visor.
+        const suffix = slots.length > 1 ? `.${slot.materialName.toLowerCase().replace(/[^a-z0-9_-]/g, "-")}` : "";
+        const r = await bakeSkin(slug, pieceDir, skin, slot.mi, suffix);
+        if (r) {
+          binding.bakedSet = r.set;
+          if (slots.length === 1) baked[r.skinKey] = r.set;
+        } else if (slots.length === 1) {
+          delete baked[skin.toLowerCase()];
+        }
+      }
+      bindings[slot.materialName] = binding;
+    }
+    // A global set is invalid for multi-part pieces, even when only one part is
+    // layered. Keep the old manifest contract for unequivocal single-material items.
+    if (slots.length > 1 || slots[0].resolution === "unresolved-skin") delete baked[skin.toLowerCase()];
+    materialBindings[skin.toLowerCase()] = bindings;
   }
+  mkdirSync(dirname(bindingsFile), { recursive: true });
+  writeFileSync(bindingsFile, JSON.stringify(materialBindings, null, 2) + "\n");
   writeFileSync(bakedFile, JSON.stringify(baked, null, 2) + "\n");
+  console.log(`wrote ${bindingsFile} (${Object.keys(materialBindings).length} skins)`);
   console.log(`wrote ${bakedFile} (${Object.keys(baked).length} skins)`);
 }
 

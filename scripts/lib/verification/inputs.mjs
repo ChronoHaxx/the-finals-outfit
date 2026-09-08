@@ -5,13 +5,14 @@
 // no dedupe logic, no "is this a variant of that" bookkeeping.
 import { resolve } from "node:path";
 import { hashFiles, hashValues } from "./hash.mjs";
+import { materialMapPaths } from "./material-inputs.mjs";
 
 export const ASPECTS = Object.freeze(["transform", "geometry", "uv", "bindings", "bodyCulling"]);
 
 // Bump when a check's LOGIC changes, so improving a check re-runs it instead of silently
 // inheriting verdicts made by the old one.
 export const CHECK_VERSION = Object.freeze({
-  transform: 4, geometry: 2, uv: 1, bindings: 2, bodyCulling: 2,
+  transform: 4, geometry: 2, uv: 1, bindings: 3, bodyCulling: 2,
 });
 
 const MESH_SCOPED = new Set(["transform", "geometry", "uv", "bodyCulling"]);
@@ -19,6 +20,9 @@ const MESH_SCOPED = new Set(["transform", "geometry", "uv", "bodyCulling"]);
 export function aspectKey(item, aspect) {
   const mesh = item.model?.gltfPath ?? "";
   if (!MESH_SCOPED.has(aspect)) {
+    // Two skins may share their shell albedo but have different glass/LED slots.
+    // Keep the item identity stable when a secondary binding is added or repaired.
+    if (item.model?.materialBindings) return { scope: "skin", key: `${mesh}|${item.id}` };
     const set = item.model?.material?.bakedSet;
     // Skin identity is the baked set when there is one, else the item itself.
     return { scope: "skin", key: set ? `${mesh}|${set.albedo}` : `${mesh}|${item.id}` };
@@ -36,7 +40,6 @@ export function aspectKey(item, aspect) {
 function inputPaths(item, aspect, root) {
   const pub = (rel) => resolve(root, "public", rel);
   const mesh = item.model?.gltfPath ? [pub(item.model.gltfPath)] : [];
-  const set = item.model?.material?.bakedSet;
   switch (aspect) {
     case "geometry":
     case "uv":
@@ -58,11 +61,7 @@ function inputPaths(item, aspect, root) {
         ...(item.model?.gltfPath ? [pub(item.model.gltfPath.replace(/\.glb$/, ".bodymask.png"))] : []),
       ];
     case "bindings":
-      return [
-        ...(set ? [pub(set.albedo), pub(set.normal), pub(set.orm)] : []),
-        ...(set?.cutout ? [pub(set.cutout)] : []),
-        ...(item.model?.material?.emissiveMap ? [pub(item.model.material.emissiveMap)] : []),
-      ];
+      return [...(item.model?.materialBindings ? mesh : []), ...materialMapPaths(item).map(pub)];
     default:
       throw new Error(`unknown aspect '${aspect}'`);
   }
@@ -70,5 +69,10 @@ function inputPaths(item, aspect, root) {
 
 export async function inputHash(item, aspect, root) {
   const files = await hashFiles(inputPaths(item, aspect, root));
+  // Paths/bytes alone miss a slot being reassigned, or a TwoSided/opacity change.
+  if (aspect === "bindings") {
+    const bindings = item.model?.materialBindings ?? item.model?.material ?? null;
+    return hashValues([files, CHECK_VERSION[aspect], aspect, bindings]);
+  }
   return hashValues([files, CHECK_VERSION[aspect], aspect]);
 }

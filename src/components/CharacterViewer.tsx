@@ -3,7 +3,7 @@ import { OrbitControls, ContactShadows } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { CharacterRig, type RigMaterial, type RigDecal } from "../rig/CharacterRig";
+import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal } from "../rig/CharacterRig";
 import MaterialTuner from "./MaterialTuner";
 import MeshInspector from "./MeshInspector";
 import { createGltfLoader } from "../rig/loaders";
@@ -119,6 +119,27 @@ function toRigMaterial(model: NonNullable<Item["model"]>): RigMaterial | undefin
     emissiveMapUrl: m.emissiveMap ? bust(modelUrl(m.emissiveMap)) : undefined,
     emissiveIntensity: m.emissiveIntensity,
   };
+}
+
+function toRigMaterialBindings(
+  model: NonNullable<Item["model"]>,
+  tintRecolor?: string,
+): Record<string, RigMaterialBinding> | undefined {
+  if (!model.materialBindings) return undefined;
+  const resolve = (path: string | undefined) => path ? bust(modelUrl(path)) : undefined;
+  return Object.fromEntries(Object.entries(model.materialBindings).map(([name, binding]) => [name, {
+    ...toRigMaterial({ gltfPath: model.gltfPath, material: binding }),
+    ...(tintRecolor ? { tintRecolor } : {}),
+    family: binding.family,
+    doubleSided: binding.doubleSided,
+    glass: binding.glass ? { ...binding.glass, normal: resolve(binding.glass.normal) } : undefined,
+    ledScreen: binding.ledScreen ? {
+      ...binding.ledScreen,
+      animation: resolve(binding.ledScreen.animation)!,
+      colorRamp: resolve(binding.ledScreen.colorRamp),
+      normal: resolve(binding.ledScreen.normal),
+    } : undefined,
+  }]));
 }
 
 // Procedural photo-studio environment for PMREM: a DARK room with a few large bright
@@ -337,6 +358,7 @@ export default function CharacterViewer() {
               slot,
               url: modelUrl(item.model.gltfPath),
               material,
+              materialBindings: toRigMaterialBindings(item.model, underTint),
               underLayerUrl: realUnder ? modelUrl(realUnder) : undefined,
               underLayerTint: realUnder ? item.model.underLayerTint : undefined,
               underLayerFallbackUrl: fallbackGlb ? modelUrl(fallbackGlb) : undefined,

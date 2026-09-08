@@ -19,6 +19,7 @@ npm run build              # production build -> dist/
 npm run preview            # preview the built bundle
 npm run typecheck          # tsc --noEmit
 npm run validate:catalog   # schema-check src/data/items.json
+npm run import:catalog -- --materials-only  # refresh per-material bindings from the local dump
 ```
 
 ## Assets
@@ -248,10 +249,12 @@ carry a `TwoSided` flag, and the dump exports it: of 318 master materials under
 `M_Charachter_CelShaded` and similar. UE's default is `false`, so the remaining
 ~278 masters should be single-sided and only those 40 stay double.
 
-The work is therefore: resolve each item's material to its master through the
-parent chain, read `TwoSided`, and carry it to the runtime — not invent a
-geometric test. Same shape as the `hideSlots` finding, and the third time on this
-project that the shipped data beat inference.
+**Implemented 2026-09-08:** the importer resolves each material's parent chain,
+including instance overrides, and carries `TwoSided` to the runtime in
+`model.materialBindings`. Missing parents stay unknown; resolved masters use
+Unreal's default `false`. Existing GLBs retain their old export flags, but the
+viewer now applies the source flags per material. See
+[_docs/2026-09-08-material-bindings.md](_docs/2026-09-08-material-bindings.md).
 
 **The game already ships the rules for both, and this repo already extracts
 them.** `scripts/customization.generated.json` holds the per-item customisation
@@ -290,7 +293,7 @@ few bespoke shaders are not: the lava and lava-lamp materials expose *no*
 parameters at all, so nothing can be inferred and only eyeballed approximation is
 available.
 
-**Multi-part pieces are flattened to one material.** A helmet is one mesh with two
+**Historical finding — corrected 2026-09-08: multi-part pieces were flattened.** A helmet is one mesh with two
 primitives — shell (6,570 tris, `MI_Helmet_Helmet`) and visor (976 tris,
 `MI_Helmet_Visor`) — but `CharacterRig` assigns the baked set to *every* material
 on the mesh:
@@ -304,14 +307,14 @@ have more than one material, and all of them lose the distinction. The bake is
 the other half of it: `readMI` takes the first material instance carrying layered
 parameters, so a piece's second material is never even read.
 
-**Every mesh is double-sided.** 40 of 40 sampled cosmetics have `doubleSided:
+**Historical finding — corrected at runtime 2026-09-08: blanket double-sided exports.** 40 of 40 sampled cosmetics have `doubleSided:
 true` on every material, applied blanket at conversion. That is correct for
 chainmail, cloth and hair cards, and wrong for a closed solid — through a
 helmet's visor opening you see the interior of the far side of the shell, which
 reads as stray geometry inside the item. It also costs fill rate everywhere.
 Both are visible on `racing-helmet-carbonfiber`.
 
-**`M_LEDScreen` is a third material family and nothing reads it.** The racing
+**`M_LEDScreen` now has a separate static reconstruction (2026-09-08).** The racing
 helmet's visor is its own material instance parented to `M_LEDScreen`, separate
 from the helmet shell, and it carries an animated sprite sheet rather than a
 static map:
@@ -323,10 +326,11 @@ scalars   AnimationTrack, FrameCount, TrackCount, Brightness,
           UVScale, UVOffsetV, VerticalFade, HorizontalFade
 ```
 
-`bake-composite` reads **one** material instance per skin and takes the first
-that carries layered parameters, so a piece whose parts use different masters
-loses all but one of them. The visor is skipped entirely, which is why the helmet
-renders with a plain dark band where the icon shows an orange LED pattern.
+The importer and baker now preserve each source material slot. Layered surfaces
+receive independent baked sets; LED surfaces use their own atlas, ramp and
+parameters, and glass surfaces use their source tint/opacity/roughness. The
+viewer no longer paints the visor with the shell's texture. Unresolved source
+assignments are recorded in `scripts/material-bindings.generated.json`.
 
 Note this one **does** have a static reference: the icon shows a frame of the
 animation, so the still appearance is checkable even though the motion is not.

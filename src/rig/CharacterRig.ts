@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { Slot } from "../lib/slots";
+import type { MaterialBinding } from "../lib/item";
 import BODY_MASK_SLOTS from "../lib/body-mask-slots.json";
 import { disposeObject3D } from "./dispose";
 import { BodyDecalManager, type RigDecal } from "./BodyDecals";
@@ -43,6 +44,24 @@ export interface RigMaterial {
   emissiveIntensity?: number;
 }
 
+export interface RigMaterialBinding extends RigMaterial {
+  family: MaterialBinding["family"];
+  doubleSided?: boolean;
+  glass?: MaterialBinding["glass"];
+  // Paths are resolved URLs by the time they reach the rig, just like bakedSet.
+  ledScreen?: MaterialBinding["ledScreen"];
+}
+
+interface LoadedMaterial {
+  material: RigMaterialBinding;
+  region: THREE.Texture | null;
+  decals: GarmentDecalTex[];
+  baked: { map: THREE.Texture; normalMap: THREE.Texture; orm: THREE.Texture } | null;
+  emissive: THREE.Texture | null;
+  glassNormal: THREE.Texture | null;
+  led: { animation: THREE.Texture; colorRamp: THREE.Texture | null; normal: THREE.Texture | null } | null;
+}
+
 // A loaded garment print decal ready for the shader.
 interface GarmentDecalTex {
   region: number;
@@ -58,6 +77,7 @@ export interface RigItem {
   slot: Slot;
   url: string; // fully-resolved .glb URL (already passed through assetUrl)
   material?: RigMaterial;
+  materialBindings?: Record<string, RigMaterialBinding>;
   // Heads only: retune the shared body material to match the face — the game swaps the
   // body color map per head (Dark/Light/FemaleMedium) and multiplies it
   // (MI_Body_*.json BodyColorMap + ColorMultiply/Roughness). texUrl is fully resolved.
@@ -332,10 +352,14 @@ export class CharacterRig {
 
     // Load the piece-shared region map once (reused across this piece's meshes); disposed
     // with the scene since it's stashed on each tinted material's userData.
-    const regionTex = await this.loadRegionMap(item.material);
-    const garmentDecals = await this.loadGarmentDecals(item.material);
-    const bakedSet = await this.loadBakedSet(item.material);
-    const emissiveTex = await this.loadEmissiveMap(item.material);
+    const boundMaterials = item.materialBindings
+      ? await this.loadMaterialBindings(item.materialBindings, gltf.scene)
+      : null;
+    const legacyMaterial = boundMaterials ? undefined : item.material;
+    const bakedSet = await this.loadBakedSet(legacyMaterial);
+    const regionTex = bakedSet ? null : await this.loadRegionMap(legacyMaterial);
+    const garmentDecals = await this.loadGarmentDecals(legacyMaterial);
+    const emissiveTex = await this.loadEmissiveMap(legacyMaterial);
     // Hair cards: the strand SHAPE lives in a sibling <style>.coverage.webp (built by
     // scripts/build-hair-coverage.mjs from the dump's card-atlas coverage / NXA alpha) the
     // converter never wired in — without it the flat cards render as opaque colored shards.
@@ -353,8 +377,14 @@ export class CharacterRig {
       else if ((o as THREE.Mesh).isMesh) statics.push(o as THREE.Mesh);
     });
 
-    const applyMat = (mesh: THREE.Mesh) =>
-      this.applyMaterial(mesh, item.material, regionTex, garmentDecals, bakedSet, hairCov, emissiveTex);
+    // GLTFLoader shares materials between primitives. Apply a binding only once and reuse
+    // its result, including when a layered shader upgrades to MeshPhysicalMaterial.
+    const appliedMaterials = new Map<THREE.Material, THREE.Material>();
+    const originalTextures = this.sceneTextures(gltf.scene);
+    const applyMat = (mesh: THREE.Mesh) => {
+      if (boundMaterials) this.applyMaterialBindings(mesh, boundMaterials, appliedMaterials, hairCov);
+      else this.applyMaterial(mesh, legacyMaterial, regionTex, garmentDecals, bakedSet, hairCov, emissiveTex);
+    };
 
     for (const mesh of meshes) {
       const cosmeticSkel = mesh.skeleton;
@@ -448,6 +478,11 @@ export class CharacterRig {
         attached.push(mesh);
       }
     }
+
+    // Replaced embedded maps may be shared with an unbound primitive: release them only
+    // after every material has been assigned, and only if no live material still uses them.
+    const retainedTextures = this.sceneTextures(gltf.scene, attached);
+    for (const texture of originalTextures) if (!retainedTextures.has(texture)) texture.dispose();
 
     // Add the whole cosmetic scene (preserving mesh transforms); its skinned meshes now skin
     // from the body's bones, which live in the same rendered graph under `root`.
@@ -687,6 +722,209 @@ export class CharacterRig {
     return out;
   }
 
+  private sceneTextures(scene: THREE.Object3D, extra: THREE.Object3D[] = []): Set<THREE.Texture> {
+    const textures = new Set<THREE.Texture>();
+    for (const root of [scene, ...extra]) root.traverse((object) => {
+      const mesh = object as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+        for (const value of [...Object.values(material), ...Object.values(material.userData)]) {
+          if ((value as THREE.Texture | undefined)?.isTexture) textures.add(value as THREE.Texture);
+        }
+      }
+    });
+    return textures;
+  }
+
+  private async loadBindingTexture(url: string | undefined, colorSpace: THREE.ColorSpace): Promise<THREE.Texture | null> {
+    if (!url) return null;
+    try {
+      const texture = await this.texLoader.loadAsync(url);
+      texture.colorSpace = colorSpace;
+      texture.flipY = false;
+      texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+      texture.needsUpdate = true;
+      return texture;
+    } catch (error) {
+      console.warn(`[CharacterRig] failed to load material texture '${url}'`, error);
+      return null;
+    }
+  }
+
+  private async loadMaterialBindings(
+    bindings: Record<string, RigMaterialBinding>,
+    scene: THREE.Object3D,
+  ): Promise<Map<string, LoadedMaterial>> {
+    const names = new Set(this.collectStandardMaterials(scene).map((material) => material.name));
+    const loaded = new Map<string, LoadedMaterial>();
+    await Promise.all(Object.entries(bindings).map(async ([name, material]) => {
+      // Do not fetch assets for names absent from this GLB or unsupported source shaders.
+      if (!names.has(name)) return;
+      const entry: LoadedMaterial = {
+        material, region: null, decals: [], baked: null, emissive: null, glassNormal: null, led: null,
+      };
+      if (this.usesStandardBinding(material)) {
+        [entry.baked, entry.decals, entry.emissive] = await Promise.all([
+          this.loadBakedSet(material), this.loadGarmentDecals(material), this.loadEmissiveMap(material),
+        ]);
+        if (!entry.baked) entry.region = await this.loadRegionMap(material);
+      } else if (material.family === "glass" && material.glass) {
+        entry.glassNormal = await this.loadBindingTexture(material.glass.normal, THREE.NoColorSpace);
+      } else if (material.family === "led" && material.ledScreen) {
+        const [animation, colorRamp, normal] = await Promise.all([
+          this.loadBindingTexture(material.ledScreen.animation, THREE.SRGBColorSpace),
+          this.loadBindingTexture(material.ledScreen.colorRamp, THREE.SRGBColorSpace),
+          this.loadBindingTexture(material.ledScreen.normal, THREE.NoColorSpace),
+        ]);
+        if (animation) {
+          animation.magFilter = THREE.NearestFilter;
+          animation.minFilter = THREE.NearestFilter;
+          animation.generateMipmaps = false;
+          entry.led = { animation, colorRamp, normal };
+        } else {
+          colorRamp?.dispose();
+          normal?.dispose();
+        }
+      }
+      loaded.set(name, entry);
+    }));
+    return loaded;
+  }
+
+  private usesStandardBinding(material: RigMaterialBinding): boolean {
+    if (material.family === "glass" || material.family === "led") return false;
+    // A single-material item may carry explicit legacy colour/PBR data even when its
+    // source shader has no reconstruction. Metadata alone preserves the embedded GLB
+    // appearance for every family, including a layered slot awaiting its own bake.
+    return Object.entries(material).some(([key, value]) =>
+      value !== undefined && !["family", "doubleSided", "glass", "ledScreen"].includes(key));
+  }
+
+  private applyMaterialBindings(
+    mesh: THREE.Mesh,
+    bindings: Map<string, LoadedMaterial>,
+    applied: Map<THREE.Material, THREE.Material>,
+    hairCoverage: THREE.Texture | null,
+  ): void {
+    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+    const result = materials.map((source) => {
+      const previous = applied.get(source);
+      if (previous) return previous;
+      const binding = bindings.get(source.name);
+      if (!binding || !(source as THREE.MeshStandardMaterial).isMeshStandardMaterial) return source;
+      const { material } = binding;
+      let output = source as THREE.MeshStandardMaterial;
+      if (material.family === "glass" && material.glass) {
+        this.clearSurfaceMaps(output);
+        output.color.set(material.glass.color);
+        output.opacity = material.glass.opacity;
+        output.roughness = material.glass.roughness;
+        output.normalMap = binding.glassNormal;
+        output.metalness = 0;
+        output.transparent = output.opacity < 1;
+        output.depthWrite = !output.transparent;
+        output.alphaTest = 0;
+      } else if (material.family === "led") {
+        this.clearSurfaceMaps(output);
+        output.color.set(0x050505);
+        output.roughness = 0.25;
+        output.metalness = 0;
+        output.transparent = false;
+        output.depthWrite = true;
+        output.alphaTest = 0;
+        if (binding.led && material.ledScreen) this.applyLedScreen(output, material.ledScreen, binding.led);
+      } else if (this.usesStandardBinding(material)) {
+        // Reuse the existing shader implementation with one material at a time. Source
+        // family replaces the legacy glass-name guess on this authoritative path.
+        const carrier = new THREE.Mesh(mesh.geometry, output);
+        this.applyMaterial(carrier, material, binding.region, binding.decals, binding.baked,
+          hairCoverage, binding.emissive, false);
+        output = carrier.material;
+        // A material can be removed before its first shader compile. Own decal textures
+        // immediately, instead of relying on onBeforeCompile to register them for cleanup.
+        binding.decals.forEach((decal, index) => { output.userData[`garmentDecalTex${index}`] = decal.tex; });
+      }
+      if (hairCoverage && !this.usesStandardBinding(material)) {
+        output.alphaMap = hairCoverage;
+        output.alphaTest = 0.5;
+        output.transparent = false;
+        output.side = THREE.DoubleSide;
+        output.envMapIntensity = 0.55;
+      }
+      if (material.doubleSided !== undefined) {
+        output.side = material.doubleSided ? THREE.DoubleSide : THREE.FrontSide;
+      }
+      output.needsUpdate = true;
+      applied.set(source, output);
+      return output;
+    });
+    mesh.material = Array.isArray(mesh.material) ? result : result[0];
+  }
+
+  private clearSurfaceMaps(material: THREE.MeshStandardMaterial): void {
+    material.map = material.normalMap = material.roughnessMap = material.metalnessMap = null;
+    material.alphaMap = material.aoMap = material.emissiveMap = null;
+    material.emissive.set(0x000000);
+    material.emissiveIntensity = 1;
+  }
+
+  private applyLedScreen(
+    material: THREE.MeshStandardMaterial,
+    screen: NonNullable<RigMaterialBinding["ledScreen"]>,
+    textures: NonNullable<LoadedMaterial["led"]>,
+  ): void {
+    material.map ??= CharacterRig.whiteTex(); // ensures vMapUv exists on the standard shader
+    material.normalMap = textures.normal;
+    material.emissive.set(0xffffff);
+    material.userData.ledAnimationTexture = textures.animation;
+    material.userData.ledScreen = screen;
+    if (textures.colorRamp) material.userData.ledColorRampTexture = textures.colorRamp;
+    const time = { value: screen.captureTime ?? 0 };
+    const start = performance.now();
+    if (screen.captureTime === undefined) material.onBeforeRender = () => {
+      time.value = (performance.now() - start) / 1000;
+    };
+    const tint = new THREE.Color(screen.tint ?? "#ffffff");
+    const rampImage = textures.colorRamp?.image as { width?: number; height?: number } | undefined;
+    const verticalRamp = (rampImage?.height ?? 1) > (rampImage?.width ?? 1);
+    const atlasImage = textures.animation.image as { width?: number; height?: number } | undefined;
+    const pixelWidth = screen.pixelWidth ?? (atlasImage?.width ?? screen.trackCount) / screen.trackCount;
+    const pixelHeight = screen.pixelHeight ?? (atlasImage?.height ?? screen.frameCount) / screen.frameCount;
+    const key = `led-${CharacterRig.tintUid++}`;
+    material.customProgramCacheKey = () => key;
+    material.onBeforeCompile = (shader) => {
+      shader.uniforms.uLedAnimation = { value: textures.animation };
+      shader.uniforms.uLedColorRamp = { value: textures.colorRamp ?? CharacterRig.whiteTex() };
+      shader.uniforms.uLedTime = time;
+      shader.uniforms.uLedTint = { value: tint };
+      shader.uniforms.uLedBrightness = { value: screen.brightness };
+      // The exported atlas has tracks in columns and frames in rows. Placement is a
+      // reconstruction from source UV scalars; the cooked Unreal shader graph is absent.
+      shader.fragmentShader = [
+        "uniform sampler2D uLedAnimation;",
+        "uniform sampler2D uLedColorRamp;",
+        "uniform float uLedTime;",
+        "uniform vec3 uLedTint;",
+        "uniform float uLedBrightness;",
+        shader.fragmentShader,
+      ].join("\n").replace("#include <emissivemap_fragment>", [
+        `vec2 ledUv = (vMapUv - 0.5) / ${screen.uvScale.toFixed(8)} + 0.5 + vec2(${(screen.uvOffsetU ?? 0).toFixed(8)}, ${screen.uvOffsetV.toFixed(8)});`,
+        "float ledInside = step(0.0, ledUv.x) * step(ledUv.x, 1.0) * step(0.0, ledUv.y) * step(ledUv.y, 1.0);",
+        `float ledFrame = mod(floor(uLedTime * ${screen.animationSpeed.toFixed(8)}), ${screen.frameCount.toFixed(1)});`,
+        `vec2 ledAtlasUv = (clamp(ledUv, 0.001, 0.999) + vec2(${Math.min(screen.animationTrack, screen.trackCount - 1).toFixed(1)}, ledFrame)) / vec2(${screen.trackCount.toFixed(1)}, ${screen.frameCount.toFixed(1)});`,
+        "vec4 ledPixel = texture2D(uLedAnimation, ledAtlasUv);",
+        `vec2 ledCell = fract(ledUv * vec2(${pixelWidth.toFixed(8)}, ${pixelHeight.toFixed(8)})) - 0.5;`,
+        "float ledRadius = length(ledCell);",
+        "float ledEdge = max(fwidth(ledRadius), 0.0001);",
+        "float ledCoverage = 1.0 - smoothstep(0.5 - ledEdge, 0.5 + ledEdge, ledRadius);",
+        textures.colorRamp
+          ? `vec3 ledColor = texture2D(uLedColorRamp, ${verticalRamp ? "vec2(0.5, clamp(ledUv.x, 0.0, 1.0))" : "vec2(clamp(ledUv.x, 0.0, 1.0), 0.5)"}).rgb;`
+          : "vec3 ledColor = vec3(1.0);",
+        "totalEmissiveRadiance = ledPixel.rgb * ledPixel.a * ledColor * uLedTint * uLedBrightness * ledInside * ledCoverage;",
+      ].join("\n"));
+    };
+  }
+
   // Load a skin's baked layered-composite set (albedo/normal/orm — scripts/bake-composite.mjs).
   // Assigned straight onto the mesh's MeshStandardMaterial; the textures sit on standard
   // material slots so dispose.ts frees them with the cosmetic scene on unequip.
@@ -694,26 +932,27 @@ export class CharacterRig {
     mat?: RigMaterial,
   ): Promise<{ map: THREE.Texture; normalMap: THREE.Texture; orm: THREE.Texture } | null> {
     if (!mat?.bakedSet) return null;
-    try {
-      const [map, normalMap, orm] = await Promise.all([
-        this.texLoader.loadAsync(mat.bakedSet.albedo),
-        this.texLoader.loadAsync(mat.bakedSet.normal),
-        this.texLoader.loadAsync(mat.bakedSet.orm),
-      ]);
-      map.colorSpace = THREE.SRGBColorSpace;
-      normalMap.colorSpace = THREE.NoColorSpace;
-      orm.colorSpace = THREE.NoColorSpace;
-      for (const t of [map, normalMap, orm]) {
-        t.flipY = false; // glTF UV convention (vMapUv / UV0), matches the baked maps
-        t.wrapS = THREE.ClampToEdgeWrapping;
-        t.wrapT = THREE.ClampToEdgeWrapping;
-        t.needsUpdate = true;
-      }
-      return { map, normalMap, orm };
-    } catch (e) {
-      console.warn(`[CharacterRig] failed to load baked set`, e);
+    const results = await Promise.allSettled([
+      this.texLoader.loadAsync(mat.bakedSet.albedo),
+      this.texLoader.loadAsync(mat.bakedSet.normal),
+      this.texLoader.loadAsync(mat.bakedSet.orm),
+    ]);
+    if (results.some((result) => result.status === "rejected")) {
+      for (const result of results) if (result.status === "fulfilled") result.value.dispose();
+      console.warn(`[CharacterRig] failed to load baked set`, results.filter((result) => result.status === "rejected"));
       return null;
     }
+    const [map, normalMap, orm] = results.map((result) => (result as PromiseFulfilledResult<THREE.Texture>).value);
+    map.colorSpace = THREE.SRGBColorSpace;
+    normalMap.colorSpace = THREE.NoColorSpace;
+    orm.colorSpace = THREE.NoColorSpace;
+    for (const t of [map, normalMap, orm]) {
+      t.flipY = false; // glTF UV convention (vMapUv / UV0), matches the baked maps
+      t.wrapS = THREE.ClampToEdgeWrapping;
+      t.wrapT = THREE.ClampToEdgeWrapping;
+      t.needsUpdate = true;
+    }
+    return { map, normalMap, orm };
   }
 
   // Load a hair's strand-coverage mask (greyscale; white = hair). Used as an alphaMap +
@@ -803,6 +1042,7 @@ export class CharacterRig {
     baked: { map: THREE.Texture; normalMap: THREE.Texture; orm: THREE.Texture } | null = null,
     hairCov: THREE.Texture | null = null,
     emissiveTex: THREE.Texture | null = null,
+    useGlassHeuristic = true,
   ): void {
     // Hair coverage cuts the flat cards into strands — apply first (independent of dye data, and
     // needed even if `mat` is absent). DoubleSide: cards are single-sided planes seen from both
@@ -842,7 +1082,7 @@ export class CharacterRig {
     // before the branches below, which skip glass materials via the CharacterRig.isGlass guards.
     {
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-      for (const m of mats) if (CharacterRig.isGlass(m)) this.applyGlass(m as THREE.MeshStandardMaterial);
+      for (const m of mats) if (useGlassHeuristic && CharacterRig.isGlass(m)) this.applyGlass(m as THREE.MeshStandardMaterial);
     }
     // Baked layered composite: the per-skin look is fully resolved (color + detail + pattern
     // + AO in the albedo; spatial roughness/metalness in the orm). Assign it straight onto the
@@ -851,7 +1091,7 @@ export class CharacterRig {
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       for (const m of mats) {
         const std = m as THREE.MeshStandardMaterial;
-        if (CharacterRig.isGlass(std)) continue; // glass lens already handled above
+        if (useGlassHeuristic && CharacterRig.isGlass(std)) continue;
         std.map = baked.map;
         std.normalMap = baked.normalMap;
         std.roughnessMap = baked.orm; // three reads G
@@ -879,7 +1119,7 @@ export class CharacterRig {
     const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
     for (let i = 0; i < mats.length; i++) {
       let std = mats[i] as THREE.MeshStandardMaterial;
-      if (CharacterRig.isGlass(std)) continue; // glass lens already handled above
+      if (useGlassHeuristic && CharacterRig.isGlass(std)) continue;
       if (wantsSheen && std.isMeshStandardMaterial && !(std as THREE.MeshPhysicalMaterial).isMeshPhysicalMaterial) {
         const phys = new THREE.MeshPhysicalMaterial();
         phys.copy(std);
@@ -1240,10 +1480,9 @@ export class CharacterRig {
     this.equipped.delete(slot);
   }
 
-  // What is ACTUALLY in the scene, for the dev inspector. Reports the live three.js objects
-  // rather than the catalog's description of them, because the two can disagree — a piece with
-  // two primitives gets one baked texture assigned to both (see applyMaterial's baked branch),
-  // and that divergence is invisible from the catalog alone.
+  // Report live objects for the dev inspector, including the resolved material maps and
+  // source-sidedness. This catches missing textures and incorrect slot assignments that
+  // cannot be diagnosed by reading catalog metadata alone.
   inspect(): InspectGroup[] {
     const groups: InspectGroup[] = [];
 
@@ -1323,6 +1562,16 @@ export class CharacterRig {
         if (overrides.has(source)) return source;
         if (!this.isMaterialSharedOutsideMesh(mesh, source)) return source;
         const copy = cloneMaterialForInspector(source);
+        if (source.userData.ledScreen && copy.userData.ledAnimationTexture) {
+          // Material.clone deliberately omits shader callbacks. Rebuild the LED patch
+          // against the copy's textures so a side diagnostic cannot remove the display
+          // or leave its uniforms pointing at a sibling's disposed texture objects.
+          this.applyLedScreen(copy as THREE.MeshStandardMaterial, source.userData.ledScreen, {
+            animation: copy.userData.ledAnimationTexture,
+            colorRamp: copy.userData.ledColorRampTexture ?? null,
+            normal: (copy as THREE.MeshStandardMaterial).normalMap,
+          });
+        }
         overrides.add(copy);
         return copy;
       });
