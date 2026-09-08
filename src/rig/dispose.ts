@@ -7,6 +7,8 @@ export function disposeObject3D(root: THREE.Object3D): void {
   root.traverse((o) => {
     const mesh = o as Partial<THREE.Mesh>;
     mesh.geometry?.dispose();
+    mesh.customDepthMaterial?.dispose();
+    mesh.customDistanceMaterial?.dispose();
     const material = mesh.material;
     if (material) {
       for (const m of Array.isArray(material) ? material : [material]) disposeMaterial(m);
@@ -14,7 +16,7 @@ export function disposeObject3D(root: THREE.Object3D): void {
   });
 }
 
-function disposeMaterial(material: THREE.Material): void {
+export function disposeMaterial(material: THREE.Material): void {
   for (const value of Object.values(material as unknown as Record<string, unknown>)) {
     if (value && (value as THREE.Texture).isTexture) (value as THREE.Texture).dispose();
   }

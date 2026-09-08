@@ -55,6 +55,12 @@ export class BodyDecalManager {
   private nailMask: THREE.Texture | null = null; // shared across all nail polishes
   private bodyHideTex: THREE.Texture | null = null; // unioned body-UV mask: white = discard
   private bodyHideUrl: string | null = null; // sorted-url signature of the active union
+  private bodyHidePending: Promise<void> = Promise.resolve();
+  private readonly materialBases = new WeakMap<THREE.Material, {
+    compile: THREE.Material["onBeforeCompile"];
+    cacheKey: THREE.Material["customProgramCacheKey"];
+    key: string;
+  }>();
 
   constructor(
     private readonly texLoader: THREE.TextureLoader,
@@ -67,14 +73,19 @@ export class BodyDecalManager {
   // (scripts/build-body-masks.mjs + scripts/visual-diff/build-garment-masks.mjs); all
   // active masks are unioned into ONE canvas so the shader keeps a single sampler.
   // Missing masks (404) are skipped silently — not every piece ships one.
-  setBodyHideMasks(urls: string[]): void {
-    const key = [...urls].sort().join("|");
+  setBodyHideMasks(urls: string[], layouts: Record<string, [number, number]> = {}): void {
+    const key = JSON.stringify([...urls].sort().map(url => [url, layouts[url] ?? [1, 1]]));
     if (key === this.bodyHideUrl) return;
     this.bodyHideUrl = key;
-    void this.composeBodyHide(urls, key);
+    this.bodyHidePending = this.composeBodyHide(urls, key, layouts);
   }
 
-  private async composeBodyHide(urls: string[], key: string): Promise<void> {
+  async whenBodyHidesReady(): Promise<void> {
+    let pending: Promise<void>;
+    do { pending = this.bodyHidePending; await pending; } while (pending !== this.bodyHidePending);
+  }
+
+  private async composeBodyHide(urls: string[], key: string, layouts: Record<string, [number, number]>): Promise<void> {
     let tex: THREE.Texture | null = null;
     if (urls.length) {
       const imgs = await Promise.all(
@@ -89,17 +100,22 @@ export class BodyDecalManager {
         ),
       );
       if (key !== this.bodyHideUrl) return; // superseded while loading
-      const ok = imgs.filter((i): i is HTMLImageElement => !!i);
+      const ok = imgs.flatMap((image, i) => image ? [{ image, tiles: layouts[urls[i]] ?? [1, 1] }] : []);
       if (ok.length) {
         const cnv = document.createElement("canvas");
-        cnv.width = 512;
-        cnv.height = 512;
+        // Body UVs span two horizontal tiles. Keep their identities distinct;
+        // stretching/repeating a one-tile mask would hide unrelated skin regions.
+        const columns = Math.max(...ok.map(m => m.tiles[0])), rows = Math.max(...ok.map(m => m.tiles[1]));
+        const size = Math.max(512, ...ok.map(m => Math.max(m.image.naturalWidth / m.tiles[0], m.image.naturalHeight / m.tiles[1])));
+        cnv.width = columns * size;
+        cnv.height = rows * size;
         const ctx = cnv.getContext("2d")!;
         ctx.globalCompositeOperation = "lighten"; // union of white-on-black masks
-        for (const im of ok) ctx.drawImage(im, 0, 0, 512, 512);
+        for (const { image, tiles } of ok) ctx.drawImage(image, 0, 0, tiles[0] * size, tiles[1] * size);
         tex = new THREE.CanvasTexture(cnv);
         tex.colorSpace = THREE.NoColorSpace;
         tex.flipY = false;
+        tex.userData.coverageUvScale = new THREE.Vector2(1 / columns, 1 / rows);
         tex.needsUpdate = true;
       }
     }
@@ -199,11 +215,16 @@ export class BodyDecalManager {
     layers: ResolvedLayer[],
     hide: THREE.Texture | null = null,
   ): void {
+    let base = this.materialBases.get(mat);
+    if (!base) {
+      base = { compile: mat.onBeforeCompile, cacheKey: mat.customProgramCacheKey, key: mat.customProgramCacheKey() };
+      this.materialBases.set(mat, base);
+    }
     // Reset to the clean baked material when nothing routes here anymore.
     if (!layers.length && !hide) {
       if (mat.userData.decalPatched) {
-        mat.onBeforeCompile = () => {};
-        mat.customProgramCacheKey = () => "decal-none";
+        mat.onBeforeCompile = base.compile;
+        mat.customProgramCacheKey = base.cacheKey;
         mat.userData.decalPatched = false;
         mat.needsUpdate = true;
       }
@@ -225,15 +246,21 @@ export class BodyDecalManager {
         .join("-");
     const key = `decal-${sig}-${BodyDecalManager.uid++}`;
     mat.userData.decalPatched = true;
-    mat.customProgramCacheKey = () => key;
-    mat.onBeforeCompile = (shader) => {
+    mat.customProgramCacheKey = () => `${base.key}:${key}`;
+    mat.onBeforeCompile = (shader, renderer) => {
+      // Body coverage and decals must compose with the source skinning patch.
+      // Replacing it would silently drop influences 5-8 on the GPU.
+      base.compile.call(mat, shader, renderer);
       let decl = "";
       let body = "";
       let glow = "";
       if (hide) {
         shader.uniforms.uBodyHide = { value: hide };
-        decl += "uniform sampler2D uBodyHide;\n";
-        body += "  if ( texture2D( uBodyHide, vMapUv ).r > 0.5 ) discard;\n";
+        shader.uniforms.uBodyHideUvScale = { value: hide.userData.coverageUvScale ?? new THREE.Vector2(1, 1) };
+        decl += "uniform sampler2D uBodyHide;\nuniform vec2 uBodyHideUvScale;\n";
+        body += `  vec2 coverageUv = vMapUv * uBodyHideUvScale;
+          if (all(greaterThanEqual(coverageUv, vec2(0.0))) && all(lessThan(coverageUv, vec2(1.0))) &&
+              texture2D(uBodyHide, coverageUv).r > 0.5) discard;\n`;
       }
       resolved.forEach((l, i) => {
         if (l.colorTex) {
@@ -286,10 +313,9 @@ export class BodyDecalManager {
         }
         body += "  }\n";
       });
-      let frag = shader.fragmentShader.replace(
-        "#include <map_fragment>",
-        "#include <map_fragment>\n" + body,
-      );
+      const surfaceAnchor = mat.userData.reconstructed ? "// recovered_surface_ready" : "#include <map_fragment>";
+      if (!shader.fragmentShader.includes(surfaceAnchor)) throw new Error("Body decal surface anchor is missing");
+      let frag = shader.fragmentShader.replace(surfaceAnchor, surfaceAnchor + "\n" + body);
       if (glow)
         frag = frag.replace(
           "#include <emissivemap_fragment>",

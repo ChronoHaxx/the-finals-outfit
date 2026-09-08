@@ -1,21 +1,27 @@
 import * as THREE from "three";
+import { attachSourceStatic } from './SourceAttachment';
 import type { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { Slot } from "../lib/slots";
-import { disposeObject3D } from "./dispose";
+import { disposeObject3D, disposeMaterial } from "./dispose";
 import { BodyDecalManager, type RigDecal } from "./BodyDecals";
+import { loadReconstructedMaterial, type SurfaceView } from "./ReconstructedMaterial";
+import { enableSourceSkinning } from "./SourceMesh";
+import { rebindSourceSkeleton, type SourceBoneAttachment } from "./SourceSkeleton";
+import { fittingMorphNames, SourceFitting } from "./SourceFitting";
+import type { SourceRigPart, SourceSkinPair } from "./SourceAssembly";
 
 export type { RigDecal } from "./BodyDecals";
 
 // Framework-agnostic three.js rig: loads a base body, then equips/unequips cosmetic
 // glTFs by rebinding each cosmetic SkinnedMesh to the body's shared skeleton. No React.
-// All dump assets derive from one UE master skeleton, so cosmetic bone NAMES are a
-// subset of the body's — that's what makes name-based rebinding (and reuse of the
-// cosmetic's own boneInverses) correct.
+// Shared body bones map by name. Preserved source garments can also own accessory
+// branches absent from the body; those attach through their authored ancestors.
 
 // Per-skin material/dye data, with the ColorMask URL already resolved (consistent with
 // `url`). Approximates the game's layered dye system: classify each ColorMask texel into
 // the nearest `regions[].mask` and recolor the baked (neutral) BaseColor with its tint.
 export interface RigMaterial {
+  reconstructed?: { url: string; view?: SurfaceView };
   regionMapUrl?: string;
   regionColors?: string[]; // color per part, indexed by the region map
   regionRoughness?: number[]; // optional per-part PBR, same index order as regionColors
@@ -56,6 +62,10 @@ export interface RigItem {
   id: string;
   slot: Slot;
   url: string; // fully-resolved .glb URL (already passed through assetUrl)
+  sourceMeshUrl?: string; // preserved source geometry; legacy URL still identifies coverage masks
+  sourceParts?: SourceRigPart[];
+  sourceSkinPair?: SourceSkinPair;
+  sourceSurfaceView?: SurfaceView;
   material?: RigMaterial;
   // Heads only: retune the shared body material to match the face — the game swaps the
   // body color map per head (Dark/Light/FemaleMedium) and multiplies it
@@ -78,6 +88,7 @@ interface EquippedHandle {
   scene: THREE.Object3D; // the cosmetic gltf.scene we added to root
   meshes: THREE.SkinnedMesh[];
   statics: THREE.Mesh[]; // origin-authored statics re-parented onto a bone (watches/earrings)
+  sourceBoneRoots?: THREE.Bone[]; // garment-owned branches attached to the body
   underLayerScene?: THREE.Object3D; // a composited real under-garment (see RigItem.underLayerUrl)
   underLayerMeshes?: THREE.SkinnedMesh[]; // its skinned meshes (skeletons disposed on unequip)
 }
@@ -100,9 +111,13 @@ export class CharacterRig {
   readonly root: THREE.Group;
   private skeleton: THREE.Skeleton | null = null;
   private bonesByName = new Map<string, THREE.Bone>();
+  private bodyRestInverses = new Map<string, THREE.Matrix4>();
   private bodyScene: THREE.Object3D | null = null;
   private bodyMaterials: THREE.MeshStandardMaterial[] = [];
   private equipped = new Map<Slot, EquippedHandle>();
+  private assemblyHiddenSlots = new Set<Slot>();
+  private readonly sourceFitting = new SourceFitting();
+  private sourceFittingNames = new Set<string>();
 
   private readonly texLoader = new THREE.TextureLoader();
   private readonly decals: BodyDecalManager;
@@ -129,6 +144,49 @@ export class CharacterRig {
 
   isReady(): boolean {
     return this.skeleton !== null;
+  }
+
+  sourceAssemblyId(slot: Slot): string | undefined {
+    const handle = this.equipped.get(slot);
+    return handle?.scene.userData.sourceAssembly ? handle.id : undefined;
+  }
+
+  equippedItemId(slot: Slot): string | undefined {
+    return this.equipped.get(slot)?.id;
+  }
+
+  setSourceFittingTags(tags: string[]): void {
+    this.sourceFittingNames = fittingMorphNames(tags);
+    this.root.traverse(o => {
+      const mesh = o as THREE.Mesh;
+      if (mesh.isMesh && (mesh.userData.sourceBody || mesh.userData.sourceMesh))
+        this.sourceFitting.apply(mesh, this.sourceFittingNames);
+    });
+  }
+
+  whenBodyHidesReady(): Promise<void> {
+    return this.decals.whenBodyHidesReady();
+  }
+
+  setAssemblyVisibility(slot: Slot, visible: boolean): void {
+    const handle = this.equipped.get(slot);
+    if (!handle) return;
+    const wasHidden = this.assemblyHiddenSlots.has(slot);
+    if (visible) this.assemblyHiddenSlots.delete(slot);
+    else this.assemblyHiddenSlots.add(slot);
+    for (const object of [handle.scene, handle.underLayerScene, ...handle.statics]) {
+      if (!object) continue;
+      if (!visible) {
+        object.userData.assemblyOriginalVisibility ??= object.visible;
+        object.visible = false;
+      } else if (typeof object.userData.assemblyOriginalVisibility === "boolean") {
+        object.visible = object.userData.assemblyOriginalVisibility;
+        delete object.userData.assemblyOriginalVisibility;
+      }
+    }
+    // Invisible clothing/head geometry must not continue cutting holes in the
+    // underlying body. Other visible covering items keep their own masks active.
+    if (wasHidden !== !visible) this.refreshBodyHides();
   }
 
   // Relaxed idle stance applied to the shared skeleton (cosmetics follow automatically —
@@ -163,44 +221,94 @@ export class CharacterRig {
     }
   }
 
-  async loadBody(url: string): Promise<void> {
-    const gltf = await this.loader.loadAsync(url);
+  private bodyLoadVersion = 0;
 
-    let skinned: THREE.SkinnedMesh | null = null;
-    gltf.scene.traverse((o) => {
-      const s = o as THREE.SkinnedMesh;
-      if (s.isSkinnedMesh && !skinned) skinned = s;
-    });
-    if (!skinned) throw new Error(`Body '${url}' has no SkinnedMesh`);
-
-    // Replace any existing body (handles React StrictMode's double-mount, where two
-    // loadBody calls can resolve against the same rig).
-    if (this.bodyScene) {
-      this.root.remove(this.bodyScene);
-      disposeObject3D(this.bodyScene);
+  async loadBody(url: string, sourceMeshUrl?: string): Promise<void> {
+    const version = ++this.bodyLoadVersion;
+    const loaded = await Promise.allSettled([this.loader.loadAsync(url),
+      ...(sourceMeshUrl ? [this.loader.loadAsync(sourceMeshUrl)] : [])]);
+    const release = (scene: THREE.Object3D) => {
+      const skeletons = new Set((scene.getObjectsByProperty("isSkinnedMesh", true) as THREE.SkinnedMesh[]).map(m => m.skeleton));
+      skeletons.forEach(s => s.dispose());
+      disposeObject3D(scene);
+    };
+    const failure = loaded.find(result => result.status === "rejected");
+    if (version !== this.bodyLoadVersion || failure) {
+      for (const result of loaded) if (result.status === "fulfilled") release(result.value.scene);
+      if (version === this.bodyLoadVersion && failure?.status === "rejected") throw failure.reason;
+      return;
     }
-
-    this.skeleton = (skinned as THREE.SkinnedMesh).skeleton;
-    this.bonesByName.clear();
-    this.basePose.clear();
-    for (const bone of this.skeleton.bones) {
-      this.bonesByName.set(bone.name, bone);
-      if (bone.name in CharacterRig.IDLE_POSE) this.basePose.set(bone.name, bone.rotation.clone());
+    const gltf = (loaded[0] as PromiseFulfilledResult<Awaited<ReturnType<GLTFLoader["loadAsync"]>>>).value;
+    const source = loaded[1]?.status === "fulfilled" ? loaded[1].value : undefined;
+    const body = gltf.scene.getObjectsByProperty("isSkinnedMesh", true)[0] as THREE.SkinnedMesh | undefined;
+    const bones = new Map<string, THREE.Bone>(), inverses = new Map<string, THREE.Matrix4>();
+    const basePose = new Map<string, THREE.Euler>();
+    const driver = body?.skeleton;
+    try {
+      if (!body || !driver) throw new Error(`Body '${url}' has no SkinnedMesh`);
+      gltf.scene.updateMatrixWorld(true);
+      for (const bone of driver.bones) {
+        bones.set(bone.name, bone);
+        inverses.set(bone.name, bone.matrixWorld.clone().invert());
+        if (bone.name in CharacterRig.IDLE_POSE) basePose.set(bone.name, bone.rotation.clone());
+      }
+      if (source) {
+        // Preserve the existing skin material and animation driver while adding
+        // the source geometry, full skin weights and authored fitting morphs.
+        const candidates = source.scene.getObjectsByProperty("isSkinnedMesh", true) as THREE.SkinnedMesh[];
+        if (candidates.length !== 1 || Array.isArray(body.material) || Array.isArray(candidates[0].material))
+          throw new Error("Unsupported source body material layout");
+        const fresh = candidates[0];
+        if ((fresh.material as THREE.Material).name !== body.material.name)
+          throw new Error("Source body material slot mismatch");
+        const { skeleton, attachments } = rebindSourceSkeleton(fresh.skeleton, bones, inverses);
+        for (const { parent, root } of attachments) parent.add(root);
+        body.geometry.dispose();
+        body.geometry = fresh.geometry;
+        fresh.geometry = new THREE.BufferGeometry(); // ownership transfers to body
+        body.morphTargetDictionary = { ...fresh.morphTargetDictionary };
+        body.morphTargetInfluences = [...(fresh.morphTargetInfluences ?? [])];
+        body.bind(skeleton, fresh.bindMatrix);
+        body.userData.sourceBody = true;
+        body.userData.sourceBodyUrl = sourceMeshUrl;
+        body.frustumCulled = false;
+        // The source colour attribute encodes masks; the legacy skin material
+        // expects white vertex colours. Preserve the data without tinting skin.
+        body.material.vertexColors = false;
+        enableSourceSkinning(body);
+        this.sourceFitting.apply(body, this.sourceFittingNames);
+      }
+    } catch (error) {
+      release(gltf.scene);
+      if (source) release(source.scene);
+      throw error;
     }
-    this.setPose(this.pose); // re-apply the active pose to the fresh skeleton
-
+    if (source) release(source.scene);
+    this.releaseBody();
+    this.skeleton = driver!;
+    this.bonesByName = bones;
+    this.bodyRestInverses = inverses;
+    this.basePose = basePose;
+    this.setPose(this.pose);
     this.bodyScene = gltf.scene;
     this.enableShadows(gltf.scene);
     this.root.add(gltf.scene);
-    // Register the body's M_Skin material(s) as the "body" decal target (tattoos/paint/nails).
-    // registerTarget re-applies any decal selected before the body finished loading.
     this.bodyMaterials = this.collectStandardMaterials(gltf.scene);
-    this.bodyBaseMaps.clear(); // fresh materials -> fresh originals
+    this.bodyBaseMaps.clear();
     this.decals.registerTarget("body", this.bodyMaterials);
-    // Re-apply the equipped head's body pairing if a face was equipped before the body.
     this.applyBodySkin();
-    // TODO(morph): body-type morphs — swapping the H/L/M body mesh here must rebuild
-    // bonesByName and re-equip current cosmetics against the new skeleton.
+    // Other archetypes require re-equipping cosmetics against their new driver.
+  }
+
+  private releaseBody(): void {
+    if (!this.bodyScene) return;
+    this.restoreSourceBodySkin();
+    this.root.remove(this.bodyScene);
+    const skeletons = new Set((this.bodyScene.getObjectsByProperty("isSkinnedMesh", true) as THREE.SkinnedMesh[]).map(m => m.skeleton));
+    if (this.skeleton) skeletons.add(this.skeleton);
+    skeletons.forEach(s => s.dispose());
+    disposeObject3D(this.bodyScene);
+    this.bodyScene = null;
   }
 
   // Shadow flags for every mesh in a loaded scene. Fully-transparent shells (the baked
@@ -246,7 +354,9 @@ export class CharacterRig {
     for (const m of head) {
       m.transparent = false;
       m.depthWrite = true;
-      m.alphaTest = 0.33;
+      // Recovered neck coverage already uses the source fade and alpha hashing.
+      // A second hard cutoff would truncate that gradual transition.
+      m.alphaTest = m.userData.skinCoverage === 'neck-fade' ? 0 : 0.33;
       m.needsUpdate = true;
     }
     // Eyeballs: glossy wet surface — with the (damped) eye normals, a low roughness gives
@@ -255,16 +365,13 @@ export class CharacterRig {
       m.roughness = 0.25;
       m.needsUpdate = true;
     }
-    // Hide the meshes we can't render correctly yet: the refractive cornea shell +
-    // eye-edge (alpha=0 bake intent is unreliable through Blender 4.5's deprecated blend
-    // API — they intermittently export OPAQUE) and the EYELASH cards, whose alpha doesn't
-    // decode as strand coverage and renders as grey shards over the eyes (verified by
-    // bisection; alphaTest only shrinks the shards). Brows are a separate material and stay.
+    // Legacy eye-shell/edge and lash bakes lack usable coverage. Recovered lashes
+    // now evaluate coverage from the original RGB expression and can be shown.
     scene.traverse((o) => {
       const mesh = o as THREE.Mesh;
       if (!mesh.isMesh) return;
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-      if (mats.some((m) => /eyeshell|eyeedge|eyelash/i.test(m.name ?? ""))) mesh.visible = false;
+      if (mats.some((m) => !m.userData.reconstructed && /eyeshell|eyeedge|eyelash/i.test(m.name ?? ""))) mesh.visible = false;
     });
     if (head.length) this.decals.registerTarget("head", head);
     if (eyes.length) this.decals.registerTarget("eyes", eyes);
@@ -278,17 +385,35 @@ export class CharacterRig {
     this.decals.clear(slot);
   }
 
-  async equip(item: RigItem): Promise<void> {
+  async equip(item: RigItem, signal?: AbortSignal): Promise<void> {
+    if (signal?.aborted) return;
     if (!this.skeleton) throw new Error("equip() called before loadBody() resolved");
+    if (item.sourceSkinPair || item.sourceParts) {
+      await this.equipSourceItems([item], [], signal);
+      return;
+    }
 
-    const gltf = await this.loader.loadAsync(item.url);
-    this.unequip(item.slot); // swap semantics: drop whatever was in this slot
+    const gltf = await this.loader.loadAsync(item.sourceMeshUrl ?? item.url);
+    if (signal?.aborted) {
+      disposeObject3D(gltf.scene);
+      return;
+    }
 
     // Load the piece-shared region map once (reused across this piece's meshes); disposed
     // with the scene since it's stashed on each tinted material's userData.
-    const regionTex = await this.loadRegionMap(item.material);
-    const garmentDecals = await this.loadGarmentDecals(item.material);
-    const bakedSet = await this.loadBakedSet(item.material);
+    let reconstructed: Awaited<ReturnType<typeof loadReconstructedMaterial>> | undefined;
+    if (item.material?.reconstructed) {
+      try {
+        reconstructed = await loadReconstructedMaterial(item.material.reconstructed.url, item.material.reconstructed.view);
+      } catch (error) {
+        disposeObject3D(gltf.scene);
+        if (signal?.aborted) return;
+        throw error;
+      }
+    }
+    const regionTex = reconstructed ? null : await this.loadRegionMap(item.material);
+    const garmentDecals = reconstructed ? [] : await this.loadGarmentDecals(item.material);
+    const bakedSet = reconstructed ? null : await this.loadBakedSet(item.material);
     const emissiveTex = await this.loadEmissiveMap(item.material);
     // Hair cards: the strand SHAPE lives in a sibling <style>.coverage.webp (built by
     // scripts/build-hair-coverage.mjs from the dump's card-atlas coverage / NXA alpha) the
@@ -298,6 +423,29 @@ export class CharacterRig {
       item.slot === "hair" || item.slot === "facialHair"
         ? await this.loadHairCoverage(item.url.replace(/\.glb(\?.*)?$/, ".coverage.webp$1"))
         : null;
+    // Finish all asynchronous loads before attaching any of this item to the rig.
+    // A newer selection can supersede even a slow recovered texture/shader load.
+    const underLayer = !signal?.aborted && item.underLayerUrl
+      ? await this.loadUnderLayer(item.underLayerUrl, item.underLayerTint, item.underLayerFallbackUrl)
+      : null;
+    if (signal?.aborted) {
+      reconstructed?.dispose();
+      regionTex?.dispose();
+      garmentDecals.forEach((decal) => decal.tex.dispose());
+      bakedSet?.map.dispose();
+      bakedSet?.normalMap.dispose();
+      bakedSet?.orm.dispose();
+      emissiveTex?.dispose();
+      hairCov?.dispose();
+      disposeObject3D(gltf.scene);
+      if (underLayer) {
+        underLayer.meshes.forEach((mesh) => mesh.skeleton.dispose());
+        disposeObject3D(underLayer.scene);
+      }
+      return;
+    }
+    this.unequip(item.slot); // the new item is ready; release the previous selection
+    gltf.scene.userData.rigItemId = item.id;
 
     const meshes: THREE.SkinnedMesh[] = [];
     const statics: THREE.Mesh[] = [];
@@ -307,7 +455,7 @@ export class CharacterRig {
       else if ((o as THREE.Mesh).isMesh) statics.push(o as THREE.Mesh);
     });
 
-    const applyMat = (mesh: THREE.Mesh) =>
+    const applyMat = (mesh: THREE.Mesh) => reconstructed ? reconstructed.apply(mesh) :
       this.applyMaterial(mesh, item.material, regionTex, garmentDecals, bakedSet, hairCov, emissiveTex);
 
     for (const mesh of meshes) {
@@ -326,11 +474,17 @@ export class CharacterRig {
       });
       // Reuse the cosmetic's own boneInverses (bind pose authored vs the same master
       // skeleton) and preserve its bindMatrix.
-      const rebound = new THREE.Skeleton(mappedBones, cosmeticSkel.boneInverses);
+      // Blender reorients bone axes in legacy GLBs. Fresh UE meshes have the same
+      // world-space bind shape but retain the original axes. Bind those vertices
+      // to the driver's recorded neutral pose, not to its currently posed bones.
+      const inverses = item.sourceMeshUrl ? cosmeticSkel.bones.map((bone, i) =>
+        this.bodyRestInverses.get(bone.name)?.clone() ?? cosmeticSkel.boneInverses[i]) : cosmeticSkel.boneInverses;
+      const rebound = new THREE.Skeleton(mappedBones, inverses);
       mesh.bind(rebound, mesh.bindMatrix);
       mesh.frustumCulled = false; // skinned bounds aren't auto-updated
 
       applyMat(mesh);
+      enableSourceSkinning(mesh);
     }
 
     // Static (non-skinned) cosmetic meshes. Most (hair) are authored in body space and sit
@@ -353,6 +507,7 @@ export class CharacterRig {
       const cy = center ? center.applyMatrix4(mesh.matrixWorld).y : 1;
       const bone = Math.abs(cy) < 0.4 ? this.staticBone(item.slot) : null;
       if (bone) {
+        mesh.userData.rigItemId = item.id;
         // Fold the FULL ancestor transform chain into the mesh's local transform before
         // re-parenting: quantized GLBs carry the dequant scale on WRAPPER nodes, and
         // bone.add() alone would discard it (watch meshes ballooned to 2.5m this way).
@@ -390,12 +545,7 @@ export class CharacterRig {
     this.enableShadows(gltf.scene);
     for (const mesh of attached) this.enableShadows(mesh);
     this.root.add(gltf.scene);
-    // Real under-garment (open-coat undersuit): composite the actual game under-mesh with its own
-    // glb material, rebound to the body skeleton like any cosmetic. Failures degrade gracefully
-    // (the generic recoloured top still shows via effectiveBuild when this is absent).
-    const underLayer = item.underLayerUrl
-      ? await this.loadUnderLayer(item.underLayerUrl, item.underLayerTint, item.underLayerFallbackUrl)
-      : null;
+    // The under-garment was loaded alongside the cosmetic before the swap.
     if (underLayer) this.root.add(underLayer.scene);
     this.equipped.set(item.slot, {
       id: item.id,
@@ -413,15 +563,280 @@ export class CharacterRig {
       // shared mask would over-hide (holes) under shorter shells. ALL heads need it —
       // even the special shells (BlankFace etc.) duplicate the body's neck/chest
       // (verified: ungated they z-fight as white camo). Missing masks 404 and skip.
-      this.bodyHideUrls.set("face", item.url.replace(/\.glb(\?.*)?$/, ".bodymask.png$1"));
+      this.bodyHideUrls.set("face", [item.url.replace(/\.glb(\?.*)?$/, ".bodymask.png$1")]);
       this.currentBodySkin = item.bodySkin ?? null;
       this.applyBodySkin();
     } else if (CharacterRig.BODYMASK_SLOTS.has(item.slot)) {
       // Garments ship a sibling <piece>.bodymask.png (white = body covered) — absent
       // masks 404 and are skipped by the union loader.
-      this.bodyHideUrls.set(item.slot, item.url.replace(/\.glb(\?.*)?$/, ".bodymask.png$1"));
+      this.bodyHideUrls.set(item.slot, [item.url.replace(/\.glb(\?.*)?$/, ".bodymask.png$1")]);
     }
     this.refreshBodyHides();
+  }
+
+  // Hair and its face/scalp parameters share a visible result. Stage all changed
+  // source slots before replacing any old slot, including texture/shader failures.
+  async equipSourceItems(items: RigItem[], removals: Slot[] = [], signal?: AbortSignal): Promise<boolean> {
+    if (signal?.aborted) return false;
+    if (!this.skeleton) throw new Error('Source equip called before body loading');
+    const slots = [...items.map(item => item.slot), ...removals];
+    if (new Set(slots).size !== slots.length) throw new Error('Repeated source transaction slot');
+    if (items.some(item => !item.sourceSkinPair && !item.sourceParts)) throw new Error('Source transactions require preserved source inputs');
+    const version = this.bodyLoadVersion;
+    const results = await Promise.allSettled(items.map(item => {
+      if (item.sourceSkinPair) return this.stageSourceSkin(item, item.sourceSkinPair, signal);
+      if (item.sourceParts) return this.stageSourceAssembly(item, item.sourceParts, signal);
+      throw new Error('Missing source transaction input');
+    }));
+    const stages = results.flatMap(result => result.status === 'fulfilled' && result.value ? [result.value] : []);
+    const failure = results.find(result => result.status === 'rejected');
+    if (signal?.aborted || version !== this.bodyLoadVersion || failure || stages.length !== items.length) {
+      stages.forEach(stage => stage.release());
+      if (!signal?.aborted && version === this.bodyLoadVersion && failure?.status === 'rejected') throw failure.reason;
+      return false;
+    }
+    // No await between commits: a rendered frame sees either complete appearance.
+    removals.forEach(slot => this.unequip(slot));
+    stages.forEach(stage => stage.commit());
+    return true;
+  }
+
+  private async stageSourceAssembly(item: RigItem, parts: SourceRigPart[], signal?: AbortSignal): Promise<{ commit: () => void; release: () => void } | undefined> {
+    const scene = new THREE.Group();
+    scene.name = `${item.id}:assembly`;
+    scene.userData.rigItemId = item.id;
+    scene.userData.sourceAssembly = true;
+    const meshes: THREE.SkinnedMesh[] = [];
+    const skeletons = new Set<THREE.Skeleton>();
+    const attachments: SourceBoneAttachment[] = [];
+    const materials = new Map<string, Awaited<ReturnType<typeof loadReconstructedMaterial>>>();
+    const requests = [...new Set(parts.flatMap(part => Object.values(part.materials).map(m => m.url)))];
+    const scenes = new Map<number, THREE.Object3D>();
+    // Wait for every pending resource, including failed batches, before cleanup.
+    // Nothing is attached until the complete item is ready and still selected.
+    const results = await Promise.allSettled([
+      ...parts.map(async (part) => {
+        const gltf = await this.loader.loadAsync(part.url);
+        scenes.set(part.sourceIndex, gltf.scene);
+        gltf.scene.traverse(o => {
+          if ((o as THREE.SkinnedMesh).isSkinnedMesh) skeletons.add((o as THREE.SkinnedMesh).skeleton);
+        });
+      }),
+      ...requests.map(async (url) => {
+        materials.set(url, await loadReconstructedMaterial(url, item.sourceSurfaceView));
+      }),
+    ]);
+    for (const part of parts) {
+      const root = scenes.get(part.sourceIndex);
+      if (root) scene.add(root); // authored part order, independent of fetch timing
+    }
+    const release = () => {
+      disposeObject3D(scene);
+      skeletons.forEach(s => s.dispose());
+      materials.forEach(m => m.dispose());
+    };
+    if (signal?.aborted) { release(); return; }
+    const failure = results.find(r => r.status === "rejected");
+    if (failure?.status === "rejected") { release(); throw failure.reason; }
+    try {
+      for (const part of parts) {
+        const root = scenes.get(part.sourceIndex)!;
+        root.userData.sourcePartIndex = part.sourceIndex;
+        root.userData.sourceMesh = part.sourceMesh;
+        const candidates = root.getObjectsByProperty('isMesh', true) as THREE.Mesh[];
+        if (!candidates.length) throw new Error('Source assembly has no mesh sections');
+        for (const candidate of candidates) {
+          let mesh = candidate as THREE.SkinnedMesh;
+          if (part.attachment) {
+            const body = this.bodyScene?.getObjectsByProperty('isSkinnedMesh', true).find(o => o.userData.sourceBody);
+            const bone = this.bonesByName.get(part.attachment.socket), inverse = this.bodyRestInverses.get(part.attachment.socket);
+            if (!body || !bone || !inverse || new URL(body.userData.sourceBodyUrl, window.location.href).href !== part.attachment.bodyUrl)
+              throw new Error('Source attachment does not match the active body');
+            mesh = attachSourceStatic(candidate, part.attachment, bone, inverse);
+            skeletons.add(mesh.skeleton);
+          } else if (!mesh.isSkinnedMesh) throw new Error("Source clothing part must be skinned");
+          const slots = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          for (const [index, old] of slots.entries()) {
+            const slot = old.userData.sourceSlot?.MaterialSlotName as string | undefined;
+            const binding = slot ? part.materials[slot] : undefined;
+            if (!binding) throw new Error(`Missing source material slot: ${slot}`);
+            // Hair currently reads vertex colour only, but preserve a valid
+            // world-input frame for the surface adapter's geometry contract.
+            mesh.geometry.computeBoundingBox();
+            const center = mesh.geometry.boundingBox!.getCenter(new THREE.Vector3()).multiplyScalar(100);
+            materials.get(binding.url)!.apply(mesh, index, { boundsOrigin: [center.x, center.z, center.y] });
+            const material = Array.isArray(mesh.material) ? mesh.material[index] : mesh.material;
+            material.userData.sourceMaterial = binding.source;
+          }
+          if (!part.attachment) {
+            const { skeleton, attachments: branches } = rebindSourceSkeleton(mesh.skeleton, this.bonesByName, this.bodyRestInverses);
+            attachments.push(...branches);
+            skeletons.add(skeleton);
+            mesh.bind(skeleton, mesh.bindMatrix);
+          }
+          mesh.frustumCulled = false;
+          mesh.userData.sourcePartIndex = part.sourceIndex;
+          mesh.userData.sourceMesh = part.sourceMesh;
+          enableSourceSkinning(mesh);
+          this.sourceFitting.apply(mesh, this.sourceFittingNames);
+          meshes.push(mesh);
+        }
+      }
+    } catch (error) { release(); throw error; }
+    // Original imported skeleton buffers are no longer used; all parts now share
+    // the driver's neutral bind pose and continue following its current pose.
+    const used = new Set(meshes.map(m => m.skeleton));
+    skeletons.forEach(s => { if (!used.has(s)) s.dispose(); });
+    this.enableShadows(scene);
+    return { release, commit: () => {
+      this.unequip(item.slot);
+      for (const { parent, root } of attachments) parent.add(root);
+      this.root.add(scene);
+      this.equipped.set(item.slot, { id: item.id, scene, meshes, statics: [], sourceBoneRoots: attachments.map(a => a.root) });
+      this.bodyHideUrls.set(item.slot, [...new Set(parts.flatMap(p => p.bodyMaskUrl ? [p.bodyMaskUrl] : []))]);
+      this.bodyHideLayouts.set(item.slot, Object.fromEntries(parts
+        .filter(p => p.bodyMaskUrl && p.bodyMaskUvTiles).map(p => [p.bodyMaskUrl!, p.bodyMaskUvTiles!])));
+      this.refreshBodyHides();
+    } };
+  }
+
+  private sourceBodySkin?: { mesh: THREE.SkinnedMesh; previous: THREE.MeshStandardMaterial };
+
+  private restoreSourceBodySkin(): void {
+    const previous = this.sourceBodySkin;
+    if (!previous) return;
+    this.sourceBodySkin = undefined;
+    this.decals.unregisterTarget("body");
+    disposeMaterial(previous.mesh.material as THREE.Material);
+    previous.mesh.material = previous.previous;
+    this.bodyMaterials = this.collectStandardMaterials(this.bodyScene!);
+    this.decals.registerTarget("body", this.bodyMaterials);
+  }
+
+  private async stageSourceSkin(item: RigItem, pair: SourceSkinPair, signal?: AbortSignal): Promise<{ commit: () => void; release: () => void } | undefined> {
+    if (item.slot !== "face") throw new Error("Skin pairs must own the face slot");
+    const body = this.bodyScene?.getObjectsByProperty("isSkinnedMesh", true).find(o => o.userData.sourceBody) as THREE.SkinnedMesh | undefined;
+    if (!body || Array.isArray(body.material) || new URL(body.userData.sourceBodyUrl, window.location.href).href !== pair.body.url)
+      throw new Error("Skin pair requires its preserved fitted body");
+    const version = this.bodyLoadVersion;
+    const recovered = new Map<string, Awaited<ReturnType<typeof loadReconstructedMaterial>>>();
+    const roots = new Map<string, THREE.Object3D>();
+    const skeletons = new Set<THREE.Skeleton>();
+    const urls = [...new Set([pair.head, pair.body].flatMap(p => Object.values(p.materials).flatMap(m => m.url ? [m.url] : [])))];
+    const loaded = await Promise.allSettled([
+      ...[["legacy", item.url], ["source", pair.head.url]].map(async ([key, url]) => {
+        const gltf = await this.loader.loadAsync(url);
+        roots.set(key, gltf.scene);
+        gltf.scene.getObjectsByProperty("isSkinnedMesh", true).forEach(m => skeletons.add((m as THREE.SkinnedMesh).skeleton));
+      }),
+      ...urls.map(async url => recovered.set(url, await loadReconstructedMaterial(url, item.sourceSurfaceView))),
+    ]);
+    let stagedBodyMaterial: THREE.Material | undefined;
+    const release = () => {
+      roots.forEach(disposeObject3D);
+      skeletons.forEach(s => s.dispose());
+      recovered.forEach(m => m.dispose());
+      if (stagedBodyMaterial) disposeMaterial(stagedBodyMaterial);
+    };
+    if (signal?.aborted || version !== this.bodyLoadVersion) { release(); return; }
+    const failure = loaded.find(r => r.status === "rejected");
+    if (failure?.status === "rejected") { release(); throw failure.reason; }
+    const scene = roots.get("source")!;
+    const meshes = scene.getObjectsByProperty("isSkinnedMesh", true) as THREE.SkinnedMesh[];
+    const attachments: SourceBoneAttachment[] = [];
+    try {
+      const legacy = new Map(this.collectStandardMaterials(roots.get("legacy")!).map(m => [m.name, m]));
+      const frames = new Map<THREE.Skeleton, ReturnType<typeof rebindSourceSkeleton>>();
+      const usedSlots = new Set<string>();
+      if (!meshes.length) throw new Error("Source head has no skinned geometry");
+      // Validate the complete fallback mapping before allocating replacements.
+      // A missing later section must not orphan earlier cloned materials.
+      for (const mesh of meshes) for (const old of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+        const slot = old.userData.sourceSlot?.MaterialSlotName as string;
+        const name = pair.head.materials[slot]?.legacyName;
+        if (!name || !legacy.has(name)) throw new Error(`Missing exact head preview material: ${slot}`);
+        usedSlots.add(slot);
+      }
+      if (Object.keys(pair.head.materials).some(slot => !usedSlots.has(slot))) throw new Error("Missing source head sections");
+      for (const mesh of meshes) {
+        const originals = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        const replacements = originals.map(old => {
+          const slot = old.userData.sourceSlot?.MaterialSlotName as string;
+          const binding = pair.head.materials[slot];
+          const baseline = binding?.legacyName ? legacy.get(binding.legacyName) : undefined;
+          if (!baseline) throw new Error(`Missing exact head preview material: ${slot}`);
+          const material = baseline.clone();
+          // Cloned materials must own their textures after releasing the staging GLB.
+          for (const [key, value] of Object.entries(material)) if (value?.isTexture)
+            (material as unknown as Record<string, unknown>)[key] = (value as THREE.Texture).clone();
+          material.userData = { ...material.userData, ...old.userData };
+          old.dispose();
+          return material;
+        });
+        mesh.material = Array.isArray(mesh.material) ? replacements : replacements[0];
+        for (const [i, material] of replacements.entries()) {
+          const slot = material.userData.sourceSlot.MaterialSlotName as string;
+          const binding = pair.head.materials[slot];
+          if (binding.url) recovered.get(binding.url)!.apply(mesh, i, { boundsOrigin: pair.head.boundsOrigin, preserveAlpha: true });
+          const final = Array.isArray(mesh.material) ? mesh.material[i] : mesh.material;
+          final.userData.sourceMaterial = binding.source;
+          final.userData.previewMaterialFallback = !binding.url;
+        }
+        let frame = frames.get(mesh.skeleton);
+        if (!frame) {
+          frame = rebindSourceSkeleton(mesh.skeleton, this.bonesByName, this.bodyRestInverses);
+          frames.set(mesh.skeleton, frame);
+          attachments.push(...frame.attachments);
+          skeletons.add(frame.skeleton);
+        }
+        mesh.bind(frame.skeleton, mesh.bindMatrix);
+        mesh.frustumCulled = false;
+        mesh.userData.sourceMesh = pair.head.sourceMesh;
+        mesh.userData.sourcePartIndex = pair.head.sourceIndex;
+        enableSourceSkinning(mesh);
+        this.sourceFitting.apply(mesh, this.sourceFittingNames);
+      }
+      const bodyBindings = Object.values(pair.body.materials);
+      if (bodyBindings.length !== 1 || !bodyBindings[0].url) throw new Error("Skin pair requires one recovered body material");
+      const stage = new THREE.SkinnedMesh(body.geometry, new THREE.MeshStandardMaterial());
+      try {
+        recovered.get(bodyBindings[0].url)!.apply(stage, undefined, { boundsOrigin: pair.body.boundsOrigin });
+        stagedBodyMaterial = stage.material;
+        stagedBodyMaterial.userData.sourceMaterial = bodyBindings[0].source;
+        enableSourceSkinning(stage);
+      } finally {
+        stagedBodyMaterial = stage.material;
+        stage.customDepthMaterial?.dispose();
+        stage.customDistanceMaterial?.dispose();
+      }
+    } catch (error) { release(); throw error; }
+    const used = new Set(meshes.map(m => m.skeleton));
+    skeletons.forEach(s => { if (!used.has(s)) s.dispose(); });
+    disposeObject3D(roots.get("legacy")!);
+    roots.delete('legacy');
+    return { release, commit: () => {
+      this.unequip("face");
+      this.sourceBodySkin = { mesh: body, previous: body.material as THREE.MeshStandardMaterial };
+      this.decals.unregisterTarget("body");
+      body.material = stagedBodyMaterial!;
+      this.bodyMaterials = this.collectStandardMaterials(this.bodyScene!);
+      this.decals.registerTarget("body", this.bodyMaterials);
+      for (const { parent, root } of attachments) parent.add(root);
+      scene.name = `${item.id}:skin-preview`;
+      scene.userData.rigItemId = item.id;
+      scene.userData.sourceSkinPair = true;
+      this.enableShadows(scene);
+      this.root.add(scene);
+      this.equipped.set("face", { id: item.id, scene, meshes, statics: [], sourceBoneRoots: attachments.map(a => a.root) });
+      this.registerHeadDecalTargets(scene);
+      if (this.collectStandardMaterials(scene).some(m => m.userData.skinCoverage === 'neck-fade')) {
+        // Keep skin behind the fading edge. The original matching morph pulls
+        // the body's upper neck inside the head; a legacy cutout creates holes.
+        this.bodyHideUrls.delete('face');
+      } else this.bodyHideUrls.set("face", [item.url.replace(/\.glb(\?.*)?$/, ".bodymask.png$1")]);
+      this.currentBodySkin = item.bodySkin ?? null;
+      this.refreshBodyHides();
+    } };
   }
 
   // Load a real under-garment glb and rebind its skinned meshes onto the body skeleton (same
@@ -486,9 +901,12 @@ export class CharacterRig {
     "feet",
     "hands",
   ]);
-  private bodyHideUrls = new Map<Slot | "face", string>();
+  private bodyHideUrls = new Map<Slot | "face", string[]>();
+  private bodyHideLayouts = new Map<Slot, Record<string, [number, number]>>();
   private refreshBodyHides(): void {
-    this.decals.setBodyHideMasks([...this.bodyHideUrls.values()]);
+    this.decals.setBodyHideMasks([...this.bodyHideUrls]
+      .filter(([slot]) => !this.assemblyHiddenSlots.has(slot)).flatMap(([, urls]) => urls),
+      Object.assign({}, ...[...this.bodyHideLayouts].filter(([slot]) => !this.assemblyHiddenSlots.has(slot)).map(([, layout]) => layout)));
   }
 
   private currentBodySkin: RigItem["bodySkin"] | null = null;
@@ -514,6 +932,7 @@ export class CharacterRig {
       }
     }
     for (const m of this.bodyMaterials) {
+      if (m.userData.skinSurface) continue;
       if (!this.bodyBaseMaps.has(m)) this.bodyBaseMaps.set(m, m.map);
       const baseMap = this.bodyBaseMaps.get(m) ?? null;
       m.map = this.bodySkinTex ?? baseMap;
@@ -1124,9 +1543,12 @@ export class CharacterRig {
   unequip(slot: Slot): void {
     const handle = this.equipped.get(slot);
     if (!handle) return;
+    this.assemblyHiddenSlots.delete(slot);
+    this.bodyHideLayouts.delete(slot);
     // A head being removed takes its decal targets with it (the makeup/eye decals stay pending
     // in the manager and re-apply if a head is equipped again), and un-hides the body shell.
     if (slot === "face") {
+      this.restoreSourceBodySkin();
       this.decals.unregisterTarget("head");
       this.decals.unregisterTarget("eyes");
       this.bodyHideUrls.delete("face");
@@ -1137,6 +1559,7 @@ export class CharacterRig {
     }
     this.refreshBodyHides();
     this.root.remove(handle.scene);
+    handle.sourceBoneRoots?.forEach(bone => bone.removeFromParent());
     for (const mesh of handle.meshes) mesh.skeleton.dispose();
     disposeObject3D(handle.scene);
     // Bone-attached statics live outside handle.scene, so dispose them separately.
@@ -1154,17 +1577,16 @@ export class CharacterRig {
   }
 
   dispose(): void {
+    this.bodyLoadVersion++;
+    this.sourceFittingNames.clear();
     this.bodySkinTex?.dispose();
     this.bodySkinTex = null;
     this.bodyBaseMaps.clear();
-    this.decals.clearAll();
     for (const slot of [...this.equipped.keys()]) this.unequip(slot);
-    if (this.bodyScene) {
-      this.root.remove(this.bodyScene);
-      disposeObject3D(this.bodyScene);
-      this.bodyScene = null;
-    }
+    this.releaseBody();
+    this.decals.clearAll();
     this.skeleton = null;
     this.bonesByName.clear();
+    this.bodyRestInverses.clear();
   }
 }
