@@ -26,30 +26,30 @@ export default function Builder() {
     }
   }, []);
   return (
-    <main className="mx-auto flex min-h-full max-w-6xl flex-col gap-6 px-5 py-8">
-      <header className="space-y-1">
+    <main className="mx-auto flex h-dvh max-w-6xl flex-col gap-3 overflow-hidden px-3 py-3 sm:px-5 lg:gap-6 lg:py-6">
+      <header className="shrink-0 space-y-1">
         <p className="text-xs uppercase tracking-widest text-neutral-500">
           the-finals-outfit
         </p>
         <h1 className="text-2xl font-semibold sm:text-3xl">
           Cosmetic outfit builder
         </h1>
-        <p className="max-w-prose text-sm text-neutral-400">
+        <p className="hidden max-w-prose text-sm text-neutral-400 lg:block">
           Compose a look from THE FINALS cosmetic catalog, then share it by URL.
           Fan-made, unaffiliated with Embark Studios.
         </p>
       </header>
 
-      <div className="grid flex-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-        <section className="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4">
+      <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-6">
+        <section aria-label="3D outfit preview" className="min-h-0 min-w-0 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/40 p-3 lg:p-4">
           <PreviewPane />
         </section>
-        <section className="rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4">
+        <section aria-label="Cosmetic browser" className="min-h-0 min-w-0 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/40 p-3 lg:p-4">
           <SlotPicker />
         </section>
       </div>
 
-      <footer className="pt-4 text-xs text-neutral-500">
+      <footer className="shrink-0 text-[10px] text-neutral-500 lg:text-xs">
         Fan-made project. THE FINALS is a trademark of Embark Studios AB.
       </footer>
     </main>

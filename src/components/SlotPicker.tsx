@@ -28,7 +28,7 @@ export default function SlotPicker() {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex max-h-20 shrink-0 flex-wrap gap-1.5 overflow-y-auto overscroll-contain lg:max-h-40">
         {NON_EMPTY.map((s) => (
           <button
             key={s}
@@ -48,7 +48,7 @@ export default function SlotPicker() {
         ))}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -68,7 +68,7 @@ export default function SlotPicker() {
         </button>
       </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-3 content-start gap-2 overflow-y-auto pr-1 sm:grid-cols-4 md:grid-cols-5">
+      <div aria-label="Cosmetic results" tabIndex={0} className="grid min-h-0 flex-1 grid-cols-3 content-start gap-2 overflow-y-auto overscroll-contain pr-1 sm:grid-cols-4 md:grid-cols-5">
         {items.map((item, i) => {
           const equipped = build[item.slot] === item.id;
           return (
@@ -113,7 +113,7 @@ export default function SlotPicker() {
         })}
       </div>
 
-      <p className="text-xs text-neutral-500">{items.length} items</p>
+      <p className="shrink-0 text-xs text-neutral-500">{items.length} items</p>
     </div>
   );
 }
