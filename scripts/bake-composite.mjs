@@ -18,7 +18,9 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join, basename } from "node:path";
 import sharp from "sharp";
-import { readMI, texturePath, arraySlices, baseMaterialOf } from "./lib/layered-mi.mjs";
+import { texturePath, arraySlices, baseMaterialOf } from "./lib/layered-mi.mjs";
+import { resolveSkinMaterialSlots } from "./lib/material-instances.mjs";
+import { buildSourceMaterialBinding } from "./lib/material-textures.mjs";
 import {
   COLOR_MODEL,
   applyOp,
@@ -155,10 +157,14 @@ function sample(raw, u, v, wrap) {
 }
 
 // Tangent-space normal: decode XY, reconstruct Z (= the proven fixNormalMaps approach; the
-// dump packs cavity/AO into B, so never trust it). Returns unit [x,y,z].
+// dump packs cavity/AO into B, so never trust it). Unreal stores tangent normals in the
+// DirectX convention, while the glTF/three.js tangent basis is OpenGL; flip G at this
+// boundary. BAKE_NORMAL_GREEN_FLIP=0 retains the pre-fix decode for an attributed A/B render.
+const NORMAL_GREEN_FLIP = process.env.BAKE_NORMAL_GREEN_FLIP !== "0";
 function decodeNormal(rgba) {
   const x = (rgba[0] / 255) * 2 - 1;
-  const y = (rgba[1] / 255) * 2 - 1;
+  const y0 = (rgba[1] / 255) * 2 - 1;
+  const y = NORMAL_GREEN_FLIP ? -y0 : y0;
   const z = Math.sqrt(Math.max(0, 1 - x * x - y * y));
   return [x, y, z];
 }
@@ -211,16 +217,28 @@ function layerParams(mi, L, globalTiling) {
   };
 }
 
-// A scheme swatch (ColorA/B/C, LINEAR rgb) is a default PLACEHOLDER when it's near-white,
-// near-black, or a pure saturated primary (red/green/blue) — the per-instance default palette.
-// Blending a real overlay toward such a swatch washes it out (the SentinelTop pauldrons baked
-// white because their dark overlay was blended toward a red/white placeholder scheme).
+// A scheme swatch (ColorA/B/C, LINEAR rgb) is a default PLACEHOLDER when it's near-white or a
+// pure saturated primary (red/green/blue) — the per-instance default palette. Blending a real
+// overlay toward such a swatch washes it out (the SentinelTop pauldrons baked white because
+// their dark overlay was blended toward a red/white placeholder scheme).
+//
+// NEAR-BLACK IS NOT A PLACEHOLDER, and testing for it cost 96 of 1,968 baked albedos.
+// Black is the most common authored garment colour in this game — carbon fibre, leather,
+// tactical — and it is not a plausible engine default in a palette whose other defaults are
+// pure red, green and blue. Treating it as unset discarded the real colour: the racing
+// helmet's ColorA is rgb(0.010, 0.010, 0.010), its actual carbon weave, and rejecting it left
+// two layers authored white-with-maskStrength-1 untinted, so the helmet baked WHITE. The
+// region-tint path reads the same ColorA and correctly emits #1a1a1a, which is the proof the
+// source data was fine. See _docs/2026-08-14-white-patches.md.
+//
+// The SentinelTop case stays covered by the `ovMin > 0.85` gate at the call site: only a
+// near-white "tint me" overlay is ever blended, so a dark overlay can no longer be washed out
+// regardless of what the scheme contains.
 function isPlaceholderSwatch(c) {
   if (!c) return true;
   const mx = Math.max(c[0], c[1], c[2]);
   const mn = Math.min(c[0], c[1], c[2]);
   if (mn > 0.85) return true; // near-white
-  if (mx < 0.05) return true; // near-black
   const mid = c[0] + c[1] + c[2] - mx - mn;
   return mx > 0.85 && mid < 0.15 && mn < 0.15; // pure primary (FF0000 etc.)
 }
@@ -237,9 +255,18 @@ function schemeColor(maskRgba, mi) {
   const cC = mi.vectors.ColorC;
   const wg = maskRgba[1] / 255;
   const wb = maskRgba[2] / 255;
-  const a = cA ? [cA.r, cA.g, cA.b] : [0, 0, 0];
-  const b = cB ? [cB.r, cB.g, cB.b] : a;
-  const c = cC ? [cC.r, cC.g, cC.b] : a;
+  // Substitute per-swatch rather than discarding the whole scheme. A skin often carries one
+  // real colour and leaves the other two as the engine's default primaries — the racing helmet
+  // is ColorA black with ColorB pure green and ColorC pure blue. Falling back to the first real
+  // swatch keeps ColorA usable while stopping a placeholder green/blue being painted into any
+  // region the mask routes to B or C.
+  const raw = (v) => (v ? [v.r, v.g, v.b] : null);
+  const [rA, rB, rC] = [raw(cA), raw(cB), raw(cC)];
+  const fallback = [rA, rB, rC].find((v) => v && !isPlaceholderSwatch(v)) ?? [0, 0, 0];
+  const pick = (v) => (v && !isPlaceholderSwatch(v) ? v : fallback);
+  const a = pick(rA);
+  const b = pick(rB);
+  const c = pick(rC);
   let out = a.slice(); // ColorA is the base (mask red / no other channel)
   out = mix3(out, b, wg); // ColorB where the mask's green channel is on
   out = mix3(out, c, wb); // ColorC where the mask's blue channel is on
@@ -270,13 +297,13 @@ function resolvePiece(piece) {
   const asset = assets.find((a) => a.dst === dst);
   if (!asset) throw new Error(`no asset-sources entry with dst '${dst}'`);
   const pieceDir = dirname(asset.src); // dump-relative, e.g. "Casual/Assets/LongCoat"
-  return { slug, pieceDir, glbRel };
+  return { slug, pieceDir, glbRel, meshJson: resolve(DUMP, asset.src.replace(/\.uemodel$/i, ".json")) };
 }
 
 // --- bake one skin -----------------------------------------------------------
-async function bakeSkin(slug, pieceDir, skinName) {
+async function bakeSkin(slug, pieceDir, skinName, selectedMI, materialSuffix = "") {
   const skinDir = resolve(DUMP, pieceDir, "Skins", skinName);
-  const mi = readMI(skinDir);
+  const mi = selectedMI;
   if (!mi) {
     console.warn(`  ${skinName}: no MI — skip`);
     return null;
@@ -450,7 +477,7 @@ async function bakeSkin(slug, pieceDir, skinName) {
     }
   }
 
-  const outBase = `${slug}.${skinKey}`;
+  const outBase = `${slug}.${skinKey}${materialSuffix}`;
   const dstDir = resolve(MODELS, "cosmetics");
   mkdirSync(dstDir, { recursive: true });
   await Promise.all([
@@ -476,7 +503,7 @@ async function bakeSkin(slug, pieceDir, skinName) {
 }
 
 async function bakePiece(pieceKey, skinFilter) {
-  const { slug, pieceDir } = resolvePiece(pieceKey);
+  const { slug, pieceDir, meshJson } = resolvePiece(pieceKey);
   const skinsRoot = resolve(DUMP, pieceDir, "Skins");
   let skins = readdirSync(skinsRoot, { withFileTypes: true })
     .filter((d) => d.isDirectory())
@@ -487,14 +514,54 @@ async function bakePiece(pieceKey, skinFilter) {
 
   console.log(`baking ${slug} (${pieceDir}) @ ${RES}px albedo/orm, ${NORMAL_RES}px normal — skins: ${skins.join(", ")}`);
   const bakedFile = resolve(MODELS, "cosmetics", `${slug}.baked.json`);
+  const bindingsFile = resolve(MODELS, "cosmetics", `${slug}.materials.json`);
   // Always merge into the existing manifest so baking a subset of skins (even with --force)
   // never drops the entries of skins not baked this run.
   const baked = existsSync(bakedFile) ? JSON.parse(readFileSync(bakedFile, "utf8")) : {};
+  const materialBindings = existsSync(bindingsFile) ? JSON.parse(readFileSync(bindingsFile, "utf8")) : {};
   for (const skin of skins) {
-    const r = await bakeSkin(slug, pieceDir, skin);
-    if (r) baked[r.skinKey] = r.set;
+    const skinDir = resolve(DUMP, pieceDir, "Skins", skin);
+    const slots = resolveSkinMaterialSlots(meshJson, skinDir, DUMP);
+    if (!slots.length) {
+      console.warn(`  ${skin}: no source material slots — leaving existing bake unchanged`);
+      continue;
+    }
+    const bindings = {};
+    // Once this skin has a resolved slot inventory, only a successful single-slot
+    // bake below can repopulate its legacy entry. Failed/changed families must not
+    // resurrect an old global texture set during catalog import.
+    delete baked[skin.toLowerCase()];
+    for (const slot of slots) {
+      if (slot.resolution === "unresolved-skin") {
+        console.warn(`  ${skin}/${slot.materialName}: ambiguous skin assignment — retaining embedded material`);
+        bindings[slot.materialName] = { family: "unknown", ...(typeof slot.mi?.doubleSided === "boolean" ? { doubleSided: slot.mi.doubleSided } : {}) };
+        continue;
+      }
+      const binding = await buildSourceMaterialBinding(slot.mi, { dumpRoot: DUMP, modelsRoot: MODELS });
+      if (slot.mi?.family === "layered") {
+        // Each primitive's MI is a separate bake input, including its own parent
+        // parameters and texture arrays. A single-layered + LED/glass piece still
+        // needs an explicit name binding: the old global set painted its visor.
+        const suffix = slots.length > 1 ? `.${slot.materialName.toLowerCase().replace(/[^a-z0-9_-]/g, "-")}` : "";
+        const r = await bakeSkin(slug, pieceDir, skin, slot.mi, suffix);
+        if (r) {
+          binding.bakedSet = r.set;
+          if (slots.length === 1) baked[r.skinKey] = r.set;
+        } else if (slots.length === 1) {
+          delete baked[skin.toLowerCase()];
+        }
+      }
+      bindings[slot.materialName] = binding;
+    }
+    // A global set is invalid for multi-part pieces, even when only one part is
+    // layered. Keep the old manifest contract for unequivocal single-material items.
+    if (slots.length > 1 || slots[0].resolution === "unresolved-skin") delete baked[skin.toLowerCase()];
+    materialBindings[skin.toLowerCase()] = bindings;
   }
+  mkdirSync(dirname(bindingsFile), { recursive: true });
+  writeFileSync(bindingsFile, JSON.stringify(materialBindings, null, 2) + "\n");
   writeFileSync(bakedFile, JSON.stringify(baked, null, 2) + "\n");
+  console.log(`wrote ${bindingsFile} (${Object.keys(materialBindings).length} skins)`);
   console.log(`wrote ${bakedFile} (${Object.keys(baked).length} skins)`);
 }
 

@@ -80,7 +80,10 @@ async function compressGlbs(absPaths) {
       let ampSum = 0;
       for (let i = 0; i < count; i++) {
         x[i] = data[i * ch] / 127.5 - 1;
-        y[i] = data[i * ch + 1] / 127.5 - 1;
+        // UE/Unreal source normals are DirectX (green points down); glTF and three.js
+        // consume OpenGL tangent normals (green points up). Keep this conversion at the
+        // asset boundary instead of compensating in per-material tuning.
+        y[i] = -(data[i * ch + 1] / 127.5 - 1);
         ampSum += Math.hypot(x[i], y[i]);
       }
       const amp = ampSum / count;

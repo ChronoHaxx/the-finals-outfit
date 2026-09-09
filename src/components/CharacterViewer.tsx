@@ -3,11 +3,12 @@ import { OrbitControls, ContactShadows } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { CharacterRig, type RigMaterial, type RigDecal, type RigItem } from "../rig/CharacterRig";
+import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
 import { loadSourceAssemblyItems, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
+import MeshInspector from "./MeshInspector";
 import { createGltfLoader } from "../rig/loaders";
 import { useBuildStore, effectiveBuild } from "../store/useBuildStore";
 import { getItemById } from "../lib/catalog";
@@ -40,11 +41,20 @@ interface DevParams {
   surfaceView?: SurfaceView;
   isolate?: boolean;
   temporal?: boolean;
+  inspect: boolean;
 }
 function readDevParams(): DevParams {
-  if (!import.meta.env.DEV || typeof window === "undefined")
-    return { debugAlbedo: false, noBaked: false, tune: false };
+  if (typeof window === "undefined")
+    return { debugAlbedo: false, noBaked: false, tune: false, inspect: false };
   const p = new URLSearchParams(window.location.search);
+  // Production uses the validated source paths automatically. Diagnostic URL
+  // switches remain local; reconstructed=0 is a complete legacy comparison.
+  if (!import.meta.env.DEV) return {
+    debugAlbedo: false, noBaked: false, tune: false, inspect: false,
+    reconstructed: p.get("reconstructed") !== "0",
+    sourceMeshes: true, sourceAssembly: true, sourceFitting: true,
+    surfaceView: "lit", isolate: false, temporal: true,
+  };
   const cam = p.get("cam")?.split(",").map(Number);
   const fov = Number(p.get("fov"));
   return {
@@ -64,6 +74,9 @@ function readDevParams(): DevParams {
     surfaceView: SURFACE_VIEWS.find((v) => v === p.get("surface")) ?? "lit",
     isolate: p.get("isolate") === "1",
     temporal: p.get("temporal") !== "0",
+    // ?inspect=1 mounts the DEV MeshInspector. Unlike the tuner it takes its own
+    // column rather than overlaying the canvas, so the model is never occluded.
+    inspect: p.get("inspect") === "1",
   };
 }
 const DEV = readDevParams();
@@ -136,6 +149,27 @@ function toRigMaterial(model: NonNullable<Item["model"]>): RigMaterial | undefin
     emissiveMapUrl: m.emissiveMap ? bust(modelUrl(m.emissiveMap)) : undefined,
     emissiveIntensity: m.emissiveIntensity,
   };
+}
+
+function toRigMaterialBindings(
+  model: NonNullable<Item["model"]>,
+  tintRecolor?: string,
+): Record<string, RigMaterialBinding> | undefined {
+  if (!model.materialBindings) return undefined;
+  const resolve = (path: string | undefined) => path ? bust(modelUrl(path)) : undefined;
+  return Object.fromEntries(Object.entries(model.materialBindings).map(([name, binding]) => [name, {
+    ...toRigMaterial({ gltfPath: model.gltfPath, material: binding }),
+    ...(tintRecolor ? { tintRecolor } : {}),
+    family: binding.family,
+    doubleSided: binding.doubleSided,
+    glass: binding.glass ? { ...binding.glass, normal: resolve(binding.glass.normal) } : undefined,
+    ledScreen: binding.ledScreen ? {
+      ...binding.ledScreen,
+      animation: resolve(binding.ledScreen.animation)!,
+      colorRamp: resolve(binding.ledScreen.colorRamp),
+      normal: resolve(binding.ledScreen.normal),
+    } : undefined,
+  }]));
 }
 
 // Procedural photo-studio environment for PMREM: a DARK room with a few large bright
@@ -480,6 +514,7 @@ export default function CharacterViewer() {
               sourceSkinPair,
               sourceSurfaceView: DEV.debugAlbedo ? "baseColor" : DEV.surfaceView,
               material,
+              materialBindings: item.model ? toRigMaterialBindings(item.model, underTint) : undefined,
               underLayerUrl: realUnder ? modelUrl(realUnder) : undefined,
               underLayerTint: realUnder ? item.model?.underLayerTint : undefined,
               underLayerFallbackUrl: fallbackGlb ? modelUrl(fallbackGlb) : undefined,
@@ -626,7 +661,7 @@ export default function CharacterViewer() {
       >
         {theme === "studio" ? "Studio" : "Lobby"}
       </button>
-      {DEV.reconstructed && hasRecoveredPreview && (
+      {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && (
         <div className="absolute left-2 top-2 z-10 rounded-md bg-black/70 px-3 py-2 text-xs text-white">
           <span className="mb-1 block">Recovered shader · preview lighting</span>
           <select
@@ -655,6 +690,7 @@ export default function CharacterViewer() {
           {error}
         </div>
       )}
+      {DEV.inspect && ready && <MeshInspector rig={rig} />}
     </div>
   );
 }

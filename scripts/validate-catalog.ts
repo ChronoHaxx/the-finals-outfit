@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { Agent, request as httpsRequest } from "node:https";
 import { collectAssetRefs } from "./lib/asset-refs.mjs";
+import { RECONSTRUCTION_ROOTS } from "./lib/reconstruction-assets.mjs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { CatalogSchema, SponsorsSchema } from "../src/lib/item.ts";
@@ -167,6 +168,7 @@ if (itemsResult.success && sponsorsResult.success) {
     console.log(`checking ${paths.length} assets against ${manifestUrl} …`);
 
     let hosted: Set<string> | null = null;
+    let reconstructionPaths: string[] = [];
     try {
       const res = await getText(manifestUrl);
       if (res.status !== 200) {
@@ -175,7 +177,14 @@ if (itemsResult.success && sponsorsResult.success) {
             `Run 'npm run stage:assets' and publish _assets-upload/ before deploying.`,
         );
       } else {
-        hosted = new Set<string>(JSON.parse(res.body).paths);
+        const manifest = JSON.parse(res.body);
+        hosted = new Set<string>(manifest.paths);
+        reconstructionPaths = manifest.reconstructionPaths ?? [];
+        if (!Array.isArray(reconstructionPaths) || !reconstructionPaths.length ||
+            reconstructionPaths.some((path: unknown) => typeof path !== 'string')) {
+          errors.push('Hosted release has no reconstruction asset manifest. Stage and publish the new runtime assets before deployment.');
+          reconstructionPaths = [];
+        }
       }
     } catch (err) {
       errors.push(`manifest ${manifestUrl} unreachable: ${(err as Error).message}`);
@@ -185,10 +194,17 @@ if (itemsResult.success && sponsorsResult.success) {
       for (const p of paths) {
         if (!hosted.has(p.replace(/^\/+/, ""))) broken.push(`not in manifest: ${p}`);
       }
+      for (const p of [...RECONSTRUCTION_ROOTS, ...reconstructionPaths]) {
+        if (!hosted.has(p)) broken.push(`reconstruction dependency not in manifest: ${p}`);
+      }
 
       // The manifest is only as trustworthy as the upload it claims to describe, so
       // confirm a random handful really are served before believing the rest.
-      const sample = [...paths].sort(() => Math.random() - 0.5).slice(0, 12);
+      const sample = [...new Set([
+        ...paths.sort(() => Math.random() - 0.5).slice(0, 12),
+        ...RECONSTRUCTION_ROOTS,
+        ...reconstructionPaths.filter(p => /\.(glsl|bin)$/.test(p)).sort(() => Math.random() - 0.5).slice(0, 8),
+      ])];
       for (const p of sample) {
         const res = await attempt(base + p.replace(/^\/+/, ""));
         if (!res.ok) broken.push(`${res.why} ${p} (manifest claims it is published)`);

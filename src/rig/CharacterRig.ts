@@ -3,6 +3,8 @@ import { attachSourceStatic } from './SourceAttachment';
 import type { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { Slot } from "../lib/slots";
 import { disposeObject3D, disposeMaterial } from "./dispose";
+import type { MaterialBinding } from "../lib/item";
+import BODY_MASK_SLOTS from "../lib/body-mask-slots.json";
 import { BodyDecalManager, type RigDecal } from "./BodyDecals";
 import { loadReconstructedMaterial, type SurfaceView } from "./ReconstructedMaterial";
 import { enableSourceSkinning } from "./SourceMesh";
@@ -48,6 +50,24 @@ export interface RigMaterial {
   emissiveIntensity?: number;
 }
 
+export interface RigMaterialBinding extends RigMaterial {
+  family: MaterialBinding["family"];
+  doubleSided?: boolean;
+  glass?: MaterialBinding["glass"];
+  // Paths are resolved URLs by the time they reach the rig, just like bakedSet.
+  ledScreen?: MaterialBinding["ledScreen"];
+}
+
+interface LoadedMaterial {
+  material: RigMaterialBinding;
+  region: THREE.Texture | null;
+  decals: GarmentDecalTex[];
+  baked: { map: THREE.Texture; normalMap: THREE.Texture; orm: THREE.Texture } | null;
+  emissive: THREE.Texture | null;
+  glassNormal: THREE.Texture | null;
+  led: { animation: THREE.Texture; colorRamp: THREE.Texture | null; normal: THREE.Texture | null } | null;
+}
+
 // A loaded garment print decal ready for the shader.
 interface GarmentDecalTex {
   region: number;
@@ -67,6 +87,7 @@ export interface RigItem {
   sourceSkinPair?: SourceSkinPair;
   sourceSurfaceView?: SurfaceView;
   material?: RigMaterial;
+  materialBindings?: Record<string, RigMaterialBinding>;
   // Heads only: retune the shared body material to match the face — the game swaps the
   // body color map per head (Dark/Light/FemaleMedium) and multiplies it
   // (MI_Body_*.json BodyColorMap + ColorMultiply/Roughness). texUrl is fully resolved.
@@ -83,6 +104,29 @@ export interface RigItem {
   underLayerFallbackUrl?: string;
 }
 
+// Shapes returned by CharacterRig.inspect() — the dev inspector's view of the live scene.
+export interface InspectMaterial {
+  name: string;
+  side: "front" | "back" | "double";
+  transparent: boolean;
+  alphaTest: number;
+  maps: Record<string, string | null>;
+}
+export interface InspectMesh {
+  uuid: string;
+  name: string;
+  skinned: boolean;
+  visible: boolean;
+  triangles: number;
+  vertices: number;
+  materials: InspectMaterial[];
+}
+export interface InspectGroup {
+  label: string; // slot name, or "body"
+  id: string; // catalog item id
+  meshes: InspectMesh[];
+}
+
 interface EquippedHandle {
   id: string;
   scene: THREE.Object3D; // the cosmetic gltf.scene we added to root
@@ -91,6 +135,24 @@ interface EquippedHandle {
   sourceBoneRoots?: THREE.Bone[]; // garment-owned branches attached to the body
   underLayerScene?: THREE.Object3D; // a composited real under-garment (see RigItem.underLayerUrl)
   underLayerMeshes?: THREE.SkinnedMesh[]; // its skinned meshes (skeletons disposed on unequip)
+}
+
+// Inspector-only material copies own their texture references. Material.clone() keeps texture
+// objects shared, which would let disposeObject3D() tear down a source texture still used by an
+// unselected sibling. Copying the texture slots here makes the override a real, disposable owner.
+function cloneMaterialForInspector(source: THREE.Material): THREE.Material {
+  const clone = source.clone();
+  const cloneFields = clone as unknown as Record<string, unknown>;
+  for (const key of Object.keys(cloneFields)) {
+    const value = cloneFields[key] as THREE.Texture | undefined;
+    if (value?.isTexture) cloneFields[key] = value.clone();
+  }
+  clone.userData = { ...source.userData };
+  for (const [key, value] of Object.entries(clone.userData)) {
+    const texture = value as THREE.Texture | undefined;
+    if (texture?.isTexture) clone.userData[key] = texture.clone();
+  }
+  return clone;
 }
 
 export class CharacterRig {
@@ -118,6 +180,10 @@ export class CharacterRig {
   private assemblyHiddenSlots = new Set<Slot>();
   private readonly sourceFitting = new SourceFitting();
   private sourceFittingNames = new Set<string>();
+  // Mesh UUID -> material copies made by the dev inspector. Values stay attached to their mesh
+  // and are therefore released by disposeObject3D() with the scene; this map only prevents a
+  // second copy on every toggle and is cleared when that scene leaves the rig.
+  private inspectorMaterialOverrides = new Map<string, Set<THREE.Material>>();
 
   private readonly texLoader = new THREE.TextureLoader();
   private readonly decals: BodyDecalManager;
@@ -304,6 +370,7 @@ export class CharacterRig {
     if (!this.bodyScene) return;
     this.restoreSourceBodySkin();
     this.root.remove(this.bodyScene);
+    this.forgetInspectorOverrides(this.bodyScene);
     const skeletons = new Set((this.bodyScene.getObjectsByProperty("isSkinnedMesh", true) as THREE.SkinnedMesh[]).map(m => m.skeleton));
     if (this.skeleton) skeletons.add(this.skeleton);
     skeletons.forEach(s => s.dispose());
@@ -411,10 +478,14 @@ export class CharacterRig {
         throw error;
       }
     }
-    const regionTex = reconstructed ? null : await this.loadRegionMap(item.material);
-    const garmentDecals = reconstructed ? [] : await this.loadGarmentDecals(item.material);
-    const bakedSet = reconstructed ? null : await this.loadBakedSet(item.material);
-    const emissiveTex = await this.loadEmissiveMap(item.material);
+    const boundMaterials = !reconstructed && item.materialBindings
+      ? await this.loadMaterialBindings(item.materialBindings, gltf.scene)
+      : null;
+    const legacyMaterial = reconstructed || boundMaterials ? undefined : item.material;
+    const bakedSet = await this.loadBakedSet(legacyMaterial);
+    const regionTex = bakedSet ? null : await this.loadRegionMap(legacyMaterial);
+    const garmentDecals = await this.loadGarmentDecals(legacyMaterial);
+    const emissiveTex = await this.loadEmissiveMap(legacyMaterial);
     // Hair cards: the strand SHAPE lives in a sibling <style>.coverage.webp (built by
     // scripts/build-hair-coverage.mjs from the dump's card-atlas coverage / NXA alpha) the
     // converter never wired in — without it the flat cards render as opaque colored shards.
@@ -455,8 +526,15 @@ export class CharacterRig {
       else if ((o as THREE.Mesh).isMesh) statics.push(o as THREE.Mesh);
     });
 
-    const applyMat = (mesh: THREE.Mesh) => reconstructed ? reconstructed.apply(mesh) :
-      this.applyMaterial(mesh, item.material, regionTex, garmentDecals, bakedSet, hairCov, emissiveTex);
+    // GLTFLoader shares materials between primitives. Apply a binding only once and reuse
+    // its result, including when a layered shader upgrades to MeshPhysicalMaterial.
+    const appliedMaterials = new Map<THREE.Material, THREE.Material>();
+    const originalTextures = this.sceneTextures(gltf.scene);
+    const applyMat = (mesh: THREE.Mesh) => {
+      if (reconstructed) reconstructed.apply(mesh);
+      else if (boundMaterials) this.applyMaterialBindings(mesh, boundMaterials, appliedMaterials, hairCov);
+      else this.applyMaterial(mesh, legacyMaterial, regionTex, garmentDecals, bakedSet, hairCov, emissiveTex);
+    };
 
     for (const mesh of meshes) {
       const cosmeticSkel = mesh.skeleton;
@@ -492,11 +570,14 @@ export class CharacterRig {
     // socket-attached in-engine — so for those slots we re-parent onto the matching bone
     // (re-parenting moves them out of gltf.scene, so they're tracked for disposal).
     const attached: THREE.Mesh[] = [];
+    const eyeAnchor = item.slot === "eyewear" ? this.eyeWorldCenter() : null;
     for (const mesh of statics) {
       mesh.frustumCulled = false;
       applyMat(mesh);
       // Origin-authored statics (socket-attached in-engine — glasses, masks, earrings,
-      // wings) sit at ~y=0 IN WORLD SPACE; pin them to the slot's bone. Body-authored
+      // wings) often sit at ~y=0 IN WORLD SPACE; this is only a routing heuristic, not proof
+      // that the exported mesh has the game's socket offset. Pin candidates to the slot's bone
+      // while preserving their authored transform. Body-authored
       // statics (hair, helmets whose NODE carries the placement/scale) already sit at
       // their part and must stay under root — re-parenting them to a bone would discard
       // the node transform chain (a 0.35m helmet rendered 2m tall this way). The test
@@ -512,13 +593,18 @@ export class CharacterRig {
         // re-parenting: quantized GLBs carry the dequant scale on WRAPPER nodes, and
         // bone.add() alone would discard it (watch meshes ballooned to 2.5m this way).
         mesh.updateWorldMatrix(true, false);
-        if (item.slot === "facewear" || item.slot === "headwear") {
+        if (
+          item.slot === "earrings" ||
+          item.slot === "eyewear" ||
+          item.slot === "facewear" ||
+          item.slot === "headwear"
+        ) {
           // Head masks (hannya etc.) are authored at the ORIGIN facing world-forward. The plain
           // decompose+add (below) is right for a watch — it wants the wrist bone's rotation — but
-          // here it multiplies the head bone's REST rotation onto the mask, tilting it off the
-          // face (verified: hannya rendered up-left, clipped). Socket to the head at the authored
-          // offset while KEEPING the authored world orientation (counter the bone rotation), so
-          // the mask sits on the face and still follows the posed head.
+          // head-attached statics must not inherit the arbitrary REST rotation of a facial socket:
+          // that turns earrings on their side and can put glasses behind the face. Socket them at
+          // the authored offset while KEEPING the authored world orientation (counter the bone
+          // rotation), so they sit correctly and still follow the posed head.
           const wp = new THREE.Vector3();
           const wq = new THREE.Quaternion();
           const ws = new THREE.Vector3();
@@ -535,9 +621,25 @@ export class CharacterRig {
           mesh.matrixWorld.decompose(mesh.position, mesh.quaternion, mesh.scale);
         }
         bone.add(mesh);
+        if (eyeAnchor) {
+          mesh.updateWorldMatrix(true, false);
+          mesh.geometry.computeBoundingBox();
+          const center = mesh.geometry.boundingBox?.getCenter(new THREE.Vector3());
+          if (center) {
+            const currentWorld = center.applyMatrix4(mesh.matrixWorld);
+            const targetLocal = bone.worldToLocal(eyeAnchor.clone());
+            const currentLocal = bone.worldToLocal(currentWorld);
+            mesh.position.add(targetLocal.sub(currentLocal));
+          }
+        }
         attached.push(mesh);
       }
     }
+
+    // Replaced embedded maps may be shared with an unbound primitive: release them only
+    // after every material has been assigned, and only if no live material still uses them.
+    const retainedTextures = this.sceneTextures(gltf.scene, attached);
+    for (const texture of originalTextures) if (!retainedTextures.has(texture)) texture.dispose();
 
     // Add the whole cosmetic scene (preserving mesh transforms); its skinned meshes now skin
     // from the body's bones, which live in the same rendered graph under `root`.
@@ -894,13 +996,10 @@ export class CharacterRig {
   }
 
   // Slots whose pieces wrap the body and may ship a generated coverage mask.
-  private static readonly BODYMASK_SLOTS = new Set<Slot>([
-    "upperBody",
-    "outerwear",
-    "lowerBody",
-    "feet",
-    "hands",
-  ]);
+  // Single source of truth: src/lib/body-mask-slots.json — the verification check
+  // imports the same module, so the two can never disagree. (`face` is in the set but
+  // is handled by its own branch above, which also registers head decal targets.)
+  private static readonly BODYMASK_SLOTS = new Set<Slot>(BODY_MASK_SLOTS as Slot[]);
   private bodyHideUrls = new Map<Slot | "face", string[]>();
   private bodyHideLayouts = new Map<Slot, Record<string, [number, number]>>();
   private refreshBodyHides(): void {
@@ -996,6 +1095,29 @@ export class CharacterRig {
 
   // Load a piece's garment print decals (cap 4 — each costs a texture unit in the patched
   // shader). Failures skip the decal rather than failing the equip.
+  // Origin-authored eyewear has no actor/socket transform in the extracted static mesh. Derive
+  // its anchor from the equipped head's visible eyeball geometry instead of inventing a world
+  // coordinate (rooted, body-space eyewear such as GamingGlasses never enters this path).
+  private eyeWorldCenter(): THREE.Vector3 | null {
+    const face = this.equipped.get("face")?.scene;
+    if (!face) return null;
+    face.updateWorldMatrix(true, true);
+    const box = new THREE.Box3();
+    let found = false;
+    face.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      const label = [mesh.name, ...mats.map((m) => m.name)].join(" ");
+      if (!/eye/i.test(label) || /shell|edge|lash|brow/i.test(label)) return;
+      const part = new THREE.Box3().setFromObject(mesh);
+      if (part.isEmpty()) return;
+      box.union(part);
+      found = true;
+    });
+    return found ? box.getCenter(new THREE.Vector3()) : null;
+  }
+
   private async loadGarmentDecals(mat?: RigMaterial): Promise<GarmentDecalTex[]> {
     if (!mat?.garmentDecals?.length) return [];
     const out: GarmentDecalTex[] = [];
@@ -1021,6 +1143,209 @@ export class CharacterRig {
     return out;
   }
 
+  private sceneTextures(scene: THREE.Object3D, extra: THREE.Object3D[] = []): Set<THREE.Texture> {
+    const textures = new Set<THREE.Texture>();
+    for (const root of [scene, ...extra]) root.traverse((object) => {
+      const mesh = object as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+        for (const value of [...Object.values(material), ...Object.values(material.userData)]) {
+          if ((value as THREE.Texture | undefined)?.isTexture) textures.add(value as THREE.Texture);
+        }
+      }
+    });
+    return textures;
+  }
+
+  private async loadBindingTexture(url: string | undefined, colorSpace: THREE.ColorSpace): Promise<THREE.Texture | null> {
+    if (!url) return null;
+    try {
+      const texture = await this.texLoader.loadAsync(url);
+      texture.colorSpace = colorSpace;
+      texture.flipY = false;
+      texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+      texture.needsUpdate = true;
+      return texture;
+    } catch (error) {
+      console.warn(`[CharacterRig] failed to load material texture '${url}'`, error);
+      return null;
+    }
+  }
+
+  private async loadMaterialBindings(
+    bindings: Record<string, RigMaterialBinding>,
+    scene: THREE.Object3D,
+  ): Promise<Map<string, LoadedMaterial>> {
+    const names = new Set(this.collectStandardMaterials(scene).map((material) => material.name));
+    const loaded = new Map<string, LoadedMaterial>();
+    await Promise.all(Object.entries(bindings).map(async ([name, material]) => {
+      // Do not fetch assets for names absent from this GLB or unsupported source shaders.
+      if (!names.has(name)) return;
+      const entry: LoadedMaterial = {
+        material, region: null, decals: [], baked: null, emissive: null, glassNormal: null, led: null,
+      };
+      if (this.usesStandardBinding(material)) {
+        [entry.baked, entry.decals, entry.emissive] = await Promise.all([
+          this.loadBakedSet(material), this.loadGarmentDecals(material), this.loadEmissiveMap(material),
+        ]);
+        if (!entry.baked) entry.region = await this.loadRegionMap(material);
+      } else if (material.family === "glass" && material.glass) {
+        entry.glassNormal = await this.loadBindingTexture(material.glass.normal, THREE.NoColorSpace);
+      } else if (material.family === "led" && material.ledScreen) {
+        const [animation, colorRamp, normal] = await Promise.all([
+          this.loadBindingTexture(material.ledScreen.animation, THREE.SRGBColorSpace),
+          this.loadBindingTexture(material.ledScreen.colorRamp, THREE.SRGBColorSpace),
+          this.loadBindingTexture(material.ledScreen.normal, THREE.NoColorSpace),
+        ]);
+        if (animation) {
+          animation.magFilter = THREE.NearestFilter;
+          animation.minFilter = THREE.NearestFilter;
+          animation.generateMipmaps = false;
+          entry.led = { animation, colorRamp, normal };
+        } else {
+          colorRamp?.dispose();
+          normal?.dispose();
+        }
+      }
+      loaded.set(name, entry);
+    }));
+    return loaded;
+  }
+
+  private usesStandardBinding(material: RigMaterialBinding): boolean {
+    if (material.family === "glass" || material.family === "led") return false;
+    // A single-material item may carry explicit legacy colour/PBR data even when its
+    // source shader has no reconstruction. Metadata alone preserves the embedded GLB
+    // appearance for every family, including a layered slot awaiting its own bake.
+    return Object.entries(material).some(([key, value]) =>
+      value !== undefined && !["family", "doubleSided", "glass", "ledScreen"].includes(key));
+  }
+
+  private applyMaterialBindings(
+    mesh: THREE.Mesh,
+    bindings: Map<string, LoadedMaterial>,
+    applied: Map<THREE.Material, THREE.Material>,
+    hairCoverage: THREE.Texture | null,
+  ): void {
+    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+    const result = materials.map((source) => {
+      const previous = applied.get(source);
+      if (previous) return previous;
+      const binding = bindings.get(source.name);
+      if (!binding || !(source as THREE.MeshStandardMaterial).isMeshStandardMaterial) return source;
+      const { material } = binding;
+      let output = source as THREE.MeshStandardMaterial;
+      if (material.family === "glass" && material.glass) {
+        this.clearSurfaceMaps(output);
+        output.color.set(material.glass.color);
+        output.opacity = material.glass.opacity;
+        output.roughness = material.glass.roughness;
+        output.normalMap = binding.glassNormal;
+        output.metalness = 0;
+        output.transparent = output.opacity < 1;
+        output.depthWrite = !output.transparent;
+        output.alphaTest = 0;
+      } else if (material.family === "led") {
+        this.clearSurfaceMaps(output);
+        output.color.set(0x050505);
+        output.roughness = 0.25;
+        output.metalness = 0;
+        output.transparent = false;
+        output.depthWrite = true;
+        output.alphaTest = 0;
+        if (binding.led && material.ledScreen) this.applyLedScreen(output, material.ledScreen, binding.led);
+      } else if (this.usesStandardBinding(material)) {
+        // Reuse the existing shader implementation with one material at a time. Source
+        // family replaces the legacy glass-name guess on this authoritative path.
+        const carrier = new THREE.Mesh(mesh.geometry, output);
+        this.applyMaterial(carrier, material, binding.region, binding.decals, binding.baked,
+          hairCoverage, binding.emissive, false);
+        output = carrier.material;
+        // A material can be removed before its first shader compile. Own decal textures
+        // immediately, instead of relying on onBeforeCompile to register them for cleanup.
+        binding.decals.forEach((decal, index) => { output.userData[`garmentDecalTex${index}`] = decal.tex; });
+      }
+      if (hairCoverage && !this.usesStandardBinding(material)) {
+        output.alphaMap = hairCoverage;
+        output.alphaTest = 0.5;
+        output.transparent = false;
+        output.side = THREE.DoubleSide;
+        output.envMapIntensity = 0.55;
+      }
+      if (material.doubleSided !== undefined) {
+        output.side = material.doubleSided ? THREE.DoubleSide : THREE.FrontSide;
+      }
+      output.needsUpdate = true;
+      applied.set(source, output);
+      return output;
+    });
+    mesh.material = Array.isArray(mesh.material) ? result : result[0];
+  }
+
+  private clearSurfaceMaps(material: THREE.MeshStandardMaterial): void {
+    material.map = material.normalMap = material.roughnessMap = material.metalnessMap = null;
+    material.alphaMap = material.aoMap = material.emissiveMap = null;
+    material.emissive.set(0x000000);
+    material.emissiveIntensity = 1;
+  }
+
+  private applyLedScreen(
+    material: THREE.MeshStandardMaterial,
+    screen: NonNullable<RigMaterialBinding["ledScreen"]>,
+    textures: NonNullable<LoadedMaterial["led"]>,
+  ): void {
+    material.map ??= CharacterRig.whiteTex(); // ensures vMapUv exists on the standard shader
+    material.normalMap = textures.normal;
+    material.emissive.set(0xffffff);
+    material.userData.ledAnimationTexture = textures.animation;
+    material.userData.ledScreen = screen;
+    if (textures.colorRamp) material.userData.ledColorRampTexture = textures.colorRamp;
+    const time = { value: screen.captureTime ?? 0 };
+    const start = performance.now();
+    if (screen.captureTime === undefined) material.onBeforeRender = () => {
+      time.value = (performance.now() - start) / 1000;
+    };
+    const tint = new THREE.Color(screen.tint ?? "#ffffff");
+    const rampImage = textures.colorRamp?.image as { width?: number; height?: number } | undefined;
+    const verticalRamp = (rampImage?.height ?? 1) > (rampImage?.width ?? 1);
+    const atlasImage = textures.animation.image as { width?: number; height?: number } | undefined;
+    const pixelWidth = screen.pixelWidth ?? (atlasImage?.width ?? screen.trackCount) / screen.trackCount;
+    const pixelHeight = screen.pixelHeight ?? (atlasImage?.height ?? screen.frameCount) / screen.frameCount;
+    const key = `led-${CharacterRig.tintUid++}`;
+    material.customProgramCacheKey = () => key;
+    material.onBeforeCompile = (shader) => {
+      shader.uniforms.uLedAnimation = { value: textures.animation };
+      shader.uniforms.uLedColorRamp = { value: textures.colorRamp ?? CharacterRig.whiteTex() };
+      shader.uniforms.uLedTime = time;
+      shader.uniforms.uLedTint = { value: tint };
+      shader.uniforms.uLedBrightness = { value: screen.brightness };
+      // The exported atlas has tracks in columns and frames in rows. Placement is a
+      // reconstruction from source UV scalars; the cooked Unreal shader graph is absent.
+      shader.fragmentShader = [
+        "uniform sampler2D uLedAnimation;",
+        "uniform sampler2D uLedColorRamp;",
+        "uniform float uLedTime;",
+        "uniform vec3 uLedTint;",
+        "uniform float uLedBrightness;",
+        shader.fragmentShader,
+      ].join("\n").replace("#include <emissivemap_fragment>", [
+        `vec2 ledUv = (vMapUv - 0.5) / ${screen.uvScale.toFixed(8)} + 0.5 + vec2(${(screen.uvOffsetU ?? 0).toFixed(8)}, ${screen.uvOffsetV.toFixed(8)});`,
+        "float ledInside = step(0.0, ledUv.x) * step(ledUv.x, 1.0) * step(0.0, ledUv.y) * step(ledUv.y, 1.0);",
+        `float ledFrame = mod(floor(uLedTime * ${screen.animationSpeed.toFixed(8)}), ${screen.frameCount.toFixed(1)});`,
+        `vec2 ledAtlasUv = (clamp(ledUv, 0.001, 0.999) + vec2(${Math.min(screen.animationTrack, screen.trackCount - 1).toFixed(1)}, ledFrame)) / vec2(${screen.trackCount.toFixed(1)}, ${screen.frameCount.toFixed(1)});`,
+        "vec4 ledPixel = texture2D(uLedAnimation, ledAtlasUv);",
+        `vec2 ledCell = fract(ledUv * vec2(${pixelWidth.toFixed(8)}, ${pixelHeight.toFixed(8)})) - 0.5;`,
+        "float ledRadius = length(ledCell);",
+        "float ledEdge = max(fwidth(ledRadius), 0.0001);",
+        "float ledCoverage = 1.0 - smoothstep(0.5 - ledEdge, 0.5 + ledEdge, ledRadius);",
+        textures.colorRamp
+          ? `vec3 ledColor = texture2D(uLedColorRamp, ${verticalRamp ? "vec2(0.5, clamp(ledUv.x, 0.0, 1.0))" : "vec2(clamp(ledUv.x, 0.0, 1.0), 0.5)"}).rgb;`
+          : "vec3 ledColor = vec3(1.0);",
+        "totalEmissiveRadiance = ledPixel.rgb * ledPixel.a * ledColor * uLedTint * uLedBrightness * ledInside * ledCoverage;",
+      ].join("\n"));
+    };
+  }
+
   // Load a skin's baked layered-composite set (albedo/normal/orm — scripts/bake-composite.mjs).
   // Assigned straight onto the mesh's MeshStandardMaterial; the textures sit on standard
   // material slots so dispose.ts frees them with the cosmetic scene on unequip.
@@ -1028,26 +1353,27 @@ export class CharacterRig {
     mat?: RigMaterial,
   ): Promise<{ map: THREE.Texture; normalMap: THREE.Texture; orm: THREE.Texture } | null> {
     if (!mat?.bakedSet) return null;
-    try {
-      const [map, normalMap, orm] = await Promise.all([
-        this.texLoader.loadAsync(mat.bakedSet.albedo),
-        this.texLoader.loadAsync(mat.bakedSet.normal),
-        this.texLoader.loadAsync(mat.bakedSet.orm),
-      ]);
-      map.colorSpace = THREE.SRGBColorSpace;
-      normalMap.colorSpace = THREE.NoColorSpace;
-      orm.colorSpace = THREE.NoColorSpace;
-      for (const t of [map, normalMap, orm]) {
-        t.flipY = false; // glTF UV convention (vMapUv / UV0), matches the baked maps
-        t.wrapS = THREE.ClampToEdgeWrapping;
-        t.wrapT = THREE.ClampToEdgeWrapping;
-        t.needsUpdate = true;
-      }
-      return { map, normalMap, orm };
-    } catch (e) {
-      console.warn(`[CharacterRig] failed to load baked set`, e);
+    const results = await Promise.allSettled([
+      this.texLoader.loadAsync(mat.bakedSet.albedo),
+      this.texLoader.loadAsync(mat.bakedSet.normal),
+      this.texLoader.loadAsync(mat.bakedSet.orm),
+    ]);
+    if (results.some((result) => result.status === "rejected")) {
+      for (const result of results) if (result.status === "fulfilled") result.value.dispose();
+      console.warn(`[CharacterRig] failed to load baked set`, results.filter((result) => result.status === "rejected"));
       return null;
     }
+    const [map, normalMap, orm] = results.map((result) => (result as PromiseFulfilledResult<THREE.Texture>).value);
+    map.colorSpace = THREE.SRGBColorSpace;
+    normalMap.colorSpace = THREE.NoColorSpace;
+    orm.colorSpace = THREE.NoColorSpace;
+    for (const t of [map, normalMap, orm]) {
+      t.flipY = false; // glTF UV convention (vMapUv / UV0), matches the baked maps
+      t.wrapS = THREE.ClampToEdgeWrapping;
+      t.wrapT = THREE.ClampToEdgeWrapping;
+      t.needsUpdate = true;
+    }
+    return { map, normalMap, orm };
   }
 
   // Load a hair's strand-coverage mask (greyscale; white = hair). Used as an alphaMap +
@@ -1137,6 +1463,7 @@ export class CharacterRig {
     baked: { map: THREE.Texture; normalMap: THREE.Texture; orm: THREE.Texture } | null = null,
     hairCov: THREE.Texture | null = null,
     emissiveTex: THREE.Texture | null = null,
+    useGlassHeuristic = true,
   ): void {
     // Hair coverage cuts the flat cards into strands — apply first (independent of dye data, and
     // needed even if `mat` is absent). DoubleSide: cards are single-sided planes seen from both
@@ -1176,7 +1503,7 @@ export class CharacterRig {
     // before the branches below, which skip glass materials via the CharacterRig.isGlass guards.
     {
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-      for (const m of mats) if (CharacterRig.isGlass(m)) this.applyGlass(m as THREE.MeshStandardMaterial);
+      for (const m of mats) if (useGlassHeuristic && CharacterRig.isGlass(m)) this.applyGlass(m as THREE.MeshStandardMaterial);
     }
     // Baked layered composite: the per-skin look is fully resolved (color + detail + pattern
     // + AO in the albedo; spatial roughness/metalness in the orm). Assign it straight onto the
@@ -1185,7 +1512,7 @@ export class CharacterRig {
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       for (const m of mats) {
         const std = m as THREE.MeshStandardMaterial;
-        if (CharacterRig.isGlass(std)) continue; // glass lens already handled above
+        if (useGlassHeuristic && CharacterRig.isGlass(std)) continue;
         std.map = baked.map;
         std.normalMap = baked.normalMap;
         std.roughnessMap = baked.orm; // three reads G
@@ -1213,7 +1540,7 @@ export class CharacterRig {
     const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
     for (let i = 0; i < mats.length; i++) {
       let std = mats[i] as THREE.MeshStandardMaterial;
-      if (CharacterRig.isGlass(std)) continue; // glass lens already handled above
+      if (useGlassHeuristic && CharacterRig.isGlass(std)) continue;
       if (wantsSheen && std.isMeshStandardMaterial && !(std as THREE.MeshPhysicalMaterial).isMeshPhysicalMaterial) {
         const phys = new THREE.MeshPhysicalMaterial();
         phys.copy(std);
@@ -1571,9 +1898,133 @@ export class CharacterRig {
     if (handle.underLayerScene) {
       this.root.remove(handle.underLayerScene);
       for (const mesh of handle.underLayerMeshes ?? []) mesh.skeleton.dispose();
+      this.forgetInspectorOverrides(handle.underLayerScene);
       disposeObject3D(handle.underLayerScene);
     }
+    this.forgetInspectorOverrides(handle.scene);
     this.equipped.delete(slot);
+  }
+
+  // Report live objects for the dev inspector, including the resolved material maps and
+  // source-sidedness. This catches missing textures and incorrect slot assignments that
+  // cannot be diagnosed by reading catalog metadata alone.
+  inspect(): InspectGroup[] {
+    const groups: InspectGroup[] = [];
+
+    const readMesh = (mesh: THREE.Mesh | THREE.SkinnedMesh): InspectMesh => {
+      const g = mesh.geometry;
+      const idx = g.index;
+      const pos = g.attributes.position;
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      return {
+        uuid: mesh.uuid,
+        name: mesh.name || "(unnamed)",
+        skinned: (mesh as THREE.SkinnedMesh).isSkinnedMesh === true,
+        visible: mesh.visible,
+        triangles: Math.round((idx ? idx.count : (pos?.count ?? 0)) / 3),
+        vertices: pos?.count ?? 0,
+        materials: mats.map((m) => {
+          const std = m as THREE.MeshStandardMaterial;
+          // A texture's origin: TextureLoader keeps the HTMLImageElement, so `src` is the URL
+          // the rig fetched. A texture that came in with the GLB has no src — worth showing,
+          // since "from the mesh file" vs "assigned by the rig" is the question being asked.
+          const mapOf = (t: THREE.Texture | null | undefined) =>
+            t ? ((t.image as { src?: string } | undefined)?.src ?? "(embedded in mesh)") : null;
+          return {
+            name: std.name || "(unnamed)",
+            side: std.side === THREE.DoubleSide ? "double" : std.side === THREE.BackSide ? "back" : "front",
+            transparent: !!std.transparent,
+            alphaTest: std.alphaTest ?? 0,
+            maps: {
+              map: mapOf(std.map),
+              normalMap: mapOf(std.normalMap),
+              roughnessMap: mapOf(std.roughnessMap),
+              metalnessMap: mapOf(std.metalnessMap),
+              alphaMap: mapOf(std.alphaMap),
+              emissiveMap: mapOf(std.emissiveMap),
+            },
+          };
+        }),
+      };
+    };
+
+    const collect = (label: string, id: string, roots: THREE.Object3D[]): void => {
+      const meshes: InspectMesh[] = [];
+      for (const r of roots)
+        r.traverse((o) => {
+          const m = o as THREE.Mesh;
+          if (m.isMesh) meshes.push(readMesh(m));
+        });
+      if (meshes.length) groups.push({ label, id, meshes });
+    };
+
+    if (this.bodyScene) collect("body", "body", [this.bodyScene]);
+    for (const [slot, h] of this.equipped) {
+      const roots: THREE.Object3D[] = [h.scene, ...h.statics];
+      if (h.underLayerScene) roots.push(h.underLayerScene);
+      collect(slot, h.id, roots);
+    }
+    return groups;
+  }
+
+  // Inspector actions. Kept on the rig so the panel never reaches into three directly.
+  setMeshVisible(uuid: string, visible: boolean): void {
+    this.root.traverse((o) => {
+      if (o.uuid === uuid) o.visible = visible;
+    });
+  }
+
+  setMeshSide(uuid: string, side: "front" | "double"): void {
+    this.root.traverse((o) => {
+      if (o.uuid !== uuid) return;
+      const mesh = o as THREE.Mesh;
+      const sourceMaterials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      const overrides = this.inspectorMaterialOverrides.get(uuid) ?? new Set<THREE.Material>();
+      const materials = sourceMaterials.map((source) => {
+        // GLTFLoader reuses one Three.js material for every primitive that references the same
+        // glTF material. A side toggle is a mesh-local diagnostic, so copy only when another
+        // mesh still points at the source; an unshared material can be changed in place.
+        if (overrides.has(source)) return source;
+        if (!this.isMaterialSharedOutsideMesh(mesh, source)) return source;
+        const copy = cloneMaterialForInspector(source);
+        if (source.userData.ledScreen && copy.userData.ledAnimationTexture) {
+          // Material.clone deliberately omits shader callbacks. Rebuild the LED patch
+          // against the copy's textures so a side diagnostic cannot remove the display
+          // or leave its uniforms pointing at a sibling's disposed texture objects.
+          this.applyLedScreen(copy as THREE.MeshStandardMaterial, source.userData.ledScreen, {
+            animation: copy.userData.ledAnimationTexture,
+            colorRamp: copy.userData.ledColorRampTexture ?? null,
+            normal: (copy as THREE.MeshStandardMaterial).normalMap,
+          });
+        }
+        overrides.add(copy);
+        return copy;
+      });
+      if (materials.some((material, i) => material !== sourceMaterials[i])) {
+        mesh.material = Array.isArray(mesh.material) ? materials : materials[0];
+        this.inspectorMaterialOverrides.set(uuid, overrides);
+      }
+      for (const m of materials) {
+        m.side = side === "double" ? THREE.DoubleSide : THREE.FrontSide;
+        m.needsUpdate = true;
+      }
+    });
+  }
+
+  private isMaterialSharedOutsideMesh(mesh: THREE.Mesh, material: THREE.Material): boolean {
+    let shared = false;
+    this.root.traverse((o) => {
+      if (shared || o === mesh) return;
+      const other = o as THREE.Mesh;
+      if (!other.isMesh) return;
+      const materials = Array.isArray(other.material) ? other.material : [other.material];
+      if (materials.includes(material)) shared = true;
+    });
+    return shared;
+  }
+
+  private forgetInspectorOverrides(root: THREE.Object3D): void {
+    root.traverse((o) => this.inspectorMaterialOverrides.delete(o.uuid));
   }
 
   dispose(): void {
@@ -1588,5 +2039,6 @@ export class CharacterRig {
     this.skeleton = null;
     this.bonesByName.clear();
     this.bodyRestInverses.clear();
+    this.inspectorMaterialOverrides.clear();
   }
 }

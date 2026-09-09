@@ -19,6 +19,7 @@ npm run build              # production build -> dist/
 npm run preview            # preview the built bundle
 npm run typecheck          # tsc --noEmit
 npm run validate:catalog   # schema-check src/data/items.json
+npm run import:catalog -- --materials-only  # refresh per-material bindings from the local dump
 ```
 
 ## Assets
@@ -116,5 +117,277 @@ deploys if the catalog is invalid.
 
 ## Roadmap
 
-Current milestone: M5 — materials pipeline (branch
-`claude/m5-materials-pipeline`).
+M5 (materials pipeline) has shipped: 2,531 of 2,866 items carry a 3D model, with
+per-skin baked albedo/normal/orm sets replacing the old flat region tint.
+
+What's next, roughly in the order it's worth doing. Nothing here is committed to
+a date.
+
+**0. Lighting and tone calibration.** Everything below that touches colour is
+measured against the official item icons, and that comparison is only meaningful
+if this renderer's lighting resembles the one the icons were rendered with. It
+currently may not: `scripts/lib/color-model.mjs` exists solely to bridge a gap
+where authored colours come out brighter and more saturated in the icons than in
+the raw values (`#a07819` reading as roughly `#eeb606`). That gap was attributed
+to the game's shader; it has never been tested against the simpler explanation,
+which is that our studio environment and exposure are darker and flatter. The
+deliverable is not "nicer lighting" — it is a defensible answer to whether that
+fitted colour model is a real finding about the game or an artefact of our
+lighting. `?debugAlbedo=1` already renders unlit albedo, which is what separates
+the two questions. **Build the light rigs and environments as data, not as
+hardcoded scene code** — items 2 and 6 both need exactly this machinery.
+
+**A first attempt on 2026-08-15 produced nothing usable, for a reason worth
+recording.** Comparing the mean colour of a render against the mean colour of an
+icon is invalid while the render includes the bare body: 45k item pixels in the
+icon against 488k in the render, most of them skin, so skin tone dominates and
+the means are not comparable. **Any measurement here must isolate the item's
+pixels first** — render the piece against a known background, or mask by the
+item's own coverage. One directional signal survived: lit luminance 94.7 against
+unlit 111.5, so our lighting *darkens* the albedo, and the icon at 120.5 is
+brighter than both. Consistent with the hypothesis; not evidence for it.
+
+**1. Per-item verification matrix.** `scripts/visual-diff/` scores each item's
+render against its official icon, and `verdicts.generated.json` already records a
+score, a category and a fix-class for 239 of them. The gap is granularity and
+trust: a single score can't say *what* is wrong, and a verdict has no way of
+expiring when the assets underneath it change. The plan is per-aspect marks —
+position, culling, material, UV, shading, effects — each carrying who checked it
+and a hash of the inputs, so any re-bake that could invalidate a mark flips it
+back to unverified automatically. Everything below is easier to target, and
+possible to measure, once this exists.
+
+**2. Dev mode.** A gated in-app surface for inspecting and marking a single item:
+swap parameters, toggle culling, see the icon side by side. `?tune=1` already
+does a narrow version of this for five PBR factors (see `MaterialTuner.tsx`).
+
+**What is actually wrong with it, from using it rather than reading it** — the
+panel is `absolute right-0 top-0 h-full w-[300px]` and sits *over* the canvas at
+`z-20` with no way to collapse it, so it permanently occludes roughly a third of
+the viewport, including part of the model it exists to inspect. Five global PBR
+multipliers is also a thin surface: the parameters that decide what a garment
+looks like are per-layer and per-region, and none of them are reachable.
+
+So the first two requirements are concrete: **do not cover the model**, and
+**reach the parameters that actually matter**.
+
+**The inspector half of this shipped on 2026-08-15**: `?inspect=1` mounts
+`MeshInspector.tsx`, which reports the live three.js scene — every mesh, its
+materials, triangle counts, which texture each map slot actually holds, and
+whether a material is double-sided — plus hide/show and a back-face toggle per
+mesh. It docks to the window edge, so the model is never covered. What remains of
+this item is the *marking* surface: recording a verdict against the matrix from
+inside the app.
+
+**The third requirement came from a real failure on 2026-08-15, and it reframed
+the item.**
+Looking at a rendered helmet, the owner asked whether the visor was a separate
+mesh — because something looked wrong inside it. Answering took terminal queries
+through `gltf-transform`, and the answer was two defects nobody had reported:
+the piece is two primitives with two materials that the runtime flattens to one,
+and every mesh in the catalogue is double-sided so the shell's interior renders
+through the visor opening.
+
+**Neither was visible to any check, and neither was answerable from the app.** So
+dev mode is not primarily a slider panel — it is **an inspector for what is
+actually being rendered**, closer to a scene outliner than a tuner:
+
+- the mesh tree: primitives, their materials, triangle and vertex counts
+- per-material state — `doubleSided`, `alphaMode`, which maps are actually bound,
+  and **which texture the runtime ended up assigning**, which is not always the
+  one the asset declares
+- isolate or hide a primitive, and toggle back-face culling, to see what a part
+  contributes
+- the item's baked textures viewable directly, beside the model
+
+The test for this item is simple: **the owner should be able to answer "what am I
+looking at" without an agent running a query.** Every question that needed a
+terminal to answer is a requirement.
+
+**3. Mesh culling.** Two separate problems that need separate treatment.
+
+*Body culling* — the base body poking through clothes: feet inside shoes, legs
+through trousers. **The runtime supports this and it is roughly half-done.**
+`CharacterRig` maps any equipped item to a `<name>.bodymask.png` sibling and
+discards the body texels it covers, and 392 such masks already exist — covering
+**363 of the 847 distinct meshes (43%)**. The remaining 484 need generating, and
+none of the existing ones has ever been checked. Generating them is a coverage
+bake from the garment mesh onto the body's UV, which the existing Blender
+conversion step can do. Per mesh, and machine-checkable.
+
+*Garment-vs-garment clipping* — a coat sleeve through an undersuit. This is a
+property of a **combination**, not of an item, so it cannot be tracked per item
+and should be sampled across common pairings instead.
+
+*Back faces* — every mesh is `doubleSided: true`, applied blanket at conversion,
+so a closed solid renders its own interior through any opening. Correct only for
+the flat things: chainmail, cloth, hair cards. `?inspect=1` badges it amber per
+material, so the scale is visible without a query.
+
+**Two geometric heuristics were tried on 2026-08-15 and both failed. Do not try a
+third.**
+
+*Boundary-edge ratio* — "a closed shell has no open edges". Implemented and
+tested: the racing helmet classified as **open**, because a helmet legitimately
+has a neck aperture, so it kept its back faces and the defect survived. The
+signal does not separate the case that matters.
+
+*Volume-to-area shape factor* — "a sheet encloses nothing, a shell encloses
+space". Measured over real assets and the ranges **overlap**, so no threshold
+exists:
+
+```
+SOLID  helmet shell   0.0071      SHEET  knight cape       0.0262
+SOLID  rubber gloves  0.0266      SHEET  sleeve chainmail  0.0526
+SOLID  body           0.0282      SHEET  chainmail skirt   0.0793
+```
+
+**The game ships the answer, as it did for the clipping rules.** UE materials
+carry a `TwoSided` flag, and the dump exports it: of 318 master materials under
+`MaterialLibrary`, **40 declare it** — `M_CharacterGlass_01/02`,
+`M_CharacterGemstones`, `M_CharacterBallisticGel`, `M_CharacterDetailAlpha`,
+`M_Charachter_CelShaded` and similar. UE's default is `false`, so the remaining
+~278 masters should be single-sided and only those 40 stay double.
+
+**Implemented 2026-09-08:** the importer resolves each material's parent chain,
+including instance overrides, and carries `TwoSided` to the runtime in
+`model.materialBindings`. Missing parents stay unknown; resolved masters use
+Unreal's default `false`. Existing GLBs retain their old export flags, but the
+viewer now applies the source flags per material. See
+[_docs/2026-09-08-material-bindings.md](_docs/2026-09-08-material-bindings.md).
+
+**The game already ships the rules for both, and this repo already extracts
+them.** `scripts/customization.generated.json` holds the per-item customisation
+DataAssets, of 3,559 entries:
+
+```
+3,193  hideSlots   which slots this item suppresses
+1,412  hideMesh    18 distinct tags — HairCovered, WristsCovered, TightPants,
+                   SkirtCovered, BodyReplacement, WearingHood, RemoveTail …
+2,273  shape       deformation rules, e.g. ShrinkWrap.shrink_gloves_under_jacket,
+                   PushInsideClothes.push_lower_torso, PushLumbar.coat_covers_butt
+```
+
+None of it is consumed: `model.hides` is populated on **0 of 2,866** catalog
+items, and `CharacterRig` carries a `TODO(clip)` where it would be read. So the
+first half of this work is an import and wiring job against a closed 18-tag
+vocabulary, not a research problem.
+
+`shape` is the interesting half. The game does not only hide meshes — it deforms
+them, shrink-wrapping gloves under a jacket rather than hiding either. That is
+real work to implement, but the per-item rule list is already on disk, so it is
+implementation rather than reverse-engineering.
+
+**4. Save and share, finished.** The share codec is done and shipped —
+`?outfit=` carries a versioned, slot-named payload (`src/lib/outfit.ts`), and the
+schema already reserves `dyes` and `presetName`. What's missing is the surface:
+a copy-link control, and named local saves.
+
+**5. Hair and effect dynamics.** Hair renders as static alpha-tested cards with
+no motion. Separately, ~860 material instances carry time-driven shader effects
+that currently render as a still frame — `ShimmerIntensity` (861),
+`ShimmerRotationTimeMultiplier` (857), `FakeReflectionCubemap` (809), plus a
+handful of `Animation` / `Pos Tex` / `Rot Tex` bindings. Those parameters survive
+extraction and are self-describing, so a generic reconstruction is tractable. A
+few bespoke shaders are not: the lava and lava-lamp materials expose *no*
+parameters at all, so nothing can be inferred and only eyeballed approximation is
+available.
+
+**Historical finding — corrected 2026-09-08: multi-part pieces were flattened.** A helmet is one mesh with two
+primitives — shell (6,570 tris, `MI_Helmet_Helmet`) and visor (976 tris,
+`MI_Helmet_Visor`) — but `CharacterRig` assigns the baked set to *every* material
+on the mesh:
+
+```js
+for (const m of mats) { std.map = baked.map; ... }   // src/rig/CharacterRig.ts:807
+```
+
+So the visor is painted with the shell's texture. **5 of 40** sampled cosmetics
+have more than one material, and all of them lose the distinction. The bake is
+the other half of it: `readMI` takes the first material instance carrying layered
+parameters, so a piece's second material is never even read.
+
+**Historical finding — corrected at runtime 2026-09-08: blanket double-sided exports.** 40 of 40 sampled cosmetics have `doubleSided:
+true` on every material, applied blanket at conversion. That is correct for
+chainmail, cloth and hair cards, and wrong for a closed solid — through a
+helmet's visor opening you see the interior of the far side of the shell, which
+reads as stray geometry inside the item. It also costs fill rate everywhere.
+Both are visible on `racing-helmet-carbonfiber`.
+
+**`M_LEDScreen` now has a separate static reconstruction (2026-09-08).** The racing
+helmet's visor is its own material instance parented to `M_LEDScreen`, separate
+from the helmet shell, and it carries an animated sprite sheet rather than a
+static map:
+
+```
+textures  Animation, ColorRamp, Normal, Roughness
+scalars   AnimationTrack, FrameCount, TrackCount, Brightness,
+          ColorSHiftSpeed, AnimationSpeed, FlickerSpeed,
+          UVScale, UVOffsetV, VerticalFade, HorizontalFade
+```
+
+The importer and baker now preserve each source material slot. Layered surfaces
+receive independent baked sets; LED surfaces use their own atlas, ramp and
+parameters, and glass surfaces use their source tint/opacity/roughness. The
+viewer no longer paints the visor with the shell's texture. Unresolved source
+assignments are recorded in `scripts/material-bindings.generated.json`.
+
+Note this one **does** have a static reference: the icon shows a frame of the
+animation, so the still appearance is checkable even though the motion is not.
+
+**Note this breaks the verification method.** A still frame cannot show whether
+motion is right, and the official icons are static too — so for animated effects
+there is no ground truth in any source we hold. These need their own status
+(static-verified / motion-unverified / motion-approved-by-human) rather than a
+plain pass/fail, or they will either sit permanently unverified or be marked
+verified on a still frame while the motion is wrong.
+
+**6. Scene editor.** A user-facing sandbox: swap backgrounds including 360°/180°
+panoramas, add and move lights, frame a shot. Mostly a UI over item 0's
+machinery, which is why that one says to build environments as data. Scene state
+can ride the existing share codec as additional fields, turning "share your
+outfit" into "share your shot" without a second system.
+
+**Decide this before building it:** once users control lighting, "correct colour"
+stops being well-defined, because every verdict in item 1 is relative to one
+lighting setup. There must be a single canonical reference preset that
+verification always uses and users cannot alter; everything else is a creative
+departure from it. Left until late, this makes the matrix's colour marks
+uninterpretable.
+
+**7. Emotes.** Deliberately last. The rig poses a shared skeleton but has no
+animation playback, so this is the only item that needs a genuinely new
+subsystem rather than an extension of one.
+
+### Why the detail normals are switched off
+
+`bake-composite.mjs` sets `normalStrength` and `macroNormalStrength` to `0`, and
+that is **correct, not a fudge** — though the reason was only established on
+2026-08-14 and the source comments blamed the symptom rather than the cause.
+
+The garment materials tile their detail normal aggressively: the Sentinel Top's
+layers declare `DetailTiling` of **20**, and layers 4 and 6–8 declare **60**. In
+engine that is fine, because the tiled map is sampled per-pixel at screen
+resolution — the whole point of tiling is that the detail can be finer than any
+atlas.
+
+This pipeline bakes into a fixed **1024px** UV0 atlas, so a 20× tile gets about
+51 pixels and a 60× tile about 17. Fine fabric weave aliases into coarse
+quilting. Measured directly: re-baking the Sentinel Top with the authored
+strengths restored changes 26% of the rendered pixels and covers the garment,
+belt and shoulder pads in a visible waffle.
+
+**So this is an architectural limit of baking to UV0, not a tuning problem, and
+no constant fixes it.** Real surface detail needs the tiled normal applied at
+*runtime* with its own texture repeat, the way the game does it — a second
+normal sampled per-pixel rather than folded into the atlas. Baking at 4096 would
+soften the aliasing at 16× the memory and still not reproduce it.
+
+### Known gaps
+
+The render-vs-icon census sits at a mean score of ~61/100 across 239 sampled
+items, with colour accuracy the largest single category of failure. Some of that
+is structural rather than fixable: the master material's node graph does not
+survive extraction, so every material here is a reconstruction fitted against
+the icons rather than a decode. See `finals-re-kb` for the format research this
+is built on.
