@@ -6,6 +6,9 @@ import { resolve } from "node:path";
 import { chromium } from "playwright-core";
 
 const out = resolve("visual-diff/reconstructed");
+// A fresh server avoids importing a second Zustand store after Vite has hot-
+// replaced the catalog in a long-running development session.
+const appUrl = (process.env.APP_URL ?? 'http://127.0.0.1:5173').replace(/\/$/, '');
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ channel: "msedge", headless: true });
 const page = await browser.newPage({ viewport: { width: 1080, height: 1000 } });
@@ -21,7 +24,7 @@ const expectedMaterials = suffix => [id(suffix), ...(suffix === "leather-black" 
   .map(id => `${id}:recovered`).sort();
 function url(suffix = "leather-black") {
   const outfit = "1." + Buffer.from(JSON.stringify({ slots: { outerwear: id(suffix) } })).toString("base64url");
-  return `http://127.0.0.1:5173/?outfit=${outfit}&reconstructed=1&isolate=1&pose=a`;
+  return `${appUrl}/?outfit=${outfit}&reconstructed=1&isolate=1&pose=a`;
 }
 async function state() {
   return page.evaluate(() => {

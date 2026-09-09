@@ -93,6 +93,9 @@ export class BodyDecalManager {
           (u) =>
             new Promise<HTMLImageElement | null>((res) => {
               const im = new Image();
+              // Hosted coverage is drawn into a canvas and uploaded to WebGL.
+              // Request CORS permission before src so that canvas stays readable.
+              im.crossOrigin = "anonymous";
               im.onload = () => res(im);
               im.onerror = () => res(null);
               im.src = u;
