@@ -3,18 +3,23 @@ import { OrbitControls, ContactShadows } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal } from "../rig/CharacterRig";
+import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
+import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
+import { loadSourceAssemblyItems, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import MaterialTuner from "./MaterialTuner";
+import { StablePreview } from "./StablePreview";
 import MeshInspector from "./MeshInspector";
 import { createGltfLoader } from "../rig/loaders";
 import { useBuildStore, effectiveBuild } from "../store/useBuildStore";
 import { getItemById } from "../lib/catalog";
 import { modelUrl } from "../lib/assets";
+import { encodeOutfit } from "../lib/outfit";
 import { SLOTS, type Slot } from "../lib/slots";
 import type { Item } from "../lib/item";
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
 const NAIL_MASK_URL = modelUrl("models/decals/_shared/nailmask.webp");
+const RECOVERED_ITEMS = ["casual-longcoat-leather-black", "casual-longcoat-leather-camo", "casual-longcoat-satin"];
 
 // Coarse quality tier: phones get smaller shadow maps / cheaper grounding.
 const IS_TOUCH = typeof navigator !== "undefined" && navigator.maxTouchPoints > 0;
@@ -29,12 +34,27 @@ interface DevParams {
   pose?: "a" | "idle";
   noBaked: boolean;
   tune: boolean;
+  reconstructed?: boolean;
+  sourceMeshes?: boolean;
+  sourceAssembly?: boolean;
+  sourceFitting?: boolean;
+  surfaceView?: SurfaceView;
+  isolate?: boolean;
+  temporal?: boolean;
   inspect: boolean;
 }
 function readDevParams(): DevParams {
-  if (!import.meta.env.DEV || typeof window === "undefined")
+  if (typeof window === "undefined")
     return { debugAlbedo: false, noBaked: false, tune: false, inspect: false };
   const p = new URLSearchParams(window.location.search);
+  // Production uses the validated source paths automatically. Diagnostic URL
+  // switches remain local; reconstructed=0 is a complete legacy comparison.
+  if (!import.meta.env.DEV) return {
+    debugAlbedo: false, noBaked: false, tune: false, inspect: false,
+    reconstructed: p.get("reconstructed") !== "0",
+    sourceMeshes: true, sourceAssembly: true, sourceFitting: true,
+    surfaceView: "lit", isolate: false, temporal: true,
+  };
   const cam = p.get("cam")?.split(",").map(Number);
   const fov = Number(p.get("fov"));
   return {
@@ -47,12 +67,22 @@ function readDevParams(): DevParams {
     noBaked: p.get("nobaked") === "1",
     // ?tune=1 mounts the DEV MaterialTuner (icon-vs-render slider panel).
     tune: p.get("tune") === "1",
+    reconstructed: p.get("reconstructed") === "1",
+    sourceMeshes: p.get("sourceMeshes") !== "0",
+    sourceAssembly: p.get("sourceAssembly") !== "0",
+    sourceFitting: p.get("sourceFitting") !== "0",
+    surfaceView: SURFACE_VIEWS.find((v) => v === p.get("surface")) ?? "lit",
+    isolate: p.get("isolate") === "1",
+    temporal: p.get("temporal") !== "0",
     // ?inspect=1 mounts the DEV MeshInspector. Unlike the tuner it takes its own
     // column rather than overlaying the canvas, so the model is never occluded.
     inspect: p.get("inspect") === "1",
   };
 }
 const DEV = readDevParams();
+
+const sourcePreviewKey = (id: string, item: SourceOutfit['items'][string], skinParameters: SourceMaterialParameters[] = []) =>
+  `${id}|parts:${JSON.stringify(item.parts)}|parameters:${JSON.stringify([item.materialParameters, skinParameters])}`;
 
 // Two scene themes. "studio" reproduces the bright neutral wardrobe render the official
 // item icons were captured in — it's the calibration target, so its lighting must stay
@@ -277,6 +307,7 @@ export default function CharacterViewer() {
   const [theme, setTheme] = useState<SceneTheme>("studio");
   const build = useBuildStore((s) => s.build);
   const prev = useRef<Partial<Record<Slot, string | null>>>({});
+  const [hasRecoveredPreview, setHasRecoveredPreview] = useState(false);
 
   // Dev-only: expose the rig root + THREE so the visual-diff harness can bisect rendering
   // issues (toggle maps/meshes, inject test textures) in the live scene without guessing.
@@ -293,7 +324,8 @@ export default function CharacterViewer() {
     let cancelled = false;
     rig.setPose(DEV.pose ?? "idle"); // applied to the skeleton once the body loads
     rig
-      .loadBody(BODY_URL)
+      .loadBody(BODY_URL, DEV.reconstructed && DEV.sourceMeshes && DEV.sourceAssembly && DEV.sourceFitting
+        ? modelUrl("models/reconstructed-meshes-v2/SK_Body_M.glb") : undefined)
       .then(() => !cancelled && setReady(true))
       .catch((e) => {
         console.error(e);
@@ -310,14 +342,104 @@ export default function CharacterViewer() {
   // Diff the serializable `build` -> rig equip/unequip whenever it changes.
   useEffect(() => {
     if (!ready) return;
+    if (DEV.reconstructed) setError(null);
     let cancelled = false;
+    const controller = new AbortController();
     (async () => {
       // Harness idle flag: false while this equip loop has in-flight loads.
       (window as unknown as { __rigIdle?: boolean }).__rigIdle = false;
+      // Restore the previous inspection state before swapping items, including
+      // when the next item is outside the recovered material family.
+      rig.root.traverse((o) => {
+        if (typeof o.userData.reconstructionOriginalVisibility === "boolean") {
+          o.visible = o.userData.reconstructionOriginalVisibility;
+          delete o.userData.reconstructionOriginalVisibility;
+        }
+      });
       // Render a base top under Outerwear when Upper Body is empty (never-bare torso). Derived
       // from `build` only for the rig — the store/share-link `build` is untouched.
-      const eff = effectiveBuild(build);
+      let supported = new Set<string>();
+      if (DEV.reconstructed && DEV.sourceMeshes && DEV.sourceAssembly) {
+        try {
+          supported = await loadSourceAssemblyItems(modelUrl("models/reconstructed-assemblies-v1"));
+          if (cancelled) return;
+        } catch (e) {
+          if (cancelled) return;
+          console.error(e);
+          setError("Couldn’t load reconstructed item data.");
+          (window as unknown as { __rigIdle?: boolean }).__rigIdle = true;
+          return;
+        }
+      }
+      const completeCoat = !!build.outerwear && supported.has(build.outerwear);
+      const eff = completeCoat ? build : effectiveBuild(build);
+      let assembly: SourceOutfit | undefined;
+      let sourceShirtConflict = false;
+      if (DEV.reconstructed && DEV.sourceAssembly) {
+        try {
+          const ids = Object.values(eff).filter((id): id is string => !!id);
+          const sourceUrl = modelUrl("models/reconstructed-assembly-v2");
+          assembly = await loadSourceOutfit(ids, sourceUrl);
+          sourceShirtConflict = !!completeCoat && assembly.slotConflicts.some(c =>
+            c.slot === "EBodySlot::BodyUpper" && c.items.includes(build.outerwear!) && c.items.includes(build.upperBody!));
+          if (sourceShirtConflict) {
+            // The coat includes its authored top and occupies BodyUpper. Keep the
+            // user's shirt selection for removal of the coat, but it contributes
+            // neither geometry nor active tags while that complete coat is worn.
+            assembly = await loadSourceOutfit(ids.filter(id => id !== build.upperBody), sourceUrl);
+          }
+          if (cancelled) return;
+        } catch (e) {
+          if (cancelled) return;
+          console.error(e);
+          setError("Couldn’t load outfit fitting data.");
+          (window as unknown as { __rigIdle?: boolean }).__rigIdle = true;
+          return;
+        }
+      }
+      const appearanceSlots = new Set<Slot>();
+      // Source hair attaches through the preserved body's head frame. The
+      // legacy-body diagnostic modes must keep their legacy hair path as well.
+      const requestedHair = eff.hair && DEV.sourceMeshes && DEV.sourceFitting && supported.has(eff.hair) ? assembly?.items[eff.hair] : undefined;
+      const requestedFace = eff.face && DEV.sourceMeshes && DEV.sourceFitting ? assembly?.items[eff.face] : undefined;
+      const faceItem = eff.face ? getItemById(eff.face) : undefined;
+      if (assembly && requestedFace && faceItem?.model?.gltfPath && (requestedHair || (!eff.hair && rig.sourceAssemblyId('hair')))) {
+        appearanceSlots.add('hair'); appearanceSlots.add('face');
+        try {
+          const parameters = assembly.materialParameters.filter(p => p.itemId === eff.hair);
+          const assetsUrl = modelUrl('models/reconstructed-assemblies-v1');
+          const pair = await loadSourceSkinPair(faceItem.id, requestedFace, assetsUrl, parameters);
+          if (cancelled) return;
+          if (!pair) appearanceSlots.clear(); // this face remains on the existing path
+          else {
+            const hairKey = requestedHair ? sourcePreviewKey(eff.hair!, requestedHair) : null;
+            const faceKey = sourcePreviewKey(faceItem.id, requestedFace, parameters);
+            const changes: RigItem[] = [], removals: Slot[] = [];
+            if (prev.current.hair !== hairKey) {
+              if (requestedHair) changes.push({ id: eff.hair!, slot: 'hair', url: '',
+                sourceParts: await loadSourceRigParts(requestedHair, assetsUrl),
+                sourceSurfaceView: DEV.debugAlbedo ? 'baseColor' : DEV.surfaceView });
+              else removals.push('hair');
+            }
+            if (prev.current.face !== faceKey) changes.push({ id: faceItem.id, slot: 'face', url: modelUrl(faceItem.model.gltfPath),
+              sourceSkinPair: pair, sourceSurfaceView: DEV.debugAlbedo ? 'baseColor' : DEV.surfaceView,
+              bodySkin: faceItem.model.bodySkin ? { colorMultiply: faceItem.model.bodySkin.colorMultiply,
+                roughness: faceItem.model.bodySkin.roughness,
+                texUrl: faceItem.model.bodySkin.texPath ? modelUrl(faceItem.model.bodySkin.texPath) : undefined } : undefined });
+            if (cancelled) return;
+            const committed = await rig.equipSourceItems(changes, removals, controller.signal);
+            if (cancelled) return;
+            if (committed) { prev.current.hair = hairKey; prev.current.face = faceKey; }
+            else { delete prev.current.hair; delete prev.current.face; }
+          }
+        } catch (e) {
+          if (cancelled) return;
+          console.error(e); setError('Couldn’t load this hair and scalp preview.');
+          delete prev.current.hair; delete prev.current.face;
+        }
+      }
       for (const slot of SLOTS) {
+        if (appearanceSlots.has(slot)) continue;
         const id = eff[slot];
         // Open-coat undersuit tint: when Upper Body was auto-substituted under an open coat,
         // recolour the base top to the coat's mean colour so its open back blends. The tint
@@ -334,35 +456,69 @@ export default function CharacterViewer() {
           id && (slot === "upperBody" || (slot === "outerwear" && !build.upperBody))
             ? getItemById(id)?.model?.underLayerUrl
             : undefined;
-        const key = underTint
+        const sourceItem = id && supported.has(id) && (slot !== 'hair' || (DEV.sourceMeshes && DEV.sourceFitting))
+          ? assembly?.items[id] : undefined;
+        const skinCandidate = id && slot === "face" && DEV.sourceMeshes && DEV.sourceFitting ? assembly?.items[id] : undefined;
+        let skinParameters: SourceMaterialParameters[] = [];
+        if (skinCandidate && assembly) {
+          // Hair is staged before the face. Use the successfully equipped source
+          // hairstyle, including the previous one when a replacement fails.
+          const hair = rig.sourceAssemblyId('hair');
+          try {
+            const parameterOutfit = hair === eff.hair ? assembly : await loadSourceOutfit(
+              [...Object.entries(eff).filter(([slot]) => slot !== 'hair').map(([, id]) => id), hair]
+                .filter((id): id is string => !!id), modelUrl('models/reconstructed-assembly-v2'));
+            if (cancelled) return;
+            skinParameters = parameterOutfit.materialParameters.filter(p => p.itemId === hair);
+          } catch (e) {
+            if (cancelled) return;
+            console.error(e); setError('Couldn’t load scalp fitting data.'); delete prev.current[slot]; continue;
+          }
+        }
+        const sourceKey = sourceItem ?? skinCandidate;
+        const key = sourceKey ? sourcePreviewKey(id!, sourceKey, skinParameters) : underTint
           ? `${id}|${underTint}`
           : realUnder
             ? `${id}|u:${realUnder}`
             : id;
         if (prev.current[slot] === key) continue;
-        prev.current[slot] = key ?? null;
         const item = id ? getItemById(id) : undefined;
-        if (item?.model?.gltfPath) {
+        if (item && (item.model?.gltfPath || sourceItem)) {
           try {
             // TODO(M4-dye): override material.regions[].tint from build dyes here.
-            const base = toRigMaterial(item.model);
+            const base = item.model ? toRigMaterial(item.model) : undefined;
+            if (base && DEV.reconstructed && RECOVERED_ITEMS.includes(item.id)) {
+              base.reconstructed = {
+                url: bust(modelUrl(`models/reconstructed/${item.id}.json`)),
+                view: DEV.debugAlbedo ? "baseColor" : DEV.surfaceView,
+              };
+            }
             const material = underTint ? { ...(base ?? {}), tintRecolor: underTint } : base;
             // Fallback under-mesh (the generic recoloured top) if the real one fails to load — keeps
             // a shirt under the coat instead of a bare torso.
             const fallbackGlb =
-              realUnder && item.model.underLayer
+              realUnder && item.model?.underLayer
                 ? getItemById(item.model.underLayer)?.model?.gltfPath
                 : undefined;
+            const sourceParts = sourceItem ? await loadSourceRigParts(sourceItem,
+              modelUrl("models/reconstructed-assemblies-v1")) : undefined;
+            const sourceSkinPair = skinCandidate ? await loadSourceSkinPair(item.id, skinCandidate,
+              modelUrl("models/reconstructed-assemblies-v1"), skinParameters) : undefined;
             await rig.equip({
               id: item.id,
               slot,
-              url: modelUrl(item.model.gltfPath),
+              url: item.model?.gltfPath ? modelUrl(item.model.gltfPath) : sourceParts![0]?.url ?? "",
+              sourceMeshUrl: DEV.reconstructed && DEV.sourceMeshes && RECOVERED_ITEMS.includes(item.id)
+                ? modelUrl("models/reconstructed-meshes-v2/SK_Casual_LongCoat_M.glb") : undefined,
+              sourceParts,
+              sourceSkinPair,
+              sourceSurfaceView: DEV.debugAlbedo ? "baseColor" : DEV.surfaceView,
               material,
-              materialBindings: toRigMaterialBindings(item.model, underTint),
+              materialBindings: item.model ? toRigMaterialBindings(item.model, underTint) : undefined,
               underLayerUrl: realUnder ? modelUrl(realUnder) : undefined,
-              underLayerTint: realUnder ? item.model.underLayerTint : undefined,
+              underLayerTint: realUnder ? item.model?.underLayerTint : undefined,
               underLayerFallbackUrl: fallbackGlb ? modelUrl(fallbackGlb) : undefined,
-              bodySkin: item.model.bodySkin
+              bodySkin: item.model?.bodySkin
                 ? {
                     colorMultiply: item.model.bodySkin.colorMultiply,
                     roughness: item.model.bodySkin.roughness,
@@ -371,9 +527,14 @@ export default function CharacterViewer() {
                       : undefined,
                   }
                 : undefined,
-            });
+            }, controller.signal);
           } catch (e) {
+            if (cancelled) return;
             console.error(e);
+            if (sourceItem || skinCandidate || (DEV.reconstructed && RECOVERED_ITEMS.includes(item.id))) setError("Couldn’t load this shader preview.");
+            // Failed loads remain retryable on the next build change.
+            delete prev.current[slot];
+            continue;
           }
           if (cancelled) return;
         } else if (item?.decal) {
@@ -389,13 +550,71 @@ export default function CharacterViewer() {
           rig.unequip(slot);
           rig.unequipDecal(slot);
         }
+        prev.current[slot] = key ?? null;
+      }
+      if (assembly) {
+        const activeCoat = rig.sourceAssemblyId("outerwear");
+        // Failed replacements retain their previous source assemblies in any slot.
+        // Resolve visibility from the items actually equipped after the batch.
+        const actual = Object.fromEntries(SLOTS.map(slot => [slot, rig.equippedItemId(slot)
+          ?? (getItemById(eff[slot] ?? "")?.decal ? eff[slot] : undefined)])) as typeof eff;
+        if (SLOTS.some(slot => actual[slot] !== eff[slot])) {
+          try {
+            const ids = Object.values(actual).filter((id): id is string => !!id);
+            assembly = await loadSourceOutfit(ids, modelUrl("models/reconstructed-assembly-v2"));
+            sourceShirtConflict = !!activeCoat && assembly.slotConflicts.some(c =>
+              c.slot === "EBodySlot::BodyUpper" && c.items.includes(activeCoat) && c.items.includes(actual.upperBody!));
+            if (sourceShirtConflict) assembly = await loadSourceOutfit(ids.filter(id => id !== actual.upperBody),
+              modelUrl("models/reconstructed-assembly-v2"));
+            if (cancelled) return;
+          } catch (e) {
+            if (cancelled) return;
+            console.error(e);
+            setError("Couldn’t load outfit fitting data.");
+          }
+        }
+        for (const slot of SLOTS) rig.setAssemblyVisibility(slot,
+          !(slot === "upperBody" && sourceShirtConflict && !!activeCoat) &&
+          !assembly.items[actual[slot] ?? ""]?.hidden);
+        rig.setSourceFittingTags(DEV.sourceFitting ? assembly.fittingTags : []);
+        (window as unknown as { __sourceAssembly?: SourceOutfit }).__sourceAssembly = assembly;
+      }
+      await rig.whenBodyHidesReady();
+      if (cancelled) return;
+      let recovered = false;
+      rig.root.traverse(o => {
+        const mesh = o as THREE.Mesh;
+        if (mesh.isMesh && (Array.isArray(mesh.material) ? mesh.material : [mesh.material])
+          .some(m => m.userData.reconstructed === true)) recovered = true;
+      });
+      if (!cancelled) setHasRecoveredPreview(recovered);
+      if (DEV.reconstructed && DEV.isolate && recovered) {
+        rig.root.traverse((o) => {
+          const mesh = o as THREE.Mesh;
+          if (!mesh.isMesh) return;
+          const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          mesh.userData.reconstructionOriginalVisibility = mesh.visible;
+          mesh.visible = materials.some((m) => m.userData.reconstructed === true);
+        });
       }
       if (!cancelled) (window as unknown as { __rigIdle?: boolean }).__rigIdle = true;
     })();
     return () => {
       cancelled = true;
+      controller.abort();
     };
   }, [build, ready, rig]);
+
+  const changePreviewOption = (name: "surface" | "isolate", value: string) => {
+    const url = new URL(window.location.href);
+    // The URL is only hydrated on mount; it does not follow edits in the picker.
+    // Save the current outfit before reloading to change a preview option.
+    const slots: Partial<Record<Slot, string>> = {};
+    for (const slot of SLOTS) if (build[slot]) slots[slot] = build[slot];
+    url.searchParams.set("outfit", encodeOutfit({ slots }));
+    url.searchParams.set(name, value);
+    window.location.assign(url);
+  };
 
   return (
     <div
@@ -425,6 +644,7 @@ export default function CharacterViewer() {
       >
         {theme === "studio" ? <StudioLights /> : <LobbyLights />}
         <primitive object={rig.root} />
+        {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview />}
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
           enablePan
@@ -441,6 +661,24 @@ export default function CharacterViewer() {
       >
         {theme === "studio" ? "Studio" : "Lobby"}
       </button>
+      {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && (
+        <div className="absolute left-2 top-2 z-10 rounded-md bg-black/70 px-3 py-2 text-xs text-white">
+          <span className="mb-1 block">Recovered shader · preview lighting</span>
+          <select
+            aria-label="Recovered material view"
+            className="w-full rounded bg-neutral-800 p-1"
+            value={DEV.surfaceView}
+            onChange={(event) => changePreviewOption("surface", event.target.value)}
+          >
+            {SURFACE_VIEWS.map((view) => <option key={view} value={view}>{view === "baseColor" ? "Material colour" : view === "lit" ? "Lit surface" : view[0].toUpperCase() + view.slice(1)}</option>)}
+          </select>
+          <label className="mt-2 flex items-center gap-2">
+            <input type="checkbox" checked={DEV.isolate ?? false}
+              onChange={(event) => changePreviewOption("isolate", event.target.checked ? "1" : "0")} />
+            Isolate recovered items
+          </label>
+        </div>
+      )}
       {DEV.tune && ready && <MaterialTuner rig={rig} />}
       {!ready && !error && (
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-sm text-neutral-500">

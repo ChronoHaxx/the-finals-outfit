@@ -11,6 +11,9 @@
 /public/items/
 /public/models/
 /scripts/generated/
+/scripts/shader-probe/bin/
+/scripts/shader-probe/obj/
+/scripts/shader-probe/__pycache__/
 /visual-diff/
 /_objcheck/
 

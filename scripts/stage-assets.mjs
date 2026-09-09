@@ -20,16 +20,25 @@ import { readFileSync, existsSync, mkdirSync, copyFileSync, writeFileSync, statS
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
 import { collectAssetRefs } from "./lib/asset-refs.mjs";
+import { collectReconstructionAssetRefs, collectAssetCompanions } from "./lib/reconstruction-assets.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const publicDir = resolve(ROOT, "public");
 const version = process.argv[2] ?? "v1";
+if (!/^[a-z0-9][a-z0-9-]*$/.test(version)) throw new Error('Use a single version directory name');
 const outRoot = resolve(ROOT, "_assets-upload");
 const outDir = join(outRoot, version);
+if (existsSync(outDir)) throw new Error(`Version already exists: ${version}. Choose a new version; published paths are immutable.`);
 
 const items = JSON.parse(readFileSync(resolve(ROOT, "src/data/items.json"), "utf8"));
 
 const referenced = collectAssetRefs(items);
+const reconstruction = collectReconstructionAssetRefs(publicDir);
+for (const path of collectAssetCompanions(publicDir, referenced)) referenced.add(path);
+for (const path of reconstruction) referenced.add(path);
+
+const absent = [...referenced].filter(path => !existsSync(join(publicDir, path)));
+if (absent.length) throw new Error(`Cannot stage ${absent.length} missing assets: ${absent.slice(0, 10).join(', ')}`);
 
 let copied = 0;
 let bytes = 0;
@@ -54,7 +63,7 @@ for (const rel of referenced) {
 // vouch for itself.
 writeFileSync(
   join(outDir, "manifest.json"),
-  JSON.stringify({ version, count: copied, paths: [...referenced].sort() }, null, 0),
+  JSON.stringify({ version, count: copied, paths: [...referenced].sort(), reconstructionPaths: [...reconstruction].sort() }, null, 0),
 );
 
 // Lives at the publish root so it covers every version directory.

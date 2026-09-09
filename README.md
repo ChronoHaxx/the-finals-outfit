@@ -81,6 +81,21 @@ well-formed path pointing at nothing — CI has no assets locally, so it cannot
 tell the difference any other way. The workflow runs the same check on every
 deploy.
 
+Supported source reconstruction is enabled in production. `?reconstructed=0`
+selects the legacy renderer for comparison; the material inspector and other
+diagnostic switches remain development-only.
+
+Asset staging includes the source outfit definitions, assembly and skin-pair
+indexes, their referenced meshes, material variants, GLSL, compressed textures,
+and available body-mask/hair-coverage companions. It refuses an existing version
+directory or a missing required file. Keep earlier version directories on the
+asset host so existing deployments retain their assets. Catalog validation checks
+the hosted manifest and real samples from both the catalog and reconstruction.
+
+Run `node scripts/check-production.mjs` against a production preview before
+release. Set `PRODUCTION_URL` and `ASSETS_BASE` to check a deployed release;
+`--local-assets` intercepts asset requests with local files for pre-upload checks.
+
 ## Contributing catalog entries
 
 The cosmetic catalog lives in `src/data/items.json`. Each entry must satisfy
