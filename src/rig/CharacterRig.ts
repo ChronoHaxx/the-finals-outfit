@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { attachSourceStatic } from './SourceAttachment';
+import { attachSourceStatic, bodySocketRest, type SourceSocketRest } from './SourceAttachment';
 import type { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { Slot } from "../lib/slots";
 import { disposeObject3D, disposeMaterial } from "./dispose";
@@ -7,6 +7,7 @@ import type { MaterialBinding } from "../lib/item";
 import BODY_MASK_SLOTS from "../lib/body-mask-slots.json";
 import { BodyDecalManager, type RigDecal } from "./BodyDecals";
 import { loadReconstructedMaterial, type SurfaceView } from "./ReconstructedMaterial";
+import { resolveLegacyBodyCoverage } from "./LegacyBodyCoverage";
 import { enableSourceSkinning } from "./SourceMesh";
 import { rebindSourceSkeleton, type SourceBoneAttachment } from "./SourceSkeleton";
 import { fittingMorphNames, SourceFitting } from "./SourceFitting";
@@ -133,8 +134,18 @@ interface EquippedHandle {
   meshes: THREE.SkinnedMesh[];
   statics: THREE.Mesh[]; // origin-authored statics re-parented onto a bone (watches/earrings)
   sourceBoneRoots?: THREE.Bone[]; // garment-owned branches attached to the body
+  headComponent?: string; // this item hangs off the named source head component's own bones
   underLayerScene?: THREE.Object3D; // a composited real under-garment (see RigItem.underLayerUrl)
   underLayerMeshes?: THREE.SkinnedMesh[]; // its skinned meshes (skeletons disposed on unequip)
+}
+
+// The equipped source head's own bones, kept separate from the body's. A head-component socket
+// must resolve inside the head that is actually worn: a body bone of the same name is a different
+// component and cannot stand in for it.
+interface SourceHeadComponent {
+  id: string;
+  sourceMesh: string;
+  bones: Map<string, { bone: THREE.Bone; restInverse: THREE.Matrix4 }>;
 }
 
 // Inspector-only material copies own their texture references. Material.clone() keeps texture
@@ -177,6 +188,7 @@ export class CharacterRig {
   private bodyScene: THREE.Object3D | null = null;
   private bodyMaterials: THREE.MeshStandardMaterial[] = [];
   private equipped = new Map<Slot, EquippedHandle>();
+  private sourceHead: SourceHeadComponent | null = null;
   private assemblyHiddenSlots = new Set<Slot>();
   private readonly sourceFitting = new SourceFitting();
   private sourceFittingNames = new Set<string>();
@@ -219,6 +231,12 @@ export class CharacterRig {
 
   equippedItemId(slot: Slot): string | undefined {
     return this.equipped.get(slot)?.id;
+  }
+
+  /** Identity of the source head component whose own bones head-attached items may use. It changes
+   *  whenever the worn head does, so callers can tell that such an item has to be staged again. */
+  sourceHeadComponentKey(): string | undefined {
+    return this.sourceHead ? `${this.sourceHead.id}|${this.sourceHead.sourceMesh}` : undefined;
   }
 
   setSourceFittingTags(tags: string[]): void {
@@ -368,6 +386,7 @@ export class CharacterRig {
 
   private releaseBody(): void {
     if (!this.bodyScene) return;
+    this.sourceHead = null;
     this.restoreSourceBodySkin();
     this.root.remove(this.bodyScene);
     this.forgetInspectorOverrides(this.bodyScene);
@@ -516,6 +535,7 @@ export class CharacterRig {
       return;
     }
     this.unequip(item.slot); // the new item is ready; release the previous selection
+    this.decals.clear(item.slot); // including a decal-only choice in the same slot
     gltf.scene.userData.rigItemId = item.id;
 
     const meshes: THREE.SkinnedMesh[] = [];
@@ -671,7 +691,10 @@ export class CharacterRig {
     } else if (CharacterRig.BODYMASK_SLOTS.has(item.slot)) {
       // Garments ship a sibling <piece>.bodymask.png (white = body covered) — absent
       // masks 404 and are skipped by the union loader.
-      this.bodyHideUrls.set(item.slot, [item.url.replace(/\.glb(\?.*)?$/, ".bodymask.png$1")]);
+      const body = this.bodyScene?.getObjectsByProperty("isSkinnedMesh", true)[0] as THREE.SkinnedMesh | undefined;
+      const coverage = resolveLegacyBodyCoverage(item.url, body?.userData.sourceBodyUrl);
+      this.bodyHideUrls.set(item.slot, [coverage?.url ?? item.url.replace(/\.glb(\?.*)?$/, ".bodymask.png$1")]);
+      if (coverage) this.bodyHideLayouts.set(item.slot, { [coverage.url]: coverage.uvTiles });
     }
     this.refreshBodyHides();
   }
@@ -701,6 +724,55 @@ export class CharacterRig {
     removals.forEach(slot => this.unequip(slot));
     stages.forEach(stage => stage.commit());
     return true;
+  }
+
+  // Find the live bone an attached static hangs from, and the socket rest it uses. Body sockets
+  // keep the existing preserved-body contract. A frame names another component: the source head
+  // actually worn, or an optional attachment mesh anchored on a body bone.
+  //
+  // A bone the component owns is checked numerically here: its bind is that component's own, so a
+  // same-named bone from another component, a changed mesh or a stale index fails closed instead
+  // of shifting the attachment. A bone shared with the body is supplied by the driver, whose bind
+  // axes are the legacy body's rather than the source's, so it cannot be compared that way; the
+  // resolver has already required that rest to equal the preserved body's, and the active body
+  // identity is checked above. Optional attachment meshes transfer the rigid driver pose only;
+  // their jiggle joints are not simulated here.
+  private resolveSourceAttachment(attachment: NonNullable<SourceRigPart['attachment']>):
+    { bone: THREE.Bone; restInverse: THREE.Matrix4; socket: SourceSocketRest; headComponent?: string } {
+    const body = this.bodyScene?.getObjectsByProperty('isSkinnedMesh', true).find(o => o.userData.sourceBody);
+    if (!body || new URL(body.userData.sourceBodyUrl, window.location.href).href !== attachment.bodyUrl)
+      throw new Error('Source attachment does not match the active body');
+    const frame = attachment.frame;
+    if (!frame) {
+      const bone = this.bonesByName.get(attachment.socket), restInverse = this.bodyRestInverses.get(attachment.socket);
+      if (!bone || !restInverse) throw new Error('Source attachment does not match the active body');
+      return { bone, restInverse, socket: bodySocketRest(attachment) };
+    }
+    const head = frame.kind === 'head-component' ? this.sourceHead : null;
+    const component = frame.kind === 'head-component'
+      ? frame.components.find(c => c.source === head?.sourceMesh)
+      : frame.component;
+    if (!component) throw new Error(`No active source head component carries socket ${attachment.socket}`);
+    let live: { bone: THREE.Bone; restInverse: THREE.Matrix4 } | undefined;
+    if (component.bodyBone) {
+      const bone = this.bonesByName.get(component.bone), restInverse = this.bodyRestInverses.get(component.bone);
+      if (bone && restInverse && (!head || head.bones.get(component.bone)?.bone === bone)) live = { bone, restInverse };
+      else if (bone && restInverse) throw new Error(`Source attachment socket bone is not the head component's: ${component.bone}`);
+    } else {
+      const entry = head?.bones.get(component.bone);
+      if (entry && !entry.bone.userData.sourceBoneExtension)
+        throw new Error(`Source attachment socket bone is not the head component's: ${component.bone}`);
+      if (entry) {
+        const rest = entry.restInverse.clone().invert();
+        if (rest.elements.some((v, i) => !Number.isFinite(v) || Math.abs(v - component.parentRest[i]) > 1e-5))
+          throw new Error(`Source attachment socket bone is not the preserved rest: ${component.bone}`);
+        live = entry;
+      }
+    }
+    if (!live) throw new Error(`Source attachment socket bone is missing: ${component.bone}`);
+    return { bone: live.bone, restInverse: live.restInverse,
+      socket: { rest: component.rest, restScale: component.restScale },
+      ...(head ? { headComponent: `${head.id}|${head.sourceMesh}` } : {}) };
   }
 
   private async stageSourceAssembly(item: RigItem, parts: SourceRigPart[], signal?: AbortSignal): Promise<{ commit: () => void; release: () => void } | undefined> {
@@ -740,6 +812,7 @@ export class CharacterRig {
     if (signal?.aborted) { release(); return; }
     const failure = results.find(r => r.status === "rejected");
     if (failure?.status === "rejected") { release(); throw failure.reason; }
+    let headComponent: string | undefined;
     try {
       for (const part of parts) {
         const root = scenes.get(part.sourceIndex)!;
@@ -750,11 +823,9 @@ export class CharacterRig {
         for (const candidate of candidates) {
           let mesh = candidate as THREE.SkinnedMesh;
           if (part.attachment) {
-            const body = this.bodyScene?.getObjectsByProperty('isSkinnedMesh', true).find(o => o.userData.sourceBody);
-            const bone = this.bonesByName.get(part.attachment.socket), inverse = this.bodyRestInverses.get(part.attachment.socket);
-            if (!body || !bone || !inverse || new URL(body.userData.sourceBodyUrl, window.location.href).href !== part.attachment.bodyUrl)
-              throw new Error('Source attachment does not match the active body');
-            mesh = attachSourceStatic(candidate, part.attachment, bone, inverse);
+            const placement = this.resolveSourceAttachment(part.attachment);
+            if (placement.headComponent) headComponent = placement.headComponent;
+            mesh = attachSourceStatic(candidate, part.attachment, placement.bone, placement.restInverse, placement.socket);
             skeletons.add(mesh.skeleton);
           } else if (!mesh.isSkinnedMesh) throw new Error("Source clothing part must be skinned");
           const slots = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
@@ -792,9 +863,12 @@ export class CharacterRig {
     this.enableShadows(scene);
     return { release, commit: () => {
       this.unequip(item.slot);
+      // A source item replaces a decal-only choice in its slot, such as the legacy grey nail
+      // tint. This also holds for an item whose parts are all hidden (a glove-covered nail).
+      this.decals.clear(item.slot);
       for (const { parent, root } of attachments) parent.add(root);
       this.root.add(scene);
-      this.equipped.set(item.slot, { id: item.id, scene, meshes, statics: [], sourceBoneRoots: attachments.map(a => a.root) });
+      this.equipped.set(item.slot, { id: item.id, scene, meshes, statics: [], sourceBoneRoots: attachments.map(a => a.root), headComponent });
       this.bodyHideUrls.set(item.slot, [...new Set(parts.flatMap(p => p.bodyMaskUrl ? [p.bodyMaskUrl] : []))]);
       this.bodyHideLayouts.set(item.slot, Object.fromEntries(parts
         .filter(p => p.bodyMaskUrl && p.bodyMaskUvTiles).map(p => [p.bodyMaskUrl!, p.bodyMaskUvTiles!])));
@@ -916,6 +990,16 @@ export class CharacterRig {
     skeletons.forEach(s => { if (!used.has(s)) s.dispose(); });
     disposeObject3D(roots.get("legacy")!);
     roots.delete('legacy');
+    // This head's own bones, by name. Sections may share one rebound skeleton, but two sections
+    // must never disagree about a name — a head-attached socket has to resolve to one bone.
+    const headBones = new Map<string, { bone: THREE.Bone; restInverse: THREE.Matrix4 }>();
+    try {
+      for (const skeleton of used) skeleton.bones.forEach((bone, index) => {
+        const existing = headBones.get(bone.name);
+        if (existing && existing.bone !== bone) throw new Error(`Source head repeats bone ${bone.name}`);
+        headBones.set(bone.name, { bone, restInverse: skeleton.boneInverses[index] });
+      });
+    } catch (error) { release(); throw error; }
     return { release, commit: () => {
       this.unequip("face");
       this.sourceBodySkin = { mesh: body, previous: body.material as THREE.MeshStandardMaterial };
@@ -930,6 +1014,7 @@ export class CharacterRig {
       this.enableShadows(scene);
       this.root.add(scene);
       this.equipped.set("face", { id: item.id, scene, meshes, statics: [], sourceBoneRoots: attachments.map(a => a.root) });
+      this.sourceHead = { id: item.id, sourceMesh: pair.head.sourceMesh, bones: headBones };
       this.registerHeadDecalTargets(scene);
       if (this.collectStandardMaterials(scene).some(m => m.userData.skinCoverage === 'neck-fade')) {
         // Keep skin behind the fading edge. The original matching morph pulls
@@ -1875,6 +1960,11 @@ export class CharacterRig {
     // A head being removed takes its decal targets with it (the makeup/eye decals stay pending
     // in the manager and re-apply if a head is equipped again), and un-hides the body shell.
     if (slot === "face") {
+      // Items socketed onto this head's own bones go with it: those bones leave the scene graph,
+      // so keeping the attachment would strand it at the pose it happened to be drawn in.
+      this.sourceHead = null;
+      for (const [dependent, entry] of [...this.equipped])
+        if (dependent !== slot && entry.headComponent) this.unequip(dependent);
       this.restoreSourceBodySkin();
       this.decals.unregisterTarget("head");
       this.decals.unregisterTarget("eyes");

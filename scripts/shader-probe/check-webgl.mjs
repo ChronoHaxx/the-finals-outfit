@@ -13,7 +13,10 @@ try {
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e)));
   page.on("console", (e) => { if (e.type() === "error") errors.push(e.text()); });
-  await page.goto("http://127.0.0.1:5173", { waitUntil: "networkidle" });
+  // The app keeps loading preview assets, so the network never idles within the default timeout.
+  // Only the test renderer modules are needed here: wait for the viewer to publish them.
+  await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => !!window.__THREE, undefined, { timeout: 60000 });
   const report = await page.evaluate(async ({ cases, materialBase }) => {
     const THREE = window.__THREE;
     if (!THREE) throw new Error("No test renderer modules");

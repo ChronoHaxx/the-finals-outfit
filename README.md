@@ -132,6 +132,10 @@ deploys if the catalog is invalid.
 
 ## Roadmap
 
+For current reconstruction counts and the remaining sequence, see the
+[12 September coverage checkpoint](_docs/reconstruction-progress-2026-09-12.md).
+It distinguishes touched choices, complete source assemblies and visual acceptance.
+
 M5 (materials pipeline) has shipped: 2,531 of 2,866 items carry a 3D model, with
 per-skin baked albedo/normal/orm sets replacing the old flat region tint.
 

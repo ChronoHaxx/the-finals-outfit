@@ -22,6 +22,10 @@ export function emptyOutfit(): Outfit {
 // adding slots can never shift the meaning of an existing link; ids are schema-constrained
 // ASCII slugs, so btoa/atob are safe. Decode is forgiving: unknown keys are stripped by
 // zod, and a corrupt payload throws (callers fall back to an empty build).
+//
+// This stays a pure codec: decode returns exactly what was encoded. Storing the slot name
+// means a link outlives a catalog slot correction, so callers pass the decoded outfit
+// through `migrateOutfit` (src/lib/outfit-slots.ts) before using it.
 export function encodeOutfit(outfit: Outfit): string {
   const compact: Outfit = { slots: outfit.slots };
   if (outfit.dyes && Object.keys(outfit.dyes).length) compact.dyes = outfit.dyes;

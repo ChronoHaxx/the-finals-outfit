@@ -185,6 +185,12 @@ New runs record mapping/parser details and source-container TOC hashes in
 `source-run.json`. Material mode accepts an array of object paths or the path/count
 object emitted by the source-index builder.
 
+Shader-mode requests accept exact asset basenames or full
+`Discovery/Content/.../Material.uasset` package paths. Use full paths when different
+packages share a basename. Output manifests still use basenames, so two requested
+materials with the same basename must be extracted into separate run directories;
+the tool rejects that collision before writing material exports.
+
 1. Run `inventory` to write `packages.json`, then select definition candidates:
    `python scripts/shader-probe/collect-definitions.py --packages <inventory>/packages.json --output <requests.json>`.
 2. Run `properties` with that request file. This decodes tagged properties without

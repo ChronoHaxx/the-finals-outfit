@@ -81,7 +81,8 @@ def material_inputs(exports, requests=None):
         if not owner:
             raise ValueError(f'No selected shader in the parent chain for {instance}')
         if chain[0]['Name'] not in ('M_Character_Layered', 'M_Character_8Layers_Master', 'M_Skin', 'M_Face',
-                                  'M_EyeRefractive_2', 'M_Teeth', 'M_EyelashMaster', 'M_Hair_Metahuman_01'):
+                                  'M_EyeRefractive_2', 'M_Teeth', 'M_EyelashMaster', 'M_Hair_Metahuman_01',
+                                  'M_CharacterNails_Base', 'M_CharacterAttachment'):
             raise ValueError(f'Unsupported master material for {instance}: {chain[0]["Name"]}')
         overlays = job.get('parameterOverrides', [])
         if len(set(overlays)) != len(overlays): raise ValueError('Repeated parameter override')

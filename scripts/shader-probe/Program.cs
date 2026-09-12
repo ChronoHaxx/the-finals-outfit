@@ -90,18 +90,27 @@ if (mode == "inventory")
     return 0;
 }
 
-string[] names = requestedShaders ? JsonConvert.DeserializeObject<string[]>(File.ReadAllText(args[4]))!
+string[] requests = requestedShaders ? JsonConvert.DeserializeObject<string[]>(File.ReadAllText(args[4]))!
     : ["M_Character_Layered", "MI_Character_Layered_2",
     "MI_Casual_LongCoat_Leather_Black", "MI_Casual_LongCoat_Leather_Camo", "MI_Casual_LongCoat_Satin"];
-if (names.Length == 0 || names.Distinct(StringComparer.OrdinalIgnoreCase).Count() != names.Length ||
-    names.Any(n => !System.Text.RegularExpressions.Regex.IsMatch(n, "^[A-Za-z0-9_]+$")))
-    throw new ArgumentException("Shader requests must contain distinct exact asset names");
+if (requests.Length == 0 || requests.Distinct(StringComparer.OrdinalIgnoreCase).Count() != requests.Length ||
+    requests.Any(n => !System.Text.RegularExpressions.Regex.IsMatch(n,
+        "^(?:[A-Za-z0-9_]+|Discovery/Content/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\\.uasset)$")))
+    throw new ArgumentException("Shader requests must contain distinct exact asset names or Discovery/Content package paths");
+// Material compilation still keys local exports by basename. Exact paths resolve
+// ambiguous source names, but colliding output basenames require separate runs.
+string[] names = requests.Select(Path.GetFileNameWithoutExtension).ToArray()!;
+if (names.Distinct(StringComparer.OrdinalIgnoreCase).Count() != names.Length)
+    throw new ArgumentException("Shader output basenames collide; extract these exact paths in separate runs");
 var results = new List<object>();
 int exportFailures = 0;
-foreach (var name in names)
+foreach (var request in requests)
 {
-    var matches = provider.Files.Where(x => Path.GetFileNameWithoutExtension(x.Key).Equals(name,
-        StringComparison.OrdinalIgnoreCase) && x.Key.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase))
+    var name = Path.GetFileNameWithoutExtension(request);
+    var exactPath = request.Contains('/');
+    var matches = provider.Files.Where(x => (exactPath ? x.Key.Equals(request, StringComparison.OrdinalIgnoreCase)
+        : Path.GetFileNameWithoutExtension(x.Key).Equals(name, StringComparison.OrdinalIgnoreCase))
+        && x.Key.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase))
         .DistinctBy(x => x.Key, StringComparer.OrdinalIgnoreCase).ToArray();
     if (matches.Length > 1) throw new InvalidDataException($"Ambiguous shader asset name: {name}");
     var file = matches.FirstOrDefault();
