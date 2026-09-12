@@ -13,7 +13,7 @@ import { createGltfLoader } from "../rig/loaders";
 import { useBuildStore, effectiveBuild } from "../store/useBuildStore";
 import { getItemById } from "../lib/catalog";
 import { modelUrl } from "../lib/assets";
-import { encodeOutfit } from "../lib/outfit";
+import { buildShareUrl } from "../lib/share-url";
 import { SLOTS, type Slot } from "../lib/slots";
 import type { Item } from "../lib/item";
 
@@ -313,6 +313,7 @@ export default function CharacterViewer() {
   );
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryAttempt, setRetryAttempt] = useState(0);
   const [theme, setTheme] = useState<SceneTheme>("studio");
   const build = useBuildStore((s) => s.build);
   const prev = useRef<Partial<Record<Slot, string | null>>>({});
@@ -351,7 +352,7 @@ export default function CharacterViewer() {
   // Diff the serializable `build` -> rig equip/unequip whenever it changes.
   useEffect(() => {
     if (!ready) return;
-    if (DEV.reconstructed) setError(null);
+    setError(null);
     let cancelled = false;
     const controller = new AbortController();
     (async () => {
@@ -548,7 +549,7 @@ export default function CharacterViewer() {
           } catch (e) {
             if (cancelled) return;
             console.error(e);
-            if (sourceItem || skinCandidate || (DEV.reconstructed && RECOVERED_ITEMS.includes(item.id))) setError("Couldn’t load this shader preview.");
+            setError("Couldn’t load the selected preview. Some items may still show the previous selection.");
             // Failed loads remain retryable on the next build change.
             delete prev.current[slot];
             continue;
@@ -624,15 +625,12 @@ export default function CharacterViewer() {
       cancelled = true;
       controller.abort();
     };
-  }, [build, ready, rig]);
+  }, [build, ready, rig, retryAttempt]);
 
   const changePreviewOption = (name: "surface" | "isolate", value: string) => {
-    const url = new URL(window.location.href);
-    // The URL is only hydrated on mount; it does not follow edits in the picker.
+    const url = new URL(buildShareUrl(window.location.href, build));
+    // Picker edits do not rewrite the address bar.
     // Save the current outfit before reloading to change a preview option.
-    const slots: Partial<Record<Slot, string>> = {};
-    for (const slot of SLOTS) if (build[slot]) slots[slot] = build[slot];
-    url.searchParams.set("outfit", encodeOutfit({ slots }));
     url.searchParams.set(name, value);
     window.location.assign(url);
   };
@@ -707,8 +705,13 @@ export default function CharacterViewer() {
         </div>
       )}
       {error && (
-        <div className="absolute inset-0 grid place-items-center px-4 text-center text-sm text-red-400">
-          {error}
+        <div role="alert" className="absolute inset-x-2 bottom-2 rounded-lg bg-neutral-950/90 p-3 text-center text-sm text-red-300">
+          <p>{error}</p>
+          <button className="mt-2 rounded bg-neutral-700 px-3 py-1.5 text-white hover:bg-neutral-600"
+            onClick={() => {
+              if (ready) setRetryAttempt(attempt => attempt + 1);
+              else changePreviewOption("isolate", DEV.isolate ? "1" : "0");
+            }}>Retry preview</button>
         </div>
       )}
       {DEV.inspect && ready && <MeshInspector rig={rig} />}

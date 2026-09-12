@@ -11,11 +11,18 @@ right to them.
 
 The application code here is original work. The cosmetic catalog in
 `src/data/items.json` is metadata — item identifiers, display names and
-equipment slots. Those are facts about a published game, of the same kind
+equipment slots, including internal entries found in the extracted catalog.
+These are game metadata of the same kind
 catalogued publicly by [thefinals.wiki](https://thefinals.wiki) and
 [the-finals.fandom.com](https://the-finals.fandom.com), and they are kept here
 so the builder has something to build with. The artwork the catalog *points at*
 is not kept here, and never has been.
+
+Public display names and catalog matching in `src/data/wiki-catalog.json` use
+[THE FINALS Wiki](https://www.thefinals.wiki/wiki/All_Cosmetics), retrieved on
+12 September 2026, together with the game's localization table. Each match
+records its wiki page and revision. Wiki descriptions and artwork are not
+included. See `_docs/public-catalog-2026-09-12.md` for matching rules and limits.
 
 ## What is deliberately not in this repository
 

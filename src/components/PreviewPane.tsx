@@ -1,5 +1,5 @@
 import { SLOTS, SLOT_LABELS, type Slot } from "../lib/slots";
-import { getItemById } from "../lib/catalog";
+import { getBrowseItem as getItemById } from "../lib/browse-catalog";
 import { useBuildStore } from "../store/useBuildStore";
 import { assetUrl } from "../lib/assets";
 import CharacterViewer from "./CharacterViewer";

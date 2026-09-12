@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { fetchAsset as checkedFetch } from "../lib/asset-fetch";
 import { HAIR_LIGHTING_GLSL } from './HairLighting';
 
 export const SURFACE_VIEWS = ["lit", "baseColor", "normal", "roughness", "metalness", "ao", "specular"] as const;
@@ -40,11 +41,6 @@ interface Manifest {
   parameterOverrides?: string[];
 }
 
-async function checkedFetch(url: string): Promise<Response> {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(`Recovered material asset ${response.status}: ${url}`);
-  return response;
-}
 async function verifyHash(data: ArrayBuffer, expected: string): Promise<void> {
   const hash = await crypto.subtle.digest("SHA-256", data);
   const actual = Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, "0")).join("");

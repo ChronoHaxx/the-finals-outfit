@@ -11,6 +11,8 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "validate:catalog": "tsx scripts/validate-catalog.ts",
+    "validate:share-links": "node scripts/check-share-compatibility.mjs",
+    "sync:share-ids": "node scripts/sync-share-ids.mjs",
     "import:catalog": "tsx scripts/import-catalog.ts",
     "discover:assets": "tsx scripts/discover-assets.ts",
     "convert:meshes": "node scripts/convert-meshes.mjs",
