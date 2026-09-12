@@ -96,6 +96,53 @@ Run `node scripts/check-production.mjs` against a production preview before
 release. Set `PRODUCTION_URL` and `ASSETS_BASE` to check a deployed release;
 `--local-assets` intercepts asset requests with local files for pre-upload checks.
 
+### Hosting and monitoring
+
+The webpage, JavaScript and CSS are on **GitHub Pages**. Models, textures and
+catalog thumbnails are on **Cloudflare Pages**. The deployed asset base is the
+`ASSETS_BASE` repository variable; changing it requires another app deployment.
+The Netlify upload is retained only as an old rollback copy. Fresh site loads
+use Cloudflare; a tab left open across the migration needs refreshing.
+
+- **Asset deployments:** Cloudflare dashboard → Workers & Pages →
+  `the-finals-outfit-assets` → Deployments. This is a static asset project;
+  its Functions metrics/logs do not count ordinary static downloads.
+- **Visitors and page performance:** Cloudflare dashboard → Analytics →
+  Web Analytics → `chronohaxx.github.io`. The public beacon identifier in
+  `src/lib/analytics.ts` is not a credential. It loads only in production on
+  this app's GitHub Pages path, excluding localhost and forks. Analytics may
+  take a few minutes to appear and can be blocked by visitor privacy tools.
+  These charts measure page visits, not a complete asset request log.
+- **Availability and asset host:** [Actions → Site health](https://github.com/ChronoHaxx/the-finals-outfit/actions/workflows/site-health.yml).
+  Open a run for its pass/fail result and summary. It checks the live HTML/app
+  bundle for the expected Cloudflare release and rejects Netlify references,
+  then checks the manifest and an icon, mesh and source texture, including CORS.
+  Large sample files use HEAD requests, not full downloads. Rendering/visual
+  correctness is covered separately by `check-production.mjs`.
+
+`Site health` runs after a successful site deployment, on manual dispatch, and
+approximately every 15 minutes once the workflow is on the default branch.
+It retries failures twice. It uses standard GitHub-hosted Actions on this public
+repository, without a paid monitoring service, secret, local PC or model calls.
+Schedules are best effort and can be delayed. GitHub disables scheduled workflows
+in public repositories after 60 days without repository activity; re-enable the
+workflow in Actions if that happens.
+
+For alerts, use GitHub **Settings → Notifications → Actions** and enable web or
+email notifications, optionally only for failed runs. Delivery follows your
+GitHub notification settings; adding the workflow does not enable them for you.
+Scheduled-run notifications normally go to the user who last changed the schedule.
+
+Run the same inexpensive check locally with `npm run check:site`. Override
+`ASSETS_BASE` for a new Cloudflare release and `PRODUCTION_URL` for a candidate
+website. The host check intentionally fails if an asset migration points back
+to Netlify. After an intentional future host migration, update the monitor too.
+
+Sources: [Cloudflare analytics setup](https://developers.cloudflare.com/web-analytics/get-started/),
+[Functions metrics](https://developers.cloudflare.com/pages/functions/metrics/),
+[GitHub schedules](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule),
+[workflow notifications](https://docs.github.com/en/actions/concepts/workflows-and-actions/notifications-for-workflow-runs).
+
 ## Contributing catalog entries
 
 The cosmetic catalog lives in `src/data/items.json`. Each entry must satisfy
