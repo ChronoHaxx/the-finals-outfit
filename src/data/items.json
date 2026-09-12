@@ -1006,9 +1006,18 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#a8a8a8",
+          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-90sskateboarder-01-bodyhands_c.png",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-90sskateboarder-01_m.webp"
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvOffsetX": -1,
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "nonMasked",
+          "surfacePath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-90sskateboarder-01-bodyhands_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1023,9 +1032,18 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#484848",
+          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-armsblack-01-bodyhands_c.png",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-armsblack-01_m.webp"
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvOffsetX": -1,
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-armsblack-01-bodyhands_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1040,9 +1058,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#28e828",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-bodytight-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-bodytight-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-bodytight-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-bodytight-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1057,9 +1093,18 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#a8a8a8",
+          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-bruises-02-bodyhands_c.png",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-bruises-02_m.webp"
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvOffsetX": -1,
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "nonMasked",
+          "surfacePath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-bruises-02-bodyhands_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1074,9 +1119,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#f88898",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-demonlady-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-demonlady-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-demonlady-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-demonlady-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1091,9 +1154,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#585858",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-discosilver-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-discosilver-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-discosilver-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-discosilver-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1108,9 +1189,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#f87898",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-easterndemon-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-easterndemon-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-easterndemon-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-easterndemon-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1125,9 +1224,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#383838",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-elfprincessdark-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-elfprincessdark-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-elfprincessdark-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-elfprincessdark-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1142,9 +1259,16 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#a8a8a8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-glitterglam-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-glitterglam-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-glitterglam-01-bodyhands_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1159,9 +1283,16 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#485888",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-goblin-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-goblin-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-goblin-01-bodyhands_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1176,9 +1307,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#383838",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-metallicblack-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-metallicblack-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-metallicblack-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-metallicblack-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1193,9 +1342,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#686868",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-metallicblackgold-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-metallicblackgold-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-metallicblackgold-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-metallicblackgold-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1210,9 +1377,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#c89858",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-metallicgold-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-metallicgold-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-metallicgold-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-metallicgold-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1227,9 +1412,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#e8e898",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-ogre-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-ogre-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-ogre-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-ogre-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1244,9 +1447,18 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#888888",
+          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-oilyhands-01-bodyhands_c.png",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-oilyhands-01_m.webp"
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvOffsetX": -1,
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-oilyhands-01-bodyhands_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1261,9 +1473,16 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#f888b8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-orfpink-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-orfpink-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-orfpink-01-bodyhands_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1278,9 +1497,16 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#f8c838",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-orfyellow-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-orfyellow-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-orfyellow-01-bodyhands_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1295,9 +1521,18 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#a8a8a8",
-          "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-runnyfingersblack-01_m.webp"
+          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-runnyfingersblack-01-bodyhands_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvOffsetX": -1,
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-runnyfingersblack-01-bodyhands_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1312,9 +1547,18 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#989898",
-          "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-runnyfingersgold-01_m.webp"
+          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-runnyfingersgold-01-bodyhands_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvOffsetX": -1,
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-runnyfingersgold-01-bodyhands_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1329,9 +1573,29 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#a8a8a8",
+          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-sweat-01-bodyhands_c.png",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-sweat-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0,
+          "colorMultiply": "nonMasked",
+          "surfacePath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-sweat-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-sweat-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0,
+          "colorMultiply": "nonMasked"
         }
       ]
     },
@@ -1346,8 +1610,16 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#282828",
-          "uv": 1
+          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-techwearsymbols-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvOffsetX": -1,
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "nonMasked"
         }
       ]
     },
@@ -1362,9 +1634,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#e8e8d8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-undead-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-undead-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-undead-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-undead-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1379,9 +1669,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#f8f8f8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-vampire-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-vampire-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-vampire-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-vampire-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1396,9 +1704,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#f8f8f8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-wraith-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-bodypaint-wraith-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-wraith-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-bodypaint-wraith-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1413,9 +1739,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#f8f8f8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-geishagoth-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-makeup-geishagoth-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-geishagoth-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-geishagoth-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1430,9 +1774,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#c8c8c8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-oilybody-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-makeup-oilybody-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-oilybody-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-oilybody-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1447,9 +1809,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#d8d8d8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-01-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-makeup-scifibody-01_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-01-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1464,9 +1844,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#d8d8d8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-02-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-makeup-scifibody-02_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-02-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-02-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1481,9 +1879,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#d8d8d8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-03-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-makeup-scifibody-03_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-03-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-03-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -1498,9 +1914,27 @@
       "layers": [
         {
           "target": "body",
-          "tint": "#d8d8d8",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-04-bodyhands_c.webp",
           "uv": 1,
-          "maskPath": "models/decals/bodyPaint/bodycosmetics-makeup-scifibody-04_m.webp"
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-04-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-body-paints-v1/bodycosmetics-makeup-scifibody-04-head_c.webp",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1
         }
       ]
     },
@@ -118482,7 +118916,7 @@
   },
   {
     "id": "casual-shortdress-latex",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Short Dress Latex",
     "imageUrl": "items/lowerBody/casual-shortdress-latex.webp",
     "set": "Casual",
@@ -118560,7 +118994,7 @@
   },
   {
     "id": "casual-shortdress-nylon-red",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Short Dress Nylon Red",
     "imageUrl": "items/lowerBody/casual-shortdress-nylon-red.webp",
     "set": "Casual",
@@ -118638,7 +119072,7 @@
   },
   {
     "id": "casual-shortdress-shiny",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Short Dress Shiny",
     "imageUrl": "items/lowerBody/casual-shortdress-shiny.webp",
     "set": "Casual",
@@ -118670,7 +119104,7 @@
   },
   {
     "id": "casual-shortdress-translucent-candycorn",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Short Dress Translucent Candy Corn",
     "imageUrl": "items/lowerBody/casual-shortdress-translucent-candycorn.webp",
     "set": "Casual",
@@ -118702,7 +119136,7 @@
   },
   {
     "id": "casual-shortdress-translucent-green",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Short Dress Translucent Green",
     "imageUrl": "items/lowerBody/casual-shortdress-translucent-green.webp",
     "set": "Casual",
@@ -118734,7 +119168,7 @@
   },
   {
     "id": "casual-shortdress-velvet",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Short Dress Velvet",
     "imageUrl": "items/lowerBody/casual-shortdress-velvet.webp",
     "set": "Casual",
@@ -121251,7 +121685,7 @@
   },
   {
     "id": "cowboy-jeansjacket-denim-blackbeige",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Jeans Jacket Denim Black Beige",
     "imageUrl": "items/lowerBody/cowboy-jeansjacket-denim-blackbeige.webp",
     "set": "Cowboy",
@@ -121361,7 +121795,7 @@
   },
   {
     "id": "cowboy-jeansjacket-denim-browngreen",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Jeans Jacket Denim Brown Green",
     "imageUrl": "items/lowerBody/cowboy-jeansjacket-denim-browngreen.webp",
     "set": "Cowboy",
@@ -121495,7 +121929,7 @@
   },
   {
     "id": "cowboy-jeansjacket-denim-lightblue",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Jeans Jacket Denim Light Blue",
     "imageUrl": "items/lowerBody/cowboy-jeansjacket-denim-lightblue.webp",
     "set": "Cowboy",
@@ -121605,7 +122039,7 @@
   },
   {
     "id": "cowboy-jeansjacket-neon",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Jeans Jacket Neon",
     "imageUrl": "items/lowerBody/cowboy-jeansjacket-neon.webp",
     "set": "Cowboy",
@@ -150906,7 +151340,7 @@
   },
   {
     "id": "streetwear-jacketshort-leather-dissun",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Jacket Short Leather Dissun",
     "imageUrl": "items/lowerBody/streetwear-jacketshort-leather-dissun.webp",
     "set": "Streetwear",
@@ -151089,7 +151523,7 @@
   },
   {
     "id": "streetwear-jacketshort-metal-goldospuze",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Jacket Short Metal Gold Osp Uze",
     "imageUrl": "items/lowerBody/streetwear-jacketshort-metal-goldospuze.webp",
     "set": "Streetwear",
@@ -151248,7 +151682,7 @@
   },
   {
     "id": "streetwear-jacketshort-metal-goldwinner",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Jacket Short Metal Gold Winner",
     "imageUrl": "items/lowerBody/streetwear-jacketshort-metal-goldwinner.webp",
     "set": "Streetwear",
@@ -155913,7 +156347,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-anubis",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton Anubis",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-anubis.webp",
     "set": "Streetwear",
@@ -156071,7 +156505,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-black",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton Black",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-black.webp",
     "set": "Streetwear",
@@ -156229,7 +156663,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-enorino",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton Eno Rino",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-enorino.webp",
     "set": "Streetwear",
@@ -156411,7 +156845,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-gray",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton Gray",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-gray.webp",
     "set": "Streetwear",
@@ -156569,7 +157003,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-green",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton Green",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-green.webp",
     "set": "Streetwear",
@@ -156727,7 +157161,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-orangeevent",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton Orange Event",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-orangeevent.webp",
     "set": "Streetwear",
@@ -156885,7 +157319,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-orangeevent-a5ee",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton Orange Event Team LTM",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-orangeevent-a5ee.webp",
     "set": "Streetwear",
@@ -156988,7 +157422,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-ospuzestarterpack",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton OSPUZEStarter Pack",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-ospuzestarterpack.webp",
     "set": "Streetwear",
@@ -157147,7 +157581,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-pinkcommunity",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton Pink Community",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-pinkcommunity.webp",
     "set": "Streetwear",
@@ -157305,7 +157739,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-starsstripes",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton Stars Stripes",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-starsstripes.webp",
     "set": "Streetwear",
@@ -157439,7 +157873,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-white",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton White",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-white.webp",
     "set": "Streetwear",
@@ -157597,7 +158031,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-whiteeaster",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton White Easter",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-whiteeaster.webp",
     "set": "Streetwear",
@@ -157731,7 +158165,7 @@
   },
   {
     "id": "streetwear-tightsinglet-cotton-whiteskillissue",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Cotton White Skill Issue",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-cotton-whiteskillissue.webp",
     "set": "Streetwear",
@@ -157889,7 +158323,7 @@
   },
   {
     "id": "streetwear-tightsinglet-jerseyspeckled",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Jersey Speckled",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-jerseyspeckled.webp",
     "set": "Streetwear",
@@ -158047,7 +158481,7 @@
   },
   {
     "id": "streetwear-tightsinglet-jerseyspeckled-ivada",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Jersey Speckled Ivada",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-jerseyspeckled-ivada.webp",
     "set": "Streetwear",
@@ -158205,7 +158639,7 @@
   },
   {
     "id": "streetwear-tightsinglet-jerseyspeckled-refe-6bf9",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Jersey Speckled Refer Friend",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-jerseyspeckled-refe-6bf9.webp",
     "set": "Streetwear",
@@ -158362,7 +158796,7 @@
   },
   {
     "id": "streetwear-tightsinglet-translucent-green",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Translucent Green",
     "imageUrl": "items/lowerBody/streetwear-tightsinglet-translucent-green.webp",
     "set": "Streetwear",
@@ -158402,7 +158836,7 @@
   },
   {
     "id": "streetwear-tightsingletsportevent-cotton",
-    "slot": "lowerBody",
+    "slot": "upperBody",
     "name": "Tight Singlet Sport Event Cotton",
     "imageUrl": "items/lowerBody/streetwear-tightsingletsportevent-cotton.webp",
     "set": "Streetwear",

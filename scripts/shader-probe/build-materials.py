@@ -9,20 +9,73 @@ import gzip
 import hashlib
 import json
 import math
+import re
 import struct
 from pathlib import Path
 
 from PIL import Image
 from sm5_slice import Slice, f32
-from material_inputs import material_inputs, texture_paths, neck_fade_inputs
+from material_inputs import material_inputs, texture_paths, neck_fade_inputs, static_parameters
+from nail_sampler import effective_nail_sampler, apply_nail_sampler
 
 
 def read_json(path):
     return json.loads(path.read_text(encoding='utf-8-sig'))
 
 
+# M_CharacterNails_Base is BLEND_Masked, but its opacity mask comes only from engine effects: the
+# impact render target and the character spawn/death dissolve. The undamaged, fully spawned state
+# the preview shows keeps every fragment, so the static slice renders it opaque.
+NAIL_SCOPE = ('Static nail surface: hand side, colour pairs, pattern or colour texture, metallic and roughness; '
+              'engine-effect opacity (impact, dissolve), emissive effects, pixel depth offset and Unreal lighting excluded')
+ATTACHMENT_SCOPE = ('Static M_CharacterAttachment surface: CR colour with its multiply, desaturation and tint overlay, NOH normal '
+                    'and occlusion, roughness, specular and metallic; engine-effect opacity (impact, dissolve), thermal, selection '
+                    'and spawn emissive, vertex-stage offsets, pixel depth offset and Unreal lighting excluded')
+
+
+def attachment_contract(chain, bindings, assembly, sliced, used):
+    """Accept only the ordinary M_CharacterAttachment surface; reject live branches the static slice drops.
+
+    Material opacity or emissive, another blend mode or a non-default shading model would render as a
+    plausible solid surface, so each is an explicit error. Returns the manifest's surface policy fields.
+    """
+    properties = chain[0]['Properties']
+    blend, shading = properties.get('BlendMode', 'EBlendMode::BLEND_Opaque'), properties.get('ShadingModel')
+    two_sided = properties.get('TwoSided', False)
+    for material in chain[1:]:
+        override = material['Properties'].get('BasePropertyOverrides', {})
+        if override.get('bOverride_BlendMode'): blend = override['BlendMode']
+        if override.get('bOverride_ShadingModel'): shading = override['ShadingModel']
+        if override.get('bOverride_TwoSided'): two_sided = override['TwoSided']
+    if blend not in ('EBlendMode::BLEND_Opaque', 'EBlendMode::BLEND_Masked'): raise ValueError(f'Unsupported attachment blend mode {blend}')
+    if shading not in (None, 'EMaterialShadingModel::MSM_DefaultLit'): raise ValueError(f'Unsupported attachment shading model {shading}')
+    switches = sorted(key[1] for key, value in static_parameters(chain).items()
+                      if key[1] in ('ActivateOpacity', 'ActivateEmissive', 'UseNEMForEmissive') and value.get('Value'))
+    if switches: raise ValueError(f'Live material branch outside the static surface: {", ".join(switches)}')
+    read = {(int(r), lane) for r, lanes in re.findall(rf"cb{bindings['materialBufferIndex']}\[(\d+)\]\.([xyzw]+)", assembly)
+            for lane in lanes}
+    for field in bindings['uniformFields']:
+        register, lanes = re.fullmatch(r'cb\d+\[(\d+)\]\.([xyzw]+)', field['register']).groups()
+        if 'Emissive' in field['expression'] and any((int(register), lane) in read for lane in lanes):
+            raise ValueError(f'Live material emissive input: {field["expression"]}')
+    # The family's engine clip (impact target, spawn/death dissolve) projects its dissolve grid onto the
+    # plane the pixel normal faces, so the surface normal may reach it. Any other route from a surface
+    # texture is material opacity, which this static surface does not reproduce.
+    for condition in sliced.discards:
+        reached = Slice.sampled_slots([condition], sliced.outputs['normal']) & set(used)
+        if reached: raise ValueError(f'Surface texture {sorted(reached)} reaches the discard other than through the surface '
+                                     'normal: material opacity is not reproduced')
+    policy = {'twoSided': two_sided, 'blendMode': blend.split('::')[-1]}
+    if blend == 'EBlendMode::BLEND_Masked':
+        policy['opacityPolicy'] = ('Masked only by the engine impact and dissolve clip; surface textures reach it only through the '
+                                   'normal that orients the dissolve projection, so the undamaged, spawned surface keeps every fragment')
+    return policy
+
+
 def evaluate_preshader(data, parameters):
-    cursor,stack=0,[]
+    # TextureSize/TexelSize (39/40) read an engine texture resource that is not reconstructed.
+    # Every field computed from one is NaN, so a live read fails the slice and the forward check.
+    cursor,stack,engine=0,[],False
     def read(fmt):
         nonlocal cursor
         value=struct.unpack_from(fmt,data,cursor); cursor+=struct.calcsize(fmt)
@@ -43,15 +96,17 @@ def evaluate_preshader(data, parameters):
             count,*swizzle=read('<5B'); value=stack.pop(); stack.append([value[i] for i in swizzle[:count]])
         elif op==38:
             b,a=stack.pop(),stack.pop(); stack.append(a+b)
+        elif op in (39,40):
+            read('<HiBi'); stack.append([math.nan]*3); engine=True
         elif op in unary:
-            stack.append([f32(unary[op](x)) for x in stack.pop()])
+            value=stack.pop(); stack.append([math.nan]*len(value) if engine else [f32(unary[op](x)) for x in value])
         elif op in binary:
             b,a=stack.pop(),stack.pop(); width=max(len(a),len(b))
             if len(a) not in (1,width) or len(b) not in (1,width): raise ValueError('Preshader width mismatch')
-            stack.append([f32(binary[op](a[i%len(a)],b[i%len(b)])) for i in range(width)])
+            stack.append([math.nan]*width if engine else [f32(binary[op](a[i%len(a)],b[i%len(b)])) for i in range(width)])
         else: raise ValueError(f'Unsupported numeric preshader opcode {op}')
     if cursor!=len(data) or len(stack)!=1: raise ValueError('Invalid numeric preshader stack/span')
-    return stack[0]
+    return [math.nan]*len(stack[0]) if engine else stack[0]
 
 
 def material_constants(uniforms, chain):
@@ -162,18 +217,26 @@ def build(exports, textures, output, requests=None, keep_going=False):
         sliced=Slice(assembly_path.read_text(),constants,slots,view_dependent=cloth,geometry_dependent=geometry,skin_surface=skin,
                      surface_kind=kind,material_buffer=bindings['materialBufferIndex'],neck_fade=neck_fade_inputs(chain,bindings,constants))
         shader,used,report=sliced.emit()
+        attachment=chain[0]['Name']=='M_CharacterAttachment'
+        policy=attachment_contract(chain,bindings,assembly_path.read_text(),sliced,used) if attachment else None
         entries=[]
         for slot in used:
             path=slots[slot]['path']
             if path not in packed: packed[path]=pack_texture(tex_info[path],textures,output)
-            entries.append({'slot':slot,**packed[path]})
+            entry = {'slot':slot,**packed[path]}
+            # The compiled shader's sampler, not the texture asset's metadata, decides addressing.
+            if chain[0]['Name'] in ('M_CharacterNails_Base','M_CharacterAttachment'):
+                raw = (exports/'shaders'/(stem+'.basepass-pixel.ue-shader.bin')).read_bytes()
+                entry = apply_nail_sampler(entry, effective_nail_sampler(raw, assembly_path.read_text(), slot))
+            entries.append(entry)
         shader_name=item_id+'.glsl'; (output/shader_name).write_bytes(shader.encode('utf8'))
         manifest={'formatVersion':1,'itemId':item_id,'shader':shader_name,'textures':entries,
                   'sourceInstance':instance,'sourceShaderOwner':owner,'sourceRoot':chain[0]['Name'],'shaderSha256':hashlib.sha256(shader.encode()).hexdigest(),
                   'assemblySha256':hashlib.sha256(assembly_path.read_bytes()).hexdigest(),
-                  'scope':'Static face/hair material inputs; engine effects, temporal rendering and Unreal lighting excluded' if kind else 'Static skin surface channels; native opacity, pixel depth offset, engine effects and subsurface lighting excluded' if skin else 'Static opaque clothing surface; engine effects and Unreal lighting excluded',**report}
+                  'scope':'Static face/hair material inputs; engine effects, temporal rendering and Unreal lighting excluded' if kind else 'Static skin surface channels; native opacity, pixel depth offset, engine effects and subsurface lighting excluded' if skin else NAIL_SCOPE if chain[0]['Name']=='M_CharacterNails_Base' else ATTACHMENT_SCOPE if attachment else 'Static opaque clothing surface; engine effects and Unreal lighting excluded',**report}
         overlays = [m['Package'] + '.' + m['Name'] for m in chain if m.get('_parameterOverride')]
         if overlays: manifest['parameterOverrides'] = overlays
+        if policy: manifest.update(policy)
         if kind:
             two_sided=chain[0]['Properties'].get('TwoSided',False)
             for material in chain[1:]:

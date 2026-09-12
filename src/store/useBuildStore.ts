@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { SLOTS, type Slot } from "../lib/slots";
 import type { Item } from "../lib/item";
 import { getItemById } from "../lib/catalog";
+import { migrateBuildSlots } from "../lib/outfit-slots";
 
 // `build` is the serializable source of truth: slot -> selected item id (or null).
 // It maps 1:1 onto Outfit.slots (src/lib/outfit.ts) for the M4 share-link encoder.
@@ -66,6 +67,8 @@ export const useBuildStore = create<BuildState>((set) => ({
     })),
   // Share links describe the EXACT build — blank base, not defaults, so an absent slot in
   // the link stays empty (and the visual-diff harness renders items in isolation).
-  load: (slots) => set({ build: { ...blankBuild(), ...slots } }),
+  // Slot maps written down before a catalog slot correction are migrated here as well as
+  // in the share-link path, so loading a build directly can't disagree with loading its URL.
+  load: (slots) => set({ build: { ...blankBuild(), ...migrateBuildSlots(slots) } }),
   reset: () => set({ build: defaultBuild() }),
 }));

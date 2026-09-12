@@ -27,6 +27,7 @@ import sharp from "sharp";
 import { CatalogSchema, type Item, type Material, type MaterialBinding, type Decal } from "../src/lib/item.ts";
 import { SLOTS, type Slot } from "../src/lib/slots.ts";
 import { composeMaterialBindings, type ImportMaterialSlot } from "./lib/import-material-bindings.ts";
+import { classifySlot } from "./lib/catalog-slots.ts";
 // @ts-expect-error plain-JS source resolver shared with the material baker
 import { resolveMaterialBindings } from "./lib/material-instances.mjs";
 // @ts-expect-error plain-JS source parser shared with the material baker
@@ -107,40 +108,10 @@ const BODYCOSMETIC_SLOT: Record<string, Slot> = {
 // Slots that render as a 2D decal composited onto the body/head (no mesh).
 const DECAL_SLOTS = new Set<Slot>(["tattoo", "blush", "bodyPaint", "eyes", "nailPolish"]);
 
-// Piece-name keyword -> slot, evaluated in order (most specific first). Used for set
-// folders (ActionHero, Cowboy, …) and Attachments. Input is space-separated first
+// Piece-name keyword -> slot lives in ./lib/catalog-slots.ts, so the ordering (which is
+// load-bearing: a lower-body MODIFIER must never outrank an upper-body garment name) can
+// be tested without running the importer. Input is space-separated first
 // (BaseballCap -> "baseball cap") so \b boundaries catch glued PascalCase tokens.
-// `hood(?!ie)` keeps hoodies out of headwear; outerwear before upperBody so capes/coats
-// win over "top/suit"; upperBack before lowerBack so clavicle weapons sort to the back.
-const SLOT_RULES: [RegExp, Slot][] = [
-  [/glass|goggle|monocle|shades|sunglass|spectacle/, "eyewear"],
-  [/mask|eyepatch|rebreather|respirator|muzzle|faceguard|veil|balaclava|bandana|scarf|gaiter/, "facewear"],
-  [/boot|shoe|sneaker|sandal|heel|geta|spur|clog|loafer|pump|cleat|wedge|footwear|flip ?flop/, "feet"],
-  [/glove|gauntlet|mitten|knuckle|\bhand|finger/, "hands"],
-  [/watch|wrist|bracelet|bangle/, "wrist"],
-  [/pant|trouser|short|skirt|kilt|legging|tight|stocking|chap|jean|legwear|bottom|capri|jogger/, "lowerBody"],
-  [/cape|cloak|poncho|coat|duster|mantle|robe|shawl|capelet|cardigan/, "outerwear"],
-  [/backpack|bandolier|\bbag|harness|satchel|quiver|\bpack|wing|jetpack|parachute|sling|strap|clavicle|rope/, "upperBack"],
-  // NOTE: \bhat\b / \bcaps?\b need BOTH boundaries — bare `\bcap` matched "captain
-  // jacket" into headwear.
-  [/helmet|\bhats?\b|\bcaps?\b|beanie|crown|cowl|\bhorns?\b|antenna|antler|beret|visor|halo|hood(?!ie)|turban|headband|headgear|tiara|fedora|bolero|sombrero|snapback|headphone|headset|\bears?\b|\bhead\b/, "headwear"],
-  [/top|jacket|shirt|vest|hoodie|sweater|tank|jersey|tunic|blouse|\bsuit|torso|armou?r|bodysuit|dress|overall|uniform|turtle ?neck|pullover|sweatshirt|crop|corset|upper ?body|\bbody\b/, "upperBody"],
-  [/lumbar|\btail|pistol|\bgun|sheath|holster/, "lowerBack"],
-];
-
-function spaceCase(s: string): string {
-  return s
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/([A-Za-z])([0-9])/g, "$1 $2")
-    .replace(/[_-]+/g, " ")
-    .toLowerCase();
-}
-
-function keywordSlot(text: string): Slot | null {
-  const spaced = spaceCase(text);
-  for (const [re, slot] of SLOT_RULES) if (re.test(spaced)) return slot;
-  return null;
-}
 
 // ---------------------------------------------------------------------------
 // Sponsor inference (from skin-suffix tokens). Long distinctive names match as a
@@ -1428,7 +1399,7 @@ function classify(hit: IconHit): Classified {
     // set folder (ActionHero…) or Attachments: piece = segment after Assets, else segs[1]
     const assetsIdx = hit.segs.findIndex((s) => /^assets$/i.test(s));
     piece = (assetsIdx >= 0 ? hit.segs[assetsIdx + 1] : hit.segs[1]) ?? cat;
-    slot = keywordSlot(piece) ?? keywordSlot(fileToken);
+    slot = classifySlot(piece, fileToken);
     if (cat !== "Attachments") setName = cat;
   }
 

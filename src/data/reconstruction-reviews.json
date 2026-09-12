@@ -1,0 +1,38 @@
+{
+  "streetwear-tightsinglet-cotton-enorino": {
+    "status": "accepted",
+    "note": "Looks good in the reviewed Medium outfit; user confirmed the result on 11 September 2026."
+  },
+  "casual-longcoat-leather-camo": {
+    "status": "polish",
+    "note": "Wrist gap reported on 11 September 2026; outfit and body coverage need inspection."
+  },
+  "bodycosmetics-bodypaint-discosilver-01": {
+    "status": "issue",
+    "note": "Known visual error: the face finish does not match the metallic body; head surface reconstruction is pending."
+  },
+  "bodycosmetics-bodypaint-metallicblack-01": {
+    "status": "issue",
+    "note": "Known visual error: the face finish does not match the metallic body; head surface reconstruction is pending."
+  },
+  "bodycosmetics-bodypaint-metallicblackgold-01": {
+    "status": "issue",
+    "note": "Known visual error: the face finish does not match the metallic body; head surface reconstruction is pending."
+  },
+  "bodycosmetics-bodypaint-metallicgold-01": {
+    "status": "issue",
+    "note": "Known visual error: the face finish does not match the metallic body; head surface reconstruction is pending."
+  },
+  "bodycosmetics-bodypaint-sweat-01": {
+    "status": "issue",
+    "note": "Known visual error: facial streaks look like grime without the wet head finish and droplet normals; both are still pending."
+  },
+  "attachment-mask-ballistic-01-headwear-darkgreen": {
+    "status": "polish",
+    "note": "Source material and placement reviewed on Medium, 12 September 2026. Rear straps intersect Afro Fade in places; hair fitting and culling need further polish."
+  },
+  "attachment-mask-ballistic-01-headwear-vaiiya": {
+    "status": "polish",
+    "note": "Source material and placement reviewed on Medium, 12 September 2026. Rear straps intersect Afro Fade in places; hair fitting and culling need further polish."
+  }
+}

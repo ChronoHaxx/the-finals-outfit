@@ -7,7 +7,7 @@ import { chromium } from 'playwright-core';
 
 const base = process.env.PRODUCTION_URL ?? 'http://127.0.0.1:4173/the-finals-outfit/';
 const assetsBase = process.env.ASSETS_BASE ?? 'https://the-finals-outfit-assets.netlify.app/v4-reconstruction/';
-const output = 'scripts/generated/release';
+const output = process.env.PRODUCTION_REPORT_DIR ?? 'scripts/generated/release';
 mkdirSync(output, { recursive: true });
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const results = [];
@@ -33,6 +33,18 @@ try {
       upperBody: 'actionhero-sentineltop-nylon-yellow', lowerBody: 'actionhero-sentinelpants-nylon-yellow',
       earrings: 'bodycosmetics-earrings-beetlegold-01', eyewear: 'attachment-3dpaperglasses-paper',
       feet: 'casual-tallsneakers-canvas' } },
+    { name: 'coverage-accessories-nails', source: true, expectedPaths: [
+      '/reconstructed-accessory-frames-v1/', '/reconstructed-nails-v1/',
+    ], slots: { face: 'head-face-01-base', hair: 'hairs-afrofade',
+      upperBody: 'streetwear-tightsinglet-cotton-enorino', lowerBody: 'casual-loosejeans-denim-darkblue',
+      feet: 'casual-tallsneakers-canvas', earrings: 'bodycosmetics-earrings-chain-01-gold',
+      lowerBack: 'attachment-boombox-01-finals-lumbar', nailPolish: 'bodycosmetics-nails-crosses-01' } },
+    { name: 'ordinary-accessory', source: true, expectedPaths: ['/reconstructed-accessories-v1/'],
+      slots: { face: 'head-face-01-base', hair: 'hairs-afrofade', facewear: 'attachment-asianmask',
+        upperBody: 'casual-basictshirt-cotton-alfaacta', lowerBody: 'casual-loosejeans-denim-darkblue',
+        feet: 'casual-tallsneakers-canvas' } },
+    { name: 'body-paint', source: true, slots: { face: 'head-face-01-base',
+      hair: 'hairs-afrofade', bodyPaint: 'bodycosmetics-bodypaint-bodytight-01' } },
     { name: 'legacy', slots: null, source: false },
   ]) {
     errors = []; requested = []; badResponses = [];
@@ -51,6 +63,9 @@ try {
     assert.equal(await page.evaluate(() => !!window.__rigRoot), false, 'production excludes developer rig access');
     assert.equal(requested.some(url => url.includes('/reconstructed-neck-v1/')), test.source);
     assert.equal(requested.some(url => url.includes('/reconstructed-meshes-v2/SK_Body_M.glb')), test.source);
+    for (const path of test.expectedPaths ?? []) {
+      assert(requested.some(url => url.includes(path)), `${test.name}: missing reconstructed dependency ${path}`);
+    }
     assert.deepEqual(badResponses, [], `${test.name}: failed asset requests`);
     assert.deepEqual(errors, [], `${test.name}: browser errors`);
     const capture = `${output}/${new URL(base).hostname === '127.0.0.1' ? 'preview' : 'live'}-${test.name}.png`;

@@ -19,6 +19,7 @@ export const HARDCODED = [
   "models/body/SK_Body_M.glb",
   "models/decals/_shared/nailmask.webp",
   "models/decals/_shared/bodyhide-face.webp",
+  "models/reconstructed-coverage-legacy-singlet-v1/streetwear-tight-singlet.bodymask.png",
 ];
 
 const ASSET_PATH = /^(models|items|textures)\/[\w./-]+\.(webp|png|jpg|jpeg|glb|gltf|ktx2|bin)$/i;

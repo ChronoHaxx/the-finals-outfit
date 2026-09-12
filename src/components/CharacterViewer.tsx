@@ -84,11 +84,8 @@ const DEV = readDevParams();
 const sourcePreviewKey = (id: string, item: SourceOutfit['items'][string], skinParameters: SourceMaterialParameters[] = []) =>
   `${id}|parts:${JSON.stringify(item.parts)}|parameters:${JSON.stringify([item.materialParameters, skinParameters])}`;
 
-// Two scene themes. "studio" reproduces the bright neutral wardrobe render the official
-// item icons were captured in — it's the calibration target, so its lighting must stay
-// neutral (any tint here shows up as a color error against the icons). "lobby" is the
-// dark main-menu inspect mood (warm key + signature blue rims), kept as a purely
-// cosmetic alternate view — no color-accuracy promises.
+// Two scene themes: a neutral wardrobe preview for comparing item colours, and
+// a dark lobby view with a warm key and blue rim lights.
 type SceneTheme = "studio" | "lobby";
 
 const THEME_BACKGROUND: Record<SceneTheme, string> = {
@@ -104,7 +101,14 @@ function toRigDecal(decal: NonNullable<Item["decal"]>): RigDecal {
       target: l.target,
       colorUrl: l.colorPath ? modelUrl(l.colorPath) : undefined,
       maskUrl: l.maskPath ? modelUrl(l.maskPath) : undefined,
+      surfaceUrl: l.surfacePath ? modelUrl(l.surfacePath) : undefined,
+      surfaceOverride: l.surfaceOverride,
       uv: l.uv,
+      uvScale: l.uvScale,
+      uvLayout: l.uvLayout,
+      uvOffsetX: l.uvOffsetX,
+      colorOverride: l.colorOverride,
+      colorMultiply: l.colorMultiply,
       tint: l.tint,
       emissive: l.emissive,
     })),
@@ -172,16 +176,17 @@ function toRigMaterialBindings(
   }]));
 }
 
-// Procedural photo-studio environment for PMREM: a DARK room with a few large bright
-// softbox panels. The panels carry the diffuse light (high irradiance, no files needed),
-// while the dark walls keep the AVERAGE radiance low — that's what makes metals read as
-// dark gunmetal with bright streaks (like the official icons) instead of washed-out
-// chrome, which is what a uniformly bright env (RoomEnvironment) produces.
+// Procedural studio reflection environment. A neutral fill and broad panels keep
+// recovered metal detail visible instead of leaving black interiors between bright
+// streaks. Compared on source armour, leather, cloth and shoes plus legacy controls;
+// this remains preview lighting, not a reproduction of the game's illumination.
 function makeSoftboxScene(): THREE.Scene {
   const scene = new THREE.Scene();
+  const roomMaterial = new THREE.MeshBasicMaterial({ side: THREE.BackSide });
+  roomMaterial.color.setScalar(0.4); // linear radiance, not an sRGB colour swatch
   const room = new THREE.Mesh(
     new THREE.BoxGeometry(14, 14, 14),
-    new THREE.MeshBasicMaterial({ color: 0x1c1d20, side: THREE.BackSide }),
+    roomMaterial,
   );
   scene.add(room);
   const panel = (w: number, h: number, intensity: number, pos: [number, number, number]) => {
@@ -192,14 +197,14 @@ function makeSoftboxScene(): THREE.Scene {
     m.lookAt(0, 1, 0);
     scene.add(m);
   };
-  panel(5, 5, 16, [1.5, 6, 3]); // top-front key softbox
-  panel(4, 5, 7, [-4.5, 2.5, 2]); // camera-left fill
-  panel(3, 4, 5, [4.5, 2, -2.5]); // back-right accent
+  panel(8, 6, 7, [1.5, 6, 3]); // top-front key softbox
+  panel(8, 6, 3, [-4.5, 2.5, 2]); // camera-left fill
+  panel(6, 6, 2, [4.5, 2, -2.5]); // back-right accent
   return scene;
 }
 
 // Image-based lighting via PMREM (no network/asset dependency, unlike drei's
-// <Environment> HDR presets). The studio theme uses the dark softbox scene above as the
+// <Environment> HDR presets). The studio theme uses the softbox scene above as the
 // primary light source; the lobby theme keeps the generic bright RoomEnvironment, dimmed,
 // so its key + rim lights define the look.
 function StudioEnvironment({ intensity, softbox }: { intensity: number; softbox?: boolean }) {
@@ -207,11 +212,18 @@ function StudioEnvironment({ intensity, softbox }: { intensity: number; softbox?
   const scene = useThree((s) => s.scene);
   useEffect(() => {
     const pmrem = new THREE.PMREMGenerator(gl);
-    const envTex = pmrem.fromScene(softbox ? makeSoftboxScene() : new RoomEnvironment(), 0.04).texture;
+    const room = softbox ? makeSoftboxScene() : new RoomEnvironment();
+    const target = pmrem.fromScene(room, 0.04);
+    const envTex = target.texture;
+    room.traverse(object => {
+      if (!(object instanceof THREE.Mesh)) return;
+      object.geometry.dispose();
+      for (const material of (Array.isArray(object.material) ? object.material : [object.material])) material.dispose();
+    });
     scene.environment = envTex;
     return () => {
       if (scene.environment === envTex) scene.environment = null;
-      envTex.dispose();
+      target.dispose();
       pmrem.dispose();
     };
   }, [gl, scene, softbox]);
@@ -253,11 +265,8 @@ function KeyLight() {
   );
 }
 
-// Bright neutral high-key studio — the environment the official icons were rendered in.
-// Intensities are anchor-calibrated: near-neutral items (grey boots, white sneakers) are
-// rendered and probed against their icons (scripts/visual-diff), and the rig is tuned so
-// their ΔL ≈ 0 at BOTH chest and ground level — the game's studio has no vertical falloff,
-// so the hemisphere/env carry more of the light than the key.
+// Neutral studio preview. Shared lighting is reviewed against multiple material
+// families; recovered material values remain independent of the environment choice.
 function StudioLights() {
   return (
     <>
@@ -456,8 +465,13 @@ export default function CharacterViewer() {
           id && (slot === "upperBody" || (slot === "outerwear" && !build.upperBody))
             ? getItemById(id)?.model?.underLayerUrl
             : undefined;
-        const sourceItem = id && supported.has(id) && (slot !== 'hair' || (DEV.sourceMeshes && DEV.sourceFitting))
+        const sourceCandidate = id && supported.has(id) && (slot !== 'hair' || (DEV.sourceMeshes && DEV.sourceFitting))
           ? assembly?.items[id] : undefined;
+        // A part socketed onto the head component only exists while a source head is worn: its
+        // sockets are that head's own. Without one, keep the ordinary path instead of failing.
+        const headSocketed = !!sourceCandidate?.parts.some(part => !part.hidden && part.definition.bAttachToHeadMesh);
+        const headComponent = headSocketed ? rig.sourceHeadComponentKey() : undefined;
+        const sourceItem = headSocketed && !headComponent ? undefined : sourceCandidate;
         const skinCandidate = id && slot === "face" && DEV.sourceMeshes && DEV.sourceFitting ? assembly?.items[id] : undefined;
         let skinParameters: SourceMaterialParameters[] = [];
         if (skinCandidate && assembly) {
@@ -476,7 +490,10 @@ export default function CharacterViewer() {
           }
         }
         const sourceKey = sourceItem ?? skinCandidate;
-        const key = sourceKey ? sourcePreviewKey(id!, sourceKey, skinParameters) : underTint
+        // An item socketed onto the head component belongs to the head that is worn: the face is
+        // staged before this loop, so a head swap has to re-stage it rather than be deduplicated.
+        const key = sourceKey ? sourcePreviewKey(id!, sourceKey, skinParameters)
+          + (headSocketed ? `|head:${headComponent ?? "none"}` : "") : underTint
           ? `${id}|${underTint}`
           : realUnder
             ? `${id}|u:${realUnder}`
@@ -539,6 +556,10 @@ export default function CharacterViewer() {
           if (cancelled) return;
         } else if (item?.decal) {
           // 2D body cosmetic (tattoo/makeup/paint/eyes/nails) composited onto the body/head.
+          // A source item may still occupy the slot (a native nail replaced by a legacy-only
+          // polish). Remove it, and forget the committed key so a cancelled pass reprocesses it.
+          rig.unequip(slot);
+          delete prev.current[slot];
           try {
             await rig.equipDecal(slot, toRigDecal(item.decal));
           } catch (e) {

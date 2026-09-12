@@ -44,13 +44,18 @@ def forward(assembly, constants, textures, uv, view_tangent=None, basis=None):
         if negative: values=-values
         return values
     for i in range(0,len(constants),4): write(f'cb3[{i//4}]',constants[i:i+4])
-    write('v0',[1,0,0,0]);write('v1',[0,0,1,1]);write('v2',uv);write('v6',[.5,.5,.5,1])
+    # UV0 is wherever the input signature places TEXCOORD0 (a colour interpolant may precede it).
+    texcoord0=re.search(r'// TEXCOORD\s+0\s+xyzw\s+(\d+)\s+NONE',assembly)
+    write('v0',[1,0,0,0]);write('v1',[0,0,1,1]);write(f'v{texcoord0[1] if texcoord0 else 2}',uv);write('v6',[.5,.5,.5,1])
     for i in range(4): write(f'cb0[{44+i}]',np.eye(4)[i])
     write('cb0[122]',[0,0,5,0]);write('cb0[159]',[0,0,0,1]);write('cb0[160]',[0,1,0,1])
     if view_tangent is not None:
         frame = np.eye(3) if basis is None else basis
         write('v0', [*frame[:,0], 0]); write('v1', [*frame[:,2], 1])
         write('cb0[122]', [*(frame @ np.asarray(view_tangent) + [.5,.5,.5]), 0])
+    f0=None; f0_check=None; f0_anchor=None  # folded Specular: see sm5_slice.Slice.track_folded_f0
+    def near(source,value,lanes):
+        return source.startswith('l(') and np.allclose(read(source)[lanes],value,rtol=0,atol=5e-7)
     for text in assembly.splitlines():
         line=re.sub(r'\s*\[precise(?:\([^]]*\))?\]','',text.strip())
         match=re.match(r'(\w+)((?:\([^)]*\))*)\s*(.*)',line)
@@ -65,10 +70,24 @@ def forward(assembly, constants, textures, uv, view_tangent=None, basis=None):
         if op=='endif': active=branches.pop()[0];continue
         if not active or op in ('ret','discard_nz'): continue
         mask=a[0].split('.')[-1] if '.' in a[0] else 'xyzw'; lanes=['xyzw'.index(c) for c in mask]
-        if op=='mul' and 'cb0[159]' in line: result['normal']=read(a[1])[lanes].copy()
+        if op=='mul' and 'cb0[159]' in line:
+            # An unconnected Normal is folded into the operand that is not the view override.
+            material=a[2] if 'cb0[159]' in a[1] and 'cb0[159]' not in a[2] else a[1]
+            result['normal']=read(material)[lanes].copy()
         if op=='mad' and a[0]=='o2.z': result['roughness']=read(a[1])[[2]].copy()
         if op=='mad_sat' and 'cb0[160].w' in line: result['ao']=read(a[1])[[lanes[0]]].copy()
+        if op=='add_sat' and a[1:]==['cb0[160].z','cb0[160].w']: result['ao']=np.ones(1,np.float32)
         if op=='mul' and 'l(0.080000)' in line: result['specular']=read(a[1])[[0]].copy()
+        # Record the folded F0 inputs from the executed registers, then check the result numerically.
+        state,f0=f0,None
+        register=a[0].split('.')[0]
+        if op=='add' and len(a)==3 and near(a[2],-.04,lanes) and a[1].lstrip('-').split('.')[0]!=register:
+            f0={'stage':1,'dst':a[0],'base':read(a[1])[lanes].copy()}
+        elif state and state['dst']==a[0] and state['stage']==1 and op=='mul':
+            weight=[x for x in a[1:3] if x.split('.')[0]!=register]
+            if len(weight)==1: f0={**state,'stage':2,'metal':float(read(weight[0])[0])}
+        elif state and state['dst']==a[0] and state['stage']==2 and op=='add' and near(a[2],.04,lanes):
+            f0_check=state
         saturated=op.endswith('_sat');op=op.removesuffix('_sat'); typ='f'
         if op=='mov': value=read(a[1],'u');typ='u'
         elif op=='movc': value=np.where(read(a[1],'u')!=0,read(a[2],'u'),read(a[3],'u'));typ='u'
@@ -117,12 +136,23 @@ def forward(assembly, constants, textures, uv, view_tangent=None, basis=None):
             elif op=='frc':value=x-np.floor(x)
             elif op=='round_ni':value=np.floor(x)
             elif op=='round_pi':value=np.ceil(x)
+            elif op=='log':value=np.log2(x)  # D3D log: base 2, NaN below zero, -inf at zero
+            elif op=='exp':value=np.exp2(x)
             else:raise ValueError(f'Unknown reference opcode {op}')
         if saturated:
             if typ!='f': value=value.view(np.float32)
             value=np.clip(value,0,1);typ='f'
         write(a[0],value,typ)
+        if f0_check:
+            base,metal=f0_check['base'],f0_check['metal']
+            if not np.allclose(read(a[0]),(base-.04)*metal+.04,rtol=0,atol=1e-6):
+                raise AssertionError('Folded F0 sequence is not lerp(0.04, base colour, metalness)')
+            if 'specular' in result: raise AssertionError('Ambiguous specular anchor')
+            result['specular']=np.full(1,.04/.08,np.float32); f0_anchor=(base,metal); f0_check=None
     result['baseColor']=read('o3.xyzx')[:3];result['metalness']=read('o2.x')[:1]
+    if f0_anchor is not None and not (np.allclose(f0_anchor[0],result['baseColor'],rtol=0,atol=1e-6)
+                                      and np.isclose(f0_anchor[1],result['metalness'][0],rtol=0,atol=1e-6)):
+        raise AssertionError('Folded F0 does not read the emitted base colour and metalness')
     return result
 
 
@@ -150,6 +180,7 @@ def evaluate_nodes(sliced,textures,uv,view_tangent=None):
                        'min':lambda:min(a),'max':lambda:max(a),'neg':lambda:-a[0],'abs':lambda:abs(a[0]),
                        'floor':lambda:np.floor(a[0]),'ceil':lambda:np.ceil(a[0]),'fract':lambda:a[0]-np.floor(a[0]),
                        'sin':lambda:np.sin(a[0]),'cos':lambda:np.cos(a[0]),'sqrt':lambda:np.sqrt(a[0]),
+                       'log2':lambda:np.log2(a[0]),'exp2':lambda:np.exp2(a[0]),
                        'rsq':lambda:1/np.sqrt(a[0]),'rcp':lambda:1/a[0],
                        'and':lambda:int(a[0])&int(a[1]),'or':lambda:int(a[0])|int(a[1]),'shl':lambda:(int(a[0])<<(int(a[1])&31))&0xffffffff,
                        'lt':lambda:0xffffffff if a[0]<a[1] else 0,'ge':lambda:0xffffffff if a[0]>=a[1] else 0,

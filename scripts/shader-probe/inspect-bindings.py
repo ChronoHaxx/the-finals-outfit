@@ -18,7 +18,7 @@ class Expression:
         self.text, self.width = text, width
 
 
-def decode_expression(data, parameters):
+def decode_expression(data, parameters, names=()):
     cursor, stack, parameter_names = 0, [], set()
 
     def read(fmt):
@@ -67,6 +67,14 @@ def decode_expression(data, parameters):
             if width > 4:
                 raise ValueError("AppendVector exceeds four components")
             stack.append(Expression(f"float{width}({left.text}, {right.text})", width))
+        elif opcode in (39, 40):
+            # TextureSize / TexelSize: the parameter (name index into Names, index, association) and
+            # its texture index. The engine reads the bound texture resource; not a numeric parameter.
+            name_index, _, association, texture_index = read("<HiBi")
+            if name_index >= len(names) or association > 2:
+                raise ValueError("Texture size names an unknown texture parameter")
+            kind = "TextureSize" if opcode == 39 else "TexelSize"
+            stack.append(Expression(f"{kind}({names[name_index]!r}, texture {texture_index})", 3))
         elif opcode in binary:
             right, left = stack.pop(), stack.pop()
             if left.width != right.width and 1 not in (left.width, right.width):
@@ -156,7 +164,8 @@ def inspect(uniform_path, output):
         if start + size > len(data) or consumed.intersection(range(start, start + size)):
             raise ValueError("Preshader opcode spans overlap or exceed the data")
         consumed.update(range(start, start + size))
-        expression, parameters = decode_expression(data[start:start + size], uniforms["UniformNumericParameters"])
+        expression, parameters = decode_expression(data[start:start + size], uniforms["UniformNumericParameters"],
+                                                   uniforms["UniformPreshaderData"].get("Names") or ())
         for field_index in range(preshader["FieldIndex"], preshader["FieldIndex"] + preshader["NumFields"]):
             field = fields[field_index]
             if not re.fullmatch(r"Float[1-4]", field["Type"]):
@@ -190,7 +199,10 @@ def inspect(uniform_path, output):
     if assembly_path.exists():
         assembly = assembly_path.read_text(encoding="utf-8-sig")
         declared = re.search(rf"dcl_constantbuffer CB{buffer_index}\[(\d+)\]", assembly)
-        if not declared or int(declared[1]) != uniforms["UniformPreshaderBufferSize"]:
+        # FXC declares a constant buffer only up to its highest register read, so trailing unread
+        # registers may be trimmed. It can never exceed the material layout; every read component
+        # must still map to a decoded field below.
+        if not declared or not 0 < int(declared[1]) <= uniforms["UniformPreshaderBufferSize"]:
             raise ValueError("Disassembled material buffer size differs from metadata")
         used = {(int(reg), lane) for reg, lanes in re.findall(rf"cb{buffer_index}\[(\d+)\]\.([xyzw]+)", assembly)
                 for lane in lanes}

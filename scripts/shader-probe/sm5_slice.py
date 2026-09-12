@@ -103,6 +103,8 @@ class Slice:
                  surface_kind=None, material_buffer=3, neck_fade=None):
         self.registers, self.outputs, self.texture_info = {}, {}, texture_info
         self.instructions, self.snapshots, self.branches = [], {}, []
+        self.folded, self.f0_state, self.f0_anchor = [], None, None
+        self.discards = []
         self.view_dependent = view_dependent
         self.geometry_dependent = geometry_dependent
         self.skin_surface = skin_surface
@@ -143,7 +145,10 @@ class Slice:
             primitive = re.search(r'// PRIMITIVE_ID\s+0\s+x\s+(\d+)\s+NONE\s+uint', text)
             if not primitive: raise ValueError('Missing skin primitive input signature')
             self.registers[f'v{primitive[1]}.x'] = const(0, 'u')
-        uv_register = 3 if surface_kind == 'hair' else 2
+        # UV0 follows the input signature: a vertex-colour interpolant can precede TEXCOORD0
+        # (hair, tinted attachments). Hair keeps its explicit register check below.
+        texcoord0 = re.search(r'// TEXCOORD\s+0\s+xyzw\s+(\d+)\s+NONE', text)
+        uv_register = int(texcoord0[1]) if texcoord0 else 3 if surface_kind == 'hair' else 2
         if surface_kind == 'hair':
             if not re.search(r'// COLOR\s+0\s+xyzw\s+2\s+NONE', text): raise ValueError('Unknown hair colour input signature')
             if not re.search(r'// TEXCOORD\s+0\s+xyzw\s+3\s+NONE', text): raise ValueError('Unknown hair UV input signature')
@@ -163,12 +168,19 @@ class Slice:
             # packing. These anchors must be unique in every accepted permutation.
             if op == 'mul' and 'cb0[159]' in clean:
                 mask = self.destination(operands[0])[1]
-                self.capture('normal', [self.read(operands[1])[i] for i in mask])
+                material = operands[1]
+                if 'cb0[159]' in operands[1] and 'cb0[159]' not in operands[2]:
+                    # An unconnected Normal is the constant (0,0,1), folded into the other operand.
+                    material = operands[2]
+                    self.folded.append('normal')
+                self.capture('normal', [self.read(material)[i] for i in mask])
             if op == 'mad' and operands[0] == 'o2.z':
                 self.capture('roughness',[self.read(operands[1])[2]])
             if op == 'mad_sat' and 'cb0[160].w' in clean:
                 self.capture('ao',[self.read(operands[1])[self.destination(operands[0])[1][0]]])
-            if self.world_surface and op == 'add_sat' and operands[1:] == ['cb0[160].z', 'cb0[160].w']:
+            if op == 'add_sat' and operands[1:] == ['cb0[160].z', 'cb0[160].w']:
+                # An unconnected AmbientOcclusion folds its default 1 into the two view constants.
+                if not self.world_surface: self.folded.append('ao')
                 self.capture('ao', [const(1)])
             if skin_surface and op == 'mad_sat' and 'cb0[157].wwww' in operands:
                 self.capture('subsurfaceColor', [self.read(operands[1])[i] for i in self.destination(operands[0])[1]])
@@ -176,6 +188,7 @@ class Slice:
                 self.capture('specular',[self.read(operands[1])[0]])
             if surface_kind == 'eyelash' and op == 'mov' and operands == ['o2.y', 'l(0)']:
                 self.capture('specular', [const(0)])
+            self.track_folded_f0(op, operands)
             self.execute(op,operands,qualifiers)
             previous = self.instructions[-2] if len(self.instructions) > 1 else None
             if neck_fade and op == 'mul_sat' and len(operands) == 3 and operands[2] == neck_fade['amount']:
@@ -240,6 +253,11 @@ class Slice:
         if neck_fade and neck_gate_count != 1: raise ValueError('Expected one neck-fade enable anchor')
         self.capture('baseColor',[self.registers[f'o3.{c}'] for c in 'xyz'])
         self.capture('metalness',[const(0) if surface_kind == 'hair' else self.registers['o2.x']])
+        if self.f0_anchor:
+            base, metal = self.f0_anchor
+            if len(base) != 3 or any(a is not b for a, b in zip(base, self.outputs['baseColor'])) \
+                    or metal is not self.outputs['metalness'][0]:
+                raise ValueError('Folded specular anchor does not read the emitted base colour and metalness')
         if surface_kind == 'hair': self.capture('scatter', [self.registers['o2.x']])
         required = {'normal','roughness','ao','specular','baseColor','metalness'}
         if skin_surface: required.add('subsurfaceColor')
@@ -251,6 +269,49 @@ class Slice:
     def capture(self,name,nodes):
         if name in self.outputs: raise ValueError(f'Ambiguous {name} anchor')
         self.outputs[name] = nodes
+
+    def track_folded_f0(self, op, operands):
+        """An unconnected Specular folds 0.08 * 0.5 into F0 = lerp(0.04, BaseColor, Metallic).
+
+        Only the complete consecutive sequence counts: add X, B, l(-0.04); mul X, X, M in either
+        operand order with a scalar M; add X, X, l(0.04). B and M are kept so __init__ can require
+        them to be exactly the emitted base colour and metalness. Anything else captures nothing,
+        leaving specular missing and the material rejected.
+        """
+        state, self.f0_state = self.f0_state, None
+        if op not in ('add', 'mul') or len(operands) != 3 or not re.fullmatch(r'r\d+\.[xyzw]+', operands[0]): return
+        register, mask = self.destination(operands[0])
+        def same(text):  # the destination register itself, read lane for lane
+            m = re.fullmatch(rf'{register}\.([xyzw]{{4}})', text)
+            return bool(m) and all(m[1][i] == 'xyzw'[i] for i in mask)
+        def literal(text, value):
+            if not text.startswith('l('): return False
+            values = [float(v) for v in split_operands(text[2:-1])]
+            values = values * 4 if len(values) == 1 else values
+            return len(values) == 4 and all(abs(values[i] - value) < 5e-7 for i in mask)
+        if op == 'add' and literal(operands[2], -0.04) and not operands[1].lstrip('-').startswith(register + '.'):
+            self.f0_state = {'stage': 1, 'dst': operands[0], 'base': [self.read(operands[1])[i] for i in mask]}
+        elif state and state['dst'] == operands[0] and state['stage'] == 1 and op == 'mul':
+            weight = operands[2] if same(operands[1]) else operands[1] if same(operands[2]) else None
+            if weight and re.fullmatch(r'r\d+\.([xyzw])\1\1\1', weight):
+                self.f0_state = {**state, 'stage': 2, 'metal': self.read(weight)[0]}
+        elif state and state['dst'] == operands[0] and state['stage'] == 2 and op == 'add' \
+                and same(operands[1]) and literal(operands[2], 0.04):
+            self.f0_anchor = (state['base'], state['metal'])
+            self.folded.append('specular')
+            self.capture('specular', [const(0.5)])  # 0.04 = 0.08 * Specular
+
+    @staticmethod
+    def sampled_slots(nodes, barriers=()):
+        """Texture slots sampled beneath these expression nodes, not looking past any barrier node."""
+        seen, slots, stack = set(barriers), set(), list(nodes)
+        while stack:
+            node = stack.pop()
+            if node in seen: continue
+            seen.add(node)
+            if node.op == 'sample': slots.add(node.value[0])
+            stack.extend(node.args)
+        return slots
 
     @staticmethod
     def destination(s):
@@ -314,7 +375,11 @@ class Slice:
                 n=no.get(key,Node('external',value=f'uninitialized:{key}'))
                 merged[key]=mk('select',cond,y,cast(n,y.type),kind=y.type)
             self.registers=merged; return
-        if op in ('ret','discard_nz'): return
+        if op=='discard_nz':
+            # The slice has no opacity output. Keep each condition so a caller can prove that
+            # no discard reads the surface; the instruction itself emits nothing.
+            self.discards.append(self.read(a[0],'u')[0]); return
+        if op=='ret': return
         sat=op.endswith('_sat'); op=op.removesuffix('_sat')
         if op.startswith('sample'):
             coord=self.read(a[1],'f'); slot,swiz=a[2].split('.')
@@ -445,6 +510,7 @@ class Slice:
             arguments += ', ReconstructedGeometry geometry'
         code=prelude+f'\nReconstructedSurface recoveredSurface({arguments}) {{\n  ReconstructedSurface surface;\n'+'\n'.join(lines)+'\n  return surface;\n}\n'
         report={'scalarNodes':len(names),'sourceLines':sorted(source_lines)}
+        if self.folded: report['foldedMaterialDefaults'] = sorted(self.folded)
         report['requiredUvSets'] = sorted({int(name[2]) for name in inputs if re.fullmatch(r'uv[01]\.[xy]', name)})
         if self.view_dependent: report['viewDependentCloth'] = True
         if self.geometry_dependent:

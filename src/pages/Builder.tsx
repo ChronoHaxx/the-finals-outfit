@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import PreviewPane from "../components/PreviewPane";
 import SlotPicker from "../components/SlotPicker";
 import { decodeOutfit } from "../lib/outfit";
+import { migrateOutfit } from "../lib/outfit-slots";
 import { getItemById } from "../lib/catalog";
 import { useBuildStore } from "../store/useBuildStore";
 import type { Slot } from "../lib/slots";
@@ -9,11 +10,14 @@ import type { Slot } from "../lib/slots";
 export default function Builder() {
   // Hydrate the build from a share link (?outfit=…) once on mount. Ids that no longer
   // exist in the catalog are dropped silently; a corrupt code leaves the empty build.
+  // The slot filter below is what keeps a stale link honest, so a link minted before a
+  // catalog slot correction has to be migrated FIRST or its garment would look stale and
+  // be dropped (src/lib/outfit-slots.ts).
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("outfit");
     if (!code) return;
     try {
-      const outfit = decodeOutfit(code);
+      const outfit = migrateOutfit(decodeOutfit(code));
       const valid = Object.fromEntries(
         Object.entries(outfit.slots).filter(([slot, id]) => {
           const item = id ? getItemById(id) : undefined;

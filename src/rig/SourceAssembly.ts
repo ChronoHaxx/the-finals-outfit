@@ -204,12 +204,40 @@ export async function loadSourceOutfit(ids: string[], baseUrl: string): Promise<
   return outfit;
 }
 
+/** One socket rest authored by a component that is not the body: a head mesh, or an optional
+ *  attachment mesh. Matrices are the converted (GLB) axes the preserved meshes already use. */
+export interface SourceSocketFrame {
+  source: string;        // exact source object path of the component that carries the socket
+  sourceSha256: string;  // exact source package hash of that component
+  bone: string;          // the live bone the socket hangs from, inside that component
+  bodyBone: boolean;     // that bone is the preserved body's own, at the same rest, not the component's
+  parentRest: number[];  // 16 — that bone's component-space rest
+  rest: number[];        // 16 — the socket's component-space rest, including its own scale
+  restScale: [number, number, number]; // the diagonal the socket itself carries, converted axes
+}
+
+/** Where a socket lives when it is not a body bone. A head-component socket is resolved against
+ *  the source head that is actually equipped; an optional attachment mesh authors exactly one. */
+export type SourceAttachmentFrame =
+  | { kind: 'head-component'; components: SourceSocketFrame[] }
+  | { kind: 'optional-mesh'; component: SourceSocketFrame };
+
 export interface AssemblyAssets {
   formatVersion: number;
   meshes: Record<string, { url: string; kind?: 'skeletal' | 'static'; bodyMaskUrl?: string; bodyMaskUvTiles?: [number, number]; slots: { slot: string; material: string }[] }>;
   materials: Record<string, string>;
   materialVariants?: Record<string, string>;
   attachmentBody?: { source: string; url: string; restBones: Record<string, number[]> };
+  attachmentFrames?: {
+    headComponents?: Record<string, SourceFrameComponent>;
+    optionalMeshes?: Record<string, SourceFrameComponent>;
+  };
+}
+
+/** One component's socket rests as the index records them; `bodyBone` is decided while resolving. */
+export interface SourceFrameComponent {
+  sourceSha256: string;
+  sockets: Record<string, Omit<SourceSocketFrame, 'source' | 'sourceSha256' | 'bodyBone'>>;
 }
 
 export interface SourceRigPart {
@@ -220,9 +248,33 @@ export interface SourceRigPart {
   bodyMaskUvTiles?: [number, number];
   materials: Record<string, { url: string; source: string }>;
   attachment?: {
-    bodyUrl: string; socket: string; sourceRestMatrix: number[];
+    bodyUrl: string; socket: string;
+    sourceRestMatrix?: number[]; // body-bone sockets only; a frame carries its own component rest
     position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number];
+    frame?: SourceAttachmentFrame;
   };
+}
+
+const MATRIX = (value: unknown): value is number[] =>
+  Array.isArray(value) && value.length === 16 && value.every(v => typeof v === 'number' && Number.isFinite(v));
+
+// A component bone that is also the preserved body's own must carry the body's rest: the driver
+// then supplies it, and no runtime comparison against the driver's own bind axes is possible.
+// A bone the component owns is checked against this rest again when the rig resolves it.
+function socketFrame(source: string, entry: SourceFrameComponent | undefined, socket: string,
+  body: NonNullable<AssemblyAssets['attachmentBody']>, label: string): SourceSocketFrame {
+  const rest = entry?.sockets?.[socket];
+  if (!entry?.sourceSha256 || !rest || typeof rest.bone !== 'string' || !rest.bone ||
+      !MATRIX(rest.rest) || !MATRIX(rest.parentRest) ||
+      !Array.isArray(rest.restScale) || rest.restScale.length !== 3 ||
+      !rest.restScale.every(v => Number.isFinite(v) && v !== 0))
+    throw new Error(`Missing preserved ${label} frame: ${socket}`);
+  const anchor = body.restBones[rest.bone];
+  const bodyBone = MATRIX(anchor);
+  if (bodyBone && anchor.some((v, i) => Math.abs(v - rest.parentRest[i]) > 1e-5))
+    throw new Error(`${label} anchor is not the preserved body rest: ${rest.bone}`);
+  return { source, sourceSha256: entry.sourceSha256, bone: rest.bone, bodyBone, parentRest: [...rest.parentRest],
+    rest: [...rest.rest], restScale: [rest.restScale[0], rest.restScale[1], rest.restScale[2]] };
 }
 
 export interface SourceSkinPart {
@@ -288,9 +340,13 @@ export function resolveSourceRigParts(item: SourceOutfit["items"][string], asset
   return item.parts.filter(part => !part.hidden).map(part => {
     const p = part.definition;
     const attached = !!part.staticMesh && !part.skeletalMesh && !!p.bIsAttached;
+    const optionalMesh = path(p.OptionalAttachmentMesh);
     if (part.unresolved.length || part.effect || p.LogicModules?.length ||
         (attached && (p.WrapDeformation?.bIsWrapDeformed || p.WrapDeformation?.bIsWrapDeformedByHeadComponent || path(p.WrapDeformation?.OptionalWrapDeformerMesh))) ||
-        p.bAttachToHeadMesh || path(p.OptionalAttachmentMesh) || p.bIsHeadMesh ||
+        // A socket belongs to the body, to the head component, or to one optional attachment
+        // mesh — never to two of them, and never to a part that is not an attached static.
+        (p.bAttachToHeadMesh && optionalMesh) || (!attached && (p.bAttachToHeadMesh || optionalMesh)) ||
+        p.bIsHeadMesh ||
         (!attached && (part.staticMesh || p.bIsAttached ||
         Object.values(p.LocalPosition ?? {}).some(v => v !== 0) ||
         Object.values(p.LocalRotation ?? {}).some(v => v !== 0) ||
@@ -300,16 +356,36 @@ export function resolveSourceRigParts(item: SourceOutfit["items"][string], asset
     let attachment: SourceRigPart['attachment'];
     if (attached) {
       const body = assets.attachmentBody, socket = p.AttachmentSocket;
-      const frame = socket ? body?.restBones[socket] : undefined;
-      if (!body || !socket || !frame || frame.length !== 16 || !frame.every(Number.isFinite))
-        throw new Error('Missing preserved source attachment frame');
+      let frame: SourceAttachmentFrame | undefined, restMatrix: number[] | undefined;
+      if (!body || !socket) throw new Error('Missing preserved source attachment frame');
+      if (p.bAttachToHeadMesh) {
+        // Head-component sockets are authored per head mesh. The item is supported only when
+        // every preserved head provides the socket; the rig then uses the one actually equipped.
+        const heads = Object.entries(assets.attachmentFrames?.headComponents ?? {});
+        if (!heads.length) throw new Error(`Missing preserved head component frame: ${socket}`);
+        frame = { kind: 'head-component',
+          components: heads.map(([source, entry]) => socketFrame(source, entry, socket, body, 'head component')) };
+      } else if (optionalMesh) {
+        const component = socketFrame(optionalMesh, assets.attachmentFrames?.optionalMeshes?.[optionalMesh],
+          socket, body, 'optional attachment mesh');
+        // An optional mesh is only ever driven through the body, so its anchor has to be a
+        // preserved body bone; its own added joints are not simulated.
+        if (!component.bodyBone)
+          throw new Error(`Optional attachment mesh anchor is not the preserved body rest: ${component.bone}`);
+        frame = { kind: 'optional-mesh', component };
+      } else {
+        restMatrix = body.restBones[socket];
+        if (!MATRIX(restMatrix)) throw new Error('Missing preserved source attachment frame');
+      }
       const position = p.LocalPosition, rotation = p.LocalRotation, scale = p.LocalScale;
+      // Authored positive scales, uniform or not, are applied at rest by the rig. Mirrored or
+      // singular authored scales stay unsupported; only a socket's own source scale may reflect.
       if (!position || !rotation || !scale ||
           ![...Object.values(position), ...Object.values(rotation), ...Object.values(scale)].every(Number.isFinite) ||
-          Object.values(scale).some(v => v !== 1)) throw new Error('Unsupported source attachment transform');
-      attachment = { bodyUrl: url(body.url), socket, sourceRestMatrix: frame,
+          Object.values(scale).some(v => !(v > 0))) throw new Error('Unsupported source attachment transform');
+      attachment = { bodyUrl: url(body.url), socket, ...(restMatrix ? { sourceRestMatrix: restMatrix } : {}),
         position: [position.X, position.Y, position.Z], rotation: [rotation.Pitch, rotation.Yaw, rotation.Roll],
-        scale: [scale.X, scale.Y, scale.Z] };
+        scale: [scale.X, scale.Y, scale.Z], ...(frame ? { frame } : {}) };
     }
     const sourceMesh = attached ? part.staticMesh : part.skeletalMesh;
     const mesh = assets.meshes[sourceMesh];
@@ -336,4 +412,18 @@ export async function loadSourceAssemblyItems(baseUrl: string): Promise<Set<stri
     throw new Error("Invalid source assembly item index");
   }
   return new Set(index.items);
+}
+
+// Picker progress follows the active asset release, including the separately reconstructed face.
+// These entries indicate work has been applied; neither index claims perfect visual fidelity.
+export async function loadSourceReconstructionItems(baseUrl: string): Promise<Set<string>> {
+  const [assemblies, skinPairs] = await Promise.all([
+    loadSourceAssemblyItems(baseUrl),
+    readJson(`${baseUrl}/skin-pairs.json`) as Promise<{ formatVersion: number; items: Record<string, unknown> }>,
+  ]);
+  if (skinPairs.formatVersion !== 1 || !skinPairs.items || typeof skinPairs.items !== "object" || Array.isArray(skinPairs.items)) {
+    pending.delete(`${baseUrl}/skin-pairs.json`);
+    throw new Error("Invalid source skin pair item index");
+  }
+  return new Set([...assemblies, ...Object.keys(skinPairs.items)]);
 }

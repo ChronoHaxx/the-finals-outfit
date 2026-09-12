@@ -211,15 +211,37 @@ export type Model = z.infer<typeof ModelSchema>;
 const DECAL_TARGETS = ["body", "head", "eyes", "nails"] as const;
 const DecalLayerSchema = z.object({
   target: z.enum(DECAL_TARGETS),
+  // A source paint whose colour multiply reads RGB beneath zero alpha keeps its native PNG: lossless
+  // WebP as encoded here clears those texels.
   colorPath: z
     .string()
-    .regex(/^[\w./-]+\.webp$/, { message: "colorPath must be a base-relative .webp path" })
+    .regex(/^[\w./-]+\.(webp|png)$/, { message: "colorPath must be a base-relative .webp or .png path" })
     .optional(),
   maskPath: z
     .string()
     .regex(/^[\w./-]+\.webp$/, { message: "maskPath must be a base-relative .webp path" })
     .optional(),
+  // Packed body-paint data retains PNG: RGB beneath zero metallic alpha must survive decoding.
+  surfacePath: z.string().regex(/^[\w./-]+\.png$/, {
+    message: "surfacePath must be a base-relative .png path",
+  }).optional(),
+  surfaceOverride: z.union([z.literal(0), z.literal(1)]).optional(),
   uv: z.union([z.literal(0), z.literal(1)]).optional(), // body UV channel (default 0)
+  // Per-axis scale on the selected UV set: for a body paint, BodyPaintTiles as 1/tiles on X and 1
+  // on Y. Only a layer carrying this samples the `uv` channel — see RigDecalLayer.uvScale in
+  // src/rig/BodyDecals.ts for why.
+  uvScale: z.tuple([z.number().positive(), z.number().positive()]).optional(),
+  // The paint coordinate contract recovered from the compiled M_Skin: V is folded with fract() and
+  // sampling is gated to the unit square. Named, not inferred — see RigDecalLayer.uvLayout.
+  uvLayout: z.literal("sourceBodyPaint").optional(),
+  // Source BodyPaintPlacement.x (TattooPlacement.x for a tattoo layer), added to U after the X scale
+  // and never wrapped. Only a sourceBodyPaint layer honours it — see RigDecalLayer.uvOffsetX.
+  uvOffsetX: z.number().finite().optional(),
+  // Source BodyColorOverride: the weight on the paint's base-colour branch.
+  colorOverride: z.number().min(0).max(1).optional(),
+  // Source BodyColorMultiplyNonMasked as the multiply before that blend: "masked" for 0,
+  // "nonMasked" for 1. Absent keeps the earlier mix-only composite — see RigDecalLayer.colorMultiply.
+  colorMultiply: z.enum(["masked", "nonMasked"]).optional(),
   tint: HexColorSchema.optional(),
   // glow: the tint is also applied as emissive (e.g. "Eyes Emissive *" items)
   emissive: z.boolean().optional(),

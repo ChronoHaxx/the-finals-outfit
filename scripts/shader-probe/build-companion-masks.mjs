@@ -3,19 +3,35 @@
 // leave source morph activation / wrap deformation as separate fitting work.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { resolve, relative } from "node:path";
 import { chromium } from "playwright-core";
 
 const all = process.argv.includes("--all");
+// Explicit, bounded legacy geometry mode uses the same preserved Medium body and
+// projection method as source assemblies. It writes a sibling preview, never the
+// original one-tile legacy mask. Multi-mesh legacy garments need a union first.
+const legacy = process.argv.includes("--legacy");
 const itemsArg = process.argv.indexOf("--items");
 const selectedIds = itemsArg < 0 ? null : new Set(process.argv[itemsArg + 1]?.split(","));
 if (selectedIds && (!all || !selectedIds.size || selectedIds.has(""))) throw new Error("--items requires --all and comma-separated item IDs");
+if (legacy && (!all || !selectedIds)) throw new Error("--legacy requires --all and explicit --items");
 const outputArg = process.argv.indexOf("--output");
 const output = outputArg < 0 ? "public/models/reconstructed-assemblies-v1" : process.argv[outputArg + 1];
 if (!output?.replaceAll("\\", "/").startsWith("public/models/") || output.split(/[\\/]/).includes(".."))
   throw new Error("Coverage outputs must stay in public/models");
+if (legacy && (outputArg < 0 || ["public/models/cosmetics", "public/models/reconstructed-assemblies-v1"].includes(output.replaceAll("\\", "/").replace(/\/$/, ""))))
+  throw new Error("Legacy coverage requires a separate explicit preview output folder");
 mkdirSync(output, { recursive: true });
-const index = JSON.parse(readFileSync("public/models/reconstructed-assemblies-v1/assets.json", "utf8"));
-let items = all ? JSON.parse(readFileSync("public/models/reconstructed-assemblies-v1/supported-items.json", "utf8")).ready
+const indexArg = process.argv.indexOf("--index");
+const indexFolder = indexArg < 0 ? "public/models/reconstructed-assemblies-v1" : process.argv[indexArg + 1];
+if (!indexFolder?.replaceAll("\\", "/").startsWith("public/models/") || indexFolder.split(/[\\/]/).includes(".."))
+  throw new Error("Coverage index must stay in public/models");
+const indexUrl = "/" + relative(resolve("public"), resolve(indexFolder)).replaceAll("\\", "/");
+const index = JSON.parse(readFileSync(`${indexFolder}/assets.json`, "utf8"));
+let items = legacy ? JSON.parse(readFileSync("src/data/items.json", "utf8"))
+    .filter(item => selectedIds.has(item.id) && item.model?.gltfPath)
+    .map(item => ({ id: item.id, slot: item.slot, legacyMesh: item.model.gltfPath }))
+  : all ? JSON.parse(readFileSync(`${indexFolder}/supported-items.json`, "utf8")).ready
   : ["leather-black", "satin", "leather-camo"].map(suffix => ({ id: `casual-longcoat-${suffix}`, slot: "outerwear" }));
 if (selectedIds) {
   items = items.filter(item => selectedIds.has(item.id));
@@ -33,7 +49,7 @@ try {
   page.on("console", message => { if (message.text().startsWith("COVERAGE ")) console.log(message.text()); });
   await page.goto("http://127.0.0.1:5173/scripts/generated/shader-probe/coverage-harness.html", { waitUntil: "networkidle" });
   await page.waitForFunction(() => !!window.__coverage);
-  const result = await page.evaluate(async ({ items, all, bodyFile }) => {
+  const result = await page.evaluate(async ({ items, all, bodyFile, indexUrl }) => {
     const { THREE: T, MeshBVH } = window.__coverage;
     const { CharacterRig } = await import("/src/rig/CharacterRig.ts");
     const { createGltfLoader } = await import("/src/rig/loaders.ts");
@@ -48,10 +64,19 @@ try {
       g.computeVertexNormals(); return g;
     };
     const results = [], visited = new Set();
-    for (const { id, slot } of items) {
-      const outfit = await loadSourceOutfit([id], "/models/reconstructed-assembly-v2");
-      const parts = await loadSourceRigParts(outfit.items[id], "/models/reconstructed-assemblies-v1");
-      await rig.equip({ id, slot, url: "unused.glb", sourceParts: parts });
+    for (const { id, slot, legacyMesh } of items) {
+      if (legacyMesh) {
+        if (visited.has(legacyMesh)) continue;
+        await rig.equip({ id, slot, url: "/" + legacyMesh });
+        const group = rig.root.children.find(child => child.userData.rigItemId === id);
+        const meshes = group?.getObjectsByProperty("isSkinnedMesh", true) ?? [];
+        if (meshes.length !== 1) throw new Error(`Legacy coverage requires one skinned mesh: ${id} has ${meshes.length}`);
+        meshes[0].userData.sourceMesh = legacyMesh; // provenance key in this disposable rig only
+      } else {
+        const outfit = await loadSourceOutfit([id], "/models/reconstructed-assembly-v2");
+        const parts = await loadSourceRigParts(outfit.items[id], indexUrl);
+        await rig.equip({ id, slot, url: "unused.glb", sourceParts: parts });
+      }
       const garments = rig.root.getObjectsByProperty("isSkinnedMesh", true)
         .filter(o => o.userData.sourceMesh && (all || !o.userData.sourceMesh.includes("/LongCoat/")) && !visited.has(o.userData.sourceMesh));
       for (const mesh of garments) {
@@ -121,19 +146,21 @@ try {
       rig.unequip(slot);
     }
     rig.dispose(); return results;
-  }, { items, all, bodyFile });
+  }, { items, all, bodyFile, indexUrl });
   const hashes = bytes => createHash("sha256").update(bytes).digest("hex");
   const records = [];
   for (const { png, ...record } of result) {
-    const file = record.source.split(".").at(-1) + ".bodymask.png";
+    const file = (legacy ? record.source.split("/").at(-1).replace(/\.glb$/, "") : record.source.split(".").at(-1)) + ".bodymask.png";
     const bytes = Buffer.from(png, "base64");
     if (!record.coveredPixels) { console.log(`No body coverage for ${record.source}`); continue; }
     writeFileSync(`${output}/${file}`, bytes);
-    records.push({ ...record, file, sha256: hashes(bytes), meshSha256: index.meshes[record.source].sha256 });
+    records.push({ ...record, file, sha256: hashes(bytes),
+      meshSha256: hashes(readFileSync(legacy ? resolve("public", record.source) : resolve(indexFolder, index.meshes[record.source].url))) });
     console.log(`${file}: ${record.coveredTriangles} body triangles covered in both poses`);
   }
   writeFileSync(`${output}/derived-coverage.json`, JSON.stringify({ formatVersion: 1,
     method: "Bidirectional surface projection; 4 cm each direction; seven samples per body triangle plus per-texel projection at partial boundaries; normal alignment > .25; intersection of A and idle coverage",
     source: "Derived preview coverage, not recovered game rules. Specific to the recorded medium-body geometry, zero fitting weights and supported poses.",
+    geometryMode: legacy ? "legacy" : "source", indexFolder: legacy ? null : indexFolder,
     bodyFile, bodySha256: hashes(readFileSync(`public/${bodyFile}`)), records }, null, 2));
 } finally { await browser.close(); }
