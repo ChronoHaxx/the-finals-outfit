@@ -36,9 +36,10 @@ for (const file of fs.readdirSync(wikiDirectory).filter(f => /^\d+\.json$/.test(
     pages.push({ pageId: page.pageid, revisionId: revision.revid, ...fields });
   }
 }
-// The wiki template treats omitted/blank flags as false. Unknown spellings are
-// excluded here instead of silently treating malformed metadata as released.
-const visible = p => [p.IsUnreleased, p.IsHidden].every(v => v == null || /^(?:|0|No)$/i.test(v));
+// A missing name match is not release evidence. Preserve explicit wiki flags
+// independently of identity matching; unknown flag values are not a ban.
+const flag = value => value == null || /^(?:|0|No|False)$/i.test(value) ? false
+  : /^(?:1|Yes|True)$/i.test(value) ? true : null;
 const overrides = JSON.parse(fs.readFileSync(path.join(root, 'src/data/wiki-catalog-overrides.json'), 'utf8'));
 const outputPath = path.join(root, 'src/data/wiki-catalog.json');
 const previous = fs.existsSync(outputPath) ? JSON.parse(fs.readFileSync(outputPath, 'utf8')).items : {};
@@ -51,13 +52,19 @@ for (const item of catalog) {
   const pageId = override?.pageId ?? established?.pageId;
   const matches = pages.filter(p => types[item.slot]?.includes(p.Type) &&
     (pageId ? p.pageId === pageId : gameName && nameKey(p.Name) === nameKey(gameName)));
-  if (matches.length !== 1 || !visible(matches[0])) {
-    excluded.push({ id: item.id, reason: !matches.length ? 'unmatched' : matches.length > 1 ? 'ambiguous' : 'wiki-hidden-or-unreleased' });
+  if (matches.length !== 1) {
+    excluded.push({ id: item.id, reason: !matches.length ? 'unmatched' : 'ambiguous' });
+    // Do not lose previously confirmed restrictions if its wiki page vanishes.
+    if (established?.isHidden === true || established?.isUnreleased === true) {
+      candidates.push({ id: item.id, ...established });
+    }
     continue;
   }
   const p = matches[0];
   candidates.push({ id: item.id, name: p.Name, pageId: p.pageId, revisionId: p.revisionId,
-    method: override ? 'reviewed-icon-match' : established?.method ?? 'exact-localized-name', isHidden: false, isUnreleased: false });
+    method: override ? 'reviewed-icon-match' : established?.method ?? 'exact-localized-name',
+    isHidden: flag(p.IsHidden) ?? established?.isHidden ?? null,
+    isUnreleased: flag(p.IsUnreleased) ?? established?.isUnreleased ?? null });
 }
 const pageCounts = new Map();
 for (const c of candidates) pageCounts.set(c.pageId, (pageCounts.get(c.pageId) ?? 0) + 1);
@@ -73,11 +80,18 @@ const accepted = candidates.filter(c => {
 const snapshot = JSON.parse(fs.readFileSync(path.join(wikiDirectory, '../wiki-snapshot.json'), 'utf8'));
 // Some namespace pages are redirects or lack the cosmetic template.
 if (!snapshot.complete || rawCount !== snapshot.count) throw new Error('Incomplete wiki snapshot');
-const output = { schemaVersion: 1, retrievedAt: snapshot.at, source: 'https://www.thefinals.wiki/',
+const output = { schemaVersion: 2, retrievedAt: snapshot.at, source: 'https://www.thefinals.wiki/',
+  localizedNames: Object.fromEntries(catalog.flatMap(item => {
+    const name = names.get(idKey(item.id));
+    return typeof name === 'string' && name.trim() ? [[item.id, name.trim()]] : [];
+  })),
   items: Object.fromEntries(accepted.map(({ id, ...entry }) => [id, entry])) };
 fs.writeFileSync(path.join(root, 'src/data/wiki-catalog.json'), JSON.stringify(output, null, 2) + '\n');
 const reportDirectory = path.join(root, 'scripts/generated');
 fs.mkdirSync(reportDirectory, { recursive: true });
 fs.writeFileSync(path.join(reportDirectory, 'wiki-catalog-unmatched.json'), JSON.stringify(excluded, null, 2));
-console.log(JSON.stringify({ wikiPages: snapshot.count, publicItems: accepted.length, developerOnly: excluded.length,
-  bySlot: Object.fromEntries(Object.keys(types).map(slot => [slot, accepted.filter(c => catalog.find(i => i.id === c.id)?.slot === slot).length])) }, null, 2));
+const restricted = new Set(accepted.filter(c => c.isHidden === true || c.isUnreleased === true).map(c => c.id));
+console.log(JSON.stringify({ wikiPages: snapshot.count, wikiMatches: accepted.length,
+  localizedNames: Object.keys(output.localizedNames).length, unmatchedIdentities: excluded.length,
+  publicItems: catalog.length - restricted.size, explicitlyRestricted: restricted.size,
+  bySlot: Object.fromEntries(Object.keys(types).map(slot => [slot, catalog.filter(i => i.slot === slot && !restricted.has(i.id)).length])) }, null, 2));

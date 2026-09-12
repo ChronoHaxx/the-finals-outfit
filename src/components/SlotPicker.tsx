@@ -16,7 +16,6 @@ const isRenderable = (i: { id: string; model?: unknown; decal?: unknown }, sourc
 export default function SlotPicker() {
   const [slot, setSlot] = useState<Slot>(NON_EMPTY[0] ?? "upperBody");
   const [query, setQuery] = useState("");
-  const [only3d, setOnly3d] = useState(false);
   const [statusFilter, setStatusFilter] = useState<ReviewStatus | "all">("all");
   const [workedOn, setWorkedOn] = useState<Set<string>>(new Set());
   const [progressState, setProgressState] = useState<"loading" | "ready" | "unavailable">("loading");
@@ -35,12 +34,9 @@ export default function SlotPicker() {
     const all = getItemsBySlot(slot);
     const q = query.trim().toLowerCase();
     const byQuery = q ? all.filter((i) => i.name.toLowerCase().includes(q)) : all;
-    return byQuery.filter(i => (!only3d || isRenderable(i, workedOn))
-      && (statusFilter === "all" || (isRenderable(i, workedOn)
-        && getReconstructionReview(i, workedOn, progressState).status === statusFilter)));
-  }, [slot, query, only3d, workedOn, statusFilter, progressState]);
-
-  const modelCount = useMemo(() => getItemsBySlot(slot).filter(i => isRenderable(i, workedOn)).length, [slot, workedOn]);
+    return byQuery.filter(i => statusFilter === "all" || (isRenderable(i, workedOn)
+      && getReconstructionReview(i, workedOn, progressState).status === statusFilter));
+  }, [slot, query, workedOn, statusFilter, progressState]);
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
@@ -72,18 +68,6 @@ export default function SlotPicker() {
           aria-label={`Search ${SLOT_LABELS[slot]}`}
           className="min-w-0 flex-1 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 outline-none placeholder:text-neutral-600 focus:border-neutral-600"
         />
-        <button
-          onClick={() => setOnly3d((v) => !v)}
-          title="Show only items with a 3D model"
-          aria-pressed={only3d}
-          className={`shrink-0 rounded-lg px-3 py-2 text-xs font-medium transition ${
-            only3d
-              ? "bg-emerald-400 text-neutral-900"
-              : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
-          }`}
-        >
-          3D only{modelCount ? ` (${modelCount})` : ""}
-        </button>
         <select aria-label="3D status" value={statusFilter}
           onChange={event => setStatusFilter(event.target.value as ReviewStatus | "all")}
           className="w-full shrink-0 rounded-lg border border-neutral-800 bg-neutral-900 px-2 py-2 text-xs text-neutral-300 sm:w-auto">

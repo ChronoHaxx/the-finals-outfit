@@ -4,17 +4,22 @@ import type { Item } from "./item";
 import type { Slot } from "./slots";
 import rawMatches from "../data/wiki-catalog.json";
 
-type WikiMatch = { name: string; pageId: number; revisionId: number; isHidden: boolean; isUnreleased: boolean };
+type WikiMatch = { name: string; isHidden: boolean | null; isUnreleased: boolean | null };
 const matches: Readonly<Record<string, WikiMatch>> = rawMatches.items;
+const localizedNames: Readonly<Record<string, string>> = rawMatches.localizedNames;
+
+export function getPublicCatalogItem(item: Item, match?: WikiMatch, localizedName?: string): Item | undefined {
+  // An incomplete wiki match must not hide an otherwise usable cosmetic.
+  if (match?.isHidden === true || match?.isUnreleased === true) return undefined;
+  return { ...item, name: match?.name ?? localizedName ?? item.name };
+}
 
 // Renderer dependencies keep using catalog.ts: an undershirt or hidden body
 // companion is not a selectable cosmetic and must remain loadable internally.
 export function getBrowseItem(id: string, developer = DEVELOPER_CATALOG): Item | undefined {
   const item = getItemById(id);
   if (!item || developer) return item;
-  const match = matches[id];
-  if (!match || match.isHidden || match.isUnreleased) return undefined;
-  return { ...item, name: match.name };
+  return getPublicCatalogItem(item, matches[id], localizedNames[id]);
 }
 
 const PUBLIC_ITEMS = getAllItems().flatMap(item => {
