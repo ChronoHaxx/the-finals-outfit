@@ -1,5 +1,7 @@
 // Decoded source relationships, kept independent of Three and the catalog's
 // older filename-derived garment guesses. Missing rules stay explicit.
+import { fetchAsset } from "../lib/asset-fetch";
+
 interface SoftPath { AssetPathName: string; SubPathString?: string }
 interface Override {
   MatchingTags: string[];
@@ -172,8 +174,7 @@ const pending = new Map<string, Promise<unknown>>();
 async function readJson(url: string): Promise<unknown> {
   let value = pending.get(url);
   if (!value) {
-    value = fetch(url).then(async (response) => {
-      if (!response.ok) throw new Error(`Source outfit data unavailable: ${response.status}`);
+    value = fetchAsset(url).then(async (response) => {
       return response.json() as Promise<unknown>;
     }).catch((error) => { pending.delete(url); throw error; });
     pending.set(url, value);

@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+const registryFile = new URL('../src/data/share-item-ids.json', import.meta.url);
+const registry = JSON.parse(fs.readFileSync(registryFile, 'utf8'));
+if (registry.version !== 2 || !Array.isArray(registry.items)) throw new Error('Unsupported share registry');
+const known = new Set(registry.items);
+const catalog = JSON.parse(fs.readFileSync(new URL('../src/data/items.json', import.meta.url), 'utf8'));
+const added = catalog.map(item => item.id).filter(id => !known.has(id));
+registry.items.push(...added);
+fs.writeFileSync(registryFile, JSON.stringify(registry, null, 2) + '\n');
+console.log(`Appended ${added.length} stable share IDs; existing IDs unchanged.`);

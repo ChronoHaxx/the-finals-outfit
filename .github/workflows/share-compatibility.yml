@@ -1,0 +1,24 @@
+name: Share link compatibility
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Check permanent IDs against the base branch
+        env:
+          SHARE_LINK_BASE: ${{ github.event.pull_request.base.sha }}
+        run: npm run validate:share-links
+      - name: Decode existing published link formats
+        run: node --import tsx --test tests/share-links.test.ts tests/public-catalog.test.ts tests/wiki-catalog-import.test.mjs

@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { SLOTS, SLOT_LABELS, type Slot } from "../lib/slots";
-import { getItemsBySlot } from "../lib/catalog";
+import { getBrowseItemsBySlot as getItemsBySlot } from "../lib/browse-catalog";
 import { useBuildStore } from "../store/useBuildStore";
 import { assetUrl, modelUrl } from "../lib/assets";
 import { loadSourceReconstructionItems } from "../rig/SourceAssembly";
-import { resolveLegacyBodyCoverage } from "../rig/LegacyBodyCoverage";
-import reviewRecords from "../data/reconstruction-reviews.json";
+import { getReconstructionReview, REVIEW_LABELS, REVIEW_STYLES, type ReviewStatus } from "../lib/reconstruction-status";
 
 // Slots that actually have items (skips empty ones like bodyType/emote for now).
 const NON_EMPTY: Slot[] = SLOTS.filter((s) => getItemsBySlot(s).length > 0);
@@ -13,19 +12,11 @@ const NON_EMPTY: Slot[] = SLOTS.filter((s) => getItemsBySlot(s).length > 0);
 // Source assemblies can render without a legacy catalog mesh (for example Knight Pants No Skirt).
 const isRenderable = (i: { id: string; model?: unknown; decal?: unknown }, sourceItems: ReadonlySet<string>) =>
   !!(i.model || i.decal || sourceItems.has(i.id));
-type ReviewStatus = "untouched" | "polish" | "issue" | "accepted";
-const REVIEW_STYLES: Record<ReviewStatus, string> = {
-  untouched: "bg-red-500 text-white",
-  polish: "bg-blue-500 text-white",
-  issue: "bg-purple-500 text-white",
-  accepted: "bg-emerald-400 text-neutral-900",
-};
-const REVIEWS = reviewRecords as Record<string, { status: ReviewStatus; note: string }>;
 
 export default function SlotPicker() {
   const [slot, setSlot] = useState<Slot>(NON_EMPTY[0] ?? "upperBody");
   const [query, setQuery] = useState("");
-  const [only3d, setOnly3d] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<ReviewStatus | "all">("all");
   const [workedOn, setWorkedOn] = useState<Set<string>>(new Set());
   const [progressState, setProgressState] = useState<"loading" | "ready" | "unavailable">("loading");
   const build = useBuildStore((s) => s.build);
@@ -43,10 +34,9 @@ export default function SlotPicker() {
     const all = getItemsBySlot(slot);
     const q = query.trim().toLowerCase();
     const byQuery = q ? all.filter((i) => i.name.toLowerCase().includes(q)) : all;
-    return only3d ? byQuery.filter(i => isRenderable(i, workedOn)) : byQuery;
-  }, [slot, query, only3d, workedOn]);
-
-  const modelCount = useMemo(() => getItemsBySlot(slot).filter(i => isRenderable(i, workedOn)).length, [slot, workedOn]);
+    return byQuery.filter(i => statusFilter === "all" || (isRenderable(i, workedOn)
+      && getReconstructionReview(i, workedOn, progressState).status === statusFilter));
+  }, [slot, query, workedOn, statusFilter, progressState]);
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
@@ -70,42 +60,28 @@ export default function SlotPicker() {
         ))}
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 flex-wrap items-center gap-2">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={`Search ${SLOT_LABELS[slot]}…`}
+          aria-label={`Search ${SLOT_LABELS[slot]}`}
           className="min-w-0 flex-1 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 outline-none placeholder:text-neutral-600 focus:border-neutral-600"
         />
-        <button
-          onClick={() => setOnly3d((v) => !v)}
-          title="Show only items with a 3D model"
-          className={`shrink-0 rounded-lg px-3 py-2 text-xs font-medium transition ${
-            only3d
-              ? "bg-emerald-400 text-neutral-900"
-              : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
-          }`}
-        >
-          3D only{modelCount ? ` (${modelCount})` : ""}
-        </button>
+        <select aria-label="3D status" value={statusFilter}
+          onChange={event => setStatusFilter(event.target.value as ReviewStatus | "all")}
+          className="w-full shrink-0 rounded-lg border border-neutral-800 bg-neutral-900 px-2 py-2 text-xs text-neutral-300 sm:w-auto">
+          <option value="all">All 3D statuses</option>
+          {(Object.keys(REVIEW_LABELS) as ReviewStatus[]).map(status =>
+            <option key={status} value={status}>{REVIEW_LABELS[status]}</option>)}
+        </select>
       </div>
 
       <div aria-label="Cosmetic results" tabIndex={0} className="grid min-h-0 flex-1 grid-cols-3 content-start gap-2 overflow-y-auto overscroll-contain pr-1 sm:grid-cols-4 md:grid-cols-5">
+        {items.length === 0 && <p className="col-span-full p-4 text-sm text-neutral-400">No items match these filters.</p>}
         {items.map((item, i) => {
           const equipped = build[item.slot] === item.id;
-          // Paints and the reviewed legacy singlet coverage repair live outside the assembly index.
-          const legacySinglet = !!(item.model && resolveLegacyBodyCoverage(item.model.gltfPath, "models/reconstructed-meshes-v2/SK_Body_M.glb"));
-          const touched = workedOn.has(item.id)
-            || !!item.decal?.layers.some(l => l.uvLayout === "sourceBodyPaint" && l.uvScale)
-            || legacySinglet;
-          const review = REVIEWS[item.id];
-          // A coverage repair does not fix the singlets' broken prints/materials. Explicit item
-          // verdicts win; generic source support is progress that still needs visual polish.
-          const status: ReviewStatus = review?.status ?? (legacySinglet ? "issue" : touched ? "polish" : "untouched");
-          const progress = review?.note ?? (status === "issue" ? "Known visual errors: coverage repaired; materials and prints still need work"
-            : status === "polish" ? "Needs visual polish · Medium reconstruction in progress"
-            : progressState === "ready" ? "Awaiting reconstruction"
-            : progressState === "loading" ? "Checking reconstruction status" : "Reconstruction status unavailable");
+          const { status, note: progress } = getReconstructionReview(item, workedOn, progressState);
           return (
             <button
               key={item.id}
