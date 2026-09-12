@@ -5,6 +5,9 @@ import "./index.css";
 import Builder from "./pages/Builder";
 import Outfit from "./pages/Outfit";
 import NotFound from "./pages/NotFound";
+import { startAnalytics } from "./lib/analytics";
+
+if (import.meta.env.PROD) startAnalytics();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

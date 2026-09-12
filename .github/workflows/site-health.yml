@@ -1,0 +1,38 @@
+name: Site health
+
+on:
+  workflow_dispatch:
+  # Off the hour to reduce contention. GitHub schedules are best effort.
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_run:
+    workflows: ['Deploy to GitHub Pages']
+    types: [completed]
+  pull_request:
+    paths:
+      - '.github/workflows/site-health.yml'
+      - 'scripts/check-site-health.mjs'
+      - 'scripts/lib/site-health*'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test the monitor
+        run: node --test scripts/lib/site-health.test.mjs
+      - name: Check live website and Cloudflare assets
+        if: github.event_name != 'pull_request'
+        env:
+          ASSETS_BASE: ${{ vars.ASSETS_BASE }}
+        run: node scripts/check-site-health.mjs

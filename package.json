@@ -10,6 +10,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
+    "check:site": "node scripts/check-site-health.mjs",
     "validate:catalog": "tsx scripts/validate-catalog.ts",
     "import:catalog": "tsx scripts/import-catalog.ts",
     "discover:assets": "tsx scripts/discover-assets.ts",

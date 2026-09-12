@@ -6,7 +6,7 @@ import { resolve, relative, isAbsolute } from 'node:path';
 import { chromium } from 'playwright-core';
 
 const base = process.env.PRODUCTION_URL ?? 'http://127.0.0.1:4173/the-finals-outfit/';
-const assetsBase = process.env.ASSETS_BASE ?? 'https://the-finals-outfit-assets.netlify.app/v4-reconstruction/';
+const assetsBase = process.env.ASSETS_BASE ?? 'https://the-finals-outfit-assets.pages.dev/v5-coverage-20260912/';
 const output = process.env.PRODUCTION_REPORT_DIR ?? 'scripts/generated/release';
 mkdirSync(output, { recursive: true });
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
@@ -66,6 +66,10 @@ try {
     for (const path of test.expectedPaths ?? []) {
       assert(requested.some(url => url.includes(path)), `${test.name}: missing reconstructed dependency ${path}`);
     }
+    const assetRequests = requested.filter(url => /\/(?:models|items)\//.test(new URL(url).pathname));
+    assert(assetRequests.length > 0, `${test.name}: no asset requests`);
+    assert(assetRequests.every(url => url.startsWith(assetsBase)), `${test.name}: unexpected asset host or release`);
+    assert(!requested.some(url => new URL(url).hostname.endsWith('.netlify.app')), `${test.name}: Netlify dependency`);
     assert.deepEqual(badResponses, [], `${test.name}: failed asset requests`);
     assert.deepEqual(errors, [], `${test.name}: browser errors`);
     const capture = `${output}/${new URL(base).hostname === '127.0.0.1' ? 'preview' : 'live'}-${test.name}.png`;
