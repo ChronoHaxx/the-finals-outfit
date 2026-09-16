@@ -1,0 +1,160 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/SK_Military_AssaultGloves_M.SK_Military_AssaultGloves_M"
+  ],
+  "missingMeshes": [
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/SK_Military_AssaultGloves_M.SK_Military_AssaultGloves_M"
+  ],
+  "items": [
+    {
+      "id": "military-assaultgloves-leather-black",
+      "name": "Assault Gloves Leather Black",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_Black/MI_Military_AssaultGloves_Leather_Black.MI_Military_AssaultGloves_Leather_Black"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-leather-blackred",
+      "name": "Assault Gloves Leather Black Red",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_BlackRed/MI_Military_AssaultGloves_Leather_BlackRed.MI_Military_AssaultGloves_Leather_BlackRed"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-leather-gray",
+      "name": "Assault Gloves Leather Gray",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_Gray/MI_Military_AssaultGloves_Leather_Gray.MI_Military_AssaultGloves_Leather_Gray"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-leather-greencamo",
+      "name": "Assault Gloves Leather Green Camo",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_GreenCamo/MI_Military_AssaultGloves_Leather_GreenCamo.MI_Military_AssaultGloves_Leather_GreenCamo"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-leather-redblue",
+      "name": "Assault Gloves Leather Red Blue",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_RedBlue/MI_Military_AssaultGloves_Leather_RedBlue.MI_Military_AssaultGloves_Leather_RedBlue"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-leather-swat",
+      "name": "Assault Gloves Leather SWAT",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_SWAT/MI_Military_AssaultGloves_Leather_SWAT.MI_Military_AssaultGloves_Leather_SWAT"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-leatherrough-esportdrg",
+      "name": "Assault Gloves Leather Rough Esport DRG",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/LeatherRough_EsportDRG/MI_Military_AssaultGloves_LeatherRough_EsportDRG.MI_Military_AssaultGloves_LeatherRough_EsportDRG"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-nylon",
+      "name": "Assault Gloves Nylon",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon/MI_Military_AssaultGloves_Nylon.MI_Military_AssaultGloves_Nylon"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-nylon-dede",
+      "name": "Assault Gloves Nylon Dede",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_Dede/MI_Military_AssaultGloves_Nylon_Dede.MI_Military_AssaultGloves_Nylon_Dede"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-nylon-moolahcamo",
+      "name": "Assault Gloves Nylon Moolah Camo",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_MoolahCamo/MI_Military_AssaultGloves_Nylon_MoolahCamo.MI_Military_AssaultGloves_Nylon_MoolahCamo"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-nylon-orf",
+      "name": "Assault Gloves Nylon ORF",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_ORF/MI_Military_AssaultGloves_Nylon_ORF.MI_Military_AssaultGloves_Nylon_ORF"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-nylon-volpe",
+      "name": "Assault Gloves Nylon Volpe",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_Volpe/MI_Military_AssaultGloves_Nylon_Volpe.MI_Military_AssaultGloves_Nylon_Volpe"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-suede",
+      "name": "Assault Gloves Suede",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Suede/MI_Military_AssaultGloves_Suede.MI_Military_AssaultGloves_Suede"
+      ]
+    },
+    {
+      "id": "military-assaultgloves-suede-esportkz",
+      "name": "Assault Gloves Suede Esport KZ",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Suede_EsportKZ/MI_Military_AssaultGloves_Suede_EsportKZ.MI_Military_AssaultGloves_Suede_EsportKZ"
+      ]
+    }
+  ],
+  "roots": [
+    "M_Character_8Layers_Master",
+    "M_Character_Layered"
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/LeatherRough_EsportDRG/MI_Military_AssaultGloves_LeatherRough_EsportDRG.MI_Military_AssaultGloves_LeatherRough_EsportDRG",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_Black/MI_Military_AssaultGloves_Leather_Black.MI_Military_AssaultGloves_Leather_Black",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_BlackRed/MI_Military_AssaultGloves_Leather_BlackRed.MI_Military_AssaultGloves_Leather_BlackRed",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_Gray/MI_Military_AssaultGloves_Leather_Gray.MI_Military_AssaultGloves_Leather_Gray",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_GreenCamo/MI_Military_AssaultGloves_Leather_GreenCamo.MI_Military_AssaultGloves_Leather_GreenCamo",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_RedBlue/MI_Military_AssaultGloves_Leather_RedBlue.MI_Military_AssaultGloves_Leather_RedBlue",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_SWAT/MI_Military_AssaultGloves_Leather_SWAT.MI_Military_AssaultGloves_Leather_SWAT",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon/MI_Military_AssaultGloves_Nylon.MI_Military_AssaultGloves_Nylon",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_Dede/MI_Military_AssaultGloves_Nylon_Dede.MI_Military_AssaultGloves_Nylon_Dede",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_MoolahCamo/MI_Military_AssaultGloves_Nylon_MoolahCamo.MI_Military_AssaultGloves_Nylon_MoolahCamo",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_ORF/MI_Military_AssaultGloves_Nylon_ORF.MI_Military_AssaultGloves_Nylon_ORF",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_Volpe/MI_Military_AssaultGloves_Nylon_Volpe.MI_Military_AssaultGloves_Nylon_Volpe",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Suede/MI_Military_AssaultGloves_Suede.MI_Military_AssaultGloves_Suede",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Suede_EsportKZ/MI_Military_AssaultGloves_Suede_EsportKZ.MI_Military_AssaultGloves_Suede_EsportKZ"
+  ],
+  "attached": false,
+  "count": 14,
+  "missingMaterials": [
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_Black/MI_Military_AssaultGloves_Leather_Black.MI_Military_AssaultGloves_Leather_Black",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_BlackRed/MI_Military_AssaultGloves_Leather_BlackRed.MI_Military_AssaultGloves_Leather_BlackRed",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_Gray/MI_Military_AssaultGloves_Leather_Gray.MI_Military_AssaultGloves_Leather_Gray",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_GreenCamo/MI_Military_AssaultGloves_Leather_GreenCamo.MI_Military_AssaultGloves_Leather_GreenCamo",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_RedBlue/MI_Military_AssaultGloves_Leather_RedBlue.MI_Military_AssaultGloves_Leather_RedBlue",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Leather_SWAT/MI_Military_AssaultGloves_Leather_SWAT.MI_Military_AssaultGloves_Leather_SWAT",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/LeatherRough_EsportDRG/MI_Military_AssaultGloves_LeatherRough_EsportDRG.MI_Military_AssaultGloves_LeatherRough_EsportDRG",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon/MI_Military_AssaultGloves_Nylon.MI_Military_AssaultGloves_Nylon",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_Dede/MI_Military_AssaultGloves_Nylon_Dede.MI_Military_AssaultGloves_Nylon_Dede",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_MoolahCamo/MI_Military_AssaultGloves_Nylon_MoolahCamo.MI_Military_AssaultGloves_Nylon_MoolahCamo",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_ORF/MI_Military_AssaultGloves_Nylon_ORF.MI_Military_AssaultGloves_Nylon_ORF",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Nylon_Volpe/MI_Military_AssaultGloves_Nylon_Volpe.MI_Military_AssaultGloves_Nylon_Volpe",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Suede/MI_Military_AssaultGloves_Suede.MI_Military_AssaultGloves_Suede",
+    "/Game/Discovery/Characters/Military/Assets/AssaultGloves/Skins/Suede_EsportKZ/MI_Military_AssaultGloves_Suede_EsportKZ.MI_Military_AssaultGloves_Suede_EsportKZ"
+  ]
+}

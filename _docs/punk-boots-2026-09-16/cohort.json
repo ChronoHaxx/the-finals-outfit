@@ -1,0 +1,120 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/SK_Streetwear_PunkBoots_M.SK_Streetwear_PunkBoots_M"
+  ],
+  "missingMeshes": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/SK_Streetwear_PunkBoots_M.SK_Streetwear_PunkBoots_M"
+  ],
+  "items": [
+    {
+      "id": "streetwear-punkboots-canvas",
+      "name": "Punk Boots Canvas",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Canvas/MI_Streetwear_PunkBoots_Canvas.MI_Streetwear_PunkBoots_Canvas"
+      ]
+    },
+    {
+      "id": "streetwear-punkboots-leather",
+      "name": "Punk Boots Leather",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather/MI_Streetwear_PunkBoots_Leather.MI_Streetwear_PunkBoots_Leather"
+      ]
+    },
+    {
+      "id": "streetwear-punkboots-leather-blackwhite",
+      "name": "Punk Boots Leather Black White",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_BlackWhite/MI_PunkBoots_Leather_BlackWhite.MI_PunkBoots_Leather_BlackWhite"
+      ]
+    },
+    {
+      "id": "streetwear-punkboots-leather-brown",
+      "name": "Punk Boots Leather Brown",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_Brown/MI_Streetwear_PunkBoots_Leather_Brown.MI_Streetwear_PunkBoots_Leather_Brown"
+      ]
+    },
+    {
+      "id": "streetwear-punkboots-leather-lightbrown",
+      "name": "Punk Boots Leather Light Brown",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_LightBrown/MI_Streetwear_PunkBoots_Leather_LightBrown.MI_Streetwear_PunkBoots_Leather_LightBrown"
+      ]
+    },
+    {
+      "id": "streetwear-punkboots-leather-orf",
+      "name": "Punk Boots Leather ORF",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_ORF/MI_Streetwear_PunkBoots_Leather_ORF.MI_Streetwear_PunkBoots_Leather_ORF"
+      ]
+    },
+    {
+      "id": "streetwear-punkboots-leather-shiny",
+      "name": "Punk Boots Leather Shiny",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_Shiny/MI_Streetwear_PunkBoots_Leather_Shiny.MI_Streetwear_PunkBoots_Leather_Shiny"
+      ]
+    },
+    {
+      "id": "streetwear-punkboots-wornleather",
+      "name": "Punk Boots Worn Leather",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/WornLeather/MI_Streetwear_PunkBoots_WornLeather.MI_Streetwear_PunkBoots_WornLeather"
+      ]
+    },
+    {
+      "id": "streetwear-punkboots-wornleather-biker",
+      "name": "Punk Boots Worn Leather Biker",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/WornLeather_Biker/MI_Streetwear_PunkBoots_WornLeather_Biker.MI_Streetwear_PunkBoots_WornLeather_Biker"
+      ]
+    },
+    {
+      "id": "streetwear-punkboots-wornleather-black",
+      "name": "Punk Boots Worn Leather Black",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/WornLeather_Black/MI_Streetwear_PunkBoots_WornLeather_Black.MI_Streetwear_PunkBoots_WornLeather_Black"
+      ]
+    }
+  ],
+  "roots": [
+    "M_Character_8Layers_Master",
+    "M_Character_Layered"
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Canvas/MI_Streetwear_PunkBoots_Canvas.MI_Streetwear_PunkBoots_Canvas",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather/MI_Streetwear_PunkBoots_Leather.MI_Streetwear_PunkBoots_Leather",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_BlackWhite/MI_PunkBoots_Leather_BlackWhite.MI_PunkBoots_Leather_BlackWhite",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_Brown/MI_Streetwear_PunkBoots_Leather_Brown.MI_Streetwear_PunkBoots_Leather_Brown",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_LightBrown/MI_Streetwear_PunkBoots_Leather_LightBrown.MI_Streetwear_PunkBoots_Leather_LightBrown",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_ORF/MI_Streetwear_PunkBoots_Leather_ORF.MI_Streetwear_PunkBoots_Leather_ORF",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_Shiny/MI_Streetwear_PunkBoots_Leather_Shiny.MI_Streetwear_PunkBoots_Leather_Shiny",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/WornLeather/MI_Streetwear_PunkBoots_WornLeather.MI_Streetwear_PunkBoots_WornLeather",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/WornLeather_Biker/MI_Streetwear_PunkBoots_WornLeather_Biker.MI_Streetwear_PunkBoots_WornLeather_Biker",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/WornLeather_Black/MI_Streetwear_PunkBoots_WornLeather_Black.MI_Streetwear_PunkBoots_WornLeather_Black"
+  ],
+  "attached": false,
+  "count": 10,
+  "missingMaterials": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Canvas/MI_Streetwear_PunkBoots_Canvas.MI_Streetwear_PunkBoots_Canvas",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather/MI_Streetwear_PunkBoots_Leather.MI_Streetwear_PunkBoots_Leather",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_BlackWhite/MI_PunkBoots_Leather_BlackWhite.MI_PunkBoots_Leather_BlackWhite",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_Brown/MI_Streetwear_PunkBoots_Leather_Brown.MI_Streetwear_PunkBoots_Leather_Brown",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_LightBrown/MI_Streetwear_PunkBoots_Leather_LightBrown.MI_Streetwear_PunkBoots_Leather_LightBrown",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_ORF/MI_Streetwear_PunkBoots_Leather_ORF.MI_Streetwear_PunkBoots_Leather_ORF",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/Leather_Shiny/MI_Streetwear_PunkBoots_Leather_Shiny.MI_Streetwear_PunkBoots_Leather_Shiny",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/WornLeather/MI_Streetwear_PunkBoots_WornLeather.MI_Streetwear_PunkBoots_WornLeather",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/WornLeather_Biker/MI_Streetwear_PunkBoots_WornLeather_Biker.MI_Streetwear_PunkBoots_WornLeather_Biker",
+    "/Game/Discovery/Characters/Streetwear/Assets/PunkBoots/Skins/WornLeather_Black/MI_Streetwear_PunkBoots_WornLeather_Black.MI_Streetwear_PunkBoots_WornLeather_Black"
+  ]
+}

@@ -1,7 +1,22 @@
 // Check the emitted GLSL against the forward SM5 interpreter's fixture outputs.
 // Constant texture samples isolate shader arithmetic from filtering/lighting.
+//
+// The existing bare-node command stays valid on Node 22.15 through the project's
+// installed tsx scoped import. The sampler plan is shared with the runtime loader.
+// Planning happens in Node and is handed to the page through a
+// binding, so the probe and the viewer always agree on which samplers exist.
+//
+// The probe keeps every slot's data independent: identity aliasing is disabled
+// here because the fixtures deliberately give each slot a different synthetic
+// value, so slots that the budget forces together become separate array layers
+// and the original SM5 expected values still apply unchanged.
 import { chromium } from "playwright-core";
 import { readFileSync, writeFileSync } from "node:fs";
+import { tsImport } from "tsx/esm/api";
+const {
+  RECOVERED_SAMPLER_TARGET, planReconstructedSamplers, rewriteSamplerGlsl,
+  samplerPlanReport, samplerUniformBindings,
+} = await tsImport("../../src/rig/ReconstructedSamplers.ts", import.meta.url);
 const fixturePath = process.argv[2];
 const materialBase = process.argv[3] ?? "/models/reconstructed";
 const reportPath = process.argv[4] ?? `visual-diff/reconstructed/${process.argv[3] ? "assembly-webgl" : "webgl"}-checks.json`;
@@ -10,12 +25,22 @@ const fixtures = JSON.parse(readFileSync(fixturePath, "utf8"));
 const browser = await chromium.launch({ channel: "msedge", headless: true });
 try {
   const page = await browser.newPage();
+  // Plan and rewrite in Node with the shared planner; the page only receives
+  // the resulting plan, uniform mapping and already-rewritten shader text.
+  await page.exposeFunction("__recoveredSamplerProgram", ({ textures, shader, coverage }) => {
+    const plan = planReconstructedSamplers(textures, { target: RECOVERED_SAMPLER_TARGET, deduplicate: false });
+    return {
+      plan, report: samplerPlanReport(plan), uniforms: samplerUniformBindings(plan),
+      shader: rewriteSamplerGlsl(shader, plan),
+      coverage: coverage === null ? null : rewriteSamplerGlsl(coverage, plan, { allowMissingDeclarations: true }),
+    };
+  });
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e)));
   page.on("console", (e) => { if (e.type() === "error") errors.push(e.text()); });
   // The app keeps loading preview assets, so the network never idles within the default timeout.
   // Only the test renderer modules are needed here: wait for the viewer to publish them.
-  await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
+  await page.goto(process.env.APP_URL ?? "http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => !!window.__THREE, undefined, { timeout: 60000 });
   const report = await page.evaluate(async ({ cases, materialBase }) => {
     const THREE = window.__THREE;
@@ -30,7 +55,7 @@ try {
     const report = [];
     for (const [id, group] of grouped) {
       const manifest = await (await fetch(`${materialBase}/${id}.json`)).json();
-      const code = await (await fetch(`${materialBase}/${manifest.shader}`)).text();
+      let code = await (await fetch(`${materialBase}/${manifest.shader}`)).text();
       let coverageCode = '';
       if (manifest.coverageShader) {
         coverageCode = await (await fetch(`${materialBase}/${manifest.coverageShader}`)).text();
@@ -38,14 +63,21 @@ try {
           .map(b=>b.toString(16).padStart(2,'0')).join('');
         if (hash !== manifest.coverageShaderSha256 || group.some(test=>test.coverageShaderSha256 !== hash))
           throw new Error(`Coverage fixture/shader hash mismatch for ${id}`);
-        // The full surface includes the same declarations and a superset of samplers.
-        coverageCode = coverageCode.replace(/^uniform[^;]+;$/gm,'').replace(/struct ReconstructedGeometry \{[^}]+\};/g,'')
-          .replace('recoveredSurface(', 'recoveredCoverage(');
       }
       const shaderHash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(code)))]
         .map(b => b.toString(16).padStart(2, "0")).join("");
       if (shaderHash !== manifest.shaderSha256 || group.some(test => test.shaderSha256 !== shaderHash))
         throw new Error(`Fixture/shader hash mismatch for ${id}; regenerate fixtures with --materials`);
+      // Original bytes are hashed first; only the runtime copies are retargeted.
+      const program = await window.__recoveredSamplerProgram({ textures: manifest.textures, shader: code,
+        coverage: manifest.coverageShader ? coverageCode : null });
+      const plan = program.plan;
+      code = program.shader;
+      if (manifest.coverageShader) {
+        // The full surface includes the same declarations and a superset of samplers.
+        coverageCode = program.coverage.replace(/^uniform[^;]+;$/gm,'').replace(/struct ReconstructedGeometry \{[^}]+\};/g,'')
+          .replace('recoveredSurface(', 'recoveredCoverage(');
+      }
       const world = !!manifest.skinSurface || !!manifest.worldSurface;
       const coverage = ['hair', 'eyelash'].includes(manifest.surfaceKind) || !!manifest.skinCoverage;
       const quad = !!manifest.geometryDependentNormals || world;
@@ -55,18 +87,24 @@ try {
           [`testGeometry${name}`, { value: Array.from({ length: 4 }, () => new THREE.Vector3()) }])),
         testGeometryHandedness: { value: new Float32Array(4) },
         testGeometryColor: { value: Array.from({ length: 4 }, () => new THREE.Vector4()) } };
+      // One float texture per planned sampler. Packed slots each own a layer, so
+      // their independent fixture values stay independent.
       const textures = new Map();
-      for (const spec of manifest.textures) {
-        const data = new Float32Array(spec.array ? spec.depth * 4 : 4);
-        const texture = spec.cube ? new THREE.CubeTexture(Array.from({length: 6}, () => new THREE.DataTexture(new Float32Array(4), 1, 1)))
-          : spec.array ? new THREE.DataArrayTexture(data, 1, 1, spec.depth) : new THREE.DataTexture(data, 1, 1);
+      for (const resource of plan.resources) {
+        const spec = resource.kind === "pack" ? null : resource.texture;
+        const depth = resource.kind === "pack" ? resource.layout.depth : spec.depth;
+        const texture = resource.kind !== "pack" && spec.cube
+          ? new THREE.CubeTexture(Array.from({length: 6}, () => new THREE.DataTexture(new Float32Array(4), 1, 1)))
+          : resource.kind === "pack" || spec.array
+            ? new THREE.DataArrayTexture(new Float32Array(depth * 4), 1, 1, depth)
+            : new THREE.DataTexture(new Float32Array(4), 1, 1);
         texture.type = THREE.FloatType; texture.format = THREE.RGBAFormat;
         texture.minFilter = THREE.NearestFilter; texture.magFilter = THREE.NearestFilter;
         texture.wrapS = THREE.RepeatWrapping; texture.wrapT = THREE.RepeatWrapping;
         texture.generateMipmaps = false;
-        textures.set(spec.slot, texture);
-        uniforms[`u_${spec.slot}`] = { value: texture };
+        textures.set(resource.key, texture);
       }
+      for (const binding of program.uniforms) uniforms[binding.name] = { value: textures.get(binding.resource) };
       const material = new THREE.RawShaderMaterial({
         glslVersion: THREE.GLSL3, uniforms,
         vertexShader: "in vec3 position; void main() { gl_Position = vec4(position, 1.0); }",
@@ -107,14 +145,21 @@ try {
             uniforms.testGeometryHandedness.value[i] = geometry.handedness;
           }
         }
-        for (const [slot, texture] of textures) {
-          const samples = test.textures[slot];
-          if (texture.isDataArrayTexture && samples.length !== texture.image.depth)
-            throw new Error(`Fixture array depth mismatch for ${id}/${slot}; regenerate with --materials`);
-          if (texture.isCubeTexture) {
-            if (samples.length !== 6) throw new Error(`Fixture cube face count mismatch for ${id}/${slot}`);
+        for (const binding of plan.bindings) {
+          const samples = test.textures[binding.slot];
+          const texture = textures.get(binding.resource);
+          if (binding.kind === "alias") throw new Error(`Probe plan aliased ${id}/${binding.slot}; fixtures are independent`);
+          if (binding.kind === "layer") {
+            if (samples.length !== 1) throw new Error(`Fixture array depth mismatch for ${id}/${binding.slot}; regenerate with --materials`);
+            texture.image.data.set(samples[0], binding.layer * 4);
+          } else if (texture.isDataArrayTexture) {
+            if (samples.length !== texture.image.depth)
+              throw new Error(`Fixture array depth mismatch for ${id}/${binding.slot}; regenerate with --materials`);
+            texture.image.data.set(samples.flat());
+          } else if (texture.isCubeTexture) {
+            if (samples.length !== 6) throw new Error(`Fixture cube face count mismatch for ${id}/${binding.slot}`);
             texture.images.forEach((face, i) => face.image.data.set(samples[i]));
-          } else texture.image.data.set(texture.isDataArrayTexture ? samples.flat() : samples[0]);
+          } else texture.image.data.set(samples[0]);
           texture.needsUpdate = true;
         }
         const expected = Array.from({ length: quad ? 4 : 1 }, (_, lane) => {
@@ -141,7 +186,8 @@ try {
         completedCases++;
       } } catch (error) { failure = String(error); }
       report.push({ itemId: id, cases: completedCases, expectedCases: group.length,
-        maxAbsoluteError, ...(failure ? { error: failure } : {}) });
+        maxAbsoluteError, samplerPlan: { ...program.report, maxTextureImageUnits: renderer.capabilities.maxTextures },
+        ...(failure ? { error: failure } : {}) });
       scene.remove(mesh); material.dispose(); textures.forEach((t) => t.dispose());
     }
     geometry.dispose(); target.dispose(); renderer.dispose();

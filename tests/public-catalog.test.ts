@@ -6,6 +6,7 @@ import { isDeveloperCatalogPath } from '../src/lib/catalog-mode';
 import { getReconstructionReview } from '../src/lib/reconstruction-status';
 import { buildShareUrl, readOutfitLink } from '../src/lib/share-url';
 import matches from '../src/data/wiki-catalog.json';
+import sourceNames from '../src/data/source-catalog-names.json';
 
 test('public display names do not change asset identity or hide unmatched items', () => {
   assert.equal(getBrowseItem('casual-basictshirt-cotton-black', false)?.name, 'SPECTATOR STANDARD');
@@ -50,6 +51,37 @@ test('only affirmative release flags restrict public browsing, not unknown names
   assert.equal(getPublicCatalogItem(item, { name: 'HAIR', isHidden: null, isUnreleased: null })?.id, item.id);
   assert.equal(getPublicCatalogItem(item, { name: 'HAIR', isHidden: true, isUnreleased: false }), undefined);
   assert.equal(getPublicCatalogItem(item, { name: 'HAIR', isHidden: false, isUnreleased: true }), undefined);
+});
+
+test('fresh exact names fill gaps while keeping original identities and descriptive variants', () => {
+  const id = 'bodycosmetics-makeup-ancientwarrior-ivada-01';
+  assert.equal(getBrowseItem(id, false)?.name, 'IVADA Warden Ink');
+  assert.equal(getBrowseItem(id, true)?.name, 'Makeup Ancient Warrior Ivada 01');
+  assert.equal(getBrowseItem(id, false)?.imageUrl, getItemById(id)?.imageUrl);
+  assert.equal(getBrowseItem('hairs-afrofade-blonde', false)?.name, 'Afro Fade Blonde');
+  for (const [itemId, name] of Object.entries(sourceNames.names)) {
+    assert.ok(getItemById(itemId), itemId);
+    assert.ok(name.trim().length > 0 && name.length <= 80, itemId);
+    assert.ok(!/\{\d+\}/.test(name), itemId);
+    assert.equal(getBrowseItem(itemId, true)?.name, getItemById(itemId)?.name);
+  }
+  assert.equal(PUBLIC_CATALOG_COUNT, 2866);
+});
+
+test('generic source names keep descriptive styles and colours without losing identity', () => {
+  const hair = getItemById('hairs-afrofade')!;
+  const blonde = getItemById('hairs-afrofade-blonde')!;
+  const generic = { name: 'HAIR', isHidden: false, isUnreleased: false };
+  assert.equal(getPublicCatalogItem(hair, generic)?.name, 'Afro Fade');
+  assert.equal(getPublicCatalogItem(blonde, generic, 'Hair')?.name, 'Afro Fade Blonde');
+  assert.equal(getPublicCatalogItem(hair, { ...generic, name: '  Hair  ' })?.name, 'Afro Fade');
+  assert.equal(getPublicCatalogItem(hair, generic, 'A Specific Game Name')?.name, 'A Specific Game Name');
+  assert.equal(getPublicCatalogItem(hair, { ...generic, name: 'SOMETHING SPECIAL' })?.name, 'SOMETHING SPECIAL');
+  assert.equal(getPublicCatalogItem(hair, { ...generic, name: ' ' }, '')?.name, 'Afro Fade');
+  const head = getItemById('head-face-01-base')!;
+  assert.equal(getPublicCatalogItem(head, { ...generic, name: 'HEAD 01' })?.name, head.name);
+  assert.equal(getPublicCatalogItem(hair, generic)?.model, hair.model);
+  assert.equal(getPublicCatalogItem(hair, { ...generic, isHidden: true }), undefined);
 });
 
 test('old share links retain unmatched cosmetics while rejecting incorrect slots', () => {

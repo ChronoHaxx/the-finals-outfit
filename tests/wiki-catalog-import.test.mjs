@@ -14,7 +14,8 @@ test('wiki refresh separates missing identity matches from affirmative visibilit
     const items = ['old-id', 'future-id', 'hidden-id', 'ambiguous-id', 'collision-id', 'new-id', 'unknown-flag-id', 'missing-id'].map(id => ({ id, slot: 'upperBody' }));
     write('src/data/items.json', items);
     write('src/data/wiki-catalog-overrides.json', {});
-    write('src/data/wiki-catalog.json', { items: { 'old-id': { name: 'OLD NAME', pageId: 1, revisionId: 1, method: 'exact-localized-name' } } });
+    const identityEvidence = { source: 'manual-review', selectedAt: '2026-09-12T00:00:00Z', sourceSha256: 'fixture-hash' };
+    write('src/data/wiki-catalog.json', { items: { 'old-id': { name: 'OLD NAME', pageId: 1, revisionId: 1, method: 'user-selected-icon', identityEvidence } } });
     write('localization.json', [{ StringTable: { KeysToEntries: {
       ID_CUSTOMIZATION_OLD_ID_ITEM: 'OLD NAME', ID_CUSTOMIZATION_FUTURE_ID_ITEM: 'FUTURE',
       ID_CUSTOMIZATION_HIDDEN_ID_ITEM: 'HIDDEN', ID_CUSTOMIZATION_AMBIGUOUS_ID_ITEM: 'DOUBLE',
@@ -40,6 +41,8 @@ test('wiki refresh separates missing identity matches from affirmative visibilit
     assert.equal(result['old-id'].name, 'NEW NAME');
     assert.equal(result['old-id'].pageId, 1);
     assert.equal(result['old-id'].revisionId, 100);
+    assert.equal(result['old-id'].method, 'user-selected-icon');
+    assert.deepEqual(result['old-id'].identityEvidence, identityEvidence);
     assert.equal(result['future-id'].isUnreleased, true);
     assert.equal(result['hidden-id'].isHidden, true);
     assert.equal(result['unknown-flag-id'].isHidden, null);

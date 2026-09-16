@@ -1,0 +1,130 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/SK_Military_CombatGloves_M.SK_Military_CombatGloves_M"
+  ],
+  "missingMeshes": [
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/SK_Military_CombatGloves_M.SK_Military_CombatGloves_M"
+  ],
+  "items": [
+    {
+      "id": "military-combatgloves-nylon",
+      "name": "Combat Gloves Nylon",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon/MI_Military_CombatGloves_Nylon.MI_Military_CombatGloves_Nylon"
+      ]
+    },
+    {
+      "id": "military-combatgloves-nylon-alfaacta",
+      "name": "Combat Gloves Nylon Alfa Acta",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_AlfaActa/MI_Military_CombatGloves_Nylon_AlfaActa.MI_Military_CombatGloves_Nylon_AlfaActa"
+      ]
+    },
+    {
+      "id": "military-combatgloves-nylon-arctic",
+      "name": "Combat Gloves Nylon Arctic",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Arctic/MI_Military_CombatGloves_Nylon_Arctic.MI_Military_CombatGloves_Nylon_Arctic"
+      ]
+    },
+    {
+      "id": "military-combatgloves-nylon-blackorange",
+      "name": "Combat Gloves Nylon Black Orange",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_BlackOrange/MI_Military_CombatGloves_Nylon_BlackOrange.MI_Military_CombatGloves_Nylon_BlackOrange"
+      ]
+    },
+    {
+      "id": "military-combatgloves-nylon-blackwhite",
+      "name": "Combat Gloves Nylon Black White",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_BlackWhite/MI_Military_CombatGloves_Nylon_BlackWhite.MI_Military_CombatGloves_Nylon_BlackWhite"
+      ]
+    },
+    {
+      "id": "military-combatgloves-nylon-fnatic",
+      "name": "Combat Gloves Nylon Fnatic",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Fnatic/MI_Military_CombatGloves_Nylon_Fnatic.MI_Military_CombatGloves_Nylon_Fnatic"
+      ]
+    },
+    {
+      "id": "military-combatgloves-nylon-ntmr",
+      "name": "Combat Gloves Nylon NTMR",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_NTMR/MI_Military_CombatGloves_Nylon_NTMR.MI_Military_CombatGloves_Nylon_NTMR"
+      ]
+    },
+    {
+      "id": "military-combatgloves-nylon-orange",
+      "name": "Combat Gloves Nylon Orange",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Orange/MI_Military_CombatGloves_Nylon_Orange.MI_Military_CombatGloves_Nylon_Orange"
+      ]
+    },
+    {
+      "id": "military-combatgloves-nylon-paintball",
+      "name": "Combat Gloves Nylon Paint Ball",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_PaintBall/MI_Military_CombatGloves_Nylon_PaintBall.MI_Military_CombatGloves_Nylon_PaintBall"
+      ]
+    },
+    {
+      "id": "military-combatgloves-nylon-skeleton",
+      "name": "Combat Gloves Nylon Skeleton",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Skeleton/MI_Military_CombatGloves_Nylon_Skeleton.MI_Military_CombatGloves_Nylon_Skeleton"
+      ]
+    },
+    {
+      "id": "military-combatgloves-nylon-sniper",
+      "name": "Combat Gloves Nylon Sniper",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Sniper/MI_Military_CombatGloves_Nylon_Sniper.MI_Military_CombatGloves_Nylon_Sniper"
+      ]
+    }
+  ],
+  "roots": [
+    "M_Character_8Layers_Master",
+    "M_Character_Layered"
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon/MI_Military_CombatGloves_Nylon.MI_Military_CombatGloves_Nylon",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_AlfaActa/MI_Military_CombatGloves_Nylon_AlfaActa.MI_Military_CombatGloves_Nylon_AlfaActa",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Arctic/MI_Military_CombatGloves_Nylon_Arctic.MI_Military_CombatGloves_Nylon_Arctic",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_BlackOrange/MI_Military_CombatGloves_Nylon_BlackOrange.MI_Military_CombatGloves_Nylon_BlackOrange",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_BlackWhite/MI_Military_CombatGloves_Nylon_BlackWhite.MI_Military_CombatGloves_Nylon_BlackWhite",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Fnatic/MI_Military_CombatGloves_Nylon_Fnatic.MI_Military_CombatGloves_Nylon_Fnatic",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_NTMR/MI_Military_CombatGloves_Nylon_NTMR.MI_Military_CombatGloves_Nylon_NTMR",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Orange/MI_Military_CombatGloves_Nylon_Orange.MI_Military_CombatGloves_Nylon_Orange",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_PaintBall/MI_Military_CombatGloves_Nylon_PaintBall.MI_Military_CombatGloves_Nylon_PaintBall",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Skeleton/MI_Military_CombatGloves_Nylon_Skeleton.MI_Military_CombatGloves_Nylon_Skeleton",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Sniper/MI_Military_CombatGloves_Nylon_Sniper.MI_Military_CombatGloves_Nylon_Sniper"
+  ],
+  "attached": false,
+  "count": 11,
+  "missingMaterials": [
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon/MI_Military_CombatGloves_Nylon.MI_Military_CombatGloves_Nylon",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_AlfaActa/MI_Military_CombatGloves_Nylon_AlfaActa.MI_Military_CombatGloves_Nylon_AlfaActa",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Arctic/MI_Military_CombatGloves_Nylon_Arctic.MI_Military_CombatGloves_Nylon_Arctic",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_BlackOrange/MI_Military_CombatGloves_Nylon_BlackOrange.MI_Military_CombatGloves_Nylon_BlackOrange",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_BlackWhite/MI_Military_CombatGloves_Nylon_BlackWhite.MI_Military_CombatGloves_Nylon_BlackWhite",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Fnatic/MI_Military_CombatGloves_Nylon_Fnatic.MI_Military_CombatGloves_Nylon_Fnatic",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_NTMR/MI_Military_CombatGloves_Nylon_NTMR.MI_Military_CombatGloves_Nylon_NTMR",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Orange/MI_Military_CombatGloves_Nylon_Orange.MI_Military_CombatGloves_Nylon_Orange",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_PaintBall/MI_Military_CombatGloves_Nylon_PaintBall.MI_Military_CombatGloves_Nylon_PaintBall",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Skeleton/MI_Military_CombatGloves_Nylon_Skeleton.MI_Military_CombatGloves_Nylon_Skeleton",
+    "/Game/Discovery/Characters/Military/Assets/CombatGloves/Skins/Nylon_Sniper/MI_Military_CombatGloves_Nylon_Sniper.MI_Military_CombatGloves_Nylon_Sniper"
+  ]
+}

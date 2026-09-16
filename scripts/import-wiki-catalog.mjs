@@ -63,6 +63,10 @@ for (const item of catalog) {
   const p = matches[0];
   candidates.push({ id: item.id, name: p.Name, pageId: p.pageId, revisionId: p.revisionId,
     method: override ? 'reviewed-icon-match' : established?.method ?? 'exact-localized-name',
+    // Keep the original identity evidence through later wiki name/revision updates.
+    // A different page assignment needs its own evidence.
+    ...(established?.pageId === p.pageId && established.identityEvidence
+      ? { identityEvidence: established.identityEvidence } : {}),
     isHidden: flag(p.IsHidden) ?? established?.isHidden ?? null,
     isUnreleased: flag(p.IsUnreleased) ?? established?.isUnreleased ?? null });
 }

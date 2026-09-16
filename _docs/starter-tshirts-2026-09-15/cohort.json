@@ -1,0 +1,130 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/SK_StarterSet_TShirt_M.SK_StarterSet_TShirt_M"
+  ],
+  "missingMeshes": [
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/SK_StarterSet_TShirt_M.SK_StarterSet_TShirt_M"
+  ],
+  "items": [
+    {
+      "id": "starterset-tshirt-cotton-anniversary24",
+      "name": "TShirt Cotton Anniversary 24",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Anniversary24/MI_StarterSet_TShirt_Cotton_Anniversary24.MI_StarterSet_TShirt_Cotton_Anniversary24"
+      ]
+    },
+    {
+      "id": "starterset-tshirt-cotton-black",
+      "name": "TShirt Cotton Black",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Black/MI_TShirt_Cotton_Black.MI_TShirt_Cotton_Black"
+      ]
+    },
+    {
+      "id": "starterset-tshirt-cotton-closedbeta",
+      "name": "TShirt Cotton Closed Beta",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_ClosedBeta/MI_TShirt_Cotton_ClosedBeta.MI_TShirt_Cotton_ClosedBeta"
+      ]
+    },
+    {
+      "id": "starterset-tshirt-cotton-deathbyrhodent",
+      "name": "TShirt Cotton Death By Rhodent",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_DeathByRhodent/MI_StarterSet_TShirt_Cotton_DeathByRhodent.MI_StarterSet_TShirt_Cotton_DeathByRhodent"
+      ]
+    },
+    {
+      "id": "starterset-tshirt-cotton-halloween2024",
+      "name": "TShirt Cotton Halloween 2024",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Halloween2024/MI_TShirt_Cotton_Halloween2024.MI_TShirt_Cotton_Halloween2024"
+      ]
+    },
+    {
+      "id": "starterset-tshirt-cotton-valentines2025playerone",
+      "name": "TShirt Cotton Valentines 2025 Player One",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Valentines2025PlayerOne/MI_StarterSet_TShirt_Cotton_Valentines2025PlayerOne.MI_StarterSet_TShirt_Cotton_Valentines2025PlayerOne"
+      ]
+    },
+    {
+      "id": "starterset-tshirt-cotton-valentines2025playertwo",
+      "name": "TShirt Cotton Valentines 2025 Player Two",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Valentines2025PlayerTwo/MI_StarterSet_TShirt_Cotton_Valentines2025PlayerTwo.MI_StarterSet_TShirt_Cotton_Valentines2025PlayerTwo"
+      ]
+    },
+    {
+      "id": "starterset-tshirt-cotton-whiteblack",
+      "name": "TShirt Cotton White Black",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_WhiteBlack/MI_TShirt_Cotton_WhiteBlack.MI_TShirt_Cotton_WhiteBlack"
+      ]
+    },
+    {
+      "id": "starterset-tshirt-cotton-whiteblue",
+      "name": "TShirt Cotton White Blue",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_WhiteBlue/MI_TShirt_Cotton_WhiteBlue.MI_TShirt_Cotton_WhiteBlue"
+      ]
+    },
+    {
+      "id": "starterset-tshirt-cotton-whitered",
+      "name": "TShirt Cotton White Red",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_WhiteRed/MI_TShirt_Cotton_WhiteRed.MI_TShirt_Cotton_WhiteRed"
+      ]
+    },
+    {
+      "id": "starterset-tshirt-cotton-yellow",
+      "name": "TShirt Cotton Yellow",
+      "slot": "upperBody",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Yellow/MI_TShirt_Cotton_Yellow.MI_TShirt_Cotton_Yellow"
+      ]
+    }
+  ],
+  "roots": [
+    "M_Character_8Layers_Master",
+    "M_Character_Layered"
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Anniversary24/MI_StarterSet_TShirt_Cotton_Anniversary24.MI_StarterSet_TShirt_Cotton_Anniversary24",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Black/MI_TShirt_Cotton_Black.MI_TShirt_Cotton_Black",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_ClosedBeta/MI_TShirt_Cotton_ClosedBeta.MI_TShirt_Cotton_ClosedBeta",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_DeathByRhodent/MI_StarterSet_TShirt_Cotton_DeathByRhodent.MI_StarterSet_TShirt_Cotton_DeathByRhodent",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Halloween2024/MI_TShirt_Cotton_Halloween2024.MI_TShirt_Cotton_Halloween2024",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Valentines2025PlayerOne/MI_StarterSet_TShirt_Cotton_Valentines2025PlayerOne.MI_StarterSet_TShirt_Cotton_Valentines2025PlayerOne",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Valentines2025PlayerTwo/MI_StarterSet_TShirt_Cotton_Valentines2025PlayerTwo.MI_StarterSet_TShirt_Cotton_Valentines2025PlayerTwo",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_WhiteBlack/MI_TShirt_Cotton_WhiteBlack.MI_TShirt_Cotton_WhiteBlack",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_WhiteBlue/MI_TShirt_Cotton_WhiteBlue.MI_TShirt_Cotton_WhiteBlue",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_WhiteRed/MI_TShirt_Cotton_WhiteRed.MI_TShirt_Cotton_WhiteRed",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Yellow/MI_TShirt_Cotton_Yellow.MI_TShirt_Cotton_Yellow"
+  ],
+  "attached": false,
+  "count": 11,
+  "missingMaterials": [
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Anniversary24/MI_StarterSet_TShirt_Cotton_Anniversary24.MI_StarterSet_TShirt_Cotton_Anniversary24",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Black/MI_TShirt_Cotton_Black.MI_TShirt_Cotton_Black",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_ClosedBeta/MI_TShirt_Cotton_ClosedBeta.MI_TShirt_Cotton_ClosedBeta",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_DeathByRhodent/MI_StarterSet_TShirt_Cotton_DeathByRhodent.MI_StarterSet_TShirt_Cotton_DeathByRhodent",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Halloween2024/MI_TShirt_Cotton_Halloween2024.MI_TShirt_Cotton_Halloween2024",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Valentines2025PlayerOne/MI_StarterSet_TShirt_Cotton_Valentines2025PlayerOne.MI_StarterSet_TShirt_Cotton_Valentines2025PlayerOne",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Valentines2025PlayerTwo/MI_StarterSet_TShirt_Cotton_Valentines2025PlayerTwo.MI_StarterSet_TShirt_Cotton_Valentines2025PlayerTwo",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_WhiteBlack/MI_TShirt_Cotton_WhiteBlack.MI_TShirt_Cotton_WhiteBlack",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_WhiteBlue/MI_TShirt_Cotton_WhiteBlue.MI_TShirt_Cotton_WhiteBlue",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_WhiteRed/MI_TShirt_Cotton_WhiteRed.MI_TShirt_Cotton_WhiteRed",
+    "/Game/Discovery/Characters/StarterSet/Assets/TShirt/Skins/Cotton_Yellow/MI_TShirt_Cotton_Yellow.MI_TShirt_Cotton_Yellow"
+  ]
+}
