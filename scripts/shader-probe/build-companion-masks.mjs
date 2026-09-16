@@ -15,6 +15,11 @@ const itemsArg = process.argv.indexOf("--items");
 const selectedIds = itemsArg < 0 ? null : new Set(process.argv[itemsArg + 1]?.split(","));
 if (selectedIds && (!all || !selectedIds.size || selectedIds.has(""))) throw new Error("--items requires --all and comma-separated item IDs");
 if (legacy && (!all || !selectedIds)) throw new Error("--legacy requires --all and explicit --items");
+// Some body islands are shared by opposite limbs. Opt in for newly reviewed
+// masks: a texel may hide skin only when every body surface mapped there is covered.
+// Existing published masks and the default generation policy remain unchanged.
+const conservativeSharedUv = process.argv.includes("--conservative-shared-uv");
+if (conservativeSharedUv && (!all || !selectedIds)) throw new Error("--conservative-shared-uv requires --all and explicit --items");
 const outputArg = process.argv.indexOf("--output");
 const output = outputArg < 0 ? "public/models/reconstructed-assemblies-v1" : process.argv[outputArg + 1];
 if (!output?.replaceAll("\\", "/").startsWith("public/models/") || output.split(/[\\/]/).includes(".."))
@@ -49,7 +54,7 @@ try {
   page.on("console", message => { if (message.text().startsWith("COVERAGE ")) console.log(message.text()); });
   await page.goto("http://127.0.0.1:5173/scripts/generated/shader-probe/coverage-harness.html", { waitUntil: "networkidle" });
   await page.waitForFunction(() => !!window.__coverage);
-  const result = await page.evaluate(async ({ items, all, bodyFile, indexUrl }) => {
+  const result = await page.evaluate(async ({ items, all, bodyFile, indexUrl, conservativeSharedUv }) => {
     const { THREE: T, MeshBVH } = window.__coverage;
     const { CharacterRig } = await import("/src/rig/CharacterRig.ts");
     const { createGltfLoader } = await import("/src/rig/loaders.ts");
@@ -79,7 +84,12 @@ try {
       }
       const garments = rig.root.getObjectsByProperty("isSkinnedMesh", true)
         .filter(o => o.userData.sourceMesh && (all || !o.userData.sourceMesh.includes("/LongCoat/")) && !visited.has(o.userData.sourceMesh));
-      for (const mesh of garments) {
+      // A source mesh with several material sections loads as one skinned mesh per section. Project
+      // them together, so each source mesh yields one record and one mask file.
+      const sections = new Map();
+      for (const mesh of garments) sections.set(mesh.userData.sourceMesh, [...(sections.get(mesh.userData.sourceMesh) ?? []), mesh]);
+      for (const group of sections.values()) {
+        const mesh = group[0];
         visited.add(mesh.userData.sourceMesh);
         let covered;
         let coveragePixels;
@@ -88,13 +98,17 @@ try {
         const poseCounts = [];
         for (const pose of ["a", "idle"]) {
           rig.setPose(pose); rig.root.updateMatrixWorld(true);
-          const g = makeGeometry(mesh), b = makeGeometry(body), tree = new MeshBVH(g, { indirect: true });
+          const geometries = group.map(makeGeometry), b = makeGeometry(body);
+          const trees = geometries.map(g => new MeshBVH(g, { indirect: true }));
+          const tree = { raycast: (...args) => trees.flatMap(t => t.raycast(...args)) };
+          const g = { dispose: () => geometries.forEach(x => x.dispose()) };
           const ray = new T.Ray(), point = new T.Vector3(), normal = new T.Vector3();
           const vertices = [new T.Vector3(), new T.Vector3(), new T.Vector3()];
           const normals = [new T.Vector3(), new T.Vector3(), new T.Vector3()];
           const samples = [[1,0,0],[0,1,0],[0,0,1],[.5,.5,0],[.5,0,.5],[0,.5,.5],[1/3,1/3,1/3]];
           const found = new Uint8Array(b.index.count / 3);
           const pixels = new Uint8Array(WIDTH * HEIGHT), uv = b.attributes.uv;
+          const exposedPixels = conservativeSharedUv ? new Uint8Array(WIDTH * HEIGHT) : null;
           // A global 4 cm bidirectional projection tolerates intersecting shells.
           // Interior triangles use seven samples; partial boundary triangles are
           // projected per texel. Proximity to an open rim alone is insufficient.
@@ -110,9 +124,10 @@ try {
               normal.normalize(); ray.origin.copy(point).addScaledVector(normal, -.04); ray.direction.copy(normal);
               return tree.raycast(ray, T.DoubleSide, 0, .08).some(hit => hit.face.normal.dot(normal) > .25);
             };
-            const hits = samples.map(coveredAt), full = hits.every(Boolean);
+            const hits = samples.map(coveredAt), full = hits.every(Boolean), any = hits.some(Boolean);
             found[tri] = +full;
-            if (!hits.some(Boolean)) continue;
+            // Uncovered triangles matter when another limb shares their UVs.
+            if (!conservativeSharedUv && !any) continue;
             const points = [0,1,2].map(j => { const i = b.index.getX(tri*3+j); return [uv.getX(i)*RES, uv.getY(i)*RES]; });
             const [[ax,ay],[bx,by],[cx,cy]] = points;
             const den = (by-cy)*(ax-cx)+(cx-bx)*(ay-cy);
@@ -123,10 +138,16 @@ try {
               const wa = ((by-cy)*(x+.5-cx)+(cx-bx)*(y+.5-cy))/den;
               const wb = ((cy-ay)*(x+.5-cx)+(ax-cx)*(y+.5-cy))/den, wc = 1-wa-wb;
               if (Math.min(wa,wb,wc) < 0) continue;
-              if (full || coveredAt([wa,wb,wc])) pixels[y*WIDTH+x] = 255;
+              if (full || (any && coveredAt([wa,wb,wc]))) pixels[y*WIDTH+x] = 255;
+              else if (exposedPixels) exposedPixels[y*WIDTH+x] = 1;
             }
           }
-          poseCounts.push({ pose, triangles: found.reduce((a, b) => a + b, 0), pixels: pixels.reduce((a,b) => a + +(b > 0), 0) });
+          let sharedUvRemovedPixels = 0;
+          if (exposedPixels) for (let i = 0; i < pixels.length; i++) {
+            if (pixels[i] && exposedPixels[i]) { pixels[i] = 0; sharedUvRemovedPixels++; }
+          }
+          poseCounts.push({ pose, triangles: found.reduce((a, b) => a + b, 0), pixels: pixels.reduce((a,b) => a + +(b > 0), 0),
+            ...(conservativeSharedUv ? { sharedUvRemovedPixels } : {}) });
           covered = covered ? covered.map((v, i) => v && found[i] ? 1 : 0) : found;
           coveragePixels = coveragePixels ? coveragePixels.map((v, i) => v && pixels[i] ? 255 : 0) : pixels;
           g.dispose(); b.dispose();
@@ -146,7 +167,7 @@ try {
       rig.unequip(slot);
     }
     rig.dispose(); return results;
-  }, { items, all, bodyFile, indexUrl });
+  }, { items, all, bodyFile, indexUrl, conservativeSharedUv });
   const hashes = bytes => createHash("sha256").update(bytes).digest("hex");
   const records = [];
   for (const { png, ...record } of result) {
@@ -159,7 +180,9 @@ try {
     console.log(`${file}: ${record.coveredTriangles} body triangles covered in both poses`);
   }
   writeFileSync(`${output}/derived-coverage.json`, JSON.stringify({ formatVersion: 1,
-    method: "Bidirectional surface projection; 4 cm each direction; seven samples per body triangle plus per-texel projection at partial boundaries; normal alignment > .25; intersection of A and idle coverage",
+    method: "Bidirectional surface projection; 4 cm each direction; seven samples per body triangle plus per-texel projection at partial boundaries; normal alignment > .25; intersection of A and idle coverage"
+      + (conservativeSharedUv ? "; texels shared with any uncovered body surface remain visible" : ""),
+    ...(conservativeSharedUv ? { sharedUvPolicy: "all-surfaces-covered" } : {}),
     source: "Derived preview coverage, not recovered game rules. Specific to the recorded medium-body geometry, zero fitting weights and supported poses.",
     geometryMode: legacy ? "legacy" : "source", indexFolder: legacy ? null : indexFolder,
     bodyFile, bodySha256: hashes(readFileSync(`public/${bodyFile}`)), records }, null, 2));

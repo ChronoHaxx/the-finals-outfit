@@ -6,23 +6,26 @@ on:
   # site goes stale with no failure anywhere. The branch check moved into the job,
   # where it reads the repository's CURRENT default branch.
   push:
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
     if: >-
-      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'pull_request' ||
       github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
+    env:
+      # Pin code and artwork in the same revision. The immutable deployment also
+      # leaves the older production asset URL available during review/rollback.
+      ASSETS_BASE: https://0d315b18.the-finals-outfit-assets.pages.dev/
     steps:
       - uses: actions/checkout@v4
 
@@ -33,12 +36,12 @@ jobs:
 
       - run: npm ci
 
+      - name: Check sharing and changed application contracts
+        run: |
+          npm run validate:share-links
+          node --import tsx --test tests/reconstruction-progress.test.ts tests/public-catalog.test.ts tests/wiki-catalog-import.test.mjs tests/reconstructed-samplers.test.mjs
+
       - name: Validate catalog
-        env:
-          # Presence is checked against the real host, not the checkout — a CI checkout
-          # has no assets at all. Without this the validator can only check path SHAPE,
-          # and a well-formed path pointing at nothing ships as a 404.
-          ASSETS_BASE: ${{ vars.ASSETS_BASE }}
         run: npm run validate:catalog
 
       - name: Build
@@ -47,24 +50,24 @@ jobs:
           VITE_BASE: /${{ github.event.repository.name }}/
           # Where every asset is served from. Nothing extracted is committed, so with
           # this unset the site builds and deploys but renders no artwork.
-          VITE_ASSETS_BASE: ${{ vars.ASSETS_BASE }}
-          # Optional: serve 3D models from somewhere other than ASSETS_BASE. Unset ->
-          # models come from ASSETS_BASE like everything else.
-          VITE_MODELS_BASE: ${{ vars.MODELS_BASE }}
+          VITE_ASSETS_BASE: ${{ env.ASSETS_BASE }}
         run: npm run build
 
       - name: Copy 404.html for SPA fallback
         run: cp dist/index.html dist/404.html
 
-      - uses: actions/configure-pages@v5
-
       - uses: actions/upload-pages-artifact@v3
+        if: github.ref_name == github.event.repository.default_branch
         with:
           path: dist
 
   deploy:
+    if: github.ref_name == github.event.repository.default_branch
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

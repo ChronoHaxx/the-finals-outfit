@@ -1,0 +1,119 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/SK_Streetwear_Pants_M.SK_Streetwear_Pants_M"
+  ],
+  "missingMeshes": [
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/SK_Streetwear_Pants_M.SK_Streetwear_Pants_M"
+  ],
+  "items": [
+    {
+      "id": "streetwear-pants-cotton-black",
+      "name": "Pants Cotton Black",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Black/MI_Pants_Cotton_Black.MI_Pants_Cotton_Black"
+      ]
+    },
+    {
+      "id": "streetwear-pants-cotton-blackwhite",
+      "name": "Pants Cotton Black White",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_BlackWhite/MI_Pants_Cotton_BlackWhite.MI_Pants_Cotton_BlackWhite"
+      ]
+    },
+    {
+      "id": "streetwear-pants-cotton-blue",
+      "name": "Pants Cotton Blue",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Blue/MI_Pants_Cotton_Blue.MI_Pants_Cotton_Blue"
+      ]
+    },
+    {
+      "id": "streetwear-pants-cotton-camo",
+      "name": "Pants Cotton Camo",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Camo/MI_Pants_Cotton_Camo.MI_Pants_Cotton_Camo"
+      ]
+    },
+    {
+      "id": "streetwear-pants-cotton-kawaii",
+      "name": "Pants Cotton Kawaii",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Kawaii/MI_Pants_Cotton_Kawaii.MI_Pants_Cotton_Kawaii"
+      ]
+    },
+    {
+      "id": "streetwear-pants-cotton-pink",
+      "name": "Pants Cotton Pink",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Pink/MI_Pants_Cotton_Pink.MI_Pants_Cotton_Pink"
+      ]
+    },
+    {
+      "id": "streetwear-pants-cotton-sponsoriseult",
+      "name": "Pants Cotton Sponsor ISEULT",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_SponsorISEULT/MI_Pants_Cotton_SponsorISEULT.MI_Pants_Cotton_SponsorISEULT"
+      ]
+    },
+    {
+      "id": "streetwear-pants-cotton-sponsoriseultblue",
+      "name": "Pants Cotton Sponsor ISEULTBlue",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_SponsorISEULTBlue/MI_Pants_Cotton_SponsorISEULTBlue.MI_Pants_Cotton_SponsorISEULTBlue"
+      ]
+    },
+    {
+      "id": "streetwear-pants-cotton-whiteblack",
+      "name": "Pants Cotton White Black",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_WhiteBlack/MI_Pants_Cotton_WhiteBlack.MI_Pants_Cotton_WhiteBlack"
+      ]
+    },
+    {
+      "id": "streetwear-pants-cotton-yellow",
+      "name": "Pants Cotton Yellow",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Yellow/MI_Pants_Cotton_Yellow.MI_Pants_Cotton_Yellow"
+      ]
+    }
+  ],
+  "roots": [
+    "M_Character_8Layers_Master"
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Black/MI_Pants_Cotton_Black.MI_Pants_Cotton_Black",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_BlackWhite/MI_Pants_Cotton_BlackWhite.MI_Pants_Cotton_BlackWhite",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Blue/MI_Pants_Cotton_Blue.MI_Pants_Cotton_Blue",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Camo/MI_Pants_Cotton_Camo.MI_Pants_Cotton_Camo",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Kawaii/MI_Pants_Cotton_Kawaii.MI_Pants_Cotton_Kawaii",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Pink/MI_Pants_Cotton_Pink.MI_Pants_Cotton_Pink",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_SponsorISEULT/MI_Pants_Cotton_SponsorISEULT.MI_Pants_Cotton_SponsorISEULT",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_SponsorISEULTBlue/MI_Pants_Cotton_SponsorISEULTBlue.MI_Pants_Cotton_SponsorISEULTBlue",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_WhiteBlack/MI_Pants_Cotton_WhiteBlack.MI_Pants_Cotton_WhiteBlack",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Yellow/MI_Pants_Cotton_Yellow.MI_Pants_Cotton_Yellow"
+  ],
+  "attached": false,
+  "count": 10,
+  "missingMaterials": [
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Black/MI_Pants_Cotton_Black.MI_Pants_Cotton_Black",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_BlackWhite/MI_Pants_Cotton_BlackWhite.MI_Pants_Cotton_BlackWhite",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Blue/MI_Pants_Cotton_Blue.MI_Pants_Cotton_Blue",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Camo/MI_Pants_Cotton_Camo.MI_Pants_Cotton_Camo",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Kawaii/MI_Pants_Cotton_Kawaii.MI_Pants_Cotton_Kawaii",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Pink/MI_Pants_Cotton_Pink.MI_Pants_Cotton_Pink",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_SponsorISEULT/MI_Pants_Cotton_SponsorISEULT.MI_Pants_Cotton_SponsorISEULT",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_SponsorISEULTBlue/MI_Pants_Cotton_SponsorISEULTBlue.MI_Pants_Cotton_SponsorISEULTBlue",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_WhiteBlack/MI_Pants_Cotton_WhiteBlack.MI_Pants_Cotton_WhiteBlack",
+    "/Game/Discovery/Characters/Streetwear/Assets/Pants/Skins/Cotton_Yellow/MI_Pants_Cotton_Yellow.MI_Pants_Cotton_Yellow"
+  ]
+}

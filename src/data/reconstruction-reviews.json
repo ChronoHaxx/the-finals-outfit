@@ -34,5 +34,21 @@
   "attachment-mask-ballistic-01-headwear-vaiiya": {
     "status": "polish",
     "note": "Source material and placement reviewed on Medium, 12 September 2026. Rear straps intersect Afro Fade in places; hair fitting and culling need further polish."
+  },
+  "streetwear-wristband-cotton-logored": {
+    "status": "issue",
+    "note": "Known visual error on Medium: the red wristband body mask leaves a gap above the opposite glove cuff. Reproduced before and after Combat Gloves reconstruction on 15 September 2026; wristband coverage repair pending."
+  },
+  "military-assaultvest-polyester-black": {
+    "status": "polish",
+    "note": "Shader texture-limit issue repaired on 16 September 2026. Source values, original texture sampling, eight-angle A/idle previews and outfit switching verified on Medium. Narrow wrist/cuff seams still need fitting polish; native lighting and human acceptance remain pending."
+  },
+  "military-assaultvest-polyester-moolahcamo": {
+    "status": "polish",
+    "note": "Shader texture-limit issue repaired on 16 September 2026. Source values, original texture sampling, eight-angle A/idle previews and outfit switching verified on Medium. Narrow wrist/cuff seams still need fitting polish; native lighting and human acceptance remain pending."
+  },
+  "military-assaultvest-polyester-redblue": {
+    "status": "polish",
+    "note": "Shader texture-limit issue repaired on 16 September 2026. Source values, original texture sampling, eight-angle A/idle previews and outfit switching verified on Medium. Narrow wrist/cuff seams still need fitting polish; native lighting and human acceptance remain pending."
   }
 }

@@ -237,7 +237,9 @@ def build(exports, textures, output, requests=None, keep_going=False):
         overlays = [m['Package'] + '.' + m['Name'] for m in chain if m.get('_parameterOverride')]
         if overlays: manifest['parameterOverrides'] = overlays
         if policy: manifest.update(policy)
-        if kind:
+        # 8Layers clothing can be authored TwoSided per instance (e.g. an open cape sheet); without the
+        # field the runtime keeps the GLB's single-sided material and culls those back faces.
+        if kind or geometry:
             two_sided=chain[0]['Properties'].get('TwoSided',False)
             for material in chain[1:]:
                 override=material['Properties'].get('BasePropertyOverrides',{})

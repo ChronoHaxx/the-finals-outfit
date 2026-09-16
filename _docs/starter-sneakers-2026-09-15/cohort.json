@@ -1,0 +1,190 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/SK_Sneakers_M.SK_Sneakers_M"
+  ],
+  "missingMeshes": [
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/SK_Sneakers_M.SK_Sneakers_M"
+  ],
+  "items": [
+    {
+      "id": "starterset-sneakers-iridescent",
+      "name": "Sneakers Iridescent",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Iridescent/MI_StarterSet_Sneakers_Iridescent.MI_StarterSet_Sneakers_Iridescent"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-action",
+      "name": "Sneakers Leather Action",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_Action/MI_StarterSet_Sneakers_Leather_Action.MI_StarterSet_Sneakers_Leather_Action"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-black",
+      "name": "Sneakers Leather Black",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_Black/MI_Sneakers_Black.MI_Sneakers_Black"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-blackgold",
+      "name": "Sneakers Leather Black Gold",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_BlackGold/MI_StarterSet_Sneakers_Leather_BlackGold.MI_StarterSet_Sneakers_Leather_BlackGold"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-blackwhite",
+      "name": "Sneakers Leather Black White",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_BlackWhite/MI_Sneakers_BlackWhite.MI_Sneakers_BlackWhite"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-blackyellow",
+      "name": "Sneakers Leather Black Yellow",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_BlackYellow/MI_StarterSet_Sneakers_Leather_BlackYellow.MI_StarterSet_Sneakers_Leather_BlackYellow"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-closedbeta",
+      "name": "Sneakers Leather Closed Beta",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_ClosedBeta/MI_StarterSet_Sneakers_Leather_ClosedBeta.MI_StarterSet_Sneakers_Leather_ClosedBeta"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-darkbrown",
+      "name": "Sneakers Leather Dark Brown",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_DarkBrown/MI_StarterSet_Sneakers_Leather_DarkBrown.MI_StarterSet_Sneakers_Leather_DarkBrown"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-graywhite",
+      "name": "Sneakers Leather Gray White",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_GrayWhite/MI_Sneakers_GrayWhite.MI_Sneakers_GrayWhite"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-majorseventpass",
+      "name": "Sneakers Leather Majors Event Pass",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_MajorsEventPass/MI_StarterSet_Sneakers_Leather_MajorsEventPass.MI_StarterSet_Sneakers_Leather_MajorsEventPass"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-openbetaospuze",
+      "name": "Sneakers Leather Open Beta OSPUZE",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_OpenBetaOSPUZE/MI_StarterSet_Sneakers_Leather_OpenBetaOSPUZE.MI_StarterSet_Sneakers_Leather_OpenBetaOSPUZE"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-orf",
+      "name": "Sneakers Leather ORF",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_ORF/MI_StarterSet_Sneakers_Leather_ORF.MI_StarterSet_Sneakers_Leather_ORF"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-paintball",
+      "name": "Sneakers Leather Paint Ball",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_PaintBall/MI_StarterSet_Sneakers_Leather_PaintBall.MI_StarterSet_Sneakers_Leather_PaintBall"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-red",
+      "name": "Sneakers Leather Red",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_Red/MI_Sneakers_Leather_Red.MI_Sneakers_Leather_Red"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-white",
+      "name": "Sneakers Leather White",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_White/MI_StarterSet_Sneakers_Leather_White.MI_StarterSet_Sneakers_Leather_White"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-leather-whitered",
+      "name": "Sneakers Leather White Red",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_WhiteRed/MI_StarterSet_Sneakers_Leather_WhiteRed.MI_StarterSet_Sneakers_Leather_WhiteRed"
+      ]
+    },
+    {
+      "id": "starterset-sneakers-nylon",
+      "name": "Sneakers Nylon",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Nylon/MI_StarterSet_Sneakers_Nylon.MI_StarterSet_Sneakers_Nylon"
+      ]
+    }
+  ],
+  "roots": [
+    "M_Character_8Layers_Master",
+    "M_Character_HolographicMaterial"
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Iridescent/MI_StarterSet_Sneakers_Iridescent.MI_StarterSet_Sneakers_Iridescent",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_Action/MI_StarterSet_Sneakers_Leather_Action.MI_StarterSet_Sneakers_Leather_Action",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_Black/MI_Sneakers_Black.MI_Sneakers_Black",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_BlackGold/MI_StarterSet_Sneakers_Leather_BlackGold.MI_StarterSet_Sneakers_Leather_BlackGold",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_BlackWhite/MI_Sneakers_BlackWhite.MI_Sneakers_BlackWhite",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_BlackYellow/MI_StarterSet_Sneakers_Leather_BlackYellow.MI_StarterSet_Sneakers_Leather_BlackYellow",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_ClosedBeta/MI_StarterSet_Sneakers_Leather_ClosedBeta.MI_StarterSet_Sneakers_Leather_ClosedBeta",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_DarkBrown/MI_StarterSet_Sneakers_Leather_DarkBrown.MI_StarterSet_Sneakers_Leather_DarkBrown",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_GrayWhite/MI_Sneakers_GrayWhite.MI_Sneakers_GrayWhite",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_MajorsEventPass/MI_StarterSet_Sneakers_Leather_MajorsEventPass.MI_StarterSet_Sneakers_Leather_MajorsEventPass",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_ORF/MI_StarterSet_Sneakers_Leather_ORF.MI_StarterSet_Sneakers_Leather_ORF",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_OpenBetaOSPUZE/MI_StarterSet_Sneakers_Leather_OpenBetaOSPUZE.MI_StarterSet_Sneakers_Leather_OpenBetaOSPUZE",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_PaintBall/MI_StarterSet_Sneakers_Leather_PaintBall.MI_StarterSet_Sneakers_Leather_PaintBall",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_Red/MI_Sneakers_Leather_Red.MI_Sneakers_Leather_Red",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_White/MI_StarterSet_Sneakers_Leather_White.MI_StarterSet_Sneakers_Leather_White",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_WhiteRed/MI_StarterSet_Sneakers_Leather_WhiteRed.MI_StarterSet_Sneakers_Leather_WhiteRed",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Nylon/MI_StarterSet_Sneakers_Nylon.MI_StarterSet_Sneakers_Nylon"
+  ],
+  "attached": false,
+  "count": 17,
+  "missingMaterials": [
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Iridescent/MI_StarterSet_Sneakers_Iridescent.MI_StarterSet_Sneakers_Iridescent",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_Action/MI_StarterSet_Sneakers_Leather_Action.MI_StarterSet_Sneakers_Leather_Action",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_Black/MI_Sneakers_Black.MI_Sneakers_Black",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_BlackGold/MI_StarterSet_Sneakers_Leather_BlackGold.MI_StarterSet_Sneakers_Leather_BlackGold",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_BlackWhite/MI_Sneakers_BlackWhite.MI_Sneakers_BlackWhite",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_BlackYellow/MI_StarterSet_Sneakers_Leather_BlackYellow.MI_StarterSet_Sneakers_Leather_BlackYellow",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_ClosedBeta/MI_StarterSet_Sneakers_Leather_ClosedBeta.MI_StarterSet_Sneakers_Leather_ClosedBeta",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_DarkBrown/MI_StarterSet_Sneakers_Leather_DarkBrown.MI_StarterSet_Sneakers_Leather_DarkBrown",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_GrayWhite/MI_Sneakers_GrayWhite.MI_Sneakers_GrayWhite",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_MajorsEventPass/MI_StarterSet_Sneakers_Leather_MajorsEventPass.MI_StarterSet_Sneakers_Leather_MajorsEventPass",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_OpenBetaOSPUZE/MI_StarterSet_Sneakers_Leather_OpenBetaOSPUZE.MI_StarterSet_Sneakers_Leather_OpenBetaOSPUZE",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_ORF/MI_StarterSet_Sneakers_Leather_ORF.MI_StarterSet_Sneakers_Leather_ORF",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_PaintBall/MI_StarterSet_Sneakers_Leather_PaintBall.MI_StarterSet_Sneakers_Leather_PaintBall",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_Red/MI_Sneakers_Leather_Red.MI_Sneakers_Leather_Red",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_White/MI_StarterSet_Sneakers_Leather_White.MI_StarterSet_Sneakers_Leather_White",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Leather_WhiteRed/MI_StarterSet_Sneakers_Leather_WhiteRed.MI_StarterSet_Sneakers_Leather_WhiteRed",
+    "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/Skins/Nylon/MI_StarterSet_Sneakers_Nylon.MI_StarterSet_Sneakers_Nylon"
+  ]
+}

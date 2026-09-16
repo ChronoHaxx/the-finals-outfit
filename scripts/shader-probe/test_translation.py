@@ -236,7 +236,9 @@ def check_exports(exports,requests=None,materials=None):
                 if parameter=='OcclusionCurvatureMaterialID':return [.83,.42,layer/8,1]
                 if parameter=='Normal' or 'Normals' in parameter or 'DecalData' in parameter:return [.56,.43,0,1]
                 if 'Masks' in parameter:
-                    layer_index=max(0,min(dimensions_info['depth']-1,int(np.floor(float(coords[2])+.5))))
+                    # Flat masks (including ComplexDecal_Masks) have UV only.
+                    # A parameter name does not establish an array layer axis.
+                    layer_index=max(0,min(dimensions_info['depth']-1,int(np.floor(float(coords[2])+.5)))) if dimensions_info.get('array') else 0
                     return [.22+min(4,layer_index)*.09,0,0,1]
                 if parameter=='ColorMask':return [1,.2,.1,1]
                 if 'DecalColor' in parameter:return [.6,.3,.2,.7]

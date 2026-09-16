@@ -314,7 +314,7 @@ def stage_gpu(args):
     result, log = runs / f'{stamp}{suffix}.json', runs / f'{stamp}{suffix}.log'
     with log.open('w', encoding='utf-8') as out:
         code = subprocess.call(['node', 'scripts/shader-probe/check-webgl.mjs', str(fixtures),
-                                '/models/reconstructed-accessories-v1/staging', str(result)],
+                                getattr(args, 'material_base', '/models/reconstructed-accessories-v1/staging'), str(result)],
                                stdout=out, stderr=subprocess.STDOUT)
     if not result.is_file(): raise SystemExit(f'GPU stage produced no result of its own (exit {code}); see {log}')
     rows, expected = read_json(result), read_json(folder / 'translation-checks.json')

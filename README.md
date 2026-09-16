@@ -58,9 +58,10 @@ the default branch, serving from `https://<user>.github.io/the-finals-outfit/`
 until a custom domain is set via `public/CNAME`.
 
 A CI checkout has no assets, so the build resolves them against
-**`VITE_ASSETS_BASE`**, set from the `ASSETS_BASE` repository variable (Settings
-→ Secrets and variables → Actions → Variables). Unset, the site builds and
-deploys but renders no artwork.
+**`VITE_ASSETS_BASE`**, set from the version-pinned `ASSETS_BASE` in
+`.github/workflows/deploy.yml`. Code and artwork are reviewed together in a PR.
+The workflow checks PRs but only publishes the default branch. Local development
+can still set `VITE_ASSETS_BASE` to a published release or use local artwork.
 
 ### Releasing assets
 
@@ -70,16 +71,20 @@ a year. Publish a new version directory instead and switch atomically:
 
 ```sh
 npm run stage:assets -- v2        # copies only referenced files into _assets-upload/v2/
-# publish _assets-upload/ to the host, then prove it before switching:
+# publish only the new version to a separate immutable deployment, then verify:
 ASSETS_BASE=https://<host>/v2/ npm run validate:catalog
-gh variable set ASSETS_BASE --body "https://<host>/v2/"
+# update ASSETS_BASE in .github/workflows/deploy.yml in the same release PR
 ```
 
-That validation step is the one that matters. It fetches every path the catalog
-references and fails on any non-2xx, which is the only check that catches a
-well-formed path pointing at nothing — CI has no assets locally, so it cannot
-tell the difference any other way. The workflow runs the same check on every
-deploy.
+Validation compares every catalog reference with the published manifest and
+spot-checks actual files, including reconstruction dependencies. CI has no
+assets locally, so checking paths against the checkout alone cannot detect a
+missing upload. The workflow runs this hosted check for PRs and deployments.
+
+The 20% release uses an immutable Cloudflare Pages deployment hostname with
+its assets at the root. Keep previous deployments: the current public site and
+rollback builds still need them. No repository-variable change is required
+when merging this release, and the older production asset alias is untouched.
 
 Supported source reconstruction is enabled in production. `?reconstructed=0`
 selects the legacy renderer for comparison; the material inspector and other
@@ -133,7 +138,7 @@ deploys if the catalog is invalid.
 ## Roadmap
 
 For current reconstruction counts and the remaining sequence, see the
-[12 September coverage checkpoint](_docs/reconstruction-progress-2026-09-12.md).
+[20% coverage checkpoint](_docs/reconstruction-progress-2026-09-16.md).
 It distinguishes touched choices, complete source assemblies and visual acceptance.
 
 M5 (materials pipeline) has shipped: 2,531 of 2,866 items carry a 3D model, with

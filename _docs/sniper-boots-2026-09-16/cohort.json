@@ -1,0 +1,119 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/SK_Military_SniperBoots_M.SK_Military_SniperBoots_M"
+  ],
+  "missingMeshes": [
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/SK_Military_SniperBoots_M.SK_Military_SniperBoots_M"
+  ],
+  "items": [
+    {
+      "id": "military-sniperboots-leather",
+      "name": "Sniper Boots Leather",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather/MI_Military_SniperBoots_Leather.MI_Military_SniperBoots_Leather"
+      ]
+    },
+    {
+      "id": "military-sniperboots-leather-alfaacta",
+      "name": "Sniper Boots Leather Alfa Acta",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_AlfaActa/MI_Military_SniperBoots_Leather_AlfaActa.MI_Military_SniperBoots_Leather_AlfaActa"
+      ]
+    },
+    {
+      "id": "military-sniperboots-leather-arctic",
+      "name": "Sniper Boots Leather Arctic",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Arctic/MI_Military_SniperBoots_Leather_Arctic.MI_Military_SniperBoots_Leather_Arctic"
+      ]
+    },
+    {
+      "id": "military-sniperboots-leather-black",
+      "name": "Sniper Boots Leather Black",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Black/MI_Military_SniperBoots_Leather_Black.MI_Military_SniperBoots_Leather_Black"
+      ]
+    },
+    {
+      "id": "military-sniperboots-leather-blackrabbit",
+      "name": "Sniper Boots Leather Black Rabbit",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_BlackRabbit/MI_Military_SniperBoots_Leather_BlackRabbit.MI_Military_SniperBoots_Leather_BlackRabbit"
+      ]
+    },
+    {
+      "id": "military-sniperboots-leather-dede",
+      "name": "Sniper Boots Leather Dede",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Dede/MI_Military_SniperBoots_Leather_Dede.MI_Military_SniperBoots_Leather_Dede"
+      ]
+    },
+    {
+      "id": "military-sniperboots-leather-esportkz",
+      "name": "Sniper Boots Leather Esport KZ",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_EsportKZ/MI_Military_SniperBoots_Leather_EsportKZ.MI_Military_SniperBoots_Leather_EsportKZ"
+      ]
+    },
+    {
+      "id": "military-sniperboots-leather-fivefears",
+      "name": "Sniper Boots Leather Five Fears",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_FiveFears/MI_Military_SniperBoots_Leather_FiveFears.MI_Military_SniperBoots_Leather_FiveFears"
+      ]
+    },
+    {
+      "id": "military-sniperboots-leather-gray",
+      "name": "Sniper Boots Leather Gray",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Gray/MI_Military_SniperBoots_Leather_Gray.MI_Military_SniperBoots_Leather_Gray"
+      ]
+    },
+    {
+      "id": "military-sniperboots-leather-white",
+      "name": "Sniper Boots Leather White",
+      "slot": "feet",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_White/MI_Military_SniperBoots_Leather_White.MI_Military_SniperBoots_Leather_White"
+      ]
+    }
+  ],
+  "roots": [
+    "M_Character_Layered"
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather/MI_Military_SniperBoots_Leather.MI_Military_SniperBoots_Leather",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_AlfaActa/MI_Military_SniperBoots_Leather_AlfaActa.MI_Military_SniperBoots_Leather_AlfaActa",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Arctic/MI_Military_SniperBoots_Leather_Arctic.MI_Military_SniperBoots_Leather_Arctic",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Black/MI_Military_SniperBoots_Leather_Black.MI_Military_SniperBoots_Leather_Black",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_BlackRabbit/MI_Military_SniperBoots_Leather_BlackRabbit.MI_Military_SniperBoots_Leather_BlackRabbit",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Dede/MI_Military_SniperBoots_Leather_Dede.MI_Military_SniperBoots_Leather_Dede",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_EsportKZ/MI_Military_SniperBoots_Leather_EsportKZ.MI_Military_SniperBoots_Leather_EsportKZ",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_FiveFears/MI_Military_SniperBoots_Leather_FiveFears.MI_Military_SniperBoots_Leather_FiveFears",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Gray/MI_Military_SniperBoots_Leather_Gray.MI_Military_SniperBoots_Leather_Gray",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_White/MI_Military_SniperBoots_Leather_White.MI_Military_SniperBoots_Leather_White"
+  ],
+  "attached": false,
+  "count": 10,
+  "missingMaterials": [
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather/MI_Military_SniperBoots_Leather.MI_Military_SniperBoots_Leather",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_AlfaActa/MI_Military_SniperBoots_Leather_AlfaActa.MI_Military_SniperBoots_Leather_AlfaActa",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Arctic/MI_Military_SniperBoots_Leather_Arctic.MI_Military_SniperBoots_Leather_Arctic",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Black/MI_Military_SniperBoots_Leather_Black.MI_Military_SniperBoots_Leather_Black",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_BlackRabbit/MI_Military_SniperBoots_Leather_BlackRabbit.MI_Military_SniperBoots_Leather_BlackRabbit",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Dede/MI_Military_SniperBoots_Leather_Dede.MI_Military_SniperBoots_Leather_Dede",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_EsportKZ/MI_Military_SniperBoots_Leather_EsportKZ.MI_Military_SniperBoots_Leather_EsportKZ",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_FiveFears/MI_Military_SniperBoots_Leather_FiveFears.MI_Military_SniperBoots_Leather_FiveFears",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_Gray/MI_Military_SniperBoots_Leather_Gray.MI_Military_SniperBoots_Leather_Gray",
+    "/Game/Discovery/Characters/Military/Assets/SniperBoots/Skins/Leather_White/MI_Military_SniperBoots_Leather_White.MI_Military_SniperBoots_Leather_White"
+  ]
+}

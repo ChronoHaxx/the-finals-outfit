@@ -1,0 +1,220 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/SK_Military_TacticalGloves_M.SK_Military_TacticalGloves_M"
+  ],
+  "missingMeshes": [
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/SK_Military_TacticalGloves_M.SK_Military_TacticalGloves_M"
+  ],
+  "items": [
+    {
+      "id": "military-tacticalgloves-base-arenasecurity",
+      "name": "Tactical Gloves Base Arena Security",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_ArenaSecurity/MI_Military_TacticalGloves_Base_ArenaSecurity.MI_Military_TacticalGloves_Base_ArenaSecurity"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-base-blackred",
+      "name": "Tactical Gloves Base Black Red",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_BlackRed/MI_Military_TacticalGloves_Base_BlackRed.MI_Military_TacticalGloves_Base_BlackRed"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-base-camogreen",
+      "name": "Tactical Gloves Base Camo Green",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_CamoGreen/MI_TacticalGloves_Base_CamoGreen.MI_TacticalGloves_Base_CamoGreen"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-base-junglecamo",
+      "name": "Tactical Gloves Base Jungle Camo",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_JungleCamo/MI_Military_TacticalGloves_Base_JungleCamo.MI_Military_TacticalGloves_Base_JungleCamo"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-base-kawaii",
+      "name": "Tactical Gloves Base Kawaii",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_Kawaii/MI_Military_TacticalGloves_Base_Kawaii.MI_Military_TacticalGloves_Base_Kawaii"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-base-mercenary",
+      "name": "Tactical Gloves Base Mercenary",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_Mercenary/MI_Military_TacticalGloves_Base_Mercenary.MI_Military_TacticalGloves_Base_Mercenary"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-base-orf",
+      "name": "Tactical Gloves Base ORF",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_ORF/MI_Military_TacticalGloves_Base_ORF.MI_Military_TacticalGloves_Base_ORF"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-base-ospuzestarterpack",
+      "name": "Tactical Gloves Base OSPUZEStarter Pack",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_OSPUZEStarterPack/MI_Military_TacticalGloves_Base_OSPUZEStarterPack.MI_Military_TacticalGloves_Base_OSPUZEStarterPack"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-base-snowcamo",
+      "name": "Tactical Gloves Base Snow Camo",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_SnowCamo/MI_Military_TacticalGloves_Base_SnowCamo.MI_Military_TacticalGloves_Base_SnowCamo"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-base-vanguard",
+      "name": "Tactical Gloves Base Vanguard",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_Vanguard/MI_Military_TacticalGloves_Base_Vanguard.MI_Military_TacticalGloves_Base_Vanguard"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-canvas",
+      "name": "Tactical Gloves Canvas",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas/MI_Military_TacticalGloves_Canvas.MI_Military_TacticalGloves_Canvas"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-canvas-arctic",
+      "name": "Tactical Gloves Canvas Arctic",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_Arctic/MI_Military_TacticalGloves_Canvas_Arctic.MI_Military_TacticalGloves_Canvas_Arctic"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-canvas-commando",
+      "name": "Tactical Gloves Canvas Commando",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_Commando/MI_Military_TacticalGloves_Canvas_Commando.MI_Military_TacticalGloves_Canvas_Commando"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-canvas-military",
+      "name": "Tactical Gloves Canvas Military",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_Military/MI_Military_TacticalGloves_Canvas_Military.MI_Military_TacticalGloves_Canvas_Military"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-canvas-ospuzestarterpack",
+      "name": "Tactical Gloves Canvas OSPUZEStarter Pack",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_OSPUZEStarterPack/MI_Military_TacticalGloves_Canvas_OSPUZEStarterPack.MI_Military_TacticalGloves_Canvas_OSPUZEStarterPack"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-canvas-reddissun",
+      "name": "Tactical Gloves Canvas Red Dissun",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_RedDissun/MI_Military_TacticalGloves_Canvas_RedDissun.MI_Military_TacticalGloves_Canvas_RedDissun"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-denim",
+      "name": "Tactical Gloves Denim",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Denim/MI_Military_TacticalGloves_Denim.MI_Military_TacticalGloves_Denim"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-denim-easters6",
+      "name": "Tactical Gloves Denim Easter S 6",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Denim/Skins/EasterS6/MI_Military_TacticalGloves_Denim_EasterS6.MI_Military_TacticalGloves_Denim_EasterS6"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-pulsar",
+      "name": "Tactical Gloves Pulsar",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Pulsar/MI_Military_TacticalGloves_Pulsar.MI_Military_TacticalGloves_Pulsar"
+      ]
+    },
+    {
+      "id": "military-tacticalgloves-vaiiya",
+      "name": "Tactical Gloves Vaiiya",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Vaiiya/MI_Military_TacticalGloves_Vaiiya.MI_Military_TacticalGloves_Vaiiya"
+      ]
+    }
+  ],
+  "roots": [
+    "M_Character_8Layers_Master",
+    "M_Character_Layered"
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_ArenaSecurity/MI_Military_TacticalGloves_Base_ArenaSecurity.MI_Military_TacticalGloves_Base_ArenaSecurity",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_BlackRed/MI_Military_TacticalGloves_Base_BlackRed.MI_Military_TacticalGloves_Base_BlackRed",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_CamoGreen/MI_TacticalGloves_Base_CamoGreen.MI_TacticalGloves_Base_CamoGreen",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_JungleCamo/MI_Military_TacticalGloves_Base_JungleCamo.MI_Military_TacticalGloves_Base_JungleCamo",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_Kawaii/MI_Military_TacticalGloves_Base_Kawaii.MI_Military_TacticalGloves_Base_Kawaii",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_Mercenary/MI_Military_TacticalGloves_Base_Mercenary.MI_Military_TacticalGloves_Base_Mercenary",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_ORF/MI_Military_TacticalGloves_Base_ORF.MI_Military_TacticalGloves_Base_ORF",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_OSPUZEStarterPack/MI_Military_TacticalGloves_Base_OSPUZEStarterPack.MI_Military_TacticalGloves_Base_OSPUZEStarterPack",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_SnowCamo/MI_Military_TacticalGloves_Base_SnowCamo.MI_Military_TacticalGloves_Base_SnowCamo",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_Vanguard/MI_Military_TacticalGloves_Base_Vanguard.MI_Military_TacticalGloves_Base_Vanguard",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas/MI_Military_TacticalGloves_Canvas.MI_Military_TacticalGloves_Canvas",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_Arctic/MI_Military_TacticalGloves_Canvas_Arctic.MI_Military_TacticalGloves_Canvas_Arctic",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_Commando/MI_Military_TacticalGloves_Canvas_Commando.MI_Military_TacticalGloves_Canvas_Commando",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_Military/MI_Military_TacticalGloves_Canvas_Military.MI_Military_TacticalGloves_Canvas_Military",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_OSPUZEStarterPack/MI_Military_TacticalGloves_Canvas_OSPUZEStarterPack.MI_Military_TacticalGloves_Canvas_OSPUZEStarterPack",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_RedDissun/MI_Military_TacticalGloves_Canvas_RedDissun.MI_Military_TacticalGloves_Canvas_RedDissun",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Denim/MI_Military_TacticalGloves_Denim.MI_Military_TacticalGloves_Denim",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Denim/Skins/EasterS6/MI_Military_TacticalGloves_Denim_EasterS6.MI_Military_TacticalGloves_Denim_EasterS6",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Pulsar/MI_Military_TacticalGloves_Pulsar.MI_Military_TacticalGloves_Pulsar",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Vaiiya/MI_Military_TacticalGloves_Vaiiya.MI_Military_TacticalGloves_Vaiiya"
+  ],
+  "attached": false,
+  "count": 20,
+  "missingMaterials": [
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_ArenaSecurity/MI_Military_TacticalGloves_Base_ArenaSecurity.MI_Military_TacticalGloves_Base_ArenaSecurity",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_BlackRed/MI_Military_TacticalGloves_Base_BlackRed.MI_Military_TacticalGloves_Base_BlackRed",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_CamoGreen/MI_TacticalGloves_Base_CamoGreen.MI_TacticalGloves_Base_CamoGreen",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_JungleCamo/MI_Military_TacticalGloves_Base_JungleCamo.MI_Military_TacticalGloves_Base_JungleCamo",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_Kawaii/MI_Military_TacticalGloves_Base_Kawaii.MI_Military_TacticalGloves_Base_Kawaii",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_Mercenary/MI_Military_TacticalGloves_Base_Mercenary.MI_Military_TacticalGloves_Base_Mercenary",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_ORF/MI_Military_TacticalGloves_Base_ORF.MI_Military_TacticalGloves_Base_ORF",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_OSPUZEStarterPack/MI_Military_TacticalGloves_Base_OSPUZEStarterPack.MI_Military_TacticalGloves_Base_OSPUZEStarterPack",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_SnowCamo/MI_Military_TacticalGloves_Base_SnowCamo.MI_Military_TacticalGloves_Base_SnowCamo",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Base_Vanguard/MI_Military_TacticalGloves_Base_Vanguard.MI_Military_TacticalGloves_Base_Vanguard",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas/MI_Military_TacticalGloves_Canvas.MI_Military_TacticalGloves_Canvas",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_Arctic/MI_Military_TacticalGloves_Canvas_Arctic.MI_Military_TacticalGloves_Canvas_Arctic",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_Commando/MI_Military_TacticalGloves_Canvas_Commando.MI_Military_TacticalGloves_Canvas_Commando",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_Military/MI_Military_TacticalGloves_Canvas_Military.MI_Military_TacticalGloves_Canvas_Military",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_OSPUZEStarterPack/MI_Military_TacticalGloves_Canvas_OSPUZEStarterPack.MI_Military_TacticalGloves_Canvas_OSPUZEStarterPack",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Canvas_RedDissun/MI_Military_TacticalGloves_Canvas_RedDissun.MI_Military_TacticalGloves_Canvas_RedDissun",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Denim/MI_Military_TacticalGloves_Denim.MI_Military_TacticalGloves_Denim",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Denim/Skins/EasterS6/MI_Military_TacticalGloves_Denim_EasterS6.MI_Military_TacticalGloves_Denim_EasterS6",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Pulsar/MI_Military_TacticalGloves_Pulsar.MI_Military_TacticalGloves_Pulsar",
+    "/Game/Discovery/Characters/Military/Assets/TacticalGloves/Skins/Vaiiya/MI_Military_TacticalGloves_Vaiiya.MI_Military_TacticalGloves_Vaiiya"
+  ]
+}

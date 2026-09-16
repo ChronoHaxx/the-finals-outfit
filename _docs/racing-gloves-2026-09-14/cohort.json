@@ -1,0 +1,210 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/SK_Racing_Gloves_M.SK_Racing_Gloves_M"
+  ],
+  "missingMeshes": [
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/SK_Racing_Gloves_M.SK_Racing_Gloves_M"
+  ],
+  "items": [
+    {
+      "id": "racing-gloves-black-cns",
+      "name": "Gloves Black CNS",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Black_CNS/MI_Racing_Gloves_Leather_Black_CNS.MI_Racing_Gloves_Leather_Black_CNS"
+      ]
+    },
+    {
+      "id": "racing-gloves-leather-black",
+      "name": "Gloves Leather Black",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Leather_Black/MI_Racing_Gloves_Leather_Black.MI_Racing_Gloves_Leather_Black"
+      ]
+    },
+    {
+      "id": "racing-gloves-leather-black-heist",
+      "name": "Gloves Leather Black Heist",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Black_Heist/MI_Racing_Gloves_Leather_Black_Heist.MI_Racing_Gloves_Leather_Black_Heist"
+      ]
+    },
+    {
+      "id": "racing-gloves-leather-redbrown",
+      "name": "Gloves Leather Red Brown",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/RedBrown/MI_Racing_Gloves_Leather_RedBrown.MI_Racing_Gloves_Leather_RedBrown"
+      ]
+    },
+    {
+      "id": "racing-gloves-leather-yellow",
+      "name": "Gloves Leather Yellow",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Leather_Yellow/MI_Racing_Gloves_Leather_Yellow.MI_Racing_Gloves_Leather_Yellow"
+      ]
+    },
+    {
+      "id": "racing-gloves-leatherrough",
+      "name": "Gloves Leather Rough",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherRough/MI_Racing_Gloves_LeatherRough.MI_Racing_Gloves_LeatherRough"
+      ]
+    },
+    {
+      "id": "racing-gloves-leatherrough-black",
+      "name": "Gloves Leather Rough Black",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherRough_Black/MI_Racing_Gloves_LeatherRough_Black.MI_Racing_Gloves_LeatherRough_Black"
+      ]
+    },
+    {
+      "id": "racing-gloves-leathershiny-brown",
+      "name": "Gloves Leather Shiny Brown",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherShiny_Brown/MI_Racing_Gloves_LeatherShiny_Brown2.MI_Racing_Gloves_LeatherShiny_Brown2"
+      ]
+    },
+    {
+      "id": "racing-gloves-leathershiny-lawyerblack",
+      "name": "Gloves Leather Shiny Lawyer Black",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherShiny_LawyerBlack/MI_Racing_Gloves_LeatherShiny_LawyerBlack.MI_Racing_Gloves_LeatherShiny_LawyerBlack"
+      ]
+    },
+    {
+      "id": "racing-gloves-nylon-alfaacta",
+      "name": "Gloves Nylon Alfa Acta",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_AlfaActa/MI_Racing_Gloves_Nylon_AlfaActa.MI_Racing_Gloves_Nylon_AlfaActa"
+      ]
+    },
+    {
+      "id": "racing-gloves-nylon-alliance",
+      "name": "Gloves Nylon Alliance",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon/MI_Racing_Gloves_Nylon.MI_Racing_Gloves_Nylon"
+      ]
+    },
+    {
+      "id": "racing-gloves-nylon-blackurban",
+      "name": "Gloves Nylon Black Urban",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_BlackUrban/MI_Racing_Gloves_Nylon_BlackUrban.MI_Racing_Gloves_Nylon_BlackUrban"
+      ]
+    },
+    {
+      "id": "racing-gloves-nylon-cnss7sp",
+      "name": "Gloves Nylon CNSS 7 SP",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_CNSS7SP/MI_Racing_Gloves_Nylon_CNSS7SP.MI_Racing_Gloves_Nylon_CNSS7SP"
+      ]
+    },
+    {
+      "id": "racing-gloves-nylon-enorino",
+      "name": "Gloves Nylon Eno Rino",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_EnoRino/MI_Racing_Gloves_Nylon_EnoRino.MI_Racing_Gloves_Nylon_EnoRino"
+      ]
+    },
+    {
+      "id": "racing-gloves-nylon-ivada",
+      "name": "Gloves Nylon IVADA",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_IVADA/MI_Racing_Gloves_Nylon_IVADA.MI_Racing_Gloves_Nylon_IVADA"
+      ]
+    },
+    {
+      "id": "racing-gloves-nylon-vaiiyas7sp",
+      "name": "Gloves Nylon Vaiiya S 7 SP",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_VaiiyaS7SP/MI_Racing_Gloves_Nylon_VaiiyaS7SP.MI_Racing_Gloves_Nylon_VaiiyaS7SP"
+      ]
+    },
+    {
+      "id": "racing-gloves-nylon-volpe",
+      "name": "Gloves Nylon Volpe",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_Volpe/MI_Racing_Gloves_Nylon_Volpe.MI_Racing_Gloves_Nylon_Volpe"
+      ]
+    },
+    {
+      "id": "racing-gloves-squareweave",
+      "name": "Gloves Square Weave",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/SquareWeave/MI_Racing_Gloves_SquareWeave.MI_Racing_Gloves_SquareWeave"
+      ]
+    },
+    {
+      "id": "racing-gloves-squareweave-trentila",
+      "name": "Gloves Square Weave Trentila",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/SquareWeave_Trentila/MI_Racing_Gloves_SquareWeave_Trentila.MI_Racing_Gloves_SquareWeave_Trentila"
+      ]
+    }
+  ],
+  "roots": [
+    "M_Character_8Layers_Master",
+    "M_Character_Layered"
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Black_CNS/MI_Racing_Gloves_Leather_Black_CNS.MI_Racing_Gloves_Leather_Black_CNS",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Black_Heist/MI_Racing_Gloves_Leather_Black_Heist.MI_Racing_Gloves_Leather_Black_Heist",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherRough/MI_Racing_Gloves_LeatherRough.MI_Racing_Gloves_LeatherRough",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherRough_Black/MI_Racing_Gloves_LeatherRough_Black.MI_Racing_Gloves_LeatherRough_Black",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherShiny_Brown/MI_Racing_Gloves_LeatherShiny_Brown2.MI_Racing_Gloves_LeatherShiny_Brown2",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherShiny_LawyerBlack/MI_Racing_Gloves_LeatherShiny_LawyerBlack.MI_Racing_Gloves_LeatherShiny_LawyerBlack",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Leather_Black/MI_Racing_Gloves_Leather_Black.MI_Racing_Gloves_Leather_Black",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Leather_Yellow/MI_Racing_Gloves_Leather_Yellow.MI_Racing_Gloves_Leather_Yellow",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon/MI_Racing_Gloves_Nylon.MI_Racing_Gloves_Nylon",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_AlfaActa/MI_Racing_Gloves_Nylon_AlfaActa.MI_Racing_Gloves_Nylon_AlfaActa",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_BlackUrban/MI_Racing_Gloves_Nylon_BlackUrban.MI_Racing_Gloves_Nylon_BlackUrban",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_CNSS7SP/MI_Racing_Gloves_Nylon_CNSS7SP.MI_Racing_Gloves_Nylon_CNSS7SP",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_EnoRino/MI_Racing_Gloves_Nylon_EnoRino.MI_Racing_Gloves_Nylon_EnoRino",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_IVADA/MI_Racing_Gloves_Nylon_IVADA.MI_Racing_Gloves_Nylon_IVADA",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_VaiiyaS7SP/MI_Racing_Gloves_Nylon_VaiiyaS7SP.MI_Racing_Gloves_Nylon_VaiiyaS7SP",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_Volpe/MI_Racing_Gloves_Nylon_Volpe.MI_Racing_Gloves_Nylon_Volpe",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/RedBrown/MI_Racing_Gloves_Leather_RedBrown.MI_Racing_Gloves_Leather_RedBrown",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/SquareWeave/MI_Racing_Gloves_SquareWeave.MI_Racing_Gloves_SquareWeave",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/SquareWeave_Trentila/MI_Racing_Gloves_SquareWeave_Trentila.MI_Racing_Gloves_SquareWeave_Trentila"
+  ],
+  "attached": false,
+  "count": 19,
+  "missingMaterials": [
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Black_CNS/MI_Racing_Gloves_Leather_Black_CNS.MI_Racing_Gloves_Leather_Black_CNS",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Leather_Black/MI_Racing_Gloves_Leather_Black.MI_Racing_Gloves_Leather_Black",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Black_Heist/MI_Racing_Gloves_Leather_Black_Heist.MI_Racing_Gloves_Leather_Black_Heist",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/RedBrown/MI_Racing_Gloves_Leather_RedBrown.MI_Racing_Gloves_Leather_RedBrown",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Leather_Yellow/MI_Racing_Gloves_Leather_Yellow.MI_Racing_Gloves_Leather_Yellow",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherRough/MI_Racing_Gloves_LeatherRough.MI_Racing_Gloves_LeatherRough",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherRough_Black/MI_Racing_Gloves_LeatherRough_Black.MI_Racing_Gloves_LeatherRough_Black",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherShiny_Brown/MI_Racing_Gloves_LeatherShiny_Brown2.MI_Racing_Gloves_LeatherShiny_Brown2",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/LeatherShiny_LawyerBlack/MI_Racing_Gloves_LeatherShiny_LawyerBlack.MI_Racing_Gloves_LeatherShiny_LawyerBlack",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_AlfaActa/MI_Racing_Gloves_Nylon_AlfaActa.MI_Racing_Gloves_Nylon_AlfaActa",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon/MI_Racing_Gloves_Nylon.MI_Racing_Gloves_Nylon",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_BlackUrban/MI_Racing_Gloves_Nylon_BlackUrban.MI_Racing_Gloves_Nylon_BlackUrban",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_CNSS7SP/MI_Racing_Gloves_Nylon_CNSS7SP.MI_Racing_Gloves_Nylon_CNSS7SP",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_EnoRino/MI_Racing_Gloves_Nylon_EnoRino.MI_Racing_Gloves_Nylon_EnoRino",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_IVADA/MI_Racing_Gloves_Nylon_IVADA.MI_Racing_Gloves_Nylon_IVADA",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_VaiiyaS7SP/MI_Racing_Gloves_Nylon_VaiiyaS7SP.MI_Racing_Gloves_Nylon_VaiiyaS7SP",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_Volpe/MI_Racing_Gloves_Nylon_Volpe.MI_Racing_Gloves_Nylon_Volpe",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/SquareWeave/MI_Racing_Gloves_SquareWeave.MI_Racing_Gloves_SquareWeave",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/SquareWeave_Trentila/MI_Racing_Gloves_SquareWeave_Trentila.MI_Racing_Gloves_SquareWeave_Trentila"
+  ]
+}
