@@ -58,7 +58,8 @@ the default branch, serving from `https://<user>.github.io/the-finals-outfit/`
 until a custom domain is set via `public/CNAME`.
 
 A CI checkout has no assets, so the build resolves them against
-**`VITE_ASSETS_BASE`**, set from the version-pinned `ASSETS_BASE` in
+**`VITE_ASSETS_BASE`** and **`VITE_MODELS_BASE`**, set from the version-pinned
+`ASSETS_BASE` and optional `MODELS_BASE` in
 `.github/workflows/deploy.yml`. Code and artwork are reviewed together in a PR.
 The workflow checks PRs but only publishes the default branch. Local development
 can still set `VITE_ASSETS_BASE` to a published release or use local artwork.
@@ -81,8 +82,17 @@ spot-checks actual files, including reconstruction dependencies. CI has no
 assets locally, so checking paths against the checkout alone cannot detect a
 missing upload. The workflow runs this hosted check for PRs and deployments.
 
-The 20% release uses an immutable Cloudflare Pages deployment hostname with
-its assets at the root. Keep previous deployments: the current public site and
+The current release keeps unchanged icons on the previous immutable Cloudflare
+Pages deployment and serves models, textures and reconstruction metadata from a
+new deployment. Each package stays within the Pages free-plan file limit. Stage
+the model package with `npm run stage:assets -- <version> --models-only`; optionally
+set `ASSET_SOURCE_DIR` to an existing extraction's `public` directory. Validate with
+both `ASSETS_BASE=<icons-host>` and `MODELS_BASE=<models-host>`. The validator checks
+each path against the same host that the application will use, including the new
+model release's reconstruction dependencies. Build with both corresponding
+`VITE_` variables. Omitting the model override preserves single-host behavior.
+
+Both deployments serve their assets at the root. Keep previous deployments: the current public site and
 rollback builds still need them. No repository-variable change is required
 when merging this release, and the older production asset alias is untouched.
 
@@ -138,7 +148,7 @@ deploys if the catalog is invalid.
 ## Roadmap
 
 For current reconstruction counts and the remaining sequence, see the
-[20% coverage checkpoint](_docs/reconstruction-progress-2026-09-16.md).
+[37.6% coverage checkpoint](_docs/reconstruction-progress-2026-09-19.md).
 It distinguishes touched choices, complete source assemblies and visual acceptance.
 
 M5 (materials pipeline) has shipped: 2,531 of 2,866 items carry a 3D model, with

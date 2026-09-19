@@ -1,0 +1,120 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/SK_Municipal_Gloves_M.SK_Municipal_Gloves_M"
+  ],
+  "missingMeshes": [
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/SK_Municipal_Gloves_M.SK_Municipal_Gloves_M"
+  ],
+  "items": [
+    {
+      "id": "municipal-gloves-emissivenylon-alfaacta",
+      "name": "Gloves Emissive Nylon Alfa Acta",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/EmissiveNylon_AlfaActa/MI_Municipal_Gloves_EmissiveNylon_AlfaActa.MI_Municipal_Gloves_EmissiveNylon_AlfaActa"
+      ]
+    },
+    {
+      "id": "municipal-gloves-nylon-helicoptermedic",
+      "name": "Gloves Nylon Helicopter Medic",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Nylon_HelicopterMedic/MI_Municipal_Gloves_Nylon_HelicopterMedic.MI_Municipal_Gloves_Nylon_HelicopterMedic"
+      ]
+    },
+    {
+      "id": "municipal-gloves-polyester",
+      "name": "Gloves Polyester",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester/MI_Municipal_Gloves_Polyester.MI_Municipal_Gloves_Polyester"
+      ]
+    },
+    {
+      "id": "municipal-gloves-polyester-beige",
+      "name": "Gloves Polyester Beige",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_Beige/MI_Municipal_Gloves_Polyester_Beige.MI_Municipal_Gloves_Polyester_Beige"
+      ]
+    },
+    {
+      "id": "municipal-gloves-polyester-black",
+      "name": "Gloves Polyester Black",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_Black/MI_Municipal_Gloves_Polyester_Black.MI_Municipal_Gloves_Polyester_Black"
+      ]
+    },
+    {
+      "id": "municipal-gloves-polyester-blackvolpe",
+      "name": "Gloves Polyester Black Volpe",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_BlackVolpe/MI_Municipal_Gloves_Polyester_BlackVolpe.MI_Municipal_Gloves_Polyester_BlackVolpe"
+      ]
+    },
+    {
+      "id": "municipal-gloves-polyester-camogreen",
+      "name": "Gloves Polyester Camo Green",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_CamoGreen/MI_Gloves_Polyester_CamoGreen.MI_Gloves_Polyester_CamoGreen"
+      ]
+    },
+    {
+      "id": "municipal-gloves-polyester-fivefears",
+      "name": "Gloves Polyester Five Fears",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_FiveFears/MI_Municipal_Gloves_Polyester_FiveFears.MI_Municipal_Gloves_Polyester_FiveFears"
+      ]
+    },
+    {
+      "id": "municipal-gloves-polyester-orf",
+      "name": "Gloves Polyester ORF",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_ORF/MI_Municipal_Gloves_Polyester_ORF.MI_Municipal_Gloves_Polyester_ORF"
+      ]
+    },
+    {
+      "id": "municipal-gloves-polyester-rescue",
+      "name": "Gloves Polyester Rescue",
+      "slot": "hands",
+      "materials": [
+        "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_Rescue/MI_Municipal_Gloves_Polyester_Rescue.MI_Municipal_Gloves_Polyester_Rescue"
+      ]
+    }
+  ],
+  "roots": [
+    "M_Character_8Layers_Master",
+    "M_Character_Layered"
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/EmissiveNylon_AlfaActa/MI_Municipal_Gloves_EmissiveNylon_AlfaActa.MI_Municipal_Gloves_EmissiveNylon_AlfaActa",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Nylon_HelicopterMedic/MI_Municipal_Gloves_Nylon_HelicopterMedic.MI_Municipal_Gloves_Nylon_HelicopterMedic",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester/MI_Municipal_Gloves_Polyester.MI_Municipal_Gloves_Polyester",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_Beige/MI_Municipal_Gloves_Polyester_Beige.MI_Municipal_Gloves_Polyester_Beige",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_Black/MI_Municipal_Gloves_Polyester_Black.MI_Municipal_Gloves_Polyester_Black",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_BlackVolpe/MI_Municipal_Gloves_Polyester_BlackVolpe.MI_Municipal_Gloves_Polyester_BlackVolpe",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_CamoGreen/MI_Gloves_Polyester_CamoGreen.MI_Gloves_Polyester_CamoGreen",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_FiveFears/MI_Municipal_Gloves_Polyester_FiveFears.MI_Municipal_Gloves_Polyester_FiveFears",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_ORF/MI_Municipal_Gloves_Polyester_ORF.MI_Municipal_Gloves_Polyester_ORF",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_Rescue/MI_Municipal_Gloves_Polyester_Rescue.MI_Municipal_Gloves_Polyester_Rescue"
+  ],
+  "attached": false,
+  "count": 10,
+  "missingMaterials": [
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/EmissiveNylon_AlfaActa/MI_Municipal_Gloves_EmissiveNylon_AlfaActa.MI_Municipal_Gloves_EmissiveNylon_AlfaActa",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Nylon_HelicopterMedic/MI_Municipal_Gloves_Nylon_HelicopterMedic.MI_Municipal_Gloves_Nylon_HelicopterMedic",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester/MI_Municipal_Gloves_Polyester.MI_Municipal_Gloves_Polyester",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_Beige/MI_Municipal_Gloves_Polyester_Beige.MI_Municipal_Gloves_Polyester_Beige",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_Black/MI_Municipal_Gloves_Polyester_Black.MI_Municipal_Gloves_Polyester_Black",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_BlackVolpe/MI_Municipal_Gloves_Polyester_BlackVolpe.MI_Municipal_Gloves_Polyester_BlackVolpe",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_CamoGreen/MI_Gloves_Polyester_CamoGreen.MI_Gloves_Polyester_CamoGreen",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_FiveFears/MI_Municipal_Gloves_Polyester_FiveFears.MI_Municipal_Gloves_Polyester_FiveFears",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_ORF/MI_Municipal_Gloves_Polyester_ORF.MI_Municipal_Gloves_Polyester_ORF",
+    "/Game/Discovery/Characters/Municipal/Assets/Gloves/Skins/Polyester_Rescue/MI_Municipal_Gloves_Polyester_Rescue.MI_Municipal_Gloves_Polyester_Rescue"
+  ]
+}

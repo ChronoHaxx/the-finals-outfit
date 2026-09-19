@@ -1,0 +1,94 @@
+{
+  "meshes": [
+    "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+    "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M"
+  ],
+  "items": [
+    {
+      "id": "military-tacticaltrousers-cotton-blackred",
+      "name": "Tactical Trousers Cotton Black Red",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackRed/MI_Military_TacticalTrousers_Cotton_BlackRed.MI_Military_TacticalTrousers_Cotton_BlackRed",
+        "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+      ]
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-blackwhite",
+      "name": "Tactical Trousers Cotton Black White",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackWhite/MI_TacticalTrousers_Cotton_BlackWhite.MI_TacticalTrousers_Cotton_BlackWhite",
+        "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+      ]
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-camogreenorange",
+      "name": "Tactical Trousers Cotton Camo Green Orange",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CamoGreenOrange/MI_TacticalTrousers_Cotton_CamoGreenOrange.MI_TacticalTrousers_Cotton_CamoGreenOrange",
+        "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+      ]
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-cb2b",
+      "name": "Tactical Trousers Cotton CB 2 B",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CB2B/MI_Military_TacticalTrousers_Cotton_CB2B.MI_Military_TacticalTrousers_Cotton_CB2B",
+        "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+      ]
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-junglecamo",
+      "name": "Tactical Trousers Cotton Jungle Camo",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_JungleCamo/MI_Military_TacticalTrousers_Cotton_JungleCamo.MI_Military_TacticalTrousers_Cotton_JungleCamo",
+        "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+      ]
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-mercenary",
+      "name": "Tactical Trousers Cotton Mercenary",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_Mercenary/MI_Military_TacticalTrousers_Cotton_Mercenary.MI_Military_TacticalTrousers_Cotton_Mercenary",
+        "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+      ]
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-openbeta",
+      "name": "Tactical Trousers Cotton Open Beta",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_OpenBetaOSPUZE/MI_Military_TacticalTrousers_Cotton_OpenBeta.MI_Military_TacticalTrousers_Cotton_OpenBeta",
+        "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+      ]
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-snowcamo",
+      "name": "Tactical Trousers Cotton Snow Camo",
+      "slot": "lowerBody",
+      "materials": [
+        "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_SnowCamo/MI_Military_TacticalTrousers_Cotton_SnowCamo.MI_Military_TacticalTrousers_Cotton_SnowCamo",
+        "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton_White/MI_Military_TacticalSocks_Cotton_White.MI_Military_TacticalSocks_Cotton_White"
+      ]
+    }
+  ],
+  "materials": [
+    "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton",
+    "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton_White/MI_Military_TacticalSocks_Cotton_White.MI_Military_TacticalSocks_Cotton_White",
+    "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackRed/MI_Military_TacticalTrousers_Cotton_BlackRed.MI_Military_TacticalTrousers_Cotton_BlackRed",
+    "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackWhite/MI_TacticalTrousers_Cotton_BlackWhite.MI_TacticalTrousers_Cotton_BlackWhite",
+    "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CB2B/MI_Military_TacticalTrousers_Cotton_CB2B.MI_Military_TacticalTrousers_Cotton_CB2B",
+    "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CamoGreenOrange/MI_TacticalTrousers_Cotton_CamoGreenOrange.MI_TacticalTrousers_Cotton_CamoGreenOrange",
+    "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_JungleCamo/MI_Military_TacticalTrousers_Cotton_JungleCamo.MI_Military_TacticalTrousers_Cotton_JungleCamo",
+    "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_Mercenary/MI_Military_TacticalTrousers_Cotton_Mercenary.MI_Military_TacticalTrousers_Cotton_Mercenary",
+    "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_OpenBetaOSPUZE/MI_Military_TacticalTrousers_Cotton_OpenBeta.MI_Military_TacticalTrousers_Cotton_OpenBeta",
+    "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_SnowCamo/MI_Military_TacticalTrousers_Cotton_SnowCamo.MI_Military_TacticalTrousers_Cotton_SnowCamo"
+  ],
+  "count": 8,
+  "attached": false
+}

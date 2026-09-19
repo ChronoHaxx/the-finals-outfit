@@ -1,0 +1,2679 @@
+{
+  "military-tacticaltrousers-cotton-blackred": {
+    "formatVersion": 1,
+    "id": "military-tacticaltrousers-cotton-blackred",
+    "source": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackRed/DA_Military_TacticalTrousers_Cotton_BlackRed.uasset",
+    "sourceSha256": "3225C16FDCE363B2A48244501056E0C7B5A5C4571BC2CBE7ECF9FF49D066B592",
+    "propertiesSha256": "df063820ae5b6c44c5d6e7134e39b6e632c0a57ee7552e1fe13013f789479c25",
+    "properties": {
+      "AssetTags": [
+        "Customization.Theme.Military",
+        "Customization.Slot.BodyLower",
+        "Online.Season.4.M2",
+        "Online.Season"
+      ],
+      "VisualParts": [
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_L.SK_Military_TacticalTrousers_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_H.SK_Military_TacticalTrousers_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        },
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_L.SK_Military_TacticalSocks_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_H.SK_Military_TacticalSocks_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        }
+      ],
+      "MaterialOverrides": [
+        {
+          "Key": "TacticalTrousers",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackRed/MI_Military_TacticalTrousers_Cotton_BlackRed.MI_Military_TacticalTrousers_Cotton_BlackRed",
+            "SubPathString": ""
+          }
+        },
+        {
+          "Key": "TacticalSocks",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton",
+            "SubPathString": ""
+          }
+        }
+      ],
+      "Slots": [
+        "EBodySlot::BodyLower"
+      ],
+      "ActivatesTags": [
+        "Customization.Shape.PushInsideClothes.push_full_pants",
+        "Customization.Shape.PushInsideClothes.push_socks_quarter"
+      ],
+      "AudioTags": [
+        "Audio.Customization.Clothing.Tactical"
+      ],
+      "PersistenceDataAsset": {
+        "ObjectName": "PersistenceDataAsset'DA_Persistence_Military_TacticalTrousers_Cotton_BlackRed'",
+        "ObjectPath": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackRed/DA_Persistence_Military_TacticalTrousers_Cotton_BlackRed.0"
+      },
+      "DevelopmentAvailability": "EDevelopmentAvailability::UserFacing",
+      "Rarity": "EItemRarity::Epic"
+    }
+  },
+  "military-tacticaltrousers-cotton-blackwhite": {
+    "formatVersion": 1,
+    "id": "military-tacticaltrousers-cotton-blackwhite",
+    "source": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackWhite/DA_Military_TacticalTrousers_Cotton_BlackWhite.uasset",
+    "sourceSha256": "D8B059E189813A987DC4E3C36D6845CEBE7C67E6518B6EB7883209EEDA7A80D2",
+    "propertiesSha256": "252f31f498e05da9140927e95bc733dd3cae63f94e4652caf280e31ea6f8389c",
+    "properties": {
+      "AssetTags": [
+        "Customization.Theme.Military",
+        "Customization.Slot.BodyLower",
+        "Customization.Deadline.Beta",
+        "Online.Season.1"
+      ],
+      "VisualParts": [
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_L.SK_Military_TacticalTrousers_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_H.SK_Military_TacticalTrousers_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        },
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_L.SK_Military_TacticalSocks_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_H.SK_Military_TacticalSocks_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        }
+      ],
+      "MaterialOverrides": [
+        {
+          "Key": "TacticalTrousers",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackWhite/MI_TacticalTrousers_Cotton_BlackWhite.MI_TacticalTrousers_Cotton_BlackWhite",
+            "SubPathString": ""
+          }
+        },
+        {
+          "Key": "TacticalSocks",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton",
+            "SubPathString": ""
+          }
+        }
+      ],
+      "Slots": [
+        "EBodySlot::BodyLower"
+      ],
+      "ActivatesTags": [
+        "Customization.Shape.PushInsideClothes.push_full_pants",
+        "Customization.Shape.PushInsideClothes.push_socks_quarter"
+      ],
+      "AudioTags": [
+        "Audio.Customization.Clothing.Tactical"
+      ],
+      "PersistenceDataAsset": {
+        "ObjectName": "PersistenceDataAsset'DA_Persistence_Military_TacticalTrousers_Cotton_BlackWhite'",
+        "ObjectPath": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackWhite/DA_Persistence_Military_TacticalTrousers_Cotton_BlackWhite.0"
+      },
+      "DevelopmentAvailability": "EDevelopmentAvailability::UserFacing",
+      "Rarity": "EItemRarity::Epic"
+    }
+  },
+  "military-tacticaltrousers-cotton-camogreenorange": {
+    "formatVersion": 1,
+    "id": "military-tacticaltrousers-cotton-camogreenorange",
+    "source": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CamoGreenOrange/DA_Military_TacticalTrousers_Cotton_CamoGreenOrange.uasset",
+    "sourceSha256": "9503F1431B25D05DF06C58A5DE629CD9F3BA86CC9F71857FC3AF93946A2F3B71",
+    "propertiesSha256": "ec5a03eaf3e2d667bf65a0b5b9f9c680467f54c30b5fcdf109be10ddb5097984",
+    "properties": {
+      "AssetTags": [
+        "Customization.Theme.Military",
+        "Customization.Slot.BodyLower",
+        "Customization.Deadline.Beta",
+        "Online.Season.2"
+      ],
+      "VisualParts": [
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_L.SK_Military_TacticalTrousers_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_H.SK_Military_TacticalTrousers_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        },
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_L.SK_Military_TacticalSocks_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_H.SK_Military_TacticalSocks_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        }
+      ],
+      "MaterialOverrides": [
+        {
+          "Key": "TacticalTrousers",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CamoGreenOrange/MI_TacticalTrousers_Cotton_CamoGreenOrange.MI_TacticalTrousers_Cotton_CamoGreenOrange",
+            "SubPathString": ""
+          }
+        },
+        {
+          "Key": "TacticalSocks",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton",
+            "SubPathString": ""
+          }
+        }
+      ],
+      "Slots": [
+        "EBodySlot::BodyLower"
+      ],
+      "ActivatesTags": [
+        "Customization.Shape.PushInsideClothes.push_full_pants",
+        "Customization.Shape.PushInsideClothes.push_socks_quarter"
+      ],
+      "AudioTags": [
+        "Audio.Customization.Clothing.Tactical"
+      ],
+      "PersistenceDataAsset": {
+        "ObjectName": "PersistenceDataAsset'DA_Persistence_Military_TacticalTrousers_Cotton_CamoGreenOrange'",
+        "ObjectPath": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CamoGreenOrange/DA_Persistence_Military_TacticalTrousers_Cotton_CamoGreenOrange.0"
+      },
+      "DevelopmentAvailability": "EDevelopmentAvailability::UserFacing",
+      "Rarity": "EItemRarity::Epic"
+    }
+  },
+  "military-tacticaltrousers-cotton-cb2b": {
+    "formatVersion": 1,
+    "id": "military-tacticaltrousers-cotton-cb2b",
+    "source": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CB2B/DA_Military_TacticalTrousers_Cotton_CB2B.uasset",
+    "sourceSha256": "4458505D63720AFF86EB8BAF1091484C2A4DF657A93D0C3AE167DC63E113A1CD",
+    "propertiesSha256": "d80f9280f346cb675907b2d551b571de21781cc214115268c3d6ee4d6d931225",
+    "properties": {
+      "AssetTags": [
+        "Customization.Theme.Military",
+        "Customization.Slot.BodyLower",
+        "Online.Season.1"
+      ],
+      "VisualParts": [
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_L.SK_Military_TacticalTrousers_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_H.SK_Military_TacticalTrousers_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        },
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_L.SK_Military_TacticalSocks_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_H.SK_Military_TacticalSocks_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        }
+      ],
+      "MaterialOverrides": [
+        {
+          "Key": "TacticalTrousers",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CB2B/MI_Military_TacticalTrousers_Cotton_CB2B.MI_Military_TacticalTrousers_Cotton_CB2B",
+            "SubPathString": ""
+          }
+        },
+        {
+          "Key": "TacticalSocks",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton",
+            "SubPathString": ""
+          }
+        }
+      ],
+      "Slots": [
+        "EBodySlot::BodyLower"
+      ],
+      "ActivatesTags": [
+        "Customization.Shape.PushInsideClothes.push_full_pants",
+        "Customization.Shape.PushInsideClothes.push_socks_quarter"
+      ],
+      "AudioTags": [
+        "Audio.Customization.Clothing.Tactical"
+      ],
+      "PersistenceDataAsset": {
+        "ObjectName": "PersistenceDataAsset'DA_Persistence_Military_TacticalTrousers_Cotton_CB2B'",
+        "ObjectPath": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CB2B/DA_Persistence_Military_TacticalTrousers_Cotton_CB2B.0"
+      },
+      "DevelopmentAvailability": "EDevelopmentAvailability::UserFacing",
+      "Rarity": "EItemRarity::Epic"
+    }
+  },
+  "military-tacticaltrousers-cotton-junglecamo": {
+    "formatVersion": 1,
+    "id": "military-tacticaltrousers-cotton-junglecamo",
+    "source": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_JungleCamo/DA_Military_TacticalTrousers_Cotton_JungleCamo.uasset",
+    "sourceSha256": "E1F15471368D0279A9B1831CD3C28E1B55E893B2CA2E377FE04D0FCD1F742B5C",
+    "propertiesSha256": "d23857bf073f2c24c633059add7b896c7167248a99a61af7d6b0e74366e27b18",
+    "properties": {
+      "AssetTags": [
+        "Customization.Theme.Military",
+        "Customization.Slot.BodyLower",
+        "Online.Season.1"
+      ],
+      "VisualParts": [
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_L.SK_Military_TacticalTrousers_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_H.SK_Military_TacticalTrousers_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        },
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_L.SK_Military_TacticalSocks_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_H.SK_Military_TacticalSocks_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        }
+      ],
+      "MaterialOverrides": [
+        {
+          "Key": "TacticalTrousers",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_JungleCamo/MI_Military_TacticalTrousers_Cotton_JungleCamo.MI_Military_TacticalTrousers_Cotton_JungleCamo",
+            "SubPathString": ""
+          }
+        },
+        {
+          "Key": "TacticalSocks",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton",
+            "SubPathString": ""
+          }
+        }
+      ],
+      "Slots": [
+        "EBodySlot::BodyLower"
+      ],
+      "ActivatesTags": [
+        "Customization.Shape.PushInsideClothes.push_full_pants",
+        "Customization.Shape.PushInsideClothes.push_socks_quarter"
+      ],
+      "AudioTags": [
+        "Audio.Customization.Clothing.Tactical"
+      ],
+      "PersistenceDataAsset": {
+        "ObjectName": "PersistenceDataAsset'DA_Persistence_Military_TacticalTrousers_Cotton_JungleCamo'",
+        "ObjectPath": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_JungleCamo/DA_Persistence_Military_TacticalTrousers_Cotton_JungleCamo.0"
+      },
+      "DevelopmentAvailability": "EDevelopmentAvailability::UserFacing",
+      "Rarity": "EItemRarity::Epic"
+    }
+  },
+  "military-tacticaltrousers-cotton-mercenary": {
+    "formatVersion": 1,
+    "id": "military-tacticaltrousers-cotton-mercenary",
+    "source": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_Mercenary/DA_Military_TacticalTrousers_Cotton_Mercenary.uasset",
+    "sourceSha256": "518544653A5E9847D9629A70CD020B2E99AE6EA4BF6E8E74EB7E5F7954B88508",
+    "propertiesSha256": "2915ad8da093c2b4dbe2d81766e72a8f56bf75478522b775917993148205a3e7",
+    "properties": {
+      "AssetTags": [
+        "Customization.Deadline.Beta",
+        "Customization.Theme.Military",
+        "Customization.Slot.BodyLower",
+        "Online.Season.1"
+      ],
+      "VisualParts": [
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_L.SK_Military_TacticalTrousers_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_H.SK_Military_TacticalTrousers_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        },
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_L.SK_Military_TacticalSocks_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_H.SK_Military_TacticalSocks_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        }
+      ],
+      "MaterialOverrides": [
+        {
+          "Key": "TacticalTrousers",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_Mercenary/MI_Military_TacticalTrousers_Cotton_Mercenary.MI_Military_TacticalTrousers_Cotton_Mercenary",
+            "SubPathString": ""
+          }
+        },
+        {
+          "Key": "TacticalSocks",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton",
+            "SubPathString": ""
+          }
+        }
+      ],
+      "Slots": [
+        "EBodySlot::BodyLower"
+      ],
+      "ActivatesTags": [
+        "Customization.Shape.PushInsideClothes.push_full_pants",
+        "Customization.Shape.PushInsideClothes.push_socks_quarter"
+      ],
+      "AudioTags": [
+        "Audio.Customization.Clothing.Tactical"
+      ],
+      "PersistenceDataAsset": {
+        "ObjectName": "PersistenceDataAsset'DA_Persistence_Military_TacticalTrousers_Cotton_Mercenary'",
+        "ObjectPath": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_Mercenary/DA_Persistence_Military_TacticalTrousers_Cotton_Mercenary.0"
+      },
+      "DevelopmentAvailability": "EDevelopmentAvailability::UserFacing",
+      "Rarity": "EItemRarity::Epic"
+    }
+  },
+  "military-tacticaltrousers-cotton-openbeta": {
+    "formatVersion": 1,
+    "id": "military-tacticaltrousers-cotton-openbeta",
+    "source": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_OpenBetaOSPUZE/DA_Military_TacticalTrousers_Cotton_OpenBeta.uasset",
+    "sourceSha256": "24EA01BE4C5B5FAAFDD10E0226BDED7F3001735F11332A5E5ACFA8DD515874B4",
+    "propertiesSha256": "fad22b081eb16d2a01e26e5de56ddf5a22b54bc90d234918157f1a003f446eaa",
+    "properties": {
+      "AssetTags": [
+        "Customization.Theme.Military",
+        "Customization.Slot.BodyLower",
+        "Online.Season.1",
+        "Customization.Sponsor.Ospuze"
+      ],
+      "VisualParts": [
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_L.SK_Military_TacticalTrousers_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_H.SK_Military_TacticalTrousers_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        },
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_L.SK_Military_TacticalSocks_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_H.SK_Military_TacticalSocks_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        }
+      ],
+      "MaterialOverrides": [
+        {
+          "Key": "TacticalTrousers",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_OpenBetaOSPUZE/MI_Military_TacticalTrousers_Cotton_OpenBeta.MI_Military_TacticalTrousers_Cotton_OpenBeta",
+            "SubPathString": ""
+          }
+        },
+        {
+          "Key": "TacticalSocks",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton",
+            "SubPathString": ""
+          }
+        }
+      ],
+      "Slots": [
+        "EBodySlot::BodyLower"
+      ],
+      "ActivatesTags": [
+        "Customization.Shape.PushInsideClothes.push_full_pants",
+        "Customization.Shape.PushInsideClothes.push_socks_quarter"
+      ],
+      "AudioTags": [
+        "Audio.Customization.Clothing.Tactical"
+      ],
+      "PersistenceDataAsset": {
+        "ObjectName": "PersistenceDataAsset'DA_Persistence_Military_TacticalTrousers_Cotton_OpenBeta'",
+        "ObjectPath": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_OpenBetaOSPUZE/DA_Persistence_Military_TacticalTrousers_Cotton_OpenBeta.0"
+      },
+      "DevelopmentAvailability": "EDevelopmentAvailability::UserFacing",
+      "Rarity": "EItemRarity::Epic"
+    }
+  },
+  "military-tacticaltrousers-cotton-snowcamo": {
+    "formatVersion": 1,
+    "id": "military-tacticaltrousers-cotton-snowcamo",
+    "source": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_SnowCamo/DA_Military_TacticalTrousers_Cotton_SnowCamo.uasset",
+    "sourceSha256": "1A73EF8112E6F50308EC368EBE27951CD4372A10CE4CD345CBF33C76212C6409",
+    "propertiesSha256": "15328e4e22f04e5db2a925fb6658d91d3e3b8da4e371a1c72dfe5ec9a18eec8a",
+    "properties": {
+      "AssetTags": [
+        "Customization.Theme.Military",
+        "Customization.Slot.BodyLower",
+        "Online.Season.1"
+      ],
+      "VisualParts": [
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_L.SK_Military_TacticalTrousers_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_H.SK_Military_TacticalTrousers_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        },
+        {
+          "StaticMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "SkeletalMesh": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+            "SubPathString": ""
+          },
+          "Effect": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bVisibleInFirstPerson": true,
+          "bCanBeMerged": true,
+          "bIsHeadMesh": false,
+          "OptionalHeadWrapMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "bIsAttached": false,
+          "bAttachToHeadMesh": false,
+          "OptionalAttachmentMesh": {
+            "AssetPathName": "",
+            "SubPathString": ""
+          },
+          "AttachmentSocket": "None",
+          "bLimitMergedLod": false,
+          "MaxMergedLodIndex": 3,
+          "LocalPosition": {
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "LocalRotation": {
+            "Pitch": 0.0,
+            "Yaw": 0.0,
+            "Roll": 0.0
+          },
+          "LocalScale": {
+            "X": 1.0,
+            "Y": 1.0,
+            "Z": 1.0
+          },
+          "TagOverrides": [
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Light"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_L.SK_Military_TacticalSocks_L",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            {
+              "MatchingTags": [
+                "Customization.Archetype.Heavy"
+              ],
+              "bOffsetTransform": false,
+              "OffsetPosition": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "OffsetRotation": {
+                "Pitch": 0.0,
+                "Yaw": 0.0,
+                "Roll": 0.0
+              },
+              "OffsetScale": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              },
+              "bOverrideMesh": true,
+              "ReplacementStaticMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "ReplacementSkeletalMesh": {
+                "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_H.SK_Military_TacticalSocks_H",
+                "SubPathString": ""
+              },
+              "bOverrideEffect": false,
+              "ReplacementEffect": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              },
+              "bOverrideMaterials": false,
+              "MaterialOverrides": [],
+              "bAddLogicModules": false,
+              "LogicModules": [],
+              "OptionalWrapDeformerMeshOverride": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            }
+          ],
+          "LogicModules": [],
+          "WrapDeformation": {
+            "bIsWrapDeformed": false,
+            "bIsWrapDeformedByHeadComponent": false,
+            "DisabledByTags": [],
+            "OptionalWrapDeformerMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            }
+          }
+        }
+      ],
+      "MaterialOverrides": [
+        {
+          "Key": "TacticalTrousers",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_SnowCamo/MI_Military_TacticalTrousers_Cotton_SnowCamo.MI_Military_TacticalTrousers_Cotton_SnowCamo",
+            "SubPathString": ""
+          }
+        },
+        {
+          "Key": "TacticalSocks",
+          "Value": {
+            "AssetPathName": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton_White/MI_Military_TacticalSocks_Cotton_White.MI_Military_TacticalSocks_Cotton_White",
+            "SubPathString": ""
+          }
+        }
+      ],
+      "Slots": [
+        "EBodySlot::BodyLower"
+      ],
+      "ActivatesTags": [
+        "Customization.Shape.PushInsideClothes.push_full_pants",
+        "Customization.Shape.PushInsideClothes.push_socks_quarter"
+      ],
+      "AudioTags": [
+        "Audio.Customization.Clothing.Tactical"
+      ],
+      "PersistenceDataAsset": {
+        "ObjectName": "PersistenceDataAsset'DA_Persistence_Military_TacticalTrousers_Cotton_SnowCamo'",
+        "ObjectPath": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_SnowCamo/DA_Persistence_Military_TacticalTrousers_Cotton_SnowCamo.0"
+      },
+      "DevelopmentAvailability": "EDevelopmentAvailability::UserFacing",
+      "Rarity": "EItemRarity::Epic"
+    }
+  }
+}

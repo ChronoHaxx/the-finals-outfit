@@ -1,0 +1,194 @@
+{
+  "at": "2026-09-18T19:41:32.058Z",
+  "scope": "Two real source DTO meshes and all eight current definitions. Binding probe uses explicitly uncompiled in-memory material sentinels; not source/GPU/visual acceptance.",
+  "rows": [
+    {
+      "id": "military-tacticaltrousers-cotton-blackred",
+      "sourceSha256": "3225C16FDCE363B2A48244501056E0C7B5A5C4571BC2CBE7ECF9FF49D066B592",
+      "bindings": [
+        {
+          "sourceIndex": 0,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+          "slot": "TacticalTrousers",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackRed/MI_Military_TacticalTrousers_Cotton_BlackRed.MI_Military_TacticalTrousers_Cotton_BlackRed"
+        },
+        {
+          "sourceIndex": 1,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+          "slot": "TacticalSocks",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+        }
+      ],
+      "rendered": false,
+      "materialReady": false
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-blackwhite",
+      "sourceSha256": "D8B059E189813A987DC4E3C36D6845CEBE7C67E6518B6EB7883209EEDA7A80D2",
+      "bindings": [
+        {
+          "sourceIndex": 0,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+          "slot": "TacticalTrousers",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_BlackWhite/MI_TacticalTrousers_Cotton_BlackWhite.MI_TacticalTrousers_Cotton_BlackWhite"
+        },
+        {
+          "sourceIndex": 1,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+          "slot": "TacticalSocks",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+        }
+      ],
+      "rendered": false,
+      "materialReady": false
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-camogreenorange",
+      "sourceSha256": "9503F1431B25D05DF06C58A5DE629CD9F3BA86CC9F71857FC3AF93946A2F3B71",
+      "bindings": [
+        {
+          "sourceIndex": 0,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+          "slot": "TacticalTrousers",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CamoGreenOrange/MI_TacticalTrousers_Cotton_CamoGreenOrange.MI_TacticalTrousers_Cotton_CamoGreenOrange"
+        },
+        {
+          "sourceIndex": 1,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+          "slot": "TacticalSocks",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+        }
+      ],
+      "rendered": false,
+      "materialReady": false
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-cb2b",
+      "sourceSha256": "4458505D63720AFF86EB8BAF1091484C2A4DF657A93D0C3AE167DC63E113A1CD",
+      "bindings": [
+        {
+          "sourceIndex": 0,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+          "slot": "TacticalTrousers",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_CB2B/MI_Military_TacticalTrousers_Cotton_CB2B.MI_Military_TacticalTrousers_Cotton_CB2B"
+        },
+        {
+          "sourceIndex": 1,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+          "slot": "TacticalSocks",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+        }
+      ],
+      "rendered": false,
+      "materialReady": false
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-junglecamo",
+      "sourceSha256": "E1F15471368D0279A9B1831CD3C28E1B55E893B2CA2E377FE04D0FCD1F742B5C",
+      "bindings": [
+        {
+          "sourceIndex": 0,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+          "slot": "TacticalTrousers",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_JungleCamo/MI_Military_TacticalTrousers_Cotton_JungleCamo.MI_Military_TacticalTrousers_Cotton_JungleCamo"
+        },
+        {
+          "sourceIndex": 1,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+          "slot": "TacticalSocks",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+        }
+      ],
+      "rendered": false,
+      "materialReady": false
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-mercenary",
+      "sourceSha256": "518544653A5E9847D9629A70CD020B2E99AE6EA4BF6E8E74EB7E5F7954B88508",
+      "bindings": [
+        {
+          "sourceIndex": 0,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+          "slot": "TacticalTrousers",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_Mercenary/MI_Military_TacticalTrousers_Cotton_Mercenary.MI_Military_TacticalTrousers_Cotton_Mercenary"
+        },
+        {
+          "sourceIndex": 1,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+          "slot": "TacticalSocks",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+        }
+      ],
+      "rendered": false,
+      "materialReady": false
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-openbeta",
+      "sourceSha256": "24EA01BE4C5B5FAAFDD10E0226BDED7F3001735F11332A5E5ACFA8DD515874B4",
+      "bindings": [
+        {
+          "sourceIndex": 0,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+          "slot": "TacticalTrousers",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_OpenBetaOSPUZE/MI_Military_TacticalTrousers_Cotton_OpenBeta.MI_Military_TacticalTrousers_Cotton_OpenBeta"
+        },
+        {
+          "sourceIndex": 1,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+          "slot": "TacticalSocks",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton/MI_Military_TacticalSocks_Cotton.MI_Military_TacticalSocks_Cotton"
+        }
+      ],
+      "rendered": false,
+      "materialReady": false
+    },
+    {
+      "id": "military-tacticaltrousers-cotton-snowcamo",
+      "sourceSha256": "1A73EF8112E6F50308EC368EBE27951CD4372A10CE4CD345CBF33C76212C6409",
+      "bindings": [
+        {
+          "sourceIndex": 0,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+          "slot": "TacticalTrousers",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/Skins/Cotton_SnowCamo/MI_Military_TacticalTrousers_Cotton_SnowCamo.MI_Military_TacticalTrousers_Cotton_SnowCamo"
+        },
+        {
+          "sourceIndex": 1,
+          "mesh": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+          "slot": "TacticalSocks",
+          "material": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/Skins/Cotton_White/MI_Military_TacticalSocks_Cotton_White.MI_Military_TacticalSocks_Cotton_White"
+        }
+      ],
+      "rendered": false,
+      "materialReady": false
+    }
+  ],
+  "existing": [
+    {
+      "id": "medieval-knightpants-cotton-ultimate",
+      "structuralReady": false,
+      "blocker": "Missing recovered material for KnightWaistBelt: /Game/Discovery/Characters/Medieval/Assets/KnightWaistBelt/Skins/Leather_Black/MI_Medieval_KnightWaistBelt_Leather_Black.MI_Medieval_KnightWaistBelt_Leather_Black"
+    },
+    {
+      "id": "casual-bikervest-leather",
+      "structuralReady": false,
+      "blocker": "Missing recovered material for BikerVest: /Game/Discovery/Characters/Casual/Assets/BikerVest/Skins/Leather/MI_Casual_BikerVest_Leather.MI_Casual_BikerVest_Leather"
+    },
+    {
+      "id": "casual-bikervest-leatherworn",
+      "structuralReady": false,
+      "blocker": "Missing recovered material for BikerVest: /Game/Discovery/Characters/Casual/Assets/BikerVest/Skins/LeatherWorn/MI_Casual_BikerVest_LeatherWorn.MI_Casual_BikerVest_LeatherWorn"
+    },
+    {
+      "id": "casual-bikervest-nylon",
+      "structuralReady": false,
+      "blocker": "Missing recovered material for BikerVest: /Game/Discovery/Characters/Casual/Assets/BikerVest/Skins/Nylon/MI_Casual_BikerVest_Nylon.MI_Casual_BikerVest_Nylon"
+    }
+  ],
+  "activeUnchanged": {
+    "public/models/reconstructed-assemblies-v1/assets.json": "dbcaf2ebc3d6bd1a5b66a2c9f89052dfec4c13c98dc1479268559dc55d5ebcf7",
+    "public/models/reconstructed-assemblies-v1/skin-pairs.json": "07485bcf2e59f54a4940d6e7b690bd07f8b490ab39f63329d51b5db35e3a91e7",
+    "public/models/reconstructed-assemblies-v1/supported-items.json": "f172436a5ec0fcd4812626eca280924424086dfc32d01e7082d55f27970381d2"
+  },
+  "passed": true
+}

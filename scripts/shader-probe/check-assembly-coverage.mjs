@@ -1,13 +1,16 @@
 // Discover complete assemblies using the same resolver used by the viewer.
 // This measures asset readiness for the medium preview, not matched game fitting.
 import { readFileSync, writeFileSync } from "node:fs";
-import { resolveSourceOutfit, resolveSourceRigParts } from "../../src/rig/SourceAssembly.ts";
+import { pathToFileURL } from "node:url";
+import { resolve } from "node:path";
 
-const [definitionsPath, assetsPath, outputPath] = process.argv.slice(2);
+const [definitionsPath, assetsPath, outputPath, resolverPath, catalogPath] = process.argv.slice(2);
+const { resolveSourceOutfit, resolveSourceRigParts } = await import(resolverPath
+  ? pathToFileURL(resolve(resolverPath)).href : new URL("../../src/rig/SourceAssembly.ts", import.meta.url).href);
 if (!outputPath) throw new Error("Usage: node --import tsx check-assembly-coverage.mjs <customization.json> <assets.json> <supported-items.json>");
 const read = path => JSON.parse(readFileSync(path, "utf8"));
 const data = read(definitionsPath), assets = read(assetsPath);
-const catalog = new Map(read("src/data/items.json").map(item => [item.id, item]));
+const catalog = new Map(read(catalogPath ?? "src/data/items.json").map(item => [item.id, item]));
 const items = [], ready = [], exceptions = [];
 for (const [id, name] of Object.entries(data.catalog)) {
   const item = catalog.get(id);

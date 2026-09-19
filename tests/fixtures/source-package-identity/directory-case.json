@@ -1,0 +1,37 @@
+{
+  "at": "2026-09-18T20:32:31.279209+00:00",
+  "cases": [
+    {
+      "resolution": "scripts/generated/shader-probe/family-batch08-tactical-boots-pouch-v1/source/material-resolution.json",
+      "source": "/Game/Discovery/Characters/Military/Assets/TacticalBootsPouch/Skins/Nylon_OspUze/MI_Military_TacticalBootsPouch_Nylon_OspUze.MI_Military_TacticalBootsPouch_Nylon_OspUze",
+      "instance": "MI_Military_TacticalBootsPouch_Nylon_OspUze",
+      "matches": [
+        {
+          "exportedPath": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalBootsPouch/Skins/Nylon_OSPUZE/MI_Military_TacticalBootsPouch_Nylon_OspUze.uasset",
+          "exportedObject": "/Game/Discovery/Characters/Military/Assets/TacticalBootsPouch/Skins/Nylon_OSPUZE/MI_Military_TacticalBootsPouch_Nylon_OspUze.MI_Military_TacticalBootsPouch_Nylon_OspUze",
+          "sameFullPathIgnoringCase": true,
+          "sha256": null
+        }
+      ]
+    },
+    {
+      "resolution": "scripts/generated/shader-probe/racing-gloves-v1/source/material-resolution.json",
+      "source": "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_IVADA/MI_Racing_Gloves_Nylon_IVADA.MI_Racing_Gloves_Nylon_IVADA",
+      "instance": "MI_Racing_Gloves_Nylon_IVADA",
+      "matches": [
+        {
+          "exportedPath": "Discovery/Content/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_Ivada/MI_Racing_Gloves_Nylon_IVADA.uasset",
+          "exportedObject": "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_Ivada/MI_Racing_Gloves_Nylon_IVADA.MI_Racing_Gloves_Nylon_IVADA",
+          "sameFullPathIgnoringCase": true,
+          "sha256": null
+        }
+      ]
+    }
+  ],
+  "uniqueCaseOnlySources": [
+    "/Game/Discovery/Characters/Military/Assets/TacticalBootsPouch/Skins/Nylon_OspUze/MI_Military_TacticalBootsPouch_Nylon_OspUze.MI_Military_TacticalBootsPouch_Nylon_OspUze",
+    "/Game/Discovery/Characters/Racing/Assets/Gloves/Skins/Nylon_IVADA/MI_Racing_Gloves_Nylon_IVADA.MI_Racing_Gloves_Nylon_IVADA"
+  ],
+  "count": 2,
+  "scope": "Read-only exact full package path comparison; no basename fallback, alias mutation, source substitution or activation."
+}

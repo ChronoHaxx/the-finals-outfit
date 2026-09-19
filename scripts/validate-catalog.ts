@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { Agent, request as httpsRequest } from "node:https";
 import { collectAssetRefs } from "./lib/asset-refs.mjs";
 import { RECONSTRUCTION_ROOTS } from "./lib/reconstruction-assets.mjs";
+import { catalogHostGroups } from "./lib/catalog-host-groups.mjs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { CatalogSchema, SponsorsSchema } from "../src/lib/item.ts";
@@ -98,128 +99,130 @@ if (itemsResult.success && sponsorsResult.success) {
         "A well-formed path pointing at nothing will pass this run.",
     );
   } else {
-    const base = assetsBase.replace(/\/*$/, "/");
-    const paths = [...referenced];
+    for (const { base, paths, reconstruction } of catalogHostGroups(referenced, assetsBase, process.env.MODELS_BASE)) {
+      const reconstructionRoots = reconstruction ? RECONSTRUCTION_ROOTS : [];
 
-    // Checked against a published manifest rather than by fetching every path.
-    //
-    // The exhaustive version was tried first and does not work at this scale: ~4,500
-    // rapid requests trip Netlify's rate limiting, which answers 403, which reads as
-    // "the asset is missing" and fails the build over files that return 200 the moment
-    // you ask for one on its own. Retrying just made it slow as well as wrong. A gate
-    // that cries wolf gets switched off, which is worse than no gate.
-    //
-    // So the host publishes manifest.json next to the assets and this diffs against it
-    // — one request, exact, and immune to rate limiting. A manifest could in principle
-    // lie about what was uploaded, so a small random sample is still fetched for real;
-    // that is few enough requests to stay well under any limit.
-    const agent = new Agent({ keepAlive: true, maxSockets: 4 });
-    // node:https sends no User-Agent unless told to, and some hosts answer an
-    // anonymous client differently. Be identifiable.
-    const UA = "the-finals-outfit-catalog-validator";
+      // Checked against a published manifest rather than by fetching every path.
+      //
+      // The exhaustive version was tried first and does not work at this scale: ~4,500
+      // rapid requests trip Netlify's rate limiting, which answers 403, which reads as
+      // "the asset is missing" and fails the build over files that return 200 the moment
+      // you ask for one on its own. Retrying just made it slow as well as wrong. A gate
+      // that cries wolf gets switched off, which is worse than no gate.
+      //
+      // So the host publishes manifest.json next to the assets and this diffs against it
+      // — one request, exact, and immune to rate limiting. A manifest could in principle
+      // lie about what was uploaded, so a small random sample is still fetched for real;
+      // that is few enough requests to stay well under any limit.
+      const agent = new Agent({ keepAlive: true, maxSockets: 4 });
+      // node:https sends no User-Agent unless told to, and some hosts answer an
+      // anonymous client differently. Be identifiable.
+      const UA = "the-finals-outfit-catalog-validator";
 
-    const head = (url: string) =>
-      new Promise<number>((resolvePromise, reject) => {
-        const opts = { method: "HEAD", agent, headers: { "user-agent": UA } };
-        const req = httpsRequest(url, opts, (res) => {
-          res.resume(); // drain, or the socket is never released back to the pool
-          resolvePromise(res.statusCode ?? 0);
+      const head = (url: string) =>
+        new Promise<number>((resolvePromise, reject) => {
+          const opts = { method: "HEAD", agent, headers: { "user-agent": UA } };
+          const req = httpsRequest(url, opts, (res) => {
+            res.resume(); // drain, or the socket is never released back to the pool
+            resolvePromise(res.statusCode ?? 0);
+          });
+          req.on("error", reject);
+          req.setTimeout(20_000, () => req.destroy(new Error("timeout")));
+          req.end();
         });
-        req.on("error", reject);
-        req.setTimeout(20_000, () => req.destroy(new Error("timeout")));
-        req.end();
-      });
 
-    const attempt = async (url: string): Promise<{ ok: true } | { ok: false; why: string }> => {
-      let last = "";
-      for (let tries = 0; tries < 4; tries++) {
-        if (tries > 0) await new Promise((r) => setTimeout(r, 250 * 2 ** (tries - 1)));
-        try {
-          const status = await head(url);
-          if (status >= 200 && status < 300) return { ok: true };
-          if (status < 429) return { ok: false, why: String(status) };
-          last = String(status); // 429 / 5xx — host is struggling, worth retrying
-        } catch (err) {
-          last = (err as Error).message;
+      const attempt = async (url: string): Promise<{ ok: true } | { ok: false; why: string }> => {
+        let last = "";
+        for (let tries = 0; tries < 4; tries++) {
+          if (tries > 0) await new Promise((r) => setTimeout(r, 250 * 2 ** (tries - 1)));
+          try {
+            const status = await head(url);
+            if (status >= 200 && status < 300) return { ok: true };
+            if (status < 429) return { ok: false, why: String(status) };
+            last = String(status); // 429 / 5xx — host is struggling, worth retrying
+          } catch (err) {
+            last = (err as Error).message;
+          }
         }
-      }
-      return { ok: false, why: last };
-    };
+        return { ok: false, why: last };
+      };
 
-    const getText = (url: string) =>
-      new Promise<{ status: number; body: string }>((resolvePromise, reject) => {
-        const req = httpsRequest(
-          url,
-          { method: "GET", agent, headers: { "user-agent": UA } },
-          (res) => {
-            let body = "";
-            res.setEncoding("utf8");
-            res.on("data", (c) => (body += c));
-            res.on("end", () => resolvePromise({ status: res.statusCode ?? 0, body }));
-          },
-        );
-        req.on("error", reject);
-        req.setTimeout(30_000, () => req.destroy(new Error("timeout")));
-        req.end();
-      });
+      const getText = (url: string) =>
+        new Promise<{ status: number; body: string }>((resolvePromise, reject) => {
+          const req = httpsRequest(
+            url,
+            { method: "GET", agent, headers: { "user-agent": UA } },
+            (res) => {
+              let body = "";
+              res.setEncoding("utf8");
+              res.on("data", (c) => (body += c));
+              res.on("end", () => resolvePromise({ status: res.statusCode ?? 0, body }));
+            },
+          );
+          req.on("error", reject);
+          req.setTimeout(30_000, () => req.destroy(new Error("timeout")));
+          req.end();
+        });
 
-    const broken: string[] = [];
-    const manifestUrl = `${base}manifest.json`;
-    console.log(`checking ${paths.length} assets against ${manifestUrl} …`);
+      const broken: string[] = [];
+      const manifestUrl = `${base}manifest.json`;
+      console.log(`checking ${paths.length} assets against ${manifestUrl} …`);
 
-    let hosted: Set<string> | null = null;
-    let reconstructionPaths: string[] = [];
-    try {
-      const res = await getText(manifestUrl);
-      if (res.status !== 200) {
-        errors.push(
-          `manifest ${manifestUrl} returned ${res.status} — cannot verify assets. ` +
-            `Run 'npm run stage:assets' and publish _assets-upload/ before deploying.`,
-        );
-      } else {
-        const manifest = JSON.parse(res.body);
-        hosted = new Set<string>(manifest.paths);
-        reconstructionPaths = manifest.reconstructionPaths ?? [];
-        if (!Array.isArray(reconstructionPaths) || !reconstructionPaths.length ||
-            reconstructionPaths.some((path: unknown) => typeof path !== 'string')) {
-          errors.push('Hosted release has no reconstruction asset manifest. Stage and publish the new runtime assets before deployment.');
-          reconstructionPaths = [];
+      let hosted: Set<string> | null = null;
+      let reconstructionPaths: string[] = [];
+      try {
+        const res = await getText(manifestUrl);
+        if (res.status !== 200) {
+          errors.push(
+            `manifest ${manifestUrl} returned ${res.status} — cannot verify assets. ` +
+              `Run 'npm run stage:assets' and publish _assets-upload/ before deploying.`,
+          );
+        } else {
+          const manifest = JSON.parse(res.body);
+          hosted = new Set<string>(manifest.paths);
+          reconstructionPaths = reconstruction ? manifest.reconstructionPaths ?? [] : [];
+          if (reconstruction && (!Array.isArray(reconstructionPaths) || !reconstructionPaths.length ||
+              reconstructionPaths.some((path: unknown) => typeof path !== 'string'))) {
+            errors.push('Hosted release has no reconstruction asset manifest. Stage and publish the new runtime assets before deployment.');
+            reconstructionPaths = [];
+          }
         }
-      }
-    } catch (err) {
-      errors.push(`manifest ${manifestUrl} unreachable: ${(err as Error).message}`);
-    }
-
-    if (hosted) {
-      for (const p of paths) {
-        if (!hosted.has(p.replace(/^\/+/, ""))) broken.push(`not in manifest: ${p}`);
-      }
-      for (const p of [...RECONSTRUCTION_ROOTS, ...reconstructionPaths]) {
-        if (!hosted.has(p)) broken.push(`reconstruction dependency not in manifest: ${p}`);
+      } catch (err) {
+        errors.push(`manifest ${manifestUrl} unreachable: ${(err as Error).message}`);
       }
 
-      // The manifest is only as trustworthy as the upload it claims to describe, so
-      // confirm a random handful really are served before believing the rest.
-      const sample = [...new Set([
-        ...paths.sort(() => Math.random() - 0.5).slice(0, 12),
-        ...RECONSTRUCTION_ROOTS,
-        ...reconstructionPaths.filter(p => /\.(glsl|bin)$/.test(p)).sort(() => Math.random() - 0.5).slice(0, 8),
-      ])];
-      for (const p of sample) {
-        const res = await attempt(base + p.replace(/^\/+/, ""));
-        if (!res.ok) broken.push(`${res.why} ${p} (manifest claims it is published)`);
-      }
-      console.log(`manifest lists ${hosted.size} files; spot-checked ${sample.length}`);
-    }
+      if (hosted) {
+        for (const p of paths) {
+          if (!hosted.has(p.replace(/^\/+/, ""))) broken.push(`not in manifest: ${p}`);
+        }
+        for (const p of [...reconstructionRoots, ...reconstructionPaths]) {
+          if (!hosted.has(p)) broken.push(`reconstruction dependency not in manifest: ${p}`);
+        }
 
-    if (broken.length > 0) {
-      broken.sort();
-      for (const b of broken.slice(0, 10)) errors.push(`asset not published: ${b}`);
-      if (broken.length > 10) {
-        errors.push(`…and ${broken.length - 10} more assets not published`);
+        // The manifest is only as trustworthy as the upload it claims to describe, so
+        // confirm a random handful really are served before believing the rest.
+        const sample = [...new Set([
+          ...paths.sort(() => Math.random() - 0.5).slice(0, 12),
+          ...reconstructionRoots,
+          ...reconstructionPaths.filter(p => /\.(glsl|bin)$/.test(p)).sort(() => Math.random() - 0.5).slice(0, 8),
+        ])];
+        for (const p of sample) {
+          const res = await attempt(base + p.replace(/^\/+/, ""));
+          if (!res.ok) broken.push(`${res.why} ${p} (manifest claims it is published)`);
+        }
+        console.log(`manifest lists ${hosted.size} files; spot-checked ${sample.length}`);
       }
-    } else if (hosted) {
-      console.log(`all ${paths.length} referenced assets are published at ${base}`);
+
+      if (broken.length > 0) {
+        broken.sort();
+        for (const b of broken.slice(0, 10)) errors.push(`asset not published: ${b}`);
+        if (broken.length > 10) {
+          errors.push(`…and ${broken.length - 10} more assets not published`);
+        }
+      } else if (hosted) {
+        console.log(`all ${paths.length} referenced assets are published at ${base}`);
+      }
+      agent.destroy();
     }
   }
 
