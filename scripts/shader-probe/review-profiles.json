@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "description": "Baseline review framing for ordinary single-mesh families, read by generate-family-review.mjs. Capture cameras and base outfits follow the reviewed ordinary-batch and pilot geometry configs. These are starting points only: screenshots still need visual review, and families may need extra fitting, occlusion or regression scenarios.",
+  "path": "/thesecret-dev-mode-ganyu-only/",
+  "profiles": {
+    "upperBody": {
+      "slot": "upperBody",
+      "framing": "root",
+      "captureCamera": "0,1.2,2.8,0,1.2,0",
+      "baseOutfit": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "lowerBody": "casual-loosejeans-denim-darkblue",
+        "feet": "casual-tallsneakers-canvas"
+      },
+      "outfitCameras": {
+        "front": "0,1.2,2.8,0,1.2,0",
+        "rear": "0,1.2,-2.8,0,1.2,0"
+      },
+      "extraViews": [],
+      "notes": [
+        "The rear outfit view is where the Varsity cuff gap was found; inspect cuffs, collar and hem against the base outfit, and add combined-outfit scenarios for garments that interact with gloves or bags."
+      ]
+    },
+    "lowerBody": {
+      "slot": "lowerBody",
+      "framing": "root",
+      "captureCamera": "0,0.65,2.55,0,0.65,0",
+      "baseOutfit": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "upperBody": "casual-basictshirt-cotton-alfaacta",
+        "feet": "casual-tallsneakers-canvas"
+      },
+      "outfitCameras": {
+        "front": "0,0.65,2.55,0,0.65,0",
+        "rear": "0,0.65,-2.55,0,0.65,0"
+      },
+      "extraViews": [
+        {
+          "name": "bare-waist-rear",
+          "camera": "0,0.95,-2.2,0,0.95,0",
+          "withoutSlots": [
+            "upperBody"
+          ]
+        }
+      ],
+      "notes": [
+        "bare-waist-rear removes the upper-body garment so the rear waistband is not hidden by a shirt; its waist-height camera is a baseline value that needs visual confirmation. Boot and footwear tucking is not covered."
+      ]
+    },
+    "hands": {
+      "slot": "hands",
+      "framing": "positive-x-item",
+      "captureCamera": "0,1.2,2.8,0,1.2,0",
+      "idleCapture": {
+        "camera": "0,1.05,3.2,0,1.05,0",
+        "framing": "root"
+      },
+      "baseOutfit": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "upperBody": "casual-basictshirt-cotton-alfaacta",
+        "lowerBody": "casual-loosejeans-denim-darkblue",
+        "feet": "casual-tallsneakers-canvas"
+      },
+      "outfitCameras": {
+        "front": "0,1.2,2.8,0,1.2,0",
+        "rear": "0,1.2,-2.8,0,1.2,0"
+      },
+      "extraViews": [
+        {
+          "name": "hand-positive-x",
+          "camera": "0.55,0.95,1.8,0.55,0.95,0"
+        },
+        {
+          "name": "hand-negative-x",
+          "camera": "-0.55,0.95,1.8,-0.55,0.95,0"
+        }
+      ],
+      "notes": [
+        "A-pose captures measure the positive-X hand. Idle uses a wider root-centered outfit view because a close rotating camera can enter the torso and lose the glove. The outfit hand views use fixed A-pose cameras near x=+/-0.55, y=0.95 so the negative-X hand is also seen; they are not measured per item and need visual confirmation that each hand is framed. Sleeve and jacket cuff overlap needs extra scenarios."
+      ]
+    },
+    "upperBack": {
+      "slot": "upperBack",
+      "framing": "root",
+      "captureCamera": "0,1.2,2.8,0,1.2,0",
+      "baseOutfit": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "upperBody": "casual-basictshirt-cotton-alfaacta",
+        "lowerBody": "casual-loosejeans-denim-darkblue",
+        "feet": "casual-tallsneakers-canvas"
+      },
+      "outfitCameras": {
+        "front": "0,1.2,2.8,0,1.2,0",
+        "rear": "0,1.2,-2.8,0,1.2,0"
+      },
+      "extraViews": [],
+      "notes": [
+        "Straps and bags are checked only over the base T-shirt; jackets, vests and other back accessories may need extra overlap scenarios."
+      ]
+    },
+    "feet": {
+      "slot": "feet",
+      "framing": "root",
+      "captureCamera": "0,0.21,1.4,0,0.21,0",
+      "baseOutfit": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "upperBody": "casual-basictshirt-cotton-alfaacta",
+        "lowerBody": "casual-loosejeans-denim-darkblue"
+      },
+      "outfitCameras": {
+        "front": "0,0.21,1.4,0,0.21,0",
+        "rear": "0,0.21,-1.4,0,0.21,0"
+      },
+      "extraViews": [
+        {
+          "name": "bare-calves-front",
+          "camera": "0,0.21,1.4,0,0.21,0",
+          "withoutSlots": [
+            "lowerBody"
+          ]
+        },
+        {
+          "name": "bare-calves-rear",
+          "camera": "0,0.21,-1.4,0,0.21,0",
+          "withoutSlots": [
+            "lowerBody"
+          ]
+        }
+      ],
+      "notes": [
+        "Camera reuses the reviewed Large Sneakers capture configuration. Root-centered eight-angle A/idle views include both shoes; inspect toe, sole, ankle, cuff and bare-calf coverage. A shared starting profile, not per-item fit acceptance. Different trouser shapes and source-supported shrink transitions need extra scenarios."
+      ]
+    }
+  }
+}

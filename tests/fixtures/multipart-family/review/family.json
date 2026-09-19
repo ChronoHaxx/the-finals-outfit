@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 2,
+  "id": "tactical-trousers",
+  "paths": {
+    "docs": "_docs/multipart-tactical-proof-2026-09-18",
+    "work": "scripts/generated/shader-probe/multipart-tactical-proof-v1",
+    "runtime": "public/models/reconstructed-multipart-tactical-v1",
+    "preview": "public/models/reconstructed-multipart-tactical-preview-v1",
+    "active": "public/models/reconstructed-assemblies-v1",
+    "sourceIndex": "public/models/reconstructed-assembly-v2",
+    "catalog": "scripts/generated/catalog-public-worktree/src/data/items.json",
+    "resolver": "scripts/generated/catalog-public-worktree/src/rig/SourceAssembly.ts",
+    "refresh": "scripts/generated/shader-probe/catalog-refresh-20260912",
+    "appUrl": "http://127.0.0.1:5174",
+    "metadata": [
+      "scripts/generated/catalog-public-worktree/src/data/wiki-catalog.json",
+      "scripts/generated/catalog-public-worktree/src/data/source-catalog-names.json",
+      "scripts/generated/catalog-public-worktree/src/data/share-item-ids.json",
+      "scripts/generated/catalog-public-worktree/src/data/reconstruction-reviews.json"
+    ]
+  },
+  "fittingTags": [
+    "Customization.Shape.PushInsideClothes.push_full_pants",
+    "Customization.Shape.PushInsideClothes.push_socks_quarter"
+  ],
+  "coverage": {
+    "mode": "fitted-conservative-shared-uv",
+    "composition": "per-component-union"
+  },
+  "itemSlot": "lowerBody",
+  "components": [
+    {
+      "sourceIndex": 0,
+      "source": "/Game/Discovery/Characters/Military/Assets/TacticalTrousers/SK_Military_TacticalTrousers_M.SK_Military_TacticalTrousers_M",
+      "slot": "TacticalTrousers",
+      "sha256": "ad44347f8e4d8541d7179abbd446f70e13f3ff524f1cf56bfa5c3e35071bf0a2",
+      "sourcePackageSha256": "DE70D8A745703E0DB1751B468DC0053FAD0D4859F77E4F45E08BBBCC0746D971",
+      "sourceDtoSha256": "16157c74ce28d4965e4744a8bf2968f897ba5371a70d74a383c45704a30b670a",
+      "facts": {
+        "vertices": 16413,
+        "triangles": 26457,
+        "uvSets": 1,
+        "bones": 31,
+        "materialSections": 1,
+        "maxInfluences": 8
+      },
+      "morphNames": [
+        "medium_male",
+        "medium_female"
+      ]
+    },
+    {
+      "sourceIndex": 1,
+      "source": "/Game/Discovery/Characters/Military/Assets/TacticalSocks/SK_Military_TacticalSocks_M.SK_Military_TacticalSocks_M",
+      "slot": "TacticalSocks",
+      "sha256": "aa3089fd2f9a160cc52c60d23244f4f2ce2b909e11cf176a234222c48b0511c0",
+      "sourcePackageSha256": "231301BB958EE2A06F380421B3B63B9D4139CCBCCFA7E0D729F5BBB78416188E",
+      "sourceDtoSha256": "9e9656d4e74e63176fdd04e836ed1af875f9afef128b85364b5cfdf0593c2d0c",
+      "facts": {
+        "vertices": 302,
+        "triangles": 494,
+        "uvSets": 1,
+        "bones": 23,
+        "materialSections": 1,
+        "maxInfluences": 2
+      },
+      "morphNames": [
+        "medium_male",
+        "medium_female"
+      ]
+    }
+  ]
+}

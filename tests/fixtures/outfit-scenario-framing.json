@@ -1,0 +1,122 @@
+{
+  "steps": [
+    {
+      "name": "shirt",
+      "slots": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "upperBody": "casual-basictshirt-cotton-alfaacta",
+        "lowerBody": "casual-loosejeans-denim-darkblue",
+        "feet": "casual-tallsneakers-canvas",
+        "upperBack": "streetwear-tacticalbandolier-cotton"
+      },
+      "camera": "0,1.25,1.85,0,1.25,0",
+      "pose": "a",
+      "samePage": false,
+      "expected": {
+        "streetwear-tacticalbandolier-cotton": true
+      }
+    },
+    {
+      "name": "singlet",
+      "slots": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "upperBody": "streetwear-tightsinglet-cotton-enorino",
+        "lowerBody": "casual-loosejeans-denim-darkblue",
+        "feet": "casual-tallsneakers-canvas",
+        "upperBack": "streetwear-tacticalbandolier-cotton"
+      },
+      "camera": "0,1.25,1.85,0,1.25,0",
+      "pose": "a",
+      "samePage": true,
+      "expected": {
+        "streetwear-tacticalbandolier-cotton": true
+      }
+    },
+    {
+      "name": "coat",
+      "slots": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "upperBody": "casual-basictshirt-cotton-alfaacta",
+        "lowerBody": "casual-loosejeans-denim-darkblue",
+        "feet": "casual-tallsneakers-canvas",
+        "upperBack": "streetwear-tacticalbandolier-cotton",
+        "outerwear": "casual-longcoat-leather-black"
+      },
+      "camera": "0,1.25,1.85,0,1.25,0",
+      "pose": "a",
+      "samePage": true,
+      "expected": {
+        "streetwear-tacticalbandolier-cotton": true
+      }
+    },
+    {
+      "name": "shirt-restored",
+      "slots": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "upperBody": "casual-basictshirt-cotton-alfaacta",
+        "lowerBody": "casual-loosejeans-denim-darkblue",
+        "feet": "casual-tallsneakers-canvas",
+        "upperBack": "streetwear-tacticalbandolier-cotton"
+      },
+      "camera": "0,1.25,1.85,0,1.25,0",
+      "pose": "a",
+      "samePage": true,
+      "expected": {
+        "streetwear-tacticalbandolier-cotton": true
+      }
+    },
+    {
+      "name": "bare",
+      "slots": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "lowerBody": "casual-loosejeans-denim-darkblue",
+        "feet": "casual-tallsneakers-canvas",
+        "upperBack": "streetwear-tacticalbandolier-cotton"
+      },
+      "camera": "0,1.25,1.85,0,1.25,0",
+      "pose": "a",
+      "samePage": true,
+      "expected": {
+        "streetwear-tacticalbandolier-cotton": true
+      }
+    },
+    {
+      "name": "bare-rear",
+      "slots": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "lowerBody": "casual-loosejeans-denim-darkblue",
+        "feet": "casual-tallsneakers-canvas",
+        "upperBack": "streetwear-tacticalbandolier-cotton"
+      },
+      "camera": "0,1.25,-1.85,0,1.25,0",
+      "pose": "a",
+      "samePage": true,
+      "expected": {
+        "streetwear-tacticalbandolier-cotton": true
+      }
+    },
+    {
+      "name": "shirt-rear",
+      "slots": {
+        "face": "head-face-01-base",
+        "hair": "hairs-afrofade",
+        "upperBody": "casual-basictshirt-cotton-alfaacta",
+        "lowerBody": "casual-loosejeans-denim-darkblue",
+        "feet": "casual-tallsneakers-canvas",
+        "upperBack": "streetwear-tacticalbandolier-cotton"
+      },
+      "camera": "0,1.25,-1.85,0,1.25,0",
+      "pose": "a",
+      "samePage": true,
+      "expected": {
+        "streetwear-tacticalbandolier-cotton": true
+      }
+    }
+  ]
+}

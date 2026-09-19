@@ -13,6 +13,9 @@ interface Override {
   bOverrideMaterials: boolean;
   MaterialOverrides: { Key: string; Value: SoftPath }[];
   bOffsetTransform?: boolean;
+  OffsetPosition?: { X: number; Y: number; Z: number };
+  OffsetRotation?: { Pitch: number; Yaw: number; Roll: number };
+  OffsetScale?: { X: number; Y: number; Z: number };
   bAddLogicModules?: boolean;
 }
 interface VisualPart {
@@ -84,6 +87,24 @@ function parameterOverlays(parameters: SourceMaterialParameters[], slot: string)
 }
 
 function path(value?: SoftPath): string { return value?.AssetPathName ?? ""; }
+
+// An offset is a no-op only when every component is authored as exactly the numeric identity.
+// A missing, partial, extended, non-numeric or non-identity offset stays unsupported placement.
+const OFFSET_IDENTITY = [
+  ["OffsetPosition", { X: 0, Y: 0, Z: 0 }],
+  ["OffsetRotation", { Pitch: 0, Yaw: 0, Roll: 0 }],
+  ["OffsetScale", { X: 1, Y: 1, Z: 1 }],
+] as const;
+function offsetsPlacement(rule: Override): boolean {
+  if (!rule.bOffsetTransform) return false;
+  return !OFFSET_IDENTITY.every(([field, identity]) => {
+    const value = rule[field] as unknown;
+    return !!value && typeof value === "object" && !Array.isArray(value) &&
+      Object.keys(value).length === Object.keys(identity).length &&
+      Object.entries(identity).every(([axis, expected]) => (value as Record<string, unknown>)[axis] === expected);
+  });
+}
+
 export function hasSourceTag(tags: Iterable<string>, requested: string): boolean {
   for (const tag of tags) if (tag === requested || tag.startsWith(requested + ".")) return true;
   return false;
@@ -108,11 +129,11 @@ export function resolveSourceOutfit(definitions: SourceDefinition[], contextTags
         // A single tag is unambiguous. Preserve multi-tag conditions for the full
         // evaluator until the game's all/any matching and priority are verified.
         if (rule.MatchingTags.length > 1) {
-          if (rule.bOverrideMesh || rule.bOverrideEffect || rule.bOverrideMaterials || rule.bOffsetTransform || rule.bAddLogicModules)
+          if (rule.bOverrideMesh || rule.bOverrideEffect || rule.bOverrideMaterials || offsetsPlacement(rule) || rule.bAddLogicModules)
             resolved.unresolved.push(`multi-tag condition ${index}`);
           return;
         }
-        if (rule.bOffsetTransform || rule.bAddLogicModules) resolved.unresolved.push(`unsupported placement or logic override ${index}`);
+        if (offsetsPlacement(rule) || rule.bAddLogicModules) resolved.unresolved.push(`unsupported placement or logic override ${index}`);
         matching.push({ rule, index });
       });
       for (const field of ["mesh", "effect"] as const) {

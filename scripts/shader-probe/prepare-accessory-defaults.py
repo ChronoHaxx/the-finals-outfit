@@ -33,6 +33,7 @@ import time
 from pathlib import Path
 
 from material_inputs import material_inputs, parent_chain, read_json, texture_paths
+import source_package_identity as package_identity
 
 HERE = Path(__file__).resolve().parent
 
@@ -250,6 +251,21 @@ def exported_packages(folder):
     return {r['path']: r for r in read_json(folder / 'probe-summary.json')['results']}
 
 
+def exported_inventory(folder):
+    """Every exported package path of a probe summary, duplicates and case variants included."""
+    return [r['path'] for r in read_json(folder / 'probe-summary.json')['results']]
+
+
+def case_evidence(member):
+    """A chain member's directory-case resolutions; nothing for an exact member, so exact rows stay unchanged."""
+    evidence = {}
+    if member['match'] != package_identity.EXACT:
+        evidence['exported'] = {'object': member['exportedObject'], 'match': member['match']}
+    if member['parent'] and member['parent']['match'] != package_identity.EXACT:
+        evidence['parentLink'] = member['parent']
+    return evidence
+
+
 def stage_source(args):
     global REUSE_EXPORTS, REUSE_TEXTURES
     if getattr(args, 'fresh_sources', False):
@@ -350,20 +366,29 @@ def stage_source(args):
         if code: raise SystemExit('validate.ps1 failed; see working-01.validate.log')
 
     # 5. Every default material resolved through its exported chain; bound textures reused or extracted.
-    packages = {r['name']: r['path'] for r in read_json(working / 'probe-summary.json')['results']}
+    # Identities are checked against every exported package, never a basename dictionary; only a unique
+    # directory-case variant is accepted besides the exact path, and it is recorded with its actual package.
+    inventory = exported_inventory(working)
     resolution = []
     for source in default_materials(items):
         name = short(source)
         row = {'source': source, 'instance': name}
         try:
-            if name not in packages or assembly_index.object_path(packages[name]) != source:
-                raise ValueError('Exact source package is not in the working export')
+            found = package_identity.resolve(source, inventory)
             chain = parent_chain(working, name)
-            for record in chain:
-                if assembly_index.object_path(packages.get(record['Name'], '')) != record['Package'] + '.' + record['Name']:
-                    raise ValueError(f'Chain member {record["Name"]} does not match its exported package')
-            row['chain'] = [{'object': r['Package'] + '.' + r['Name'], 'package': packages[r['Name']],
-                             'uassetSha256': file_sha(working / f'{r["Name"]}.uasset')} for r in chain]
+            try:
+                members = package_identity.chain_identity(chain, inventory)
+            except (KeyError, TypeError, ValueError) as error:
+                raise ValueError(f'Chain member does not match its exported package: {error}')
+            if chain[-1]['Name'] != name or members[-1]['package'] != found['package']:
+                raise ValueError(f'Chain member {chain[-1]["Name"]} does not match its exported package')
+            if found['match'] != package_identity.EXACT:
+                row['sourcePackage'] = {'match': found['match'], 'requested': {'object': source, 'package': package_of(source)},
+                                        'actual': {'object': found['object'], 'package': found['package'],
+                                                   'uassetSha256': file_sha(working / f'{name}.uasset')}}
+            row['chain'] = [{'object': m['object'], 'package': m['package'],
+                             'uassetSha256': file_sha(working / f'{r["Name"]}.uasset'),
+                             **case_evidence(m)} for r, m in zip(chain, members)]
             row['root'] = chain[0]['Name']
             (_, _, owner, _), = material_inputs(working, [{'id': job_id(name), 'instance': name}])
             row['owner'] = owner
@@ -435,6 +460,8 @@ def shared_helpers():
     # These existing helpers write only within their configured batch directories.
     accessories.WORK, accessories.RUNTIME, accessories.PREVIEW = WORK, RUNTIME, PREVIEW
     accessories.MARKER = MARKER
+    accessories.ACTIVE, accessories.CATALOG, accessories.SOURCE_INDEX = ACTIVE, CATALOG, SOURCE_INDEX
+    accessories.RESOLVER = globals().get('RESOLVER', Path('src/rig/SourceAssembly.ts'))
     return accessories
 
 
@@ -503,6 +530,10 @@ def stage_index(args):
     added_file = RUNTIME / 'defaults-assets.json'
     assembly_index.build([RUNTIME / 'meshes'], [RUNTIME / 'materials'], [SOURCE / 'working-01'], LEGACY, added_file, [], None)
     added = preview_tools.rebase_assets(read_json(added_file), preview_tools.Rebaser(RUNTIME, PREVIEW))
+    # build-assembly-assets keys a material by its exported package. Meshes name the requested source, so a
+    # directory-case resolution recorded by the source stage (re-checked here) is bound by that source.
+    added['materials'] = package_identity.requested_keys(added['materials'], read_json(SOURCE / 'material-resolution.json'),
+                                                 exported_inventory(SOURCE / 'working-01'))
     if set(added['meshes']) != needed_meshes or set(added['materials']) != needed_sources:
         raise ValueError('Staged dependencies do not match the complete candidates')
     helper.guard_preview()

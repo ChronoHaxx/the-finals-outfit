@@ -284,6 +284,10 @@ export function validateConfig(raw) {
   if (pose !== 'a' && pose !== 'idle') {
     errors.push(`config.pose must be 'a' or 'idle': ${JSON.stringify(raw.pose)}`);
   }
+  const framing = raw.framing ?? 'root';
+  if (!['root', 'positive-x-item'].includes(framing)) {
+    errors.push("config.framing must be 'root' or 'positive-x-item'");
+  }
 
   if (errors.length) throw new Error(`invalid config:\n- ${errors.join('\n- ')}`);
 
@@ -294,6 +298,7 @@ export function validateConfig(raw) {
     path: raw.path,
     angles: angles.map(angle => ({ name: angle.name, radians: angle.radians })),
     pose,
+    ...(framing === 'root' ? {} : { framing }),
   };
 }
 
@@ -421,14 +426,48 @@ export function viewUrl(config, slots) {
 }
 
 /** Rotate the rig root, flush the matrix and wait two animation frames so the shot is settled. */
-export async function rotateRig(page, radians) {
-  await page.evaluate(async (yaw) => {
+export async function rotateRig(page, radians, framing = null) {
+  await page.evaluate(async ({yaw, framing}) => {
     const root = window.__rigRoot;
     if (!root) throw new Error('window.__rigRoot is not available; cannot rotate the rig');
     root.rotation.y = yaw;
+    if (framing) {
+      const T = window.__THREE;
+      const base = new T.Vector3().fromArray(framing.rootPosition);
+      const local = new T.Vector3().fromArray(framing.center).sub(base);
+      root.position.copy(base).add(local).sub(local.clone().applyAxisAngle(new T.Vector3(0, 1, 0), yaw));
+    }
     root.updateMatrixWorld(true);
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-  }, radians);
+  }, {yaw: radians, framing});
+}
+
+/** Frame one hand using its actual skinned vertices; shared by every glove family. */
+export async function positiveXItemFraming(page, id) {
+  const measured = await page.evaluate(id => {
+    const root = window.__rigRoot, T = window.__THREE;
+    const child = root?.children.find(c => c.userData.rigItemId === id);
+    if (!child || !T) throw new Error('Cannot measure the requested item');
+    root.updateMatrixWorld(true);
+    const box = new T.Box3(), point = new T.Vector3();
+    const split = root.getWorldPosition(new T.Vector3()).x + 0.05;
+    let sampled = 0;
+    child.traverse(mesh => {
+      if (!mesh.isMesh || !mesh.geometry?.attributes?.position) return;
+      mesh.skeleton?.update();
+      for (let i = 0; i < mesh.geometry.attributes.position.count; i++) {
+        mesh.getVertexPosition(i, point); mesh.localToWorld(point);
+        if (point.x > split) { box.expandByPoint(point); sampled++; }
+      }
+    });
+    if (!sampled) throw new Error('No positive-X item vertices');
+    return {center:box.getCenter(new T.Vector3()).toArray(), size:box.getSize(new T.Vector3()).toArray(),
+      rootPosition:root.position.toArray(), sampled};
+  }, id);
+  if (!measured.size.every(n => Number.isFinite(n) && n > 0 && n < 0.7))
+    throw new Error('Positive-X framing requires local hand-sized geometry');
+  const [x, y, z] = measured.center, distance = Math.max(0.5, Math.max(...measured.size) * 2.8);
+  return {...measured, mode:'positive-x-item', camera:`${x},${y},${z + distance},${x},${y},${z}`};
 }
 
 export async function runCapture({ config, mode, previewDir, outDir, report, persist }) {
@@ -453,6 +492,15 @@ export async function runCapture({ config, mode, previewDir, outDir, report, per
     });
     await waitIdle(page);
 
+    let framing = null;
+    if (config.framing === 'positive-x-item') {
+      framing = await positiveXItemFraming(page, config.items[0].id);
+      report.framing = framing;
+      config = {...config, camera:framing.camera};
+      await page.goto(viewUrl(config, buildSlots(config.baseOutfit, config.items[0])), {waitUntil:'domcontentloaded'});
+      await waitIdle(page);
+    }
+
     for (const item of config.items) {
       const entry = {
         id: item.id,
@@ -469,6 +517,7 @@ export async function runCapture({ config, mode, previewDir, outDir, report, per
       report.items.push(entry);
       flush();
       try {
+        await rotateRig(page, 0, framing);
         await swap(page, buildSlots(config.baseOutfit, item));
         await waitIdle(page);
         entry.state = await rigState(page);
@@ -488,7 +537,7 @@ export async function runCapture({ config, mode, previewDir, outDir, report, per
         }
         const angles = mode === 'before' ? [FRONT_ANGLE] : config.angles;
         for (const [index, angle] of angles.entries()) {
-          await rotateRig(page, angle.radians);
+          await rotateRig(page, angle.radians, framing);
           const file = resolveUnder(outDir, 'views', item.id, `${String(index).padStart(2, '0')}-${angle.name}.png`);
           await shoot(page, file);
           entry.views.push({

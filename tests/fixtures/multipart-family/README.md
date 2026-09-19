@@ -1,0 +1,2 @@
+Source metadata fixtures copied byte-for-byte from the approved multipart worker snapshot. resolver-probe-v1.json was produced independently with the actual product resolver; its binding sentinels are not renderable materials. No raw game assets.
+The review/ fixture contains the pinned two-component family manifest and eight binding rows from the real proof. Tests replace runtime outputs with synthetic data and do not depend on ignored _docs or raw assets.

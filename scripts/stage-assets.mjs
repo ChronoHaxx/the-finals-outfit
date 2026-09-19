@@ -1,7 +1,7 @@
 // Stage exactly the assets the catalog references into _assets-upload/<version>/,
 // ready to publish to whatever host VITE_ASSETS_BASE points at.
 //
-//   node scripts/stage-assets.mjs v2
+//   node scripts/stage-assets.mjs v2 [--models-only]
 //
 // Why a version directory rather than uploading in place:
 //
@@ -23,8 +23,10 @@ import { collectAssetRefs } from "./lib/asset-refs.mjs";
 import { collectReconstructionAssetRefs, collectAssetCompanions } from "./lib/reconstruction-assets.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const publicDir = resolve(ROOT, "public");
+// Release worktrees can use the existing extraction without copying it into Git.
+const publicDir = resolve(process.env.ASSET_SOURCE_DIR || resolve(ROOT, "public"));
 const version = process.argv[2] ?? "v1";
+const modelsOnly = process.argv.includes('--models-only');
 if (!/^[a-z0-9][a-z0-9-]*$/.test(version)) throw new Error('Use a single version directory name');
 const outRoot = resolve(ROOT, "_assets-upload");
 const outDir = join(outRoot, version);
@@ -36,6 +38,11 @@ const referenced = collectAssetRefs(items);
 const reconstruction = collectReconstructionAssetRefs(publicDir);
 for (const path of collectAssetCompanions(publicDir, referenced)) referenced.add(path);
 for (const path of reconstruction) referenced.add(path);
+// Icons can stay on a previous immutable release when only 3D content changes.
+// Pair this package with MODELS_BASE in validation and VITE_MODELS_BASE at build.
+if (modelsOnly) for (const path of referenced) {
+  if (!path.startsWith('models/')) referenced.delete(path);
+}
 
 const absent = [...referenced].filter(path => !existsSync(join(publicDir, path)));
 if (absent.length) throw new Error(`Cannot stage ${absent.length} missing assets: ${absent.slice(0, 10).join(', ')}`);
@@ -63,7 +70,7 @@ for (const rel of referenced) {
 // vouch for itself.
 writeFileSync(
   join(outDir, "manifest.json"),
-  JSON.stringify({ version, count: copied, paths: [...referenced].sort(), reconstructionPaths: [...reconstruction].sort() }, null, 0),
+  JSON.stringify({ version, scope: modelsOnly ? 'models' : 'all', count: copied, paths: [...referenced].sort(), reconstructionPaths: [...reconstruction].sort() }, null, 0),
 );
 
 // Lives at the publish root so it covers every version directory.
@@ -83,5 +90,7 @@ if (missing.length > 0) {
   process.exit(1);
 }
 console.log(`\nnext: publish _assets-upload/ to the host, then`);
-console.log(`  ASSETS_BASE=<host>/${version}/ npm run validate:catalog`);
+console.log(modelsOnly
+  ? `  ASSETS_BASE=<existing-icons-host> MODELS_BASE=<new-models-host> npm run validate:catalog`
+  : `  ASSETS_BASE=<host>/${version}/ npm run validate:catalog`);
 console.log(`and only switch the ASSETS_BASE repo variable once that passes.`);

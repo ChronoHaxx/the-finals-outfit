@@ -14,6 +14,7 @@
 /scripts/shader-probe/bin/
 /scripts/shader-probe/obj/
 /scripts/shader-probe/__pycache__/
+**/__pycache__/
 /visual-diff/
 /_objcheck/
 

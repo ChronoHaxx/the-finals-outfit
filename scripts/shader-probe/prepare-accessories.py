@@ -50,6 +50,7 @@ preview_tools = load('prepare-coverage-preview')
 READY = Path('_docs/accessory-materials-2026-09-11/opus-source-ready.json')
 ASTRA_AUDIT = Path('_docs/accessory-materials-2026-09-11/astra-initial-audit.json')
 CATALOG = Path('src/data/items.json')
+RESOLVER = Path('src/rig/SourceAssembly.ts')
 SOURCE_INDEX = Path('public/models/reconstructed-assembly-v2')
 ACTIVE = Path('public/models/reconstructed-assemblies-v1')
 RUNTIME = Path('public/models/reconstructed-accessories-v1')
@@ -354,7 +355,7 @@ def resolve_items(assets_file, output):
     output.parent.mkdir(parents=True, exist_ok=True)
     with (output.parent / (output.stem + '.log')).open('w', encoding='utf-8') as log:
         subprocess.check_call(['node', '--import', 'tsx', 'scripts/shader-probe/check-assembly-coverage.mjs',
-                               str(SOURCE_INDEX / 'customization.json'), str(assets_file), str(output)],
+                               str(SOURCE_INDEX / 'customization.json'), str(assets_file), str(output), str(RESOLVER), str(CATALOG)],
                               stdout=log, stderr=subprocess.STDOUT)
     return read_json(output)
 

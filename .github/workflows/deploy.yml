@@ -26,6 +26,7 @@ jobs:
       # Pin code and artwork in the same revision. The immutable deployment also
       # leaves the older production asset URL available during review/rollback.
       ASSETS_BASE: https://0d315b18.the-finals-outfit-assets.pages.dev/
+      MODELS_BASE: https://a029b249.the-finals-outfit-assets.pages.dev/
     steps:
       - uses: actions/checkout@v4
 
@@ -39,7 +40,8 @@ jobs:
       - name: Check sharing and changed application contracts
         run: |
           npm run validate:share-links
-          node --import tsx --test tests/reconstruction-progress.test.ts tests/public-catalog.test.ts tests/wiki-catalog-import.test.mjs tests/reconstructed-samplers.test.mjs
+          node --import tsx --test tests/reconstruction-progress.test.ts tests/public-catalog.test.ts tests/wiki-catalog-import.test.mjs tests/reconstructed-samplers.test.mjs tests/catalog-host-groups.test.mjs tests/rig/source-identity-offset.test.mjs
+          node --import tsx --test tests/coverage-projection.test.mjs tests/family-active-reuse.test.mjs tests/multipart-family.test.mjs tests/multipart-review-contract.test.mjs tests/outfit-scenario-contract.test.mjs scripts/shader-probe/capture-family.test.mjs scripts/shader-probe/family-fitting-evidence.test.mjs scripts/shader-probe/generate-family-review.test.mjs scripts/shader-probe/source-fitting.test.mjs
 
       - name: Validate catalog
         run: npm run validate:catalog
@@ -51,6 +53,7 @@ jobs:
           # Where every asset is served from. Nothing extracted is committed, so with
           # this unset the site builds and deploys but renders no artwork.
           VITE_ASSETS_BASE: ${{ env.ASSETS_BASE }}
+          VITE_MODELS_BASE: ${{ env.MODELS_BASE }}
         run: npm run build
 
       - name: Copy 404.html for SPA fallback

@@ -1,12 +1,13 @@
 import type * as THREE from "three";
 
-// Bounded preview rule: these decoded tag groups name authored morphs.
+// Bounded preview rule: these decoded tag groups name authored morphs, plus the
+// single exact tag PushJacket.bandolier_squeeze; no other PushJacket leaf is decoded.
 // Exact leaf matches activate at full weight. The game's native evaluator,
 // wrap deformation, attachment offsets and other shape groups are not recovered.
 export function fittingMorphNames(tags: Iterable<string>): Set<string> {
   const result = new Set<string>();
   for (const tag of tags) {
-    const match = /^Customization\.Shape\.(?:PushInsideClothes|ShrinkWrap|HeadNeckMatch)\.([A-Za-z0-9_]+)$/.exec(tag);
+    const match = /^Customization\.Shape\.(?:PushInsideClothes|ShrinkWrap|HeadNeckMatch|PushJacket(?=\.bandolier_squeeze$))\.([A-Za-z0-9_]+)$/.exec(tag);
     if (match) result.add(match[1]);
   }
   return result;

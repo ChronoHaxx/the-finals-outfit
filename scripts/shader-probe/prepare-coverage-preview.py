@@ -141,14 +141,22 @@ def rebase_skin_pairs(pairs, rebase):
 
 def resolved_shape(document, folder):
     """Normalise every URL to a public-relative path so preservation can be compared exactly."""
+    # Indexes repeat the same strings many times: look each one up once per call. The memo
+    # dies with this call, so the next call sees the folder and files as they are then.
+    seen = {}
+
+    def normalise(value):
+        try:
+            target = (folder / value).resolve()
+            if not target.is_file(): return None
+        except OSError:
+            return None
+        return 'resolved:' + os.path.relpath(target, PUBLIC).replace('\\', '/')
+
     def convert(value):
         if isinstance(value, str):
-            try:
-                target = (folder / value).resolve()
-                if not target.is_file(): return value
-            except OSError:
-                return value
-            return 'resolved:' + os.path.relpath(target, PUBLIC).replace('\\', '/')
+            if value not in seen: seen[value] = normalise(value)
+            return value if seen[value] is None else seen[value]
         if isinstance(value, list): return [convert(v) for v in value]
         if isinstance(value, dict): return {k: convert(v) for k, v in value.items()}
         return value

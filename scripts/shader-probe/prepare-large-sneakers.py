@@ -42,6 +42,13 @@ DOTNET = Path('scripts/generated/shader-probe/tools/dotnet/dotnet.exe')
 PROBE = Path('scripts/generated/shader-probe/catalog-refresh-20260912/opus-probe-bin/ShaderProbe.dll')
 SETTINGS = 'C:/Users/ChronoHax/AppData/Roaming/FModel/AppSettings.json'
 MESH_REPORT = DOCS / 'opus-mesh-report.json'
+# Set only by prepare-family.py for an activeMeshReuse manifest: given the rebased added and active meshes, it returns
+# the one active mesh whose entry is kept unchanged instead of added. None keeps the duplicate refusal for every mesh.
+ACTIVE_MESH_REUSE = None
+# Set only by prepare-multipart-family.py for an activeMaterialReuse manifest: given the rebased added and active material
+# bindings and this module's PREVIEW, it proves each declared fresh bundle identical to the pinned active one and returns
+# the declared bindings kept unchanged instead of added. None keeps the duplicate refusal for every material.
+ACTIVE_MATERIAL_REUSE = None
 
 
 def plan():
@@ -327,6 +334,12 @@ def index():
     d.assembly_index.build([RUNTIME / 'meshes'], [RUNTIME / 'materials'], [d.SOURCE / 'working-01'],
                            d.LEGACY, addition_file, [coverage] if coverage_ready else [], None)
     additions = d.read_json(addition_file)
+    # Bind only recorded, uniquely verified directory-case exports under the requested source identity.
+    keyed = d.package_identity.requested_keys(additions['materials'],
+        d.read_json(d.SOURCE / 'material-resolution.json'), d.exported_inventory(d.SOURCE / 'working-01'))
+    if keyed != additions['materials']:
+        additions['materials'] = keyed
+        d.write(addition_file, additions)
     if not coverage_ready:
         # Do not silently use an older legacy mask while deriving this source mesh.
         for entry in additions['meshes'].values():
@@ -354,8 +367,14 @@ def index():
     added_rebase = d.preview_tools.Rebaser(RUNTIME, PREVIEW)
     added = d.preview_tools.rebase_assets(additions, added_rebase)
     if rebase.missing or added_rebase.missing: raise ValueError('Missing indexed dependency')
+    kept = set(ACTIVE_MESH_REUSE(added['meshes'], assets['meshes'])) if ACTIVE_MESH_REUSE else set()
+    if not kept <= set(added['meshes']) & set(assets['meshes']): raise ValueError('Reuse hook named a mesh that is not active')
+    kept_materials = set(ACTIVE_MATERIAL_REUSE(added['materials'], assets['materials'], PREVIEW)) if ACTIVE_MATERIAL_REUSE else set()
+    if not kept_materials <= set(added['materials']) & set(assets['materials']): raise ValueError('Reuse hook named a material that is not active')
     for field in ('meshes', 'materials'):
-        if set(added[field]) & set(assets[field]): raise ValueError('Would replace existing ' + field)
+        reused = kept if field == 'meshes' else kept_materials
+        if (set(added[field]) & set(assets[field])) - reused: raise ValueError('Would replace existing ' + field)
+        added[field] = {k: v for k, v in added[field].items() if k not in reused}
         assets[field].update(added[field])
     helper.guard_preview()
     d.write(PREVIEW / 'assets.json', assets); d.write(PREVIEW / 'skin-pairs.json', pairs)
@@ -377,7 +396,9 @@ def index():
     d.write(PREVIEW / 'preview.json', {'marker': d.MARKER, 'at': d.now(), 'implemented': implemented,
              'coverageReady': coverage_ready, 'previousAdvertised': len(advertised), 'previewAdvertised': len(supported['items']),
              'previousAssemblies': len(old), 'previewAssemblies': len(new), 'unadvertisedStructurallyReady': unadvertised_ready,
-             'activeUnchanged': True, 'visualAcceptance': 'pending', 'humanAcceptance': 'pending'})
+             'activeUnchanged': True, 'visualAcceptance': 'pending', 'humanAcceptance': 'pending',
+             **({'reusedActiveMeshes': sorted(kept)} if kept else {}),
+             **({'reusedActiveMaterials': sorted(kept_materials)} if kept_materials else {})})
     d.write(WORK / 'supported-items-additions.json', {'items': implemented, 'ready': [new[i] for i in implemented]})
     d.write(WORK / 'assets-additions.json', {field: added[field] for field in ('meshes', 'materials')})
     progress('preview-coverage' if coverage_ready else 'preview-structural', previewAvailable=True,
