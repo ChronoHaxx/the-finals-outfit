@@ -58,13 +58,18 @@ the default branch, serving from `https://<user>.github.io/the-finals-outfit/`
 until a custom domain is set via `public/CNAME`.
 
 A CI checkout has no assets, so the build resolves them against
-**`VITE_ASSETS_BASE`** and **`VITE_MODELS_BASE`**, set from the version-pinned
-`ASSETS_BASE` and optional `MODELS_BASE` in
+**`VITE_ASSETS_BASE`**, **`VITE_MODELS_BASE`** and **`VITE_RECONSTRUCTION_BASE`**, set from the version-pinned
+`ASSETS_BASE` and optional `MODELS_BASE` / `RECONSTRUCTION_BASE` in
 `.github/workflows/deploy.yml`. Code and artwork are reviewed together in a PR.
 The workflow checks PRs but only publishes the default branch. Local development
 can still set `VITE_ASSETS_BASE` to a published release or use local artwork.
 
 ### Releasing assets
+
+Follow the [multi-deployment release guide](docs/deployment.md). Split referenced
+assets across additional free static deployments whenever a package exceeds the
+provider's limits; three hosts is not a fixed maximum. Keep dependency closures
+intact and validate the shared browser/CI routing before publishing the app.
 
 Never overwrite a published asset path. They are served `immutable, max-age=1y`,
 so replacing a file in place strands every existing visitor on the old bytes for
@@ -82,17 +87,18 @@ spot-checks actual files, including reconstruction dependencies. CI has no
 assets locally, so checking paths against the checkout alone cannot detect a
 missing upload. The workflow runs this hosted check for PRs and deployments.
 
-The current release keeps unchanged icons on the previous immutable Cloudflare
-Pages deployment and serves models, textures and reconstruction metadata from a
-new deployment. Each package stays within the Pages free-plan file limit. Stage
-the model package with `npm run stage:assets -- <version> --models-only`; optionally
-set `ASSET_SOURCE_DIR` to an existing extraction's `public` directory. Validate with
-both `ASSETS_BASE=<icons-host>` and `MODELS_BASE=<models-host>`. The validator checks
-each path against the same host that the application will use, including the new
-model release's reconstruction dependencies. Build with both corresponding
-`VITE_` variables. Omitting the model override preserves single-host behavior.
+The current release reuses unchanged icons and base models from their previous
+immutable Cloudflare Pages deployments, and adds a separate reconstruction release.
+Stage it with `npm run stage:assets -- <version> --reconstruction-only`; optionally
+set `ASSET_SOURCE_DIR` to the existing extraction's `public` directory. The package
+includes required relative companions even when they live outside reconstruction
+directories. Staging checks file counts and sizes before writing output. Validate
+with `ASSETS_BASE=<icons-host>`, `MODELS_BASE=<models-host>` and
+`RECONSTRUCTION_BASE=<reconstruction-host>`; build with the three corresponding
+`VITE_` variables. The browser and validator use the same path routing. Omitting
+overrides preserves the previous one-host or two-host behavior.
 
-Both deployments serve their assets at the root. Keep previous deployments: the current public site and
+These deployments serve their assets at the root. Keep previous deployments: the current public site and
 rollback builds still need them. No repository-variable change is required
 when merging this release, and the older production asset alias is untouched.
 

@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { fetchAsset as checkedFetch } from "../lib/asset-fetch";
+import { VerifiedByteCache } from "../lib/verified-bytes";
 import { HAIR_LIGHTING_GLSL } from './HairLighting';
 import {
   RECOVERED_SAMPLER_TARGET, assemblePackedLayers, planReconstructedSamplers, rewriteSamplerGlsl,
@@ -33,20 +34,16 @@ interface Manifest {
   parameterOverrides?: string[];
 }
 
-async function verifyHash(data: ArrayBuffer, expected: string): Promise<void> {
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  const actual = Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, "0")).join("");
-  if (actual !== expected.toLowerCase()) throw new Error("Recovered material asset hash mismatch");
-}
+// Hash-verified shader and texture bytes, reused across loads of the same authored file
+// (hair and face swaps restage the same skin textures). Every call receives its own copy;
+// manifests are not hashed and always load fresh. Bounded to 128 MiB / 512 entries.
+const verifiedBytes = new VerifiedByteCache(checkedFetch);
 
 // Every sampler resource starts from the authored bytes: fetch, decompress and
-// hash-check the original file before anything is uploaded or regrouped.
-async function fetchTextureData(spec: TextureSpec, base: string): Promise<ArrayBuffer> {
-  const response = await checkedFetch(new URL(spec.file, base).href);
-  if (!response.body) throw new Error("Empty recovered texture response");
-  const data = await new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
-  await verifyHash(data, spec.sha256);
-  return data;
+// hash-check the original file before anything is uploaded or regrouped. A repeat
+// load reuses bytes that already passed that check; layout validation still runs per load.
+function fetchTextureData(spec: TextureSpec, base: string): Promise<ArrayBuffer> {
+  return verifiedBytes.load(new URL(spec.file, base).href, spec.sha256, "gzip");
 }
 
 function validateTextureLayout(spec: TextureSpec, data: ArrayBuffer): { half: boolean } {
@@ -177,15 +174,14 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     throw new Error('Unsupported recovered skin coverage');
   const neckFade = manifest.skinCoverage === 'neck-fade';
   const masked = manifest.surfaceKind === "eyelash" || hair || neckFade;
-  const shaderBytes = await (await checkedFetch(new URL(manifest.shader, base).href)).arrayBuffer();
-  await verifyHash(shaderBytes, manifest.shaderSha256);
+  const shaderBytes = await verifiedBytes.load(new URL(manifest.shader, base).href, manifest.shaderSha256, "identity");
   let recoveredShader = new TextDecoder().decode(shaderBytes);
   let coverageShader: string | undefined;
   if (masked) {
     if (!manifest.coverageShader || !manifest.coverageShaderSha256 || manifest.coverageGeometryFields?.length !== 0)
       throw new Error("Recovered masked shadows require validated UV-only coverage");
-    const bytes = await (await checkedFetch(new URL(manifest.coverageShader, base).href)).arrayBuffer();
-    await verifyHash(bytes, manifest.coverageShaderSha256);
+    const bytes = await verifiedBytes.load(new URL(manifest.coverageShader, base).href,
+      manifest.coverageShaderSha256, "identity");
     coverageShader = new TextDecoder().decode(bytes);
   }
   // One plan drives the surface pass, the shadow/coverage pass and every upload.

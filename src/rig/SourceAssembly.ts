@@ -1,6 +1,8 @@
 // Decoded source relationships, kept independent of Three and the catalog's
 // older filename-derived garment guesses. Missing rules stay explicit.
 import { fetchAsset } from "../lib/asset-fetch";
+import { isRigidSourceRest, multiplySourceMatrices, sourceIdentityDeviation, sourceLocalMatrix,
+  type SourceVector } from "./SourceTransform";
 
 interface SoftPath { AssetPathName: string; SubPathString?: string }
 interface Override {
@@ -24,9 +26,11 @@ interface VisualPart {
   Effect: SoftPath;
   TagOverrides: Override[];
   bIsAttached?: boolean;
+  bCanBeMerged?: boolean;
   bIsHeadMesh?: boolean;
   bAttachToHeadMesh?: boolean;
   OptionalAttachmentMesh?: SoftPath;
+  OptionalHeadWrapMesh?: SoftPath;
   AttachmentSocket?: string;
   WrapDeformation?: { bIsWrapDeformed: boolean; bIsWrapDeformedByHeadComponent: boolean; OptionalWrapDeformerMesh: SoftPath };
   LocalPosition?: { X: number; Y: number; Z: number };
@@ -77,8 +81,34 @@ export interface SourceMaterialParameters {
   unresolved: string[];
 }
 
-function parameterOverlays(parameters: SourceMaterialParameters[], slot: string): string[] {
-  const matching = parameters.filter(p => p.slots.includes(slot));
+// Material slot names are Unreal FNames: compared case-insensitively, stored with their own spelling.
+// Only ASCII letters fold; punctuation, other spelling and non-ASCII case stay different slots.
+export function materialSlotIdentity(name: string): string {
+  return name.replace(/[A-Z]/g, c => c.toLowerCase());
+}
+
+/** The one stored spelling in `names` naming `slot`, or undefined. Distinct case-equivalent spellings
+ *  are ambiguous and throw rather than pick an alias, even when their values agree. */
+export function matchMaterialSlot(names: Iterable<string>, slot: string, label: string): string | undefined {
+  const identity = materialSlotIdentity(slot);
+  const matches = [...new Set([...names].filter(name => materialSlotIdentity(name) === identity))];
+  if (matches.length > 1) throw new Error(`Ambiguous case-equivalent ${label}: ${matches.join(", ")}`);
+  return matches[0];
+}
+
+/** The override bound to one mesh slot: exact or unique case-only key, else undefined (the source default).
+ *  `slots` are the mesh's own slot names; an override reaching two case-equivalent slots is ambiguous. */
+export function materialSlotOverride(materials: Record<string, string>, slot: string, slots: string[] = [slot]): string | undefined {
+  const key = matchMaterialSlot(Object.keys(materials), slot, `material overrides for ${slot}`);
+  if (key === undefined) return undefined;
+  matchMaterialSlot(slots, slot, `material slots for override ${key}`);
+  return materials[key];
+}
+
+export function parameterOverlays(parameters: SourceMaterialParameters[], slot: string, slots: string[] = [slot]): string[] {
+  const matching = parameters.filter(p =>
+    matchMaterialSlot(p.slots, slot, `material parameter slots for ${slot}`) !== undefined);
+  if (matching.length) matchMaterialSlot(slots, slot, "material slots for parameter overrides");
   // Preserve the authored array order within one customization item. Priority
   // between different items remains unknown, even if a combination was indexed.
   if (new Set(matching.map(p => p.itemId)).size > 1 || matching.some(p => p.unresolved.length))
@@ -203,6 +233,13 @@ async function readJson(url: string): Promise<unknown> {
   return value;
 }
 
+export class MissingSourceDefinitionError extends Error {
+  constructor(readonly itemIds: string[]) {
+    super(`Missing outfit fitting data: ${itemIds.join(', ')}`);
+    this.name = 'MissingSourceDefinitionError';
+  }
+}
+
 export async function loadSourceOutfit(ids: string[], baseUrl: string): Promise<SourceOutfit> {
   const catalog = await readJson(`${baseUrl}/catalog.json`) as { formatVersion: number; items: string[] };
   if (catalog.formatVersion !== 1 || !Array.isArray(catalog.items)) {
@@ -211,7 +248,12 @@ export async function loadSourceOutfit(ids: string[], baseUrl: string): Promise<
   }
   const available = new Set(catalog.items);
   const selected = [...new Set(ids)];
-  const definitions = await Promise.all(selected.filter(id => available.has(id)).map(async (id) => {
+  // Unknown selected items may author tags that replace the head, hide hair, or change materials.
+  // Never resolve a partial selection as if those items contributed no rules. The viewer keeps
+  // its last appearance on this error; missing metadata elsewhere in the catalog is irrelevant.
+  const missing = selected.filter(id => !available.has(id));
+  if (missing.length) throw new MissingSourceDefinitionError(missing);
+  const definitions = await Promise.all(selected.map(async (id) => {
     const record = await readJson(`${baseUrl}/items/${encodeURIComponent(id)}.json`) as SourceDefinition;
     if (record.formatVersion !== 1 || record.id !== id || !record.properties || !record.sourceSha256) {
       pending.delete(`${baseUrl}/items/${encodeURIComponent(id)}.json`);
@@ -221,9 +263,7 @@ export async function loadSourceOutfit(ids: string[], baseUrl: string): Promise<
   }));
   // The current rig is the medium body in the third-person frontend. Body-type
   // morphs and further context tags will be bound when those controls are added.
-  const outfit = resolveSourceOutfit(definitions, ["Customization.Archetype.Medium"]);
-  outfit.unresolvedItems = selected.filter(id => !available.has(id));
-  return outfit;
+  return resolveSourceOutfit(definitions, ["Customization.Archetype.Medium"]);
 }
 
 /** One socket rest authored by a component that is not the body: a head mesh, or an optional
@@ -262,6 +302,18 @@ export interface SourceFrameComponent {
   sockets: Record<string, Omit<SourceSocketFrame, 'source' | 'sourceSha256' | 'bodyBone'>>;
 }
 
+/** One preserved mesh section's recipient, identified by its exact source material index: the
+ *  position the converter writes in GLB materials order, which is the source's own section
+ *  MaterialIndex and the order of the index's `slots` array. A repeated authored slot name still
+ *  names two different recipients, so the index — not the name — is what selects one. */
+export interface SourceMaterialSection {
+  materialIndex: number;
+  slot: string;          // the authored FName spelling, exactly as the source stores it
+  defaultSource: string; // that section's own authored default, before any override
+  source: string;        // the effective recipient after overrides
+  url: string;           // the recovered material, or the parameter variant when overlays apply
+}
+
 export interface SourceRigPart {
   sourceIndex: number;
   sourceMesh: string;
@@ -269,12 +321,21 @@ export interface SourceRigPart {
   bodyMaskUrl?: string;
   bodyMaskUvTiles?: [number, number];
   materials: Record<string, { url: string; source: string }>;
+  /** Present only when this mesh repeats a material slot name, in source material index order and
+   *  covering every section. `materials` then omits the repeated name instead of keeping whichever
+   *  section happened to be resolved last: a name that no longer identifies one recipient must not
+   *  answer for another. Meshes whose slot names are unique are unchanged and carry no sections. */
+  materialSections?: SourceMaterialSection[];
   attachment?: {
     bodyUrl: string; socket: string;
     sourceRestMatrix?: number[]; // body-bone sockets only; a frame carries its own component rest
     position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number];
     frame?: SourceAttachmentFrame;
   };
+  /** This merged skeletal part reached support through the neutral compensated head frame below,
+   *  not through an ordinary identity placement. It is still body-space geometry with no
+   *  attachment: the flag only records which route accepted it. */
+  neutralHeadFrame?: true;
 }
 
 const MATRIX = (value: unknown): value is number[] =>
@@ -306,12 +367,96 @@ export interface SourceSkinPart {
   boundsOrigin: [number, number, number]; // imported source bounds, Unreal centimetres
   materials: Record<string, { source: string; defaultSource: string; url?: string; legacyName?: string; parameterOverrides?: string[] }>;
 }
-export interface SourceSkinPair { head: SourceSkinPart; body: SourceSkinPart }
+export interface SourceSkinPair {
+  head: SourceSkinPart;
+  body: SourceSkinPart;
+  /** Present only when this outfit explicitly replaced the source head's mesh with nothing and the
+   *  selected hair needs no scalp. `head` stays the index's own record of that head, so the index
+   *  and every visible path are unchanged; the runtime must not request or render it while this is
+   *  set, and removing whatever empties it restores the same head through the ordinary path. */
+  headOmitted?: SourceHeadOmission;
+}
+
+/** Why one outfit does not render the head its face authors. A transient outfit state, derived per
+ *  resolution: the immutable index never carries it. */
+export interface SourceHeadOmission {
+  sourceMesh: string;          // the head mesh the source authored, and that returns when uncovered
+  rules: number[];             // indices into that head part's own TagOverrides that emptied it
+  hair: SourceScalpSelection;  // why no scalp recipient is needed, keeping the hair's own id
+}
+
+/** The hair an outfit selects, as far as a scalp recipient is concerned. */
+export interface SourceHairSelection {
+  id?: string;                            // undefined only when the outfit selects no hair at all
+  item?: SourceOutfit["items"][string];   // its resolved item, when the source path supports it
+}
+
+/** No scalp recipient is required: no hair at all, a hair whose every part is explicitly emptied,
+ *  or a validated material-only choice — which is never `item.hidden`, having no part to hide. */
+export type SourceScalpSelection =
+  | { kind: "none" }
+  | { kind: "hidden"; id: string }
+  | { kind: "material-only"; id: string };
+
+/** A part one of the rules the resolver actually applied replaced with nothing. The hidden flag
+ *  alone is not evidence, and neither is an occupied slot or a covering item's name. */
+export function explicitlyEmptiedPart(part: ResolvedPart): boolean {
+  if (!part.hidden || part.unresolved.length || part.staticMesh || part.skeletalMesh || part.effect) return false;
+  if (part.definition.LogicModules?.length) return false;
+  if (!part.rules.every(index => {
+    const rule = part.definition.TagOverrides?.[index];
+    return Number.isInteger(index) && !!rule && rule.MatchingTags.length <= 1 &&
+      !offsetsPlacement(rule) && !rule.bAddLogicModules;
+  })) return false;
+  return part.rules.some(index => {
+    const rule = part.definition.TagOverrides?.[index];
+    return !!rule?.bOverrideMesh && !path(rule.ReplacementStaticMesh) && !path(rule.ReplacementSkeletalMesh);
+  });
+}
+
+/** Whether a hair selection leaves no geometry for a scalp to sit under, or undefined when it does —
+ *  including a hair this build cannot resolve at all. An unsupported or legacy hairstyle is never
+ *  permission: it keeps its own geometry and still needs the head under it. */
+export function sourceHairWithoutScalp(id: string | undefined,
+  item?: SourceOutfit["items"][string]): SourceScalpSelection | undefined {
+  if (id === undefined) return item ? undefined : { kind: "none" };
+  if (!item || item.materialParameters?.some(p => p.unresolved.length)) return undefined;
+  // Donors and no visual part of its own. Only a choice the offline audit accepted reaches here:
+  // that gate is the caller's supported-item index, exactly as it is for geometry.
+  if (!item.parts.length) {
+    const parameters = item.materialParameters ?? [];
+    const scalpOnly = parameters.length > 0 && parameters.every(p => p.source && p.slots.length &&
+      p.slots.every(s => ['shader_head_shader', 'm_hair'].includes(materialSlotIdentity(s)))) &&
+      parameters.some(p => p.slots.some(s => materialSlotIdentity(s) === 'shader_head_shader'));
+    return scalpOnly ? { kind: "material-only", id } : undefined;
+  }
+  return item.parts.every(explicitlyEmptiedPart) ? { kind: "hidden", id } : undefined;
+}
+
+/** The omission this outfit authors for one preserved head part, on that part's own evidence: the
+ *  exact source index, the head role, an explicit empty mesh replacement, and the original head
+ *  mesh identity the index records. */
+export function omittedSourceHead(item: SourceOutfit["items"][string], head: Pick<SourceSkinPart, 'sourceIndex' | 'sourceMesh'>,
+  hair: SourceHairSelection): SourceHeadOmission | undefined {
+  const part = item.parts.find(p => p.sourceIndex === head.sourceIndex);
+  if (!part || !part.definition.bIsHeadMesh || !explicitlyEmptiedPart(part) ||
+      path(part.definition.SkeletalMesh) !== head.sourceMesh) return undefined;
+  const p = part.definition, wrap = p.WrapDeformation;
+  if (path(p.StaticMesh) || path(p.Effect) || p.SkeletalMesh.SubPathString || p.bIsAttached || p.bAttachToHeadMesh ||
+      path(p.OptionalAttachmentMesh) || p.LogicModules?.length ||
+      wrap?.bIsWrapDeformed || wrap?.bIsWrapDeformedByHeadComponent || path(wrap?.OptionalWrapDeformerMesh) ||
+      Object.values(p.LocalPosition ?? {}).some(v => v !== 0) ||
+      Object.values(p.LocalRotation ?? {}).some(v => v !== 0) ||
+      Object.values(p.LocalScale ?? {}).some(v => v !== 1)) return undefined;
+  const scalp = sourceHairWithoutScalp(hair.id, hair.item);
+  return scalp ? { sourceMesh: head.sourceMesh, rules: [...part.rules], hair: scalp } : undefined;
+}
 
 export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"][string], baseUrl: string,
-  parameters: SourceMaterialParameters[] = []): Promise<SourceSkinPair | undefined> {
+  parameters: SourceMaterialParameters[] = [], hair?: SourceHairSelection): Promise<SourceSkinPair | undefined> {
   const index = await readJson(`${baseUrl}/skin-pairs.json`) as {
-    formatVersion: number; items: Record<string, SourceSkinPair & { source: string }>;
+    // The index describes the source, never a transient outfit state: an omission is added here.
+    formatVersion: number; items: Record<string, { head: SourceSkinPart; body: SourceSkinPart; source: string }>;
   };
   if (index.formatVersion !== 1 || !index.items) {
     pending.delete(`${baseUrl}/skin-pairs.json`);
@@ -319,21 +464,37 @@ export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"]
   }
   const pair = index.items[id];
   if (!pair) return;
-  const variants = parameters.length ? (await readJson(`${baseUrl}/assets.json`) as AssemblyAssets).materialVariants : undefined;
+  // Callers that pass no hair selection keep the previous contract, where a hidden head stays
+  // unsupported. An omitted head has no scalp recipient, so no variant is requested for it.
+  const omitted = hair ? omittedSourceHead(item, pair.head, hair) : undefined;
+  const needsVariants = parameters.length && (!omitted || Object.keys(pair.body.materials)
+    .some(slot => parameterOverlays(parameters, slot, Object.keys(pair.body.materials)).length));
+  const variants = needsVariants
+    ? (await readJson(`${baseUrl}/assets.json`) as AssemblyAssets).materialVariants : undefined;
   if (pair.source !== item.source || item.parts.length !== 2) throw new Error("Source skin pair definition changed");
   const resolve = (part: SourceSkinPart, isHead: boolean): SourceSkinPart => {
     const actual = item.parts.find(p => p.sourceIndex === part.sourceIndex);
-    if (!actual || actual.hidden || actual.unresolved.length || actual.skeletalMesh !== part.sourceMesh ||
-        actual.staticMesh || actual.effect || !!actual.definition.bIsHeadMesh !== isHead || actual.definition.bIsAttached ||
+    const emptied = isHead && !!omitted;
+    // An omitted head keeps every other requirement; only the mesh it resolves to differs, and
+    // that is the authored source mesh the empty replacement removed.
+    const replaced = emptied
+      ? { mesh: path(actual?.definition.SkeletalMesh),
+          extra: !!path(actual?.definition.StaticMesh) || !!path(actual?.definition.Effect) }
+      : { mesh: actual?.skeletalMesh ?? "", extra: !!actual?.staticMesh || !!actual?.effect };
+    if (!actual || actual.hidden !== emptied || actual.unresolved.length || replaced.mesh !== part.sourceMesh ||
+        replaced.extra || !!actual.definition.bIsHeadMesh !== isHead || actual.definition.bIsAttached ||
         actual.definition.LogicModules?.length || Object.values(actual.definition.LocalPosition ?? {}).some(v => v !== 0) ||
         Object.values(actual.definition.LocalRotation ?? {}).some(v => v !== 0) || Object.values(actual.definition.LocalScale ?? {}).some(v => v !== 1))
       throw new Error("Unsupported source skin pair placement or replacement");
     if (part.boundsOrigin.length !== 3 || !part.boundsOrigin.every(Number.isFinite)) throw new Error("Invalid source skin bounds");
     const url = (path: string) => new URL(path, new URL(baseUrl + "/", window.location.href)).href;
+    const slots = Object.keys(part.materials);
     const materials = Object.fromEntries(Object.entries(part.materials).map(([slot, binding]) => {
-      if ((actual.materials[slot] ?? binding.defaultSource) !== binding.source)
+      if ((materialSlotOverride(actual.materials, slot, slots) ?? binding.defaultSource) !== binding.source)
         throw new Error(`Unvalidated skin material override: ${slot}`);
-      const overlays = parameterOverlays(parameters, slot);
+      // An omitted head is no recipient for a scalp donor: none is bound to it and none is
+      // demanded of the index. The body's own bindings are unchanged.
+      const overlays = emptied ? [] : parameterOverlays(parameters, slot, slots);
       const variant = overlays.length ? variants?.[JSON.stringify([binding.source, ...overlays])] : undefined;
       if (overlays.length && !variant) throw new Error(`Unvalidated skin parameter variant: ${slot}`);
       const materialUrl = variant ?? binding.url;
@@ -342,7 +503,8 @@ export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"]
     }));
     return { ...part, url: url(part.url), materials };
   };
-  return { head: resolve(pair.head, true), body: resolve(pair.body, false) };
+  return { head: resolve(pair.head, true), body: resolve(pair.body, false),
+    ...(omitted ? { headOmitted: omitted } : {}) };
 }
 
 export async function loadSourceRigParts(item: SourceOutfit["items"][string], baseUrl: string): Promise<SourceRigPart[]> {
@@ -355,6 +517,62 @@ export async function loadSourceRigParts(item: SourceOutfit["items"][string], ba
   return resolveSourceRigParts(item, assets, url);
 }
 
+// The socket a neutral frame may compensate is the preserved body's own head bone, spelled exactly
+// as the source spells it. No other socket, and no case variant, is accepted here.
+const BODY_HEAD_SOCKET = 'head';
+// Metres, on the converted GLB translation of the rest * local product.
+const NEUTRAL_TRANSLATION_METRES = 2e-6;
+// Unitless, on that same product's linear basis and its affine row.
+const NEUTRAL_LINEAR_UNITLESS = 2e-6;
+// Unitless, on the preserved rest itself: rigid within the float32 roundoff an imported rest carries.
+const BODY_REST_RIGID_UNITLESS = 1e-4;
+
+/** One authored vector exactly as the source spells it: the named components, every one a finite
+ *  number, and nothing else. A missing, partial, extended or non-numeric vector is not a transform. */
+function sourceVector(value: unknown, keys: readonly string[]): number[] | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  const record = value as Record<string, unknown>;
+  if (Object.keys(record).length !== keys.length) return undefined;
+  const values = keys.map(key => record[key]);
+  return values.every(v => typeof v === 'number' && Number.isFinite(v)) ? values as number[] : undefined;
+}
+
+/** A neutral compensated head frame: a nonattached, mergeable skeletal part whose authored local
+ *  transform, converted the same way an attachment's is, multiplies the preserved body's own `head`
+ *  rest back to the identity. Such a part is drawn exactly where an identity placement would draw
+ *  it — in the body space its vertices and rest bones are already authored in — so the resolver may
+ *  admit it without knowing why the fields were authored.
+ *
+ *  This recognises one measured frame and nothing more. It is not a claim about how the native
+ *  engine consumes these fields; any other placement, any nonzero residue beyond the tolerances,
+ *  any head role, attachment, wrapper, effect, logic module or unresolved rule stays refused, and
+ *  the caller's supported-item index and its geometry verification remain separate gates. */
+export function neutralSourceHeadFrame(part: ResolvedPart, assets: AssemblyAssets): boolean {
+  const p = part.definition, wrap = p.WrapDeformation;
+  if (p.bCanBeMerged !== true || p.bIsAttached !== false || p.bAttachToHeadMesh !== false ||
+      p.bIsHeadMesh === true || p.AttachmentSocket !== BODY_HEAD_SOCKET) return false;
+  if (part.hidden || part.unresolved.length || part.effect || path(p.Effect) || p.LogicModules?.length ||
+      part.staticMesh || path(p.StaticMesh) || path(p.OptionalAttachmentMesh) || path(p.OptionalHeadWrapMesh) ||
+      wrap?.bIsWrapDeformed || wrap?.bIsWrapDeformedByHeadComponent || path(wrap?.OptionalWrapDeformerMesh)) return false;
+  // The part has to bring a skeletal mesh of its own: no static, no section reference, no mesh the
+  // index would have to guess at.
+  if (!part.skeletalMesh || !path(p.SkeletalMesh) || p.SkeletalMesh.SubPathString) return false;
+  if (assets.meshes[part.skeletalMesh]?.kind !== 'skeletal') return false;
+  const body = assets.attachmentBody;
+  if (typeof body?.source !== 'string' || !body.source || typeof body.url !== 'string' || !body.url) return false;
+  const position = sourceVector(p.LocalPosition, ['X', 'Y', 'Z']);
+  const rotation = sourceVector(p.LocalRotation, ['Pitch', 'Yaw', 'Roll']);
+  const scale = sourceVector(p.LocalScale, ['X', 'Y', 'Z']);
+  if (!position || !rotation || !scale || !scale.every(v => v === 1)) return false;
+  const rest = body.restBones?.[BODY_HEAD_SOCKET];
+  if (!MATRIX(rest) || !isRigidSourceRest(rest, BODY_REST_RIGID_UNITLESS)) return false;
+  const product = multiplySourceMatrices(rest, sourceLocalMatrix(position as SourceVector,
+    rotation as SourceVector, scale as SourceVector));
+  const deviation = sourceIdentityDeviation(product);
+  return deviation.translation <= NEUTRAL_TRANSLATION_METRES &&
+    Math.max(deviation.linear, deviation.affine) <= NEUTRAL_LINEAR_UNITLESS;
+}
+
 // The offline coverage audit and runtime use the same support boundary. An item
 // becomes available only when every active part has its exact mesh and materials.
 export function resolveSourceRigParts(item: SourceOutfit["items"][string], assets: AssemblyAssets,
@@ -363,13 +581,16 @@ export function resolveSourceRigParts(item: SourceOutfit["items"][string], asset
     const p = part.definition;
     const attached = !!part.staticMesh && !part.skeletalMesh && !!p.bIsAttached;
     const optionalMesh = path(p.OptionalAttachmentMesh);
+    // The one added route for a nonattached part: an authored local transform that is exactly the
+    // inverse of the preserved head rest. Every other placement below is refused as before.
+    const neutral = !attached && neutralSourceHeadFrame(part, assets);
     if (part.unresolved.length || part.effect || p.LogicModules?.length ||
         (attached && (p.WrapDeformation?.bIsWrapDeformed || p.WrapDeformation?.bIsWrapDeformedByHeadComponent || path(p.WrapDeformation?.OptionalWrapDeformerMesh))) ||
         // A socket belongs to the body, to the head component, or to one optional attachment
         // mesh — never to two of them, and never to a part that is not an attached static.
         (p.bAttachToHeadMesh && optionalMesh) || (!attached && (p.bAttachToHeadMesh || optionalMesh)) ||
         p.bIsHeadMesh ||
-        (!attached && (part.staticMesh || p.bIsAttached ||
+        (!attached && !neutral && (part.staticMesh || p.bIsAttached ||
         Object.values(p.LocalPosition ?? {}).some(v => v !== 0) ||
         Object.values(p.LocalRotation ?? {}).some(v => v !== 0) ||
         Object.values(p.LocalScale ?? {}).some(v => v !== 1)))) {
@@ -414,16 +635,26 @@ export function resolveSourceRigParts(item: SourceOutfit["items"][string], asset
     if (!mesh) throw new Error(`Missing preserved source mesh: ${sourceMesh}`);
     if (attached && mesh.kind !== 'static') throw new Error('Attachment requires a preserved static mesh');
     const materials: SourceRigPart["materials"] = {};
-    for (const slot of mesh.slots) {
-      const source = part.materials[slot.slot] ?? slot.material;
-      const overlays = parameterOverlays(item.materialParameters ?? [], slot.slot);
+    const slots = mesh.slots.map(slot => slot.slot);
+    // One authored name may name several sections of one mesh, each with its own default. Such a
+    // name cannot be a key, so those meshes carry every section by exact source material index
+    // instead; the overrides and donors an occurrence receives are still looked up by that name.
+    const repeated = new Set(slots.filter((slot, index) => slots.indexOf(slot) !== index));
+    const sections: SourceMaterialSection[] = [];
+    for (const [materialIndex, slot] of mesh.slots.entries()) {
+      const source = materialSlotOverride(part.materials, slot.slot, slots) ?? slot.material;
+      const overlays = parameterOverlays(item.materialParameters ?? [], slot.slot, slots);
       const material = overlays.length ? assets.materialVariants?.[JSON.stringify([source, ...overlays])] : assets.materials[source];
       if (!material) throw new Error(`Missing recovered material for ${slot.slot}: ${source}`);
-      materials[slot.slot] = { url: url(material), source };
+      const materialUrl = url(material);
+      sections.push({ materialIndex, slot: slot.slot, defaultSource: slot.material, source, url: materialUrl });
+      if (!repeated.has(slot.slot)) materials[slot.slot] = { url: materialUrl, source };
     }
     return { sourceIndex: part.sourceIndex, sourceMesh, url: url(mesh.url), materials, attachment,
+      ...(repeated.size ? { materialSections: sections } : {}),
       bodyMaskUvTiles: mesh.bodyMaskUvTiles,
-      bodyMaskUrl: mesh.bodyMaskUrl ? url(mesh.bodyMaskUrl) : undefined };
+      bodyMaskUrl: mesh.bodyMaskUrl ? url(mesh.bodyMaskUrl) : undefined,
+      ...(neutral ? { neutralHeadFrame: true as const } : {}) };
   });
 }
 

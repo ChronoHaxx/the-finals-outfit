@@ -1,17 +1,18 @@
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
-import { loadSourceAssemblyItems, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
+import { loadSourceAssemblyItems, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, MissingSourceDefinitionError, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
 import MeshInspector from "./MeshInspector";
 import { createGltfLoader } from "../rig/loaders";
 import { useBuildStore, effectiveBuild } from "../store/useBuildStore";
 import { getItemById } from "../lib/catalog";
+import { getBrowseItem } from "../lib/browse-catalog";
 import { modelUrl } from "../lib/assets";
 import { buildShareUrl } from "../lib/share-url";
 import { SLOTS, type Slot } from "../lib/slots";
@@ -80,6 +81,13 @@ function readDevParams(): DevParams {
   };
 }
 const DEV = readDevParams();
+
+// Browser harness contract (visual-diff and shader-probe checks): `__rigIdle` is false while
+// body or outfit work is in flight and true once that work settles, including after a failure.
+type RigHarness = { __rigIdle?: boolean; __sourceAssembly?: SourceOutfit };
+const rigHarness = () => window as unknown as RigHarness;
+// Cached selections settle almost immediately; only announce work that is still running after this.
+const BUSY_INDICATOR_DELAY_MS = 150;
 
 const sourcePreviewKey = (id: string, item: SourceOutfit['items'][string], skinParameters: SourceMaterialParameters[] = []) =>
   `${id}|parts:${JSON.stringify(item.parts)}|parameters:${JSON.stringify([item.materialParameters, skinParameters])}`;
@@ -313,11 +321,36 @@ export default function CharacterViewer() {
   );
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [missingFittingData, setMissingFittingData] = useState(false);
   const [retryAttempt, setRetryAttempt] = useState(0);
   const [theme, setTheme] = useState<SceneTheme>("studio");
   const build = useBuildStore((s) => s.build);
   const prev = useRef<Partial<Record<Slot, string | null>>>({});
   const [hasRecoveredPreview, setHasRecoveredPreview] = useState(false);
+  // One owner for "the preview is still changing". Every body/outfit pass takes a new id and
+  // only the latest id may clear it, so a superseded pass can never end a newer one.
+  const [busy, setBusy] = useState(true);
+  const [showBusy, setShowBusy] = useState(false);
+  const operation = useRef(0);
+  const beginOperation = useCallback(() => {
+    const id = ++operation.current;
+    setBusy(true);
+    rigHarness().__rigIdle = false;
+    return id;
+  }, []);
+  const endOperation = useCallback((id: number) => {
+    if (operation.current !== id) return;
+    setBusy(false);
+    rigHarness().__rigIdle = true;
+  }, []);
+  useEffect(() => {
+    if (!busy || !ready) {
+      setShowBusy(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setShowBusy(true), BUSY_INDICATOR_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [busy, ready]);
 
   // Dev-only: expose the rig root + THREE so the visual-diff harness can bisect rendering
   // issues (toggle maps/meshes, inject test textures) in the live scene without guessing.
@@ -332,6 +365,8 @@ export default function CharacterViewer() {
   // Load the base body once (StrictMode-safe: rig.dispose on cleanup, loadBody replaces).
   useEffect(() => {
     let cancelled = false;
+    // Busy until the outfit pass that a successful load starts takes over this operation.
+    const operationId = beginOperation();
     rig.setPose(DEV.pose ?? "idle"); // applied to the skeleton once the body loads
     rig
       .loadBody(BODY_URL, DEV.reconstructed && DEV.sourceMeshes && DEV.sourceAssembly && DEV.sourceFitting
@@ -339,7 +374,9 @@ export default function CharacterViewer() {
       .then(() => !cancelled && setReady(true))
       .catch((e) => {
         console.error(e);
-        if (!cancelled) setError("Failed to load the base body model.");
+        if (cancelled) return;
+        setError("Failed to load the base body model.");
+        endOperation(operationId);
       });
     return () => {
       cancelled = true;
@@ -347,25 +384,18 @@ export default function CharacterViewer() {
       setReady(false);
       prev.current = {};
     };
-  }, [rig]);
+  }, [rig, beginOperation, endOperation]);
 
   // Diff the serializable `build` -> rig equip/unequip whenever it changes.
   useEffect(() => {
     if (!ready) return;
+    const operationId = beginOperation();
     setError(null);
+    setMissingFittingData(false);
     let cancelled = false;
     const controller = new AbortController();
+    let preparedAppearance: Awaited<ReturnType<CharacterRig['prepareSourceItems']>>;
     (async () => {
-      // Harness idle flag: false while this equip loop has in-flight loads.
-      (window as unknown as { __rigIdle?: boolean }).__rigIdle = false;
-      // Restore the previous inspection state before swapping items, including
-      // when the next item is outside the recovered material family.
-      rig.root.traverse((o) => {
-        if (typeof o.userData.reconstructionOriginalVisibility === "boolean") {
-          o.visible = o.userData.reconstructionOriginalVisibility;
-          delete o.userData.reconstructionOriginalVisibility;
-        }
-      });
       // Render a base top under Outerwear when Upper Body is empty (never-bare torso). Derived
       // from `build` only for the rig — the store/share-link `build` is untouched.
       let supported = new Set<string>();
@@ -377,7 +407,6 @@ export default function CharacterViewer() {
           if (cancelled) return;
           console.error(e);
           setError("Couldn’t load reconstructed item data.");
-          (window as unknown as { __rigIdle?: boolean }).__rigIdle = true;
           return;
         }
       }
@@ -401,24 +430,44 @@ export default function CharacterViewer() {
           if (cancelled) return;
         } catch (e) {
           if (cancelled) return;
-          console.error(e);
-          setError("Couldn’t load outfit fitting data.");
-          (window as unknown as { __rigIdle?: boolean }).__rigIdle = true;
+          if (e instanceof MissingSourceDefinitionError) {
+            const names = e.itemIds.map(id => getBrowseItem(id)?.name ?? getItemById(id)?.name ?? id).join(', ');
+            setMissingFittingData(true);
+            setError(`Preview paused: fitting data is missing for ${names}. Remove or replace the item to update the preview.`);
+          } else {
+            console.error(e);
+            setError("Couldn’t load outfit fitting data.");
+          }
           return;
         }
       }
+      // Only touch the current appearance after every selected item has fitting metadata.
+      // In particular, a refused outfit must also retain the previous isolation visibility.
+      rig.root.traverse((o) => {
+        if (typeof o.userData.reconstructionOriginalVisibility === "boolean") {
+          o.visible = o.userData.reconstructionOriginalVisibility;
+          delete o.userData.reconstructionOriginalVisibility;
+        }
+      });
       const appearanceSlots = new Set<Slot>();
+      let commitAppearance: (() => boolean) | undefined;
+      let appearanceOmitsHead = false;
+      let equipFailed = false;
       // Source hair attaches through the preserved body's head frame. The
       // legacy-body diagnostic modes must keep their legacy hair path as well.
       const requestedHair = eff.hair && DEV.sourceMeshes && DEV.sourceFitting && supported.has(eff.hair) ? assembly?.items[eff.hair] : undefined;
       const requestedFace = eff.face && DEV.sourceMeshes && DEV.sourceFitting ? assembly?.items[eff.face] : undefined;
       const faceItem = eff.face ? getItemById(eff.face) : undefined;
-      if (assembly && requestedFace && faceItem?.model?.gltfPath && (requestedHair || (!eff.hair && rig.sourceAssemblyId('hair')))) {
+      // Whether a scalp has a recipient is a question about the hair the user actually selected,
+      // not about the hair the source path happens to support: an unsupported or legacy hairstyle
+      // keeps its own geometry and still needs the head it sits on.
+      const hairSelection = { id: eff.hair ?? undefined, item: requestedHair };
+      if (assembly && requestedFace && faceItem?.model?.gltfPath && (requestedHair || !eff.hair)) {
         appearanceSlots.add('hair'); appearanceSlots.add('face');
         try {
           const parameters = assembly.materialParameters.filter(p => p.itemId === eff.hair);
           const assetsUrl = modelUrl('models/reconstructed-assemblies-v1');
-          const pair = await loadSourceSkinPair(faceItem.id, requestedFace, assetsUrl, parameters);
+          const pair = await loadSourceSkinPair(faceItem.id, requestedFace, assetsUrl, parameters, hairSelection);
           if (cancelled) return;
           if (!pair) appearanceSlots.clear(); // this face remains on the existing path
           else {
@@ -437,15 +486,25 @@ export default function CharacterViewer() {
                 roughness: faceItem.model.bodySkin.roughness,
                 texUrl: faceItem.model.bodySkin.texPath ? modelUrl(faceItem.model.bodySkin.texPath) : undefined } : undefined });
             if (cancelled) return;
-            const committed = await rig.equipSourceItems(changes, removals, controller.signal);
+            preparedAppearance = await rig.prepareSourceItems(changes, removals, controller.signal);
             if (cancelled) return;
-            if (committed) { prev.current.hair = hairKey; prev.current.face = faceKey; }
-            else { delete prev.current.hair; delete prev.current.face; }
+            if (!preparedAppearance) { delete prev.current.hair; delete prev.current.face; return; }
+            commitAppearance = () => {
+              const committed = preparedAppearance!.commit();
+              if (committed) { prev.current.hair = hairKey; prev.current.face = faceKey; }
+              else { delete prev.current.hair; delete prev.current.face; }
+              return committed;
+            };
+            appearanceOmitsHead = !!pair.headOmitted;
+            // Restore a head before removing its covering. For the reverse transition, keep
+            // the previous head until every requested covering has actually loaded.
+            if (!appearanceOmitsHead) { if (!commitAppearance()) return; commitAppearance = undefined; }
           }
         } catch (e) {
           if (cancelled) return;
           console.error(e); setError('Couldn’t load this hair and scalp preview.');
           delete prev.current.hair; delete prev.current.face;
+          return; // Do not remove a covering while the head underneath failed to restore.
         }
       }
       for (const slot of SLOTS) {
@@ -471,6 +530,13 @@ export default function CharacterViewer() {
         // A part socketed onto the head component only exists while a source head is worn: its
         // sockets are that head's own. Without one, keep the ordinary path instead of failing.
         const headSocketed = !!sourceCandidate?.parts.some(part => !part.hidden && part.definition.bAttachToHeadMesh);
+        if (headSocketed && appearanceOmitsHead) {
+          // No native replacement-head socket is established. Do not fall back to an unrelated
+          // legacy/body socket, or leave an accessory attached to the head about to be removed.
+          rig.unequip(slot);
+          delete prev.current[slot];
+          continue;
+        }
         const headComponent = headSocketed ? rig.sourceHeadComponentKey() : undefined;
         const sourceItem = headSocketed && !headComponent ? undefined : sourceCandidate;
         const skinCandidate = id && slot === "face" && DEV.sourceMeshes && DEV.sourceFitting ? assembly?.items[id] : undefined;
@@ -521,7 +587,7 @@ export default function CharacterViewer() {
             const sourceParts = sourceItem ? await loadSourceRigParts(sourceItem,
               modelUrl("models/reconstructed-assemblies-v1")) : undefined;
             const sourceSkinPair = skinCandidate ? await loadSourceSkinPair(item.id, skinCandidate,
-              modelUrl("models/reconstructed-assemblies-v1"), skinParameters) : undefined;
+              modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection) : undefined;
             await rig.equip({
               id: item.id,
               slot,
@@ -552,6 +618,7 @@ export default function CharacterViewer() {
             setError("Couldn’t load the selected preview. Some items may still show the previous selection.");
             // Failed loads remain retryable on the next build change.
             delete prev.current[slot];
+            equipFailed = true;
             continue;
           }
           if (cancelled) return;
@@ -573,6 +640,10 @@ export default function CharacterViewer() {
           rig.unequipDecal(slot);
         }
         prev.current[slot] = key ?? null;
+      }
+      if (commitAppearance) {
+        if (equipFailed) { delete prev.current.hair; delete prev.current.face; return; }
+        if (!commitAppearance()) return;
       }
       if (assembly) {
         const activeCoat = rig.sourceAssemblyId("outerwear");
@@ -599,7 +670,7 @@ export default function CharacterViewer() {
           !(slot === "upperBody" && sourceShirtConflict && !!activeCoat) &&
           !assembly.items[actual[slot] ?? ""]?.hidden);
         rig.setSourceFittingTags(DEV.sourceFitting ? assembly.fittingTags : []);
-        (window as unknown as { __sourceAssembly?: SourceOutfit }).__sourceAssembly = assembly;
+        rigHarness().__sourceAssembly = assembly;
       }
       await rig.whenBodyHidesReady();
       if (cancelled) return;
@@ -619,13 +690,23 @@ export default function CharacterViewer() {
           mesh.visible = materials.some((m) => m.userData.reconstructed === true);
         });
       }
-      if (!cancelled) (window as unknown as { __rigIdle?: boolean }).__rigIdle = true;
-    })();
+    })().catch((e) => {
+      // Anything the per-step handlers above did not anticipate: surface it so Retry works.
+      if (cancelled) return;
+      console.error(e);
+      setError("Couldn’t update the preview.");
+    }).finally(() => {
+      preparedAppearance?.release();
+      // Idle only once the whole pass, including body hides, has settled. A cancelled pass
+      // leaves the busy state to the pass that superseded it.
+      if (!cancelled) endOperation(operationId);
+    });
     return () => {
       cancelled = true;
       controller.abort();
+      preparedAppearance?.release();
     };
-  }, [build, ready, rig, retryAttempt]);
+  }, [build, ready, rig, retryAttempt, beginOperation, endOperation]);
 
   const changePreviewOption = (name: "surface" | "isolate", value: string) => {
     const url = new URL(buildShareUrl(window.location.href, build));
@@ -644,6 +725,7 @@ export default function CharacterViewer() {
           type) applies cleanly — three recompiles all programs for the new renderer. */}
       <Canvas
         key={theme}
+        aria-busy={busy}
         camera={{
           position: DEV.cam ? [DEV.cam[0], DEV.cam[1], DEV.cam[2]] : [0, 1.0, 3.6],
           fov: DEV.fov ?? 35,
@@ -700,20 +782,32 @@ export default function CharacterViewer() {
       )}
       {DEV.tune && ready && <MaterialTuner rig={rig} />}
       {!ready && !error && (
-        <div className="pointer-events-none absolute inset-0 grid place-items-center text-sm text-neutral-500">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center text-sm text-neutral-500">
           Loading model…
         </div>
       )}
-      {error && (
-        <div role="alert" className="absolute inset-x-2 bottom-2 rounded-lg bg-neutral-950/90 p-3 text-center text-sm text-red-300">
-          <p>{error}</p>
-          <button className="mt-2 rounded bg-neutral-700 px-3 py-1.5 text-white hover:bg-neutral-600"
-            onClick={() => {
-              if (ready) setRetryAttempt(attempt => attempt + 1);
-              else changePreviewOption("isolate", DEV.isolate ? "1" : "0");
-            }}>Retry preview</button>
+      {/* Bottom stack: the loading pill sits above any error, so a failed slot never hides
+          the status of the pass that is still running. */}
+      <div className="pointer-events-none absolute inset-x-2 bottom-2 z-10 flex flex-col items-center gap-2">
+        <div role="status" aria-live="polite">
+          {!ready && !error ? <span className="sr-only">Loading model…</span> : showBusy && (
+            <span className="flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white shadow-sm backdrop-blur">
+              <span aria-hidden="true" className="h-3 w-3 shrink-0 rounded-full border-2 border-white/30 border-t-white motion-safe:animate-spin" />
+              Loading outfit…
+            </span>
+          )}
         </div>
-      )}
+        {error && (
+          <div role="alert" className="pointer-events-auto w-full rounded-lg bg-neutral-950/90 p-3 text-center text-sm text-red-300">
+            <p>{error}</p>
+            {!missingFittingData && <button className="mt-2 rounded bg-neutral-700 px-3 py-1.5 text-white hover:bg-neutral-600"
+              onClick={() => {
+                if (ready) setRetryAttempt(attempt => attempt + 1);
+                else changePreviewOption("isolate", DEV.isolate ? "1" : "0");
+              }}>Retry preview</button>}
+          </div>
+        )}
+      </div>
       {DEV.inspect && ready && <MeshInspector rig={rig} />}
     </div>
   );

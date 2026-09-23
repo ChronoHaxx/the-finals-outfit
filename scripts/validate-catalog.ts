@@ -99,7 +99,9 @@ if (itemsResult.success && sponsorsResult.success) {
         "A well-formed path pointing at nothing will pass this run.",
     );
   } else {
-    for (const { base, paths, reconstruction } of catalogHostGroups(referenced, assetsBase, process.env.MODELS_BASE)) {
+    // MODELS_BASE / RECONSTRUCTION_BASE mirror VITE_MODELS_BASE / VITE_RECONSTRUCTION_BASE.
+    const hostGroups = catalogHostGroups(referenced, assetsBase, process.env.MODELS_BASE, process.env.RECONSTRUCTION_BASE);
+    for (const { base, paths, reconstruction } of hostGroups) {
       const reconstructionRoots = reconstruction ? RECONSTRUCTION_ROOTS : [];
 
       // Checked against a published manifest rather than by fetching every path.
