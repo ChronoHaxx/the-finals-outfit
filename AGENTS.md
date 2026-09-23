@@ -18,3 +18,12 @@ limits. This is the release policy for this repository.
   enable paid services or change account/subscription settings automatically.
 
 Agent checks and the maintainer's physical-phone acceptance are separate.
+
+# Help with difficult problems
+
+The maintainer requested Claude Opus 5.5 assistance when Codex is struggling to
+fix or overcome an issue in this project. Use the exact `claude-opus-5-5` model
+with a bounded problem description, relevant evidence and prior attempts; keep
+the handoff scoped to this project and honor applicable approval requirements.
+Codex verifies and integrates the result. This does not authorize paid account
+changes or Claude work on other projects.
