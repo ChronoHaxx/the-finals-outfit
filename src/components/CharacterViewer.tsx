@@ -6,6 +6,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
 import { loadSourceAssemblyItems, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, MissingSourceDefinitionError, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
+import { sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
 import MeshInspector from "./MeshInspector";
@@ -438,6 +439,17 @@ export default function CharacterViewer() {
             console.error(e);
             setError("Couldn’t load outfit fitting data.");
           }
+          return;
+        }
+      }
+      // A supported source hair this outfit leaves ambiguous is refused as a whole combination:
+      // nothing is mutated, the selection is kept, and the next valid change retries.
+      if (assembly && eff.hair && DEV.sourceMeshes && DEV.sourceFitting && supported.has(eff.hair)) {
+        const ambiguity = sourceHairUnresolved(assembly, eff.hair);
+        if (ambiguity.length) {
+          console.warn(`Unsupported source hair combination ${eff.hair}: ${ambiguity.join('; ')}`);
+          setMissingFittingData(true);
+          setError('Preview paused: this hairstyle and headwear combination is not supported yet. Remove or replace the hair or headwear to update the preview.');
           return;
         }
       }
