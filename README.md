@@ -151,6 +151,27 @@ the Zod schema in `src/lib/item.ts`:
 Run `npm run validate:catalog` before opening the PR. The workflow blocks
 deploys if the catalog is invalid.
 
+## Reporting preview problems
+
+Under the preview, **Report issue** (whole outfit) or the flag beside an equipped
+piece (that item) opens a prefilled GitHub issue in a new tab. Nothing is sent
+automatically: review the text, add what you expected (the in-game icon or look)
+and a screenshot, then submit it yourself. The prefill contains:
+
+- the stable outfit link, which reloads the exact build (see `src/lib/share-url.ts`);
+- every equipped item with its slot, catalog ID and current status label;
+- the body (Medium today), catalog mode, viewport size and browser.
+
+The link is built by `src/lib/issue-report.ts` and trimmed to stay under common URL
+limits; the outfit link always remains. When triaging, reproduce with that link,
+note the item ID and body, and keep an item purple in
+`src/data/reconstruction-reviews.json` until a fix is verified.
+
+**Randomise** picks a rules-based outfit (no AI): core slots are always filled,
+optional slots by chance, locked pieces are kept, and a random hat is not paired
+with a random hairstyle. By default it only uses items that already have
+reconstruction work; tick **Any status** to include the rest.
+
 ## Roadmap
 
 For current reconstruction counts and the remaining sequence, see the
