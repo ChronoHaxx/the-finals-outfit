@@ -17,7 +17,9 @@ npm install
 npm run dev                # local dev server
 npm run build              # production build -> dist/
 npm run preview            # preview the built bundle
-npm run typecheck          # tsc --noEmit
+npm run typecheck          # tsc -b --noEmit
+npm test                   # node:test suites under tests/ and scripts/lib (scripts/test.mjs)
+npm run verify -- --dry    # machine verification against local extracted assets; report only
 npm run validate:catalog   # schema-check src/data/items.json
 npm run import:catalog -- --materials-only  # refresh per-material bindings from the local dump
 ```
@@ -127,17 +129,34 @@ the Zod schema in `src/lib/item.ts`:
   [the-finals.fandom.com](https://the-finals.fandom.com), and official patch
   notes at [reachthefinals.com/patchnotes](https://www.reachthefinals.com/patchnotes).
 
+`npm run verify` is not a unit test. It needs the local extracted assets, runs the
+machine verification checks (geometry, UV, transform, bindings, body culling) and
+writes the resulting marks to `scripts/verification.generated.json`. Add `-- --dry` to
+report without writing, or `-- --aspect=NAME` / `-- --limit=N` to narrow a run.
+
 Run `npm run validate:catalog` before opening the PR. The workflow blocks
 deploys if the catalog is invalid.
 
 ## Roadmap
 
-For current reconstruction counts and the remaining sequence, see the
-[12 September coverage checkpoint](_docs/reconstruction-progress-2026-09-12.md).
-It distinguishes touched choices, complete source assemblies and visual acceptance.
+Reconstruction counts change with each accepted asset release, so this README does
+not pin them. Consult the app’s progress display and the relevant release checkpoint; item
+status combines catalog review records with available reconstruction data. Dated checkpoints record the counts measured on their date;
+the [12 September coverage checkpoint](_docs/reconstruction-progress-2026-09-12.md)
+is one such historical record (it distinguishes touched choices, complete source
+assemblies and visual acceptance) and its numbers are not current.
 
-M5 (materials pipeline) has shipped: 2,531 of 2,866 items carry a 3D model, with
-per-skin baked albedo/normal/orm sets replacing the old flat region tint.
+M5 (materials pipeline) has shipped. *Historical inventory at that milestone:*
+2,531 of 2,866 items carried a legacy 3D model, with per-skin baked
+albedo/normal/orm sets replacing the old flat region tint. This is not current
+source-reconstruction coverage.
+
+*Historical roadmap (August–September 2026).* The items below keep their dated
+findings and figures as evidence; they are not updated as work lands. Since they
+were written, the source-reconstruction path has begun applying decoded source
+visibility rules and a bounded fitting-morph preview (`src/rig/SourceAssembly.ts`,
+`src/rig/SourceFitting.ts`). That path is separate from the legacy catalog fields
+discussed below.
 
 What's next, roughly in the order it's worth doing. Nothing here is committed to
 a date.
@@ -403,6 +422,9 @@ normal sampled per-pixel rather than folded into the atlas. Baking at 4096 would
 soften the aliasing at 16× the memory and still not reproduce it.
 
 ### Known gaps
+
+*Historical checkpoint:* this describes the legacy baked renderer's render-vs-icon
+census and has not been re-measured for source reconstruction.
 
 The render-vs-icon census sits at a mean score of ~61/100 across 239 sampled
 items, with colour accuracy the largest single category of failure. Some of that

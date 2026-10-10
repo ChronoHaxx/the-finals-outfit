@@ -1,5 +1,6 @@
 import { SLOTS, type Slot } from "./slots";
 import type { Outfit } from "./outfit";
+import { resolveEquipmentSlots } from "./equipment";
 
 // Catalog slot corrections, applied to build state that was written down BEFORE the fix.
 //
@@ -49,14 +50,43 @@ const LOWER_TO_UPPER = [
   "streetwear-tightsingletsportevent-cotton",
 ] as const;
 
+// 25 September 2026: items whose catalog slot contradicted every EBodySlot their source definition
+// declares (reconstructed-assembly-v2/items/<id>.json properties.Slots). Two head-worn items were
+// filed under feet; hip-socket items (only EBodySlot::BackLowerRight) under headwear, hands or
+// lower body. Links written before the fix keep the item through this table.
+const SOURCE_SLOT_FIXES_2026_09_25: readonly (readonly [string, Slot, Slot])[] = [
+  ["attachment-pumpkinhead-hat", "feet", "headwear"],
+  ["streetwear-shoephone-leather-black", "feet", "headwear"],
+  ["attachment-foamglove", "hands", "lowerBack"],
+  ["attachment-foamglove-ospuze", "hands", "lowerBack"],
+  ["attachment-handdrum-01-lumbar", "hands", "lowerBack"],
+  ["sport-boxinggloves-leather-blackgold", "hands", "lowerBack"],
+  ["sport-boxinggloves-leather-sportevent", "hands", "lowerBack"],
+  ["sport-boxinggloves-leather-volpe", "hands", "lowerBack"],
+  ["attachments-horngoblin-01", "headwear", "lowerBack"],
+  ["attachments-lumbarhelmet", "headwear", "lowerBack"],
+  ["cute-pandabuckethat-cotton-white", "headwear", "lowerBack"],
+  ["fromtencent-asianspirithorn", "headwear", "lowerBack"],
+  ["fromtencent-asianspirithorn-silverblue", "headwear", "lowerBack"],
+  ["military-tacticalhelmetlumbar-base-green", "headwear", "lowerBack"],
+  ["military-tacticalhelmetlumbar-base-mercenary", "headwear", "lowerBack"],
+  ["military-tacticalhelmetlumbar-plastic-arena-d565", "headwear", "lowerBack"],
+  ["military-tacticalhelmetlumbar-plastic-dissun", "headwear", "lowerBack"],
+  ["military-tacticalhelmetlumbar-plastic-ospuz-efe4", "headwear", "lowerBack"],
+  ["scifi-singlekatanashort-metal-blackvaiiya", "lowerBody", "lowerBack"],
+  ["scifi-singlekatanashort-metal-vanguard", "lowerBody", "lowerBack"],
+];
+
 export interface SlotMigration {
   readonly from: Slot;
   readonly to: Slot;
 }
 
-export const LEGACY_SLOT_MIGRATIONS: ReadonlyMap<string, SlotMigration> = new Map(
-  LOWER_TO_UPPER.map((id) => [id, { from: "lowerBody", to: "upperBody" } as const]),
-);
+export const LEGACY_SLOT_MIGRATIONS: ReadonlyMap<string, SlotMigration> = new Map<string, SlotMigration>([
+  ...LOWER_TO_UPPER.map((id) => [id, { from: "lowerBody", to: "upperBody" }] as const),
+  ...SOURCE_SLOT_FIXES_2026_09_25.map(([id, from, to]) => [id, { from, to }] as const),
+  ["casual-onestrapoveralls-denim", { from: "upperBack", to: "upperBody" }],
+]);
 
 export type SlotMap = Partial<Record<Slot, string>>;
 export type DyeMap = Partial<Record<Slot, string>>;
@@ -140,12 +170,16 @@ export function migrateSlots(
 /** Share-link hydration: migrate slots and dyes, keeping presetName and any other field. */
 export function migrateOutfit(outfit: Outfit): Outfit {
   const migrated = migrateSlots(outfit.slots, outfit.dyes);
-  const next: Outfit = { ...outfit, slots: migrated.slots };
-  if (migrated.dyes) next.dyes = migrated.dyes;
+  const resolved = resolveEquipmentSlots(migrated.slots);
+  const next: Outfit = { ...outfit, slots: resolved.slots };
+  if (migrated.dyes) {
+    for (const slot of resolved.removed) delete migrated.dyes[slot];
+    next.dyes = migrated.dyes;
+  }
   return next;
 }
 
 /** Direct store loading (harnesses, future presets) — same rules, no dyes to carry. */
 export function migrateBuildSlots(slots: Readonly<SlotMap>): SlotMap {
-  return migrateSlots(slots).slots;
+  return resolveEquipmentSlots(migrateSlots(slots).slots).slots;
 }

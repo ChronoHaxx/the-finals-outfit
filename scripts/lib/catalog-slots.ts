@@ -50,6 +50,9 @@ export const SLOT_RULES: [RegExp, Slot][] = [
   [/watch|wrist|bracelet|bangle/, "wrist"],
   [/pant|trouser|skirt|kilt|legging|stocking|chap|legwear|bottom|capri|jogger/, "lowerBody"],
   [/cape|cloak|poncho|coat|duster|mantle|robe|shawl|capelet|cardigan/, "outerwear"],
+  // OneStrapOveralls is tagged BodyUpper and occupies BodyUpper + BodyLower;
+  // its strap is not a separate back accessory.
+  [/overall/, "upperBody"],
   [/backpack|bandolier|\bbag|harness|satchel|quiver|\bpack|wing|jetpack|parachute|sling|strap|clavicle|rope/, "upperBack"],
   // NOTE: \bhat\b / \bcaps?\b need BOTH boundaries — bare `\bcap` matched "captain
   // jacket" into headwear.

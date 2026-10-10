@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { SourceRigPart } from './SourceAssembly';
+import { sourceLocalMatrix } from './SourceTransform';
 
 type SourceAttachmentTransform = NonNullable<SourceRigPart['attachment']>;
 
@@ -14,16 +15,10 @@ export function bodySocketRest(attachment: SourceAttachmentTransform): SourceSoc
 }
 
 function sourceAttachmentLocal(attachment: SourceAttachmentTransform, unitScale = false): THREE.Matrix4 {
-  // FRotator uses yaw about +Z, pitch about -Y and roll about -X. Convert
-  // the rotation through the same X/Z/Y reflection as the preserved GLBs.
-  const [pitch, yaw, roll] = attachment.rotation.map(v => v * Math.PI / 360);
-  const sp = Math.sin(pitch), cp = Math.cos(pitch), sy = Math.sin(yaw), cy = Math.cos(yaw);
-  const sr = Math.sin(roll), cr = Math.cos(roll);
-  const x = cr * sp * sy - sr * cp * cy, y = -cr * sp * cy - sr * cp * sy;
-  const z = cr * cp * sy - sr * sp * cy, w = cr * cp * cy + sr * sp * sy;
-  const [px, py, pz] = attachment.position, [sx, syScale, sz] = attachment.scale;
-  return new THREE.Matrix4().compose(new THREE.Vector3(px, pz, py).multiplyScalar(.01),
-    new THREE.Quaternion(-x, -z, -y, w).normalize(), unitScale ? new THREE.Vector3(1, 1, 1) : new THREE.Vector3(sx, sz, syScale));
+  // FRotator uses yaw about +Z, pitch about -Y and roll about -X. The conversion through the same
+  // X/Z/Y reflection as the preserved GLBs now lives in SourceTransform, which the resolver shares.
+  return new THREE.Matrix4().fromArray(sourceLocalMatrix(attachment.position, attachment.rotation,
+    unitScale ? [1, 1, 1] : attachment.scale));
 }
 
 export function sourceAttachmentRest(attachment: SourceAttachmentTransform,

@@ -1,24 +1,17 @@
 import * as THREE from "three";
 import { fetchAsset as checkedFetch } from "../lib/asset-fetch";
+import { VerifiedByteCache } from "../lib/verified-bytes";
 import { HAIR_LIGHTING_GLSL } from './HairLighting';
+import {
+  RECOVERED_SAMPLER_TARGET, assemblePackedLayers, planReconstructedSamplers, rewriteSamplerGlsl,
+  samplerPlanReport, samplerUniformBindings,
+} from "./ReconstructedSamplers";
+import type { SamplerPackResource, SamplerPlan, SamplerTextureSpec } from "./ReconstructedSamplers";
 
 export const SURFACE_VIEWS = ["lit", "baseColor", "normal", "roughness", "metalness", "ao", "specular"] as const;
 export type SurfaceView = (typeof SURFACE_VIEWS)[number];
 
-interface TextureSpec {
-  id: string;
-  slot: string;
-  file: string;
-  array: boolean;
-  cube?: boolean;
-  componentType?: "float16";
-  depth: number;
-  srgb: boolean;
-  wrapS: string;
-  wrapT: string;
-  sha256: string;
-  mips: { width: number; height: number; offset: number; bytes: number }[];
-}
+type TextureSpec = SamplerTextureSpec;
 interface Manifest {
   formatVersion: number;
   itemId: string;
@@ -34,55 +27,51 @@ interface Manifest {
   skinSurface?: boolean;
   skinCoverage?: 'neck-fade';
   worldSurface?: boolean;
-  surfaceKind?: "eye" | "teeth" | "eyelash" | "hair";
+  glassSurface?: boolean;
+  blendMode?: string;
+  surfaceKind?: "eye" | "teeth" | "eyelash" | "hair" | "glass";
   normalSpace?: "world" | "tangent" | "strand-tangent";
   twoSided?: boolean;
   requiresVertexColor?: boolean;
   parameterOverrides?: string[];
+  recoveredEmissive?: boolean;
 }
 
-async function verifyHash(data: ArrayBuffer, expected: string): Promise<void> {
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  const actual = Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, "0")).join("");
-  if (actual !== expected.toLowerCase()) throw new Error("Recovered material asset hash mismatch");
+// Hash-verified shader and texture bytes, reused across loads of the same authored file
+// (hair and face swaps restage the same skin textures). Every call receives its own copy;
+// manifests are not hashed and always load fresh. Bounded to 128 MiB / 512 entries.
+const verifiedBytes = new VerifiedByteCache(checkedFetch);
+
+// Every sampler resource starts from the authored bytes: fetch, decompress and
+// hash-check the original file before anything is uploaded or regrouped. A repeat
+// load reuses bytes that already passed that check; layout validation still runs per load.
+function fetchTextureData(spec: TextureSpec, base: string): Promise<ArrayBuffer> {
+  return verifiedBytes.load(new URL(spec.file, base).href, spec.sha256, "gzip");
 }
 
-async function loadTexture(spec: TextureSpec, base: string): Promise<THREE.Texture> {
-  const response = await checkedFetch(new URL(spec.file, base).href);
-  if (!response.body) throw new Error("Empty recovered texture response");
-  const data = await new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
-  await verifyHash(data, spec.sha256);
+function validateTextureLayout(spec: TextureSpec, data: ArrayBuffer): { half: boolean } {
   const half = spec.componentType === "float16";
   if ((spec.componentType !== undefined && !half) || (half && spec.srgb)
     || (spec.cube && (spec.array || spec.depth !== 6))
     || (!spec.array && !spec.cube && spec.depth !== 1)) throw new Error("Unsupported recovered texture layout");
   const bytesPerPixel = half ? 8 : 4;
   let end = 0;
-  const mipmaps = spec.mips.map((m) => {
+  for (const m of spec.mips) {
     if (m.offset !== end || m.bytes !== m.width * m.height * spec.depth * bytesPerPixel)
       throw new Error("Invalid recovered mip layout");
     end += m.bytes;
-    return { data: half ? new Uint16Array(data, m.offset, m.bytes / 2) : new Uint8Array(data, m.offset, m.bytes), width: m.width, height: m.height };
-  });
-  if (end !== data.byteLength || !mipmaps.length) throw new Error("Invalid recovered texture length");
-  const { width, height } = mipmaps[0];
-  // Three's CompressedArrayTexture explicitly supports RGBAFormat mip data. Its
-  // DataArrayTexture upload path only uploads level zero, losing cooked mipmaps.
-  // @types/three omits this supported RGBA upload branch from constructor types.
-  const rgbaFormat = THREE.RGBAFormat as unknown as THREE.CompressedPixelFormat;
-  const type = half ? THREE.HalfFloatType : THREE.UnsignedByteType;
-  const texture = spec.array
-    ? new THREE.CompressedArrayTexture(mipmaps, width, height, spec.depth, rgbaFormat, type)
-    : new THREE.CompressedTexture(spec.cube ? [] : mipmaps, width, height, rgbaFormat, type);
-  if (spec.cube) {
-    // Three's compressed cubemap path supports decoded RGBA face mipmaps. Keep
-    // the source +X/-X/+Y/-Y/+Z/-Z order and every authored level, without flips.
-    texture.image = Array.from({ length: 6 }, (_, face) => ({ width, height, mipmaps: mipmaps.map(m => {
-      const size = m.width * m.height * 4;
-      return { width: m.width, height: m.height, data: m.data.subarray(face * size, (face + 1) * size) };
-    }) })) as unknown as typeof texture.image;
   }
-  texture.name = `recovered:${spec.id}`;
+  if (end !== data.byteLength || !spec.mips.length) throw new Error("Invalid recovered texture length");
+  return { half };
+}
+
+// Three's CompressedArrayTexture explicitly supports RGBAFormat mip data. Its
+// DataArrayTexture upload path only uploads level zero, losing cooked mipmaps.
+// @types/three omits this supported RGBA upload branch from constructor types.
+const RGBA_COMPRESSED = THREE.RGBAFormat as unknown as THREE.CompressedPixelFormat;
+
+function applySamplerPolicy(texture: THREE.Texture, spec: { srgb: boolean; wrapS: string; wrapT: string }, name: string) {
+  texture.name = name;
   texture.colorSpace = spec.srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
   texture.flipY = false;
   const wrap = (s: string) => s === "TA_Clamp" ? THREE.ClampToEdgeWrapping
@@ -95,6 +84,46 @@ async function loadTexture(spec: TextureSpec, base: string): Promise<THREE.Textu
   texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.generateMipmaps = false;
   texture.needsUpdate = true;
+}
+
+async function loadTexture(spec: TextureSpec, base: string): Promise<THREE.Texture> {
+  const data = await fetchTextureData(spec, base);
+  const { half } = validateTextureLayout(spec, data);
+  const mipmaps = spec.mips.map((m) => ({
+    data: half ? new Uint16Array(data, m.offset, m.bytes / 2) : new Uint8Array(data, m.offset, m.bytes),
+    width: m.width, height: m.height,
+  }));
+  const { width, height } = mipmaps[0];
+  const type = half ? THREE.HalfFloatType : THREE.UnsignedByteType;
+  const texture = spec.array
+    ? new THREE.CompressedArrayTexture(mipmaps, width, height, spec.depth, RGBA_COMPRESSED, type)
+    : new THREE.CompressedTexture(spec.cube ? [] : mipmaps, width, height, RGBA_COMPRESSED, type);
+  if (spec.cube) {
+    // Three's compressed cubemap path supports decoded RGBA face mipmaps. Keep
+    // the source +X/-X/+Y/-Y/+Z/-Z order and every authored level, without flips.
+    texture.image = Array.from({ length: 6 }, (_, face) => ({ width, height, mipmaps: mipmaps.map(m => {
+      const size = m.width * m.height * 4;
+      return { width: m.width, height: m.height, data: m.data.subarray(face * size, (face + 1) * size) };
+    }) })) as unknown as typeof texture.image;
+  }
+  applySamplerPolicy(texture, spec, `recovered:${spec.id}`);
+  return texture;
+}
+
+// Packed layers never exist as their own GPU texture: the authored bytes go
+// straight into one array upload, so a layer and its original resource can
+// never both own an allocation.
+async function loadPackedTexture(resource: SamplerPackResource, base: string): Promise<THREE.Texture> {
+  const buffers = await Promise.all(resource.layers.map(async (layer) => {
+    const data = await fetchTextureData(layer.texture, base);
+    validateTextureLayout(layer.texture, data);
+    return data;
+  }));
+  const { layout } = resource;
+  const mipmaps = assemblePackedLayers(buffers, layout);
+  const texture = new THREE.CompressedArrayTexture(mipmaps, layout.width, layout.height, layout.depth,
+    RGBA_COMPRESSED, layout.componentType === "float16" ? THREE.HalfFloatType : THREE.UnsignedByteType);
+  applySamplerPolicy(texture, layout, `recovered:pack${resource.index}`);
   return texture;
 }
 
@@ -109,6 +138,7 @@ struct ReconstructedSurface {
   vec3 subsurfaceColor;
   float opacity;
   float scatter;
+  vec3 emissive;
 };
 varying vec2 vRecoveredUv0;
 varying vec2 vRecoveredUv1;
@@ -142,49 +172,49 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     throw new Error("Unsupported recovered UV requirement");
   const needsUv1 = requiredUvSets.includes(1);
   const worldSurface = !!manifest.skinSurface || !!manifest.worldSurface;
-  const usesGeometry = !!manifest.geometryDependentNormals || worldSurface;
+  const glass = !!manifest.glassSurface;
+  if ((glass || manifest.surfaceKind === 'glass') && (!glass || manifest.surfaceKind !== 'glass'
+    || manifest.normalSpace !== 'tangent' || manifest.blendMode !== 'BLEND_TranslucentGreyTransmittance'
+    || worldSurface || manifest.viewDependentCloth || manifest.geometryDependentNormals))
+    throw new Error('Unsupported recovered glass surface contract');
+  const usesGeometry = !!manifest.geometryDependentNormals || worldSurface || glass;
   const hair = manifest.surfaceKind === 'hair';
   if (manifest.skinCoverage && (manifest.skinCoverage !== 'neck-fade' || !manifest.skinSurface))
     throw new Error('Unsupported recovered skin coverage');
   const neckFade = manifest.skinCoverage === 'neck-fade';
   const masked = manifest.surfaceKind === "eyelash" || hair || neckFade;
-  const shaderBytes = await (await checkedFetch(new URL(manifest.shader, base).href)).arrayBuffer();
-  await verifyHash(shaderBytes, manifest.shaderSha256);
+  const shaderBytes = await verifiedBytes.load(new URL(manifest.shader, base).href, manifest.shaderSha256, "identity");
   let recoveredShader = new TextDecoder().decode(shaderBytes);
   let coverageShader: string | undefined;
   if (masked) {
     if (!manifest.coverageShader || !manifest.coverageShaderSha256 || manifest.coverageGeometryFields?.length !== 0)
       throw new Error("Recovered masked shadows require validated UV-only coverage");
-    const bytes = await (await checkedFetch(new URL(manifest.coverageShader, base).href)).arrayBuffer();
-    await verifyHash(bytes, manifest.coverageShaderSha256);
+    const bytes = await verifiedBytes.load(new URL(manifest.coverageShader, base).href,
+      manifest.coverageShaderSha256, "identity");
     coverageShader = new TextDecoder().decode(bytes);
   }
-  const byId = new Map<string, TextureSpec>();
-  const aliases: string[] = [];
-  const signature = (t: TextureSpec) => JSON.stringify([
-    t.sha256, t.array, t.cube, t.componentType, t.depth, t.srgb, t.wrapS, t.wrapT, t.mips,
-  ]);
-  for (const spec of manifest.textures) {
-    if (!/^t\d+$/.test(spec.slot)) throw new Error("Invalid recovered texture slot");
-    const first = byId.get(spec.id);
-    if (!first) { byId.set(spec.id, spec); continue; }
-    if (signature(first) !== signature(spec)) throw new Error("Conflicting recovered texture identity");
-    // Material instances often bind the same null decal texture to several
-    // shader slots. Alias identical resources so they consume one WebGL sampler.
-    const declaration = `uniform highp ${spec.cube ? "samplerCube" : spec.array ? "sampler2DArray" : "sampler2D"} u_${spec.slot};`;
-    if (!recoveredShader.includes(declaration)) throw new Error("Missing recovered sampler declaration");
-    recoveredShader = recoveredShader.replace(declaration, `#define u_${spec.slot} u_${first.slot}`);
-    aliases.push(`${spec.slot}=${first.slot}`);
-  }
-  const unique = [...byId.values()];
-  const loaded = await Promise.allSettled(unique.map((t) => loadTexture(t, base)));
+  // One plan drives the surface pass, the shadow/coverage pass and every upload.
+  // It aliases identical identities exactly as before and, only when the budget
+  // demands it, moves compatible 2D textures into shared array layers. The
+  // authored files, manifest metadata and shader hashes are untouched; only the
+  // already-verified runtime shader strings are transformed.
+  const plan: SamplerPlan = planReconstructedSamplers(manifest.textures,
+    { target: RECOVERED_SAMPLER_TARGET, deduplicate: true });
+  recoveredShader = rewriteSamplerGlsl(recoveredShader, plan);
+  if (coverageShader) coverageShader = rewriteSamplerGlsl(coverageShader, plan, { allowMissingDeclarations: true });
+  const planReport = samplerPlanReport(plan);
+
+  const loaded = await Promise.allSettled(plan.resources.map((resource) =>
+    resource.kind === "pack" ? loadPackedTexture(resource, base) : loadTexture(resource.texture, base)));
   const textures = new Map<string, THREE.Texture>();
-  loaded.forEach((result, i) => { if (result.status === "fulfilled") textures.set(unique[i].id, result.value); });
+  loaded.forEach((result, i) => { if (result.status === "fulfilled") textures.set(plan.resources[i].key, result.value); });
   const failure = loaded.find((r) => r.status === "rejected");
   if (failure?.status === "rejected") {
     textures.forEach((t) => t.dispose());
+    textures.clear();
     throw failure.reason;
   }
+  const uniformBindings = samplerUniformBindings(plan);
   const dispose = () => textures.forEach((t) => t.dispose());
   return {
     dispose,
@@ -200,10 +230,15 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         dispose();
         throw new Error("Geometry-dependent surface requires original tangents");
       }
-      if (!mesh.geometry.hasAttribute("uv") || (needsUv1 && !mesh.geometry.hasAttribute("uv1"))) {
+      if (!mesh.geometry.hasAttribute("uv")) {
         dispose();
         throw new Error("Recovered surface is missing a required original UV set");
       }
+      // UE's local vertex factory binds the mesh's last texcoord stream to every
+      // channel a material requests beyond what the mesh has, so on a single-UV
+      // static mesh the material's UV1 reads UV0. Alias it the same way.
+      if (needsUv1 && !mesh.geometry.hasAttribute("uv1"))
+        mesh.geometry.setAttribute("uv1", mesh.geometry.getAttribute("uv"));
       const makeMaterial = (old: THREE.Material) => {
         const material = new THREE.MeshPhysicalMaterial({
           name: `${manifest.itemId}:recovered`, roughness: 1, metalness: 1,
@@ -212,6 +247,10 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         // Spatial alpha hashing consumes the raw material coverage. Native UE
         // temporal dithering is still pending; texture alpha alone is not coverage.
         material.alphaHash = masked;
+        // Qualified glass recovers the source material's opacity. It uses the
+        // preview's alpha blend and lighting, not UE refraction/transmittance.
+        material.transparent = glass && view === 'lit';
+        material.depthWrite = !material.transparent;
         if (manifest.skinSurface && skinOptions?.preserveAlpha && !neckFade) {
           // Retain the current preview's neck-edge coverage while native skin
           // opacity/depth-offset evaluation is still a separate adapter.
@@ -231,17 +270,23 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         material.userData.skinSurface = !!manifest.skinSurface;
         material.userData.skinCoverage = manifest.skinCoverage;
         material.userData.surfaceKind = manifest.surfaceKind;
+        material.userData.glassOpacityPolicy = glass ? 'source opacity; alpha-blended preview; native refraction and lighting pending' : undefined;
         material.userData.parameterOverrides = manifest.parameterOverrides;
         material.userData.hairLightingPolicy = hair ? 'Karis 2016 R/TT/TRT preview; native lighting, volume shadows and TAA pending' : undefined;
         material.userData.coveragePolicy = masked ? "raw material coverage with Three alpha hashing; native TAA pending" : undefined;
         material.userData.skinOpacityPolicy = neckFade ? 'source neck mask and enable; preview alpha hashing; native dither, discard and depth offset pending'
           : manifest.skinSurface ? "existing preview coverage; native opacity pending" : undefined;
-        material.userData.recoveredSamplers = { bindings: manifest.textures.length, unique: unique.length };
+        // Counts and plan key so a run can be proven against the manifest. A
+        // small sampler count is a budget fact, never an acceptance signal.
+        material.userData.recoveredSamplers = planReport;
         // disposeObject3D already releases textures stored directly on userData.
-        textures.forEach((texture, id) => { material.userData[id] = texture; });
-        material.customProgramCacheKey = () => `recovered-v9:${manifest.shaderSha256}:${aliases.join(",")}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}`;
+        for (const resource of plan.resources) {
+          const texture = textures.get(resource.key);
+          if (texture) material.userData[resource.kind === "pack" ? `recoveredPack${resource.index}` : resource.texture.id] = texture;
+        }
+        material.customProgramCacheKey = () => `recovered-v11:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}`;
         material.onBeforeCompile = (shader) => {
-          for (const spec of unique) shader.uniforms[`u_${spec.slot}`] = { value: textures.get(spec.id) };
+          for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
           shader.vertexShader = "varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n" + shader.vertexShader;
           // These channels are material masks, not diffuse vertex colours.
           if (hair) shader.vertexShader = 'attribute vec4 color;\nvarying vec4 vRecoveredColor;\n' + shader.vertexShader;
@@ -284,7 +329,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               #endif
               vec3 recoveredViewTangent = transpose(recoveredViewFrame) * normalize(vViewPosition);
             ` : ""}
-            ${manifest.geometryDependentNormals ? `
+            ${manifest.geometryDependentNormals || glass ? `
               // Differentiate a reflected view-space surface in source centimetres.
               // Positions and tangent vectors share one frame; retain interpolated
               // vector lengths, since the source differentiates their curvature.
@@ -313,7 +358,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
             ` : ""}
             ReconstructedSurface recovered = recoveredSurface(vRecoveredUv0, vRecoveredUv1${manifest.viewDependentCloth ? ", recoveredViewTangent" : ""}${usesGeometry ? ", recoveredGeometry" : ""});
             diffuseColor.rgb = recovered.baseColor;
-            ${masked ? "diffuseColor.a *= clamp(recovered.opacity, 0.0, 1.0);" : ""}
+            ${masked || (glass && view === 'lit') ? "diffuseColor.a *= clamp(recovered.opacity, 0.0, 1.0);" : ""}
             ${manifest.skinSurface && skinOptions?.preserveAlpha && !neckFade ? `
               #ifdef USE_MAP
                 diffuseColor.a *= texture2D(map, vMapUv).a;
@@ -323,6 +368,10 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           `);
           fragment = replaceChunk(fragment, "roughnessmap_fragment", "float roughnessFactor = recovered.roughness;");
           fragment = replaceChunk(fragment, "metalnessmap_fragment", "float metalnessFactor = recovered.metalness;");
+          if (manifest.recoveredEmissive) fragment = replaceChunk(fragment, "emissivemap_fragment", `
+            #include <emissivemap_fragment>
+            totalEmissiveRadiance += recovered.emissive;
+          `);
           fragment = replaceChunk(fragment, "normal_fragment_maps", `
             ${hair ? `
               // The source Normal output means fibre tangent for MSM_Hair. Keep
@@ -386,9 +435,11 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           shadow.side = material.side;
           shadow.defines = { ...shadow.defines, ...(needsUv1 ? { USE_UV1: "" } : {}) };
           shadow.userData.recoveredCoverage = true;
-          shadow.customProgramCacheKey = () => `recovered-coverage-v2:${manifest.coverageShaderSha256}:${needsUv1}:${hair}`;
+          shadow.userData.recoveredSamplers = planReport;
+          shadow.customProgramCacheKey = () => `recovered-coverage-v3:${manifest.coverageShaderSha256}:${plan.cacheKey}:${needsUv1}:${hair}`;
           shadow.onBeforeCompile = shader => {
-            for (const spec of manifest.textures) shader.uniforms[`u_${spec.slot}`] = { value: textures.get(spec.id) };
+            // Same plan, same uniform mapping as the surface pass.
+            for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
             shader.vertexShader = 'varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n' + shader.vertexShader;
             shader.vertexShader = replaceChunk(shader.vertexShader, 'uv_vertex', `#include <uv_vertex>
               vRecoveredUv0 = uv; vRecoveredUv1 = ${needsUv1 ? 'uv1' : 'vec2(0.0)'};`);

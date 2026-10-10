@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { SLOTS, SLOT_LABELS, type Slot } from "../lib/slots";
 import { getBrowseItemsBySlot as getItemsBySlot } from "../lib/browse-catalog";
 import { useBuildStore } from "../store/useBuildStore";
-import { assetUrl, modelUrl } from "../lib/assets";
-import { loadSourceReconstructionItems } from "../rig/SourceAssembly";
+import { assetUrl } from "../lib/assets";
+import { useReconstructionProgress } from "../context/ReconstructionProgress";
 import { getReconstructionReview, REVIEW_LABELS, REVIEW_STYLES, type ReviewStatus } from "../lib/reconstruction-status";
 
 // Slots that actually have items (skips empty ones like bodyType/emote for now).
@@ -17,18 +17,9 @@ export default function SlotPicker() {
   const [slot, setSlot] = useState<Slot>(NON_EMPTY[0] ?? "upperBody");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<ReviewStatus | "all">("all");
-  const [workedOn, setWorkedOn] = useState<Set<string>>(new Set());
-  const [progressState, setProgressState] = useState<"loading" | "ready" | "unavailable">("loading");
+  const { workedOn, state: progressState } = useReconstructionProgress();
   const build = useBuildStore((s) => s.build);
   const toggle = useBuildStore((s) => s.toggle);
-
-  useEffect(() => {
-    let cancelled = false;
-    loadSourceReconstructionItems(modelUrl("models/reconstructed-assemblies-v1")).then(ids => {
-      if (!cancelled) { setWorkedOn(ids); setProgressState("ready"); }
-    }).catch(() => { if (!cancelled) setProgressState("unavailable"); });
-    return () => { cancelled = true; };
-  }, []);
 
   const items = useMemo(() => {
     const all = getItemsBySlot(slot);
@@ -126,13 +117,7 @@ export default function SlotPicker() {
         })}
       </div>
 
-      <p className="flex shrink-0 flex-wrap gap-x-3 gap-y-1 text-xs text-neutral-500">
-        <span>{items.length} items</span>
-        <span><span className="text-red-400">Red 3D</span>: awaiting work</span>
-        <span><span className="text-blue-400">Blue 3D</span>: needs polish</span>
-        <span><span className="text-purple-400">Purple 3D</span>: known issue</span>
-        <span><span className="text-emerald-400">Green 3D</span>: looks good</span>
-      </p>
+      <p className="shrink-0 text-xs text-neutral-500">{items.length} items</p>
     </div>
   );
 }

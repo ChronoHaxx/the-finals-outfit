@@ -1,0 +1,517 @@
+{
+  "definitions": {
+    "streetwear-techhoodie-cotton-black": {
+      "formatVersion": 1,
+      "id": "streetwear-techhoodie-cotton-black",
+      "source": "Discovery/Content/Discovery/Characters/Streetwear/Assets/TechHoodie/Skins/Cotton_Black/DA_Streetwear_TechHoodie_Cotton_Black.uasset",
+      "sourceSha256": "7337BD13D5C2C27DA9A431D959F053B9254F127D57D74426F64B9B83DFD18548",
+      "properties": {
+        "ActivatesTags": [
+          "Customization.Shape.PushInsideClothes.push_stomach",
+          "Customization.Shape.PushInsideClothes.push_torso",
+          "Customization.Shape.PushInsideClothes.push_upper_sleeves",
+          "Customization.HideMesh.WearingHood",
+          "Customization.HideMesh.WearingLongJacket",
+          "Customization.Shape.ShrinkWrap.shrink_gloves_under_jacket_right",
+          "Customization.Shape.PushHair.hood_covers_head",
+          "Customization.Shape.ShrinkWrap.shrink_half_skirt_in",
+          "Customization.Shape.ShrinkWrap.shrink_skirt_shorts_in",
+          "Customization.Shape.DefaultFace.default_ears",
+          "Customization.HideMesh.EarringsCovered"
+        ],
+        "Slots": [
+          "EBodySlot::BodyUpper",
+          "EBodySlot::Hood",
+          "EBodySlot::HeadExtensions"
+        ],
+        "VisualParts": [
+          {
+            "StaticMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "SkeletalMesh": {
+              "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/TechHoodie/SK_Streetwear_TechHoodie_M.SK_Streetwear_TechHoodie_M",
+              "SubPathString": ""
+            },
+            "Effect": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "TagOverrides": [
+              {
+                "MatchingTags": [
+                  "Customization.Archetype.Light"
+                ],
+                "bOffsetTransform": false,
+                "OffsetPosition": {
+                  "X": 0.0,
+                  "Y": 0.0,
+                  "Z": 0.0
+                },
+                "OffsetRotation": {
+                  "Pitch": 0.0,
+                  "Yaw": 0.0,
+                  "Roll": 0.0
+                },
+                "OffsetScale": {
+                  "X": 1.0,
+                  "Y": 1.0,
+                  "Z": 1.0
+                },
+                "bOverrideMesh": true,
+                "ReplacementStaticMesh": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "ReplacementSkeletalMesh": {
+                  "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/TechHoodie/SK_Streetwear_TechHoodie_L.SK_Streetwear_TechHoodie_L",
+                  "SubPathString": ""
+                },
+                "bOverrideEffect": false,
+                "ReplacementEffect": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "bOverrideMaterials": false,
+                "MaterialOverrides": [],
+                "bAddLogicModules": false
+              },
+              {
+                "MatchingTags": [
+                  "Customization.Archetype.Heavy"
+                ],
+                "bOffsetTransform": false,
+                "OffsetPosition": {
+                  "X": 0.0,
+                  "Y": 0.0,
+                  "Z": 0.0
+                },
+                "OffsetRotation": {
+                  "Pitch": 0.0,
+                  "Yaw": 0.0,
+                  "Roll": 0.0
+                },
+                "OffsetScale": {
+                  "X": 1.0,
+                  "Y": 1.0,
+                  "Z": 1.0
+                },
+                "bOverrideMesh": true,
+                "ReplacementStaticMesh": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "ReplacementSkeletalMesh": {
+                  "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/TechHoodie/SK_Streetwear_TechHoodie_H.SK_Streetwear_TechHoodie_H",
+                  "SubPathString": ""
+                },
+                "bOverrideEffect": false,
+                "ReplacementEffect": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "bOverrideMaterials": false,
+                "MaterialOverrides": [],
+                "bAddLogicModules": false
+              }
+            ],
+            "bIsAttached": false,
+            "bIsHeadMesh": false,
+            "bAttachToHeadMesh": false,
+            "OptionalAttachmentMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "AttachmentSocket": "None",
+            "WrapDeformation": {
+              "bIsWrapDeformed": false,
+              "bIsWrapDeformedByHeadComponent": false,
+              "DisabledByTags": [],
+              "OptionalWrapDeformerMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            "LocalPosition": {
+              "X": 0.0,
+              "Y": 0.0,
+              "Z": 0.0
+            },
+            "LocalRotation": {
+              "Pitch": 0.0,
+              "Yaw": 0.0,
+              "Roll": 0.0
+            },
+            "LocalScale": {
+              "X": 1.0,
+              "Y": 1.0,
+              "Z": 1.0
+            },
+            "LogicModules": []
+          }
+        ],
+        "MaterialOverrides": [
+          {
+            "Key": "TechHoodie",
+            "Value": {
+              "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/TechHoodie/Skins/Cotton_Black/MI_Streetwear_TechHoodie_Cotton_Black.MI_Streetwear_TechHoodie_Cotton_Black",
+              "SubPathString": ""
+            }
+          }
+        ]
+      }
+    },
+    "bodycosmetics-earrings-chain-01-gold": {
+      "formatVersion": 1,
+      "id": "bodycosmetics-earrings-chain-01-gold",
+      "source": "Discovery/Content/Discovery/Characters/BodyCosmetics/Earrings/Chain_01/Skins/Chain_01_Gold/DA_BodyCosmetics_Earrings_Chain_01_Gold.uasset",
+      "sourceSha256": "F0CDBEE6DEA12B18EB1F356FFEE8B9A9CC83B31117758D92CD2CAC760AE8098F",
+      "properties": {
+        "Slots": [
+          "EBodySlot::Earrings"
+        ],
+        "VisualParts": [
+          {
+            "StaticMesh": {
+              "AssetPathName": "/Game/Discovery/Characters/BodyCosmetics/Earrings/Chain_01/SM_Earrings_Chain_01_A.SM_Earrings_Chain_01_A",
+              "SubPathString": ""
+            },
+            "SkeletalMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "Effect": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "TagOverrides": [
+              {
+                "MatchingTags": [
+                  "Customization.HideMesh.EarringsCovered"
+                ],
+                "bOffsetTransform": true,
+                "OffsetPosition": {
+                  "X": 0.0,
+                  "Y": 0.0,
+                  "Z": 0.0
+                },
+                "OffsetRotation": {
+                  "Pitch": 0.0,
+                  "Yaw": 0.0,
+                  "Roll": 0.0
+                },
+                "OffsetScale": {
+                  "X": 1.0,
+                  "Y": 1.0,
+                  "Z": 1.0
+                },
+                "bOverrideMesh": true,
+                "ReplacementStaticMesh": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "ReplacementSkeletalMesh": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "bOverrideEffect": false,
+                "ReplacementEffect": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "bOverrideMaterials": false,
+                "MaterialOverrides": [],
+                "bAddLogicModules": false
+              }
+            ],
+            "bIsAttached": true,
+            "bIsHeadMesh": false,
+            "bAttachToHeadMesh": true,
+            "OptionalAttachmentMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "AttachmentSocket": "earring_01_l",
+            "WrapDeformation": {
+              "bIsWrapDeformed": false,
+              "bIsWrapDeformedByHeadComponent": false,
+              "DisabledByTags": [],
+              "OptionalWrapDeformerMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            "LocalPosition": {
+              "X": 0.0,
+              "Y": 0.0,
+              "Z": -0.0
+            },
+            "LocalRotation": {
+              "Pitch": 0.0,
+              "Yaw": 0.0,
+              "Roll": 0.0
+            },
+            "LocalScale": {
+              "X": 1.0,
+              "Y": 1.0,
+              "Z": 1.0
+            },
+            "LogicModules": []
+          },
+          {
+            "StaticMesh": {
+              "AssetPathName": "/Game/Discovery/Characters/BodyCosmetics/Earrings/Chain_01/SM_Earrings_Chain_01_A.SM_Earrings_Chain_01_A",
+              "SubPathString": ""
+            },
+            "SkeletalMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "Effect": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "TagOverrides": [
+              {
+                "MatchingTags": [
+                  "Customization.HideMesh.EarringsCovered"
+                ],
+                "bOffsetTransform": true,
+                "OffsetPosition": {
+                  "X": 0.0,
+                  "Y": 0.0,
+                  "Z": 0.0
+                },
+                "OffsetRotation": {
+                  "Pitch": 0.0,
+                  "Yaw": 0.0,
+                  "Roll": 0.0
+                },
+                "OffsetScale": {
+                  "X": 1.0,
+                  "Y": 1.0,
+                  "Z": 1.0
+                },
+                "bOverrideMesh": true,
+                "ReplacementStaticMesh": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "ReplacementSkeletalMesh": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "bOverrideEffect": false,
+                "ReplacementEffect": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "bOverrideMaterials": false,
+                "MaterialOverrides": [],
+                "bAddLogicModules": false
+              }
+            ],
+            "bIsAttached": true,
+            "bIsHeadMesh": false,
+            "bAttachToHeadMesh": true,
+            "OptionalAttachmentMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "AttachmentSocket": "earring_01_r",
+            "WrapDeformation": {
+              "bIsWrapDeformed": false,
+              "bIsWrapDeformedByHeadComponent": false,
+              "DisabledByTags": [],
+              "OptionalWrapDeformerMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            "LocalPosition": {
+              "X": 0.0,
+              "Y": 0.0,
+              "Z": -0.0
+            },
+            "LocalRotation": {
+              "Pitch": 0.0,
+              "Yaw": 0.0,
+              "Roll": 0.0
+            },
+            "LocalScale": {
+              "X": 1.0,
+              "Y": 1.0,
+              "Z": 1.0
+            },
+            "LogicModules": []
+          }
+        ],
+        "MaterialOverrides": [
+          {
+            "Key": "Earrings_Chain_01_A",
+            "Value": {
+              "AssetPathName": "/Game/Discovery/Characters/BodyCosmetics/Earrings/Chain_01/Skins/Chain_01_Gold/MI_Earrings_Chain_01_Gold_A.MI_Earrings_Chain_01_Gold_A",
+              "SubPathString": ""
+            }
+          }
+        ]
+      }
+    },
+    "casual-basictshirt-cotton-alfaacta": {
+      "formatVersion": 1,
+      "id": "casual-basictshirt-cotton-alfaacta",
+      "source": "Discovery/Content/Discovery/Characters/Casual/Assets/BasicTshirt/Skins/Cotton_AlfaActa/DA_Casual_BasicTshirt_Cotton_AlfaActa.uasset",
+      "sourceSha256": "D1E039650A980126C4E842475C81DA96737CFDC3170606278C9548E412AE89BB",
+      "properties": {
+        "ActivatesTags": [
+          "Customization.Shape.PushInsideClothes.push_lower_torso",
+          "Customization.Shape.PushInsideClothes.push_torso",
+          "Customization.HideMesh.WearingLongJacket",
+          "Customization.Shape.ShrinkWrap.shrink_half_skirt_in",
+          "Customization.Shape.ShrinkWrap.shrink_skirt_shorts_in"
+        ],
+        "Slots": [
+          "EBodySlot::BodyUpper"
+        ],
+        "VisualParts": [
+          {
+            "StaticMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "SkeletalMesh": {
+              "AssetPathName": "/Game/Discovery/Characters/Casual/Assets/BasicTshirt/SK_Casual_BasicTshirt_M.SK_Casual_BasicTshirt_M",
+              "SubPathString": ""
+            },
+            "Effect": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "TagOverrides": [
+              {
+                "MatchingTags": [
+                  "Customization.Archetype.Light"
+                ],
+                "bOffsetTransform": false,
+                "OffsetPosition": {
+                  "X": 0.0,
+                  "Y": 0.0,
+                  "Z": 0.0
+                },
+                "OffsetRotation": {
+                  "Pitch": 0.0,
+                  "Yaw": 0.0,
+                  "Roll": 0.0
+                },
+                "OffsetScale": {
+                  "X": 1.0,
+                  "Y": 1.0,
+                  "Z": 1.0
+                },
+                "bOverrideMesh": true,
+                "ReplacementStaticMesh": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "ReplacementSkeletalMesh": {
+                  "AssetPathName": "/Game/Discovery/Characters/Casual/Assets/BasicTshirt/SK_Casual_BasicTshirt_L.SK_Casual_BasicTshirt_L",
+                  "SubPathString": ""
+                },
+                "bOverrideEffect": false,
+                "ReplacementEffect": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "bOverrideMaterials": false,
+                "MaterialOverrides": [],
+                "bAddLogicModules": false
+              },
+              {
+                "MatchingTags": [
+                  "Customization.Archetype.Heavy"
+                ],
+                "bOffsetTransform": false,
+                "OffsetPosition": {
+                  "X": 0.0,
+                  "Y": 0.0,
+                  "Z": 0.0
+                },
+                "OffsetRotation": {
+                  "Pitch": 0.0,
+                  "Yaw": 0.0,
+                  "Roll": 0.0
+                },
+                "OffsetScale": {
+                  "X": 1.0,
+                  "Y": 1.0,
+                  "Z": 1.0
+                },
+                "bOverrideMesh": true,
+                "ReplacementStaticMesh": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "ReplacementSkeletalMesh": {
+                  "AssetPathName": "/Game/Discovery/Characters/Casual/Assets/BasicTshirt/SK_Casual_BasicTshirt_H.SK_Casual_BasicTshirt_H",
+                  "SubPathString": ""
+                },
+                "bOverrideEffect": false,
+                "ReplacementEffect": {
+                  "AssetPathName": "",
+                  "SubPathString": ""
+                },
+                "bOverrideMaterials": false,
+                "MaterialOverrides": [],
+                "bAddLogicModules": false
+              }
+            ],
+            "bIsAttached": false,
+            "bIsHeadMesh": false,
+            "bAttachToHeadMesh": false,
+            "OptionalAttachmentMesh": {
+              "AssetPathName": "",
+              "SubPathString": ""
+            },
+            "AttachmentSocket": "None",
+            "WrapDeformation": {
+              "bIsWrapDeformed": false,
+              "bIsWrapDeformedByHeadComponent": false,
+              "DisabledByTags": [],
+              "OptionalWrapDeformerMesh": {
+                "AssetPathName": "",
+                "SubPathString": ""
+              }
+            },
+            "LocalPosition": {
+              "X": 0.0,
+              "Y": 0.0,
+              "Z": 0.0
+            },
+            "LocalRotation": {
+              "Pitch": 0.0,
+              "Yaw": 0.0,
+              "Roll": 0.0
+            },
+            "LocalScale": {
+              "X": 1.0,
+              "Y": 1.0,
+              "Z": 1.0
+            },
+            "LogicModules": []
+          }
+        ],
+        "MaterialOverrides": [
+          {
+            "Key": "BasicTshirt",
+            "Value": {
+              "AssetPathName": "/Game/Discovery/Characters/Casual/Assets/BasicTshirt/Skins/Cotton_AlfaActa/MI_Casual_BasicTshirt_Cotton_AlfaActa.MI_Casual_BasicTshirt_Cotton_AlfaActa",
+              "SubPathString": ""
+            }
+          }
+        ]
+      }
+    }
+  },
+  "fixtureNote": "Curated resolver contract fields from the approved batch03 definitions; not complete asset metadata. Original definitions and hashes retained in local acceptance evidence."
+}

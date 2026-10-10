@@ -1,0 +1,9 @@
+# Default-material accessory batch
+
+Seven more Medium accessories now have complete source assemblies in the local asset set: silver Chain and THE FINALS logo earrings, silver boombox, raised key-art mask, ordinary/tilted Hahoe masks and brown/gold spirit horn. Complete assemblies increased 214 to 221, touched choices 261 to 268. All seven are blue for further polish; no human review was promoted to green.
+
+The reusable list-driven preparer extracts exact mesh-default materials and their dependencies, uses existing compilation and fresh CPU/GPU checks, preserves all prior bindings and produces a separate additive activation candidate. The GPU helper now accepts a per-batch material base and APP_URL, with old defaults retained. New geometry is limited to the original distinct right logo earring.
+
+Local validation: six materials /108 CPU /108 GPU cases, max GPU error5.96e-8; five stale-result regression tests; seven items /56 captured and visually reviewed views; three ordinary/sibling controls; eight preview and eight active picker workflows. The updated local game build was checked against eight preserved meshes, seven definitions and two socket packages. Existing sources, names, IDs, UI and 1,333 protected files were preserved before activation.
+
+Detailed local evidence, model accounting, screenshots, exact active hashes and the three human-check boxes are in the original extraction workspace `_docs/accessory-defaults-2026-09-12/README.md`. The newest local review is http://127.0.0.1:5174/?reconstructed=1&pose=a&temporal=0#/?o=2.36o.1l9.81ql.a17f.cct.k2n.e167.67v . Port4321 and hosted Cloudflarev5 remain the preceding checkpoint. No new deployment/PR is included. Head compatibility beyond Face01, secondary physics, fine appearance and cross-outfit fitting/culling remain open.

@@ -34,5 +34,57 @@
   "attachment-mask-ballistic-01-headwear-vaiiya": {
     "status": "polish",
     "note": "Source material and placement reviewed on Medium, 12 September 2026. Rear straps intersect Afro Fade in places; hair fitting and culling need further polish."
+  },
+  "streetwear-wristband-cotton-logored": {
+    "status": "issue",
+    "note": "Known visual error on Medium: the red wristband body mask leaves a gap above the opposite glove cuff. Reproduced before and after Combat Gloves reconstruction on 15 September 2026; wristband coverage repair pending."
+  },
+  "military-assaultvest-polyester-black": {
+    "status": "polish",
+    "note": "Shader texture-limit issue repaired on 16 September 2026. Source values, original texture sampling, eight-angle A/idle previews and outfit switching verified on Medium. Narrow wrist/cuff seams still need fitting polish; native lighting and human acceptance remain pending."
+  },
+  "military-assaultvest-polyester-moolahcamo": {
+    "status": "polish",
+    "note": "Shader texture-limit issue repaired on 16 September 2026. Source values, original texture sampling, eight-angle A/idle previews and outfit switching verified on Medium. Narrow wrist/cuff seams still need fitting polish; native lighting and human acceptance remain pending."
+  },
+  "military-assaultvest-polyester-redblue": {
+    "status": "polish",
+    "note": "Shader texture-limit issue repaired on 16 September 2026. Source values, original texture sampling, eight-angle A/idle previews and outfit switching verified on Medium. Narrow wrist/cuff seams still need fitting polish; native lighting and human acceptance remain pending."
+  },
+  "bodycosmetics-makeup-elegantknight-01": {
+    "status": "issue",
+    "note": "Known visual issue: the metallic gold face paint renders as matte pale yellow; head surface finish (metalness/roughness from BodyPaintData) is still deferred for head layers."
+  },
+  "bodycosmetics-makeup-eyeshadowgold-01": {
+    "status": "issue",
+    "note": "Known visual issue: the metallic gold paint renders matte beige; head surface finish (metalness/roughness from BodyPaintData) is still deferred for head layers."
+  },
+  "medieval-elfprincesstunic-satin": {
+    "status": "issue",
+    "note": "Known visual issue: the chest cutout shows the garment's pale interior instead of skin (conservative body coverage hides the skin under the opening)"
+  },
+  "samurai-helmet02-base": {
+    "status": "issue",
+    "note": "Known visual issue: geometry/anchor correct; helmet bowl renders brown-grey metal where the icon shows black lacquer"
+  },
+  "samurai-upperbody02-base": {
+    "status": "issue",
+    "note": "Known visual issue: the base lacquer armour renders brown-grey where the icon shows black lacquer (same as Samurai Helmet02 Base)"
+  },
+  "sport-baseballpants-cotton": {
+    "status": "issue",
+    "note": "Known visual issue: the socks render light grey where the icon shows dark grey socks"
+  },
+  "historic-empressfacemask-dark": {
+    "status": "issue",
+    "note": "Known visual issue: renders mottled silver-grey where the icon shows black lacquer with gold filigree"
+  },
+  "medieval-pirateknighthelmet-metal": {
+    "status": "issue",
+    "note": "Known visual issue: helmet renders bright cream-white metal where the icon shows darker grey steel"
+  },
+  "sport-helmet-metal-spacegame": {
+    "status": "issue",
+    "note": "Known visual issue: renders saturated blue with a cream crown where the icon shows muted blue-grey with a dark grey top"
   }
 }

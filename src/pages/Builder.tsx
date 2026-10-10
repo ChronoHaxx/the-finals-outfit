@@ -7,6 +7,10 @@ import { migrateOutfit } from "../lib/outfit-slots";
 import { filterBrowseBuild, PUBLIC_CATALOG_COUNT } from "../lib/browse-catalog";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import ShareBuild from "../components/ShareBuild";
+import CatalogProgress from "../components/CatalogProgress";
+import ProjectLinks from "../components/ProjectLinks";
+import StatusLegend from "../components/StatusLegend";
+import CatalogUpdateNote from "../components/CatalogUpdateNote";
 import { useBuildStore } from "../store/useBuildStore";
 
 export default function Builder() {
@@ -37,7 +41,8 @@ export default function Builder() {
   }, [routerLocation.search]);
   return (
     <main className="mx-auto flex h-dvh max-w-6xl flex-col gap-3 overflow-y-auto px-3 py-3 sm:px-5 lg:gap-6 lg:overflow-hidden lg:py-6">
-      <header className="shrink-0 space-y-1">
+      <header className="grid shrink-0 gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-8">
+        <div className="min-w-0 space-y-1">
         <p className="text-xs uppercase tracking-widest text-neutral-500">
           the-finals-outfit
         </p>
@@ -54,6 +59,11 @@ export default function Builder() {
         <ShareBuild />
         {omittedItems && <p role="status" className="text-xs text-amber-300">Some items in this link aren’t available in this catalog and were left out.</p>}
         {linkError && <p role="alert" className="text-xs text-amber-300">This outfit link could not be read. Your current selection has been kept.</p>}
+        </div>
+        <div className="space-y-3 lg:justify-self-end lg:self-center">
+          <CatalogUpdateNote />
+          <StatusLegend />
+        </div>
       </header>
 
       <div className="grid min-h-[840px] flex-1 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-3 lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-6">
@@ -65,9 +75,14 @@ export default function Builder() {
         </section>
       </div>
 
-      <footer className="shrink-0 text-[10px] text-neutral-500 lg:text-xs">
-        Fan-made project. THE FINALS is a trademark of Embark Studios AB.
-        {" "}<a href="https://www.thefinals.wiki/wiki/All_Cosmetics" target="_blank" rel="noreferrer" className="underline">Cosmetic names: THE FINALS Wiki</a>.
+      <footer className="grid shrink-0 gap-3 text-[10px] text-neutral-500 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-end lg:gap-6 lg:text-xs">
+        <p>Fan-made project. THE FINALS is a trademark of Embark Studios AB.
+          {" "}<a href="https://www.thefinals.wiki/wiki/All_Cosmetics" target="_blank" rel="noreferrer" className="underline">Cosmetic names: THE FINALS Wiki</a>.
+        </p>
+        <div className="space-y-2">
+          <CatalogProgress compact />
+          <ProjectLinks />
+        </div>
       </footer>
     </main>
   );

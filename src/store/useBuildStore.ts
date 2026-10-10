@@ -3,6 +3,7 @@ import { SLOTS, type Slot } from "../lib/slots";
 import type { Item } from "../lib/item";
 import { getItemById } from "../lib/catalog";
 import { migrateBuildSlots } from "../lib/outfit-slots";
+import { resolveEquipmentSlots } from "../lib/equipment";
 
 // `build` is the serializable source of truth: slot -> selected item id (or null).
 // It maps 1:1 onto Outfit.slots (src/lib/outfit.ts) for the M4 share-link encoder.
@@ -56,14 +57,13 @@ interface BuildState {
 
 export const useBuildStore = create<BuildState>((set) => ({
   build: defaultBuild(),
-  equip: (item) => set((s) => ({ build: { ...s.build, [item.slot]: item.id } })),
+  equip: (item) => set((s) => ({ build: { ...blankBuild(),
+    ...resolveEquipmentSlots({ ...s.build, [item.slot]: item.id }, item.slot).slots } })),
   unequip: (slot) => set((s) => ({ build: { ...s.build, [slot]: null } })),
   toggle: (item) =>
     set((s) => ({
-      build: {
-        ...s.build,
-        [item.slot]: s.build[item.slot] === item.id ? null : item.id,
-      },
+      build: s.build[item.slot] === item.id ? { ...s.build, [item.slot]: null }
+        : { ...blankBuild(), ...resolveEquipmentSlots({ ...s.build, [item.slot]: item.id }, item.slot).slots },
     })),
   // Share links describe the EXACT build — blank base, not defaults, so an absent slot in
   // the link stays empty (and the visual-diff harness renders items in isolation).

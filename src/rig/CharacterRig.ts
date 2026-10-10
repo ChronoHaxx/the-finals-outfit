@@ -166,6 +166,37 @@ function cloneMaterialForInspector(source: THREE.Material): THREE.Material {
   return clone;
 }
 
+// The recovered binding for one actual primitive of a preserved part. A mesh may repeat an authored
+// slot name across sections — two `M_Hair` sections with different source defaults — so the name
+// alone no longer names a recipient. For those meshes the resolver preserves every section by its
+// exact source material index, and the primitive's own converted `sourceSection.MaterialIndex`
+// selects inside it, whatever order the primitives were fetched or traversed in and however many
+// primitives share one source material. The authored spelling and the source default the GLB
+// material carries are both checked against that section, so a missing, unknown, conflicting or
+// disagreeing identity throws instead of binding some other section's material; a primitive with a
+// material array has no single section to answer for it and is refused rather than guessed. Parts
+// whose slot names are unique keep the plain by-name lookup, including ones carrying no sections.
+function sourceMaterialBinding(part: SourceRigPart, mesh: THREE.Mesh, material: THREE.Material): { url: string; source: string } {
+  const slot = material.userData.sourceSlot?.MaterialSlotName as string | undefined;
+  const sections = part.materialSections;
+  if (!sections) {
+    const binding = slot ? part.materials[slot] : undefined;
+    if (!binding) throw new Error(`Missing source material slot: ${slot}`);
+    return binding;
+  }
+  const index = (mesh.geometry.userData.sourceSection as { MaterialIndex?: unknown } | undefined)?.MaterialIndex;
+  if (typeof index !== 'number' || !Number.isSafeInteger(index) || index < 0)
+    throw new Error(`Missing source material index: ${part.sourceMesh}`);
+  const matching = sections.filter(section => section.materialIndex === index);
+  if (!matching.length) throw new Error(`Unknown source material index ${index}: ${part.sourceMesh}`);
+  if (matching.length > 1) throw new Error(`Conflicting source material index ${index}: ${part.sourceMesh}`);
+  if (!slot || matching[0].slot !== slot)
+    throw new Error(`Source material index ${index} is not slot ${slot ?? '(unnamed)'}: ${part.sourceMesh}`);
+  if (material.userData.sourceMaterial !== matching[0].defaultSource)
+    throw new Error(`Source material index ${index} is not ${matching[0].defaultSource}: ${part.sourceMesh}`);
+  return matching[0];
+}
+
 export class CharacterRig {
   private static tintUid = 0; // monotonic id for per-material program cache keys
   // 1×1 white map for pieces baked without any albedo texture (a large class of garments
@@ -702,7 +733,15 @@ export class CharacterRig {
   // Hair and its face/scalp parameters share a visible result. Stage all changed
   // source slots before replacing any old slot, including texture/shader failures.
   async equipSourceItems(items: RigItem[], removals: Slot[] = [], signal?: AbortSignal): Promise<boolean> {
-    if (signal?.aborted) return false;
+    const prepared = await this.prepareSourceItems(items, removals, signal);
+    return prepared?.commit() ?? false;
+  }
+
+  // A covering item can fail independently of the face/hair resources it suppresses. Let the
+  // viewer prepare this appearance first, then commit only after the covering items are worn.
+  async prepareSourceItems(items: RigItem[], removals: Slot[] = [], signal?: AbortSignal):
+    Promise<{ commit: () => boolean; release: () => void } | undefined> {
+    if (signal?.aborted) return;
     if (!this.skeleton) throw new Error('Source equip called before body loading');
     const slots = [...items.map(item => item.slot), ...removals];
     if (new Set(slots).size !== slots.length) throw new Error('Repeated source transaction slot');
@@ -718,12 +757,23 @@ export class CharacterRig {
     if (signal?.aborted || version !== this.bodyLoadVersion || failure || stages.length !== items.length) {
       stages.forEach(stage => stage.release());
       if (!signal?.aborted && version === this.bodyLoadVersion && failure?.status === 'rejected') throw failure.reason;
-      return false;
+      return;
     }
-    // No await between commits: a rendered frame sees either complete appearance.
-    removals.forEach(slot => this.unequip(slot));
-    stages.forEach(stage => stage.commit());
-    return true;
+    let settled = false;
+    const release = () => {
+      if (settled) return;
+      settled = true;
+      stages.forEach(stage => stage.release());
+    };
+    return { release, commit: () => {
+      if (settled) return false;
+      if (signal?.aborted || version !== this.bodyLoadVersion) { release(); return false; }
+      settled = true;
+      // No await between commits: a rendered frame sees either complete appearance.
+      removals.forEach(slot => this.unequip(slot));
+      stages.forEach(stage => stage.commit());
+      return true;
+    } };
   }
 
   // Find the live bone an attached static hangs from, and the socket rest it uses. Body sockets
@@ -784,7 +834,8 @@ export class CharacterRig {
     const skeletons = new Set<THREE.Skeleton>();
     const attachments: SourceBoneAttachment[] = [];
     const materials = new Map<string, Awaited<ReturnType<typeof loadReconstructedMaterial>>>();
-    const requests = [...new Set(parts.flatMap(part => Object.values(part.materials).map(m => m.url)))];
+    const requests = [...new Set(parts.flatMap(part =>
+      [...Object.values(part.materials), ...(part.materialSections ?? [])].map(m => m.url)))];
     const scenes = new Map<number, THREE.Object3D>();
     // Wait for every pending resource, including failed batches, before cleanup.
     // Nothing is attached until the complete item is ready and still selected.
@@ -829,10 +880,10 @@ export class CharacterRig {
             skeletons.add(mesh.skeleton);
           } else if (!mesh.isSkinnedMesh) throw new Error("Source clothing part must be skinned");
           const slots = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          if (part.materialSections && slots.length !== 1)
+            throw new Error(`Unsupported source material array: ${part.sourceMesh}`);
           for (const [index, old] of slots.entries()) {
-            const slot = old.userData.sourceSlot?.MaterialSlotName as string | undefined;
-            const binding = slot ? part.materials[slot] : undefined;
-            if (!binding) throw new Error(`Missing source material slot: ${slot}`);
+            const binding = sourceMaterialBinding(part, mesh, old);
             // Hair currently reads vertex colour only, but preserve a valid
             // world-input frame for the surface adapter's geometry contract.
             mesh.geometry.computeBoundingBox();
@@ -889,11 +940,73 @@ export class CharacterRig {
     this.decals.registerTarget("body", this.bodyMaterials);
   }
 
+  // A face whose source head this outfit explicitly replaced with nothing. No head mesh, no legacy
+  // preview fallback, no eyes and no scalp material are requested: there is no recipient for any of
+  // them, and no head bone for a socket to hang from. The recovered BODY skin of that same face is
+  // staged exactly as it is under a visible head, so uncovering the head restores both through the
+  // ordinary path with no special case of its own.
+  private async stageSourceSkinWithoutHead(item: RigItem, pair: SourceSkinPair, body: THREE.SkinnedMesh,
+    signal?: AbortSignal): Promise<{ commit: () => void; release: () => void } | undefined> {
+    const version = this.bodyLoadVersion;
+    const bindings = Object.values(pair.body.materials);
+    if (bindings.length !== 1 || !bindings[0].url) throw new Error("Skin pair requires one recovered body material");
+    let recovered: Awaited<ReturnType<typeof loadReconstructedMaterial>> | undefined;
+    let stagedBodyMaterial: THREE.Material | undefined;
+    const release = () => {
+      recovered?.dispose();
+      if (stagedBodyMaterial) disposeMaterial(stagedBodyMaterial);
+    };
+    const [loaded] = await Promise.allSettled([loadReconstructedMaterial(bindings[0].url, item.sourceSurfaceView)]);
+    if (loaded.status === "fulfilled") recovered = loaded.value;
+    if (signal?.aborted || version !== this.bodyLoadVersion) { release(); return; }
+    if (loaded.status === "rejected") { release(); throw loaded.reason; }
+    const stage = new THREE.SkinnedMesh(body.geometry, new THREE.MeshStandardMaterial());
+    try {
+      try {
+        recovered!.apply(stage, undefined, { boundsOrigin: pair.body.boundsOrigin });
+        stagedBodyMaterial = stage.material;
+        stagedBodyMaterial.userData.sourceMaterial = bindings[0].source;
+        enableSourceSkinning(stage);
+      } finally {
+        stagedBodyMaterial = stage.material;
+        stage.customDepthMaterial?.dispose();
+        stage.customDistanceMaterial?.dispose();
+      }
+    } catch (error) { release(); throw error; }
+    // The slot still holds this exact face: its id, its body skin and the head the index records
+    // are all unchanged, and only the head's own geometry is absent from the scene.
+    const scene = new THREE.Group();
+    scene.name = `${item.id}:skin-preview`;
+    scene.userData.rigItemId = item.id;
+    scene.userData.sourceSkinPair = true;
+    scene.userData.sourceHeadOmitted = pair.headOmitted;
+    return { release, commit: () => {
+      this.unequip("face");
+      this.sourceBodySkin = { mesh: body, previous: body.material as THREE.MeshStandardMaterial };
+      this.decals.unregisterTarget("body");
+      body.material = stagedBodyMaterial!;
+      this.bodyMaterials = this.collectStandardMaterials(this.bodyScene!);
+      this.decals.registerTarget("body", this.bodyMaterials);
+      this.root.add(scene);
+      this.equipped.set("face", { id: item.id, scene, meshes: [], statics: [] });
+      // No head geometry means no head or eye decal recipient, no source head component for a
+      // head-socketed accessory to resolve against, and no head-specific body-hide mask: the body
+      // shows its own neck here, so cutting it would leave a hole.
+      this.sourceHead = null;
+      this.bodyHideUrls.delete("face");
+      this.currentBodySkin = item.bodySkin ?? null;
+      this.refreshBodyHides();
+    } };
+  }
+
   private async stageSourceSkin(item: RigItem, pair: SourceSkinPair, signal?: AbortSignal): Promise<{ commit: () => void; release: () => void } | undefined> {
     if (item.slot !== "face") throw new Error("Skin pairs must own the face slot");
     const body = this.bodyScene?.getObjectsByProperty("isSkinnedMesh", true).find(o => o.userData.sourceBody) as THREE.SkinnedMesh | undefined;
     if (!body || Array.isArray(body.material) || new URL(body.userData.sourceBodyUrl, window.location.href).href !== pair.body.url)
       throw new Error("Skin pair requires its preserved fitted body");
+    // This outfit explicitly empties the source head: the resolver has already checked the head's
+    // own evidence and the selected hair. Nothing of that head is fetched, staged or committed.
+    if (pair.headOmitted) return this.stageSourceSkinWithoutHead(item, pair, body, signal);
     const version = this.bodyLoadVersion;
     const recovered = new Map<string, Awaited<ReturnType<typeof loadReconstructedMaterial>>>();
     const roots = new Map<string, THREE.Object3D>();
@@ -1015,6 +1128,12 @@ export class CharacterRig {
       this.root.add(scene);
       this.equipped.set("face", { id: item.id, scene, meshes, statics: [], sourceBoneRoots: attachments.map(a => a.root) });
       this.sourceHead = { id: item.id, sourceMesh: pair.head.sourceMesh, bones: headBones };
+      // A recovered eye activation already contains the cosmetic's authored appearance.
+      // Clear a previous legacy eye decal at commit, never during preparation: a failed
+      // download must keep the entire previously equipped face intact.
+      if (Object.entries(pair.head.materials).some(([slot, binding]) =>
+        /^shader_eye(?:left|right)_shader$/i.test(slot) && binding.parameterOverrides?.length))
+        this.unequipDecal("eyes");
       this.registerHeadDecalTargets(scene);
       if (this.collectStandardMaterials(scene).some(m => m.userData.skinCoverage === 'neck-fade')) {
         // Keep skin behind the fading edge. The original matching morph pulls
