@@ -1,11 +1,12 @@
 import type { Slot } from "./slots";
+import { resolveEquipmentSlots, equipmentConflicts } from "./equipment";
 
 // Rules-based outfit randomiser. It is deterministic for a given random source, has no
 // network or AI dependency, and never touches a locked slot.
 //
 // Rules:
 // - Locked slots keep their current value exactly (including an empty slot).
-// - Core slots (face, upper body, lower body, feet) are always filled when they have candidates.
+// - Core slots are filled when candidates exist, unless occupied by a source full-body garment.
 // - Optional slots are filled with a fixed chance, so a random look is not every accessory at once.
 // - Candidates are supplied by the caller (the browsable catalog, optionally only items that
 //   already have reconstruction work), so the randomiser never offers an item the picker hides.
@@ -42,7 +43,8 @@ export function randomizeBuild({ build, locked, candidates, random = Math.random
   const next = { ...build } as Record<Slot, string | null>;
   for (const slot of RANDOM_SLOTS) {
     if (locked.has(slot)) continue;
-    const pool = candidates(slot);
+    const pool = candidates(slot).filter(id => ![...locked].some(other =>
+      build[other] && equipmentConflicts(slot, id, other, build[other]!)));
     const chance = CORE_SLOTS.has(slot) ? 1 : OPTIONAL_CHANCE[slot] ?? 0;
     next[slot] = pool.length && random() < chance ? pick(pool, random) : null;
   }
@@ -50,6 +52,10 @@ export function randomizeBuild({ build, locked, candidates, random = Math.random
   if (next.hair && next.headwear && !locked.has("hair") && !locked.has("headwear")) {
     if (random() < 0.5) next.headwear = null; else next.hair = null;
   }
+  const resolved = resolveEquipmentSlots(next, undefined, locked);
+  // A caller supplying an already-invalid pair of locked items still keeps its locks;
+  // ordinary store hydration canonicalizes such old outfits before randomising.
+  for (const slot of resolved.removed) if (!locked.has(slot)) next[slot] = null;
   return next;
 }
 

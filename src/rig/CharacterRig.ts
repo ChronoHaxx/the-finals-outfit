@@ -1128,6 +1128,12 @@ export class CharacterRig {
       this.root.add(scene);
       this.equipped.set("face", { id: item.id, scene, meshes, statics: [], sourceBoneRoots: attachments.map(a => a.root) });
       this.sourceHead = { id: item.id, sourceMesh: pair.head.sourceMesh, bones: headBones };
+      // A recovered eye activation already contains the cosmetic's authored appearance.
+      // Clear a previous legacy eye decal at commit, never during preparation: a failed
+      // download must keep the entire previously equipped face intact.
+      if (Object.entries(pair.head.materials).some(([slot, binding]) =>
+        /^shader_eye(?:left|right)_shader$/i.test(slot) && binding.parameterOverrides?.length))
+        this.unequipDecal("eyes");
       this.registerHeadDecalTargets(scene);
       if (this.collectStandardMaterials(scene).some(m => m.userData.skinCoverage === 'neck-fade')) {
         // Keep skin behind the fading edge. The original matching morph pulls

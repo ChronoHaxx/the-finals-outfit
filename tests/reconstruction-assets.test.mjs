@@ -3,7 +3,32 @@ import { test } from 'node:test';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { collectReconstructionAssetRefs, collectAssetCompanions } from '../scripts/lib/reconstruction-assets.mjs';
+import { collectReconstructionAssetRefs, collectAssetCompanions, RECONSTRUCTION_ROOTS } from '../scripts/lib/reconstruction-assets.mjs';
+
+test('default staging includes optional eye index and dependencies, while old releases stay valid', () => {
+  const root = mkdtempSync(join(tmpdir(), 'finals-release-eyes-'));
+  const put = (path, value) => { mkdirSync(dirname(join(root, path)), { recursive: true });
+    writeFileSync(join(root, path), typeof value === 'object' ? JSON.stringify(value) : value); };
+  try {
+    for (const path of RECONSTRUCTION_ROOTS)
+      put(path, path.endsWith('.json') ? { formatVersion: 1, items: [] } : 'fixture');
+    const prior = collectReconstructionAssetRefs(root);
+    const eyeIndex = 'models/reconstructed-assemblies-v1/face-cosmetics.json';
+    assert.equal(prior.has(eyeIndex), false);
+    put(eyeIndex, { formatVersion: 1, items: { eye: { material: '../eye/eye.json' } } });
+    put('models/eye/eye.json', { recoveredEmissive: true, shader: 'eye.glsl', textures: [{ file: 'eye.rgba.gz.bin' }] });
+    put('models/eye/eye.glsl', 'fixture');
+    put('models/eye/eye.rgba.gz.bin', 'fixture');
+    const next = collectReconstructionAssetRefs(root);
+    assert.equal(next.size, prior.size + 4);
+    assert.ok(next.has(eyeIndex));
+    assert.ok(next.has('models/eye/eye.rgba.gz.bin'));
+    put(eyeIndex, { formatVersion: 2, items: {} });
+    assert.throws(() => collectReconstructionAssetRefs(root), /Invalid source face cosmetics index/);
+    put(eyeIndex, { formatVersion: 1, items: { eye: { material: '../eye/missing.json' } } });
+    assert.throws(() => collectReconstructionAssetRefs(root), /Missing reconstruction asset/);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
 
 test('release follows nested material, shadow, texture, fitting and variant dependencies', () => {
   const root = mkdtempSync(join(tmpdir(), 'finals-release-'));

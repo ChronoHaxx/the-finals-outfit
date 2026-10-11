@@ -100,7 +100,8 @@ if (itemsResult.success && sponsorsResult.success) {
     );
   } else {
     // MODELS_BASE / RECONSTRUCTION_BASE mirror VITE_MODELS_BASE / VITE_RECONSTRUCTION_BASE.
-    const hostGroups = catalogHostGroups(referenced, assetsBase, process.env.MODELS_BASE, process.env.RECONSTRUCTION_BASE);
+    const hostGroups = catalogHostGroups(referenced, assetsBase, process.env.MODELS_BASE, process.env.RECONSTRUCTION_BASE,
+      process.env.RECONSTRUCTION_ROUTES);
     for (const { base, paths, reconstruction } of hostGroups) {
       const reconstructionRoots = reconstruction ? RECONSTRUCTION_ROOTS : [];
 

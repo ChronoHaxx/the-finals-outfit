@@ -5,13 +5,14 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
-import { loadSourceAssemblyItems, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, MissingSourceDefinitionError, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
+import { loadSourceAssemblyItems, loadSourceFaceCosmetics, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, MissingSourceDefinitionError, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import { sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
 import MeshInspector from "./MeshInspector";
 import { createGltfLoader } from "../rig/loaders";
 import { useBuildStore, effectiveBuild } from "../store/useBuildStore";
+import { equipmentConflicts } from "../lib/equipment";
 import { getItemById } from "../lib/catalog";
 import { getBrowseItem } from "../lib/browse-catalog";
 import { modelUrl } from "../lib/assets";
@@ -400,9 +401,12 @@ export default function CharacterViewer() {
       // Render a base top under Outerwear when Upper Body is empty (never-bare torso). Derived
       // from `build` only for the rig — the store/share-link `build` is untouched.
       let supported = new Set<string>();
+      let faceCosmetics = new Set<string>();
       if (DEV.reconstructed && DEV.sourceMeshes && DEV.sourceAssembly) {
         try {
-          supported = await loadSourceAssemblyItems(modelUrl("models/reconstructed-assemblies-v1"));
+          [supported, faceCosmetics] = await Promise.all([
+            loadSourceAssemblyItems(modelUrl("models/reconstructed-assemblies-v1")),
+            loadSourceFaceCosmetics(modelUrl("models/reconstructed-assemblies-v1"))]);
           if (cancelled) return;
         } catch (e) {
           if (cancelled) return;
@@ -465,6 +469,7 @@ export default function CharacterViewer() {
       let commitAppearance: (() => boolean) | undefined;
       let appearanceOmitsHead = false;
       let equipFailed = false;
+      const pendingConflictRemovals: { slot: Slot; replacements: Slot[] }[] = [];
       // Source hair attaches through the preserved body's head frame. The
       // legacy-body diagnostic modes must keep their legacy hair path as well.
       const requestedHair = eff.hair && DEV.sourceMeshes && DEV.sourceFitting && supported.has(eff.hair) ? assembly?.items[eff.hair] : undefined;
@@ -474,10 +479,13 @@ export default function CharacterViewer() {
       // not about the hair the source path happens to support: an unsupported or legacy hairstyle
       // keeps its own geometry and still needs the head it sits on.
       const hairSelection = { id: eff.hair ?? undefined, item: requestedHair };
+      // A supported eye cosmetic is material-only: it recolours the worn source face's eye slots.
+      const eyes = eff.eyes && faceCosmetics.has(eff.eyes) ? eff.eyes : undefined;
       if (assembly && requestedFace && faceItem?.model?.gltfPath && (requestedHair || !eff.hair)) {
         appearanceSlots.add('hair'); appearanceSlots.add('face');
+        if (eyes) appearanceSlots.add('eyes');
         try {
-          const parameters = assembly.materialParameters.filter(p => p.itemId === eff.hair);
+          const parameters = assembly.materialParameters.filter(p => p.itemId === eff.hair || p.itemId === eyes);
           const assetsUrl = modelUrl('models/reconstructed-assemblies-v1');
           const pair = await loadSourceSkinPair(faceItem.id, requestedFace, assetsUrl, parameters, hairSelection);
           if (cancelled) return;
@@ -503,7 +511,10 @@ export default function CharacterViewer() {
             if (!preparedAppearance) { delete prev.current.hair; delete prev.current.face; return; }
             commitAppearance = () => {
               const committed = preparedAppearance!.commit();
-              if (committed) { prev.current.hair = hairKey; prev.current.face = faceKey; }
+              if (committed) {
+                prev.current.hair = hairKey; prev.current.face = faceKey;
+                if (eyes) delete prev.current.eyes; // legacy decal was cleared by the face transaction
+              }
               else { delete prev.current.hair; delete prev.current.face; }
               return committed;
             };
@@ -514,7 +525,7 @@ export default function CharacterViewer() {
           }
         } catch (e) {
           if (cancelled) return;
-          console.error(e); setError('Couldn’t load this hair and scalp preview.');
+          console.error(e); setError('Couldn’t load this face and hair preview.');
           delete prev.current.hair; delete prev.current.face;
           return; // Do not remove a covering while the head underneath failed to restore.
         }
@@ -562,7 +573,8 @@ export default function CharacterViewer() {
               [...Object.entries(eff).filter(([slot]) => slot !== 'hair').map(([, id]) => id), hair]
                 .filter((id): id is string => !!id), modelUrl('models/reconstructed-assembly-v2'));
             if (cancelled) return;
-            skinParameters = parameterOutfit.materialParameters.filter(p => p.itemId === hair);
+            skinParameters = parameterOutfit.materialParameters.filter(p => p.itemId === hair
+              || (!!eff.eyes && faceCosmetics.has(eff.eyes) && p.itemId === eff.eyes));
           } catch (e) {
             if (cancelled) return;
             console.error(e); setError('Couldn’t load scalp fitting data.'); delete prev.current[slot]; continue;
@@ -624,6 +636,12 @@ export default function CharacterViewer() {
                   }
                 : undefined,
             }, controller.signal);
+            if (!cancelled && sourceSkinPair && eyes) {
+              // The fallback-hair path also binds eyes through the recovered face.
+              // Do not apply this same item's legacy decal later in the slot loop.
+              appearanceSlots.add('eyes');
+              delete prev.current.eyes;
+            }
           } catch (e) {
             if (cancelled) return;
             console.error(e);
@@ -648,10 +666,26 @@ export default function CharacterViewer() {
           if (cancelled) return;
         } else {
           // empty slot
+          const previousId = rig.equippedItemId(slot);
+          const replacements = previousId ? SLOTS.filter(other => eff[other] &&
+            equipmentConflicts(slot, previousId, other, eff[other]!)) : [];
+          if (replacements.length) {
+            // A full-body replacement may occupy another UI slot that loads later.
+            // Keep its old companions until that exact replacement commits, so a
+            // failed request cannot strip trousers/coat (or the old full outfit).
+            pendingConflictRemovals.push({ slot, replacements });
+            continue;
+          }
           rig.unequip(slot);
           rig.unequipDecal(slot);
         }
         prev.current[slot] = key ?? null;
+      }
+      for (const { slot, replacements } of pendingConflictRemovals) {
+        if (!replacements.every(other => rig.equippedItemId(other) === eff[other])) continue;
+        rig.unequip(slot);
+        rig.unequipDecal(slot);
+        prev.current[slot] = null;
       }
       if (commitAppearance) {
         if (equipFailed) { delete prev.current.hair; delete prev.current.face; return; }

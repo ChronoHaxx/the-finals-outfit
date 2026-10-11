@@ -79,7 +79,13 @@ export interface SourceMaterialParameters {
   source: string;
   slots: string[];
   unresolved: string[];
+  /** ReplaceMaterial binds `source` itself to the slot instead of copying its dynamic values. */
+  replace?: true;
 }
+
+/** The overlay token a variant key records for one activation (a replacement is never an override). */
+export const overlayToken = (p: Pick<SourceMaterialParameters, 'source' | 'replace'>) =>
+  p.replace ? `replace:${p.source}` : p.source;
 
 // Material slot names are Unreal FNames: compared case-insensitively, stored with their own spelling.
 // Only ASCII letters fold; punctuation, other spelling and non-ASCII case stay different slots.
@@ -111,9 +117,11 @@ export function parameterOverlays(parameters: SourceMaterialParameters[], slot: 
   if (matching.length) matchMaterialSlot(slots, slot, "material slots for parameter overrides");
   // Preserve the authored array order within one customization item. Priority
   // between different items remains unknown, even if a combination was indexed.
-  if (new Set(matching.map(p => p.itemId)).size > 1 || matching.some(p => p.unresolved.length))
+  if (new Set(matching.map(p => p.itemId)).size > 1 || matching.some(p => p.unresolved.length) ||
+      (matching.some(p => p.replace) && matching.length > 1))
     throw new Error(`Unresolved material parameter overrides: ${slot}`);
-  return [...new Set(matching.map(p => p.source))];
+  // A variant key names each activation by its token, so an override and a replacement never share one.
+  return [...new Set(matching.map(overlayToken))];
 }
 
 function path(value?: SoftPath): string { return value?.AssetPathName ?? ""; }
@@ -208,10 +216,12 @@ export function resolveSourceOutfit(definitions: SourceDefinition[], contextTags
     .flatMap(item => item.properties.ActivatesTags ?? []));
   const materialParameters = definitions.flatMap(item => (item.properties.ActivatesMaterialParameters ?? []).flatMap(rule => {
     if (rule.MatchingTags.length && !rule.MatchingTags.some(tag => hasSourceTag(tags, tag))) return [];
+    const replace = rule.Behavior === 'ECustomizationMaterialBehavior::ReplaceMaterial';
     return [{ itemId: item.id, source: path(rule.MaterialInstance), slots: rule.SlotNames,
+      ...(replace ? { replace: true as const } : {}),
       unresolved: [
         ...(rule.MatchingTags.length > 1 ? ['multi-tag material parameter condition'] : []),
-        ...(rule.Behavior !== 'ECustomizationMaterialBehavior::OverrideParameters' ? ['unsupported material parameter behavior'] : []),
+        ...(rule.Behavior !== 'ECustomizationMaterialBehavior::OverrideParameters' && !replace ? ['unsupported material parameter behavior'] : []),
       ] }];
   }));
   for (const item of Object.values(items)) item.materialParameters = [];
@@ -289,6 +299,10 @@ export interface AssemblyAssets {
   meshes: Record<string, { url: string; kind?: 'skeletal' | 'static'; bodyMaskUrl?: string; bodyMaskUvTiles?: [number, number]; slots: { slot: string; material: string }[] }>;
   materials: Record<string, string>;
   materialVariants?: Record<string, string>;
+  /** A mesh shared by several items may need a different body-hide mask per item (their fitting
+   *  tags differ). Keyed by the item's source definition, then by source mesh; absent entries use
+   *  the mesh binding's own mask. */
+  itemBodyMasks?: Record<string, Record<string, { url: string; uvTiles?: [number, number] }>>;
   attachmentBody?: { source: string; url: string; restBones: Record<string, number[]> };
   attachmentFrames?: {
     headComponents?: Record<string, SourceFrameComponent>;
@@ -650,10 +664,11 @@ export function resolveSourceRigParts(item: SourceOutfit["items"][string], asset
       sections.push({ materialIndex, slot: slot.slot, defaultSource: slot.material, source, url: materialUrl });
       if (!repeated.has(slot.slot)) materials[slot.slot] = { url: materialUrl, source };
     }
+    const ownMask = assets.itemBodyMasks?.[item.source]?.[sourceMesh];
     return { sourceIndex: part.sourceIndex, sourceMesh, url: url(mesh.url), materials, attachment,
       ...(repeated.size ? { materialSections: sections } : {}),
-      bodyMaskUvTiles: mesh.bodyMaskUvTiles,
-      bodyMaskUrl: mesh.bodyMaskUrl ? url(mesh.bodyMaskUrl) : undefined,
+      bodyMaskUvTiles: ownMask ? ownMask.uvTiles : mesh.bodyMaskUvTiles,
+      bodyMaskUrl: ownMask ? url(ownMask.url) : mesh.bodyMaskUrl ? url(mesh.bodyMaskUrl) : undefined,
       ...(neutral ? { neutralHeadFrame: true as const } : {}) };
   });
 }
@@ -669,14 +684,32 @@ export async function loadSourceAssemblyItems(baseUrl: string): Promise<Set<stri
 
 // Picker progress follows the active asset release, including the separately reconstructed face.
 // These entries indicate work has been applied; neither index claims perfect visual fidelity.
+/** Material-only head cosmetics (eye items): validated per-face variants in assets.materialVariants. An index
+ *  published before these existed has no file; that means none are supported, not an error. */
+export async function loadSourceFaceCosmetics(baseUrl: string): Promise<Set<string>> {
+  let index: { formatVersion: number; items: Record<string, unknown> };
+  try {
+    index = await readJson(`${baseUrl}/face-cosmetics.json`) as typeof index;
+  } catch (error) {
+    pending.delete(`${baseUrl}/face-cosmetics.json`);
+    // Absent file: a 404, or an SPA fallback page that is not JSON. Anything else stays visible.
+    if (error instanceof SyntaxError || String((error as Error)?.message).includes('(404)')) return new Set();
+    throw error;
+  }
+  if (index.formatVersion !== 1 || !index.items || typeof index.items !== 'object' || Array.isArray(index.items))
+    throw new Error('Invalid source face cosmetics index');
+  return new Set(Object.keys(index.items));
+}
+
 export async function loadSourceReconstructionItems(baseUrl: string): Promise<Set<string>> {
-  const [assemblies, skinPairs] = await Promise.all([
+  const [assemblies, skinPairs, faceCosmetics] = await Promise.all([
     loadSourceAssemblyItems(baseUrl),
     readJson(`${baseUrl}/skin-pairs.json`) as Promise<{ formatVersion: number; items: Record<string, unknown> }>,
+    loadSourceFaceCosmetics(baseUrl),
   ]);
   if (skinPairs.formatVersion !== 1 || !skinPairs.items || typeof skinPairs.items !== "object" || Array.isArray(skinPairs.items)) {
     pending.delete(`${baseUrl}/skin-pairs.json`);
     throw new Error("Invalid source skin pair item index");
   }
-  return new Set([...assemblies, ...Object.keys(skinPairs.items)]);
+  return new Set([...assemblies, ...Object.keys(skinPairs.items), ...faceCosmetics]);
 }

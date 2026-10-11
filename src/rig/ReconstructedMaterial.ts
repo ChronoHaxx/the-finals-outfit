@@ -27,11 +27,14 @@ interface Manifest {
   skinSurface?: boolean;
   skinCoverage?: 'neck-fade';
   worldSurface?: boolean;
-  surfaceKind?: "eye" | "teeth" | "eyelash" | "hair";
+  glassSurface?: boolean;
+  blendMode?: string;
+  surfaceKind?: "eye" | "teeth" | "eyelash" | "hair" | "glass";
   normalSpace?: "world" | "tangent" | "strand-tangent";
   twoSided?: boolean;
   requiresVertexColor?: boolean;
   parameterOverrides?: string[];
+  recoveredEmissive?: boolean;
 }
 
 // Hash-verified shader and texture bytes, reused across loads of the same authored file
@@ -135,6 +138,7 @@ struct ReconstructedSurface {
   vec3 subsurfaceColor;
   float opacity;
   float scatter;
+  vec3 emissive;
 };
 varying vec2 vRecoveredUv0;
 varying vec2 vRecoveredUv1;
@@ -168,7 +172,12 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     throw new Error("Unsupported recovered UV requirement");
   const needsUv1 = requiredUvSets.includes(1);
   const worldSurface = !!manifest.skinSurface || !!manifest.worldSurface;
-  const usesGeometry = !!manifest.geometryDependentNormals || worldSurface;
+  const glass = !!manifest.glassSurface;
+  if ((glass || manifest.surfaceKind === 'glass') && (!glass || manifest.surfaceKind !== 'glass'
+    || manifest.normalSpace !== 'tangent' || manifest.blendMode !== 'BLEND_TranslucentGreyTransmittance'
+    || worldSurface || manifest.viewDependentCloth || manifest.geometryDependentNormals))
+    throw new Error('Unsupported recovered glass surface contract');
+  const usesGeometry = !!manifest.geometryDependentNormals || worldSurface || glass;
   const hair = manifest.surfaceKind === 'hair';
   if (manifest.skinCoverage && (manifest.skinCoverage !== 'neck-fade' || !manifest.skinSurface))
     throw new Error('Unsupported recovered skin coverage');
@@ -221,10 +230,15 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         dispose();
         throw new Error("Geometry-dependent surface requires original tangents");
       }
-      if (!mesh.geometry.hasAttribute("uv") || (needsUv1 && !mesh.geometry.hasAttribute("uv1"))) {
+      if (!mesh.geometry.hasAttribute("uv")) {
         dispose();
         throw new Error("Recovered surface is missing a required original UV set");
       }
+      // UE's local vertex factory binds the mesh's last texcoord stream to every
+      // channel a material requests beyond what the mesh has, so on a single-UV
+      // static mesh the material's UV1 reads UV0. Alias it the same way.
+      if (needsUv1 && !mesh.geometry.hasAttribute("uv1"))
+        mesh.geometry.setAttribute("uv1", mesh.geometry.getAttribute("uv"));
       const makeMaterial = (old: THREE.Material) => {
         const material = new THREE.MeshPhysicalMaterial({
           name: `${manifest.itemId}:recovered`, roughness: 1, metalness: 1,
@@ -233,6 +247,10 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         // Spatial alpha hashing consumes the raw material coverage. Native UE
         // temporal dithering is still pending; texture alpha alone is not coverage.
         material.alphaHash = masked;
+        // Qualified glass recovers the source material's opacity. It uses the
+        // preview's alpha blend and lighting, not UE refraction/transmittance.
+        material.transparent = glass && view === 'lit';
+        material.depthWrite = !material.transparent;
         if (manifest.skinSurface && skinOptions?.preserveAlpha && !neckFade) {
           // Retain the current preview's neck-edge coverage while native skin
           // opacity/depth-offset evaluation is still a separate adapter.
@@ -252,6 +270,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         material.userData.skinSurface = !!manifest.skinSurface;
         material.userData.skinCoverage = manifest.skinCoverage;
         material.userData.surfaceKind = manifest.surfaceKind;
+        material.userData.glassOpacityPolicy = glass ? 'source opacity; alpha-blended preview; native refraction and lighting pending' : undefined;
         material.userData.parameterOverrides = manifest.parameterOverrides;
         material.userData.hairLightingPolicy = hair ? 'Karis 2016 R/TT/TRT preview; native lighting, volume shadows and TAA pending' : undefined;
         material.userData.coveragePolicy = masked ? "raw material coverage with Three alpha hashing; native TAA pending" : undefined;
@@ -265,7 +284,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           const texture = textures.get(resource.key);
           if (texture) material.userData[resource.kind === "pack" ? `recoveredPack${resource.index}` : resource.texture.id] = texture;
         }
-        material.customProgramCacheKey = () => `recovered-v10:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}`;
+        material.customProgramCacheKey = () => `recovered-v11:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}`;
         material.onBeforeCompile = (shader) => {
           for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
           shader.vertexShader = "varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n" + shader.vertexShader;
@@ -310,7 +329,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               #endif
               vec3 recoveredViewTangent = transpose(recoveredViewFrame) * normalize(vViewPosition);
             ` : ""}
-            ${manifest.geometryDependentNormals ? `
+            ${manifest.geometryDependentNormals || glass ? `
               // Differentiate a reflected view-space surface in source centimetres.
               // Positions and tangent vectors share one frame; retain interpolated
               // vector lengths, since the source differentiates their curvature.
@@ -339,7 +358,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
             ` : ""}
             ReconstructedSurface recovered = recoveredSurface(vRecoveredUv0, vRecoveredUv1${manifest.viewDependentCloth ? ", recoveredViewTangent" : ""}${usesGeometry ? ", recoveredGeometry" : ""});
             diffuseColor.rgb = recovered.baseColor;
-            ${masked ? "diffuseColor.a *= clamp(recovered.opacity, 0.0, 1.0);" : ""}
+            ${masked || (glass && view === 'lit') ? "diffuseColor.a *= clamp(recovered.opacity, 0.0, 1.0);" : ""}
             ${manifest.skinSurface && skinOptions?.preserveAlpha && !neckFade ? `
               #ifdef USE_MAP
                 diffuseColor.a *= texture2D(map, vMapUv).a;
@@ -349,6 +368,10 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           `);
           fragment = replaceChunk(fragment, "roughnessmap_fragment", "float roughnessFactor = recovered.roughness;");
           fragment = replaceChunk(fragment, "metalnessmap_fragment", "float metalnessFactor = recovered.metalness;");
+          if (manifest.recoveredEmissive) fragment = replaceChunk(fragment, "emissivemap_fragment", `
+            #include <emissivemap_fragment>
+            totalEmissiveRadiance += recovered.emissive;
+          `);
           fragment = replaceChunk(fragment, "normal_fragment_maps", `
             ${hair ? `
               // The source Normal output means fibre tangent for MSM_Hair. Keep

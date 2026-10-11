@@ -21,7 +21,9 @@
 // Assets are served with a one-year immutable cache, so a URL's contents must never
 // change once anyone has fetched it.
 
-import { joinBase, modelUrlFor } from "./asset-routing.mjs";
+import { joinBase, modelUrlFor, parseReconstructionRoutes } from "./asset-routing.mjs";
+
+const reconstructionRoutes = parseReconstructionRoutes(import.meta.env.VITE_RECONSTRUCTION_ROUTES);
 
 export function assetUrl(path: string): string {
   return joinBase(import.meta.env.VITE_ASSETS_BASE || import.meta.env.BASE_URL, path);
@@ -32,5 +34,6 @@ export function modelUrl(path: string): string {
     assetsBase: import.meta.env.VITE_ASSETS_BASE || import.meta.env.BASE_URL,
     modelsBase: import.meta.env.VITE_MODELS_BASE,
     reconstructionBase: import.meta.env.VITE_RECONSTRUCTION_BASE,
+    reconstructionRoutes,
   });
 }

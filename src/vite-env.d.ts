@@ -7,4 +7,5 @@ interface ImportMetaEnv {
   // Optional base URL for reconstruction files (models/reconstructed/ and
   // models/reconstructed-*/). Unset or blank keeps them on the models/asset host.
   readonly VITE_RECONSTRUCTION_BASE?: string;
+  readonly VITE_RECONSTRUCTION_ROUTES?: string;
 }

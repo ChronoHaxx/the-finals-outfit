@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { resolveSourceOutfit, type SourceDefinition } from "./SourceAssembly";
-import { sourceHairUnresolved } from "./SourceHairAvailability";
+import { resolveSourceOutfit, type SourceDefinition } from "../../src/rig/SourceAssembly";
+import { sourceHairUnresolved } from "../../src/rig/SourceHairAvailability";
 
 const MEDIUM = ["Customization.Archetype.Medium"];
 const HAT = "Customization.Shape.PushHair.hat_covers_upper_hair";

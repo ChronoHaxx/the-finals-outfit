@@ -22,12 +22,14 @@ import { dirname, resolve, join } from "node:path";
 import { collectAssetRefs } from "./lib/asset-refs.mjs";
 import { collectReconstructionAssetRefs, collectAssetCompanions } from "./lib/reconstruction-assets.mjs";
 import { preflightPackage, selectStagePaths, stageMode } from "./lib/stage-selection.mjs";
+import { readAssetGraph, planAssetShards, digest } from './lib/asset-shards.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // Release worktrees can use the existing extraction without copying it into Git.
 const publicDir = resolve(process.env.ASSET_SOURCE_DIR || resolve(ROOT, "public"));
 const version = process.argv[2] ?? "v1";
-const mode = stageMode(process.argv.slice(2));
+const autoShard = process.argv.includes('--auto-shard');
+const mode = stageMode(process.argv.slice(2).filter(arg => arg !== '--auto-shard'));
 if (!/^[a-z0-9][a-z0-9-]*$/.test(version)) throw new Error('Use a single version directory name');
 const outRoot = resolve(ROOT, "_assets-upload");
 const outDir = join(outRoot, version);
@@ -45,6 +47,21 @@ const referenced = selectStagePaths(mode, { catalog, companions, reconstruction 
 
 const absent = [...referenced].filter(path => !existsSync(join(publicDir, path)));
 if (absent.length) throw new Error(`Cannot stage ${absent.length} missing assets: ${absent.slice(0, 10).join(', ')}`);
+if (autoShard) {
+  if (mode !== 'reconstruction') throw new Error('--auto-shard currently plans the reconstruction release; use --reconstruction-only');
+  const destination = resolve(process.env.ASSET_PLAN_OUT || join(outRoot, `${version}-shard-plan.json`));
+  if (existsSync(destination)) throw new Error(`Plan already exists: ${destination}`);
+  console.log(`Pinning ${referenced.size} referenced files and their relative dependencies…`);
+  const graph = readAssetGraph(publicDir, referenced, { onProgress: status =>
+    console.log(`Pinned ${status.files} files (${(status.bytes / 1024 ** 3).toFixed(2)} GiB)` ) });
+  const plan = planAssetShards(graph, { version });
+  mkdirSync(dirname(destination), { recursive: true });
+  writeFileSync(destination, JSON.stringify(plan, null, 2) + '\n', { flag: 'wx' });
+  console.log(JSON.stringify({ plan: destination, planSha256: digest(JSON.stringify(plan)), uniqueFiles: plan.uniqueFiles,
+    duplicatedFiles: plan.duplicatedFiles, shards: plan.shards.map(({ paths, ...summary }) => summary) }, null, 2));
+  console.log('Plan only: no asset copies or uploads. Stage leaf shards (1+) first with stage-asset-shard.mjs, then stage shard 0 using their immutable URLs.');
+  process.exit(0);
+}
 // Refuse before creating anything: a package that cannot fit one deployment must be split.
 preflightPackage(mode, referenced, path => statSync(join(publicDir, path)).size);
 

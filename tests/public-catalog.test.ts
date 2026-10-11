@@ -15,8 +15,9 @@ test('public display names do not change asset identity or hide unmatched items'
   assert.equal(getBrowseItem(unknown, false)?.id, unknown);
   assert.ok(getBrowseItem(unknown, true));
   assert.ok(getItemById(unknown)); // still available to the renderer / developer catalog
-  assert.equal(getBrowseItemsBySlot('lowerBack', true).length, 18);
-  assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 18);
+  // 36 since 25 Sep 2026: 18 hip-socket items (EBodySlot::BackLowerRight only) moved here from other slots.
+  assert.equal(getBrowseItemsBySlot('lowerBack', true).length, 36);
+  assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 36);
   assert.equal(getBrowseItemsBySlot('hair', false).length, 185);
   assert.ok(getBrowseItem('hairs-afrofade', false));
   assert.equal(PUBLIC_CATALOG_COUNT, getAllItems().length);

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { randomizeBuild, seededRandom, RANDOM_SLOTS, CORE_SLOTS } from "../src/lib/randomize";
 import { issueUrl, issueBody, MAX_ISSUE_URL } from "../src/lib/issue-report";
 import { SLOTS, type Slot } from "../src/lib/slots";
+import { resolveEquipmentSlots } from "../src/lib/equipment";
 
 const blank = () => Object.fromEntries(SLOTS.map(s => [s, null])) as Record<Slot, string | null>;
 const pool = (slot: Slot) => [1, 2, 3].map(n => `${slot}-${n}`);
@@ -57,4 +58,24 @@ test("issue link carries the share link, items and context and stays under the U
   const many = Array.from({ length: 400 }, (_, n) => ({ ...items[0], id: `item-${n}`, name: "Long name ".repeat(5) }));
   assert.ok(issueUrl({ repositoryUrl: "https://github.com/o/r", shareUrl: "s", items: many, userAgent: "UA".repeat(500) }).length <= MAX_ISSUE_URL);
   assert.doesNotMatch(issueBody({ repositoryUrl: "r", shareUrl: "s", items: [] }), /reported item/);
+});
+
+test('random outfits avoid full-body collisions and keep locked clothes/empty slots unchanged', () => {
+  const overalls = 'casual-onestrapoveralls-denim', shirt = 'casual-basictshirt-cotton-black', pants = 'casual-loosejeans-denim-darkblue';
+  const blank = Object.fromEntries(SLOTS.map(s => [s, null])) as Record<Slot, string | null>;
+  const candidates = (slot: Slot) => slot === 'upperBody' ? [overalls, shirt] : slot === 'lowerBody' ? [pants] : [];
+  for (let seed = 1; seed <= 50; seed++) {
+    const result = randomizeBuild({ build: blank, locked: new Set(), candidates, random: seededRandom(seed) });
+    assert.ok(!(result.upperBody === overalls && result.lowerBody));
+    assert.deepEqual(resolveEquipmentSlots(result).removed, []);
+    const locked = randomizeBuild({ build: { ...blank, lowerBody: pants }, locked: new Set(['lowerBody', 'face']),
+      candidates, random: seededRandom(seed) });
+    assert.equal(locked.lowerBody, pants);
+    assert.equal(locked.upperBody, shirt);
+    assert.equal(locked.face, null);
+    const lockedSuit = randomizeBuild({ build: { ...blank, upperBody: overalls }, locked: new Set(['upperBody']),
+      candidates, random: seededRandom(seed) });
+    assert.equal(lockedSuit.upperBody, overalls);
+    assert.equal(lockedSuit.lowerBody, null);
+  }
 });
