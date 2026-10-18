@@ -1,0 +1,20 @@
+// Cloudflare Worker for outfit link previews (see README.md). Deploying it is an account-side step.
+{
+  "name": "the-finals-outfit-share",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-01",
+  "workers_dev": true,
+  "kv_namespaces": [
+    // Replace with the id printed by `wrangler kv namespace create SHARES` before deploying.
+    { "binding": "SHARES", "id": "00000000000000000000000000000000" }
+  ],
+  "ratelimits": [
+    // Uploads per client IP: 6 a minute.
+    { "name": "UPLOAD_LIMIT", "namespace_id": "4101", "simple": { "limit": 6, "period": 60 } }
+  ],
+  "vars": {
+    "APP_URL": "https://chronohaxx.github.io/the-finals-outfit/",
+    "ALLOWED_ORIGINS": "https://chronohaxx.github.io",
+    "UPLOADS_DISABLED": "0"
+  }
+}

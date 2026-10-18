@@ -8,4 +8,6 @@ interface ImportMetaEnv {
   // models/reconstructed-*/). Unset or blank keeps them on the models/asset host.
   readonly VITE_RECONSTRUCTION_BASE?: string;
   readonly VITE_RECONSTRUCTION_ROUTES?: string;
+  // Optional origin of the link-preview Worker (workers/share-preview). Unset turns preview links off.
+  readonly VITE_SHARE_PREVIEW_BASE?: string;
 }
