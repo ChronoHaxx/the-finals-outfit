@@ -267,6 +267,13 @@ export class CharacterRig {
     return this.equipped.get(slot)?.id;
   }
 
+  /** Everything an equipped item added to the rig: its scene, under-layer, bone-parented statics and bone branches. */
+  equippedObjects(id: string): THREE.Object3D[] {
+    for (const h of this.equipped.values())
+      if (h.id === id) return [h.scene, ...(h.underLayerScene ? [h.underLayerScene] : []), ...h.statics, ...(h.sourceBoneRoots ?? [])];
+    return [];
+  }
+
   /** Identity of the source head component whose own bones head-attached items may use. It changes
    *  whenever the worn head does, so callers can tell that such an item has to be staged again. */
   sourceHeadComponentKey(): string | undefined {
@@ -915,6 +922,7 @@ export class CharacterRig {
           mesh.frustumCulled = false;
           mesh.userData.sourcePartIndex = part.sourceIndex;
           mesh.userData.sourceMesh = part.sourceMesh;
+          mesh.userData.sourceMeshUrl = part.url;
           enableSourceSkinning(mesh);
           this.sourceFitting.apply(mesh, this.sourceFittingNames);
           meshes.push(mesh);
@@ -1097,6 +1105,7 @@ export class CharacterRig {
         mesh.bind(frame.skeleton, mesh.bindMatrix);
         mesh.frustumCulled = false;
         mesh.userData.sourceMesh = pair.head.sourceMesh;
+        mesh.userData.sourceMeshUrl = pair.head.url;
         mesh.userData.sourcePartIndex = pair.head.sourceIndex;
         enableSourceSkinning(mesh);
         this.sourceFitting.apply(mesh, this.sourceFittingNames);

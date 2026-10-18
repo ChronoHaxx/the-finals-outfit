@@ -11,6 +11,7 @@ import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHair
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
 import MeshInspector from "./MeshInspector";
+import OutfitExportPanel, { type ExportContext } from "./OutfitExportPanel";
 import { createGltfLoader } from "../rig/loaders";
 import { useBuildStore, effectiveBuild } from "../store/useBuildStore";
 import { equipmentConflicts } from "../lib/equipment";
@@ -18,6 +19,7 @@ import { getItemById } from "../lib/catalog";
 import { getBrowseItem } from "../lib/browse-catalog";
 import { modelUrl } from "../lib/assets";
 import { buildShareUrl } from "../lib/share-url";
+import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { SLOTS, type Slot } from "../lib/slots";
 import type { Item } from "../lib/item";
 
@@ -216,6 +218,17 @@ function makeSoftboxScene(): THREE.Scene {
   return scene;
 }
 
+// Hands the export panel (outside the Canvas) the live renderer and camera.
+function ExportBridge({ target }: { target: { current: ExportContext | null } }) {
+  const gl = useThree((s) => s.gl);
+  const camera = useThree((s) => s.camera);
+  useEffect(() => {
+    target.current = { gl, camera };
+    return () => { target.current = null; };
+  }, [gl, camera, target]);
+  return null;
+}
+
 // Image-based lighting via PMREM (no network/asset dependency, unlike drei's
 // <Environment> HDR presets). The studio theme uses the softbox scene above as the
 // primary light source; the lobby theme keeps the generic bright RoomEnvironment, dimmed,
@@ -329,6 +342,7 @@ export default function CharacterViewer() {
   const [missingFittingData, setMissingFittingData] = useState(false);
   const [retryAttempt, setRetryAttempt] = useState(0);
   const [theme, setTheme] = useState<SceneTheme>("studio");
+  const exportContext = useRef<ExportContext | null>(null);
   const build = useBuildStore((s) => s.build);
   const prev = useRef<Partial<Record<Slot, string | null>>>({});
   // The item whose companion decal is installed for each slot (null: none).
@@ -825,6 +839,7 @@ export default function CharacterViewer() {
       >
         {theme === "studio" ? <StudioLights /> : <LobbyLights />}
         <primitive object={rig.root} />
+        {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
         {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview />}
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
@@ -861,6 +876,7 @@ export default function CharacterViewer() {
         </div>
       )}
       {DEV.tune && ready && <MaterialTuner rig={rig} />}
+      {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} />}
       {!ready && !error && (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center text-sm text-neutral-500">
           Loading model…
