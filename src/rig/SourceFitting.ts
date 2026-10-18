@@ -1,13 +1,21 @@
 import type * as THREE from "three";
 
 // Bounded preview rule: these decoded tag groups name authored morphs, plus the
-// single exact tag PushJacket.bandolier_squeeze; no other PushJacket leaf is decoded.
-// Exact leaf matches activate at full weight. The game's native evaluator,
-// wrap deformation, attachment offsets and other shape groups are not recovered.
+// single exact tag PushJacket.bandolier_squeeze and the two exact tags
+// PushHair.hat_covers_upper_hair and PushHair.hood_covers_head; no other
+// PushJacket or PushHair leaf is decoded. DefaultFace leaves (default_face,
+// default_chin, default_nose, default_ears, default_brows) are the preserved head
+// meshes' own morph names: facewear/headwear authored on the default face pulls the
+// worn face toward it, so masks and cowls no longer let lips and chin through.
+// The other leaves the source hair meshes report — push_hair_in_back,
+// push_hair_in_front, push_hair_for_facewear, hat_covers_upper_front_hair —
+// stay undecoded here. Exact leaf matches activate at full weight. The game's native
+// evaluator, wrap deformation, attachment offsets, hat removal semantics and other
+// shape groups are not recovered.
 export function fittingMorphNames(tags: Iterable<string>): Set<string> {
   const result = new Set<string>();
   for (const tag of tags) {
-    const match = /^Customization\.Shape\.(?:PushInsideClothes|ShrinkWrap|HeadNeckMatch|PushJacket(?=\.bandolier_squeeze$))\.([A-Za-z0-9_]+)$/.exec(tag);
+    const match = /^Customization\.Shape\.(?:PushInsideClothes|ShrinkWrap|HeadNeckMatch|DefaultFace|PushJacket(?=\.bandolier_squeeze$)|PushHair(?=\.(?:hat_covers_upper_hair|hood_covers_head)$))\.([A-Za-z0-9_]+)$/.exec(tag);
     if (match) result.add(match[1]);
   }
   return result;

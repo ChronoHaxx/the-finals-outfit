@@ -15,8 +15,9 @@ test('public display names do not change asset identity or hide unmatched items'
   assert.equal(getBrowseItem(unknown, false)?.id, unknown);
   assert.ok(getBrowseItem(unknown, true));
   assert.ok(getItemById(unknown)); // still available to the renderer / developer catalog
-  assert.equal(getBrowseItemsBySlot('lowerBack', true).length, 18);
-  assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 18);
+  // 36 since 25 Sep 2026: 18 hip-socket items (EBodySlot::BackLowerRight only) moved here from other slots.
+  assert.equal(getBrowseItemsBySlot('lowerBack', true).length, 36);
+  assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 36);
   assert.equal(getBrowseItemsBySlot('hair', false).length, 185);
   assert.ok(getBrowseItem('hairs-afrofade', false));
   assert.equal(PUBLIC_CATALOG_COUNT, getAllItems().length);
@@ -102,7 +103,9 @@ test('only the exact unlisted pathname selects the developer catalog', () => {
 
 test('review verdicts win over generic support and missing status data is not falsely red', () => {
   const eno = getItemById('streetwear-tightsinglet-cotton-enorino')!;
-  const broken = getItemById('streetwear-tightsinglet-cotton-black')!;
+  // A legacy model with repaired body coverage stays an issue even when worked on; only a review verdict lifts it
+  // (the source-rendered singlets carry one since 12 Oct 2026, so the example is a legacy-only variant).
+  const broken = getItemById('streetwear-tightsinglet-cotton-anubis')!;
   const ordinary = getItemById('attachment-boombox-01-finals-lumbar')!;
   assert.equal(getReconstructionReview(eno, new Set(), 'unavailable').status, 'accepted');
   assert.equal(getReconstructionReview(broken, new Set([broken.id]), 'ready').status, 'issue');

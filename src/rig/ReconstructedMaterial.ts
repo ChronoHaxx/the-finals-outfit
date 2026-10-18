@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { fetchAsset as checkedFetch } from "../lib/asset-fetch";
+import { VerifiedByteCache } from "../lib/verified-bytes";
 import { HAIR_LIGHTING_GLSL } from './HairLighting';
 import {
   RECOVERED_SAMPLER_TARGET, assemblePackedLayers, planReconstructedSamplers, rewriteSamplerGlsl,
@@ -26,27 +27,76 @@ interface Manifest {
   skinSurface?: boolean;
   skinCoverage?: 'neck-fade';
   worldSurface?: boolean;
-  surfaceKind?: "eye" | "teeth" | "eyelash" | "hair";
+  glassSurface?: boolean;
+  blendMode?: string;
+  surfaceKind?: "eye" | "teeth" | "eyelash" | "hair" | "glass";
   normalSpace?: "world" | "tangent" | "strand-tangent";
   twoSided?: boolean;
   requiresVertexColor?: boolean;
   parameterOverrides?: string[];
+  recoveredEmissive?: boolean;
+  // Authored opacity mask through the compiled dithered clip (scripts/shader-probe/masked_contract.py).
+  maskedClip?: { policy: string; opacitySource: { slot: string; component: string } };
+  // PlasticSheet parametric fresnel opacity through its DitherTemporalAA clip (scripts/shader-probe/plastic_sheet_contract.py):
+  // a geometry-dependent kept fraction rendered with alpha hashing; no UV-only coverage, so shadows stay opaque.
+  parametricOpacity?: { policy: string; fields?: string[] };
+  // PlasticSheet two-sided sign pins; the face sign itself is listed in requiredGeometryFields when the program reads it.
+  twoSidedSign?: { policy: string };
+  // Glass: 'source-world' for a cubemap program (its reflection lookup needs fixed UE world axes), otherwise
+  // 'source-world-or-orthonormal-equivalent' (dot products only, evaluated in reflected view space).
+  geometryFrame?: string;
+  requiredGeometryFields?: string[];
 }
 
-async function verifyHash(data: ArrayBuffer, expected: string): Promise<void> {
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  const actual = Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, "0")).join("");
-  if (actual !== expected.toLowerCase()) throw new Error("Recovered material asset hash mismatch");
-}
+// Cubemap glass geometry in the source-world frame (scripts/shader-probe/glass_contract.py FRAME_POLICY).
+// Derived: SourceTransform.ts converts UE (X, Y, Z) cm to three.js (X, Z, Y) m, so a three.js world vector maps back
+// as .xzy (directions) and .xzy * 100 (positions, cm); the swap is a reflection, so tangent handedness negates, as
+// for world surfaces. Choice (signed off 12 Oct 2026, cubemapGlassYaw): the mesh component world yaw is pinned to the preview
+// pose. rig.root sits at the three.js origin with identity rotation and only the camera orbits (CharacterViewer),
+// so this world frame is the source mesh component frame: component world yaw 0, the character faces UE +Y.
+// The cube direction then depends on the camera only through the reflected view vector, never on the view axes.
+// faceSign is UE's two-sided sign with an unmirrored primitive and view: +1 front face, -1 back face.
+// three draws a transparent DoubleSide material as a BackSide pass then a FrontSide pass. The BackSide program
+// defines FLIP_SIDED: winding is reversed (gl_FrontFacing is true on geometric back faces) and the vertex stage
+// negates the normal and tangent. glassUnflip undoes both, so the contract sees the vertex frame before UE's
+// TwoSidedSign plus the geometric face sign.
+const GLASS_SOURCE_WORLD_GEOMETRY = `
+  #ifdef FLIP_SIDED
+    float glassUnflip = -1.0;
+  #else
+    float glassUnflip = 1.0;
+  #endif
+  vec3 glassWorldView = transpose(mat3(viewMatrix)) * vViewPosition;
+  ReconstructedGeometry recoveredGeometry;
+  recoveredGeometry.position = (cameraPosition - glassWorldView).xzy * 100.0;
+  recoveredGeometry.view = glassWorldView.xzy * 100.0;
+  recoveredGeometry.normal = (transpose(mat3(viewMatrix)) * vNormal).xzy * glassUnflip;
+  recoveredGeometry.tangent = (transpose(mat3(viewMatrix)) * vTangent).xzy * glassUnflip;
+  recoveredGeometry.handedness = -vRecoveredHandedness;
+`;
+const GLASS_SOURCE_WORLD_FIELDS = new Set(["position", "tangent", "normal", "view", "handedness", "faceSign"]);
+// Two-sided PlasticSheet on the generic reflected view-space route (scripts/shader-probe/plastic_sheet_contract.py): UE's
+// TwoSidedSign is the rasterizer face sign once its Flags and CullingSign pins hold. Its alpha-hashed DoubleSide
+// material draws one pass, so FLIP_SIDED is never defined there and gl_FrontFacing/vNormal are the raw values; the
+// unflip mirrors glassUnflip so a later switch to a two-pass transparent draw would still hand the contract the
+// vertex frame and the geometric face. Emitted only for such programs, so every other program's GLSL is unchanged.
+const GENERIC_FACE_UNFLIP = `
+              #ifdef FLIP_SIDED
+                float recoveredUnflip = -1.0;
+              #else
+                float recoveredUnflip = 1.0;
+              #endif`;
+
+// Hash-verified shader and texture bytes, reused across loads of the same authored file
+// (hair and face swaps restage the same skin textures). Every call receives its own copy;
+// manifests are not hashed and always load fresh. Bounded to 128 MiB / 512 entries.
+const verifiedBytes = new VerifiedByteCache(checkedFetch);
 
 // Every sampler resource starts from the authored bytes: fetch, decompress and
-// hash-check the original file before anything is uploaded or regrouped.
-async function fetchTextureData(spec: TextureSpec, base: string): Promise<ArrayBuffer> {
-  const response = await checkedFetch(new URL(spec.file, base).href);
-  if (!response.body) throw new Error("Empty recovered texture response");
-  const data = await new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer();
-  await verifyHash(data, spec.sha256);
-  return data;
+// hash-check the original file before anything is uploaded or regrouped. A repeat
+// load reuses bytes that already passed that check; layout validation still runs per load.
+function fetchTextureData(spec: TextureSpec, base: string): Promise<ArrayBuffer> {
+  return verifiedBytes.load(new URL(spec.file, base).href, spec.sha256, "gzip");
 }
 
 function validateTextureLayout(spec: TextureSpec, data: ArrayBuffer): { half: boolean } {
@@ -138,6 +188,7 @@ struct ReconstructedSurface {
   vec3 subsurfaceColor;
   float opacity;
   float scatter;
+  vec3 emissive;
 };
 varying vec2 vRecoveredUv0;
 varying vec2 vRecoveredUv1;
@@ -171,21 +222,47 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     throw new Error("Unsupported recovered UV requirement");
   const needsUv1 = requiredUvSets.includes(1);
   const worldSurface = !!manifest.skinSurface || !!manifest.worldSurface;
-  const usesGeometry = !!manifest.geometryDependentNormals || worldSurface;
+  const glass = !!manifest.glassSurface;
+  if ((glass || manifest.surfaceKind === 'glass') && (!glass || manifest.surfaceKind !== 'glass'
+    || manifest.normalSpace !== 'tangent' || manifest.blendMode !== 'BLEND_TranslucentGreyTransmittance'
+    || worldSurface || manifest.viewDependentCloth || manifest.geometryDependentNormals))
+    throw new Error('Unsupported recovered glass surface contract');
+  // A cubemap glass program declares the source-world frame; every other qualified glass program keeps the
+  // orthonormal-equivalent reflected view space (absent on manifests that predate the field).
+  const glassSourceWorld = glass && manifest.geometryFrame === 'source-world';
+  if (glass && !glassSourceWorld && manifest.geometryFrame !== undefined
+    && manifest.geometryFrame !== 'source-world-or-orthonormal-equivalent')
+    throw new Error('Unsupported recovered glass geometry frame');
+  if (glassSourceWorld && (!manifest.recoveredEmissive
+    || !(manifest.requiredGeometryFields ?? []).every(field => GLASS_SOURCE_WORLD_FIELDS.has(field))))
+    throw new Error('Unsupported recovered cubemap glass contract');
+  const glassFaceSign = glassSourceWorld && (manifest.requiredGeometryFields ?? []).includes('faceSign');
+  const usesGeometry = !!manifest.geometryDependentNormals || worldSurface || glass;
   const hair = manifest.surfaceKind === 'hair';
   if (manifest.skinCoverage && (manifest.skinCoverage !== 'neck-fade' || !manifest.skinSurface))
     throw new Error('Unsupported recovered skin coverage');
   const neckFade = manifest.skinCoverage === 'neck-fade';
-  const masked = manifest.surfaceKind === "eyelash" || hair || neckFade;
-  const shaderBytes = await (await checkedFetch(new URL(manifest.shader, base).href)).arrayBuffer();
-  await verifyHash(shaderBytes, manifest.shaderSha256);
+  const maskedClip = !!manifest.maskedClip;
+  if (maskedClip && (worldSurface || glass || manifest.surfaceKind || typeof manifest.maskedClip?.policy !== 'string'))
+    throw new Error('Unsupported recovered masked clip contract');
+  const masked = manifest.surfaceKind === "eyelash" || hair || neckFade || maskedClip;
+  // PlasticSheet (plastic_sheet_contract): parametric opacity on the generic geometry route, BLEND_Masked only.
+  const parametric = !!manifest.parametricOpacity;
+  if (parametric && (!manifest.geometryDependentNormals || worldSurface || glass || maskedClip || manifest.surfaceKind
+    || manifest.blendMode !== 'BLEND_Masked' || typeof manifest.parametricOpacity?.policy !== 'string'))
+    throw new Error('Unsupported recovered parametric opacity contract');
+  // A generic geometry program that reads the rasterizer face (two-sided PlasticSheet); cubemap glass has its own block.
+  const genericFaceSign = !glass && (manifest.requiredGeometryFields ?? []).includes('faceSign');
+  if (genericFaceSign && (!manifest.geometryDependentNormals || worldSurface))
+    throw new Error('Unsupported recovered face sign contract');
+  const shaderBytes = await verifiedBytes.load(new URL(manifest.shader, base).href, manifest.shaderSha256, "identity");
   let recoveredShader = new TextDecoder().decode(shaderBytes);
   let coverageShader: string | undefined;
   if (masked) {
     if (!manifest.coverageShader || !manifest.coverageShaderSha256 || manifest.coverageGeometryFields?.length !== 0)
       throw new Error("Recovered masked shadows require validated UV-only coverage");
-    const bytes = await (await checkedFetch(new URL(manifest.coverageShader, base).href)).arrayBuffer();
-    await verifyHash(bytes, manifest.coverageShaderSha256);
+    const bytes = await verifiedBytes.load(new URL(manifest.coverageShader, base).href,
+      manifest.coverageShaderSha256, "identity");
     coverageShader = new TextDecoder().decode(bytes);
   }
   // One plan drives the surface pass, the shadow/coverage pass and every upload.
@@ -225,10 +302,15 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         dispose();
         throw new Error("Geometry-dependent surface requires original tangents");
       }
-      if (!mesh.geometry.hasAttribute("uv") || (needsUv1 && !mesh.geometry.hasAttribute("uv1"))) {
+      if (!mesh.geometry.hasAttribute("uv")) {
         dispose();
         throw new Error("Recovered surface is missing a required original UV set");
       }
+      // UE's local vertex factory binds the mesh's last texcoord stream to every
+      // channel a material requests beyond what the mesh has, so on a single-UV
+      // static mesh the material's UV1 reads UV0. Alias it the same way.
+      if (needsUv1 && !mesh.geometry.hasAttribute("uv1"))
+        mesh.geometry.setAttribute("uv1", mesh.geometry.getAttribute("uv"));
       const makeMaterial = (old: THREE.Material) => {
         const material = new THREE.MeshPhysicalMaterial({
           name: `${manifest.itemId}:recovered`, roughness: 1, metalness: 1,
@@ -236,7 +318,12 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         });
         // Spatial alpha hashing consumes the raw material coverage. Native UE
         // temporal dithering is still pending; texture alpha alone is not coverage.
-        material.alphaHash = masked;
+        // PlasticSheet's kept fraction replaces UE's temporal dither the same way (signed off, ditheredOpacity).
+        material.alphaHash = masked || parametric;
+        // Qualified glass recovers the source material's opacity. It uses the
+        // preview's alpha blend and lighting, not UE refraction/transmittance.
+        material.transparent = glass && view === 'lit';
+        material.depthWrite = !material.transparent;
         if (manifest.skinSurface && skinOptions?.preserveAlpha && !neckFade) {
           // Retain the current preview's neck-edge coverage while native skin
           // opacity/depth-offset evaluation is still a separate adapter.
@@ -256,9 +343,12 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         material.userData.skinSurface = !!manifest.skinSurface;
         material.userData.skinCoverage = manifest.skinCoverage;
         material.userData.surfaceKind = manifest.surfaceKind;
+        material.userData.glassOpacityPolicy = glass ? 'source opacity; alpha-blended preview; native refraction and lighting pending' : undefined;
         material.userData.parameterOverrides = manifest.parameterOverrides;
         material.userData.hairLightingPolicy = hair ? 'Karis 2016 R/TT/TRT preview; native lighting, volume shadows and TAA pending' : undefined;
-        material.userData.coveragePolicy = masked ? "raw material coverage with Three alpha hashing; native TAA pending" : undefined;
+        material.userData.coveragePolicy = maskedClip ? manifest.maskedClip!.policy
+          : parametric ? manifest.parametricOpacity!.policy
+          : masked ? "raw material coverage with Three alpha hashing; native TAA pending" : undefined;
         material.userData.skinOpacityPolicy = neckFade ? 'source neck mask and enable; preview alpha hashing; native dither, discard and depth offset pending'
           : manifest.skinSurface ? "existing preview coverage; native opacity pending" : undefined;
         // Counts and plan key so a run can be proven against the manifest. A
@@ -269,7 +359,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           const texture = textures.get(resource.key);
           if (texture) material.userData[resource.kind === "pack" ? `recoveredPack${resource.index}` : resource.texture.id] = texture;
         }
-        material.customProgramCacheKey = () => `recovered-v10:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}`;
+        material.customProgramCacheKey = () => `recovered-v12:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}:${maskedClip}:${parametric}:${genericFaceSign}`;
         material.onBeforeCompile = (shader) => {
           for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
           shader.vertexShader = "varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n" + shader.vertexShader;
@@ -314,16 +404,19 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               #endif
               vec3 recoveredViewTangent = transpose(recoveredViewFrame) * normalize(vViewPosition);
             ` : ""}
-            ${manifest.geometryDependentNormals ? `
+            ${glassSourceWorld ? GLASS_SOURCE_WORLD_GEOMETRY + (glassFaceSign
+              ? "recoveredGeometry.faceSign = (gl_FrontFacing ? 1.0 : -1.0) * glassUnflip;" : "") : ""}
+            ${(manifest.geometryDependentNormals || glass) && !glassSourceWorld ? `${genericFaceSign ? GENERIC_FACE_UNFLIP : ""}
               // Differentiate a reflected view-space surface in source centimetres.
               // Positions and tangent vectors share one frame; retain interpolated
               // vector lengths, since the source differentiates their curvature.
               ReconstructedGeometry recoveredGeometry;
               recoveredGeometry.position = vec3(-vViewPosition.x, vViewPosition.y, -vViewPosition.z) * 100.0;
-              recoveredGeometry.tangent = vec3(vTangent.x, -vTangent.y, vTangent.z);
-              recoveredGeometry.normal = vec3(vNormal.x, -vNormal.y, vNormal.z);
+              recoveredGeometry.tangent = vec3(vTangent.x, -vTangent.y, vTangent.z)${genericFaceSign ? " * recoveredUnflip" : ""};
+              recoveredGeometry.normal = vec3(vNormal.x, -vNormal.y, vNormal.z)${genericFaceSign ? " * recoveredUnflip" : ""};
               recoveredGeometry.view = -recoveredGeometry.position;
-              recoveredGeometry.handedness = -vRecoveredHandedness;
+              recoveredGeometry.handedness = -vRecoveredHandedness;${genericFaceSign ? `
+              recoveredGeometry.faceSign = (gl_FrontFacing ? 1.0 : -1.0) * recoveredUnflip;` : ""}
             ` : ""}
             ${worldSurface ? `
               // Skin and facial materials need source world axes for their view,
@@ -343,7 +436,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
             ` : ""}
             ReconstructedSurface recovered = recoveredSurface(vRecoveredUv0, vRecoveredUv1${manifest.viewDependentCloth ? ", recoveredViewTangent" : ""}${usesGeometry ? ", recoveredGeometry" : ""});
             diffuseColor.rgb = recovered.baseColor;
-            ${masked ? "diffuseColor.a *= clamp(recovered.opacity, 0.0, 1.0);" : ""}
+            ${masked || parametric || (glass && view === 'lit') ? "diffuseColor.a *= clamp(recovered.opacity, 0.0, 1.0);" : ""}
             ${manifest.skinSurface && skinOptions?.preserveAlpha && !neckFade ? `
               #ifdef USE_MAP
                 diffuseColor.a *= texture2D(map, vMapUv).a;
@@ -353,6 +446,10 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           `);
           fragment = replaceChunk(fragment, "roughnessmap_fragment", "float roughnessFactor = recovered.roughness;");
           fragment = replaceChunk(fragment, "metalnessmap_fragment", "float metalnessFactor = recovered.metalness;");
+          if (manifest.recoveredEmissive) fragment = replaceChunk(fragment, "emissivemap_fragment", `
+            #include <emissivemap_fragment>
+            totalEmissiveRadiance += recovered.emissive;
+          `);
           fragment = replaceChunk(fragment, "normal_fragment_maps", `
             ${hair ? `
               // The source Normal output means fibre tangent for MSM_Hair. Keep
@@ -417,7 +514,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           shadow.defines = { ...shadow.defines, ...(needsUv1 ? { USE_UV1: "" } : {}) };
           shadow.userData.recoveredCoverage = true;
           shadow.userData.recoveredSamplers = planReport;
-          shadow.customProgramCacheKey = () => `recovered-coverage-v3:${manifest.coverageShaderSha256}:${plan.cacheKey}:${needsUv1}:${hair}`;
+          shadow.customProgramCacheKey = () => `recovered-coverage-v3:${manifest.coverageShaderSha256}:${plan.cacheKey}:${needsUv1}:${hair}:${maskedClip}`;
           shadow.onBeforeCompile = shader => {
             // Same plan, same uniform mapping as the surface pass.
             for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
@@ -425,7 +522,10 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
             shader.vertexShader = replaceChunk(shader.vertexShader, 'uv_vertex', `#include <uv_vertex>
               vRecoveredUv0 = uv; vRecoveredUv1 = ${needsUv1 ? 'uv1' : 'vec2(0.0)'};`);
             shader.fragmentShader = SURFACE_STRUCT + coverageShader + '\n' + shader.fragmentShader;
-            shader.fragmentShader = replaceChunk(shader.fragmentShader, 'map_fragment', `
+            shader.fragmentShader = replaceChunk(shader.fragmentShader, 'map_fragment', maskedClip ? `
+              // Masked clip coverage was emitted as a UV-only function.
+              diffuseColor.a *= clamp(recoveredSurface(vRecoveredUv0, vRecoveredUv1).opacity, 0.0, 1.0);
+            ` : `
               // Coverage was sliced independently and has no live geometry inputs.
               ReconstructedGeometry g = ReconstructedGeometry(vec3(0.0), vec3(1.0,0.0,0.0), vec3(0.0,0.0,1.0),
                 vec3(0.0,0.0,1.0), 1.0, vec3(0.0)${hair ? ', vec4(1.0)' : ''});

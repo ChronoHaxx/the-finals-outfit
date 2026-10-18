@@ -1,7 +1,7 @@
 // Stage exactly the assets the catalog references into _assets-upload/<version>/,
 // ready to publish to whatever host VITE_ASSETS_BASE points at.
 //
-//   node scripts/stage-assets.mjs v2 [--models-only]
+//   node scripts/stage-assets.mjs v2 [--models-only | --reconstruction-only]
 //
 // Why a version directory rather than uploading in place:
 //
@@ -21,12 +21,15 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
 import { collectAssetRefs } from "./lib/asset-refs.mjs";
 import { collectReconstructionAssetRefs, collectAssetCompanions } from "./lib/reconstruction-assets.mjs";
+import { preflightPackage, selectStagePaths, stageMode } from "./lib/stage-selection.mjs";
+import { readAssetGraph, planAssetShards, digest } from './lib/asset-shards.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // Release worktrees can use the existing extraction without copying it into Git.
 const publicDir = resolve(process.env.ASSET_SOURCE_DIR || resolve(ROOT, "public"));
 const version = process.argv[2] ?? "v1";
-const modelsOnly = process.argv.includes('--models-only');
+const autoShard = process.argv.includes('--auto-shard');
+const mode = stageMode(process.argv.slice(2).filter(arg => arg !== '--auto-shard'));
 if (!/^[a-z0-9][a-z0-9-]*$/.test(version)) throw new Error('Use a single version directory name');
 const outRoot = resolve(ROOT, "_assets-upload");
 const outDir = join(outRoot, version);
@@ -34,18 +37,33 @@ if (existsSync(outDir)) throw new Error(`Version already exists: ${version}. Cho
 
 const items = JSON.parse(readFileSync(resolve(ROOT, "src/data/items.json"), "utf8"));
 
-const referenced = collectAssetRefs(items);
+const catalog = collectAssetRefs(items);
 const reconstruction = collectReconstructionAssetRefs(publicDir);
-for (const path of collectAssetCompanions(publicDir, referenced)) referenced.add(path);
-for (const path of reconstruction) referenced.add(path);
+const companions = collectAssetCompanions(publicDir, catalog);
 // Icons can stay on a previous immutable release when only 3D content changes.
-// Pair this package with MODELS_BASE in validation and VITE_MODELS_BASE at build.
-if (modelsOnly) for (const path of referenced) {
-  if (!path.startsWith('models/')) referenced.delete(path);
-}
+// --models-only pairs with MODELS_BASE / VITE_MODELS_BASE; --reconstruction-only is the
+// reconstruction shard alone, paired with RECONSTRUCTION_BASE / VITE_RECONSTRUCTION_BASE.
+const referenced = selectStagePaths(mode, { catalog, companions, reconstruction });
 
 const absent = [...referenced].filter(path => !existsSync(join(publicDir, path)));
 if (absent.length) throw new Error(`Cannot stage ${absent.length} missing assets: ${absent.slice(0, 10).join(', ')}`);
+if (autoShard) {
+  if (mode !== 'reconstruction') throw new Error('--auto-shard currently plans the reconstruction release; use --reconstruction-only');
+  const destination = resolve(process.env.ASSET_PLAN_OUT || join(outRoot, `${version}-shard-plan.json`));
+  if (existsSync(destination)) throw new Error(`Plan already exists: ${destination}`);
+  console.log(`Pinning ${referenced.size} referenced files and their relative dependencies…`);
+  const graph = readAssetGraph(publicDir, referenced, { onProgress: status =>
+    console.log(`Pinned ${status.files} files (${(status.bytes / 1024 ** 3).toFixed(2)} GiB)` ) });
+  const plan = planAssetShards(graph, { version });
+  mkdirSync(dirname(destination), { recursive: true });
+  writeFileSync(destination, JSON.stringify(plan, null, 2) + '\n', { flag: 'wx' });
+  console.log(JSON.stringify({ plan: destination, planSha256: digest(JSON.stringify(plan)), uniqueFiles: plan.uniqueFiles,
+    duplicatedFiles: plan.duplicatedFiles, shards: plan.shards.map(({ paths, ...summary }) => summary) }, null, 2));
+  console.log('Plan only: no asset copies or uploads. Stage leaf shards (1+) first with stage-asset-shard.mjs, then stage shard 0 using their immutable URLs.');
+  process.exit(0);
+}
+// Refuse before creating anything: a package that cannot fit one deployment must be split.
+preflightPackage(mode, referenced, path => statSync(join(publicDir, path)).size);
 
 let copied = 0;
 let bytes = 0;
@@ -70,7 +88,7 @@ for (const rel of referenced) {
 // vouch for itself.
 writeFileSync(
   join(outDir, "manifest.json"),
-  JSON.stringify({ version, scope: modelsOnly ? 'models' : 'all', count: copied, paths: [...referenced].sort(), reconstructionPaths: [...reconstruction].sort() }, null, 0),
+  JSON.stringify({ version, scope: mode, count: copied, paths: [...referenced].sort(), reconstructionPaths: [...reconstruction].sort() }, null, 0),
 );
 
 // Lives at the publish root so it covers every version directory.
@@ -90,7 +108,9 @@ if (missing.length > 0) {
   process.exit(1);
 }
 console.log(`\nnext: publish _assets-upload/ to the host, then`);
-console.log(modelsOnly
-  ? `  ASSETS_BASE=<existing-icons-host> MODELS_BASE=<new-models-host> npm run validate:catalog`
-  : `  ASSETS_BASE=<host>/${version}/ npm run validate:catalog`);
+console.log({
+  models: `  ASSETS_BASE=<existing-icons-host> MODELS_BASE=<new-models-host> npm run validate:catalog`,
+  reconstruction: `  ASSETS_BASE=<icons-host> MODELS_BASE=<models-host> RECONSTRUCTION_BASE=<new-reconstruction-host> npm run validate:catalog`,
+  all: `  ASSETS_BASE=<host>/${version}/ npm run validate:catalog`,
+}[mode]);
 console.log(`and only switch the ASSETS_BASE repo variable once that passes.`);

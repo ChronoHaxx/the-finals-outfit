@@ -13,6 +13,13 @@ const names = fittingMorphNames([
   "Customization.Shape.HeadNeckMatch.head_neck_match.child",
 ]);
 assert.deepEqual([...names], ["push_full_pants", "shrink_pants_under_skirt", "head_neck_match"]);
+// DefaultFace leaves name the head meshes' own morphs; other head shape groups stay undecoded.
+assert.deepEqual([...fittingMorphNames([
+  "Customization.Shape.DefaultFace.default_chin",
+  "Customization.Shape.DefaultFace.default_face",
+  "Customization.Shape.DefaultFace.default_face.child",
+  "Customization.Shape.PushHeadwear.grow_tight_headwear",
+])], ["default_chin", "default_face"]);
 const mesh = new THREE.Mesh();
 mesh.morphTargetDictionary = { medium_male: 0, push_full_pants: 1, shrink_pants_under_skirt: 2, head_neck_match: 3 };
 mesh.morphTargetInfluences = [.6, .25, 0, .15];

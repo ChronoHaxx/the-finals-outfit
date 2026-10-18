@@ -13,7 +13,7 @@ const shoes = 'casual-tallsneakers-canvas';
 
 test('garment nouns beat ambiguous lower-body modifiers; real trousers and coats retain precedence', () => {
   const groups = {
-    upperBody: ['TightSinglet', 'TightSingletSportEvent', 'ShortDress', 'JeansJacket', 'JacketShort', 'ShortSleeveShirt', 'CaptainJacket'],
+    upperBody: ['TightSinglet', 'TightSingletSportEvent', 'ShortDress', 'JeansJacket', 'JacketShort', 'ShortSleeveShirt', 'CaptainJacket', 'OneStrapOveralls'],
     lowerBody: ['Shorts', 'CargoShorts', 'Jeans', 'LooseJeans', 'Tights', 'Leggings', 'SuitPants', 'TutuSkirtWithTights', 'Trousers'],
     outerwear: ['LongCoat', 'ShortCoat', 'CoatTop', 'Cloak', 'Cape', 'Cardigan'],
     feet: ['TallSneakers', 'ShortBoots'],
@@ -26,15 +26,17 @@ test('garment nouns beat ambiguous lower-body modifiers; real trousers and coats
 });
 
 test('every recorded correction exists in its destination and migrates a historical v1 link', () => {
-  assert.equal(LEGACY_SLOT_MIGRATIONS.size, 31);
+  assert.equal(LEGACY_SLOT_MIGRATIONS.size, 55);
   for (const [id, { from, to }] of LEGACY_SLOT_MIGRATIONS) {
     assert.equal(getItemById(id)?.slot, to, id);
-    const old = { slots: { [from]: id, feet: shoes }, presetName: 'Old outfit', dyes: { [from]: '#aabbcc', feet: '#001122' } };
+    // An unrelated companion piece in a slot the move does not touch.
+    const [other, otherId] = from === 'feet' || to === 'feet' ? ['lowerBody', pants] as const : ['feet', shoes] as const;
+    const old = { slots: { [from]: id, [other]: otherId }, presetName: 'Old outfit', dyes: { [from]: '#aabbcc', [other]: '#001122' } };
     const decoded = decodeOutfit(encodeOutfit(old));
     assert.deepEqual(decoded, old, 'the codec preserves the original data');
     const migrated = migrateOutfit(decoded);
-    assert.deepEqual(migrated, { slots: { [to]: id, feet: shoes }, presetName: old.presetName,
-      dyes: { [to]: '#aabbcc', feet: '#001122' } }, id);
+    assert.deepEqual(migrated, { slots: { [to]: id, [other]: otherId }, presetName: old.presetName,
+      dyes: { [to]: '#aabbcc', [other]: '#001122' } }, id);
     assert.deepEqual(decodeOutfit(encodeOutfit(migrated)), migrated, 'new links round-trip');
     assert.deepEqual(migrateOutfit(migrated), migrated, 'migration is idempotent');
   }
