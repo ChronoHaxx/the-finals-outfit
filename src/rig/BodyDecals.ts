@@ -1,6 +1,9 @@
 import * as THREE from "three";
 import type { Slot } from "../lib/slots";
 
+// A decal belongs to a catalog slot, or is the companion decal of the source item worn in that slot.
+export type DecalKey = Slot | `companion:${Slot}`;
+
 // 2D body cosmetics (tattoos, makeup, body paint, eye/iris color, nail polish) composited onto
 // the PERSISTENT body & head materials via onBeforeCompile, rather than as their own meshes.
 // Each layer routes to a target material:
@@ -11,9 +14,14 @@ import type { Slot } from "../lib/slots";
 // luminance-preserving recolor that keeps the base skin shading.
 
 export type DecalTarget = "body" | "head" | "eyes" | "nails";
+/** Side of a body coverage mask: -1 / +1 for a part wholly on the body's -x / +x side, 0 for both or unknown. */
+export type BodyMaskSide = -1 | 0 | 1;
 export interface RigDecalLayer {
   target: DecalTarget;
   colorUrl?: string;
+  // The source colour texture is authored with SRGB off. Unreal picks the texture format from that flag, so the
+  // sampler returns the stored values with no sRGB decode; the colour texture is then uploaded without one too.
+  colorLinear?: true;
   maskUrl?: string;
   uv?: 0 | 1;
   // Per-axis scale applied to the selected UV set. For a source body paint the X factor is
@@ -66,7 +74,7 @@ export interface RigDecalLayer {
   // RG = normals. Only B/A are composited here; RG are reserved and never interpreted or altered.
   //
   // Surface composition is an explicit opt-in because it changes compiled GLSL. It needs
-  // surfaceOverride: 1, this body-target layer's sourceBodyPaint transform and a successfully
+  // surfaceOverride: 1, this body- or head-target layer's sourceBodyPaint transform and a successfully
   // loaded colour texture, whose alpha (with the same bounds gate as the colour sample) is the
   // only coverage weight — the packed texture's own alpha is the metalness value, never coverage.
   // A legacy layer, an omitted/zero switch or a failed/missing pack keeps the existing shading.
@@ -74,6 +82,11 @@ export interface RigDecalLayer {
   surfaceOverride?: 0 | 1;
   tint?: string;
   emissive?: boolean; // glow: tint is also added as emissive (e.g. emissive eye colors)
+  // M_Face FaceShadowMask on a head colour layer (12 Oct 2026): the compiled face mixes the base toward
+  // FaceShadowColor by mask.r (asm:236-239, after the paint branch at 232-235) and roughness toward 0.75 by the same
+  // mask (asm:475-476, after the paint surface). The colour layer carries FaceShadowColor in RGB and mask.r in alpha
+  // (plain mix, UV0); this is the roughness target. Such layers composite after every other layer of the target.
+  faceShadowRoughness?: number;
 }
 export interface RigDecal {
   layers: RigDecalLayer[];
@@ -92,6 +105,7 @@ interface ResolvedLayer {
   colorMultiply: "masked" | "nonMasked" | null;
   tint: THREE.Color | null;
   emissive: boolean;
+  faceShadowRoughness: number | null;
 }
 interface ActiveDecal {
   layers: ResolvedLayer[];
@@ -115,8 +129,8 @@ export class BodyDecalManager {
   }
   private static token = 0; // monotonic; identifies which set() call owns a slot
   private targets = new Map<DecalTarget, THREE.MeshStandardMaterial[]>();
-  private active = new Map<Slot, ActiveDecal>();
-  private slotTokens = new Map<Slot, number>(); // newest set/clear per slot, so stale loads bail
+  private active = new Map<DecalKey, ActiveDecal>();
+  private slotTokens = new Map<DecalKey, number>(); // newest set/clear per slot, so stale loads bail
   private nailMaskTex: THREE.Texture | null = null; // shared across all nail polishes
   private nailMaskPending: Promise<THREE.Texture | null> | null = null;
   private nailMaskEpoch = 0; // bumped by clearAll to invalidate requests from an older state
@@ -140,11 +154,13 @@ export class BodyDecalManager {
   // (scripts/build-body-masks.mjs + scripts/visual-diff/build-garment-masks.mjs); all
   // active masks are unioned into ONE canvas so the shader keeps a single sampler.
   // Missing masks (404) are skipped silently — not every piece ships one.
-  setBodyHideMasks(urls: string[], layouts: Record<string, [number, number]> = {}): void {
-    const key = JSON.stringify([...urls].sort().map(url => [url, layouts[url] ?? [1, 1]]));
+  // sides: -1 / +1 marks a mask derived from a part lying wholly on the body's -x / +x side. Body UV0
+  // mirrors left and right onto one layout, so such a mask would also hide the opposite limb.
+  setBodyHideMasks(urls: string[], layouts: Record<string, [number, number]> = {}, sides: Record<string, BodyMaskSide> = {}): void {
+    const key = JSON.stringify([...urls].sort().map(url => [url, layouts[url] ?? [1, 1], sides[url] ?? 0]));
     if (key === this.bodyHideUrl) return;
     this.bodyHideUrl = key;
-    this.bodyHidePending = this.composeBodyHide(urls, key, layouts);
+    this.bodyHidePending = this.composeBodyHide(urls, key, layouts, sides);
   }
 
   async whenBodyHidesReady(): Promise<void> {
@@ -152,7 +168,8 @@ export class BodyDecalManager {
     do { pending = this.bodyHidePending; await pending; } while (pending !== this.bodyHidePending);
   }
 
-  private async composeBodyHide(urls: string[], key: string, layouts: Record<string, [number, number]>): Promise<void> {
+  private async composeBodyHide(urls: string[], key: string, layouts: Record<string, [number, number]>,
+                                sides: Record<string, BodyMaskSide> = {}): Promise<void> {
     let tex: THREE.Texture | null = null;
     if (urls.length) {
       const imgs = await Promise.all(
@@ -170,7 +187,7 @@ export class BodyDecalManager {
         ),
       );
       if (key !== this.bodyHideUrl) return; // superseded while loading
-      const ok = imgs.flatMap((image, i) => image ? [{ image, tiles: layouts[urls[i]] ?? [1, 1] }] : []);
+      const ok = imgs.flatMap((image, i) => image ? [{ image, tiles: layouts[urls[i]] ?? [1, 1], side: sides[urls[i]] ?? 0 }] : []);
       if (ok.length) {
         const cnv = document.createElement("canvas");
         // Body UVs span two horizontal tiles. Keep their identities distinct;
@@ -181,7 +198,18 @@ export class BodyDecalManager {
         cnv.height = rows * size;
         const ctx = cnv.getContext("2d")!;
         ctx.globalCompositeOperation = "lighten"; // union of white-on-black masks
-        for (const { image, tiles } of ok) ctx.drawImage(image, 0, 0, tiles[0] * size, tiles[1] * size);
+        // R holds the masks for the -x side, G for the +x side; a two-sided mask writes both.
+        for (const { image, tiles, side } of ok) {
+          if (!side) { ctx.drawImage(image, 0, 0, tiles[0] * size, tiles[1] * size); continue; }
+          const one = document.createElement("canvas");
+          one.width = cnv.width; one.height = cnv.height;
+          const oc = one.getContext("2d")!;
+          oc.drawImage(image, 0, 0, tiles[0] * size, tiles[1] * size);
+          oc.globalCompositeOperation = "multiply";
+          oc.fillStyle = side < 0 ? "#ff0000" : "#00ff00";
+          oc.fillRect(0, 0, one.width, one.height);
+          ctx.drawImage(one, 0, 0);
+        }
         tex = new THREE.CanvasTexture(cnv);
         tex.colorSpace = THREE.NoColorSpace;
         tex.flipY = false;
@@ -214,13 +242,13 @@ export class BodyDecalManager {
   // Each call takes a token. Any later set OR clear on the same slot invalidates it, so a slow load
   // that finally arrives after it has been superseded disposes its own textures and touches nothing
   // — it must not repaint over a replacement, clear one, or resurrect a decal that was removed.
-  async set(slot: Slot, decal: RigDecal): Promise<void> {
+  async set(slot: DecalKey, decal: RigDecal): Promise<void> {
     const token = ++BodyDecalManager.token;
     this.slotTokens.set(slot, token);
     const loaded = await Promise.all(
       decal.layers.map(async (l) => ({
         source: l,
-        colorTex: l.colorUrl ? await this.loadTex(l.colorUrl, true) : null,
+        colorTex: l.colorUrl ? await this.loadTex(l.colorUrl, !l.colorLinear) : null,
         maskTex: l.maskUrl ? await this.loadTex(l.maskUrl, false) : null,
         // Only a layer that can actually composite the pack requests it: a legacy or disabled layer
         // must not pay for a texture it can never bind. Awaiting it here is what keeps equip from
@@ -260,6 +288,9 @@ export class BodyDecalManager {
         colorMultiply: sourceLayout && colorTex ? l.colorMultiply ?? null : null,
         tint: l.tint ? new THREE.Color(l.tint) : null,
         emissive: !!l.emissive,
+        // Only a plain head colour layer (no source paint layout) can be a face-shadow layer.
+        faceShadowRoughness: l.target === "head" && colorTex && !l.uvScale && typeof l.faceShadowRoughness === "number"
+          ? l.faceShadowRoughness : null,
       });
     }
     if (this.slotTokens.get(slot) !== token) {
@@ -271,14 +302,14 @@ export class BodyDecalManager {
     for (const t of this.affected(layers)) this.rebuildTarget(t);
   }
 
-  clear(slot: Slot): void {
+  clear(slot: DecalKey): void {
     this.slotTokens.set(slot, ++BodyDecalManager.token); // cancel any load still in flight
     this.release(slot);
   }
 
   // Drop whatever is installed in a slot. Kept separate from clear() so set() can replace a decal
   // without invalidating its own token.
-  private release(slot: Slot): void {
+  private release(slot: DecalKey): void {
     const a = this.active.get(slot);
     if (!a) return;
     this.active.delete(slot);
@@ -309,7 +340,9 @@ export class BodyDecalManager {
 
   // The whole opt-in for packed B/A surface data, in one place. Every clause matters:
   //   surfaceOverride: 1 — explicit switch, never inferred from the URL's presence;
-  //   target body       — this pack is composited on the body skin path only;
+  //   target body/head  — the M_Skin body path, or the M_Face head path (12 Oct 2026: M_Face writes metalness
+  //                       sat(A*w) with no base term and roughness mix(base, B, w), asm:405-406 and 473-474;
+  //                       the head's recovered base metalness is 0, so the shared mix below is that formula);
   //   uvScale           — the source transform is what makes the coordinates/gate source-derived;
   //   sourceBodyPaint   — the traced M_Skin layout that owns the fract() fold and bounds gate;
   //   colorUrl          — the colour texture's alpha is the coverage; without it there is no weight.
@@ -319,7 +352,7 @@ export class BodyDecalManager {
       l.surfaceOverride === 1 &&
       !!l.surfaceUrl &&
       !!l.colorUrl &&
-      l.target === "body" &&
+      (l.target === "body" || l.target === "head") &&
       l.uvScale != null &&
       l.uvLayout === "sourceBodyPaint"
     );
@@ -374,7 +407,8 @@ export class BodyDecalManager {
         if (target === "body" ? l.target === "body" || l.target === "nails" : l.target === target)
           out.push(l);
       }
-    return out;
+    // The face shadow follows the paint branch in the compiled face, whichever slot was equipped last.
+    return [...out.filter((l) => l.faceShadowRoughness === null), ...out.filter((l) => l.faceShadowRoughness !== null)];
   }
 
   private rebuildTarget(name: DecalTarget): void {
@@ -426,7 +460,8 @@ export class BodyDecalManager {
             `${l.uvScale ? `u${l.uv}s${l.uvScale.join("x")}${l.uvLayout === "sourceBodyPaint" ? "p" : ""}` : ""}` +
             `${l.uvOffsetX ? `x${l.uvOffsetX}` : ""}` +
             `${l.colorOverride === null ? "" : `o${l.colorOverride}`}` +
-            `${l.colorMultiply ? `*${l.colorMultiply === "nonMasked" ? "n" : "m"}` : ""}`,
+            `${l.colorMultiply ? `*${l.colorMultiply === "nonMasked" ? "n" : "m"}` : ""}` +
+            `${l.faceShadowRoughness === null ? "" : `f${l.faceShadowRoughness}`}`,
         )
         .join("-");
     const key = `decal-${sig}-${BodyDecalManager.uid++}`;
@@ -476,10 +511,16 @@ export class BodyDecalManager {
       if (hide) {
         shader.uniforms.uBodyHide = { value: hide };
         shader.uniforms.uBodyHideUvScale = { value: hide.userData.coverageUvScale ?? new THREE.Vector2(1, 1) };
-        decl += "uniform sampler2D uBodyHide;\nuniform vec2 uBodyHideUvScale;\n";
+        decl += "uniform sampler2D uBodyHide;\nuniform vec2 uBodyHideUvScale;\nvarying float vBodyBindX;\n";
+        // The side follows the body's bind-pose x (metres), not its posed position. A one-sided mask
+        // still reaches 4 cm across the midline: derived coverage projects at most 4 cm from the part.
+        const anchor = "void main() {";
+        if (!shader.vertexShader.includes(anchor)) throw new Error("Body coverage vertex anchor is missing");
+        shader.vertexShader = "varying float vBodyBindX;\n" + shader.vertexShader.replace(anchor, `${anchor}\n\tvBodyBindX = position.x;`);
         body += `  vec2 coverageUv = vMapUv * uBodyHideUvScale;
+          vec4 bodyHide = texture2D(uBodyHide, coverageUv);
           if (all(greaterThanEqual(coverageUv, vec2(0.0))) && all(lessThan(coverageUv, vec2(1.0))) &&
-              texture2D(uBodyHide, coverageUv).r > 0.5) discard;\n`;
+              ((vBodyBindX < 0.04 && bodyHide.r > 0.5) || (vBodyBindX > -0.04 && bodyHide.g > 0.5))) discard;\n`;
       }
       resolved.forEach((l, i) => {
         if (l.colorTex) {
@@ -504,6 +545,7 @@ export class BodyDecalManager {
         // is captured here where both exist. It must survive to the roughness/metalness point later
         // in the shader, hence a statement-level local rather than a value scoped to this block.
         if (l.surfaceTex && l.colorTex) body += `  float decalSurfCoverage${i} = 0.0;\n`;
+        if (l.faceShadowRoughness !== null) body += `  float decalShadowCoverage${i} = 0.0;\n`;
         body += "  {\n";
         body += `    vec2 duv = ${uv};\n`;
         if (gate) body += `    float ins = ${gate};\n`;
@@ -516,6 +558,7 @@ export class BodyDecalManager {
           // and the neutral-mask decode below, both of which belong to the colour path only. The
           // packed texture's own alpha is its metalness value, never a coverage weight.
           if (l.surfaceTex) body += `    decalSurfCoverage${i} = dc.a${gate ? " * ins" : ""};\n`;
+          if (l.faceShadowRoughness !== null) body += `    decalShadowCoverage${i} = a;\n`;
           // The source multiply (see colorMultiply) precedes the override blend and is weighted by
           // gate × alpha alone, so it too is emitted before the override and the mask decode.
           if (l.colorMultiply === "masked") body += `    diffuseColor.rgb *= clamp( dc.rgb + ( 1.0 - a ), 0.0, 1.0 );\n`;
@@ -565,6 +608,10 @@ export class BodyDecalManager {
       // declarations. Ordinary materials still carry the standard include.
       let surface = "";
       resolved.forEach((l, i) => {
+        if (l.faceShadowRoughness !== null) {
+          surface += `  roughnessFactor = clamp( mix( roughnessFactor, ${l.faceShadowRoughness.toFixed(6)}, decalShadowCoverage${i} ), 0.0, 1.0 );\n`;
+          return;
+        }
         if (!l.surfaceTex) return;
         surface +=
           "  {\n" +

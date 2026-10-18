@@ -197,9 +197,15 @@
       "layers": [
         {
           "target": "head",
-          "colorPath": "models/decals/blush/bodycosmetics-makeup-bride-01.webp",
+          "colorPath": "models/reconstructed-cosmetic-contracts-v2/bodycosmetics-makeup-bride-01-head_c.png",
           "uv": 0,
-          "maskPath": "models/decals/blush/bodycosmetics-makeup-bride-01_m.webp"
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
         }
       ]
     },
@@ -417,7 +423,23 @@
     "slot": "blush",
     "name": "Makeup Christmas Elf 01",
     "imageUrl": "items/blush/bodycosmetics-makeup-christmaself-01.webp",
-    "season": 1
+    "season": 1,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-cosmetic-contracts-v2/bodycosmetics-makeup-christmaself-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-makeup-clown-01",
@@ -497,9 +519,15 @@
       "layers": [
         {
           "target": "head",
-          "colorPath": "models/decals/blush/bodycosmetics-makeup-cuteanime-01.webp",
+          "colorPath": "models/reconstructed-cosmetic-contracts-v2/bodycosmetics-makeup-cuteanime-01-head_c.png",
           "uv": 0,
-          "maskPath": "models/decals/blush/bodycosmetics-makeup-cuteanime-01_m.webp"
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
         }
       ]
     },
@@ -514,9 +542,15 @@
       "layers": [
         {
           "target": "head",
-          "colorPath": "models/decals/blush/bodycosmetics-makeup-cutecat-01.webp",
+          "colorPath": "models/reconstructed-cosmetic-contracts-v2/bodycosmetics-makeup-cutecat-01-head_c.png",
           "uv": 0,
-          "maskPath": "models/decals/blush/bodycosmetics-makeup-cutecat-01_m.webp"
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
         }
       ]
     },
@@ -631,7 +665,9 @@
           ],
           "uvLayout": "sourceBodyPaint",
           "colorOverride": 1,
-          "colorMultiply": "masked"
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-cosmetic-contracts-v4/bodycosmetics-makeup-elegantknight-01-head_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -677,7 +713,9 @@
           ],
           "uvLayout": "sourceBodyPaint",
           "colorOverride": 0.7760000228881836,
-          "colorMultiply": "masked"
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-cosmetic-contracts-v4/bodycosmetics-makeup-eyeshadowgold-01-head_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -945,9 +983,18 @@
       "layers": [
         {
           "target": "head",
-          "colorPath": "models/decals/blush/bodycosmetics-makeup-gold-01.webp",
+          "colorPath": "models/reconstructed-cosmetic-contracts-v2/bodycosmetics-makeup-gold-01-head_c.png",
           "uv": 0,
-          "maskPath": "models/decals/blush/bodycosmetics-makeup-gold-01_m.webp"
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "colorLinear": true,
+          "surfacePath": "models/reconstructed-cosmetic-contracts-v4/bodycosmetics-makeup-gold-01-head_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -962,9 +1009,15 @@
       "layers": [
         {
           "target": "head",
-          "colorPath": "models/decals/blush/bodycosmetics-makeup-goth-01.webp",
+          "colorPath": "models/reconstructed-cosmetic-contracts-v2/bodycosmetics-makeup-goth-01-head_c.png",
           "uv": 0,
-          "maskPath": "models/decals/blush/bodycosmetics-makeup-goth-01_m.webp"
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
         }
       ]
     },
@@ -1344,9 +1397,15 @@
       "layers": [
         {
           "target": "head",
-          "colorPath": "models/decals/blush/bodycosmetics-makeup-witchpurple-01.webp",
+          "colorPath": "models/reconstructed-cosmetic-contracts-v2/bodycosmetics-makeup-witchpurple-01-head_c.png",
           "uv": 0,
-          "maskPath": "models/decals/blush/bodycosmetics-makeup-witchpurple-01_m.webp"
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
         }
       ]
     },
@@ -1529,7 +1588,9 @@
             1
           ],
           "uvLayout": "sourceBodyPaint",
-          "colorOverride": 1
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-cosmetic-contracts-v5/bodycosmetics-bodypaint-discosilver-01-head_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1682,7 +1743,9 @@
             1
           ],
           "uvLayout": "sourceBodyPaint",
-          "colorOverride": 1
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-cosmetic-contracts-v5/bodycosmetics-bodypaint-metallicblack-01-head_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1717,7 +1780,9 @@
             1
           ],
           "uvLayout": "sourceBodyPaint",
-          "colorOverride": 1
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-cosmetic-contracts-v5/bodycosmetics-bodypaint-metallicblackgold-01-head_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -1752,7 +1817,9 @@
             1
           ],
           "uvLayout": "sourceBodyPaint",
-          "colorOverride": 1
+          "colorOverride": 1,
+          "surfacePath": "models/reconstructed-cosmetic-contracts-v5/bodycosmetics-bodypaint-metallicgold-01-head_m.png",
+          "surfaceOverride": 1
         }
       ]
     },
@@ -10325,7 +10392,17 @@
         }
       }
     },
-    "season": 4
+    "season": 4,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v2/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "attachment-skullmaskblank-geng",
@@ -10359,7 +10436,17 @@
         }
       }
     },
-    "season": 8
+    "season": 8,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v2/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "attachment-skullmaskblank-gold",
@@ -10388,7 +10475,17 @@
         }
       }
     },
-    "season": 7
+    "season": 7,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v2/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "attachment-skullmaskblank-silver",
@@ -10417,7 +10514,17 @@
         }
       }
     },
-    "season": 7
+    "season": 7,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v2/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "attachments-gasmaskwrap",
@@ -10490,7 +10597,17 @@
         }
       }
     },
-    "season": 8
+    "season": 8,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v2/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "attachments-mogulmask-nosee",
@@ -10521,7 +10638,17 @@
         }
       }
     },
-    "season": 8
+    "season": 8,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v2/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "attachments-mogulmask-nospeak",
@@ -10552,7 +10679,17 @@
         }
       }
     },
-    "season": 8
+    "season": 8,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v2/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "attachments-pandamask-01-gold-white",
@@ -11998,7 +12135,17 @@
         }
       }
     },
-    "season": 2
+    "season": 2,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v3/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "fancydress-helmetmask-brass",
@@ -85818,7 +85965,17 @@
         }
       }
     },
-    "season": 1
+    "season": 1,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v3/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "attachment-rabbithead-paper-black",
@@ -85885,7 +86042,17 @@
         }
       }
     },
-    "season": 6
+    "season": 6,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v3/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "attachment-rabbithead-paper-graywhite",
@@ -85952,7 +86119,17 @@
         }
       }
     },
-    "season": 1
+    "season": 1,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v3/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "attachment-redpandahead-paper-red",
@@ -106909,7 +107086,7 @@
   },
   {
     "id": "steampunk-vestwithhood-leather",
-    "slot": "headwear",
+    "slot": "upperBody",
     "name": "Vest With Hood Leather",
     "imageUrl": "items/headwear/steampunk-vestwithhood-leather.webp",
     "set": "Steampunk",
@@ -106987,7 +107164,7 @@
   },
   {
     "id": "steampunk-vestwithhood-leather-brown",
-    "slot": "headwear",
+    "slot": "upperBody",
     "name": "Vest With Hood Leather Brown",
     "imageUrl": "items/headwear/steampunk-vestwithhood-leather-brown.webp",
     "set": "Steampunk",
@@ -107065,7 +107242,7 @@
   },
   {
     "id": "steampunk-vestwithhood-leather-white",
-    "slot": "headwear",
+    "slot": "upperBody",
     "name": "Vest With Hood Leather White",
     "imageUrl": "items/headwear/steampunk-vestwithhood-leather-white.webp",
     "set": "Steampunk",

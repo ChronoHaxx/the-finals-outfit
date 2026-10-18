@@ -5,13 +5,14 @@ import type { Slot } from "../lib/slots";
 import { disposeObject3D, disposeMaterial } from "./dispose";
 import type { MaterialBinding } from "../lib/item";
 import BODY_MASK_SLOTS from "../lib/body-mask-slots.json";
-import { BodyDecalManager, type RigDecal } from "./BodyDecals";
+import { BodyDecalManager, type BodyMaskSide, type RigDecal } from "./BodyDecals";
 import { loadReconstructedMaterial, type SurfaceView } from "./ReconstructedMaterial";
 import { resolveLegacyBodyCoverage } from "./LegacyBodyCoverage";
 import { enableSourceSkinning } from "./SourceMesh";
 import { rebindSourceSkeleton, type SourceBoneAttachment } from "./SourceSkeleton";
 import { fittingMorphNames, SourceFitting } from "./SourceFitting";
 import type { SourceRigPart, SourceSkinPair } from "./SourceAssembly";
+import { applyHeadWrap, bindHeadWrap, headWrapInputs, type HeadWrapBinding, type HeadWrapData } from "./HeadWrap";
 
 export type { RigDecal } from "./BodyDecals";
 
@@ -87,6 +88,8 @@ export interface RigItem {
   sourceParts?: SourceRigPart[];
   sourceSkinPair?: SourceSkinPair;
   sourceSurfaceView?: SurfaceView;
+  // The release's head wrap cages; a head-wrapped source part is refused without them (HeadWrap.ts).
+  headWraps?: HeadWrapData;
   material?: RigMaterial;
   materialBindings?: Record<string, RigMaterialBinding>;
   // Heads only: retune the shared body material to match the face — the game swaps the
@@ -276,6 +279,8 @@ export class CharacterRig {
       const mesh = o as THREE.Mesh;
       if (mesh.isMesh && (mesh.userData.sourceBody || mesh.userData.sourceMesh))
         this.sourceFitting.apply(mesh, this.sourceFittingNames);
+      // A head-wrapped part follows the worn cage, which takes the same fitting morphs as the head.
+      if (mesh.isMesh) rewrapToSourceHead(mesh, this.sourceFittingNames);
     });
   }
 
@@ -460,9 +465,9 @@ export class CharacterRig {
     const head: THREE.MeshStandardMaterial[] = [];
     const eyes: THREE.MeshStandardMaterial[] = [];
     for (const m of this.collectStandardMaterials(scene)) {
-      const n = (m.name || "").toLowerCase();
-      if (/eye/.test(n) && !/(eyeshell|eyeedge|eyelash|lash|brow)/.test(n)) eyes.push(m);
-      else if (!/(eyeshell|eyeedge|eyelash|lash|brow|teeth|mouth)/.test(n)) head.push(m);
+      const role = headDecalRole(m);
+      if (role === "eyes") eyes.push(m);
+      else if (role === "head") head.push(m);
     }
     // Head skin renders as alpha-MASK, never BLEND: blended skin doesn't depth-write and
     // composites against interior geometry as blotches. The D texture's alpha is the
@@ -500,6 +505,13 @@ export class CharacterRig {
   }
   unequipDecal(slot: Slot): void {
     this.decals.clear(slot);
+  }
+  // The companion decal of the source item worn in a slot (a mask's face shadow), kept apart from the slot's own decal.
+  async equipCompanionDecal(slot: Slot, decal: RigDecal): Promise<void> {
+    await this.decals.set(`companion:${slot}`, decal);
+  }
+  unequipCompanionDecal(slot: Slot): void {
+    this.decals.clear(`companion:${slot}`);
   }
 
   async equip(item: RigItem, signal?: AbortSignal): Promise<void> {
@@ -879,6 +891,8 @@ export class CharacterRig {
             mesh = attachSourceStatic(candidate, part.attachment, placement.bone, placement.restInverse, placement.socket);
             skeletons.add(mesh.skeleton);
           } else if (!mesh.isSkinnedMesh) throw new Error("Source clothing part must be skinned");
+          if (part.headWrap) wrapToSourceHead(mesh, part.sourceMesh, item.headWraps, this.sourceHead?.sourceMesh,
+            this.sourceFittingNames);
           const slots = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
           if (part.materialSections && slots.length !== 1)
             throw new Error(`Unsupported source material array: ${part.sourceMesh}`);
@@ -923,6 +937,8 @@ export class CharacterRig {
       this.bodyHideUrls.set(item.slot, [...new Set(parts.flatMap(p => p.bodyMaskUrl ? [p.bodyMaskUrl] : []))]);
       this.bodyHideLayouts.set(item.slot, Object.fromEntries(parts
         .filter(p => p.bodyMaskUrl && p.bodyMaskUvTiles).map(p => [p.bodyMaskUrl!, p.bodyMaskUvTiles!])));
+      this.bodyHideSides.set(item.slot, Object.fromEntries(parts.filter(p => p.bodyMaskUrl).map(p =>
+        [p.bodyMaskUrl!, bodyMaskSide(meshes.filter(m => m.userData.sourcePartIndex === p.sourceIndex && m.userData.sourceMesh === p.sourceMesh))])));
       this.refreshBodyHides();
     } };
   }
@@ -1206,10 +1222,12 @@ export class CharacterRig {
   private static readonly BODYMASK_SLOTS = new Set<Slot>(BODY_MASK_SLOTS as Slot[]);
   private bodyHideUrls = new Map<Slot | "face", string[]>();
   private bodyHideLayouts = new Map<Slot, Record<string, [number, number]>>();
+  private bodyHideSides = new Map<Slot, Record<string, BodyMaskSide>>();
   private refreshBodyHides(): void {
+    const visible = <T,>(map: Map<Slot, T>): T[] => [...map].filter(([slot]) => !this.assemblyHiddenSlots.has(slot)).map(([, value]) => value);
     this.decals.setBodyHideMasks([...this.bodyHideUrls]
       .filter(([slot]) => !this.assemblyHiddenSlots.has(slot)).flatMap(([, urls]) => urls),
-      Object.assign({}, ...[...this.bodyHideLayouts].filter(([slot]) => !this.assemblyHiddenSlots.has(slot)).map(([, layout]) => layout)));
+      Object.assign({}, ...visible(this.bodyHideLayouts)), Object.assign({}, ...visible(this.bodyHideSides)));
   }
 
   private currentBodySkin: RigItem["bodySkin"] | null = null;
@@ -2076,6 +2094,7 @@ export class CharacterRig {
     if (!handle) return;
     this.assemblyHiddenSlots.delete(slot);
     this.bodyHideLayouts.delete(slot);
+    this.bodyHideSides.delete(slot);
     // A head being removed takes its decal targets with it (the makeup/eye decals stay pending
     // in the manager and re-apply if a head is equipped again), and un-hides the body shell.
     if (slot === "face") {
@@ -2250,4 +2269,75 @@ export class CharacterRig {
     this.bodyRestInverses.clear();
     this.inspectorMaterialOverrides.clear();
   }
+}
+
+/** Side of the body a part's derived coverage can reach, from its bind-pose bounds in the shared body frame.
+ *  Body UV0 mirrors left and right, so a mask from a part wholly on one side must not hide the other. */
+function bodyMaskSide(meshes: THREE.Mesh[]): BodyMaskSide {
+  if (!meshes.length) return 0;
+  const box = new THREE.Box3();
+  for (const mesh of meshes) {
+    mesh.geometry.computeBoundingBox();
+    box.union(mesh.geometry.boundingBox!);
+  }
+  return box.max.x <= 0 ? -1 : box.min.x >= 0 ? 1 : 0;
+}
+
+/** Which head decal target a head material is: the skin section (makeup, head paint, head tattoo), the eyeballs
+ *  (eye colour), or neither. A source head section is classified by its source slot, the slot a makeup's
+ *  OverrideParameters rule names; only a material without one (the legacy preview GLB) falls back to its name.
+ *  Fixed 12 Oct 2026: recovered materials are named after their manifest (`skin-<hash>:recovered` on 21 of the
+ *  22 faces), so the name rule registered eyeballs, lashes and teeth as head skin and full-face paints painted
+ *  the eyes on every face but Face 01 (_docs/goal-100-2026-10-11/makeup/f05-eyes-check2.png). */
+export function headDecalRole(m: THREE.Material): "head" | "eyes" | null {
+  const slot = (m.userData.sourceSlot as { MaterialSlotName?: unknown } | undefined)?.MaterialSlotName;
+  if (typeof slot === "string")
+    return slot === "shader_head_shader" ? "head" : /^shader_eye(Left|Right)_shader$/.test(slot) ? "eyes" : null;
+  const n = (m.name || "").toLowerCase();
+  if (/eye/.test(n) && !/(eyeshell|eyeedge|eyelash|lash|brow)/.test(n)) return "eyes";
+  return /(eyeshell|eyeedge|eyelash|lash|brow|teeth|mouth)/.test(n) ? null : "head";
+}
+
+interface HeadWrapState {
+  data: HeadWrapData; source: string; head: string | undefined; binding: HeadWrapBinding;
+  attributes: THREE.BufferAttribute[]; rest: Float32Array[]; morphs: string;
+}
+// The unwrapped rest attributes and binding of each head-wrapped mesh, so a fitting change can re-wrap it.
+const headWrapStates = new WeakMap<THREE.Mesh, HeadWrapState>();
+
+/** Moves a head-wrapped part's rest geometry with the worn head's wrap cage (relative to HeadMaster's), before
+ *  skinning: positions, and normals/tangents rotated with their proxy triangle. The cage takes the head's active
+ *  fitting morphs. Missing data refuses the part. */
+function wrapToSourceHead(mesh: THREE.Mesh, source: string, data: HeadWrapData | undefined, head: string | undefined,
+  morphs: ReadonlySet<string>): void {
+  if (!data) throw new Error("A head-wrapped part requires the release's head wrap data");
+  const { reference, triangles } = headWrapInputs(data, source, head);
+  const geometry = mesh.geometry;
+  const attributes = [geometry.attributes.position, geometry.attributes.normal, geometry.attributes.tangent]
+    .filter((a): a is THREE.BufferAttribute => !!a);
+  if (attributes.some(a => (a as unknown as THREE.InterleavedBufferAttribute).isInterleavedBufferAttribute || a.normalized
+    || !(a.array instanceof Float32Array))) throw new Error("Unsupported head-wrapped geometry layout");
+  const rest = attributes.map(a => (a.array as Float32Array).slice());
+  const binding = bindHeadWrap(rest[0], reference, triangles);
+  headWrapStates.set(mesh, { data, source, head, binding, attributes, rest, morphs: "" });
+  if (!rewrapToSourceHead(mesh, morphs, true)) throw new Error("Head wrap state was not recorded");
+}
+
+/** Re-evaluates a head-wrapped mesh on its cage with these fitting morphs; false when the mesh is not head-wrapped. */
+function rewrapToSourceHead(mesh: THREE.Mesh, morphs: ReadonlySet<string>, force = false): boolean {
+  const state = headWrapStates.get(mesh);
+  if (!state) return false;
+  const { reference, target, triangles, morphs: active } = headWrapInputs(state.data, state.source, state.head, morphs);
+  const key = active.join("|");
+  if (!force && key === state.morphs) return true;
+  const [position, ...directions] = state.attributes;
+  state.attributes.forEach((a, i) => (a.array as Float32Array).set(state.rest[i]));
+  applyHeadWrap(state.binding, target, reference, triangles, position.array as Float32Array,
+    directions.map(a => a.array as Float32Array), directions.map(a => a.itemSize));
+  state.attributes.forEach(a => { a.needsUpdate = true; });
+  state.morphs = key;
+  mesh.userData.headWrapMorphs = active;
+  mesh.geometry.computeBoundingBox();
+  mesh.geometry.computeBoundingSphere();
+  return true;
 }

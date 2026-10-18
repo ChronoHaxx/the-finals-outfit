@@ -26,7 +26,7 @@ test('garment nouns beat ambiguous lower-body modifiers; real trousers and coats
 });
 
 test('every recorded correction exists in its destination and migrates a historical v1 link', () => {
-  assert.equal(LEGACY_SLOT_MIGRATIONS.size, 52);
+  assert.equal(LEGACY_SLOT_MIGRATIONS.size, 55);
   for (const [id, { from, to }] of LEGACY_SLOT_MIGRATIONS) {
     assert.equal(getItemById(id)?.slot, to, id);
     // An unrelated companion piece in a slot the move does not touch.

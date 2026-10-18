@@ -239,9 +239,15 @@ const DecalLayerSchema = z.object({
   uvOffsetX: z.number().finite().optional(),
   // Source BodyColorOverride: the weight on the paint's base-colour branch.
   colorOverride: z.number().min(0).max(1).optional(),
+  // The source colour texture has SRGB off: sampled without an sRGB decode — see RigDecalLayer.colorLinear.
+  colorLinear: z.literal(true).optional(),
   // Source BodyColorMultiplyNonMasked as the multiply before that blend: "masked" for 0,
   // "nonMasked" for 1. Absent keeps the earlier mix-only composite — see RigDecalLayer.colorMultiply.
   colorMultiply: z.enum(["masked", "nonMasked"]).optional(),
+  // M_Face FaceShadowMask (asm:236-239, 475-476) on a head layer: the colour layer mixes the base toward
+  // FaceShadowColor and roughness toward this value, by the same coverage, after every paint layer —
+  // see RigDecalLayer.faceShadowRoughness.
+  faceShadowRoughness: z.number().min(0).max(1).optional(),
   tint: HexColorSchema.optional(),
   // glow: the tint is also applied as emissive (e.g. "Eyes Emissive *" items)
   emissive: z.boolean().optional(),
@@ -268,6 +274,9 @@ export const ItemSchema = z.object({
   // A 2D body cosmetic composited onto the body/head instead of its own mesh. Mutually
   // exclusive with `model` in practice (tattoos/makeup/paint/eyes/nails).
   decal: DecalSchema.optional(),
+  // A source-mesh item's head material rule that only a decal reproduces (a mask's FaceShadowMask on the
+  // worn face). Applied while the item's own source mesh is equipped.
+  companionDecal: DecalSchema.optional(),
   tags: z.array(z.string().min(1)).optional(),
 });
 export type Item = z.infer<typeof ItemSchema>;

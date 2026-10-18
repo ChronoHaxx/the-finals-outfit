@@ -103,7 +103,9 @@ test('only the exact unlisted pathname selects the developer catalog', () => {
 
 test('review verdicts win over generic support and missing status data is not falsely red', () => {
   const eno = getItemById('streetwear-tightsinglet-cotton-enorino')!;
-  const broken = getItemById('streetwear-tightsinglet-cotton-black')!;
+  // A legacy model with repaired body coverage stays an issue even when worked on; only a review verdict lifts it
+  // (the source-rendered singlets carry one since 12 Oct 2026, so the example is a legacy-only variant).
+  const broken = getItemById('streetwear-tightsinglet-cotton-anubis')!;
   const ordinary = getItemById('attachment-boombox-01-finals-lumbar')!;
   assert.equal(getReconstructionReview(eno, new Set(), 'unavailable').status, 'accepted');
   assert.equal(getReconstructionReview(broken, new Set([broken.id]), 'ready').status, 'issue');

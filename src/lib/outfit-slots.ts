@@ -77,6 +77,16 @@ const SOURCE_SLOT_FIXES_2026_09_25: readonly (readonly [string, Slot, Slot])[] =
   ["scifi-singlekatanashort-metal-vanguard", "lowerBody", "lowerBack"],
 ];
 
+// 12 October 2026: the steampunk hooded vests were filed under headwear (name match on "Hood"), but
+// their source definitions carry the catalog tag `Customization.Slot.BodyUpper` and declare
+// EBodySlot::BodyUpper first. Worn as headwear they left the base T-shirt on underneath, which
+// poked through the vest; as upperBody they replace it, as in the game.
+const SOURCE_SLOT_FIXES_2026_10_12: readonly (readonly [string, Slot, Slot])[] = [
+  ["steampunk-vestwithhood-leather", "headwear", "upperBody"],
+  ["steampunk-vestwithhood-leather-brown", "headwear", "upperBody"],
+  ["steampunk-vestwithhood-leather-white", "headwear", "upperBody"],
+];
+
 export interface SlotMigration {
   readonly from: Slot;
   readonly to: Slot;
@@ -86,6 +96,7 @@ export const LEGACY_SLOT_MIGRATIONS: ReadonlyMap<string, SlotMigration> = new Ma
   ...LOWER_TO_UPPER.map((id) => [id, { from: "lowerBody", to: "upperBody" }] as const),
   ...SOURCE_SLOT_FIXES_2026_09_25.map(([id, from, to]) => [id, { from, to }] as const),
   ["casual-onestrapoveralls-denim", { from: "upperBack", to: "upperBody" }],
+  ...SOURCE_SLOT_FIXES_2026_10_12.map(([id, from, to]) => [id, { from, to }] as const),
 ]);
 
 export type SlotMap = Partial<Record<Slot, string>>;

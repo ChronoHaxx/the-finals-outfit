@@ -164,9 +164,14 @@ export function resolveSourceOutfit(definitions: SourceDefinition[], contextTags
       part.TagOverrides.forEach((rule, index) => {
         const known = rule.MatchingTags.filter((tag) => hasSourceTag(tags, tag));
         if (!known.length && rule.MatchingTags.length) return;
-        // A single tag is unambiguous. Preserve multi-tag conditions for the full
-        // evaluator until the game's all/any matching and priority are verified.
+        // A single tag is unambiguous. A multi-tag rule is a conjunction: measured 11 Oct 2026
+        // (_docs/goal-100-2026-10-11/multi-tag/), 110 of the 130 such rules refine a single-tag rule on
+        // the same part with a different replacement, and the rest would give every Medium "Pleated
+        // Skirt" shorts and every "Ponytail Low" no ponytail if any one tag sufficed. So a partially
+        // matched rule is inactive. A fully matched one stays refused for the full evaluator until
+        // priority between overlapping rules is verified.
         if (rule.MatchingTags.length > 1) {
+          if (!rule.MatchingTags.every(tag => hasSourceTag(tags, tag))) return;
           if (rule.bOverrideMesh || rule.bOverrideEffect || rule.bOverrideMaterials || offsetsPlacement(rule) || rule.bAddLogicModules)
             resolved.unresolved.push(`multi-tag condition ${index}`);
           return;
@@ -350,6 +355,9 @@ export interface SourceRigPart {
    *  not through an ordinary identity placement. It is still body-space geometry with no
    *  attachment: the flag only records which route accepted it. */
   neutralHeadFrame?: true;
+  /** Wrapped by the head component (both WrapDeformation flags): the rig moves the rest geometry with the worn
+   *  head's wrap cage relative to HeadMaster's (HeadWrap.ts), and refuses the part without that data. */
+  headWrap?: true;
 }
 
 const MATRIX = (value: unknown): value is number[] =>
@@ -521,12 +529,17 @@ export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"]
     ...(omitted ? { headOmitted: omitted } : {}) };
 }
 
-export async function loadSourceRigParts(item: SourceOutfit["items"][string], baseUrl: string): Promise<SourceRigPart[]> {
+export async function loadSourceAssemblyAssets(baseUrl: string): Promise<AssemblyAssets> {
   const assets = await readJson(`${baseUrl}/assets.json`) as AssemblyAssets;
   if (assets.formatVersion !== 1 || !assets.meshes || !assets.materials) {
     pending.delete(`${baseUrl}/assets.json`);
     throw new Error("Invalid source assembly assets");
   }
+  return assets;
+}
+
+export async function loadSourceRigParts(item: SourceOutfit["items"][string], baseUrl: string): Promise<SourceRigPart[]> {
+  const assets = await loadSourceAssemblyAssets(baseUrl);
   const url = (path: string) => new URL(path, new URL(baseUrl + "/", window.location.href)).href;
   return resolveSourceRigParts(item, assets, url);
 }
@@ -565,9 +578,16 @@ export function neutralSourceHeadFrame(part: ResolvedPart, assets: AssemblyAsset
   const p = part.definition, wrap = p.WrapDeformation;
   if (p.bCanBeMerged !== true || p.bIsAttached !== false || p.bAttachToHeadMesh !== false ||
       p.bIsHeadMesh === true || p.AttachmentSocket !== BODY_HEAD_SOCKET) return false;
+  // A head-component wrap (both flags, no deformer mesh of its own) is the one wrap admitted here, as it
+  // already is for identity-frame skinned parts below. Measured 11 Oct 2026
+  // (_docs/goal-100-2026-10-11/facial-hair/): the part's own cloth proxy lies on the HeadMaster *_Wraps cage
+  // and every face's cage shares that topology, so the part follows the worn head's cage relative to
+  // HeadMaster's. The resolver marks such a part (headWrap below); the rig applies the cage (HeadWrap.ts).
+  const headWrap = !!wrap?.bIsWrapDeformed && !!wrap?.bIsWrapDeformedByHeadComponent;
   if (part.hidden || part.unresolved.length || part.effect || path(p.Effect) || p.LogicModules?.length ||
       part.staticMesh || path(p.StaticMesh) || path(p.OptionalAttachmentMesh) || path(p.OptionalHeadWrapMesh) ||
-      wrap?.bIsWrapDeformed || wrap?.bIsWrapDeformedByHeadComponent || path(wrap?.OptionalWrapDeformerMesh)) return false;
+      ((wrap?.bIsWrapDeformed || wrap?.bIsWrapDeformedByHeadComponent) && !headWrap) ||
+      path(wrap?.OptionalWrapDeformerMesh)) return false;
   // The part has to bring a skeletal mesh of its own: no static, no section reference, no mesh the
   // index would have to guess at.
   if (!part.skeletalMesh || !path(p.SkeletalMesh) || p.SkeletalMesh.SubPathString) return false;
@@ -587,11 +607,25 @@ export function neutralSourceHeadFrame(part: ResolvedPart, assets: AssemblyAsset
     Math.max(deviation.linear, deviation.affine) <= NEUTRAL_LINEAR_UNITLESS;
 }
 
+/** A part that names nothing to render after its applied rules: no mesh, effect, logic module, optional or
+ *  wrap mesh, head role or unresolved rule. The seven catalog cases (11 Oct 2026) are attached parts whose only
+ *  rule adds the UltimateS10 Niagara effect; while that tag is active the part carries the effect and is refused. */
+export function emptySourcePart(part: ResolvedPart): boolean {
+  const p = part.definition;
+  return !part.staticMesh && !part.skeletalMesh && !part.effect && !part.unresolved.length && !path(p.Effect) &&
+    !p.LogicModules?.length && !path(p.OptionalAttachmentMesh) && !path(p.OptionalHeadWrapMesh) &&
+    !path(p.WrapDeformation?.OptionalWrapDeformerMesh) && !p.bIsHeadMesh && !p.bAttachToHeadMesh;
+}
+
 // The offline coverage audit and runtime use the same support boundary. An item
 // becomes available only when every active part has its exact mesh and materials.
 export function resolveSourceRigParts(item: SourceOutfit["items"][string], assets: AssemblyAssets,
   url: (path: string) => string = path => path): SourceRigPart[] {
-  return item.parts.filter(part => !part.hidden).map(part => {
+  const shown = item.parts.filter(part => !part.hidden);
+  // An empty part beside a real one renders nothing. An item made only of empty parts is not evidence of
+  // anything, so its parts go through the checks below and are refused as before.
+  const real = shown.filter(part => !emptySourcePart(part));
+  return (real.length ? real : shown).map(part => {
     const p = part.definition;
     const attached = !!part.staticMesh && !part.skeletalMesh && !!p.bIsAttached;
     const optionalMesh = path(p.OptionalAttachmentMesh);
@@ -669,7 +703,9 @@ export function resolveSourceRigParts(item: SourceOutfit["items"][string], asset
       ...(repeated.size ? { materialSections: sections } : {}),
       bodyMaskUvTiles: ownMask ? ownMask.uvTiles : mesh.bodyMaskUvTiles,
       bodyMaskUrl: ownMask ? url(ownMask.url) : mesh.bodyMaskUrl ? url(mesh.bodyMaskUrl) : undefined,
-      ...(neutral ? { neutralHeadFrame: true as const } : {}) };
+      ...(neutral ? { neutralHeadFrame: true as const } : {}),
+      ...(!attached && p.WrapDeformation?.bIsWrapDeformed && p.WrapDeformation?.bIsWrapDeformedByHeadComponent
+        ? { headWrap: true as const } : {}) };
   });
 }
 
@@ -684,21 +720,37 @@ export async function loadSourceAssemblyItems(baseUrl: string): Promise<Set<stri
 
 // Picker progress follows the active asset release, including the separately reconstructed face.
 // These entries indicate work has been applied; neither index claims perfect visual fidelity.
-/** Material-only head cosmetics (eye items): validated per-face variants in assets.materialVariants. An index
- *  published before these existed has no file; that means none are supported, not an error. */
-export async function loadSourceFaceCosmetics(baseUrl: string): Promise<Set<string>> {
+/** Material-only head cosmetics (eye items, makeup eyelash rules): validated per-face variants in
+ *  assets.materialVariants, keyed by item with the recipient slots its variants cover. An index published before
+ *  these existed has no file; that means none are supported, not an error. */
+export async function loadSourceFaceCosmetics(baseUrl: string): Promise<Map<string, string[]>> {
   let index: { formatVersion: number; items: Record<string, unknown> };
   try {
     index = await readJson(`${baseUrl}/face-cosmetics.json`) as typeof index;
   } catch (error) {
     pending.delete(`${baseUrl}/face-cosmetics.json`);
     // Absent file: a 404, or an SPA fallback page that is not JSON. Anything else stays visible.
-    if (error instanceof SyntaxError || String((error as Error)?.message).includes('(404)')) return new Set();
+    if (error instanceof SyntaxError || String((error as Error)?.message).includes('(404)')) return new Map();
     throw error;
   }
   if (index.formatVersion !== 1 || !index.items || typeof index.items !== 'object' || Array.isArray(index.items))
     throw new Error('Invalid source face cosmetics index');
-  return new Set(Object.keys(index.items));
+  return new Map(Object.entries(index.items).map(([id, entry]) => {
+    const slots = (entry as { slots?: unknown })?.slots;
+    if (!slots || typeof slots !== 'object' || Array.isArray(slots) || !Object.keys(slots).length)
+      throw new Error('Invalid source face cosmetics index');
+    return [id, Object.keys(slots)];
+  }));
+}
+
+/** The worn face cosmetics' activations their validated face variants reproduce: a rule counts only when every slot
+ *  it overrides is one the index lists for that item. A makeup's head rule is its traced body-paint decal, so only
+ *  its eyelash rule is staged on the face; an eye item's rules are all eye-slot rules. */
+export function faceCosmeticRule(cosmetics: ReadonlyMap<string, readonly string[]>, worn: (string | null | undefined)[]) {
+  return (p: SourceMaterialParameters) => {
+    const slots = worn.includes(p.itemId) ? cosmetics.get(p.itemId) : undefined;
+    return !!slots && p.slots.length > 0 && p.slots.every(slot => slots.includes(slot));
+  };
 }
 
 export async function loadSourceReconstructionItems(baseUrl: string): Promise<Set<string>> {
@@ -711,5 +763,5 @@ export async function loadSourceReconstructionItems(baseUrl: string): Promise<Se
     pending.delete(`${baseUrl}/skin-pairs.json`);
     throw new Error("Invalid source skin pair item index");
   }
-  return new Set([...assemblies, ...Object.keys(skinPairs.items), ...faceCosmetics]);
+  return new Set([...assemblies, ...Object.keys(skinPairs.items), ...faceCosmetics.keys()]);
 }

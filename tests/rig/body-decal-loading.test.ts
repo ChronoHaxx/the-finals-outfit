@@ -304,3 +304,15 @@ test('a stale mask failure after clearAll leaves the newer in-flight request alo
   await newEquip;
   assert.equal(installedShader(h.material).uniforms.uDecalM0?.value, fresh);
 });
+
+test('a colour texture authored with SRGB off is uploaded without an sRGB decode', async () => {
+  // Unreal chooses the texture format from the SRGB flag, so such a texture samples its stored values.
+  const h = harness();
+  const equip = h.decals.set('bodyPaint', { layers: [PAINT, { ...TATTOO, colorUrl: 'linear_c.png', colorLinear: true }] });
+  await settle();
+  const srgb = h.release('paint_c.webp');
+  const linear = h.release('linear_c.png');
+  await equip;
+  assert.equal(srgb.colorSpace, THREE.SRGBColorSpace);
+  assert.equal(linear.colorSpace, THREE.NoColorSpace);
+});
