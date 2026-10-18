@@ -36,9 +36,12 @@ test("conflicting mesh overrides are refused", () => {
   assert.match(check([pixie, wear("both", [HAT, HEAD])], pixie.id).join("; "), /conflicting mesh overrides/);
 });
 
-test("a partially matched multi-tag condition is refused", () => {
+// A multi-tag TagOverrides rule is a conjunction (current-app resolver, 11 Oct 2026; see
+// tests/rig/multi-tag-conjunction.test.ts): partially matched it is inactive, fully matched it is refused.
+test("a partially matched multi-tag condition is inactive; a fully matched one is refused", () => {
   assert.deepEqual(check([bun], bun.id), []);
-  assert.match(check([bun, wear("cap", [HAT])], bun.id).join("; "), /multi-tag condition/);
+  assert.deepEqual(check([bun, wear("cap", [HAT])], bun.id), []);
+  assert.match(check([bun, wear("bun-cap", [BUN, HAT])], bun.id).join("; "), /multi-tag condition/);
 });
 
 test("an ambiguous scalp parameter condition is refused", () => {
@@ -47,7 +50,7 @@ test("an ambiguous scalp parameter condition is refused", () => {
 });
 
 test("another item's ambiguity does not block the hair", () => {
-  const odd = wear("odd", ["Customization.Test.Other"],
+  const odd = wear("odd", ["Customization.Test.Other", "Customization.Test.Else"],
     [part("/Game/Test/Odd", [rule(["Customization.Test.Other", "Customization.Test.Else"], "/Game/Test/Odd2")])]);
   const outfit = resolveSourceOutfit([pixie, odd], MEDIUM);
   assert.ok(outfit.items.odd.parts[0].unresolved.length);

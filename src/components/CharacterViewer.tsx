@@ -5,8 +5,9 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
-import { loadSourceAssemblyItems, loadSourceFaceCosmetics, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, MissingSourceDefinitionError, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
-import { sourceHairUnresolved } from "../rig/SourceHairAvailability";
+import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
+import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, MissingSourceDefinitionError, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
+import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
 import MeshInspector from "./MeshInspector";
@@ -110,6 +111,7 @@ function toRigDecal(decal: NonNullable<Item["decal"]>): RigDecal {
     layers: decal.layers.map((l) => ({
       target: l.target,
       colorUrl: l.colorPath ? modelUrl(l.colorPath) : undefined,
+      colorLinear: l.colorLinear,
       maskUrl: l.maskPath ? modelUrl(l.maskPath) : undefined,
       surfaceUrl: l.surfacePath ? modelUrl(l.surfacePath) : undefined,
       surfaceOverride: l.surfaceOverride,
@@ -121,6 +123,7 @@ function toRigDecal(decal: NonNullable<Item["decal"]>): RigDecal {
       colorMultiply: l.colorMultiply,
       tint: l.tint,
       emissive: l.emissive,
+      faceShadowRoughness: l.faceShadowRoughness,
     })),
   };
 }
@@ -328,6 +331,8 @@ export default function CharacterViewer() {
   const [theme, setTheme] = useState<SceneTheme>("studio");
   const build = useBuildStore((s) => s.build);
   const prev = useRef<Partial<Record<Slot, string | null>>>({});
+  // The item whose companion decal is installed for each slot (null: none).
+  const companions = useRef<Partial<Record<Slot, string | null>>>({});
   const [hasRecoveredPreview, setHasRecoveredPreview] = useState(false);
   // One owner for "the preview is still changing". Every body/outfit pass takes a new id and
   // only the latest id may clear it, so a superseded pass can never end a newer one.
@@ -401,12 +406,14 @@ export default function CharacterViewer() {
       // Render a base top under Outerwear when Upper Body is empty (never-bare torso). Derived
       // from `build` only for the rig — the store/share-link `build` is untouched.
       let supported = new Set<string>();
-      let faceCosmetics = new Set<string>();
+      let faceCosmetics = new Map<string, string[]>();
+      let headWraps: HeadWrapData | undefined;
       if (DEV.reconstructed && DEV.sourceMeshes && DEV.sourceAssembly) {
         try {
-          [supported, faceCosmetics] = await Promise.all([
+          [supported, faceCosmetics, headWraps] = await Promise.all([
             loadSourceAssemblyItems(modelUrl("models/reconstructed-assemblies-v1")),
-            loadSourceFaceCosmetics(modelUrl("models/reconstructed-assemblies-v1"))]);
+            loadSourceFaceCosmetics(modelUrl("models/reconstructed-assemblies-v1")),
+            loadHeadWraps(modelUrl("models/reconstructed-assemblies-v1"))]);
           if (cancelled) return;
         } catch (e) {
           if (cancelled) return;
@@ -450,6 +457,13 @@ export default function CharacterViewer() {
       // nothing is mutated, the selection is kept, and the next valid change retries.
       if (assembly && eff.hair && DEV.sourceMeshes && DEV.sourceFitting && supported.has(eff.hair)) {
         const ambiguity = sourceHairUnresolved(assembly, eff.hair);
+        if (!ambiguity.length) {
+          let assets;
+          try { assets = await loadSourceAssemblyAssets(modelUrl("models/reconstructed-assemblies-v1")); }
+          catch (e) { if (cancelled) return; console.error(e); setError("Couldn’t load reconstructed item data."); return; }
+          if (cancelled) return;
+          ambiguity.push(...sourceHairMissingMeshes(assembly, eff.hair, assets.meshes));
+        }
         if (ambiguity.length) {
           console.warn(`Unsupported source hair combination ${eff.hair}: ${ambiguity.join('; ')}`);
           setMissingFittingData(true);
@@ -481,11 +495,13 @@ export default function CharacterViewer() {
       const hairSelection = { id: eff.hair ?? undefined, item: requestedHair };
       // A supported eye cosmetic is material-only: it recolours the worn source face's eye slots.
       const eyes = eff.eyes && faceCosmetics.has(eff.eyes) ? eff.eyes : undefined;
+      // A supported makeup or body paint keeps its head paint on the decal path; only its eyelash rule restages the face.
+      const cosmeticRule = faceCosmeticRule(faceCosmetics, [eyes, eff.blush, eff.bodyPaint]);
       if (assembly && requestedFace && faceItem?.model?.gltfPath && (requestedHair || !eff.hair)) {
         appearanceSlots.add('hair'); appearanceSlots.add('face');
         if (eyes) appearanceSlots.add('eyes');
         try {
-          const parameters = assembly.materialParameters.filter(p => p.itemId === eff.hair || p.itemId === eyes);
+          const parameters = assembly.materialParameters.filter(p => p.itemId === eff.hair || cosmeticRule(p));
           const assetsUrl = modelUrl('models/reconstructed-assemblies-v1');
           const pair = await loadSourceSkinPair(faceItem.id, requestedFace, assetsUrl, parameters, hairSelection);
           if (cancelled) return;
@@ -561,6 +577,9 @@ export default function CharacterViewer() {
           continue;
         }
         const headComponent = headSocketed ? rig.sourceHeadComponentKey() : undefined;
+        // A part wrapped by the head component is shaped by the worn head's wrap cage, so it is re-staged per head.
+        const headWrapped = !!sourceCandidate?.parts.some(part => !part.hidden && part.definition.WrapDeformation?.bIsWrapDeformed
+          && part.definition.WrapDeformation?.bIsWrapDeformedByHeadComponent);
         const sourceItem = headSocketed && !headComponent ? undefined : sourceCandidate;
         const skinCandidate = id && slot === "face" && DEV.sourceMeshes && DEV.sourceFitting ? assembly?.items[id] : undefined;
         let skinParameters: SourceMaterialParameters[] = [];
@@ -573,8 +592,7 @@ export default function CharacterViewer() {
               [...Object.entries(eff).filter(([slot]) => slot !== 'hair').map(([, id]) => id), hair]
                 .filter((id): id is string => !!id), modelUrl('models/reconstructed-assembly-v2'));
             if (cancelled) return;
-            skinParameters = parameterOutfit.materialParameters.filter(p => p.itemId === hair
-              || (!!eff.eyes && faceCosmetics.has(eff.eyes) && p.itemId === eff.eyes));
+            skinParameters = parameterOutfit.materialParameters.filter(p => p.itemId === hair || cosmeticRule(p));
           } catch (e) {
             if (cancelled) return;
             console.error(e); setError('Couldn’t load scalp fitting data.'); delete prev.current[slot]; continue;
@@ -584,7 +602,8 @@ export default function CharacterViewer() {
         // An item socketed onto the head component belongs to the head that is worn: the face is
         // staged before this loop, so a head swap has to re-stage it rather than be deduplicated.
         const key = sourceKey ? sourcePreviewKey(id!, sourceKey, skinParameters)
-          + (headSocketed ? `|head:${headComponent ?? "none"}` : "") : underTint
+          + (headSocketed ? `|head:${headComponent ?? "none"}` : "")
+          + (headWrapped ? `|wrap:${rig.sourceHeadComponentKey() ?? "none"}` : "") : underTint
           ? `${id}|${underTint}`
           : realUnder
             ? `${id}|u:${realUnder}`
@@ -621,6 +640,7 @@ export default function CharacterViewer() {
               sourceParts,
               sourceSkinPair,
               sourceSurfaceView: DEV.debugAlbedo ? "baseColor" : DEV.surfaceView,
+              headWraps,
               material,
               materialBindings: item.model ? toRigMaterialBindings(item.model, underTint) : undefined,
               underLayerUrl: realUnder ? modelUrl(realUnder) : undefined,
@@ -690,6 +710,20 @@ export default function CharacterViewer() {
       if (commitAppearance) {
         if (equipFailed) { delete prev.current.hair; delete prev.current.face; return; }
         if (!commitAppearance()) return;
+      }
+      // A source item's companion decal (a mask's face shadow on the worn head) follows the item actually equipped
+      // from its own source assembly; a failed or legacy equip leaves none.
+      for (const slot of SLOTS) {
+        const id = rig.equippedItemId(slot);
+        const companion = id && rig.sourceAssemblyId(slot) === id ? getItemById(id)?.companionDecal : undefined;
+        const key = companion ? id : null;
+        if ((companions.current[slot] ?? null) === key) continue;
+        delete companions.current[slot];
+        if (companion) {
+          try { await rig.equipCompanionDecal(slot, toRigDecal(companion)); } catch (e) { console.error(e); }
+          if (cancelled) return;
+        } else rig.unequipCompanionDecal(slot);
+        companions.current[slot] = key;
       }
       if (assembly) {
         const activeCoat = rig.sourceAssemblyId("outerwear");

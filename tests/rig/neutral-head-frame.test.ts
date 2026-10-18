@@ -219,6 +219,22 @@ refused("wrap by head component", { WrapDeformation: { bIsWrapDeformed: false,
   bIsWrapDeformedByHeadComponent: true, OptionalWrapDeformerMesh: SOFT() } });
 refused("wrap deformer mesh", { WrapDeformation: { bIsWrapDeformed: false,
   bIsWrapDeformedByHeadComponent: false, OptionalWrapDeformerMesh: SOFT(MESH) } });
+refused("head-component wrap with its own deformer mesh", { WrapDeformation: { bIsWrapDeformed: true,
+  bIsWrapDeformedByHeadComponent: true, OptionalWrapDeformerMesh: SOFT(MESH) } });
+refused("head-component wrap with a head wrap mesh", { OptionalHeadWrapMesh: SOFT(MESH), WrapDeformation: {
+  bIsWrapDeformed: true, bIsWrapDeformedByHeadComponent: true, OptionalWrapDeformerMesh: SOFT() } });
+
+// Facial hair: the head component's wrap (both flags, no deformer of its own) is admitted on the neutral frame
+// with the same bindings, marked for the rig to follow the worn head's wrap cage (HeadWrap.ts).
+test("a neutral frame wrapped by the head component resolves with the same bindings, marked headWrap", () => {
+  for (const { name, LocalPosition, LocalRotation } of NEUTRAL) {
+    const selected = item({ LocalPosition, LocalRotation, WrapDeformation: { bIsWrapDeformed: true,
+      bIsWrapDeformedByHeadComponent: true, DisabledByTags: [], OptionalWrapDeformerMesh: SOFT() } });
+    assert.equal(neutralSourceHeadFrame(selected.parts[0], assets()), true, name);
+    assert.deepEqual(resolveSourceRigParts(selected, assets()),
+      resolveSourceRigParts(item({ LocalPosition, LocalRotation }), assets()).map(p => ({ ...p, headWrap: true })), name);
+  }
+});
 refused("authored effect", { Effect: SOFT(NS) }, { effect: NS });
 refused("logic modules", { LogicModules: [{ Class: "Stub" }] });
 refused("a static mesh instead", { StaticMesh: SOFT(SM), SkeletalMesh: SOFT() }, { staticMesh: SM, skeletalMesh: "" });

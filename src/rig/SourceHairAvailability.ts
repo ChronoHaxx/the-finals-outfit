@@ -13,3 +13,13 @@ export function sourceHairUnresolved(outfit: SourceOutfit, hairId: string): stri
       .flatMap(p => p.unresolved.map(reason => `material parameters ${p.source}: ${reason}`)),
   ];
 }
+
+/** Meshes the hair's parts resolve to in this outfit that the preserved index does not hold. The coverage audit
+ *  checks each item standalone, so an outfit-dependent replacement (a hat's "covers upper hair" swaps a static
+ *  hair for its _UnderHat mesh) is only known here; without this it fails later as a generic load error. */
+export function sourceHairMissingMeshes(outfit: SourceOutfit, hairId: string, meshes: Record<string, unknown>): string[] {
+  const item = outfit.items[hairId];
+  if (!item) return [];
+  return item.parts.filter(part => !part.hidden).flatMap(part => [part.staticMesh, part.skeletalMesh])
+    .filter(mesh => mesh && !Object.hasOwn(meshes, mesh)).map(mesh => `missing preserved mesh ${mesh}`);
+}

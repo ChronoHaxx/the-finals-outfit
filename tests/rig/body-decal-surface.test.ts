@@ -184,7 +184,6 @@ test('an ineligible or disabled pack keeps the colour-only program and issues no
     ['no pack URL', PAINT],
     ['URL without the switch', { ...SURFACE_PAINT, surfaceOverride: undefined }],
     ['switch off', { ...SURFACE_PAINT, surfaceOverride: 0 }],
-    ['not a body layer', { ...SURFACE_PAINT, target: 'head' }],
     ['nails ride the body material but are not the body target', { ...SURFACE_PAINT, target: 'nails' }],
     ['no colour coverage', { ...SURFACE_PAINT, colorUrl: undefined }],
     ['no source layout', { ...SURFACE_PAINT, uvLayout: undefined }],
@@ -214,6 +213,21 @@ test('a pack on a later resolved layer binds its own indexed sampler and weight'
   assert.match(fragmentShader, /mix\( roughnessFactor, sp\.b, decalSurfCoverage1 \)/);
   assert.match(fragmentShader, /mix\( metalnessFactor, sp\.a, decalSurfCoverage1 \)/);
   assert.doesNotMatch(fragmentShader, /decalSurfCoverage0/);
+});
+
+test('a head paint layer (M_Face, UV0 source transform) composes its pack on the recovered head finish', async () => {
+  // M_Face: metalness sat(A*w) with no base term and roughness mix(base, B, w); the recovered head metalness is 0.
+  const head: RigDecalLayer = { ...SURFACE_PAINT, target: 'head', uv: 0, uvScale: [1, 1] };
+  const h = harness({ reconstructed: true });
+  await h.decals.set('makeup', { layers: [head] });
+  const { fragmentShader, uniforms } = h.compile();
+  assert.ok(h.requests.includes(SURFACE_URL), 'the head pack was not requested');
+  assert.ok(uniforms.uDecalS0, 'no packed sampler was bound');
+  const iMetal = fragmentShader.indexOf('float metalnessFactor = recovered.metalness;');
+  const iSurface = fragmentShader.indexOf('roughnessFactor = clamp( mix( roughnessFactor, sp.b, decalSurfCoverage0 ), 0.0, 1.0 );');
+  assert.ok(iMetal >= 0 && iSurface > iMetal, 'the head pack was not composited after the recovered factors');
+  assert.match(fragmentShader, /metalnessFactor = clamp\( mix\( metalnessFactor, sp\.a, decalSurfCoverage0 \), 0\.0, 1\.0 \);/);
+  assert.match(h.key(), /headcb/, 'the head pack must enter the program identity');
 });
 
 test('reconstructed material: the pack composes after the recovered factors, base callback intact', async () => {
@@ -462,4 +476,33 @@ test('the pack changes program identity; without it the colour program is unchan
   h.decals.clear('bodyPaint');
   assert.equal(h.material.customProgramCacheKey(), h.originalKey);
   assert.equal(h.material.onBeforeCompile, h.baseCompile);
+});
+
+// M_Face FaceShadowMask (a mask's companion decal): plain colour mix toward FaceShadowColor by the mask, then roughness
+// toward 0.75 by the same mask, both after the paint branch whatever order the slots were equipped in.
+test('a face-shadow layer mixes roughness by its own coverage after every paint layer of the head', async () => {
+  const shadow: RigDecalLayer = { target: 'head', colorUrl: 'models/masks/blackeyes_shadow.png', faceShadowRoughness: 0.75 };
+  const paint: RigDecalLayer = { ...SURFACE_PAINT, target: 'head', uv: 0, uvScale: [1, 1] };
+  const h = harness({ reconstructed: true });
+  // The shadow is equipped FIRST: the compiled face still applies it after the paint.
+  await h.decals.set('companion:facewear', { layers: [shadow] });
+  await h.decals.set('blush', { layers: [paint] });
+  const { fragmentShader } = h.compile();
+  const iPaintColour = fragmentShader.indexOf('decalSurfCoverage0 = dc.a');
+  const iShadowCov = fragmentShader.indexOf('decalShadowCoverage1 = a;');
+  assert.ok(iPaintColour >= 0 && iShadowCov > iPaintColour, 'the shadow colour must composite after the paint colour');
+  const iPack = fragmentShader.indexOf('roughnessFactor = clamp( mix( roughnessFactor, sp.b, decalSurfCoverage0 ), 0.0, 1.0 );');
+  const iShadow = fragmentShader.indexOf('roughnessFactor = clamp( mix( roughnessFactor, 0.750000, decalShadowCoverage1 ), 0.0, 1.0 );');
+  assert.ok(iPack >= 0 && iShadow > iPack, 'the shadow roughness must follow the paint surface');
+  assert.doesNotMatch(fragmentShader, /metalnessFactor = [^;]*decalShadowCoverage/, 'the face shadow never touches metalness');
+  assert.match(h.key(), /f0\.75/, 'the shadow enters the program identity');
+});
+
+test('faceShadowRoughness is ignored off the head or on a source paint layout', async () => {
+  for (const layer of [{ target: 'body', colorUrl: 'x_c.png', faceShadowRoughness: 0.75 },
+    { ...PAINT, target: 'head', uv: 0, uvScale: [1, 1], faceShadowRoughness: 0.75 }] as RigDecalLayer[]) {
+    const h = harness({ reconstructed: true });
+    await h.decals.set('blush', { layers: [layer] });
+    assert.doesNotMatch(h.compile().fragmentShader, /decalShadowCoverage/);
+  }
 });

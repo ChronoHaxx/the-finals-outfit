@@ -8,20 +8,20 @@
     "note": "Wrist gap reported on 11 September 2026; outfit and body coverage need inspection."
   },
   "bodycosmetics-bodypaint-discosilver-01": {
-    "status": "issue",
-    "note": "Known visual error: the face finish does not match the metallic body; head surface reconstruction is pending."
+    "status": "polish",
+    "note": "The face tiles now share the body’s mirror finish (M_Face packed B/A) and the lash rule is reproduced per face (12 Oct 2026). Polish: the packed normal channels (RG) are still deferred for every paint."
   },
   "bodycosmetics-bodypaint-metallicblack-01": {
-    "status": "issue",
-    "note": "Known visual error: the face finish does not match the metallic body; head surface reconstruction is pending."
+    "status": "polish",
+    "note": "The face finish now matches the metallic body (M_Face packed B/A) and the lash rule is reproduced per face (12 Oct 2026). Polish: the packed normal channels (RG) are still deferred for every paint; the preview studio renders the chrome lighter than the icon’s dark gunmetal."
   },
   "bodycosmetics-bodypaint-metallicblackgold-01": {
-    "status": "issue",
-    "note": "Known visual error: the face finish does not match the metallic body; head surface reconstruction is pending."
+    "status": "polish",
+    "note": "The face finish now matches the metallic body (M_Face packed B/A) and the lash rule is reproduced per face (12 Oct 2026). Polish: the packed normal channels (RG) are still deferred for every paint; the chrome renders lighter than the icon."
   },
   "bodycosmetics-bodypaint-metallicgold-01": {
-    "status": "issue",
-    "note": "Known visual error: the face finish does not match the metallic body; head surface reconstruction is pending."
+    "status": "polish",
+    "note": "The face finish now matches the metallic body (M_Face packed B/A, 12 Oct 2026). Polish: the packed normal channels (RG) are still deferred for every paint; the preview studio renders the metal lighter than the icon."
   },
   "bodycosmetics-bodypaint-sweat-01": {
     "status": "issue",
@@ -52,12 +52,12 @@
     "note": "Shader texture-limit issue repaired on 16 September 2026. Source values, original texture sampling, eight-angle A/idle previews and outfit switching verified on Medium. Narrow wrist/cuff seams still need fitting polish; native lighting and human acceptance remain pending."
   },
   "bodycosmetics-makeup-elegantknight-01": {
-    "status": "issue",
-    "note": "Known visual issue: the metallic gold face paint renders as matte pale yellow; head surface finish (metalness/roughness from BodyPaintData) is still deferred for head layers."
+    "status": "polish",
+    "note": "Metallic gold eye band reconstructed (M_Face packed B/A, 12 Oct 2026). Polish: the packed normal channels (RG) are still deferred for every paint."
   },
   "bodycosmetics-makeup-eyeshadowgold-01": {
-    "status": "issue",
-    "note": "Known visual issue: the metallic gold paint renders matte beige; head surface finish (metalness/roughness from BodyPaintData) is still deferred for head layers."
+    "status": "polish",
+    "note": "Metallic gold head finish reconstructed (M_Face packed B/A, 12 Oct 2026). Polish: the packed normal channels (RG) are still deferred for every paint; the studio reflections are brighter than the icon’s."
   },
   "medieval-elfprincesstunic-satin": {
     "status": "issue",
@@ -86,5 +86,109 @@
   "sport-helmet-metal-spacegame": {
     "status": "issue",
     "note": "Known visual issue: renders saturated blue with a cream crown where the icon shows muted blue-grey with a dark grey top"
+  },
+  "military-acepilothelmet-plastic-ospuze": {
+    "status": "issue",
+    "note": "Known visual error (escaped defect found 12 Oct 2026): the visor renders flat black because its authored cubemap reflection (emission) is not reproduced; the icon shows a blue-grey sky reflection."
+  },
+  "military-acepilothelmet-plastic-valkyr": {
+    "status": "issue",
+    "note": "Known visual error (escaped defect found 12 Oct 2026): the visor renders flat black because its authored cubemap reflection (emission) is not reproduced; the icon shows a blue-grey sky reflection."
+  },
+  "bodycosmetics-makeup-gold-01": {
+    "status": "polish",
+    "note": "Metallic gold head finish reconstructed (M_Face packed B/A, 12 Oct 2026). Polish: the icon’s gold-leaf crinkle comes from the packed normal channels (RG) are still deferred for every paint, and our brighter studio makes the metal paler than the icon."
+  },
+  "attachment-skullmaskblank": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. Polish: the preview studio renders the metal paler than the icon (tone/lighting; the material is GPU-matched)."
+  },
+  "attachment-skullmaskblank-geng": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. Polish: the preview studio renders the metal paler than the icon (tone/lighting; the material is GPU-matched)."
+  },
+  "attachment-skullmaskblank-gold": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. Polish: the preview studio renders the metal paler than the icon (tone/lighting; the material is GPU-matched)."
+  },
+  "attachment-skullmaskblank-silver": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. Polish: the preview studio renders the metal paler than the icon (tone/lighting; the material is GPU-matched)."
+  },
+  "attachments-mogulmask-nohear": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. Polish: the preview studio renders the metal paler than the icon (tone/lighting; the material is GPU-matched)."
+  },
+  "attachments-mogulmask-nosee": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. Polish: the preview studio renders the metal paler than the icon (tone/lighting; the material is GPU-matched)."
+  },
+  "attachments-mogulmask-nospeak": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. Polish: the preview studio renders the metal paler than the icon (tone/lighting; the material is GPU-matched)."
+  },
+  "attachment-rabbithead-paper": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. Polish: the brighter preview studio puts specular highlights on the faceted paper that the icon does not show (metalness 0 and the grey/white base colour match; masks-shadow-2/surface)."
+  },
+  "attachment-rabbithead-paper-black": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. Polish: the brighter preview studio puts specular highlights on the faceted paper that the icon does not show (metalness 0 and the grey/white base colour match; masks-shadow-2/surface)."
+  },
+  "attachment-rabbithead-paper-graywhite": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. Polish: the brighter preview studio puts specular highlights on the faceted paper that the icon does not show (metalness 0 and the grey/white base colour match; masks-shadow-2/surface)."
+  },
+  "cute-skeletonmask-cotton": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 12 Oct 2026): the eye sockets go black behind the mask. No visible gap against the icon at review distance (faces 01/05/21)."
+  },
+  "streetwear-tightsinglet-cotton-black": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-cotton-gray": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-cotton-green": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-cotton-ospuzestarterpack": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-cotton-pinkcommunity": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-cotton-white": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-cotton-whiteeaster": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-cotton-whiteskillissue": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-jerseyspeckled-ivada": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-jerseyspeckled-refe-6bf9": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+  },
+  "casual-basicshorts-cotton-darkgray": {
+    "status": "polish",
+    "note": "Reconstructed (held-rerun, 12 Oct 2026). Polish: the albedo matches the icon’s mid grey (held-rerun/shorts, surface=baseColor); the lit preview reads lighter through the Neutral tone curve."
+  },
+  "scifi-phantommask-metal-vanguard": {
+    "status": "polish",
+    "note": "Reconstructed (held-rerun, 12 Oct 2026). Polish: fuller lips (Face 05) show in the mask’s mouth gap; the item fits only default nose/chin/brows, so this follows the source."
   }
 }
