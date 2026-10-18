@@ -99,6 +99,12 @@ function fetchTextureData(spec: TextureSpec, base: string): Promise<ArrayBuffer>
   return verifiedBytes.load(new URL(spec.file, base).href, spec.sha256, "gzip");
 }
 
+/** The authored texture bytes (every mip, decompressed and hash-checked) for the developer source-file export. */
+export async function fetchRecoveredTexture(spec: TextureSpec, manifestUrl: string) {
+  const data = await fetchTextureData(spec, new URL(manifestUrl, window.location.href).href);
+  return { data, ...validateTextureLayout(spec, data) };
+}
+
 function validateTextureLayout(spec: TextureSpec, data: ArrayBuffer): { half: boolean } {
   const half = spec.componentType === "float16";
   if ((spec.componentType !== undefined && !half) || (half && spec.srgb)
@@ -343,6 +349,8 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         material.userData.skinSurface = !!manifest.skinSurface;
         material.userData.skinCoverage = manifest.skinCoverage;
         material.userData.surfaceKind = manifest.surfaceKind;
+        material.userData.normalSpace = manifest.normalSpace; // OutfitExport bakes world-space normals differently
+        material.userData.recoveredManifest = base; // OutfitSourceExport packages the authored textures
         material.userData.glassOpacityPolicy = glass ? 'source opacity; alpha-blended preview; native refraction and lighting pending' : undefined;
         material.userData.parameterOverrides = manifest.parameterOverrides;
         material.userData.hairLightingPolicy = hair ? 'Karis 2016 R/TT/TRT preview; native lighting, volume shadows and TAA pending' : undefined;
