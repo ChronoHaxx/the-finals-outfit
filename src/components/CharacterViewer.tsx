@@ -20,6 +20,7 @@ import { getBrowseItem } from "../lib/browse-catalog";
 import { modelUrl } from "../lib/assets";
 import { buildShareUrl } from "../lib/share-url";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
+import { setPreviewScene } from "../lib/viewer-handle";
 import { SLOTS, type Slot } from "../lib/slots";
 import type { Item } from "../lib/item";
 
@@ -100,6 +101,12 @@ const sourcePreviewKey = (id: string, item: SourceOutfit['items'][string], skinP
 // Two scene themes: a neutral wardrobe preview for comparing item colours, and
 // a dark lobby view with a warm key and blue rim lights.
 type SceneTheme = "studio" | "lobby";
+
+// The same backdrop as stops for the link-preview image, which paints it itself.
+const THEME_BACKDROP: Record<SceneTheme, { inner: string; middle: string; outer: string }> = {
+  studio: { inner: "#f0f3f7", middle: "#dee4eb", outer: "#c5cdd7" },
+  lobby: { inner: "#1b2740", middle: "#0a0e17", outer: "#05060a" },
+};
 
 const THEME_BACKGROUND: Record<SceneTheme, string> = {
   // Sampled from the icon corners (light grey-blue studio backdrop).
@@ -219,6 +226,18 @@ function makeSoftboxScene(): THREE.Scene {
 }
 
 // Hands the export panel (outside the Canvas) the live renderer and camera.
+// Publishes the scene for the share button's preview render while the outfit is fully loaded.
+function PreviewBridge({ root, theme, active }: { root: THREE.Object3D; theme: SceneTheme; active: boolean }) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  useEffect(() => {
+    if (!active) return;
+    setPreviewScene({ gl, scene, root, backdrop: THEME_BACKDROP[theme] });
+    return () => setPreviewScene(null);
+  }, [gl, scene, root, theme, active]);
+  return null;
+}
+
 function ExportBridge({ target }: { target: { current: ExportContext | null } }) {
   const gl = useThree((s) => s.gl);
   const camera = useThree((s) => s.camera);
@@ -840,6 +859,7 @@ export default function CharacterViewer() {
         {theme === "studio" ? <StudioLights /> : <LobbyLights />}
         <primitive object={rig.root} />
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
+        <PreviewBridge root={rig.root} theme={theme} active={ready && !busy} />
         {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview />}
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
