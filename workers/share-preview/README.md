@@ -45,3 +45,11 @@ WRANGLER_SEND_METRICS=false npx --yes wrangler@4.131.1 dev --port 8787 --ip 127.
 2. `npx --yes wrangler@4.131.1 deploy` from this folder. Note the `https://the-finals-outfit-share.<subdomain>.workers.dev` URL.
 3. Set `SHARE_PREVIEW_BASE` to that URL in `.github/workflows/deploy.yml` (passed to the build as `VITE_SHARE_PREVIEW_BASE`)
    and merge. Until then the app hides the preview option.
+
+## Live deployment (20 Oct 2026)
+
+- Worker `the-finals-outfit-share` at https://the-finals-outfit-share.chronohaxx.workers.dev (account subdomain renamed from the
+  email-derived default so share links carry no personal name).
+- KV namespace SHARES `2d6f309206e647138dbed7fbc474f33b`; the rate-limit binding works on the Free plan.
+- Smoke-tested after deploy: root redirect, foreign origin 403, wrong size 415, real upload 201, crawler page with og:image and
+  summary_large_image, image served byte-identical with nosniff and a one-year cache.

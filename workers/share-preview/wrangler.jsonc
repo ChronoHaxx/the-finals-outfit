@@ -5,8 +5,8 @@
   "compatibility_date": "2025-09-01",
   "workers_dev": true,
   "kv_namespaces": [
-    // Replace with the id printed by `wrangler kv namespace create SHARES` before deploying.
-    { "binding": "SHARES", "id": "00000000000000000000000000000000" }
+    // Created 20 Oct 2026 with `wrangler kv namespace create SHARES`.
+    { "binding": "SHARES", "id": "2d6f309206e647138dbed7fbc474f33b" }
   ],
   "ratelimits": [
     // Uploads per client IP: 6 a minute.
