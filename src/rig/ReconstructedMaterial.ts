@@ -25,11 +25,21 @@ interface Manifest {
   geometryDependentNormals?: boolean;
   requiredUvSets?: number[];
   skinSurface?: boolean;
-  skinCoverage?: 'neck-fade';
+  // The recovered skin coverage the runtime treats as a source neck fade (w61 admits the
+  // scalp-stubble extension exactly as the w53 manifest needs: the stubble coverage lerps the
+  // gated neck fade to 1 by the saturated stubble alpha, so every neck-fade behaviour applies).
+  skinCoverage?: 'neck-fade' | 'neck-fade-stubble';
   worldSurface?: boolean;
   glassSurface?: boolean;
   blendMode?: string;
-  surfaceKind?: "eye" | "teeth" | "eyelash" | "hair" | "glass";
+  surfaceKind?: "eye" | "teeth" | "eyelash" | "hair" | "hair-metallic" | "glass" | "hologram";
+  // M_FloatingHologram (scripts/shader-probe/hologram_contract.py): additive unlit emission with screen-space view inputs.
+  hologramSurface?: boolean;
+  shadingModel?: string;
+  requiredViewFields?: string[];
+  hologramProgram?: { textSha256?: string; rawSha256?: string; qualityLevel?: string };
+  timePolicy?: { gameTime?: number };
+  fogPolicy?: { fog?: string };
   normalSpace?: "world" | "tangent" | "strand-tangent";
   twoSided?: boolean;
   requiresVertexColor?: boolean;
@@ -87,6 +97,49 @@ const GENERIC_FACE_UNFLIP = `
                 float recoveredUnflip = 1.0;
               #endif`;
 
+// M_FloatingHologram preview contract, runtime half (_docs/goal-100-2026-10-11/floatinghologram-contract/, design section 5).
+// The one qualified program, by its CRLF-normalised asm text hash (scripts/shader-probe/hologram_programs.json).
+const HOLOGRAM_PROGRAMS = new Set(["538e2b69d7363ccdf0fcd21735877c3699ecc5051b1e3e5a923f3c5b5a6a3d57"]);
+const HOLOGRAM_VIEW_FIELDS = new Set(["fragCoord", "invSize", "rectMin"]);
+// The emitter declares the view struct in the shader text itself; the runtime fills it by these field names.
+const HOLOGRAM_VIEW_STRUCT = /^struct ReconstructedView \{ vec2 fragCoord; vec2 rectMin; vec2 invSize; \};$/m;
+// Fields that would need a geometry frame, coverage or another surface route. A hologram reads none of them.
+const HOLOGRAM_FORBIDDEN_FIELDS = ["geometryDependentNormals", "viewDependentCloth", "twoSidedSign", "glassSurface",
+  "worldSurface", "skinSurface", "skinCoverage", "maskedClip", "parametricOpacity", "geometryFrame",
+  "requiredGeometryFields", "normalSpace", "coverageShader", "coverageShaderSha256", "coverageGeometryFields",
+  "requiresVertexColor"] as const;
+
+function validateHologram(manifest: Manifest): string[] {
+  const fail = (why: string) => { throw new Error(`Unsupported recovered hologram contract: ${why}`); };
+  if (manifest.hologramSurface !== true || manifest.surfaceKind !== "hologram") fail("route selector");
+  if (manifest.recoveredEmissive !== true || manifest.blendMode !== "BLEND_Additive"
+    || manifest.shadingModel !== "MSM_Unlit" || manifest.twoSided !== true) fail("blend, shading or emission state");
+  for (const field of HOLOGRAM_FORBIDDEN_FIELDS)
+    if ((manifest as unknown as Record<string, unknown>)[field] !== undefined) fail(`geometry or surface field ${field}`);
+  const fields = manifest.requiredViewFields;
+  if (!Array.isArray(fields) || new Set(fields).size !== fields.length || !fields.every(f => HOLOGRAM_VIEW_FIELDS.has(f)))
+    fail("view fields");
+  if (!HOLOGRAM_PROGRAMS.has(manifest.hologramProgram?.textSha256 ?? "")) fail("program");
+  // Signed-off pins (signoffs-2026-10-12.json gameTimeZeroAndNameGate, noFogPin): a frozen frame and no fog term.
+  // The runtime adds neither; it only refuses a manifest built under some other policy.
+  if (manifest.timePolicy?.gameTime !== 0 || manifest.fogPolicy?.fog !== "none") fail("time or fog policy");
+  return fields!;
+}
+
+// ReconstructedView in D3D pixel conventions (manifest viewPolicy): fragCoord = (x, H - y) from GL's bottom-left
+// gl_FragCoord, rectMin = (vx, H - vy - vh), invSize = 1 / (vw, vh), for the current viewport (vx, vy, vw, vh) in
+// physical pixels and the bound render target's (or drawing buffer's) height H. rect = (rectMin, invSize); the
+// reciprocal is taken here, once per draw, as UE does on the CPU, so the shader sees the float32-rounded 1 / size.
+const hologramViewport = new THREE.Vector4();
+function updateHologramView(renderer: THREE.WebGLRenderer, rect: THREE.Vector4, height: { value: number }) {
+  renderer.getCurrentViewport(hologramViewport);
+  const target = renderer.getRenderTarget();
+  const H = target ? Math.max(1, target.height >> renderer.getActiveMipmapLevel()) : renderer.getContext().drawingBufferHeight;
+  const { x, y, z: w, w: h } = hologramViewport;
+  rect.set(x, H - y - h, 1 / w, 1 / h);
+  height.value = H;
+}
+
 // Hash-verified shader and texture bytes, reused across loads of the same authored file
 // (hair and face swaps restage the same skin textures). Every call receives its own copy;
 // manifests are not hashed and always load fresh. Bounded to 128 MiB / 512 entries.
@@ -97,6 +150,12 @@ const verifiedBytes = new VerifiedByteCache(checkedFetch);
 // load reuses bytes that already passed that check; layout validation still runs per load.
 function fetchTextureData(spec: TextureSpec, base: string): Promise<ArrayBuffer> {
   return verifiedBytes.load(new URL(spec.file, base).href, spec.sha256, "gzip");
+}
+
+/** The authored texture bytes (every mip, decompressed and hash-checked) for the developer source-file export. */
+export async function fetchRecoveredTexture(spec: TextureSpec, manifestUrl: string) {
+  const data = await fetchTextureData(spec, new URL(manifestUrl, window.location.href).href);
+  return { data, ...validateTextureLayout(spec, data) };
 }
 
 function validateTextureLayout(spec: TextureSpec, data: ArrayBuffer): { half: boolean } {
@@ -221,6 +280,10 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
   if (!Array.isArray(requiredUvSets) || requiredUvSets.some(uv => uv !== 0 && uv !== 1))
     throw new Error("Unsupported recovered UV requirement");
   const needsUv1 = requiredUvSets.includes(1);
+  // The hologram route (validateHologram). View inputs exist only there, so a stray view field also lands here and fails.
+  const hologram = manifest.hologramSurface !== undefined || manifest.surfaceKind === "hologram"
+    || manifest.requiredViewFields !== undefined;
+  const viewFields = hologram ? validateHologram(manifest) : [];
   const worldSurface = !!manifest.skinSurface || !!manifest.worldSurface;
   const glass = !!manifest.glassSurface;
   if ((glass || manifest.surfaceKind === 'glass') && (!glass || manifest.surfaceKind !== 'glass'
@@ -239,27 +302,48 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
   const glassFaceSign = glassSourceWorld && (manifest.requiredGeometryFields ?? []).includes('faceSign');
   const usesGeometry = !!manifest.geometryDependentNormals || worldSurface || glass;
   const hair = manifest.surfaceKind === 'hair';
-  if (manifest.skinCoverage && (manifest.skinCoverage !== 'neck-fade' || !manifest.skinSurface))
+  // M_Hair_Metallic (scripts/shader-probe/hair_metallic_contract.py): the hair kind's coverage and shadows with the
+  // generic DefaultLit PBR lighting, the vertex colour the pinned program reads, and DoubleSide; never the Karis
+  // hair lighting. Its coverage may read the vertex colour, so the shadow pass supplies the real colour.
+  const hairMetallic = manifest.surfaceKind === 'hair-metallic';
+  if (manifest.skinCoverage && ((manifest.skinCoverage !== 'neck-fade'
+      && manifest.skinCoverage !== 'neck-fade-stubble') || !manifest.skinSurface))
     throw new Error('Unsupported recovered skin coverage');
-  const neckFade = manifest.skinCoverage === 'neck-fade';
+  const neckFade = manifest.skinCoverage !== undefined;
   const maskedClip = !!manifest.maskedClip;
   if (maskedClip && (worldSurface || glass || manifest.surfaceKind || typeof manifest.maskedClip?.policy !== 'string'))
     throw new Error('Unsupported recovered masked clip contract');
-  const masked = manifest.surfaceKind === "eyelash" || hair || neckFade || maskedClip;
+  const masked = manifest.surfaceKind === "eyelash" || hair || hairMetallic || neckFade || maskedClip;
   // PlasticSheet (plastic_sheet_contract): parametric opacity on the generic geometry route, BLEND_Masked only.
   const parametric = !!manifest.parametricOpacity;
   if (parametric && (!manifest.geometryDependentNormals || worldSurface || glass || maskedClip || manifest.surfaceKind
     || manifest.blendMode !== 'BLEND_Masked' || typeof manifest.parametricOpacity?.policy !== 'string'))
     throw new Error('Unsupported recovered parametric opacity contract');
   // A generic geometry program that reads the rasterizer face (two-sided PlasticSheet); cubemap glass has its own block.
-  const genericFaceSign = !glass && (manifest.requiredGeometryFields ?? []).includes('faceSign');
+  const faceSignField = !glass && (manifest.requiredGeometryFields ?? []).includes('faceSign');
+  const genericFaceSign = faceSignField && !manifest.worldSurface;
   if (genericFaceSign && (!manifest.geometryDependentNormals || worldSurface))
+    throw new Error('Unsupported recovered face sign contract');
+  // A two-sided source-world program that reads the rasterizer face (M_FlowerPetal, scripts/shader-probe/
+  // attachment_family_contract.py; 23 Oct 2026): the worldSurface block supplies it as the cubemap glass block does.
+  // Never on skin or on a program that also declares the generic geometry route (both blocks would declare the geometry).
+  const worldFaceSign = faceSignField && !!manifest.worldSurface;
+  if (worldFaceSign && (manifest.skinSurface || manifest.geometryDependentNormals || manifest.twoSided !== true))
     throw new Error('Unsupported recovered face sign contract');
   const shaderBytes = await verifiedBytes.load(new URL(manifest.shader, base).href, manifest.shaderSha256, "identity");
   let recoveredShader = new TextDecoder().decode(shaderBytes);
+  if (hologram && HOLOGRAM_VIEW_STRUCT.test(recoveredShader) !== viewFields.length > 0)
+    throw new Error("Unsupported recovered hologram contract: view struct");
   let coverageShader: string | undefined;
+  // hair-metallic coverage may read the vertex colour (its dither powers differ per instance); every other masked
+  // kind keeps UV-only coverage. The field must be present either way.
+  const coverageColor = hairMetallic && manifest.coverageGeometryFields?.length === 1
+    && manifest.coverageGeometryFields[0] === "color";
   if (masked) {
-    if (!manifest.coverageShader || !manifest.coverageShaderSha256 || manifest.coverageGeometryFields?.length !== 0)
+    if (!manifest.coverageShader || !manifest.coverageShaderSha256
+      || !(hairMetallic
+        ? (manifest.coverageGeometryFields?.length === 0 || coverageColor)
+        : manifest.coverageGeometryFields?.length === 0))
       throw new Error("Recovered masked shadows require validated UV-only coverage");
     const bytes = await verifiedBytes.load(new URL(manifest.coverageShader, base).href,
       manifest.coverageShaderSha256, "identity");
@@ -288,12 +372,76 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
   }
   const uniformBindings = samplerUniformBindings(plan);
   const dispose = () => textures.forEach((t) => t.dispose());
+  // UE BLEND_Additive + MSM_Unlit, two-sided (design section 5), on an unlit material: no lights, no specular, no fog.
+  const makeHologramMaterial = (old: THREE.Material) => {
+    const material = new THREE.MeshBasicMaterial({ name: `${manifest.itemId}:recovered`, side: THREE.DoubleSide });
+    // Colour One/One onto what is behind; alpha Zero/One, so the target's coverage alpha is unchanged. Depth tested,
+    // never written. One DoubleSide draw: three otherwise draws a transparent DoubleSide material as a back pass and
+    // a front pass; additive light is order-free and reads no face sign, so one pass equals UE's single two-sided draw.
+    Object.assign(material, {
+      transparent: true, blending: THREE.CustomBlending,
+      blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+      blendEquationAlpha: THREE.AddEquation, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor,
+      depthWrite: false, depthTest: true, forceSinglePass: true, fog: false, toneMapped: view === "lit",
+    });
+    if (needsUv1) material.defines = { ...material.defines, USE_UV1: "" };
+    material.userData.reconstructed = true;
+    material.userData.sourceInstance = manifest.itemId;
+    material.userData.sourceSlot = old.userData.sourceSlot;
+    material.userData.surfaceKind = manifest.surfaceKind;
+    material.userData.recoveredManifest = base; // OutfitSourceExport packages the authored textures
+    // StableFrameState: a visible additive material activates the stable-frame accumulator, whose linear HDR target
+    // is where One/One blending is exact (tone mapping follows the blend). The direct path is dev-only and inexact.
+    material.userData.recoveredAdditive = true;
+    material.userData.hologramPolicy = "additive unlit emission at GameTime 0 with fog off; exact in the stable-frame "
+      + "accumulator (light over the empty backdrop passes through); the direct ?temporal=0 path tone-maps before blending";
+    material.userData.recoveredSamplers = planReport;
+    for (const resource of plan.resources) {
+      const texture = textures.get(resource.key);
+      if (texture) material.userData[resource.kind === "pack" ? `recoveredPack${resource.index}` : resource.texture.id] = texture;
+    }
+    // The view rectangle of the draw being made (updateHologramView); three calls this right before each draw.
+    const rect = new THREE.Vector4(0, 0, 1, 1), height = { value: 1 };
+    material.onBeforeRender = (renderer) => updateHologramView(renderer, rect, height);
+    material.customProgramCacheKey = () =>
+      `recovered-hologram-v1:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${needsUv1}:${viewFields.join(",")}`;
+    material.onBeforeCompile = (shader) => {
+      for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
+      shader.uniforms.uRecoveredViewRect = { value: rect };
+      shader.uniforms.uRecoveredTargetHeight = height;
+      shader.vertexShader = "varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n" + shader.vertexShader;
+      shader.vertexShader = replaceChunk(shader.vertexShader, "uv_vertex", `
+        #include <uv_vertex>
+        vRecoveredUv0 = uv;
+        vRecoveredUv1 = ${needsUv1 ? "uv1" : "vec2(0.0)"};
+      `);
+      let fragment = SURFACE_STRUCT + "uniform vec4 uRecoveredViewRect;\nuniform float uRecoveredTargetHeight;\n"
+        + recoveredShader + "\n" + shader.fragmentShader;
+      fragment = replaceChunk(fragment, "map_fragment", `${viewFields.length ? `
+        ReconstructedView recoveredView;
+        recoveredView.fragCoord = vec2(gl_FragCoord.x, uRecoveredTargetHeight - gl_FragCoord.y);
+        recoveredView.rectMin = uRecoveredViewRect.xy;
+        recoveredView.invSize = uRecoveredViewRect.zw;` : ""}
+        ReconstructedSurface recovered = recoveredSurface(vRecoveredUv0, vRecoveredUv1${viewFields.length ? ", recoveredView" : ""});
+      `);
+      // The linear pre-exposure emission is the whole colour, unscaled (manifest emissivePolicy).
+      fragment = replaceChunk(fragment, "opaque_fragment",
+        "outgoingLight = recovered.emissive;\ndiffuseColor.a = 1.0;\n#include <opaque_fragment>");
+      shader.fragmentShader = fragment;
+    };
+    for (const value of Object.values(old)) if (value?.isTexture) value.dispose();
+    old.dispose();
+    return material;
+  };
   return {
     dispose,
     apply(mesh: THREE.Mesh, materialIndex?: number, skinOptions?: { boundsOrigin: [number, number, number]; preserveAlpha?: boolean }) {
       if (hair && (manifest.normalSpace !== 'strand-tangent' || !manifest.requiresVertexColor ||
           mesh.geometry.getAttribute('color')?.itemSize !== 4 || !worldSurface))
         throw new Error('Recovered hair requires the original RGBA vertex masks and strand tangent');
+      if (hairMetallic && (manifest.normalSpace !== 'tangent' || !manifest.requiresVertexColor ||
+          mesh.geometry.getAttribute('color')?.itemSize !== 4 || !worldSurface))
+        throw new Error('Recovered metallic hair requires the original RGBA vertex masks and the tangent flake normal space');
       if (masked && Array.isArray(mesh.material) && mesh.material.length !== 1)
         throw new Error("Recovered lash shadows require a separate source section");
       if (worldSurface && (!skinOptions || skinOptions.boundsOrigin.length !== 3 || !skinOptions.boundsOrigin.every(Number.isFinite)))
@@ -311,6 +459,31 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
       // static mesh the material's UV1 reads UV0. Alias it the same way.
       if (needsUv1 && !mesh.geometry.hasAttribute("uv1"))
         mesh.geometry.setAttribute("uv1", mesh.geometry.getAttribute("uv"));
+      if (hologram) {
+        // Every hologram slot in the catalog is a single-section mesh; a section of a shared mesh is refused.
+        if ((Array.isArray(mesh.material) && mesh.material.length !== 1) || (materialIndex !== undefined && materialIndex !== 0))
+          throw new Error("Recovered hologram requires a single-section mesh");
+        const old = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+        const material = makeHologramMaterial(old);
+        mesh.material = Array.isArray(mesh.material) ? [material] : material;
+        // Additive light is not matter: no shadow. The rig re-derives castShadow from transparency after equipping
+        // (CharacterRig.enableShadows), so the mesh also carries depth/distance materials that write neither colour nor
+        // depth: the shadow pass draws nothing for it whichever value castShadow ends up with.
+        mesh.castShadow = false;
+        mesh.customDepthMaterial?.dispose();
+        mesh.customDistanceMaterial?.dispose();
+        const noShadow = <T extends THREE.Material>(shadow: T): T => {
+          shadow.colorWrite = false;
+          shadow.depthWrite = false;
+          shadow.name = `${manifest.itemId}:no-shadow`;
+          shadow.userData.hologramShadowPolicy = "additive light casts no shadow";
+          return shadow;
+        };
+        mesh.customDepthMaterial = noShadow(new THREE.MeshDepthMaterial());
+        mesh.customDistanceMaterial = noShadow(new THREE.MeshDistanceMaterial());
+        mesh.userData.recoveredAdditive = true;
+        return;
+      }
       const makeMaterial = (old: THREE.Material) => {
         const material = new THREE.MeshPhysicalMaterial({
           name: `${manifest.itemId}:recovered`, roughness: 1, metalness: 1,
@@ -343,6 +516,8 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         material.userData.skinSurface = !!manifest.skinSurface;
         material.userData.skinCoverage = manifest.skinCoverage;
         material.userData.surfaceKind = manifest.surfaceKind;
+        material.userData.normalSpace = manifest.normalSpace; // OutfitExport bakes world-space normals differently
+        material.userData.recoveredManifest = base; // OutfitSourceExport packages the authored textures
         material.userData.glassOpacityPolicy = glass ? 'source opacity; alpha-blended preview; native refraction and lighting pending' : undefined;
         material.userData.parameterOverrides = manifest.parameterOverrides;
         material.userData.hairLightingPolicy = hair ? 'Karis 2016 R/TT/TRT preview; native lighting, volume shadows and TAA pending' : undefined;
@@ -359,12 +534,12 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           const texture = textures.get(resource.key);
           if (texture) material.userData[resource.kind === "pack" ? `recoveredPack${resource.index}` : resource.texture.id] = texture;
         }
-        material.customProgramCacheKey = () => `recovered-v12:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}:${maskedClip}:${parametric}:${genericFaceSign}`;
+        material.customProgramCacheKey = () => `recovered-v13:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}:${maskedClip}:${parametric}:${genericFaceSign}${hairMetallic ? ":hair-metallic" : ""}${worldFaceSign ? ":world-face-sign" : ""}`;
         material.onBeforeCompile = (shader) => {
           for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
           shader.vertexShader = "varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n" + shader.vertexShader;
           // These channels are material masks, not diffuse vertex colours.
-          if (hair) shader.vertexShader = 'attribute vec4 color;\nvarying vec4 vRecoveredColor;\n' + shader.vertexShader;
+          if (hair || hairMetallic) shader.vertexShader = 'attribute vec4 color;\nvarying vec4 vRecoveredColor;\n' + shader.vertexShader;
           if (usesGeometry) shader.vertexShader = "varying float vRecoveredHandedness;\n" + shader.vertexShader;
           if (worldSurface) {
             const [x, y, z] = skinOptions!.boundsOrigin;
@@ -375,13 +550,13 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
             #include <uv_vertex>
             vRecoveredUv0 = uv;
             vRecoveredUv1 = ${needsUv1 ? "uv1" : "vec2(0.0)"};
-            ${hair ? 'vRecoveredColor = color;' : ''}
+            ${hair || hairMetallic ? 'vRecoveredColor = color;' : ''}
             ${usesGeometry ? "vRecoveredHandedness = tangent.w;" : ""}
             ${worldSurface ? "vRecoveredObjectPosition = (modelMatrix * vec4(uRecoveredBoundsOrigin, 1.0)).xyz;" : ""}
           `);
           let fragment = SURFACE_STRUCT + recoveredShader + "\n" + shader.fragmentShader;
+          if (hair || hairMetallic) fragment = 'varying vec4 vRecoveredColor;\n' + fragment;
           if (hair) {
-            fragment = 'varying vec4 vRecoveredColor;\n' + fragment;
             const physical = THREE.ShaderChunk.lights_physical_pars_fragment;
             if (!physical.includes('struct PhysicalMaterial {')) throw new Error('Three physical material structure changed');
             fragment = replaceChunk(fragment, 'lights_physical_pars_fragment', physical.replace('struct PhysicalMaterial {',
@@ -418,7 +593,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               recoveredGeometry.handedness = -vRecoveredHandedness;${genericFaceSign ? `
               recoveredGeometry.faceSign = (gl_FrontFacing ? 1.0 : -1.0) * recoveredUnflip;` : ""}
             ` : ""}
-            ${worldSurface ? `
+            ${worldSurface ? `${worldFaceSign ? GENERIC_FACE_UNFLIP : ""}
               // Skin and facial materials need source world axes for their view,
               // bounds and reflection terms.
               vec3 skinWorldView = transpose(mat3(viewMatrix)) * vViewPosition;
@@ -428,11 +603,12 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               ReconstructedGeometry recoveredGeometry;
               recoveredGeometry.position = skinWorldPosition.xzy * 100.0;
               recoveredGeometry.view = skinWorldView.xzy * 100.0;
-              recoveredGeometry.normal = skinWorldNormal.xzy;
-              recoveredGeometry.tangent = skinWorldTangent.xzy;
-              recoveredGeometry.handedness = -vRecoveredHandedness;
+              recoveredGeometry.normal = skinWorldNormal.xzy${worldFaceSign ? " * recoveredUnflip" : ""};
+              recoveredGeometry.tangent = skinWorldTangent.xzy${worldFaceSign ? " * recoveredUnflip" : ""};
+              recoveredGeometry.handedness = -vRecoveredHandedness;${worldFaceSign ? `
+              recoveredGeometry.faceSign = (gl_FrontFacing ? 1.0 : -1.0) * recoveredUnflip;` : ""}
               recoveredGeometry.objectPosition = vRecoveredObjectPosition.xzy * 100.0;
-              ${hair ? 'recoveredGeometry.color = vRecoveredColor;' : ''}
+              ${hair || hairMetallic ? 'recoveredGeometry.color = vRecoveredColor;' : ''}
             ` : ""}
             ReconstructedSurface recovered = recoveredSurface(vRecoveredUv0, vRecoveredUv1${manifest.viewDependentCloth ? ", recoveredViewTangent" : ""}${usesGeometry ? ", recoveredGeometry" : ""});
             diffuseColor.rgb = recovered.baseColor;
@@ -514,21 +690,26 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           shadow.defines = { ...shadow.defines, ...(needsUv1 ? { USE_UV1: "" } : {}) };
           shadow.userData.recoveredCoverage = true;
           shadow.userData.recoveredSamplers = planReport;
-          shadow.customProgramCacheKey = () => `recovered-coverage-v3:${manifest.coverageShaderSha256}:${plan.cacheKey}:${needsUv1}:${hair}:${maskedClip}`;
+          shadow.customProgramCacheKey = () => `recovered-coverage-v3:${manifest.coverageShaderSha256}:${plan.cacheKey}:${needsUv1}:${hair}:${maskedClip}${hairMetallic ? ":hair-metallic" : ""}`;
           shadow.onBeforeCompile = shader => {
             // Same plan, same uniform mapping as the surface pass.
             for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
             shader.vertexShader = 'varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n' + shader.vertexShader;
+            // The metallic kind's coverage may read the vertex colour, so the shadow pass always supplies it.
+            if (hairMetallic) shader.vertexShader = 'attribute vec4 color;\nvarying vec4 vRecoveredColor;\n' + shader.vertexShader;
             shader.vertexShader = replaceChunk(shader.vertexShader, 'uv_vertex', `#include <uv_vertex>
-              vRecoveredUv0 = uv; vRecoveredUv1 = ${needsUv1 ? 'uv1' : 'vec2(0.0)'};`);
-            shader.fragmentShader = SURFACE_STRUCT + coverageShader + '\n' + shader.fragmentShader;
+              vRecoveredUv0 = uv; vRecoveredUv1 = ${needsUv1 ? 'uv1' : 'vec2(0.0)'};${hairMetallic ? ' vRecoveredColor = color;' : ''}`);
+            shader.fragmentShader = SURFACE_STRUCT + coverageShader + '\n'
+              + (hairMetallic ? 'varying vec4 vRecoveredColor;\n' : '') + shader.fragmentShader;
             shader.fragmentShader = replaceChunk(shader.fragmentShader, 'map_fragment', maskedClip ? `
               // Masked clip coverage was emitted as a UV-only function.
               diffuseColor.a *= clamp(recoveredSurface(vRecoveredUv0, vRecoveredUv1).opacity, 0.0, 1.0);
             ` : `
-              // Coverage was sliced independently and has no live geometry inputs.
+              // Coverage was sliced independently. The hair kinds' coverage struct carries the vertex colour:
+              // the metallic kind's dither powers can make it live, so the shadow pass passes the real colour;
+              // the Karis hair kind's never is, so it keeps the synthetic white.
               ReconstructedGeometry g = ReconstructedGeometry(vec3(0.0), vec3(1.0,0.0,0.0), vec3(0.0,0.0,1.0),
-                vec3(0.0,0.0,1.0), 1.0, vec3(0.0)${hair ? ', vec4(1.0)' : ''});
+                vec3(0.0,0.0,1.0), 1.0, vec3(0.0)${hair ? ', vec4(1.0)' : hairMetallic ? ', vRecoveredColor' : ''});
               diffuseColor.a *= clamp(recoveredSurface(vRecoveredUv0, vRecoveredUv1, g).opacity, 0.0, 1.0);
             `);
           };

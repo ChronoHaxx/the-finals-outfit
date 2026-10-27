@@ -169,8 +169,11 @@ export interface SamplerPackedLevelData {
   data: Uint8Array | Uint16Array;
 }
 
-const SLOT_PATTERN = /^t\d+$/;
-const SAMPLER_REFERENCE = /\bu_t\d+\b/g;
+// A slot is a texture register, optionally split by sampler: one register sampled through two sampler states is two
+// manifest bindings (M_FloatingHologram's t3 through View sampler s1, clamp, and material sampler s3, wrap: slots
+// "t3_s1" and "t3_s3", uniforms u_t3_s1 and u_t3_s3). Each stays its own resource with its own sampler state.
+const SLOT_PATTERN = /^t\d+(?:_s\d+)?$/;
+const SAMPLER_REFERENCE = /\bu_t\d+(?:_s\d+)?\b/g;
 /** Sample call shapes the rewriter can retarget at a 2D array. Anything else
  * (texelFetch, textureSize, textureOffset, a sampler passed to a helper, …)
  * fails closed rather than being guessed at. */
@@ -180,8 +183,9 @@ const SAMPLE_CALL_ARITY: Record<string, number[]> = {
   textureGrad: [4],
 };
 
+/** The texture register number: "t12" -> 12, "t3_s1" -> 3 (identical to Number() for plain "tN" slots). */
 function slotIndex(slot: string): number {
-  return Number(slot.slice(1));
+  return Number.parseInt(slot.slice(1), 10);
 }
 
 function bytesPerPixel(spec: SamplerTextureSpec): number {

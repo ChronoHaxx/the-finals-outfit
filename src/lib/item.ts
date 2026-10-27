@@ -225,7 +225,13 @@ const DecalLayerSchema = z.object({
   surfacePath: z.string().regex(/^[\w./-]+\.png$/, {
     message: "surfacePath must be a base-relative .png path",
   }).optional(),
-  surfaceOverride: z.union([z.literal(0), z.literal(1)]).optional(),
+  // Source BodySurfaceOverride: the traced B/A surface weight a*BodySurfaceOverride (M_Skin asm:401-423;
+  // M_Face asm:405-406, 473-474), so any value in [0,1] follows the same mix (w55-paint-normals).
+  surfaceOverride: z.number().min(0).max(1).optional(),
+  // Source BodyNormalOverride: the traced flatten weight of the pack RG paint normal (reoriented normal
+  // map; M_Skin asm:153-177 / M_Face asm:151-175, w55-paint-normals). Only a sourceBodyPaint layer that
+  // carries a surfacePath composites it — see RigDecalLayer.normalOverride.
+  normalOverride: z.number().min(0).max(1).optional(),
   uv: z.union([z.literal(0), z.literal(1)]).optional(), // body UV channel (default 0)
   // Per-axis scale on the selected UV set: for a body paint, BodyPaintTiles as 1/tiles on X and 1
   // on Y. Only a layer carrying this samples the `uv` channel — see RigDecalLayer.uvScale in
