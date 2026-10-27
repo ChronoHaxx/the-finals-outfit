@@ -1995,7 +1995,7 @@
       "layers": [
         {
           "target": "body",
-          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-sweat-01-bodyhands_c.png",
+          "colorPath": "models/reconstructed-g100-w57-paint-b1-v1/bodycosmetics-bodypaint-sweat-01-bodyhands_c.png",
           "uv": 1,
           "uvScale": [
             0.5,
@@ -2004,12 +2004,12 @@
           "uvLayout": "sourceBodyPaint",
           "colorOverride": 0,
           "colorMultiply": "nonMasked",
-          "surfacePath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-sweat-01-bodyhands_m.png",
+          "surfacePath": "models/reconstructed-g100-w57-paint-b1-v1/bodycosmetics-bodypaint-sweat-01-bodyhands_m.png",
           "surfaceOverride": 1
         },
         {
           "target": "head",
-          "colorPath": "models/reconstructed-paint-contracts-v1/bodycosmetics-bodypaint-sweat-01-head_c.png",
+          "colorPath": "models/reconstructed-g100-w57-paint-b1-v1/bodycosmetics-bodypaint-sweat-01-head_c.png",
           "uv": 0,
           "uvScale": [
             1,
@@ -2017,7 +2017,10 @@
           ],
           "uvLayout": "sourceBodyPaint",
           "colorOverride": 0,
-          "colorMultiply": "nonMasked"
+          "colorMultiply": "nonMasked",
+          "surfacePath": "models/reconstructed-g100-w57-paint-b1-v1/bodycosmetics-bodypaint-sweat-01-head_m.png",
+          "surfaceOverride": 1,
+          "normalOverride": 1
         }
       ]
     },
@@ -96079,7 +96082,17 @@
         }
       }
     },
-    "season": 4
+    "season": 4,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v4/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "military-combathelmet-plastic-arctic",

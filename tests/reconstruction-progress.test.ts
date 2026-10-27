@@ -5,7 +5,7 @@ import { summarizeReconstruction, formatProgressPercent } from "../src/lib/recon
 
 test("progress counts each supplied cosmetic once, including reviewed exceptions and unsupported previews", () => {
   // ids[2] is a legacy-model singlet with repaired coverage and no review verdict, so it stays an issue when worked on.
-  const ids = ["hairs-afrofade", "streetwear-tightsinglet-cotton-enorino", "streetwear-tightsinglet-cotton-anubis", "attachment-boombox-01-finals-lumbar"];
+  const ids = ["hairs-afrofade", "streetwear-tightsinglet-cotton-enorino", "streetwear-tightsinglet-cotton-starsstripes", "attachment-boombox-01-finals-lumbar"];
   const items = ids.map(id => getItemById(id)!);
   const summary = summarizeReconstruction(items, new Set([ids[0], ids[2], "outside-this-catalog"]), "ready");
   assert.deepEqual(summary, { total: 4, counts: { untouched: 1, polish: 1, issue: 1, accepted: 1, unknown: 0 } });

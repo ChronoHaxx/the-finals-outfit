@@ -12,6 +12,9 @@ export class StableFrameState {
   private textures = new Set<THREE.Texture>();
   private geometries = new Set<THREE.BufferGeometry>();
   private masked = false;
+  // A visible recovered additive (M_FloatingHologram) material: its One/One blend is exact only in the linear HDR
+  // accumulation target, where tone mapping follows blending. Not a recorded input; derived from the materials visited.
+  private additive = false;
 
   private add(value: unknown) {
     if (!Object.is(this.values[this.cursor], value)) this.reason ||= this.category;
@@ -69,7 +72,7 @@ export class StableFrameState {
   }
 
   capture(scene: THREE.Scene, camera: THREE.Camera, renderer: THREE.WebGLRenderer, samplingCamera = camera as Pick<THREE.Camera, 'matrixWorld' | 'projectionMatrix'>) {
-    this.cursor = 0; this.reason = ''; this.masked = false;
+    this.cursor = 0; this.reason = ''; this.masked = false; this.additive = false;
     this.materials.clear(); this.textures.clear(); this.geometries.clear();
     scene.updateMatrixWorld(true); camera.updateMatrixWorld(true);
     this.category = 'camera';
@@ -95,6 +98,7 @@ export class StableFrameState {
         const materials = Array.isArray(object.material) ? object.material : [object.material];
         for (const material of materials) {
           if (visible && material.visible && material.alphaHash && material.userData.reconstructed) this.masked = true;
+          if (visible && material.visible && material.userData.recoveredAdditive === true) this.additive = true;
           this.material(material);
         }
         this.category = 'geometry';
@@ -145,7 +149,7 @@ export class StableFrameState {
     visit(scene, true);
     if (this.cursor !== this.values.length) this.reason ||= 'scene';
     this.values.length = this.cursor;
-    return { changed: this.reason, masked: this.masked };
+    return { changed: this.reason, masked: this.masked, additive: this.additive };
   }
 
   clear() { this.values.length = 0; this.materials.clear(); this.textures.clear(); this.geometries.clear(); }

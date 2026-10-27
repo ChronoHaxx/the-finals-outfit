@@ -57,10 +57,10 @@ function mesh() {
   return new THREE.Mesh(g, new THREE.MeshStandardMaterial());
 }
 
-async function compiled(name: string) {
+async function compiled(name: string, boundsOrigin?: [number, number, number]) {
   const loaded = await loadReconstructedMaterial(`https://plastic.test/${name}`);
   const m = mesh();
-  loaded.apply(m);
+  loaded.apply(m, undefined, boundsOrigin ? { boundsOrigin } : undefined);
   const material = m.material as THREE.MeshPhysicalMaterial;
   const s = { uniforms: {}, vertexShader: THREE.ShaderLib.physical.vertexShader,
     fragmentShader: THREE.ShaderLib.physical.fragmentShader };
@@ -177,4 +177,44 @@ test("cubemap glass keeps its own face sign and never the generic unflip", async
   const { fragment } = await compiled("cubemap.json");
   assert.ok(fragment.includes("recoveredGeometry.faceSign = (gl_FrontFacing ? 1.0 : -1.0) * glassUnflip;"));
   assert.ok(!fragment.includes("recoveredUnflip"));
+});
+
+// The source-world attachment route (scripts/shader-probe/attachment_family_contract.py; M_FlowerPetal, 23 Oct 2026):
+// a two-sided worldSurface program that reads the rasterizer face gets the unflip, the unflipped world frame and the
+// face sign in the worldSurface block; every other worldSurface program's GLSL and cache key are unchanged.
+const world = {
+  formatVersion: 1, itemId: "world-test", shader: "surface.glsl", shaderSha256: sha(shader), requiredUvSets: [0],
+  worldSurface: true, geometryFrame: "source-world", normalSpace: "tangent", twoSided: true, blendMode: "BLEND_Masked",
+  textures: [texture], requiredGeometryFields: ["position", "normal", "view"],
+};
+const worldFace = { ...world, itemId: "world-face-test", requiredGeometryFields: ["position", "normal", "view", "faceSign"] };
+
+test("a source-world face sign is emitted only for a two-sided worldSurface program that reads it", async t => {
+  serve(t, { "world.json": world, "world-face.json": worldFace });
+  const ordinary = await compiled("world.json", [0, 0, 150]);
+  const face = await compiled("world-face.json", [0, 0, 150]);
+  for (const token of ["recoveredUnflip", "faceSign", "FLIP_SIDED"]) assert.ok(!ordinary.fragment.includes(token), token);
+  assert.ok(face.fragment.includes(UNFLIP));
+  assert.ok(face.fragment.includes("recoveredGeometry.normal = skinWorldNormal.xzy * recoveredUnflip;"));
+  assert.ok(face.fragment.includes("recoveredGeometry.tangent = skinWorldTangent.xzy * recoveredUnflip;"));
+  assert.ok(face.fragment.includes(FACE_SIGN));
+  const stripped = face.fragment.replace(UNFLIP, "").replace(`\n              ${FACE_SIGN}`, "")
+    .replaceAll(" * recoveredUnflip;", ";");
+  assert.equal(stripped, ordinary.fragment);
+  assert.equal(face.material.side, THREE.DoubleSide);
+  const [plainKey, faceKey] = [ordinary, face].map(({ material }) => material.customProgramCacheKey());
+  assert.ok(!plainKey.includes("world-face-sign"));
+  assert.equal(faceKey, plainKey.replace("world-test", "world-face-test") + ":world-face-sign");
+});
+
+test("a source-world face sign on skin, one-sided or with the generic geometry route fails closed", async t => {
+  const invalid: Record<string, unknown> = {
+    "skin.json": { ...worldFace, skinSurface: true },
+    "one-sided.json": { ...worldFace, twoSided: false },
+    "no-sided.json": without(worldFace, "twoSided"),
+    "geometry.json": { ...worldFace, geometryDependentNormals: true },
+  };
+  serve(t, invalid);
+  for (const name of Object.keys(invalid))
+    await assert.rejects(loadReconstructedMaterial(`https://plastic.test/${name}`), /face sign contract/, name);
 });

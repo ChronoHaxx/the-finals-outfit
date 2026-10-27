@@ -24,8 +24,8 @@
     "note": "The face finish now matches the metallic body (M_Face packed B/A, 12 Oct 2026). Polish: the packed normal channels (RG) are still deferred for every paint; the preview studio renders the metal lighter than the icon."
   },
   "bodycosmetics-bodypaint-sweat-01": {
-    "status": "issue",
-    "note": "Known visual error: facial streaks look like grime without the wet head finish and droplet normals; both are still pending."
+    "status": "polish",
+    "note": "Fixed (w57 paint refinish, activated and live-checked 22 Oct 2026): the head layer now carries the authored wet finish (BodySurfaceOverride 1.0) and droplet normals (BodyNormalOverride 1.0, RNM over the flattened face normal), so the forehead, cheeks, nose and jaw edge read glossy and wet with the icon's grime streaks and speckles; the body layer is unchanged. Evidence: _docs/goal-100-2026-10-11/w57-paint-refinish/batch/ (review-v1/README.md, review-prep-v1/pairs/bodycosmetics-bodypaint-sweat-01--*.jpg, live-check-v1/before-after-*.jpg). Polish: human acceptance pending. Earlier record: Known visual error: facial streaks look like grime without the wet head finish and droplet normals; both are still pending."
   },
   "attachment-mask-ballistic-01-headwear-darkgreen": {
     "status": "polish",
@@ -36,8 +36,8 @@
     "note": "Source material and placement reviewed on Medium, 12 September 2026. Rear straps intersect Afro Fade in places; hair fitting and culling need further polish."
   },
   "streetwear-wristband-cotton-logored": {
-    "status": "issue",
-    "note": "Known visual error on Medium: the red wristband body mask leaves a gap above the opposite glove cuff. Reproduced before and after Combat Gloves reconstruction on 15 September 2026; wristband coverage repair pending."
+    "status": "polish",
+    "note": "Fixed (rechecked 22 Oct 2026 through the active index, side-aware body masks): with combat gloves both cuffs meet continuous skin, with no gap above the opposite glove cuff, and none in idle at 4 yaws; the red band with the white logo matches the icon. Evidence: _docs/goal-100-2026-10-11/purple-recheck-v1/ (README.md, wristR-cuff-zoom.png, wristL-cuff-zoom.png, sheets/streetwear-wristband-cotton-logored--*.jpg). Polish: human acceptance pending. Earlier record: Known visual error on Medium: the red wristband body mask leaves a gap above the opposite glove cuff. Reproduced before and after Combat Gloves reconstruction on 15 September 2026; wristband coverage repair pending."
   },
   "military-assaultvest-polyester-black": {
     "status": "polish",
@@ -60,8 +60,8 @@
     "note": "Metallic gold head finish reconstructed (M_Face packed B/A, 12 Oct 2026). Polish: the packed normal channels (RG) are still deferred for every paint; the studio reflections are brighter than the icon’s."
   },
   "medieval-elfprincesstunic-satin": {
-    "status": "issue",
-    "note": "Known visual issue: the chest cutout shows the garment's pale interior instead of skin (conservative body coverage hides the skin under the opening)"
+    "status": "polish",
+    "note": "Fixed (rechecked 22 Oct 2026 through the active index): the chest cutout now shows the body skin like the icon; its pixels are byte-identical to the bare torso at the same camera. Green satin, gold filigree, gauntlets, belt and the orange 32 sleeve stripe match at 4 yaws and idle. Evidence: _docs/goal-100-2026-10-11/purple-recheck-v1/ (README.md, sheets/medieval-elfprincesstunic-satin--*.jpg, elf-chest-zoom.png). Polish: human acceptance pending. Earlier record: Known visual issue: the chest cutout shows the garment's pale interior instead of skin (conservative body coverage hides the skin under the opening)"
   },
   "samurai-helmet02-base": {
     "status": "issue",
@@ -88,12 +88,12 @@
     "note": "Known visual issue: renders saturated blue with a cream crown where the icon shows muted blue-grey with a dark grey top"
   },
   "military-acepilothelmet-plastic-ospuze": {
-    "status": "issue",
-    "note": "Known visual error (escaped defect found 12 Oct 2026): the visor renders flat black because its authored cubemap reflection (emission) is not reproduced; the icon shows a blue-grey sky reflection."
+    "status": "polish",
+    "note": "Visor fixed 22 Oct 2026 by merge-wave48a: the shared MI_AcePilotHelmet_AcePilotHelmetVisor is rebuilt under the pinned deferred Glass_02 cubemap contract (the authored cubemap reflection captured as emission; CPU 12/12 and GPU max error 2.38e-07) and replaces the stale reconstructed-attached-b11-v3 binding. Through the active index the visor shows the dark blue-grey sky reflection the icon shows instead of flat black; the shell, lettering, side rings and mask are unchanged. Evidence: _docs/goal-100-2026-10-11/wave48-merge/{ospuze,valkyr}-live-review.jpg (icon + 4 yaws, active index) and _docs/goal-100-2026-10-11/w54-acepilot-cometa-attached-b2/review-v1/siblings/ (active vs rebuilt side by side). Polish: human acceptance pending. Earlier record: Known visual error (escaped defect found 12 Oct 2026): the visor renders flat black because its authored cubemap reflection (emission) is not reproduced; the icon shows a blue-grey sky reflection."
   },
   "military-acepilothelmet-plastic-valkyr": {
-    "status": "issue",
-    "note": "Known visual error (escaped defect found 12 Oct 2026): the visor renders flat black because its authored cubemap reflection (emission) is not reproduced; the icon shows a blue-grey sky reflection."
+    "status": "polish",
+    "note": "Visor fixed 22 Oct 2026 by merge-wave48a: the shared MI_AcePilotHelmet_AcePilotHelmetVisor is rebuilt under the pinned deferred Glass_02 cubemap contract (the authored cubemap reflection captured as emission; CPU 12/12 and GPU max error 2.38e-07) and replaces the stale reconstructed-attached-b11-v3 binding. Through the active index the visor shows the dark blue-grey sky reflection the icon shows instead of flat black; the shell, lettering, side rings and mask are unchanged. Evidence: _docs/goal-100-2026-10-11/wave48-merge/{ospuze,valkyr}-live-review.jpg (icon + 4 yaws, active index) and _docs/goal-100-2026-10-11/w54-acepilot-cometa-attached-b2/review-v1/siblings/ (active vs rebuilt side by side). Polish: human acceptance pending. Earlier record: Known visual error (escaped defect found 12 Oct 2026): the visor renders flat black because its authored cubemap reflection (emission) is not reproduced; the icon shows a blue-grey sky reflection."
   },
   "bodycosmetics-makeup-gold-01": {
     "status": "polish",
@@ -165,7 +165,7 @@
   },
   "streetwear-tightsinglet-cotton-white": {
     "status": "polish",
-    "note": "Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
+    "note": "Own item body mask since 21 Oct 2026 (amend-item-masks.py; reconstructed-w42a-maskhole-b1-singlet-coverage-v1, the opt-in fitted-occlusion-grazing policy shared by the other eight TightSinglet rows), replacing the shared mesh-level mask that hid skin below the hem and left a see-through strip under the back hem in idle at y180 (wave 41 escaped defect). Through the active index the hem now meets continuous skin in idle at y180 and y90 and in the A-pose front and back views, and nothing pokes through the fabric. Evidence: _docs/goal-100-2026-10-11/w42a-maskhole-b1/review-v1/README.md (full-size review, ACCEPT) and _docs/goal-100-2026-10-11/merge-wave42/live-check/ plus merge-wave42/gap-live/ (active index, no preview). Polish: human acceptance pending. Earlier record: Renders from the source assembly with reconstructed materials (12 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (singlets/live). Polish: human acceptance pending."
   },
   "streetwear-tightsinglet-cotton-whiteeaster": {
     "status": "polish",
@@ -190,5 +190,69 @@
   "scifi-phantommask-metal-vanguard": {
     "status": "polish",
     "note": "Reconstructed (held-rerun, 12 Oct 2026). Polish: fuller lips (Face 05) show in the mask’s mouth gap; the item fits only default nose/chin/brows, so this follows the source."
+  },
+  "streetwear-fingerlessshortgloves-carbonfibre": {
+    "status": "polish",
+    "note": "Own fitted body mask since 20 Oct 2026 (amend-item-masks.py; reconstructed-g100-fitmask-gloves-b1-coverage-v1), replacing the shared batch10 mesh mask that left see-through gaps at the ring/pinky openings and the cuff (wave 36 escaped defect). Openings and cuff now close on skin, with no skin poking through. Evidence: _docs/goal-100-2026-10-11/fitmask-gloves-b1/review-v1/README.md (full-size review, gap probe over a black backdrop) and _docs/goal-100-2026-10-11/merge-wave38/live-check/ plus wave38-merge/gloves-gap-probe-after/ (active index). Polish: human acceptance pending."
+  },
+  "streetwear-fingerlessshortgloves-chrome": {
+    "status": "polish",
+    "note": "Own fitted body mask since 20 Oct 2026 (amend-item-masks.py; reconstructed-g100-fitmask-gloves-b1-coverage-v1), replacing the shared batch10 mesh mask that left see-through gaps at the ring/pinky openings and the cuff (wave 36 escaped defect). Openings and cuff now close on skin, with no skin poking through. Evidence: _docs/goal-100-2026-10-11/fitmask-gloves-b1/review-v1/README.md (full-size review, gap probe over a black backdrop) and _docs/goal-100-2026-10-11/merge-wave38/live-check/ plus wave38-merge/gloves-gap-probe-after/ (active index). Polish: human acceptance pending."
+  },
+  "streetwear-fingerlessshortgloves-leather": {
+    "status": "polish",
+    "note": "Own fitted body mask since 20 Oct 2026 (amend-item-masks.py; reconstructed-g100-fitmask-gloves-b1-coverage-v1), replacing the shared batch10 mesh mask that left see-through gaps at the ring/pinky openings and the cuff (wave 36 escaped defect). Openings and cuff now close on skin, with no skin poking through. Evidence: _docs/goal-100-2026-10-11/fitmask-gloves-b1/review-v1/README.md (full-size review, gap probe over a black backdrop) and _docs/goal-100-2026-10-11/merge-wave38/live-check/ plus wave38-merge/gloves-gap-probe-after/ (active index). Polish: human acceptance pending."
+  },
+  "streetwear-fingerlessshortgloves-leather-cl-3ad6": {
+    "status": "polish",
+    "note": "Own fitted body mask since 20 Oct 2026 (amend-item-masks.py; reconstructed-g100-fitmask-gloves-b1-coverage-v1), replacing the shared batch10 mesh mask that left see-through gaps at the ring/pinky openings and the cuff (wave 36 escaped defect). Openings and cuff now close on skin, with no skin poking through. Evidence: _docs/goal-100-2026-10-11/fitmask-gloves-b1/review-v1/README.md (full-size review, gap probe over a black backdrop) and _docs/goal-100-2026-10-11/merge-wave38/live-check/ plus wave38-merge/gloves-gap-probe-after/ (active index). Polish: human acceptance pending."
+  },
+  "streetwear-fingerlessshortgloves-leather-gray": {
+    "status": "polish",
+    "note": "Own fitted body mask since 20 Oct 2026 (amend-item-masks.py; reconstructed-g100-fitmask-gloves-b1-coverage-v1), replacing the shared batch10 mesh mask that left see-through gaps at the ring/pinky openings and the cuff (wave 36 escaped defect). Openings and cuff now close on skin, with no skin poking through. Evidence: _docs/goal-100-2026-10-11/fitmask-gloves-b1/review-v1/README.md (full-size review, gap probe over a black backdrop) and _docs/goal-100-2026-10-11/merge-wave38/live-check/ plus wave38-merge/gloves-gap-probe-after/ (active index). Polish: human acceptance pending."
+  },
+  "streetwear-fingerlessshortgloves-leather-ospuze": {
+    "status": "polish",
+    "note": "Own fitted body mask since 20 Oct 2026 (amend-item-masks.py; reconstructed-g100-fitmask-gloves-b1-coverage-v1), replacing the shared batch10 mesh mask that left see-through gaps at the ring/pinky openings and the cuff (wave 36 escaped defect). Openings and cuff now close on skin, with no skin poking through. Evidence: _docs/goal-100-2026-10-11/fitmask-gloves-b1/review-v1/README.md (full-size review, gap probe over a black backdrop) and _docs/goal-100-2026-10-11/merge-wave38/live-check/ plus wave38-merge/gloves-gap-probe-after/ (active index). Polish: human acceptance pending."
+  },
+  "streetwear-fingerlessshortgloves-leather-white": {
+    "status": "polish",
+    "note": "Own fitted body mask since 20 Oct 2026 (amend-item-masks.py; reconstructed-g100-fitmask-gloves-b1-coverage-v1), replacing the shared batch10 mesh mask that left see-through gaps at the ring/pinky openings and the cuff (wave 36 escaped defect). Openings and cuff now close on skin, with no skin poking through. Evidence: _docs/goal-100-2026-10-11/fitmask-gloves-b1/review-v1/README.md (full-size review, gap probe over a black backdrop) and _docs/goal-100-2026-10-11/merge-wave38/live-check/ plus wave38-merge/gloves-gap-probe-after/ (active index). Polish: human acceptance pending."
+  },
+  "streetwear-fingerlessshortgloves-nylon-black": {
+    "status": "polish",
+    "note": "Own fitted body mask since 20 Oct 2026 (amend-item-masks.py; reconstructed-g100-fitmask-gloves-b1-coverage-v1), replacing the shared batch10 mesh mask that left see-through gaps at the ring/pinky openings and the cuff (wave 36 escaped defect). Openings and cuff now close on skin, with no skin poking through. Evidence: _docs/goal-100-2026-10-11/fitmask-gloves-b1/review-v1/README.md (full-size review, gap probe over a black backdrop) and _docs/goal-100-2026-10-11/merge-wave38/live-check/ plus wave38-merge/gloves-gap-probe-after/ (active index). Polish: human acceptance pending."
+  },
+  "military-combathelmet-plastic": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 20 Oct 2026): the eye opening of the balaclava goes black around the eyes. Head wrap clean on faces 01/20/05/21; the icon mannequin never shows this rule (rerunfixed-attached-b1-v2/review-v1/README.md)."
+  },
+  "streetwear-tightsinglet-cotton-anubis": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials and its own fitted body mask (wave 38, 20 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (fitmask-reuse-b1/review-v1/README.md, merge-wave38/live-check). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-jerseyspeckled": {
+    "status": "polish",
+    "note": "Renders from the source assembly with reconstructed materials and its own fitted body mask (wave 38, 20 Oct 2026), which replaced the legacy model and its repaired coverage; front, three-quarter and back match the icon (fitmask-reuse-b1/review-v1/README.md, merge-wave38/live-check). Polish: human acceptance pending."
+  },
+  "space-raidertechhelmet-plastic": {
+    "status": "polish",
+    "note": "Fixed 22 Oct 2026 by the masculine body type (the game always applies a body type; its medium_male morph now reaches the head, body and helmet): bare-chested on Face 01 and Face 21 the balaclava hem meets the neck with no skin patch, matching the icon (_docs/goal-100-2026-10-11/bodytype-v1/activation/raider-live-sheet.jpg, active index). Polish: with a T-shirt a hairline skin seam can show at the collar. Human acceptance pending. Earlier record: Known visual error (escaped defect found 20 Oct 2026 in the w38c-attached-b1 review, confirmed 21 Oct through the active index): skin from the worn head's own neck section pokes through the bottom of the helmet's balaclava on every face (small skin patches on Face 01, large green patches on Face 21), and a band of skin shows between the balaclava hem and the collar. Hiding the head in the page removes the patches, hiding the body does not, so no body mask can fix it; it needs a head-side hide contract. Evidence: _docs/goal-100-2026-10-11/merge-wave39b/live-check-grids/space-raidertechhelmet-plastic.jpg and space-raidertechhelmet-plastic--face21.jpg (active index), _docs/goal-100-2026-10-11/w39a-lane-a-v2/raider-neck/owner-probe-v2/*.triple.jpg (as-live | no-head | no-body), _docs/goal-100-2026-10-11/w38c-attached-b1/v1-review/README.md."
+  },
+  "bodycosmetics-makeup-glitterglam-04": {
+    "status": "issue",
+    "note": "Known visual error (escaped defect flagged 21 Oct 2026 by the w39b-s11-paint-b1-v2 review, confirmed by looking): the glitter areas render too dark. The lips are deep burgundy where the icon shows pale dusty pink, and the eyeshadow is much heavier and darker than the icon's soft grey. Same cause as the held glitterglam-05. Evidence: _docs/goal-100-2026-10-11/wave39-followup/REF-glitterglam-04-face-icon-f05-f01-crop.jpg (icon | Face 05 | Face 01)."
+  },
+  "streetwear-tacticalbandolier-windbreaker-fnatic": {
+    "status": "polish",
+    "note": "Own item body mask since 21 Oct 2026 (amend-item-masks.py; reconstructed-w41m-bandolier-fitmask-b2-active-coverage-v1, opt-in grazing occlusion policy, an empty mask: the bandolier hides no skin), replacing the shared mesh-level mask that left see-through slivers under the buckle, along the strap and at the clavicle (wave 40 escaped defect). Over a black backdrop every strap, buckle, belt-band and bag edge now meets continuous skin, and nothing pokes through. Evidence: _docs/goal-100-2026-10-11/w41m-bandolier-fitmask-b2/review-v1/README.md (full-size review, gap probes bare and under tops) and _docs/goal-100-2026-10-11/merge-wave41/live-check/ plus merge-wave41/gap-live/ (active index). Polish: human acceptance pending."
+  },
+  "streetwear-tightsinglet-translucent-green": {
+    "status": "polish",
+    "note": "Needs visual polish (merged 23 Oct 2026, wave 51; was purple through the legacy-coverage fallback): now the source assembly with the signed-off PlasticSheet no-body-hide item mask (signoffs-2026-10-22.json). The glossy green singlet matches the icon and the body shows through as in the icon. Polish: the green reads lighter and more neon than the icon (studio/tone curve); dithered-opacity grain with temporal AA off. Evidence: _docs/goal-100-2026-10-11/w63-plasticsheet-nohide/b1-october/review-v1/README.md, wave51-merge/look-live.jpg. Human acceptance pending."
+  },
+  "streetwear-tightsinglet-cotton-orangeevent": {
+    "status": "polish",
+    "note": "Reconstructed 27 Oct 2026 from the Season 12 build (w73-s12-pilot, wave 53; its MI was in no earlier extraction) and accepted at full size: orange singlet with darker side panels, THE FINALS logo, brown cross bandolier with bedroll and pouch, dark wristband on the right forearm all match the icon. Evidence: _docs/goal-100-2026-10-11/w73-s12-pilot/review-v1/README.md, _docs/goal-100-2026-10-11/w73-s12-pilot/review-v1/streetwear-tightsinglet-cotton-orangeevent.icon-vs-ours.png. Polish: human acceptance pending."
   }
 }
