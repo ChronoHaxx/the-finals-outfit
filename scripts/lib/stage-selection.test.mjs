@@ -15,6 +15,8 @@ test('mode flags are exclusive and unknown flags are refused', () => {
   assert.equal(stageMode(['v3']), 'all');
   assert.equal(stageMode(['v3', '--models-only']), 'models');
   assert.equal(stageMode(['v3', '--reconstruction-only']), 'reconstruction');
+  assert.equal(stageMode(['v3', '--icons-only']), 'icons');
+  assert.throws(() => stageMode(['v3', '--icons-only', '--models-only']), /mutually exclusive/);
   assert.throws(() => stageMode(['v3', '--models-only', '--reconstruction-only']), /mutually exclusive/);
   assert.throws(() => stageMode(['v3', '--reconstructions-only']), /Unknown option/);
 });
@@ -34,6 +36,10 @@ test('reconstruction package excludes icons and legacy models but keeps its rela
     'models/reconstructed-assembly-v2/catalog.json', 'models/reconstructed-meshes-v2/x.coverage.webp',
     'models/reconstructed/coat.json',
   ]);
+});
+
+test('icons package is the catalog and companion paths outside models/', () => {
+  assert.deepEqual(sorted(selectStagePaths('icons', sets)), ['items/hair/icon.webp']);
 });
 
 test('file limit counts the reserved generated files', () => {

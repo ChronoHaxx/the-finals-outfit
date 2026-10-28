@@ -11,6 +11,8 @@ import { resolveLegacyBodyCoverage } from "./LegacyBodyCoverage";
 import { enableSourceSkinning } from "./SourceMesh";
 import { rebindSourceSkeleton, type SourceBoneAttachment } from "./SourceSkeleton";
 import { fittingMorphNames, SourceFitting } from "./SourceFitting";
+import { bodyTypeOffsetMatrix, type BodyTypePreview } from "./BodyTypePreview";
+import { multiplySourceMatrices, type SourceMatrix } from "./SourceTransform";
 import type { SourceRigPart, SourceSkinPair } from "./SourceAssembly";
 import { applyHeadWrap, bindHeadWrap, headWrapInputs, type HeadWrapBinding, type HeadWrapData } from "./HeadWrap";
 
@@ -226,6 +228,11 @@ export class CharacterRig {
   private assemblyHiddenSlots = new Set<Slot>();
   private readonly sourceFitting = new SourceFitting();
   private sourceFittingNames = new Set<string>();
+  // The gated body-type context (BodyTypePreview.ts): its Medium morph joins the fitting morphs
+  // on every mesh that carries it, and its socket offsets compose into the sockets the asset moves.
+  // Both stay undefined — the preview exactly as it was — until the viewer gates the context on.
+  private bodyTypeMorph: string | undefined;
+  private bodyTypeSockets: Record<string, SourceMatrix> | undefined;
   // Mesh UUID -> material copies made by the dev inspector. Values stay attached to their mesh
   // and are therefore released by disposeObject3D() with the scene; this map only prevents a
   // second copy on every toggle and is cleared when that scene leaves the rig.
@@ -282,12 +289,37 @@ export class CharacterRig {
 
   setSourceFittingTags(tags: string[]): void {
     this.sourceFittingNames = fittingMorphNames(tags);
+    this.reapplySourceFitting();
+  }
+
+  /** The game's body-type context, gated (BodyTypePreview.ts): when set, its Medium morph is
+   *  applied by name to every mesh that carries it — through the same SourceFitting and
+   *  head-wrap path the fitting morphs use, so a head-wrapped part's cage takes it too when
+   *  the cage carries it — and its socket offsets compose into the attachment sockets the
+   *  asset moves. Undefined restores the no-body-type preview exactly. */
+  setBodyTypePreview(preview: BodyTypePreview | undefined): void {
+    this.bodyTypeMorph = preview?.mediumMorph;
+    this.bodyTypeSockets = preview
+      ? Object.fromEntries(Object.entries(preview.socketOffsets)
+        .map(([socket, offset]) => [socket, bodyTypeOffsetMatrix(offset)]))
+      : undefined;
+    this.reapplySourceFitting();
+  }
+
+  // The fitting morphs plus the gated body-type morph, one set everywhere morphs are applied.
+  private sourceMorphNames(): ReadonlySet<string> {
+    return this.bodyTypeMorph === undefined ? this.sourceFittingNames
+      : new Set([...this.sourceFittingNames, this.bodyTypeMorph]);
+  }
+
+  private reapplySourceFitting(): void {
+    const names = this.sourceMorphNames();
     this.root.traverse(o => {
       const mesh = o as THREE.Mesh;
       if (mesh.isMesh && (mesh.userData.sourceBody || mesh.userData.sourceMesh))
-        this.sourceFitting.apply(mesh, this.sourceFittingNames);
+        this.sourceFitting.apply(mesh, names);
       // A head-wrapped part follows the worn cage, which takes the same fitting morphs as the head.
-      if (mesh.isMesh) rewrapToSourceHead(mesh, this.sourceFittingNames);
+      if (mesh.isMesh) rewrapToSourceHead(mesh, names);
     });
   }
 
@@ -403,7 +435,7 @@ export class CharacterRig {
         // expects white vertex colours. Preserve the data without tinting skin.
         body.material.vertexColors = false;
         enableSourceSkinning(body);
-        this.sourceFitting.apply(body, this.sourceFittingNames);
+        this.sourceFitting.apply(body, this.sourceMorphNames());
       }
     } catch (error) {
       release(gltf.scene);
@@ -484,8 +516,10 @@ export class CharacterRig {
       m.transparent = false;
       m.depthWrite = true;
       // Recovered neck coverage already uses the source fade and alpha hashing.
-      // A second hard cutoff would truncate that gradual transition.
-      m.alphaTest = m.userData.skinCoverage === 'neck-fade' ? 0 : 0.33;
+      // A second hard cutoff would truncate that gradual transition. The stubble
+      // coverage (w61) carries the same gated neck fade, so it trims the same way.
+      m.alphaTest = m.userData.skinCoverage === 'neck-fade' || m.userData.skinCoverage === 'neck-fade-stubble'
+        ? 0 : 0.33;
       m.needsUpdate = true;
     }
     // Eyeballs: glossy wet surface — with the (damped) eye normals, a low roughness gives
@@ -815,7 +849,7 @@ export class CharacterRig {
     if (!frame) {
       const bone = this.bonesByName.get(attachment.socket), restInverse = this.bodyRestInverses.get(attachment.socket);
       if (!bone || !restInverse) throw new Error('Source attachment does not match the active body');
-      return { bone, restInverse, socket: bodySocketRest(attachment) };
+      return { bone, restInverse, socket: this.offsetSocketRest(attachment.socket, bodySocketRest(attachment)) };
     }
     const head = frame.kind === 'head-component' ? this.sourceHead : null;
     const component = frame.kind === 'head-component'
@@ -840,8 +874,18 @@ export class CharacterRig {
     }
     if (!live) throw new Error(`Source attachment socket bone is missing: ${component.bone}`);
     return { bone: live.bone, restInverse: live.restInverse,
-      socket: { rest: component.rest, restScale: component.restScale },
+      socket: this.offsetSocketRest(attachment.socket, { rest: component.rest, restScale: component.restScale }),
       ...(head ? { headComponent: `${head.id}|${head.sourceMesh}` } : {}) };
+  }
+
+  // The gated body-type socket offset, composed on the right of the socket's own rest: the asset
+  // authors the offset as the socket's relative transform for that body type (DA_BodyType_
+  // AttachmentSocketsBasePosition composed with SocketOffsetsMedium). A socket the asset does not
+  // name — and every socket while the gate is off — keeps its preserved rest unchanged.
+  private offsetSocketRest(socket: string, rest: SourceSocketRest): SourceSocketRest {
+    const offset = this.bodyTypeSockets?.[socket];
+    return offset === undefined ? rest
+      : { rest: multiplySourceMatrices(rest.rest, offset), restScale: rest.restScale };
   }
 
   private async stageSourceAssembly(item: RigItem, parts: SourceRigPart[], signal?: AbortSignal): Promise<{ commit: () => void; release: () => void } | undefined> {
@@ -899,7 +943,7 @@ export class CharacterRig {
             skeletons.add(mesh.skeleton);
           } else if (!mesh.isSkinnedMesh) throw new Error("Source clothing part must be skinned");
           if (part.headWrap) wrapToSourceHead(mesh, part.sourceMesh, item.headWraps, this.sourceHead?.sourceMesh,
-            this.sourceFittingNames);
+            this.sourceMorphNames());
           const slots = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
           if (part.materialSections && slots.length !== 1)
             throw new Error(`Unsupported source material array: ${part.sourceMesh}`);
@@ -924,7 +968,7 @@ export class CharacterRig {
           mesh.userData.sourceMesh = part.sourceMesh;
           mesh.userData.sourceMeshUrl = part.url;
           enableSourceSkinning(mesh);
-          this.sourceFitting.apply(mesh, this.sourceFittingNames);
+          this.sourceFitting.apply(mesh, this.sourceMorphNames());
           meshes.push(mesh);
         }
       }
@@ -1108,7 +1152,7 @@ export class CharacterRig {
         mesh.userData.sourceMeshUrl = pair.head.url;
         mesh.userData.sourcePartIndex = pair.head.sourceIndex;
         enableSourceSkinning(mesh);
-        this.sourceFitting.apply(mesh, this.sourceFittingNames);
+        this.sourceFitting.apply(mesh, this.sourceMorphNames());
       }
       const bodyBindings = Object.values(pair.body.materials);
       if (bodyBindings.length !== 1 || !bodyBindings[0].url) throw new Error("Skin pair requires one recovered body material");
@@ -1160,7 +1204,8 @@ export class CharacterRig {
         /^shader_eye(?:left|right)_shader$/i.test(slot) && binding.parameterOverrides?.length))
         this.unequipDecal("eyes");
       this.registerHeadDecalTargets(scene);
-      if (this.collectStandardMaterials(scene).some(m => m.userData.skinCoverage === 'neck-fade')) {
+      if (this.collectStandardMaterials(scene).some(m => m.userData.skinCoverage === 'neck-fade'
+        || m.userData.skinCoverage === 'neck-fade-stubble')) {
         // Keep skin behind the fading edge. The original matching morph pulls
         // the body's upper neck inside the head; a legacy cutout creates holes.
         this.bodyHideUrls.delete('face');

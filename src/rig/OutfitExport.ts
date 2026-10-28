@@ -319,6 +319,10 @@ export async function exportOutfit(root: THREE.Object3D, renderer: THREE.WebGLRe
   const jobs = meshes.flatMap(mesh => sectionsOf(mesh).map(section => ({ mesh, section })));
   const baked = new Map<THREE.Mesh, Map<number, THREE.MeshStandardMaterial>>();
   const hidden = new Map<THREE.Mesh, Set<number>>();
+  // Additive unlit holograms (ReconstructedMaterial userData.recoveredAdditive): glTF has no additive blend mode, and
+  // baking their light as an opaque or alpha-blended emissive panel would occlude what is behind it. They are left
+  // out of the .glb with a warning; the source-file export still packages their textures.
+  const additive = new Set<THREE.Mesh>();
   let keptSections = 0;
   const targets = new BakeTargets(options.textureSize);
   try {
@@ -328,6 +332,14 @@ export async function exportOutfit(root: THREE.Object3D, renderer: THREE.WebGLRe
       const live = Array.isArray(mesh.material) ? mesh.material[section.materialIndex] : mesh.material;
       if (!live || !live.visible) {
         hidden.set(mesh, new Set([...(hidden.get(mesh) ?? []), section.materialIndex]));
+        continue;
+      }
+      if (live.userData.recoveredAdditive === true) {
+        warnings.push(`${mesh.name || "mesh"}[${section.materialIndex}]: additive hologram left out (glTF has no additive blending)`);
+        // The runtime refuses holograms on multi-section meshes, so the whole mesh is the hologram.
+        const all = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        if (all.every(m => m.userData.recoveredAdditive === true)) additive.add(mesh);
+        else hidden.set(mesh, new Set([...(hidden.get(mesh) ?? []), section.materialIndex]));
         continue;
       }
       if (!(live as THREE.MeshStandardMaterial).isMeshStandardMaterial || !mesh.geometry.hasAttribute("uv")) {
@@ -354,6 +366,7 @@ export async function exportOutfit(root: THREE.Object3D, renderer: THREE.WebGLRe
   sources.forEach((source, i) => {
     const mesh = source as THREE.Mesh, target = copies[i] as THREE.Mesh;
     if (!mesh.isMesh || !meshes.includes(mesh)) return;
+    if (additive.has(mesh)) { target.visible = false; return; } // onlyVisible drops it
     const sectionMaterials = baked.get(mesh);
     target.geometry = exportGeometry(mesh, hidden.get(mesh), !!sectionMaterials, warnings);
     geometries.push(target.geometry);
