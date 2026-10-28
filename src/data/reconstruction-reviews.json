@@ -254,5 +254,9 @@
   "streetwear-tightsinglet-cotton-orangeevent": {
     "status": "polish",
     "note": "Reconstructed 27 Oct 2026 from the Season 12 build (w73-s12-pilot, wave 53; its MI was in no earlier extraction) and accepted at full size: orange singlet with darker side panels, THE FINALS logo, brown cross bandolier with bedroll and pouch, dark wristband on the right forearm all match the icon. Evidence: _docs/goal-100-2026-10-11/w73-s12-pilot/review-v1/README.md, _docs/goal-100-2026-10-11/w73-s12-pilot/review-v1/streetwear-tightsinglet-cotton-orangeevent.icon-vs-ours.png. Polish: human acceptance pending."
+  },
+  "attachments-guitar-02-back": {
+    "status": "issue",
+    "note": "Known visual error (w73-s12-pilot review, 27 Oct 2026): shape, purple body, fretboard and studs match, but the fully metallic plate and headstock (metalness about 1, roughness about 0.5, mid-grey base colour) read pale champagne and white against the icon's dark gunmetal chrome: the game studio's darker environment reflected in metal, held decision #3 (studio lighting). Evidence: _docs/goal-100-2026-10-11/w73-s12-pilot/review-v1/README.md, _docs/goal-100-2026-10-11/w73-s12-pilot/review-v1/guitar-icon-vs-full-back.png, _docs/goal-100-2026-10-11/w73-s12-pilot/review-prep-v1/surface-guitar-v1/sheet.png."
   }
 }

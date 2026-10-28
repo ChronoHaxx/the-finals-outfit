@@ -31074,6 +31074,1974 @@
       },
       "isHidden": false,
       "isUnreleased": false
+    },
+    "assets-ammobackpack-arenasecurity": {
+      "name": "PROMO RIG",
+      "pageId": 26411,
+      "revisionId": 66293,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-ballistichelmet-black": {
+      "name": "FUSED HELM",
+      "pageId": 26405,
+      "revisionId": 66288,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-mask-welding-02-headwear-engimo": {
+      "name": "FACE THE HEAT",
+      "pageId": 26054,
+      "revisionId": 67515,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-aviatorsunglasses-plastic-black": {
+      "name": "ENCORE SHADES",
+      "pageId": 26285,
+      "revisionId": 67262,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-guitar-02-back": {
+      "name": "KILLER RIFF",
+      "pageId": 26289,
+      "revisionId": 67267,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-knifebandolier-leather-brownlight": {
+      "name": "CONTINGENCY KIT",
+      "pageId": 23372,
+      "revisionId": 67402,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-knifebandolier-nylon-vaiiya": {
+      "name": "DATA CACHE",
+      "pageId": 26463,
+      "revisionId": 66302,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-planetring-01": {
+      "name": "CENTER OF GRAVITY",
+      "pageId": 23533,
+      "revisionId": 68685,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-retroglasses-metal": {
+      "name": "FOUNDER FRAMES",
+      "pageId": 23674,
+      "revisionId": 68744,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-retroglasses-metal-brown": {
+      "name": "CRANE CLASSICS",
+      "pageId": 23704,
+      "revisionId": 68758,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-retroglasses-metal-engimo": {
+      "name": "QUANTUM FRAMES",
+      "pageId": 23770,
+      "revisionId": 68790,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-robot-visor": {
+      "name": "MACHINE VISION",
+      "pageId": 23687,
+      "revisionId": 68750,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-scifisword-metal": {
+      "name": "FIELD RESEARCH BLADE",
+      "pageId": 23352,
+      "revisionId": 67396,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-snapbackcappatch-cotton-cometa": {
+      "name": "PROGRESS CAP",
+      "pageId": 23048,
+      "revisionId": 67342,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-spacetiara-01": {
+      "name": "CROWN OF WORLDS",
+      "pageId": 24060,
+      "revisionId": 67446,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-bodypaint-alien-01": {
+      "name": "DO NOT PANIC",
+      "pageId": 23615,
+      "revisionId": 68717,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-bodypaint-discobot-01": {
+      "name": "MIRROR FINISH",
+      "pageId": 23398,
+      "revisionId": 67413,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-bodypaint-iseult-01": {
+      "name": "VISIBLE RANGE",
+      "pageId": 26909,
+      "revisionId": 76902,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-bodypaint-reptile-01": {
+      "name": "BIODIVERSITY FRONT",
+      "pageId": 23346,
+      "revisionId": 67394,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-earrings-acorn-01": {
+      "name": "SEED MONEY",
+      "pageId": 26789,
+      "revisionId": 78100,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-earrings-antennaivada-01": {
+      "name": "UNION FREQUENCY",
+      "pageId": 26499,
+      "revisionId": 66066,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-earrings-bigthinhoops": {
+      "name": "TRADE RINGS",
+      "pageId": 23467,
+      "revisionId": 68656,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-earrings-peacesign-01": {
+      "name": "PEACEKEEPERS",
+      "pageId": 24351,
+      "revisionId": 67473,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-earrings-retrospace-01": {
+      "name": "CELESTIAL CUT",
+      "pageId": 23546,
+      "revisionId": 68689,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-earrings-rocket-01": {
+      "name": "COLONY HOPPER",
+      "pageId": 24031,
+      "revisionId": 67432,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-earrings-sledgehammerengimo-01": {
+      "name": "METEOR TIP",
+      "pageId": 25922,
+      "revisionId": 78094,
+      "method": "staged-icon-near-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-earrings-star-01-blue": {
+      "name": "STAR TREATMENT",
+      "pageId": 24064,
+      "revisionId": 67448,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-eyes-alieneyes-01": {
+      "name": "CONTACT LENSES",
+      "pageId": 23631,
+      "revisionId": 68725,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-makeup-alien-01": {
+      "name": "WELCOME SMILE",
+      "pageId": 23365,
+      "revisionId": 67400,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-makeup-engimotech-01": {
+      "name": "RELAY MARKS",
+      "pageId": 26045,
+      "revisionId": 67511,
+      "method": "staged-icon-identical-cross-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-makeup-glitterglam-05": {
+      "name": "COSMIC CONFIDENCE",
+      "pageId": 24062,
+      "revisionId": 67447,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-makeup-iseult-01": {
+      "name": "ULTRAVIOLET",
+      "pageId": 26922,
+      "revisionId": 76867,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-makeup-scifibody-05": {
+      "name": "VOLUNTARY UPGRADES",
+      "pageId": 23315,
+      "revisionId": 67388,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-makeup-spacepilot-01": {
+      "name": "LONG HAUL LOOK",
+      "pageId": 23465,
+      "revisionId": 68655,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-nails-engimo-01": {
+      "name": "OPERATOR'S TOUCH",
+      "pageId": 26065,
+      "revisionId": 67521,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-nails-flowers-01": {
+      "name": "PETAL POLISH",
+      "pageId": 24353,
+      "revisionId": 67474,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-nails-metallic-ivada": {
+      "name": "METAL WORKERS",
+      "pageId": 26487,
+      "revisionId": 66054,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-nails-planets-01": {
+      "name": "CELESTIAL TIPS",
+      "pageId": 23522,
+      "revisionId": 68680,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-nails-retro-01": {
+      "name": "PLANETARY KEEPSAKE",
+      "pageId": 23570,
+      "revisionId": 68696,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-nails-space-01": {
+      "name": "LAUNCH WINDOW",
+      "pageId": 24029,
+      "revisionId": 67431,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-nails-stars-01": {
+      "name": "FIVE-STAR FINISH",
+      "pageId": 24068,
+      "revisionId": 67450,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-tattoos-universe-01": {
+      "name": "THE LONG VIEW",
+      "pageId": 23518,
+      "revisionId": 68678,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-bangles-metal-blue": {
+      "name": "ORBIT BANGLES",
+      "pageId": 24070,
+      "revisionId": 67451,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-basictshirt-cotton-cometa": {
+      "name": "COMETA LIFESTYLE T",
+      "pageId": 23600,
+      "revisionId": 68710,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-basictshirt-cotton-engimo-blue": {
+      "name": "STATION STANDARD TEE",
+      "pageId": 26043,
+      "revisionId": 67510,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-casualbeanie-wool": {
+      "name": "LOW FREQUENCY",
+      "pageId": 27032,
+      "revisionId": 78244,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-fronttiecroptop-cotton-hippie": {
+      "name": "SOLAR FLARE TOP",
+      "pageId": 24369,
+      "revisionId": 67482,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-headphonesantenna-metal": {
+      "name": "FAR OUT",
+      "pageId": 24365,
+      "revisionId": 67480,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-headscarf-cotton": {
+      "name": "GOOD VIBRATIONS",
+      "pageId": 24361,
+      "revisionId": 67478,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-headscarf-cotton-orange": {
+      "name": "ORBIT BANDANA",
+      "pageId": 24363,
+      "revisionId": 67479,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-hikingboots-suede-beige": {
+      "name": "SURFACEWALKERS",
+      "pageId": 24996,
+      "revisionId": 65176,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-lowwedgeheels-latex": {
+      "name": "STARLIGHT PUMPS",
+      "pageId": 24072,
+      "revisionId": 67452,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-oversizetrackjacket-nylon-creator": {
+      "name": "MANTLE OF THE MAKER",
+      "pageId": 26389,
+      "revisionId": 66921,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-retroglassesscifi-metallic-gold": {
+      "name": "THIRD-EYE GLASSES",
+      "pageId": 24367,
+      "revisionId": 67481,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-shortdress-cotton": {
+      "name": "TRANSIT JACKET",
+      "pageId": 23369,
+      "revisionId": 71977,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-shortdress-latex-silverblue": {
+      "name": "ORBIT COUTURE",
+      "pageId": 24066,
+      "revisionId": 67449,
+      "method": "staged-icon-near-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-shortdress-nylon-iseult": {
+      "name": "STREET SPECTRUM TOP",
+      "pageId": 26923,
+      "revisionId": 76868,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-shortskirt-cotton-black": {
+      "name": "DEPARTURE DAY SKIRT",
+      "pageId": 23375,
+      "revisionId": 67403,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-shortskirt-cotton-orange": {
+      "name": "FLOWER CHILD SKIRT",
+      "pageId": 24373,
+      "revisionId": 67484,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-tshirt-cotton-cometamerch": {
+      "name": "COMETA OFFICIAL TEE",
+      "pageId": 25817,
+      "revisionId": 64171,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cowboy-bandolier-leather-browncometa": {
+      "name": "MOTIVATIONAL RESOURCES",
+      "pageId": 23319,
+      "revisionId": 67390,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cowboy-handcloth-nylon-iseult": {
+      "name": "HANDSHAKE WRAPS",
+      "pageId": 26926,
+      "revisionId": 76871,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "crosspromo-nrbackpack-metal": {
+      "name": "SURVEY PACK",
+      "pageId": 24998,
+      "revisionId": 65177,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "crosspromo-nrgloves-leather": {
+      "name": "MISSION CREEP GLOVES",
+      "pageId": 26780,
+      "revisionId": 76198,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "crosspromo-nrgloves-nylon": {
+      "name": "SALVAGER'S GRIPS",
+      "pageId": 24994,
+      "revisionId": 65175,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "crosspromo-nrgloves-nylon-black": {
+      "name": "BOUNTY GRIP",
+      "pageId": 26516,
+      "revisionId": 66086,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "crosspromo-nrhelmet-metal": {
+      "name": "AZIMUTH SENSOR ARRAY",
+      "pageId": 24990,
+      "revisionId": 65174,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "crosspromo-nrsuit-nylon": {
+      "name": "EXPEDITION SUIT",
+      "pageId": 24992,
+      "revisionId": 65172,
+      "method": "staged-icon-near-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "facialhairs-mustacheseventies-black": {
+      "name": "THE ATLAS SIGNATURE",
+      "pageId": 23727,
+      "revisionId": 68769,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "fromtencent-asianspiritboots-plastic-black": {
+      "name": "COMETFALL BOOTS",
+      "pageId": 26403,
+      "revisionId": 66283,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "fromtencent-asianspiritboots-plastic-engimo": {
+      "name": "ENGINE ROOM BOOTS",
+      "pageId": 26079,
+      "revisionId": 67527,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "fromtencent-asianspiritboots-plastic-white": {
+      "name": "STANDING ORDER",
+      "pageId": 26520,
+      "revisionId": 66090,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "fromtencent-asianspiritpants-silk-iseult": {
+      "name": "AFTERIMAGE PANTS",
+      "pageId": 26927,
+      "revisionId": 76872,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "gothic-bikerjacket-leather": {
+      "name": "PURPLE REIGN",
+      "pageId": 26287,
+      "revisionId": 67268,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "gothic-cowboyboots-leather": {
+      "name": "ROAD RATTLERS",
+      "pageId": 26295,
+      "revisionId": 67270,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "gothic-pants-leatherworn-black": {
+      "name": "HIGH MILEAGE PANTS",
+      "pageId": 26293,
+      "revisionId": 67266,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "hairs-afrorounded-black": {
+      "name": "HAIR",
+      "pageId": 23462,
+      "revisionId": 68654,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "hairs-afrorounded-red": {
+      "name": "HAIR",
+      "pageId": 23757,
+      "revisionId": 68784,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "hairs-bobcurly-blondeorange": {
+      "name": "HAIR",
+      "pageId": 24359,
+      "revisionId": 67477,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "hairs-bobstraight-iceblue": {
+      "name": "HAIR",
+      "pageId": 24058,
+      "revisionId": 67445,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "hairs-coilyslick-black": {
+      "name": "HAIR",
+      "pageId": 23725,
+      "revisionId": 68768,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "hairs-curtainfade-red": {
+      "name": "HAIR",
+      "pageId": 23308,
+      "revisionId": 67387,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "hairs-highponytail-02-saltpepper": {
+      "name": "HAIR",
+      "pageId": 23362,
+      "revisionId": 67399,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "hairs-shortwavy-blonde": {
+      "name": "HAIR",
+      "pageId": 26921,
+      "revisionId": 76880,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "head-blankface-galaxy": {
+      "name": "THE OBSERVER'S MIRAGE",
+      "pageId": 23531,
+      "revisionId": 68684,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "head-cyborg-01": {
+      "name": "AUGMENTED",
+      "pageId": 23681,
+      "revisionId": 68747,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "head-face-28-base": {
+      "name": "ALIEN COMPLEXION",
+      "pageId": 23629,
+      "revisionId": 68724,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "head-face-30-base": {
+      "name": "ATLAS CRANE",
+      "pageId": 23723,
+      "revisionId": 68767,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "head-face-31-base": {
+      "name": "FACE 31",
+      "pageId": 23479,
+      "revisionId": 68662,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "head-robot-01": {
+      "name": "SYNTHETIC CITIZEN",
+      "pageId": 23685,
+      "revisionId": 68749,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "historic-sandals-leather": {
+      "name": "PEACEWALKER SANDALS",
+      "pageId": 24375,
+      "revisionId": 67485,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-elfprincessboots-leather-blackcometa": {
+      "name": "CONCOURSE BOOTS",
+      "pageId": 23378,
+      "revisionId": 67404,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-peasantshoulderbag-leather-hippie": {
+      "name": "GOOD VIBES SATCHEL",
+      "pageId": 24371,
+      "revisionId": 67483,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-peasantshoulderbag-leather-iseul-t": {
+      "name": "SIDE CHANNEL BAG",
+      "pageId": 26924,
+      "revisionId": 76869,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-pirateknighthelmet-plastic": {
+      "name": "VISOR MAJOR",
+      "pageId": 25945,
+      "revisionId": 67305,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-techjacketharness-wool-blackgreen": {
+      "name": "COMMAND LAYERS",
+      "pageId": 26423,
+      "revisionId": 66284,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-acepilotboots-leather-spacepilot": {
+      "name": "ONE MORE JUMP",
+      "pageId": 23477,
+      "revisionId": 68661,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-acepilotboots-leather-spacepilotul-ae7f": {
+      "name": "LAST SIGHTING BOOTS",
+      "pageId": 23494,
+      "revisionId": 68669,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-acepilotgloves-leather-black": {
+      "name": "ZOLGABAR GRIPS",
+      "pageId": 26413,
+      "revisionId": 66298,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-acepilothelmet-plastic-black": {
+      "name": "INDICATOR HELM",
+      "pageId": 26397,
+      "revisionId": 66291,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-acepilothelmet-plastic-cometa": {
+      "name": "APPROACH VECTOR",
+      "pageId": 23428,
+      "revisionId": 78089,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-acepilottop-windbreaker-darkgreen": {
+      "name": "DEBT COLLECTOR RIG",
+      "pageId": 26399,
+      "revisionId": 66286,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-assaultgloves-leather-blackgreen": {
+      "name": "V.O.S ISSUE GRIPS",
+      "pageId": 26415,
+      "revisionId": 66295,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-hardcase-plastic-ivada": {
+      "name": "COLLECTIVE BAGGAGE",
+      "pageId": 26491,
+      "revisionId": 66113,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-industrialglasses-metal": {
+      "name": "BLACKFLASH OPTICS",
+      "pageId": 26996,
+      "revisionId": 78126,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-marinegloves-plastic-vaiiya": {
+      "name": "DATA INPUT",
+      "pageId": 26465,
+      "revisionId": 66303,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-marinepants-canvas-vaiiya": {
+      "name": "MOTION CONTROL",
+      "pageId": 26467,
+      "revisionId": 66306,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-marinevest-plastic-blackgreen": {
+      "name": "HULL PLATING",
+      "pageId": 26409,
+      "revisionId": 66290,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-militarymechanicweldinggoggles-pla-4e7e": {
+      "name": "BLAST GOGGLES",
+      "pageId": 26407,
+      "revisionId": 66282,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-pantswithholsterpouch-nylon": {
+      "name": "SCREEN TIME PANTS",
+      "pageId": 26417,
+      "revisionId": 66294,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-scifiboots-latex": {
+      "name": "REFLECTIVE TREADS",
+      "pageId": 24025,
+      "revisionId": 67429,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-scifiboots-nylon-black": {
+      "name": "HOT WORK BOOTS",
+      "pageId": 26419,
+      "revisionId": 66289,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-scifiboots-nylon-vaiiya": {
+      "name": "SILENT PRINT",
+      "pageId": 26469,
+      "revisionId": 66309,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-tacticalbackpack-canvas": {
+      "name": "ZOLGABAR RUCK",
+      "pageId": 26435,
+      "revisionId": 66319,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-tacticalbaglumbar-kevlar": {
+      "name": "FIELD POUCH",
+      "pageId": 26437,
+      "revisionId": 66317,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-tacticalknifelumbar-metal": {
+      "name": "FIELD CUTLERY",
+      "pageId": 26756,
+      "revisionId": 76172,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-tacticalshirt-cotton-black": {
+      "name": "FIELD CONTROL",
+      "pageId": 26660,
+      "revisionId": 69546,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "monsters-bigfootcostumehands-rubber-reptile": {
+      "name": "SAMPLE COLLECTORS",
+      "pageId": 23356,
+      "revisionId": 67397,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "pirate-bandana-cotton": {
+      "name": "DECK HEAD",
+      "pageId": 26606,
+      "revisionId": 67023,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "pirate-pirateboots-leather": {
+      "name": "HEADWIND BOOTS",
+      "pageId": 26616,
+      "revisionId": 67022,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "pirate-piraterings-gold": {
+      "name": "ALL HANDS",
+      "pageId": 26612,
+      "revisionId": 67019,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "pirate-poetshirtwithvest-silk-blue": {
+      "name": "SHIP SHAPE VEST",
+      "pageId": 26608,
+      "revisionId": 67026,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "pirate-scallywagpants-cotton": {
+      "name": "SEA LEGS",
+      "pageId": 26614,
+      "revisionId": 67025,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "pirate-seabandolier-leather": {
+      "name": "BUCKLE UP",
+      "pageId": 26610,
+      "revisionId": 67020,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "racing-gloves-leatherrough-arenasecurity": {
+      "name": "MARKSMAN'S GRIPS",
+      "pageId": 26425,
+      "revisionId": 66292,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "racing-gloves-nylon-blackorange": {
+      "name": "RESOLUTION GLOVES",
+      "pageId": 23321,
+      "revisionId": 67391,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "racing-shoes-leather-iseult": {
+      "name": "SHIFT STEPPERS",
+      "pageId": 26928,
+      "revisionId": 76873,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "retro-cordbracelet-rubber": {
+      "name": "POWER LOOP",
+      "pageId": 25650,
+      "revisionId": 67498,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "retro-retroradio-metal": {
+      "name": "RADIO TOMORROW",
+      "pageId": 25648,
+      "revisionId": 67497,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "retro-vacuumhelmet-metal": {
+      "name": "ASTRO HOOD",
+      "pageId": 25646,
+      "revisionId": 67496,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-discobotgloves-metal": {
+      "name": "GROOVE GRIPS",
+      "pageId": 23402,
+      "revisionId": 67415,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-discobothelmet-metal": {
+      "name": "DANCE PROCESSOR",
+      "pageId": 23396,
+      "revisionId": 67412,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-discojacket-cotton": {
+      "name": "LEISURE PROTOCOL",
+      "pageId": 23400,
+      "revisionId": 67414,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-discopants-cotton": {
+      "name": "BELL-BOTTOM LOGIC",
+      "pageId": 23404,
+      "revisionId": 67416,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-discoshoes-leather": {
+      "name": "DISCO DRIVE SOLES",
+      "pageId": 23406,
+      "revisionId": 67417,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-retrorobotbackpack-plastic": {
+      "name": "DATA ANNEX",
+      "pageId": 23592,
+      "revisionId": 68706,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-retrorobotfeet-plastic": {
+      "name": "LOCOMOTION TREADS",
+      "pageId": 23585,
+      "revisionId": 68703,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-retrorobotfeet-plastic-black": {
+      "name": "PRODUCTIVITY TREADS",
+      "pageId": 23598,
+      "revisionId": 68709,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-retrorobothands-plastic": {
+      "name": "HELPING HANDS",
+      "pageId": 23583,
+      "revisionId": 68702,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-retrorobothands-plastic-black": {
+      "name": "CORRECTIVE HANDS",
+      "pageId": 23596,
+      "revisionId": 68708,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-retrorobothead-plastic": {
+      "name": "VISION MODULE",
+      "pageId": 23581,
+      "revisionId": 68701,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-retrorobotheadultimate-plastic": {
+      "name": "OVERSIGHT MODULE",
+      "pageId": 23590,
+      "revisionId": 68705,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-retrorobottorso-plastic": {
+      "name": "SERVICE CHASSIS",
+      "pageId": 23578,
+      "revisionId": 68700,
+      "method": "staged-icon-near-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-retrorobottorsoultimate-plastic": {
+      "name": "ADMIN CHASSIS",
+      "pageId": 23594,
+      "revisionId": 68707,
+      "method": "staged-icon-near-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-sportyrobotbackpack-nylon": {
+      "name": "NAP PACK",
+      "pageId": 25973,
+      "revisionId": 67333,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-sportyrobotbackpack-nylon-black": {
+      "name": "SCRATCH PACK",
+      "pageId": 25964,
+      "revisionId": 67324,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-sportyrobothead-metal": {
+      "name": "CUTE AGGRESSION HELM",
+      "pageId": 25972,
+      "revisionId": 67332,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-sportyrobothead-metal-black": {
+      "name": "CATASTROPHE HELM",
+      "pageId": 25963,
+      "revisionId": 67323,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-sportyrobotlegs-metal": {
+      "name": "TREADMINATOR K",
+      "pageId": 25975,
+      "revisionId": 67335,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-sportyrobotlegs-metal-black": {
+      "name": "TREADMINATOR X",
+      "pageId": 25966,
+      "revisionId": 67326,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-sportyrobottorso-metal": {
+      "name": "HAPPY PLACE JUMPSUIT",
+      "pageId": 25974,
+      "revisionId": 67334,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-sportyrobottorso-metal-black": {
+      "name": "WRONG PLACE JUMPSUIT",
+      "pageId": 25965,
+      "revisionId": 67325,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-urbanoperativehelmet-metal-bluestar": {
+      "name": "SINGULARITY BLUE",
+      "pageId": 23236,
+      "revisionId": 67371,
+      "method": "staged-icon-visual-12sep-recheck-18oct",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-urbanoperativehelmet-metal-eclipseblue": {
+      "name": "EVENT HORIZON BLUE",
+      "pageId": 23176,
+      "revisionId": 67367,
+      "method": "staged-icon-visual-12sep-recheck-18oct",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-urbanoperativehelmet-metal-eclipsere-6fa4": {
+      "name": "EVENT HORIZON RED",
+      "pageId": 23175,
+      "revisionId": 67366,
+      "method": "staged-icon-visual-12sep-recheck-18oct",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-urbanoperativehelmet-metal-holtoweclipse": {
+      "name": "ECLIPSE DEVOTION",
+      "pageId": 23096,
+      "revisionId": 67365,
+      "method": "staged-icon-visual-12sep-recheck-18oct",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-urbanoperativehelmet-metal-holtowsun": {
+      "name": "SINGULARITY DEVOTION",
+      "pageId": 23212,
+      "revisionId": 67370,
+      "method": "staged-icon-visual-12sep-recheck-18oct",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-urbanoperativehelmet-metal-reddwarf": {
+      "name": "SINGULARITY RED",
+      "pageId": 23258,
+      "revisionId": 67372,
+      "method": "staged-icon-visual-12sep-recheck-18oct",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-boots-windbreaker": {
+      "name": "ZERO HOUR BOOTS",
+      "pageId": 26784,
+      "revisionId": 76202,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-enforcerhelmet-plastic": {
+      "name": "ONI OPTICS",
+      "pageId": 26459,
+      "revisionId": 66307,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-enforcertorso-plastic": {
+      "name": "SYSTEM CORE",
+      "pageId": 26461,
+      "revisionId": 66310,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-hackergloves-rubber-engimo": {
+      "name": "HOT-HAND GLOVES",
+      "pageId": 26075,
+      "revisionId": 67525,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-paddedtechpants-nylon-ivada": {
+      "name": "WORKER COMP",
+      "pageId": 26518,
+      "revisionId": 66088,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-pants-nylon-engimo": {
+      "name": "OVERTIME PANTS",
+      "pageId": 26077,
+      "revisionId": 67526,
+      "method": "staged-icon-near-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-ammobox-metal": {
+      "name": "CARRY ON",
+      "pageId": 26778,
+      "revisionId": 76196,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilotgloves-cotton": {
+      "name": "HERO'S LAST GRIPS",
+      "pageId": 23745,
+      "revisionId": 68778,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilotgloves-cotton-orange": {
+      "name": "STATION HAND GLOVES",
+      "pageId": 25958,
+      "revisionId": 67318,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilotgloves-cotton-white": {
+      "name": "EXPLORER'S GRIPS",
+      "pageId": 23731,
+      "revisionId": 68771,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilothelmet-orange": {
+      "name": "HERO'S HORIZON",
+      "pageId": 23721,
+      "revisionId": 68766,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilothelmet-space": {
+      "name": "EXTINCTION VISOR",
+      "pageId": 23741,
+      "revisionId": 68776,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilotpants-cotton": {
+      "name": "LAST STAND PANTS",
+      "pageId": 23747,
+      "revisionId": 68779,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilotpants-cotton-green": {
+      "name": "ACT THREE TROUSERS",
+      "pageId": 23733,
+      "revisionId": 68772,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilotshoes-nylon": {
+      "name": "SPLASHDOWN SHOES",
+      "pageId": 23749,
+      "revisionId": 68780,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilotshoes-nylon-white": {
+      "name": "LAUNCH DAY SHOES",
+      "pageId": 23735,
+      "revisionId": 68773,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilotupper-plastic": {
+      "name": "SUPERNOVA SURVIVAL RIG",
+      "pageId": 23743,
+      "revisionId": 68777,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilotupper-plastic-engimo": {
+      "name": "QUANTUM FLIGHT RIG",
+      "pageId": 23774,
+      "revisionId": 68792,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-astropilotupper-plastic-white": {
+      "name": "ADVENTURE-CLASS RIG",
+      "pageId": 23729,
+      "revisionId": 68770,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-bountyhunterhelmet-metal": {
+      "name": "DEAD HORIZON HELMET",
+      "pageId": 26512,
+      "revisionId": 66082,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-bountyhuntertop-nylon": {
+      "name": "BOUNTY CUT",
+      "pageId": 26514,
+      "revisionId": 66083,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-engineercablebandolier-rubber": {
+      "name": "SPARE PARTS",
+      "pageId": 26083,
+      "revisionId": 67529,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-engineerhelmet-metal": {
+      "name": "SERVICE DOME",
+      "pageId": 26070,
+      "revisionId": 67523,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-engineersledge-metal": {
+      "name": "PERCUSSIVE MAINTENANCE",
+      "pageId": 26081,
+      "revisionId": 67528,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-paddedleggings-nylon": {
+      "name": "ZOLGABAR PADDING",
+      "pageId": 26427,
+      "revisionId": 66299,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-pioneerpants-nylon": {
+      "name": "SERVICE CARGOS",
+      "pageId": 25959,
+      "revisionId": 67319,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-pioneershoes-nylon": {
+      "name": "ANCHOR BOOTS",
+      "pageId": 25960,
+      "revisionId": 67320,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-pioneershoes-nylon-arenasecurity": {
+      "name": "CONTACT BOOTS",
+      "pageId": 26429,
+      "revisionId": 66285,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-pioneerspacehelmet-metal": {
+      "name": "HARD VACUUM HELMET",
+      "pageId": 25956,
+      "revisionId": 67316,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-pioneerupper-windbreaker": {
+      "name": "PRESSURE SHELL",
+      "pageId": 25957,
+      "revisionId": 67317,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-planetbracelet-gold": {
+      "name": "SATURNINE",
+      "pageId": 23693,
+      "revisionId": 68753,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-planets": {
+      "name": "POCKET UNIVERSE",
+      "pageId": 23527,
+      "revisionId": 68682,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-raidertechhelmet-plastic-black": {
+      "name": "ARCHIVE OPTICS",
+      "pageId": 26421,
+      "revisionId": 66281,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spaceboots-metal": {
+      "name": "LOCAL FASHION SAMPLE",
+      "pageId": 23639,
+      "revisionId": 68729,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacebrain-base": {
+      "name": "BIG BRAIN ENERGY",
+      "pageId": 23627,
+      "revisionId": 68723,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacecombatboots-metal": {
+      "name": "STARBURN WALKERS",
+      "pageId": 24200,
+      "revisionId": 67284,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacecombatgloves-metal": {
+      "name": "STEADY-HAND GLOVES",
+      "pageId": 24196,
+      "revisionId": 67282,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacecombathelmet-metal": {
+      "name": "SPACE CASE HELMET",
+      "pageId": 24192,
+      "revisionId": 67280,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacecombatpants-metal": {
+      "name": "ORBITBREAKER GREAVES",
+      "pageId": 24198,
+      "revisionId": 67283,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacecombattorso-metal": {
+      "name": "OUTER RIM PLATE",
+      "pageId": 24194,
+      "revisionId": 67281,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacegloves-nylon": {
+      "name": "MANIPULATOR GLOVES",
+      "pageId": 23635,
+      "revisionId": 68727,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacegloves-nylon-black": {
+      "name": "HUMAN HANDLERS",
+      "pageId": 23648,
+      "revisionId": 68733,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacehelmet-metal": {
+      "name": "OBSERVATION DOME",
+      "pageId": 23644,
+      "revisionId": 68731,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spaceheroineboots-metal": {
+      "name": "STARDUSTERS",
+      "pageId": 23287,
+      "revisionId": 67379,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spaceheroinegauntlet-metal": {
+      "name": "COSMIC BRACES",
+      "pageId": 23275,
+      "revisionId": 67377,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spaceheroinehelmet-metal": {
+      "name": "MANY-WORLDS HELM",
+      "pageId": 23271,
+      "revisionId": 67375,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spaceheroineshorts-metal": {
+      "name": "STARSTEP SHORTS",
+      "pageId": 23277,
+      "revisionId": 67378,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spaceheroinetop-metal": {
+      "name": "ORBITWORN PLATE",
+      "pageId": 23273,
+      "revisionId": 67376,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotgloves-leather": {
+      "name": "MANIFEST ADJUSTERS",
+      "pageId": 23473,
+      "revisionId": 68659,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotgloves-leather-black": {
+      "name": "COOL TRANSFER GRIPS",
+      "pageId": 23490,
+      "revisionId": 68667,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotheadphones-metal": {
+      "name": "CLOUD CHASERS",
+      "pageId": 23456,
+      "revisionId": 68651,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotheadphones-plastic-cometa": {
+      "name": "WORK-LIFE BALANCE",
+      "pageId": 23753,
+      "revisionId": 68782,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilothelmet-metal": {
+      "name": "FINAL BEARING HELMET",
+      "pageId": 23486,
+      "revisionId": 68665,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotjacket-nylon": {
+      "name": "LUCKY DEPARTURE RIG",
+      "pageId": 23471,
+      "revisionId": 68658,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotjacket-nylon-cometa": {
+      "name": "ROCKETWAY JACKET",
+      "pageId": 23759,
+      "revisionId": 68785,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotjacketultimate-nylon": {
+      "name": "LOST RECORDS RIG",
+      "pageId": 23488,
+      "revisionId": 68666,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotpants-denim": {
+      "name": "OFF THE BOOKS PANTS",
+      "pageId": 23475,
+      "revisionId": 68660,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotpants-denim-black": {
+      "name": "GHOST FREIGHT PANTS",
+      "pageId": 23492,
+      "revisionId": 68668,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacesoldierbandolier-leather": {
+      "name": "FIELD OPTIONS",
+      "pageId": 26776,
+      "revisionId": 76194,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacesoldierhelmet-plastic": {
+      "name": "HARD ORBIT HAT",
+      "pageId": 26770,
+      "revisionId": 76187,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacesoldierjacket-windbreaker": {
+      "name": "LONG WATCH VEST",
+      "pageId": 26772,
+      "revisionId": 76189,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacesoldierpants-windbreaker": {
+      "name": "OUTER SERVICE PANTS",
+      "pageId": 26782,
+      "revisionId": 76200,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacesuitpants-nylon": {
+      "name": "LEGS DAY PANTS",
+      "pageId": 23637,
+      "revisionId": 68728,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacesuitpantsultimate-nylon": {
+      "name": "CONTACT ESTABLISHED",
+      "pageId": 23650,
+      "revisionId": 68734,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacesuittop-nylon": {
+      "name": "SOCIAL TRIAL JACKET",
+      "pageId": 23633,
+      "revisionId": 68726,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacesuittopultimate-nylon": {
+      "name": "DIPLOMATIC OUTERWEAR",
+      "pageId": 23646,
+      "revisionId": 68732,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacetopvest-plastic": {
+      "name": "ORBITAL ORDER JACKET",
+      "pageId": 25946,
+      "revisionId": 67306,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "sport-climbingbandolier-canvas-engimo": {
+      "name": "LIFELINE",
+      "pageId": 26055,
+      "revisionId": 67516,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "starterset-pants-nylon": {
+      "name": "FIELD SURVEY PANTS",
+      "pageId": 23359,
+      "revisionId": 67398,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "starterset-pants-nylon-blackgreen": {
+      "name": "FLIGHT-RATED PANTS",
+      "pageId": 26401,
+      "revisionId": 66287,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "starterset-pants-nylon-cometa": {
+      "name": "CONTRACT FULFILLERS",
+      "pageId": 23340,
+      "revisionId": 67392,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-baseballcap-cotton-military": {
+      "name": "ON THE CLOCK CAP",
+      "pageId": 27013,
+      "revisionId": 78003,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-baseballcap-cotton-racing": {
+      "name": "NOVA RACER CAP",
+      "pageId": 23504,
+      "revisionId": 68672,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-fingerlessshortgloves-leatherrough": {
+      "name": "CLUTCH CONTROL GLOVES",
+      "pageId": 26291,
+      "revisionId": 67261,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-headband-cotton-hippie": {
+      "name": "SUN CHASER",
+      "pageId": 24349,
+      "revisionId": 67472,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-headband-polyester": {
+      "name": "ROAD RAG",
+      "pageId": 26283,
+      "revisionId": 67269,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-hoodie-nylon-engimowinners10": {
+      "name": "CLAIMED & FAME'D",
+      "pageId": 24186,
+      "revisionId": 60634,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-messengerbag-nylon": {
+      "name": "CROSS CARRY",
+      "pageId": 26925,
+      "revisionId": 76870,
+      "method": "staged-icon-identical-cross-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-puffervest-latex": {
+      "name": "VACUUM CHIC",
+      "pageId": 24110,
+      "revisionId": 67457,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-pusheduppants-cotton-cometa": {
+      "name": "PROSPECTOR PANTS",
+      "pageId": 26327,
+      "revisionId": 67244,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-skimask-cotton-military": {
+      "name": "COLD COMFORT MASK",
+      "pageId": 27015,
+      "revisionId": 78005,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-tallboots-latex": {
+      "name": "SURFACE INSPECTORS",
+      "pageId": 23342,
+      "revisionId": 67393,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-techcroptop-nylon-engimo": {
+      "name": "REACTOR JACKET",
+      "pageId": 26072,
+      "revisionId": 67524,
+      "method": "staged-icon-near-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-tracksuittorso-nylon-greencometa": {
+      "name": "ASSESSMENT JACKET",
+      "pageId": 23349,
+      "revisionId": 67395,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-tracksuittorso-nylon-orangecometa": {
+      "name": "WORKFORCE RETENTION",
+      "pageId": 23317,
+      "revisionId": 67389,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-wristbandcompass-cotton": {
+      "name": "WRONG TURN",
+      "pageId": 27009,
+      "revisionId": 77999,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "watches-smartretro-01": {
+      "name": "COUNTDOWN COMPANION",
+      "pageId": 24101,
+      "revisionId": 67453,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "watches-spacesoldierwatch-01": {
+      "name": "T MINUS ZERO",
+      "pageId": 26759,
+      "revisionId": 76175,
+      "method": "staged-icon-identical",
+      "isHidden": false,
+      "isUnreleased": false
     }
   }
 }

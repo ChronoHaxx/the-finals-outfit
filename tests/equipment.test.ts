@@ -15,8 +15,9 @@ const companions = { face: 'head-face-09-base', hair: 'hairs-afrofade', eyes: 'b
   feet: 'casual-tallsneakers-canvas', nailPolish: 'bodycosmetics-nails-crosses-01' };
 const store = () => useBuildStore.getState();
 
-test('source table covers all 23 dual body garments; metadata and catalog IDs agree', () => {
-  assert.equal(evidence.fullBody.length, 23);
+test('source table covers all 27 dual body garments; metadata and catalog IDs agree', () => {
+  // 27 since the Season 11 import (18 Oct 2026): a short dress, the NR suit and two retro robot torsos.
+  assert.equal(evidence.fullBody.length, 27);
   assert.match(evidence.inputSha256, /^[a-f0-9]{64}$/);
   const slots = evidence.slotsByItem as Record<string, string[]>;
   for (const id of evidence.fullBody) {
