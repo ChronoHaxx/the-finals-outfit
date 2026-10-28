@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import zlib from 'node:zlib';
 import { spawnSync } from 'node:child_process';
 import { readAssetGraph, planAssetShards, validateShardPlan, stagedControlBytes, shardHosts, routesForShards, digest } from '../scripts/lib/asset-shards.mjs';
 import { parseReconstructionRoutes, compactReconstructionRoutes, modelUrlFor } from '../src/lib/asset-routing.mjs';
@@ -211,4 +212,50 @@ test('release verification checks every shard manifest and detects missing or co
     const wrong = structuredClone(f.config); wrong.shards['reconstruction-000'].manifestSha256 = '0'.repeat(64);
     await assert.rejects(verifyShardRelease(f.plan, wrong, fetcher), /differs from staged bytes/);
   } finally { f.clean(); }
+});
+
+test('--gzip-meshes publishes each mesh gzipped and verification checks it against the planned source', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'finals-gzip-mesh-'));
+  try {
+    const put = (p, bytes) => { fs.mkdirSync(path.dirname(path.join(root, p)), { recursive: true }); fs.writeFileSync(path.join(root, p), bytes); };
+    let json = Buffer.from(JSON.stringify({ asset: { version: '2.0' } }));
+    json = Buffer.concat([json, Buffer.alloc((4 - json.length % 4) % 4, 32)]);
+    const body = Buffer.alloc(20 + json.length + 4096); // mostly zeros, like unmoved morph-target vertices
+    body.writeUInt32LE(0x46546c67); body.writeUInt32LE(2, 4); body.writeUInt32LE(body.length, 8);
+    body.writeUInt32LE(json.length, 12); body.writeUInt32LE(0x4e4f534a, 16); json.copy(body, 20);
+    put('models/reconstructed-meshes/body.glb', body);
+    put(control, JSON.stringify({ meshes: { body: { url: '../reconstructed-meshes/body.glb' } } }));
+    const plan = planAssetShards(readAssetGraph(root, [control]), { version: 'gzip-v1', controls: [control], requiredRoots: [control], limits });
+    const config = { planSha256: digest(JSON.stringify(plan)), shards: Object.fromEntries(plan.shards.map(s =>
+      [s.name, { immutable: true, baseUrl: `https://immutable-${s.id}.example/release-v1/` }])) };
+    const planFile = path.join(root, 'plan.json'), hostsFile = path.join(root, 'hosts.json'), out = path.join(root, 'staged-0');
+    fs.writeFileSync(planFile, JSON.stringify(plan)); fs.writeFileSync(hostsFile, JSON.stringify(config));
+    const run = spawnSync(process.execPath, ['scripts/stage-asset-shard.mjs', planFile, '0', '--hosts', hostsFile, '--gzip-meshes'],
+      { encoding: 'utf8', env: { ...process.env, ASSET_SOURCE_DIR: root, ASSET_SHARD_OUT: out } });
+    assert.equal(run.status, 0, run.stderr);
+    const staged = fs.readFileSync(path.join(out, 'models/reconstructed-meshes/body.glb'));
+    assert.deepEqual([staged[0], staged[1]], [0x1f, 0x8b]);
+    assert.ok(staged.length < body.length / 4);
+    assert.deepEqual(zlib.gunzipSync(staged), body);
+    const manifest = JSON.parse(fs.readFileSync(path.join(out, 'manifest.json')));
+    assert.equal(manifest.meshEncoding, 'gzip');
+    assert.deepEqual(manifest.files['models/reconstructed-meshes/body.glb'], { sha256: digest(staged), bytes: staged.length,
+      encoding: 'gzip', sourceSha256: plan.nodes['models/reconstructed-meshes/body.glb'].sha256, sourceBytes: body.length });
+    assert.equal(manifest.files[control].encoding, undefined); // indexes stay plain JSON
+    config.shards['reconstruction-000'].manifestSha256 = digest(fs.readFileSync(path.join(out, 'manifest.json')));
+    const fetcher = async input => {
+      const local = path.join(out, new URL(input).pathname.replace('/release-v1/', ''));
+      return fs.existsSync(local) ? new Response(fs.readFileSync(local)) : new Response('missing', { status: 404 });
+    };
+    const report = await verifyShardRelease(plan, config, fetcher);
+    assert.ok(report.shards[0].sampled.includes('models/reconstructed-meshes/body.glb'));
+    // A hosted gzip that decompresses to anything but the planned source fails, even with a matching manifest row.
+    const tampered = zlib.gzipSync(Buffer.concat([body.subarray(0, -1), Buffer.from([1])]), { level: 9 });
+    const forged = structuredClone(manifest);
+    Object.assign(forged.files['models/reconstructed-meshes/body.glb'], { sha256: digest(tampered), bytes: tampered.length });
+    fs.writeFileSync(path.join(out, 'models/reconstructed-meshes/body.glb'), tampered);
+    fs.writeFileSync(path.join(out, 'manifest.json'), JSON.stringify(forged));
+    config.shards['reconstruction-000'].manifestSha256 = digest(fs.readFileSync(path.join(out, 'manifest.json')));
+    await assert.rejects(verifyShardRelease(plan, config, fetcher), /Hosted gzip mesh differs from planned source/);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
