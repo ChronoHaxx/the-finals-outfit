@@ -85,6 +85,20 @@ test('large flat folders split with exact file routes, while oversized files and
   assert.throws(() => planAssetShards(joined, { version: 'joined', controls: [], requiredRoots: [], limits }), /Unsplittable/);
 });
 
+test('a non-control file beside the control indexes keeps their directory on shard 0', () => {
+  // Season 11 release (28 Oct 2026): a large family filled shard 0 first, the control directory's own group
+  // (head-wraps.json and its closure) went to a leaf, and its route then sent the control indexes there.
+  const node = (...dependencies) => ({ bytes: 1, sha256: '0'.repeat(64), dependencies });
+  const wraps = 'models/reconstructed-assemblies-v1/head-wraps.json';
+  const nodes = { [control]: node(), [wraps]: node('models/reconstructed-wraps/w1.bin'), 'models/reconstructed-wraps/w1.bin': node(),
+    ...Object.fromEntries([1, 2, 3, 4].map(i => [`models/reconstructed-x/x${i}.bin`, node()])) };
+  const plan = planAssetShards(nodes, { version: 'control-dir', controls: [control], requiredRoots: [control], limits });
+  assert.equal(plan.prefixShards['models/reconstructed-assemblies-v1/'], 0);
+  assert.equal(plan.owners[wraps], 0);
+  assert.ok(plan.shards[0].paths.includes(control) && plan.shards[0].paths.includes(wraps));
+  assert.equal(plan.shards.length, 2);
+});
+
 test('duplicated body references use the same canonical host as direct runtime requests', () => {
   const f = fixture();
   try {
