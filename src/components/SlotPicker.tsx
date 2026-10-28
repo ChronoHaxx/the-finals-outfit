@@ -31,7 +31,8 @@ export default function SlotPicker() {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
-      <div className="flex max-h-20 shrink-0 flex-wrap gap-1.5 overflow-y-auto overscroll-contain lg:max-h-40">
+      {/* One scrolling row on phones, where height belongs to the grid; wrapped chips on wide screens. */}
+      <div className="-mx-3 flex shrink-0 gap-1.5 overflow-x-auto overscroll-x-contain px-3 pb-1 lg:mx-0 lg:max-h-40 lg:flex-wrap lg:overflow-y-auto lg:px-0 lg:pb-0">
         {NON_EMPTY.map((s) => (
           <button
             key={s}
@@ -39,7 +40,7 @@ export default function SlotPicker() {
               setSlot(s);
               setQuery("");
             }}
-            className={`rounded-full px-3 py-1 text-xs transition ${
+            className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1 text-xs transition ${
               s === slot
                 ? "bg-neutral-100 text-neutral-900"
                 : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
@@ -51,7 +52,7 @@ export default function SlotPicker() {
         ))}
       </div>
 
-      <div className="flex shrink-0 flex-wrap items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -61,14 +62,14 @@ export default function SlotPicker() {
         />
         <select aria-label="3D status" value={statusFilter}
           onChange={event => setStatusFilter(event.target.value as ReviewStatus | "all")}
-          className="w-full shrink-0 rounded-lg border border-neutral-800 bg-neutral-900 px-2 py-2 text-xs text-neutral-300 sm:w-auto">
+          className="w-36 shrink-0 rounded-lg border border-neutral-800 bg-neutral-900 px-2 py-2 text-xs text-neutral-300 sm:w-auto">
           <option value="all">All 3D statuses</option>
           {(Object.keys(REVIEW_LABELS) as ReviewStatus[]).map(status =>
             <option key={status} value={status}>{REVIEW_LABELS[status]}</option>)}
         </select>
       </div>
 
-      <div aria-label="Cosmetic results" tabIndex={0} className="grid min-h-0 flex-1 grid-cols-3 content-start gap-2 overflow-y-auto overscroll-contain pr-1 sm:grid-cols-4 md:grid-cols-5">
+      <div aria-label="Cosmetic results" tabIndex={0} className="grid min-h-0 flex-1 grid-cols-4 content-start gap-2 overflow-y-auto overscroll-contain pr-1 md:grid-cols-6 lg:grid-cols-5">
         {items.length === 0 && <p className="col-span-full p-4 text-sm text-neutral-400">No items match these filters.</p>}
         {items.map((item, i) => {
           const equipped = build[item.slot] === item.id;

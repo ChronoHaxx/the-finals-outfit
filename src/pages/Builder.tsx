@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import PreviewPane from "../components/PreviewPane";
 import SlotPicker from "../components/SlotPicker";
+import BuildList from "../components/BuildList";
+import MobileSheet from "../components/MobileSheet";
+import MobileMenu from "../components/MobileMenu";
+import { useMediaQuery } from "../lib/use-media-query";
 import { readOutfitLink } from "../lib/share-url";
 import { migrateOutfit } from "../lib/outfit-slots";
 import { filterBrowseBuild, PUBLIC_CATALOG_COUNT } from "../lib/browse-catalog";
@@ -16,6 +20,11 @@ import { useBuildStore } from "../store/useBuildStore";
 export default function Builder() {
   const [omittedItems, setOmittedItems] = useState(false);
   const [linkError, setLinkError] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+  // Wide screens browse beside the preview; phones and portrait tablets browse in a bottom sheet under a
+  // full-width character. Only one item browser is mounted, so its icons are requested once.
+  const wide = useMediaQuery("(min-width: 1024px)");
   const routerLocation = useLocation();
   // Support legacy query links and compact hash navigation without a page reload.
   // Migrate historical slots before filtering availability; report omissions or
@@ -39,9 +48,25 @@ export default function Builder() {
       console.warn("[outfit] ignoring invalid share code", e);
     }
   }, [routerLocation.search]);
+  const notices = <>
+    {omittedItems && <p role="status" className="text-xs text-amber-300">Some items in this link aren’t available in this catalog and were left out.</p>}
+    {linkError && <p role="alert" className="text-xs text-amber-300">This outfit link could not be read. Your current selection has been kept.</p>}
+  </>;
   return (
-    <main className="mx-auto flex h-dvh max-w-6xl flex-col gap-3 overflow-y-auto px-3 py-3 sm:px-5 lg:gap-6 lg:overflow-hidden lg:py-6">
-      <header className="grid shrink-0 gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-8">
+    <main className="flex h-dvh flex-col overflow-hidden lg:mx-auto lg:max-w-6xl lg:gap-6 lg:px-5 lg:py-6">
+      <div className="flex h-12 shrink-0 items-center justify-between gap-2 border-b border-neutral-900 px-3 pt-[env(safe-area-inset-top)] lg:hidden">
+        <div className="min-w-0 leading-tight">
+          <p className="truncate text-[10px] uppercase tracking-widest text-neutral-500">the-finals-outfit</p>
+          <h1 className="truncate text-sm font-semibold">{DEVELOPER_CATALOG ? "Developer catalog" : "Outfit builder"}</h1>
+        </div>
+        <button onClick={() => setMenuOpen(true)} aria-haspopup="dialog"
+          className="shrink-0 rounded-lg bg-neutral-800 px-3 py-1.5 text-xs font-medium text-neutral-100 hover:bg-neutral-700">
+          Share · About
+        </button>
+      </div>
+      {!wide && (omittedItems || linkError) && <div className="shrink-0 px-3 py-1">{notices}</div>}
+      {menuOpen && !wide && <MobileMenu onClose={closeMenu} />}
+      <header className="hidden shrink-0 gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-8">
         <div className="min-w-0 space-y-1">
         <p className="text-xs uppercase tracking-widest text-neutral-500">
           the-finals-outfit
@@ -57,8 +82,7 @@ export default function Builder() {
           ? <p className="text-xs text-amber-300">Full extracted catalog · internal names · may include unreleased items. Unlisted, publicly accessible.</p>
           : <p className="text-xs text-neutral-500">{PUBLIC_CATALOG_COUNT} cosmetics. Names and previews are being improved.</p>}
         <ShareBuild />
-        {omittedItems && <p role="status" className="text-xs text-amber-300">Some items in this link aren’t available in this catalog and were left out.</p>}
-        {linkError && <p role="alert" className="text-xs text-amber-300">This outfit link could not be read. Your current selection has been kept.</p>}
+        {wide && notices}
         </div>
         <div className="space-y-3 lg:justify-self-end lg:self-center">
           <CatalogUpdateNote />
@@ -66,16 +90,26 @@ export default function Builder() {
         </div>
       </header>
 
-      <div className="grid min-h-[840px] flex-1 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-3 lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-6">
-        <section aria-label="3D outfit preview" className="min-h-0 min-w-0 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/40 p-3 lg:p-4">
+      <div className="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-6">
+        {/* The viewer keeps its place in the tree at every width, so a rotation never reloads the character. */}
+        <section aria-label="3D outfit preview" className="min-h-0 min-w-0 flex-1 overflow-hidden lg:rounded-2xl lg:border lg:border-neutral-800 lg:bg-neutral-900/40 lg:p-4">
           <PreviewPane />
         </section>
-        <section aria-label="Cosmetic browser" className="min-h-0 min-w-0 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/40 p-3 lg:p-4">
-          <SlotPicker />
-        </section>
+        {wide ? (
+          <section aria-label="Cosmetic browser" className="min-h-0 min-w-0 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4">
+            <SlotPicker />
+          </section>
+        ) : (
+          <MobileSheet>
+            <BuildList variant="strip" />
+            <section aria-label="Cosmetic browser" className="flex min-h-0 flex-1 flex-col">
+              <SlotPicker />
+            </section>
+          </MobileSheet>
+        )}
       </div>
 
-      <footer className="grid shrink-0 gap-3 text-[10px] text-neutral-500 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-end lg:gap-6 lg:text-xs">
+      <footer className="hidden shrink-0 gap-3 text-[10px] text-neutral-500 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-end lg:gap-6 lg:text-xs">
         <p>Fan-made project. THE FINALS is a trademark of Embark Studios AB.
           {" "}<a href="https://www.thefinals.wiki/wiki/All_Cosmetics" target="_blank" rel="noreferrer" className="underline">Cosmetic names: THE FINALS Wiki</a>.
         </p>
