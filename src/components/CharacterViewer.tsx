@@ -1,6 +1,6 @@
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
@@ -23,6 +23,7 @@ import { buildShareUrl } from "../lib/share-url";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { setPreviewScene } from "../lib/viewer-handle";
 import { SLOTS, type Slot } from "../lib/slots";
+import { getDownloadProgress, subscribeDownloadProgress } from "../lib/load-progress";
 import type { Item } from "../lib/item";
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
@@ -130,6 +131,14 @@ type RigHarness = { __rigIdle?: boolean; __sourceAssembly?: SourceOutfit };
 const rigHarness = () => window as unknown as RigHarness;
 // Cached selections settle almost immediately; only announce work that is still running after this.
 const BUSY_INDICATOR_DELAY_MS = 150;
+
+// The bytes the current pass has downloaded (load-progress.ts): "12.3 / 45.6 MB" while the character loads, whose
+// files are all requested at once, and "12.3 MB" for an outfit, whose files become known only as each item is
+// staged (a total that keeps catching up would read as finished). Nothing until something has been announced.
+const megabytes = (bytes: number) => (bytes / 1048576).toFixed(1);
+function formatDownload(loaded: number, total: number): string | null {
+  return total > 0 ? `${megabytes(Math.min(loaded, total))} / ${megabytes(total)} MB` : null;
+}
 
 const sourcePreviewKey = (id: string, item: SourceOutfit['items'][string], skinParameters: SourceMaterialParameters[] = []) =>
   `${id}|parts:${JSON.stringify(item.parts)}|parameters:${JSON.stringify([item.materialParameters, skinParameters])}`;
@@ -409,8 +418,17 @@ export default function CharacterViewer() {
   const [busy, setBusy] = useState(true);
   const [showBusy, setShowBusy] = useState(false);
   const operation = useRef(0);
+  // Download counters when the current pass began: the indicator shows this pass's bytes only.
+  const progressBase = useRef(getDownloadProgress());
+  const progress = useSyncExternalStore(subscribeDownloadProgress, getDownloadProgress);
+  const download = formatDownload(progress.loaded - progressBase.current.loaded, progress.total - progressBase.current.total);
+  const downloaded = progress.loaded > progressBase.current.loaded
+    ? `${megabytes(progress.loaded - progressBase.current.loaded)} MB` : null;
+  const downloadFraction = progress.total > progressBase.current.total
+    ? (progress.loaded - progressBase.current.loaded) / (progress.total - progressBase.current.total) : 0;
   const beginOperation = useCallback(() => {
     const id = ++operation.current;
+    progressBase.current = getDownloadProgress();
     setBusy(true);
     rigHarness().__rigIdle = false;
     return id;
@@ -998,8 +1016,16 @@ export default function CharacterViewer() {
       {DEV.tune && ready && <MaterialTuner rig={rig} />}
       {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} />}
       {!ready && !error && (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center text-sm text-neutral-500">
-          Loading model…
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
+          <div className="flex w-48 flex-col items-center gap-3 text-neutral-600">
+            <span className="h-8 w-8 rounded-full border-2 border-neutral-400/40 border-t-neutral-700 motion-safe:animate-spin" />
+            <span className="text-sm font-medium">Loading character…</span>
+            <span className="h-1 w-full overflow-hidden rounded-full bg-neutral-400/30">
+              <span className="block h-full rounded-full bg-neutral-700 transition-[width] duration-200"
+                style={{ width: `${Math.round(Math.min(1, downloadFraction) * 100)}%` }} />
+            </span>
+            <span className="font-mono text-xs tabular-nums">{download ?? "\u00a0" /* keeps the line height */}</span>
+          </div>
         </div>
       )}
       {/* Bottom stack: the loading pill sits above any error, so a failed slot never hides
@@ -1009,7 +1035,7 @@ export default function CharacterViewer() {
           {!ready && !error ? <span className="sr-only">Loading model…</span> : showBusy && (
             <span className="flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white shadow-sm backdrop-blur">
               <span aria-hidden="true" className="h-3 w-3 shrink-0 rounded-full border-2 border-white/30 border-t-white motion-safe:animate-spin" />
-              Loading outfit…
+              Loading outfit…{downloaded && <span className="font-mono tabular-nums opacity-75">{downloaded}</span>}
             </span>
           )}
         </div>

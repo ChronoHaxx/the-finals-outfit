@@ -1,3 +1,5 @@
+import { trackDownload } from "./load-progress";
+
 const TRANSIENT = new Set([408, 429, 500, 502, 503, 504]);
 
 // Only retry failed downloads. Parsing, integrity and unsupported-material errors
@@ -12,7 +14,7 @@ export async function fetchAsset(url: string): Promise<Response> {
       await new Promise(resolve => setTimeout(resolve, 400 * 2 ** attempt));
       continue;
     }
-    if (response.ok) return response;
+    if (response.ok) return trackDownload(response); // counted for the loading indicator
     if (!TRANSIENT.has(response.status) || attempt >= 2) {
       throw new Error(`Asset download failed (${response.status}): ${url}`);
     }
