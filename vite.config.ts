@@ -1,4 +1,6 @@
 import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -14,7 +16,8 @@ function reconstructionRoutesDefine(env: Record<string, string>) {
   if (!file) return {};
   if (env.VITE_RECONSTRUCTION_ROUTES?.trim())
     throw new Error("Set VITE_RECONSTRUCTION_ROUTES or VITE_RECONSTRUCTION_ROUTES_FILE, not both");
-  const routes = readFileSync(file, "utf8").trim();
+  // Relative to this project, like the validator's RECONSTRUCTION_ROUTES_FILE, not to the shell's directory.
+  const routes = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), file), "utf8").trim();
   parseReconstructionRoutes(routes); // refuse a malformed map at build time
   return { "import.meta.env.VITE_RECONSTRUCTION_ROUTES": JSON.stringify(routes) };
 }
