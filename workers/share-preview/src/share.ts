@@ -64,7 +64,9 @@ export function previewPage(env: Env, self: string, image: string | null, code: 
   const twitter = [["twitter:card", image ? "summary_large_image" : "summary"], ["twitter:title", title],
     ...(image ? [["twitter:image", image]] : [])].map(([name, content]) => `<meta name="${name}" content="${escape(content)}">`);
   // No meta refresh: some crawlers follow it and would read the app's generic tags instead of these.
+  // noindex: each share page is a per-person redirect, not a page to rank; link-preview bots ignore it.
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${escape(title)}</title>
+<meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#5b8def">
 ${[...meta, ...twitter].join("\n")}
 <script>location.replace(${JSON.stringify(app).replace(/</g, "\\u003c")})</script></head>
