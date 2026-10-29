@@ -79,6 +79,8 @@ test("an allowed upload is stored with its code and a TTL, and its page carries 
   assert.match(page, /<meta name="twitter:card" content="summary_large_image">/);
   assert.match(page, /location\.replace\("https:\/\/chronohaxx\.github\.io\/the-finals-outfit\/#\/\?o=2\.12a\.3bc"\)/);
   assert.doesNotMatch(page, /http-equiv="refresh"/);
+  // Share pages are per-person redirects: kept out of search results, still read by link-preview bots.
+  assert.match(page, /<meta name="robots" content="noindex">/);
 
   const image = await worker.fetch(new Request(`${BASE}/i/${id}.jpg`), e);
   assert.equal(image.headers.get("Content-Type"), "image/jpeg");
@@ -121,6 +123,7 @@ test("an expired link still opens its outfit with the generic card; the stored c
   const expired = await (await worker.fetch(new Request(`${BASE}/s/AAAAAAAAAAAA?o=2.12a`), e)).text();
   assert.doesNotMatch(expired, /og:image/);
   assert.match(expired, /<meta name="twitter:card" content="summary">/);
+  assert.match(expired, /<meta name="robots" content="noindex">/);
   assert.match(expired, /#\/\?o=2\.12a"\)/);
 
   const { url } = await (await upload(e, jpeg(1200, 630), { code: "2.12a" })).json() as { url: string };

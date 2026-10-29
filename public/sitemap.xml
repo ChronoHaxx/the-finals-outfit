@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The builder is one page; other routes are served by the SPA fallback (HTTP 404) and are not listed. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://chronohaxx.github.io/the-finals-outfit/</loc>
+  </url>
+</urlset>
