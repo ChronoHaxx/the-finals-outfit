@@ -262198,28 +262198,154 @@
     "slot": "bodyPaint",
     "name": "Body Paint Black Gold 01",
     "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-blackgold-01.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-b-v1/bodycosmetics-bodypaint-blackgold-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-b-v1/bodycosmetics-bodypaint-blackgold-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-b-v1/bodycosmetics-bodypaint-blackgold-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-b-v1/bodycosmetics-bodypaint-blackgold-01-head_m.png",
+          "surfaceOverride": 1,
+          "normalOverride": 0.20000000298023224
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-bodypaint-marble-01",
     "slot": "bodyPaint",
     "name": "Body Paint Marble 01",
     "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-marble-01.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-bodypaint-marble-02",
     "slot": "bodyPaint",
     "name": "Body Paint Marble 02",
     "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-marble-02.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-02-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-02-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-02-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-02-head_m.png",
+          "surfaceOverride": 0,
+          "normalOverride": 0.8999999761581421
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-bodypaint-wraith-03",
     "slot": "bodyPaint",
     "name": "Bodypaint Wraith 03",
     "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-wraith-03.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-wraith-03-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-wraith-03-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-wraith-03-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-earrings-crocodiletooth-01",
@@ -262261,35 +262387,129 @@
     "slot": "blush",
     "name": "Makeup Fancy Makeup 01",
     "imageUrl": "items/blush/bodycosmetics-makeup-fancymakeup-01.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-fancymakeup-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-makeup-jester-02",
     "slot": "blush",
     "name": "Makeup Jester 02",
     "imageUrl": "items/blush/bodycosmetics-makeup-jester-02.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-jester-02-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-makeup-skull-06",
     "slot": "bodyPaint",
     "name": "Makeup Skull 06",
     "imageUrl": "items/bodyPaint/bodycosmetics-makeup-skull-06.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-skull-06-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-skull-06-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-skull-06-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-makeup-smudgedeyes-01",
     "slot": "blush",
     "name": "Makeup Smudged Eyes 01",
     "imageUrl": "items/blush/bodycosmetics-makeup-smudgedeyes-01.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-smudgedeyes-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-makeup-smudgedface-01",
     "slot": "blush",
     "name": "Makeup Smudged Face 01",
     "imageUrl": "items/blush/bodycosmetics-makeup-smudgedface-01.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-smudgedface-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-nails-tribal-01",
@@ -262303,14 +262523,46 @@
     "slot": "tattoo",
     "name": "Tattoos Biker 01",
     "imageUrl": "items/tattoo/bodycosmetics-tattoos-biker-01.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-tattoos-biker-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0,
+          "colorMultiply": "nonMasked"
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-tattoos-halloween2026-01",
     "slot": "tattoo",
     "name": "Tattoos Halloween 2026 01",
     "imageUrl": "items/tattoo/bodycosmetics-tattoos-halloween2026-01.webp",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-tattoos-halloween2026-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0,
+          "colorMultiply": "nonMasked"
+        }
+      ]
+    }
   },
   {
     "id": "bodycosmetics-tattoos-sponsorospuze-02",
@@ -262318,7 +262570,35 @@
     "name": "Tattoos Sponsor Ospuze 02",
     "imageUrl": "items/tattoo/bodycosmetics-tattoos-sponsorospuze-02.webp",
     "sponsor": "ospuze",
-    "season": 12
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-tattoos-sponsorospuze-02-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0.30000001192092896,
+          "colorMultiply": "nonMasked"
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-tattoos-sponsorospuze-02-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0.4000000059604645,
+          "colorMultiply": "nonMasked"
+        }
+      ]
+    }
   },
   {
     "id": "casual-basictshirt-cotton-sponsoralfaacta",
