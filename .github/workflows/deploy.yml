@@ -25,9 +25,9 @@ jobs:
     env:
       # Pin code and artwork in the same revision. The immutable deployment also
       # leaves the older production asset URL available during review/rollback.
-      ASSETS_BASE: https://b54c8f56.the-finals-outfit-assets.pages.dev/
+      ASSETS_BASE: https://d0b954a8.the-finals-outfit-assets.pages.dev/
       MODELS_BASE: https://a029b249.the-finals-outfit-assets.pages.dev/
-      RECONSTRUCTION_BASE: https://def19d66.the-finals-outfit-assets.pages.dev/
+      RECONSTRUCTION_BASE: https://e411c745.the-finals-outfit-assets.pages.dev/
       # Link-preview Worker (workers/share-preview). Blank hides the "Link with preview image" option.
       SHARE_PREVIEW_BASE: https://the-finals-outfit-share.chronohaxx.workers.dev
       # Non-primary reconstruction packages (scripts/asset-shard-config.mjs), committed as a file: at 547 prefixes the
