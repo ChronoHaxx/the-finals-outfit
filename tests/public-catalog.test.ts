@@ -16,10 +16,11 @@ test('public display names do not change asset identity or hide unmatched items'
   assert.ok(getBrowseItem(unknown, true));
   assert.ok(getItemById(unknown)); // still available to the renderer / developer catalog
   // 36 since 25 Sep 2026: 18 hip-socket items (EBodySlot::BackLowerRight only) moved here from other slots;
-  // 41 and 194 hairs since the Season 11 import (18 Oct 2026, 5 lower-back items and 9 hairs).
-  assert.equal(getBrowseItemsBySlot('lowerBack', true).length, 41);
-  assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 41);
-  assert.equal(getBrowseItemsBySlot('hair', false).length, 194);
+  // 41 and 194 hairs since the Season 11 import (18 Oct 2026, 5 lower-back items and 9 hairs);
+  // 44 and 201 since the Season 12 import (28 Oct 2026, 3 lower-back items and 7 hairs).
+  assert.equal(getBrowseItemsBySlot('lowerBack', true).length, 44);
+  assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 44);
+  assert.equal(getBrowseItemsBySlot('hair', false).length, 201);
   assert.ok(getBrowseItem('hairs-afrofade', false));
   assert.equal(PUBLIC_CATALOG_COUNT, getAllItems().length);
 });
@@ -67,7 +68,7 @@ test('fresh exact names fill gaps while keeping original identities and descript
     assert.ok(!/\{\d+\}/.test(name), itemId);
     assert.equal(getBrowseItem(itemId, true)?.name, getItemById(itemId)?.name);
   }
-  assert.equal(PUBLIC_CATALOG_COUNT, 3113);
+  assert.equal(PUBLIC_CATALOG_COUNT, 3255); // 3,113 + 142 Season 12 items (28 Oct 2026)
 });
 
 test('generic source names keep descriptive styles and colours without losing identity', () => {

@@ -258,5 +258,9 @@
   "attachments-guitar-02-back": {
     "status": "issue",
     "note": "Known visual error (w73-s12-pilot review, 27 Oct 2026): shape, purple body, fretboard and studs match, but the fully metallic plate and headstock (metalness about 1, roughness about 0.5, mid-grey base colour) read pale champagne and white against the icon's dark gunmetal chrome: the game studio's darker environment reflected in metal, held decision #3 (studio lighting). Evidence: _docs/goal-100-2026-10-11/w73-s12-pilot/review-v1/README.md, _docs/goal-100-2026-10-11/w73-s12-pilot/review-v1/guitar-icon-vs-full-back.png, _docs/goal-100-2026-10-11/w73-s12-pilot/review-prep-v1/surface-guitar-v1/sheet.png."
+  },
+  "alfaacta-trailstove-metal": {
+    "status": "issue",
+    "note": "Known visual error (w76-s12-wave review, 29 Oct 2026): shape, straps and lower-back placement match, but the metal canister reads pale against the icon's darker metal: the game studio's darker environment reflected in metal, held decision #3 (studio lighting), as the wave 53 guitar plate. Evidence: _docs/goal-100-2026-10-11/w76-s12-wave/review-v1/README.md, _docs/goal-100-2026-10-11/w76-s12-wave/review-prep-v1/zoom-sheets-v1/zoom-03.jpg."
   }
 }
