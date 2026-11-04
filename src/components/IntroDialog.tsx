@@ -109,7 +109,7 @@ function IntroContent({ fresh }: { fresh: number }) {
             </p>
 
             <dl className="mt-8 grid max-w-md animate-rise grid-cols-3 divide-x divide-line border-y border-line [animation-delay:150ms]">
-              {[[stats.items.toLocaleString("en"), "Cosmetics"], [String(stats.slots), "Slots"], [`S1–${CATALOG_UPDATE.throughSeason}`, "Seasons"]]
+              {[[stats.items.toLocaleString("en"), "Cosmetics"], [String(stats.slots), "Categories"], [`S1–${CATALOG_UPDATE.throughSeason}`, "Seasons"]]
                 .map(([value, label]) => <div key={label} className="flex flex-col-reverse gap-1 px-4 py-3 first:pl-0">
                   <dt className="hud text-fg-dim">{label}</dt>
                   <dd className="display text-[36px] tabular-nums">{value}</dd>

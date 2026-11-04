@@ -10,11 +10,11 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
-    id: "2026-11-03-new-look",
-    date: "2026-11-03",
+    id: "2026-11-04-new-look",
+    date: "2026-11-04",
     title: "New look",
     notes: [
-      "The builder is rebuilt around the 3D preview. The slot list shows what each slot is wearing.",
+      "The builder is rebuilt around the 3D preview. The category list shows what you are wearing in each.",
       "This welcome screen and these patch notes. They come back only when something new ships.",
       "On phones the preview stays on screen while you browse, and equipping in large slots is quicker.",
     ],
