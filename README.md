@@ -158,6 +158,14 @@ report without writing, or `-- --aspect=NAME` / `-- --limit=N` to narrow a run.
 Run `npm run validate:catalog` before opening the PR. The workflow blocks
 deploys if the catalog is invalid.
 
+The catalog is not bundled into the app's JavaScript. `src/lib/catalog-files.ts`
+lists each catalog file and what ships from it: the build validates the items,
+keeps only the fields the app reads, and emits each file as a hashed JSON asset that
+`index.html` preloads; the app renders once they have loaded. A new field in, say,
+`wiki-catalog.json` reaches the browser only after it is added to that projection.
+`npm run check:catalog-split` (run in CI after the build) fails if catalog data ends
+up back in a JavaScript chunk.
+
 ## Reporting preview problems
 
 Under the preview, **Report issue** (whole outfit) or the flag beside an equipped

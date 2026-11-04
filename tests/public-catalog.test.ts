@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import './helpers/load-catalog';
 import { getAllItems, getItemById } from '../src/lib/catalog';
-import { filterBrowseBuild, getBrowseItem, getBrowseItemsBySlot, getPublicCatalogItem, PUBLIC_CATALOG_COUNT } from '../src/lib/browse-catalog';
+import { filterBrowseBuild, getBrowseItem, getBrowseItemsBySlot, getPublicCatalogItem, getPublicCatalogCount } from '../src/lib/browse-catalog';
 import { isDeveloperCatalogPath } from '../src/lib/catalog-mode';
 import { getReconstructionReview } from '../src/lib/reconstruction-status';
 import { buildShareUrl, readOutfitLink } from '../src/lib/share-url';
@@ -20,7 +21,7 @@ test('public display names do not change asset identity or hide unmatched items'
   assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 36);
   assert.equal(getBrowseItemsBySlot('hair', false).length, 185);
   assert.ok(getBrowseItem('hairs-afrofade', false));
-  assert.equal(PUBLIC_CATALOG_COUNT, getAllItems().length);
+  assert.equal(getPublicCatalogCount(), getAllItems().length);
 });
 
 test('matched wiki names retain one-to-one provenance without restricting unmatched names', () => {
@@ -66,7 +67,7 @@ test('fresh exact names fill gaps while keeping original identities and descript
     assert.ok(!/\{\d+\}/.test(name), itemId);
     assert.equal(getBrowseItem(itemId, true)?.name, getItemById(itemId)?.name);
   }
-  assert.equal(PUBLIC_CATALOG_COUNT, 2866);
+  assert.equal(getPublicCatalogCount(), 2866);
 });
 
 test('generic source names keep descriptive styles and colours without losing identity', () => {

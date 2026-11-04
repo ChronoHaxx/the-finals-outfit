@@ -11,3 +11,8 @@ interface ImportMetaEnv {
   // Optional origin of the link-preview Worker (workers/share-preview). Unset turns preview links off.
   readonly VITE_SHARE_PREVIEW_BASE?: string;
 }
+
+// Emitted by the catalog-assets plugin in vite.config.ts: one URL per catalog JSON file.
+declare module "virtual:catalog-assets" {
+  export const CATALOG_URLS: Readonly<Record<import("./lib/catalog-files").CatalogFileKey, string>>;
+}

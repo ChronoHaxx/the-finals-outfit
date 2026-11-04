@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import './helpers/load-catalog';
 import { buildShareUrl, readOutfitLink } from '../src/lib/share-url';
 import { getAllItems } from '../src/lib/catalog';
 import registry from '../src/data/share-item-ids.json';
