@@ -1,7 +1,6 @@
-import rawItems from "../data/items.json";
 import rawSponsors from "../data/sponsors.json";
+import type { CatalogData } from "./catalog-files";
 import {
-  CatalogSchema,
   SponsorsSchema,
   type Item,
   type Rarity,
@@ -10,37 +9,80 @@ import {
 } from "./item";
 import { SLOTS, type Slot } from "./slots";
 
-const ITEMS: readonly Item[] = Object.freeze(CatalogSchema.parse(rawItems));
+// The catalog JSON is fetched beside the entry chunk (catalog-load.ts) instead of being
+// bundled into it, but every getter here stays synchronous: src/main.tsx renders nothing
+// until installCatalog() has run, so components never observe a half-loaded catalog.
+// Anything derived from the catalog must be computed on first use (derivedFromCatalog),
+// never at module load, because modules evaluate before the data arrives.
+// The items arrive already validated: the build ran them through CatalogSchema
+// (catalog-files.ts) and serves exactly that output under a content hash.
+
+export type CatalogSideData = Omit<CatalogData, "items">;
+
 const SPONSORS: readonly Sponsor[] = Object.freeze(
   SponsorsSchema.parse(rawSponsors),
 );
-
 const SPONSOR_IDS = new Set(SPONSORS.map((s) => s.id));
-for (const item of ITEMS) {
-  if (item.sponsor && !SPONSOR_IDS.has(item.sponsor)) {
-    throw new Error(
-      `Item '${item.id}' references unknown sponsor '${item.sponsor}'`,
-    );
+
+interface Installed {
+  items: readonly Item[];
+  bySlot: Record<Slot, Item[]>;
+  byId: Map<string, Item>;
+  side: CatalogSideData;
+}
+let installed: Installed | undefined;
+let generation = 0;
+
+export function installCatalog(data: CatalogData): void {
+  const { items: shippedItems, ...side } = data;
+  const items: readonly Item[] = Object.freeze(shippedItems);
+  for (const item of items) {
+    if (item.sponsor && !SPONSOR_IDS.has(item.sponsor)) {
+      throw new Error(
+        `Item '${item.id}' references unknown sponsor '${item.sponsor}'`,
+      );
+    }
   }
+  const bySlot = Object.fromEntries(
+    SLOTS.map((s) => [s, [] as Item[]]),
+  ) as Record<Slot, Item[]>;
+  for (const item of items) bySlot[item.slot].push(item);
+  installed = { items, bySlot, byId: new Map(items.map((i) => [i.id, i])), side };
+  generation++;
 }
 
-const BY_SLOT: Record<Slot, Item[]> = Object.fromEntries(
-  SLOTS.map((s) => [s, [] as Item[]]),
-) as Record<Slot, Item[]>;
-for (const item of ITEMS) BY_SLOT[item.slot].push(item);
+function catalog(): Installed {
+  if (!installed) {
+    throw new Error("Catalog read before it loaded. Render only after loadCatalog() resolves (src/main.tsx); tests import tests/helpers/load-catalog.ts.");
+  }
+  return installed;
+}
 
-const BY_ID = new Map<string, Item>(ITEMS.map((i) => [i.id, i]));
+// Memoizes a value computed from the catalog, recomputed if a catalog is installed again.
+export function derivedFromCatalog<T>(build: () => T): () => T {
+  let cached: { generation: number; value: T } | undefined;
+  return () => {
+    catalog();
+    if (cached?.generation !== generation) cached = { generation, value: build() };
+    return cached.value;
+  };
+}
+
+// The non-item catalog files (wiki names, share IDs, equipment slots).
+export function getCatalogData(): CatalogSideData {
+  return catalog().side;
+}
 
 export function getAllItems(): readonly Item[] {
-  return ITEMS;
+  return catalog().items;
 }
 
 export function getItemsBySlot(slot: Slot): readonly Item[] {
-  return BY_SLOT[slot];
+  return catalog().bySlot[slot];
 }
 
 export function getItemById(id: string): Item | undefined {
-  return BY_ID.get(id);
+  return catalog().byId.get(id);
 }
 
 export function getSponsors(): readonly Sponsor[] {
@@ -49,7 +91,7 @@ export function getSponsors(): readonly Sponsor[] {
 
 export function getSeasons(): readonly (number | "beta" | "launch")[] {
   const set = new Set<number | "beta" | "launch">();
-  for (const item of ITEMS) if (item.season !== undefined) set.add(item.season);
+  for (const item of getAllItems()) if (item.season !== undefined) set.add(item.season);
   return [...set].sort((a, b) => {
     const rank = (v: number | "beta" | "launch") =>
       v === "beta" ? -1 : v === "launch" ? 0 : v;
@@ -59,12 +101,12 @@ export function getSeasons(): readonly (number | "beta" | "launch")[] {
 
 export function getRarities(): readonly Rarity[] {
   const set = new Set<Rarity>();
-  for (const item of ITEMS) if (item.rarity !== undefined) set.add(item.rarity);
+  for (const item of getAllItems()) if (item.rarity !== undefined) set.add(item.rarity);
   return [...set];
 }
 
 export function getSources(): readonly Source[] {
   const set = new Set<Source>();
-  for (const item of ITEMS) if (item.source !== undefined) set.add(item.source);
+  for (const item of getAllItems()) if (item.source !== undefined) set.add(item.source);
   return [...set];
 }

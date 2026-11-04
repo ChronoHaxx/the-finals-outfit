@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import './helpers/load-catalog.ts';
 import { classifySlot } from '../scripts/lib/catalog-slots.ts';
 import { LEGACY_SLOT_MIGRATIONS, migrateSlots, migrateOutfit } from '../src/lib/outfit-slots.ts';
 import { encodeOutfit, decodeOutfit } from '../src/lib/outfit.ts';

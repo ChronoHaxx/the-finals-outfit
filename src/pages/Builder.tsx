@@ -4,7 +4,7 @@ import PreviewPane from "../components/PreviewPane";
 import SlotPicker from "../components/SlotPicker";
 import { readOutfitLink } from "../lib/share-url";
 import { migrateOutfit } from "../lib/outfit-slots";
-import { filterBrowseBuild, PUBLIC_CATALOG_COUNT } from "../lib/browse-catalog";
+import { filterBrowseBuild, getPublicCatalogCount } from "../lib/browse-catalog";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import ShareBuild from "../components/ShareBuild";
 import CatalogProgress from "../components/CatalogProgress";
@@ -55,7 +55,7 @@ export default function Builder() {
         </p>
         {DEVELOPER_CATALOG
           ? <p className="text-xs text-amber-300">Full extracted catalog · internal names · may include unreleased items. Unlisted, publicly accessible.</p>
-          : <p className="text-xs text-neutral-500">{PUBLIC_CATALOG_COUNT} cosmetics. Names and previews are being improved.</p>}
+          : <p className="text-xs text-neutral-500">{getPublicCatalogCount()} cosmetics. Names and previews are being improved.</p>}
         <ShareBuild />
         {omittedItems && <p role="status" className="text-xs text-amber-300">Some items in this link aren’t available in this catalog and were left out.</p>}
         {linkError && <p role="alert" className="text-xs text-amber-300">This outfit link could not be read. Your current selection has been kept.</p>}

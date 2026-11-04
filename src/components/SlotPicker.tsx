@@ -1,20 +1,22 @@
 import { useMemo, useState } from "react";
 import { SLOTS, SLOT_LABELS, type Slot } from "../lib/slots";
 import { getBrowseItemsBySlot as getItemsBySlot } from "../lib/browse-catalog";
+import { derivedFromCatalog } from "../lib/catalog";
 import { useBuildStore } from "../store/useBuildStore";
 import { assetUrl } from "../lib/assets";
 import { useReconstructionProgress } from "../context/ReconstructionProgress";
 import { getReconstructionReview, REVIEW_LABELS, REVIEW_STYLES, type ReviewStatus } from "../lib/reconstruction-status";
 
 // Slots that actually have items (skips empty ones like bodyType/emote for now).
-const NON_EMPTY: Slot[] = SLOTS.filter((s) => getItemsBySlot(s).length > 0);
+const nonEmptySlots = derivedFromCatalog((): Slot[] => SLOTS.filter((s) => getItemsBySlot(s).length > 0));
 
 // Source assemblies can render without a legacy catalog mesh (for example Knight Pants No Skirt).
 const isRenderable = (i: { id: string; model?: unknown; decal?: unknown }, sourceItems: ReadonlySet<string>) =>
   !!(i.model || i.decal || sourceItems.has(i.id));
 
 export default function SlotPicker() {
-  const [slot, setSlot] = useState<Slot>(NON_EMPTY[0] ?? "upperBody");
+  const nonEmpty = nonEmptySlots();
+  const [slot, setSlot] = useState<Slot>(nonEmpty[0] ?? "upperBody");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<ReviewStatus | "all">("all");
   const { workedOn, state: progressState } = useReconstructionProgress();
@@ -32,7 +34,7 @@ export default function SlotPicker() {
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
       <div className="flex max-h-20 shrink-0 flex-wrap gap-1.5 overflow-y-auto overscroll-contain lg:max-h-40">
-        {NON_EMPTY.map((s) => (
+        {nonEmpty.map((s) => (
           <button
             key={s}
             onClick={() => {
