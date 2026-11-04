@@ -7,6 +7,7 @@ import Outfit from "./pages/Outfit";
 import NotFound from "./pages/NotFound";
 import Roadmap from "./pages/Roadmap";
 import { ReconstructionProgressProvider } from "./context/ReconstructionProgress";
+import IntroDialog from "./components/IntroDialog";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -18,6 +19,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/o/:code" element={<Outfit />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <IntroDialog />
       </ReconstructionProgressProvider>
     </HashRouter>
   </StrictMode>,

@@ -60,7 +60,7 @@ export default function OutfitExportPanel({ rig, context, busy }: {
   };
 
   return (
-    <details className="absolute right-2 top-10 z-10 w-60 rounded-md bg-black/60 text-xs text-white backdrop-blur">
+    <details className="absolute right-3 top-14 z-10 w-60 bg-ink-950/90 text-xs text-white">
       <summary className="cursor-pointer select-none px-2.5 py-1 font-medium">Export 3D</summary>
       <div className="space-y-2 px-2.5 pb-2.5">
         <label className="flex items-center justify-between gap-2">

@@ -1,6 +1,6 @@
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
@@ -23,6 +23,7 @@ import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { setPreviewScene } from "../lib/viewer-handle";
 import { SLOTS, type Slot } from "../lib/slots";
 import type { Item } from "../lib/item";
+import { AUTOMATED } from "../lib/automation";
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
 const NAIL_MASK_URL = modelUrl("models/decals/_shared/nailmask.webp");
@@ -363,6 +364,7 @@ export default function CharacterViewer() {
   const [theme, setTheme] = useState<SceneTheme>("studio");
   const exportContext = useRef<ExportContext | null>(null);
   const build = useBuildStore((s) => s.build);
+  const equippedCount = SLOTS.filter((slot) => build[slot]).length;
   const prev = useRef<Partial<Record<Slot, string | null>>>({});
   // The item whose companion decal is installed for each slot (null: none).
   const companions = useRef<Partial<Record<Slot, string | null>>>({});
@@ -870,11 +872,18 @@ export default function CharacterViewer() {
           makeDefault
         />
       </Canvas>
+      {/* Viewfinder corners. Decorative, and kept out of automated canvas captures. */}
+      {!AUTOMATED && <div aria-hidden="true" className="brackets pointer-events-none absolute inset-3 z-[5]"
+        style={{ "--b": theme === "studio" ? "rgb(9 9 11 / 0.32)" : "rgb(242 239 233 / 0.32)" } as CSSProperties} />}
+      {/* No backdrop-filter on anything over the canvas: the canvas repaints every frame, so a
+          blur behind it would be recomputed every frame too — a real cost on phones. */}
       <button
+        type="button"
         onClick={() => setTheme((t) => (t === "studio" ? "lobby" : "studio"))}
         title="Toggle scene lighting"
-        className="absolute right-2 top-2 z-10 rounded-md bg-black/40 px-2.5 py-1 text-xs font-medium text-white backdrop-blur transition hover:bg-black/60"
+        className="hud absolute right-3 top-3 z-10 flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950"
       >
+        <span aria-hidden="true" className={`size-2.5 border border-fg/60 ${theme === "studio" ? "bg-[#dee4eb]" : "bg-[#1b2740]"}`} />
         {theme === "studio" ? "Studio" : "Lobby"}
       </button>
       {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && (
@@ -898,25 +907,38 @@ export default function CharacterViewer() {
       {DEV.tune && ready && <MaterialTuner rig={rig} />}
       {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} />}
       {!ready && !error && (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center text-sm text-neutral-500">
-          Loading model…
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
+          <div className="flex flex-col items-center gap-3">
+            <span className={`hud ${theme === "studio" ? "text-ink-700" : "text-fg-muted"}`}>Loading contestant</span>
+            <span className="relative block h-0.5 w-32 overflow-hidden bg-ink-950/15">
+              <span className="absolute inset-y-0 left-0 w-2/5 animate-sweep bg-finals" />
+            </span>
+          </div>
         </div>
       )}
-      {/* Bottom stack: the loading pill sits above any error, so a failed slot never hides
-          the status of the pass that is still running. */}
-      <div className="pointer-events-none absolute inset-x-2 bottom-2 z-10 flex flex-col items-center gap-2">
+      {/* Bottom-left "lower third", as on a broadcast. The loading tag sits above any error, so a
+          failed slot never hides the status of the pass that is still running. */}
+      <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex flex-col items-start gap-2">
         <div role="status" aria-live="polite">
           {!ready && !error ? <span className="sr-only">Loading model…</span> : showBusy && (
-            <span className="flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white shadow-sm backdrop-blur">
-              <span aria-hidden="true" className="h-3 w-3 shrink-0 rounded-full border-2 border-white/30 border-t-white motion-safe:animate-spin" />
-              Loading outfit…
+            <span className="flex h-8 items-center gap-2.5 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3 text-fg">
+              <span aria-hidden="true" className="relative block h-0.5 w-8 overflow-hidden bg-fg/20">
+                <span className="absolute inset-y-0 left-0 w-2/5 animate-sweep bg-finals" />
+              </span>
+              <span className="hud">Loading outfit…</span>
             </span>
           )}
         </div>
+        {!AUTOMATED && ready && !showBusy && !error && (
+          <span aria-hidden="true" className="flex h-8 animate-fade items-center gap-2 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3">
+            <span className="hud text-fg-dim">Contestant</span>
+            <span className="hud text-fg">Medium · {equippedCount} {equippedCount === 1 ? "piece" : "pieces"}</span>
+          </span>
+        )}
         {error && (
-          <div role="alert" className="pointer-events-auto w-full rounded-lg bg-neutral-950/90 p-3 text-center text-sm text-red-300">
-            <p>{error}</p>
-            {!missingFittingData && <button className="mt-2 rounded bg-neutral-700 px-3 py-1.5 text-white hover:bg-neutral-600"
+          <div role="alert" className="pointer-events-auto flex w-full flex-wrap items-center gap-x-4 gap-y-2 border-l-2 border-finals bg-ink-950/95 px-3 py-2.5 text-sm text-fg">
+            <p className="flex-1">{error}</p>
+            {!missingFittingData && <button type="button" className="hud h-8 shrink-0 bg-fg px-3 text-ink-950 hover:bg-white"
               onClick={() => {
                 if (ready) setRetryAttempt(attempt => attempt + 1);
                 else changePreviewOption("isolate", DEV.isolate ? "1" : "0");

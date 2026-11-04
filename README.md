@@ -177,7 +177,14 @@ note the item ID and body, and keep an item purple in
 **Randomise** picks a rules-based outfit (no AI): core slots are always filled,
 optional slots by chance, locked pieces are kept, and a random hat is not paired
 with a random hairstyle. By default it only uses items that already have
-reconstruction work; tick **Any status** to include the rest.
+reconstruction work; tick **Include red** to include the rest.
+
+**Patch notes** live in `src/data/changelog.ts`, newest first. The welcome screen opens
+on a first visit and again whenever the newest entry's `id` differs from the one the
+visitor last dismissed (kept in `localStorage`), so add an entry only for a change worth
+interrupting people for. Under browser automation (`navigator.webdriver`, as in every
+Playwright harness here) the welcome screen and the decorative stage overlays stay hidden,
+so canvas captures and their baselines are unaffected; see `src/lib/automation.ts`.
 
 ## Roadmap
 

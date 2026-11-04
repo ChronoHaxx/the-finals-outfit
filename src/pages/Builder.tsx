@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import PreviewPane from "../components/PreviewPane";
+import CharacterViewer from "../components/CharacterViewer";
 import SlotPicker from "../components/SlotPicker";
+import OutfitBar from "../components/OutfitBar";
 import { readOutfitLink } from "../lib/share-url";
 import { migrateOutfit } from "../lib/outfit-slots";
-import { filterBrowseBuild, PUBLIC_CATALOG_COUNT } from "../lib/browse-catalog";
+import { filterBrowseBuild } from "../lib/browse-catalog";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
-import ShareBuild from "../components/ShareBuild";
 import CatalogProgress from "../components/CatalogProgress";
-import ProjectLinks from "../components/ProjectLinks";
-import StatusLegend from "../components/StatusLegend";
+import TopBar from "../components/ProjectLinks";
 import CatalogUpdateNote from "../components/CatalogUpdateNote";
+import { CloseIcon } from "../components/Icons";
 import { useBuildStore } from "../store/useBuildStore";
 
 export default function Builder() {
@@ -39,51 +39,50 @@ export default function Builder() {
       console.warn("[outfit] ignoring invalid share code", e);
     }
   }, [routerLocation.search]);
-  return (
-    <main className="mx-auto flex h-dvh max-w-6xl flex-col gap-3 overflow-y-auto px-3 py-3 sm:px-5 lg:gap-6 lg:overflow-hidden lg:py-6">
-      <header className="grid shrink-0 gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-8">
-        <div className="min-w-0 space-y-1">
-        <p className="text-xs uppercase tracking-widest text-neutral-500">
-          the-finals-outfit
-        </p>
-        <h1 className="text-2xl font-semibold sm:text-3xl">
-          {DEVELOPER_CATALOG ? "Developer cosmetic catalog" : "Cosmetic outfit builder"}
-        </h1>
-        <p className="hidden max-w-prose text-sm text-neutral-400 lg:block">
-          Compose a look from THE FINALS cosmetic catalog, then share it by URL.
-          Fan-made, unaffiliated with Embark Studios.
-        </p>
-        {DEVELOPER_CATALOG
-          ? <p className="text-xs text-amber-300">Full extracted catalog · internal names · may include unreleased items. Unlisted, publicly accessible.</p>
-          : <p className="text-xs text-neutral-500">{PUBLIC_CATALOG_COUNT} cosmetics. Names and previews are being improved.</p>}
-        <ShareBuild />
-        {omittedItems && <p role="status" className="text-xs text-amber-300">Some items in this link aren’t available in this catalog and were left out.</p>}
-        {linkError && <p role="alert" className="text-xs text-amber-300">This outfit link could not be read. Your current selection has been kept.</p>}
-        </div>
-        <div className="space-y-3 lg:justify-self-end lg:self-center">
-          <CatalogUpdateNote />
-          <StatusLegend />
-        </div>
-      </header>
+  const dismissNotice = () => { setOmittedItems(false); setLinkError(false); };
 
-      <div className="grid min-h-[840px] flex-1 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] gap-3 lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-6">
-        <section aria-label="3D outfit preview" className="min-h-0 min-w-0 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/40 p-3 lg:p-4">
-          <PreviewPane />
+  // Phone: the page scrolls; the stage is sticky at the top and the slot strip sticks under it,
+  // so the outfit stays in view while you browse. Desktop (lg): a fixed-height three-pane layout
+  // where only the grid and the slot rail scroll.
+  return (
+    <div className="flex min-h-dvh flex-col lg:h-dvh lg:overflow-hidden">
+      <TopBar page="builder" />
+      {DEVELOPER_CATALOG && <p className="border-b border-kept/25 bg-kept/10 px-4 py-2 text-xs text-kept">
+        Full extracted catalog · internal names · may include unreleased items. Unlisted, publicly accessible.
+      </p>}
+      {(omittedItems || linkError) && <div role={linkError ? "alert" : "status"}
+        className="flex items-center gap-3 border-b border-kept/25 bg-kept/10 px-4 py-2 text-xs text-kept">
+        <p className="flex-1">{linkError
+          ? "This outfit link could not be read. Your current selection has been kept."
+          : "Some items in this link aren’t available in this catalog and were left out."}</p>
+        <button type="button" onClick={dismissNotice} aria-label="Dismiss" className="grid size-6 place-items-center hover:text-fg">
+          <CloseIcon size={12} />
+        </button>
+      </div>}
+
+      <main className="grid flex-1 lg:min-h-0 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[minmax(0,1fr)_auto] lg:gap-3 lg:p-3">
+        <section aria-label="3D outfit preview"
+          className="sticky top-0 z-20 h-(--stage-h) overflow-hidden bg-ink-900 lg:static lg:h-auto lg:min-h-0 lg:border lg:border-line">
+          <CharacterViewer />
         </section>
-        <section aria-label="Cosmetic browser" className="min-h-0 min-w-0 overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/40 p-3 lg:p-4">
+        <section aria-label="Your outfit" className="min-w-0 lg:col-start-1 lg:row-start-2">
+          <OutfitBar />
+        </section>
+        <section aria-label="Cosmetic browser"
+          className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:overflow-hidden lg:border lg:border-line lg:bg-ink-950">
           <SlotPicker />
         </section>
-      </div>
+      </main>
 
-      <footer className="grid shrink-0 gap-3 text-[10px] text-neutral-500 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-end lg:gap-6 lg:text-xs">
-        <p>Fan-made project. THE FINALS is a trademark of Embark Studios AB.
-          {" "}<a href="https://www.thefinals.wiki/wiki/All_Cosmetics" target="_blank" rel="noreferrer" className="underline">Cosmetic names: THE FINALS Wiki</a>.
+      <footer className="flex flex-col gap-3 border-t border-line px-3 py-4 lg:h-11 lg:shrink-0 lg:flex-row lg:items-center lg:gap-6 lg:px-4 lg:py-0">
+        <div className="xl:hidden"><CatalogUpdateNote /></div>
+        <div className="lg:shrink-0"><CatalogProgress compact /></div>
+        <p className="text-[11px] leading-relaxed text-fg-dim lg:ml-auto lg:min-w-0 lg:truncate lg:text-right"
+          title="Fan-made, not affiliated with Embark Studios. THE FINALS is a trademark of Embark Studios AB.">
+          Fan-made · THE FINALS is a trademark of Embark Studios AB ·
+          {" "}<a href="https://www.thefinals.wiki/wiki/All_Cosmetics" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-fg">Names: THE FINALS Wiki</a>
         </p>
-        <div className="space-y-2">
-          <CatalogProgress compact />
-          <ProjectLinks />
-        </div>
       </footer>
-    </main>
+    </div>
   );
 }
