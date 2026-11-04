@@ -124,6 +124,23 @@ release; a regression test now covers duplicated meshes and canonical ownership.
 See `_docs/release-integration-2026-10-07/SHARDING.md` in the main workspace for
 the exact evidence and remaining hosted checks.
 
+## UI previews at a sub-path
+
+GitHub Pages publishes one artifact for the whole site, so a UI preview rides along
+with main's deploy. Set `PREVIEW_REF` (a branch) and `PREVIEW_PATH` in
+`.github/workflows/deploy.yml`, and the build job also builds that branch with
+`VITE_BASE=/<repo>/<PREVIEW_PATH>/` into `dist/<PREVIEW_PATH>/`, for example
+`https://chronohaxx.github.io/the-finals-outfit/new-ui-test/`.
+
+- It uses the same pinned asset hosts as production and is marked `noindex`.
+- It refreshes only when main deploys: a push to main, or **Run workflow** on main.
+  Pushing to the preview branch alone does not redeploy it.
+- A missing branch or failed preview build warns and never blocks the production deploy.
+- It shares the production origin, so `localStorage` and the share Worker's origin
+  allowlist apply to both. Plain share links made in the preview open the preview;
+  links with a preview image redirect to the Worker's fixed `APP_URL` (the live app).
+- Clear `PREVIEW_REF` once the preview is merged or abandoned.
+
 ## Release sequence
 
 1. Inventory **only referenced** catalog assets, body-mask companions and active
