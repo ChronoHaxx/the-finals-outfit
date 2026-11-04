@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import './helpers/load-catalog';
 import { getItemById } from '../src/lib/catalog';
 import { equipmentConflicts, resolveEquipmentSlots } from '../src/lib/equipment';
 import { migrateOutfit } from '../src/lib/outfit-slots';

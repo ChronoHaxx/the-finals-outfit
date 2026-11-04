@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import "./helpers/load-catalog";
 import { randomizeBuild, seededRandom, RANDOM_SLOTS, CORE_SLOTS } from "../src/lib/randomize";
 import { issueUrl, issueBody, MAX_ISSUE_URL } from "../src/lib/issue-report";
 import { SLOTS, type Slot } from "../src/lib/slots";

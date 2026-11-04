@@ -1,14 +1,16 @@
-import source from '../data/source-equipment-slots.json';
-import { getItemById } from './catalog';
+import { derivedFromCatalog, getCatalogData, getItemById } from './catalog';
 import { SLOTS, type Slot } from './slots';
 
 type Selection = Readonly<Partial<Record<Slot, string | null>>>;
-const fullBody = new Set(source.fullBody);
-const occupancy: Readonly<Record<string, readonly string[]>> = source.slotsByItem;
+const sourceSlots = derivedFromCatalog(() => {
+  const source = getCatalogData().equipmentSlots;
+  return { fullBody: new Set(source.fullBody), occupancy: source.slotsByItem };
+});
 
 // Deliberately limited to source-declared full-body garments. Applying every
 // source slot as an equipment ban would change existing hair/hat and coat rules.
 export function equipmentConflicts(aSlot: Slot, aId: string, bSlot: Slot, bId: string): boolean {
+  const { fullBody, occupancy } = sourceSlots();
   if (aSlot === bSlot || (!fullBody.has(aId) && !fullBody.has(bId))) return false;
   // Invalid/unknown link entries must not evict valid selections before filtering.
   if (getItemById(aId)?.slot !== aSlot || getItemById(bId)?.slot !== bSlot) return false;
@@ -20,6 +22,7 @@ export function equipmentConflicts(aSlot: Slot, aId: string, bSlot: Slot, bId: s
 export function resolveEquipmentSlots(
   selection: Selection, preferred?: Slot, protectedSlots: ReadonlySet<Slot> = new Set(),
 ): { slots: Partial<Record<Slot, string>>; removed: Slot[] } {
+  const { fullBody } = sourceSlots();
   const rank = (slot: Slot) => slot === preferred ? 0 : protectedSlots.has(slot) ? 1
     : fullBody.has(selection[slot] ?? '') ? 2 : 3;
   const order = [...SLOTS].sort((a, b) => rank(a) - rank(b));

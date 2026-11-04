@@ -1,6 +1,7 @@
 import { memo, useDeferredValue, useMemo, useRef, useState } from "react";
 import { SLOTS, SLOT_LABELS, type Slot } from "../lib/slots";
 import { getBrowseItem, getBrowseItemsBySlot as getItemsBySlot } from "../lib/browse-catalog";
+import { derivedFromCatalog } from "../lib/catalog";
 import type { Item } from "../lib/item";
 import { useBuildStore } from "../store/useBuildStore";
 import { assetUrl } from "../lib/assets";
@@ -8,10 +9,6 @@ import { useReconstructionProgress } from "../context/ReconstructionProgress";
 import { getReconstructionReview, REVIEW_LABELS, REVIEW_STYLES, type ReviewStatus } from "../lib/reconstruction-status";
 import { CheckIcon, SearchIcon } from "./Icons";
 import { hideBroken } from "../lib/hide-broken";
-
-// Slots that actually have items (skips empty ones like bodyType/emote for now).
-const NON_EMPTY: Slot[] = SLOTS.filter((s) => getItemsBySlot(s).length > 0);
-const COUNTS = Object.fromEntries(NON_EMPTY.map(s => [s, getItemsBySlot(s).length])) as Record<Slot, number>;
 
 // Wardrobe order, head to toe. A slot missing from these lists still appears, under "More".
 const GROUPS: { label: string; slots: readonly Slot[] }[] = [
@@ -21,9 +18,17 @@ const GROUPS: { label: string; slots: readonly Slot[] }[] = [
   { label: "Skin", slots: ["nailPolish", "blush", "tattoo", "bodyPaint"] },
 ];
 const grouped = new Set(GROUPS.flatMap(group => group.slots));
-const RAIL = [...GROUPS, { label: "More", slots: NON_EMPTY.filter(slot => !grouped.has(slot)) }]
-  .map(group => ({ ...group, slots: group.slots.filter(slot => NON_EMPTY.includes(slot)) }))
-  .filter(group => group.slots.length > 0);
+
+// Slots that actually have items (skips empty ones like bodyType/emote for now), their item
+// counts, and the grouped rail. Computed on first use: the catalog loads after modules evaluate.
+const wardrobe = derivedFromCatalog(() => {
+  const nonEmpty: Slot[] = SLOTS.filter((s) => getItemsBySlot(s).length > 0);
+  const counts = Object.fromEntries(nonEmpty.map(s => [s, getItemsBySlot(s).length])) as Record<Slot, number>;
+  const rail = [...GROUPS, { label: "More", slots: nonEmpty.filter(slot => !grouped.has(slot)) }]
+    .map(group => ({ ...group, slots: group.slots.filter(slot => nonEmpty.includes(slot)) }))
+    .filter(group => group.slots.length > 0);
+  return { counts, rail };
+});
 
 // Source assemblies can render without a legacy catalog mesh (for example Knight Pants No Skirt).
 const isRenderable = (i: { id: string; model?: unknown; decal?: unknown }, sourceItems: ReadonlySet<string>) =>
@@ -35,9 +40,10 @@ const PHONE = "(max-width: 1023px)";
 
 function SlotRail({ slot, onSelect }: { slot: Slot; onSelect: (slot: Slot) => void }) {
   const build = useBuildStore((s) => s.build);
+  const { counts, rail } = wardrobe();
   return <nav aria-label="Cosmetic slots"
     className="sticky top-(--stage-h) z-20 flex h-14 shrink-0 items-center gap-4 overflow-x-auto overscroll-x-contain border-y border-line bg-ink-950 px-3 [scrollbar-width:none] lg:static lg:block lg:h-auto lg:w-52 lg:overflow-y-auto lg:border-y-0 lg:border-r lg:bg-ink-900 lg:px-0 lg:pb-3">
-    {RAIL.map(group => <div key={group.label} className="flex shrink-0 items-center gap-1.5 lg:block">
+    {rail.map(group => <div key={group.label} className="flex shrink-0 items-center gap-1.5 lg:block">
       <p aria-hidden="true" className="hud pr-0.5 text-[9px] text-fg-dim lg:px-4 lg:pb-1.5 lg:pt-4 lg:text-[10px]">{group.label}</p>
       {group.slots.map(s => {
         const active = s === slot;
@@ -55,7 +61,7 @@ function SlotRail({ slot, onSelect }: { slot: Slot; onSelect: (slot: Slot) => vo
             {worn && <img src={assetUrl(worn.imageUrl)} alt="" width={48} height={48} decoding="async" onError={hideBroken} className="size-full object-contain" />}
           </span>
           <span className="whitespace-nowrap">{SLOT_LABELS[s]}</span>
-          <span className={`ml-auto pl-1 text-[11px] tabular-nums ${active ? "opacity-60 lg:text-fg-muted lg:opacity-100" : "text-fg-dim"}`}>{COUNTS[s]}</span>
+          <span className={`ml-auto pl-1 text-[11px] tabular-nums ${active ? "opacity-60 lg:text-fg-muted lg:opacity-100" : "text-fg-dim"}`}>{counts[s]}</span>
         </button>;
       })}
     </div>)}
@@ -113,7 +119,7 @@ const Tile = memo(function Tile({ item, equipped, status, note, renderable, eage
 });
 
 export default function SlotPicker() {
-  const [slot, setSlot] = useState<Slot>(RAIL[0]?.slots[0] ?? "upperBody");
+  const [slot, setSlot] = useState<Slot>(() => wardrobe().rail[0]?.slots[0] ?? "upperBody");
   const [query, setQuery] = useState("");
   // Typing stays responsive: the input updates now, the filtered grid follows when React is free.
   const deferredQuery = useDeferredValue(query);

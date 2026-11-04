@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CHANGELOG, LATEST_CHANGELOG_ID } from "../data/changelog";
 import { CATALOG_UPDATE } from "../data/catalog-update";
 import { getBrowseItems, getBrowseItemsBySlot } from "../lib/browse-catalog";
+import { derivedFromCatalog } from "../lib/catalog";
 import { SLOTS } from "../lib/slots";
 import { PROGRESS_ORDER } from "../lib/reconstruction-progress";
 import { REVIEW_COLOURS, REVIEW_MEANINGS, REVIEW_STYLES } from "../lib/reconstruction-status";
@@ -21,8 +22,11 @@ function writeSeen(id: string) {
   try { localStorage.setItem(SEEN_KEY, id); } catch { /* see readSeen */ }
 }
 
-const ITEM_COUNT = getBrowseItems().length;
-const SLOT_COUNT = SLOTS.filter(slot => getBrowseItemsBySlot(slot).length > 0).length;
+// Computed on first use: the catalog loads after modules evaluate (src/main.tsx).
+const catalogStats = derivedFromCatalog(() => ({
+  items: getBrowseItems().length,
+  slots: SLOTS.filter(slot => getBrowseItemsBySlot(slot).length > 0).length,
+}));
 
 // Opens by itself once per changelog entry: on a first visit, and again when a newer entry ships.
 // Never under automation, where it would sit over every harness screenshot.
@@ -44,6 +48,7 @@ function IntroContent({ fresh }: { fresh: number }) {
   const cta = useRef<HTMLButtonElement>(null);
   const [closing, setClosing] = useState(false);
   const shared = useMemo(() => { try { return !!readOutfitLink(window.location.href); } catch { return false; } }, []);
+  const stats = catalogStats();
 
   // showModal() gives the real modal behaviour: the page behind becomes inert, focus is held
   // inside, Escape fires `cancel`, and focus returns to the opener on close.
@@ -104,7 +109,7 @@ function IntroContent({ fresh }: { fresh: number }) {
             </p>
 
             <dl className="mt-8 grid max-w-md animate-rise grid-cols-3 divide-x divide-line border-y border-line [animation-delay:150ms]">
-              {[[ITEM_COUNT.toLocaleString("en"), "Cosmetics"], [String(SLOT_COUNT), "Slots"], [`S1–${CATALOG_UPDATE.throughSeason}`, "Seasons"]]
+              {[[stats.items.toLocaleString("en"), "Cosmetics"], [String(stats.slots), "Slots"], [`S1–${CATALOG_UPDATE.throughSeason}`, "Seasons"]]
                 .map(([value, label]) => <div key={label} className="flex flex-col-reverse gap-1 px-4 py-3 first:pl-0">
                   <dt className="hud text-fg-dim">{label}</dt>
                   <dd className="display text-[36px] tabular-nums">{value}</dd>

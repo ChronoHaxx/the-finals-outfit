@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import "./helpers/load-catalog";
 import { getItemById } from "../src/lib/catalog";
 import { summarizeReconstruction, formatProgressPercent } from "../src/lib/reconstruction-progress";
 
