@@ -1,9 +1,9 @@
-import { isReconstructionPath } from '../../src/lib/asset-routing.mjs';
+import { isModelPath, isReconstructionPath } from '../../src/lib/asset-routing.mjs';
 
 // Pure package selection and Cloudflare Pages Free preflight for stage-assets.mjs.
 // A release may span any number of deployments; each package must fit one of them.
 
-const MODES = { '--models-only': 'models', '--reconstruction-only': 'reconstruction' };
+const MODES = { '--models-only': 'models', '--reconstruction-only': 'reconstruction', '--icons-only': 'icons' };
 const MiB = 1024 * 1024;
 // manifest.json and _headers are generated; one more is held back for platform files.
 export const PAGES_FREE = { maxFiles: 20000, reservedFiles: 3, maxFileBytes: 25 * MiB };
@@ -19,6 +19,8 @@ export function stageMode(args) {
 }
 
 // all: catalog + companions + reconstruction closure. models: the models/ subset of that.
+// icons: the catalog and companion paths outside models/, the ASSETS_BASE host's share once
+// models and reconstruction have their own hosts (new item icons without re-uploading 3D).
 // reconstruction: catalog and companion paths the router sends to the reconstruction
 // host, plus the whole closure, including relative dependencies outside the prefix
 // (body masks), which are duplicated here so relative URLs resolve on this host.
@@ -26,6 +28,7 @@ export function selectStagePaths(mode, { catalog, companions, reconstruction }) 
   if (mode === 'reconstruction') {
     return new Set([...[...catalog, ...companions].filter(isReconstructionPath), ...reconstruction]);
   }
+  if (mode === 'icons') return new Set([...catalog, ...companions].filter(path => !isModelPath(path)));
   const all = new Set([...catalog, ...companions, ...reconstruction]);
   return mode === 'models' ? new Set([...all].filter(path => path.startsWith('models/'))) : all;
 }

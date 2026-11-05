@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { strToU8 } from "three/examples/jsm/libs/fflate.module.js";
 import { fetchAsset } from "../lib/asset-fetch";
+import { meshBytes } from "../lib/mesh-bytes";
 import { modelUrl } from "../lib/assets";
 import { getItemById } from "../lib/catalog";
 import { encodePng } from "../lib/png-encode";
@@ -50,8 +51,10 @@ function visible(object: THREE.Object3D, root: THREE.Object3D): boolean {
   return true;
 }
 
+// Meshes are exported as the extraction's own GLB, even where the host published them gzipped.
 async function bytes(url: string): Promise<Uint8Array> {
-  return new Uint8Array(await (await fetchAsset(url)).arrayBuffer());
+  return new Uint8Array(/\.glb$/i.test(new URL(url, window.location.href).pathname)
+    ? await meshBytes(url) : await (await fetchAsset(url)).arrayBuffer());
 }
 
 function texturePngs(spec: TextureSpec, data: ArrayBuffer, half: boolean): Uint8Array[] {

@@ -103,10 +103,20 @@ export function planAssetShards(nodes, { version, limits = PAGES_FREE, controls 
     for (const [child, members] of children) split(child, members);
   }
   for (const [prefix, seeds] of groups) split(prefix, seeds);
-  units.sort((a, b) => b.files.size - a.files.size || a.prefix.localeCompare(b.prefix));
+  // A unit whose route prefix covers a control index must live on shard 0, or its route would send the control
+  // indexes to a leaf host (the Season 11 release: head-wraps.json beside assets.json). Place those first.
+  const coversControl = unit => unit.prefix.endsWith('/') && [...control].some(p => p.startsWith(unit.prefix));
+  units.sort((a, b) => coversControl(b) - coversControl(a) || b.files.size - a.files.size || a.prefix.localeCompare(b.prefix));
   const bins = [baseline], prefixShards = {}, owners = {};
   for (const p of control) owners[p] = 0;
   for (const unit of units) {
+    if (coversControl(unit)) {
+      const merged = union(bins[0], unit.files);
+      if (merged.size > capacity) throw new Error(`Control directory group does not fit shard 0: ${unit.prefix}`);
+      bins[0] = merged; prefixShards[unit.prefix] = 0;
+      for (const p of unit.seeds) owners[p] = 0;
+      continue;
+    }
     const candidates = bins.map((files, i) => ({ i, merged: union(files, unit.files) }))
       .filter(b => b.merged.size <= capacity)
       .sort((a, b) => a.merged.size - bins[a.i].size - (b.merged.size - bins[b.i].size)

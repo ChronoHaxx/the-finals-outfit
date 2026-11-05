@@ -89,7 +89,7 @@ function IntroContent({ fresh }: { fresh: number }) {
             <span aria-hidden="true" className="size-1.5 animate-blink rounded-full bg-finals" />On air
           </span>
           <span className="hud truncate text-fg-dim">
-            Catalog seasons 1–{CATALOG_UPDATE.throughSeason} · Updated {CATALOG_UPDATE.updatedLabel} · Season {CATALOG_UPDATE.nextSeason} in progress
+            Catalog seasons 1–{CATALOG_UPDATE.throughSeason} · Updated {CATALOG_UPDATE.updatedLabel} · Through game update {CATALOG_UPDATE.latestGamePatch}
           </span>
           <button type="button" onClick={close} aria-label="Close" className="ml-auto grid size-9 shrink-0 place-items-center text-fg-muted hover:text-fg">
             <CloseIcon />

@@ -87,6 +87,23 @@ export interface SourceMaterialParameters {
 export const overlayToken = (p: Pick<SourceMaterialParameters, 'source' | 'replace'>) =>
   p.replace ? `replace:${p.source}` : p.source;
 
+/** Gated resolver behaviour (w43-hair-precedence, w61 hide-wins; off by default and on no index today). */
+export interface SourceResolveOptions {
+  /** Resolve a part whose several matching TagOverrides select the same result under every candidate
+   *  precedence the source pins no order for: first-match-wins, last-match-wins, and the
+   *  specificity-then-order variants (most tags first, ties broken by first and by last), all in
+   *  authored array order. Every ordering agreeing means the game's own precedence cannot matter, so
+   *  the agreed mesh (or the agreed empty/hide) is applied; any disagreement keeps today's refusal
+   *  with today's messages. Only mesh actions participate: a fully matched multi-tag rule joins only
+   *  when the mesh is its entire action, and rules with other actions stay refused exactly as before.
+   *  "hide-wins" (signed off 22 Oct 2026, hairPrecedenceHideWins) extends the same candidates: a
+   *  disagreement the "agreeing-orderings" value refuses resolves to hidden when ANY of those
+   *  orderings selects an empty mesh replacement — the same empty-mesh application the agreed case
+   *  applies — and every other disagreement keeps today's refusal. Every combination the
+   *  "agreeing-orderings" value resolves resolves identically under "hide-wins". */
+  hairOverridePrecedence?: "agreeing-orderings" | "hide-wins";
+}
+
 // Material slot names are Unreal FNames: compared case-insensitively, stored with their own spelling.
 // Only ASCII letters fold; punctuation, other spelling and non-ASCII case stay different slots.
 export function materialSlotIdentity(name: string): string {
@@ -148,7 +165,8 @@ export function hasSourceTag(tags: Iterable<string>, requested: string): boolean
   return false;
 }
 
-export function resolveSourceOutfit(definitions: SourceDefinition[], contextTags: string[] = []): SourceOutfit {
+export function resolveSourceOutfit(definitions: SourceDefinition[], contextTags: string[] = [],
+  options: SourceResolveOptions = {}): SourceOutfit {
   const tags = new Set(contextTags);
   for (const item of definitions) for (const tag of item.properties.ActivatesTags ?? []) tags.add(tag);
   const slots = new Map<string, string[]>();
@@ -161,6 +179,44 @@ export function resolveSourceOutfit(definitions: SourceDefinition[], contextTags
         materials: Object.fromEntries((item.properties.MaterialOverrides ?? []).map(m => [m.Key, path(m.Value)])),
         definition: part };
       const matching: { rule: Override; index: number }[] = [];
+      // Gated (w43-hair-precedence "agreeing-orderings", extended by w61 "hide-wins"): the mesh
+      // candidates for the precedence check — every matched single-tag mesh rule, plus a fully
+      // matched multi-tag rule only when the mesh is its entire action (any other action keeps the
+      // rule refused below, so nothing is partially applied). Decided before the loop so a resolved
+      // multi-tag rule skips its own refusal.
+      let precedence: { rules: number[]; mesh: [string, string] } | undefined;
+      if (options.hairOverridePrecedence !== undefined) {
+        const candidates = part.TagOverrides.flatMap((rule, index) => {
+          const matched = rule.MatchingTags.length === 0
+            || rule.MatchingTags.every(tag => hasSourceTag(tags, tag));
+          if (!matched || !rule.bOverrideMesh) return [];
+          if (rule.MatchingTags.length > 1
+              && (rule.bOverrideEffect || rule.bOverrideMaterials || rule.bAddLogicModules || offsetsPlacement(rule)))
+            return [];
+          return [{ rule, index }];
+        });
+        if (candidates.length > 1) {
+          // Every candidate precedence the source pins no order for, in authored array order:
+          // first-match-wins, last-match-wins, and the specificity-then-order variants (most tags
+          // first, ties broken by first and by last). All agreeing means the game's own precedence
+          // cannot matter, so the agreed mesh (or the agreed empty/hide) is applied.
+          const most = Math.max(...candidates.map(({ rule }) => rule.MatchingTags.length));
+          const specific = candidates.filter(({ rule }) => rule.MatchingTags.length === most);
+          const value = ({ rule }: { rule: Override }) =>
+            JSON.stringify([path(rule.ReplacementStaticMesh), path(rule.ReplacementSkeletalMesh)]);
+          const winners = [candidates[0], candidates[candidates.length - 1], specific[0], specific[specific.length - 1]];
+          const values = [...new Set(winners.map(value))];
+          if (values.length === 1)
+            precedence = { rules: candidates.map(({ index }) => index), mesh: JSON.parse(values[0]) };
+          else if (options.hairOverridePrecedence === "hide-wins"
+            && values.some(candidate => { const mesh = JSON.parse(candidate) as [string, string]; return !mesh[0] && !mesh[1]; }))
+            // Signed off (22 Oct 2026, hairPrecedenceHideWins): the orderings disagree and at least
+            // one of them hides the hair, so the combination resolves to hidden — the same
+            // empty-mesh application the agreed case applies, with every participating rule
+            // recorded. A disagreement no ordering hides keeps today's refusal below.
+            precedence = { rules: candidates.map(({ index }) => index), mesh: ["", ""] };
+        }
+      }
       part.TagOverrides.forEach((rule, index) => {
         const known = rule.MatchingTags.filter((tag) => hasSourceTag(tags, tag));
         if (!known.length && rule.MatchingTags.length) return;
@@ -169,9 +225,11 @@ export function resolveSourceOutfit(definitions: SourceDefinition[], contextTags
         // the same part with a different replacement, and the rest would give every Medium "Pleated
         // Skirt" shorts and every "Ponytail Low" no ponytail if any one tag sufficed. So a partially
         // matched rule is inactive. A fully matched one stays refused for the full evaluator until
-        // priority between overlapping rules is verified.
+        // priority between overlapping rules is verified — unless the gated agreeing-orderings
+        // check above already resolved it (w43-hair-precedence).
         if (rule.MatchingTags.length > 1) {
           if (!rule.MatchingTags.every(tag => hasSourceTag(tags, tag))) return;
+          if (precedence?.rules.includes(index)) return;
           if (rule.bOverrideMesh || rule.bOverrideEffect || rule.bOverrideMaterials || offsetsPlacement(rule) || rule.bAddLogicModules)
             resolved.unresolved.push(`multi-tag condition ${index}`);
           return;
@@ -180,6 +238,14 @@ export function resolveSourceOutfit(definitions: SourceDefinition[], contextTags
         matching.push({ rule, index });
       });
       for (const field of ["mesh", "effect"] as const) {
+        if (field === "mesh" && precedence) {
+          // Every candidate precedence selected this mesh (or this empty/hide); the participating
+          // rules are the applied ones, the multi-tag participants included.
+          resolved.staticMesh = precedence.mesh[0];
+          resolved.skeletalMesh = precedence.mesh[1];
+          resolved.rules.push(...precedence.rules);
+          continue;
+        }
         const rules = matching.filter(({ rule }) => field === "mesh" ? rule.bOverrideMesh : rule.bOverrideEffect);
         const values = new Set(rules.map(({ rule }) => field === "mesh"
           ? JSON.stringify([path(rule.ReplacementStaticMesh), path(rule.ReplacementSkeletalMesh)])
@@ -210,7 +276,7 @@ export function resolveSourceOutfit(definitions: SourceDefinition[], contextTags
       }
       // Do not hide an effect-only part or infer hiding from occupied body slots.
       // An explicit empty mesh replacement is required for this first runtime stage.
-      resolved.hidden = matching.some(({ rule }) => rule.bOverrideMesh)
+      resolved.hidden = (precedence !== undefined || matching.some(({ rule }) => rule.bOverrideMesh))
         && !resolved.staticMesh && !resolved.skeletalMesh && !resolved.effect && !resolved.unresolved.length;
       return resolved;
     });
@@ -255,7 +321,8 @@ export class MissingSourceDefinitionError extends Error {
   }
 }
 
-export async function loadSourceOutfit(ids: string[], baseUrl: string): Promise<SourceOutfit> {
+export async function loadSourceOutfit(ids: string[], baseUrl: string,
+  extraContextTags: string[] = [], options: SourceResolveOptions = {}): Promise<SourceOutfit> {
   const catalog = await readJson(`${baseUrl}/catalog.json`) as { formatVersion: number; items: string[] };
   if (catalog.formatVersion !== 1 || !Array.isArray(catalog.items)) {
     pending.delete(`${baseUrl}/catalog.json`);
@@ -276,9 +343,10 @@ export async function loadSourceOutfit(ids: string[], baseUrl: string): Promise<
     }
     return record;
   }));
-  // The current rig is the medium body in the third-person frontend. Body-type
-  // morphs and further context tags will be bound when those controls are added.
-  return resolveSourceOutfit(definitions, ["Customization.Archetype.Medium"]);
+  // The current rig is the medium body in the third-person frontend. The body-type context
+  // tag joins here when that preview is gated on (BodyTypePreview.ts); without it the context
+  // is exactly what it was.
+  return resolveSourceOutfit(definitions, ["Customization.Archetype.Medium", ...extraContextTags], options);
 }
 
 /** One socket rest authored by a component that is not the body: a head mesh, or an optional
@@ -297,7 +365,8 @@ export interface SourceSocketFrame {
  *  the source head that is actually equipped; an optional attachment mesh authors exactly one. */
 export type SourceAttachmentFrame =
   | { kind: 'head-component'; components: SourceSocketFrame[] }
-  | { kind: 'optional-mesh'; component: SourceSocketFrame };
+  | { kind: 'optional-mesh'; component: SourceSocketFrame }
+  | { kind: 'body-socket'; component: SourceSocketFrame };
 
 export interface AssemblyAssets {
   formatVersion: number;
@@ -312,7 +381,55 @@ export interface AssemblyAssets {
   attachmentFrames?: {
     headComponents?: Record<string, SourceFrameComponent>;
     optionalMeshes?: Record<string, SourceFrameComponent>;
+    /** Sockets the composite mesh-merge skeleton defines on a preserved body bone (upperback_attachment on
+     *  spine_03), keyed by that skeleton. Used only for an attached part whose socket is not a body bone and
+     *  that names no optional mesh; an index without this field resolves exactly as before. */
+    bodySockets?: Record<string, SourceFrameComponent>;
   };
+  /** The body-type preview context this index selects (rig/BodyTypePreview.ts): a gate the
+   *  activation sets in the active index when the masculine default goes live, and a preview
+   *  index sets to review it beforehand. Absent — on every index today — the preview applies
+   *  no body-type morph, context tag or socket offset, exactly as before. */
+  bodyType?: string;
+  /** The hair TagOverride precedence this index selects (SourceResolveOptions): "agreeing-orderings"
+   *  (w43-hair-precedence) resolves several matching overrides only when every candidate precedence
+   *  the source pins no order for selects the same result; "hide-wins" (w61, signed off 22 Oct 2026
+   *  hairPrecedenceHideWins) additionally resolves a disagreement to hidden when any of those
+   *  orderings hides the hair. A gate the activation sets in the active index when the rule goes
+   *  live, and a preview index sets to review it beforehand. Absent — on every index today — the
+   *  resolver refuses several matching overrides exactly as before. */
+  hairOverridePrecedence?: string;
+  /** The mirrored authored attachment scale this index selects (w45-resolver): "nonzero" admits
+   *  every finite, nonzero authored LocalScale component on an attached part, whose existing
+   *  mirrored path (reverseWinding, frame = rest * scale^-1) then applies unchanged. A gate the
+   *  activation sets in the active index when it goes live, and a preview index sets to review it
+   *  beforehand. Absent — on every index today — a non-positive component is refused exactly as
+   *  before; zero and non-finite values are refused under the gate too. */
+  attachmentMirroredScale?: string;
+  /** The merged-part local transforms this index selects (w45-resolver): "inert" draws an
+   *  eligible nonattached, mergeable skeletal part with the identity placement, treating its
+   *  authored LocalPosition/LocalRotation/LocalScale and AttachmentSocket as leftover authoring
+   *  data that cannot move a mesh merged into the body. A hypothesis the gate exists to check,
+   *  not a proven fact; a gate the activation sets in the active index when it goes live, and a
+   *  preview index sets to review it beforehand. Absent — on every index today — such a part is
+   *  refused exactly as before. */
+  mergedPartTransforms?: string;
+  /** The facial-hair foreign-overlay route this index selects (w50-hair-facial): "own-slots" lets a
+   *  facial-hair item's material-parameter rule that also names slots beyond its own mesh's apply its
+   *  overlay to its own facial-hair material slots, exactly as the source rule says for those slots,
+   *  and records the foreign slots it defers (a face-recipient route does not exist yet). A gate the
+   *  activation sets in the active index when it goes live, and a preview index sets to review it
+   *  beforehand. Absent — on every index today — a part's resolution is exactly as before. */
+  facialHairForeignOverlays?: string;
+  /** The activated Niagara effect parts this index selects (w61): "drop" renders nothing for a part
+   *  whose only renderable is an effect (its own `Effect`, or a rule's `ReplacementEffect` the
+   *  resolver applied) instead of refusing the item, provided the item still has at least one real
+   *  mesh part; the item's real meshes then render (signed off 22 Oct 2026, dropActivatedEffectParts).
+   *  Logic modules, wrap or optional meshes, head roles and unresolved rules keep today's refusal.
+   *  A gate the activation sets in the active index when it goes live, and a preview index sets to
+   *  review it beforehand. Absent — on every index today — such a part refuses the item exactly as
+   *  before. */
+  activatedEffectParts?: string;
 }
 
 /** One component's socket rests as the index records them; `bodyBone` is decided while resolving. */
@@ -350,11 +467,28 @@ export interface SourceRigPart {
     sourceRestMatrix?: number[]; // body-bone sockets only; a frame carries its own component rest
     position: [number, number, number]; rotation: [number, number, number]; scale: [number, number, number];
     frame?: SourceAttachmentFrame;
+    /** The gated "nonzero" mirrored scale route admitted a negative authored component (w45-resolver):
+     *  attachSourceStatic then relaxes its positive-scale check to nonzero and applies the existing
+     *  mirrored path. Absent, a non-positive scale component is refused there exactly as before. */
+    mirroredScale?: true;
   };
   /** This merged skeletal part reached support through the neutral compensated head frame below,
    *  not through an ordinary identity placement. It is still body-space geometry with no
    *  attachment: the flag only records which route accepted it. */
   neutralHeadFrame?: true;
+  /** This merged skeletal part was admitted by the gated inert-transform route (w45-resolver):
+   *  it carries a nonidentity authored local transform, met every `neutralSourceHeadFrame`
+   *  condition except the transform-equals-inverse-head-rest test and the socket-is-head test, and
+   *  would be refused with the gate off. Its authored local transform and socket are treated as
+   *  leftover authoring data. It is still body-space geometry drawn with the identity placement,
+   *  exactly where an identity-transform skinned part is drawn; the flag only records the route. */
+  inertMergedTransform?: true;
+  /** The gated facial-hair foreign-overlay route (w50-hair-facial) recorded the slots this part's
+   *  material-parameter rules name beyond its own mesh's, in case-folded identity: the rule's own-slot
+   *  overlays resolved as before (through the variants the index carries), and these foreign slots stay
+   *  deferred to a face-recipient route that does not exist yet. Absent when the gate is off; a part's
+   *  resolution is unchanged then. */
+  deferredOverlaySlots?: string[];
   /** Wrapped by the head component (both WrapDeformation flags): the rig moves the rest geometry with the worn
    *  head's wrap cage relative to HeadMaster's (HeadWrap.ts), and refuses the part without that data. */
   headWrap?: true;
@@ -529,19 +663,105 @@ export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"]
     ...(omitted ? { headOmitted: omitted } : {}) };
 }
 
+/** The hair TagOverride precedence an index (or a capture-only dev switch) selects
+ *  (w43-hair-precedence "agreeing-orderings", w61 "hide-wins"): undefined stays off; any other
+ *  spelling is refused rather than guessed. */
+export type HairOverridePrecedence = "agreeing-orderings" | "hide-wins";
+export function hairOverridePrecedenceGate(value: string | undefined): HairOverridePrecedence | undefined {
+  if (value === undefined) return undefined;
+  if (value !== "agreeing-orderings" && value !== "hide-wins")
+    throw new Error(`Unknown hair override precedence: ${value}`);
+  return value;
+}
+
+/** The gated rig-part resolver behaviour an index (or a capture-only dev switch) selects
+ *  (w45-resolver, w61). Every gate off is exactly the previous resolver. */
+export interface SourceResolveGates {
+  /** "nonzero" mirrored authored attachment scale: accept every finite, nonzero authored
+   *  LocalScale component on an attached part (SourceAssembly + SourceAttachment); zero and
+   *  non-finite values stay refused. */
+  attachmentMirroredScale?: boolean;
+  /** "own-slots" facial-hair foreign overlays (w50-hair-facial): a facial-hair item's rule that
+   *  also names slots beyond its own mesh's applies to its own slots and records the deferred
+   *  foreign slots on the resolved part. */
+  facialHairForeignOverlays?: boolean;
+  /** "inert" merged part transforms: place an eligible nonattached, mergeable skeletal part
+   *  with the identity placement, ignoring its authored local transform and socket exactly as
+   *  an identity-transform skinned part is drawn today. */
+  mergedPartTransforms?: boolean;
+  /** "drop" activated effect parts (w61, signed off 22 Oct 2026 dropActivatedEffectParts): a
+   *  part whose only renderable is an effect renders nothing instead of refusing the item,
+   *  provided the item keeps at least one real mesh part; the item's real meshes then render.
+   *  Logic modules, wrap or optional meshes, head roles and unresolved rules stay refused. */
+  activatedEffectParts?: boolean;
+}
+
+/** Whether an index (or a capture-only dev switch) selects the gated mirrored attachment scale.
+ *  Absent stays off; any other spelling is refused rather than guessed. */
+export function attachmentMirroredScaleGate(value: string | undefined): boolean {
+  if (value === undefined) return false;
+  if (value !== "nonzero") throw new Error(`Unknown attachment mirrored scale: ${value}`);
+  return true;
+}
+
+/** Whether an index (or a capture-only dev switch) selects the gated inert merged-part
+ *  transforms. Absent stays off; any other spelling is refused rather than guessed. */
+export function mergedPartTransformsGate(value: string | undefined): boolean {
+  if (value === undefined) return false;
+  if (value !== "inert") throw new Error(`Unknown merged part transforms: ${value}`);
+  return true;
+}
+
+/** Whether an index (or a capture-only dev switch) selects the gated facial-hair foreign-overlay
+ *  route. Absent stays off; any other spelling is refused rather than guessed. */
+export function facialHairForeignOverlaysGate(value: string | undefined): boolean {
+  if (value === undefined) return false;
+  if (value !== "own-slots") throw new Error(`Unknown facial hair foreign overlays: ${value}`);
+  return true;
+}
+
+/** Whether an index (or a capture-only dev switch) selects the gated activated-effect-part drop
+ *  (w61). Absent stays off; any other spelling is refused rather than guessed. */
+export function activatedEffectPartsGate(value: string | undefined): boolean {
+  if (value === undefined) return false;
+  if (value !== "drop") throw new Error(`Unknown activated effect parts: ${value}`);
+  return true;
+}
+
+/** The resolve gates an index's assets select, with an optional capture-only override per field
+ *  (a dev URL switch wins over the index for that capture only). */
+export function assemblyResolveGates(assets: AssemblyAssets,
+  override: { attachmentMirroredScale?: string; mergedPartTransforms?: string;
+    facialHairForeignOverlays?: string; activatedEffectParts?: string } = {}): SourceResolveGates {
+  return {
+    attachmentMirroredScale: attachmentMirroredScaleGate(override.attachmentMirroredScale ?? assets.attachmentMirroredScale),
+    mergedPartTransforms: mergedPartTransformsGate(override.mergedPartTransforms ?? assets.mergedPartTransforms),
+    facialHairForeignOverlays: facialHairForeignOverlaysGate(override.facialHairForeignOverlays ?? assets.facialHairForeignOverlays),
+    activatedEffectParts: activatedEffectPartsGate(override.activatedEffectParts ?? assets.activatedEffectParts),
+  };
+}
+
 export async function loadSourceAssemblyAssets(baseUrl: string): Promise<AssemblyAssets> {
   const assets = await readJson(`${baseUrl}/assets.json`) as AssemblyAssets;
-  if (assets.formatVersion !== 1 || !assets.meshes || !assets.materials) {
+  if (assets.formatVersion !== 1 || !assets.meshes || !assets.materials
+    || (assets.bodyType !== undefined && typeof assets.bodyType !== "string")
+    || (assets.hairOverridePrecedence !== undefined && typeof assets.hairOverridePrecedence !== "string")
+    || (assets.attachmentMirroredScale !== undefined && typeof assets.attachmentMirroredScale !== "string")
+    || (assets.mergedPartTransforms !== undefined && typeof assets.mergedPartTransforms !== "string")
+    || (assets.facialHairForeignOverlays !== undefined && typeof assets.facialHairForeignOverlays !== "string")
+    || (assets.activatedEffectParts !== undefined && typeof assets.activatedEffectParts !== "string")) {
     pending.delete(`${baseUrl}/assets.json`);
     throw new Error("Invalid source assembly assets");
   }
   return assets;
 }
 
-export async function loadSourceRigParts(item: SourceOutfit["items"][string], baseUrl: string): Promise<SourceRigPart[]> {
+export async function loadSourceRigParts(item: SourceOutfit["items"][string], baseUrl: string,
+  override: { attachmentMirroredScale?: string; mergedPartTransforms?: string;
+    facialHairForeignOverlays?: string; activatedEffectParts?: string } = {}): Promise<SourceRigPart[]> {
   const assets = await loadSourceAssemblyAssets(baseUrl);
   const url = (path: string) => new URL(path, new URL(baseUrl + "/", window.location.href)).href;
-  return resolveSourceRigParts(item, assets, url);
+  return resolveSourceRigParts(item, assets, url, assemblyResolveGates(assets, override));
 }
 
 // The socket a neutral frame may compensate is the preserved body's own head bone, spelled exactly
@@ -564,20 +784,15 @@ function sourceVector(value: unknown, keys: readonly string[]): number[] | undef
   return values.every(v => typeof v === 'number' && Number.isFinite(v)) ? values as number[] : undefined;
 }
 
-/** A neutral compensated head frame: a nonattached, mergeable skeletal part whose authored local
- *  transform, converted the same way an attachment's is, multiplies the preserved body's own `head`
- *  rest back to the identity. Such a part is drawn exactly where an identity placement would draw
- *  it — in the body space its vertices and rest bones are already authored in — so the resolver may
- *  admit it without knowing why the fields were authored.
- *
- *  This recognises one measured frame and nothing more. It is not a claim about how the native
- *  engine consumes these fields; any other placement, any nonzero residue beyond the tolerances,
- *  any head role, attachment, wrapper, effect, logic module or unresolved rule stays refused, and
- *  the caller's supported-item index and its geometry verification remain separate gates. */
-export function neutralSourceHeadFrame(part: ResolvedPart, assets: AssemblyAssets): boolean {
+/** The placement-independent conditions a nonattached, mergeable skeletal part must meet before any
+ *  authored local transform is interpreted at all: no head role, no head attachment, no hidden or
+ *  unresolved state, no static, effect, logic module, optional or wrap mesh beyond the head-component
+ *  wrap admitted on the identity path, and a skeletal mesh of its own the index records as skeletal.
+ *  `neutralSourceHeadFrame` and the gated inert merged-part route (w45-resolver) share them. */
+function mergeableSkeletalPart(part: ResolvedPart, assets: AssemblyAssets): boolean {
   const p = part.definition, wrap = p.WrapDeformation;
   if (p.bCanBeMerged !== true || p.bIsAttached !== false || p.bAttachToHeadMesh !== false ||
-      p.bIsHeadMesh === true || p.AttachmentSocket !== BODY_HEAD_SOCKET) return false;
+      p.bIsHeadMesh === true) return false;
   // A head-component wrap (both flags, no deformer mesh of its own) is the one wrap admitted here, as it
   // already is for identity-frame skinned parts below. Measured 11 Oct 2026
   // (_docs/goal-100-2026-10-11/facial-hair/): the part's own cloth proxy lies on the HeadMaster *_Wraps cage
@@ -591,7 +806,23 @@ export function neutralSourceHeadFrame(part: ResolvedPart, assets: AssemblyAsset
   // The part has to bring a skeletal mesh of its own: no static, no section reference, no mesh the
   // index would have to guess at.
   if (!part.skeletalMesh || !path(p.SkeletalMesh) || p.SkeletalMesh.SubPathString) return false;
-  if (assets.meshes[part.skeletalMesh]?.kind !== 'skeletal') return false;
+  return assets.meshes[part.skeletalMesh]?.kind === 'skeletal';
+}
+
+/** A neutral compensated head frame: a nonattached, mergeable skeletal part whose authored local
+ *  transform, converted the same way an attachment's is, multiplies the preserved body's own `head`
+ *  rest back to the identity. Such a part is drawn exactly where an identity placement would draw
+ *  it — in the body space its vertices and rest bones are already authored in — so the resolver may
+ *  admit it without knowing why the fields were authored.
+ *
+ *  This recognises one measured frame and nothing more. It is not a claim about how the native
+ *  engine consumes these fields; any other placement, any nonzero residue beyond the tolerances,
+ *  any head role, attachment, wrapper, effect, logic module or unresolved rule stays refused, and
+ *  the caller's supported-item index and its geometry verification remain separate gates. */
+export function neutralSourceHeadFrame(part: ResolvedPart, assets: AssemblyAssets): boolean {
+  const p = part.definition;
+  if (p.AttachmentSocket !== BODY_HEAD_SOCKET) return false;
+  if (!mergeableSkeletalPart(part, assets)) return false;
   const body = assets.attachmentBody;
   if (typeof body?.source !== 'string' || !body.source || typeof body.url !== 'string' || !body.url) return false;
   const position = sourceVector(p.LocalPosition, ['X', 'Y', 'Z']);
@@ -607,6 +838,20 @@ export function neutralSourceHeadFrame(part: ResolvedPart, assets: AssemblyAsset
     Math.max(deviation.linear, deviation.affine) <= NEUTRAL_LINEAR_UNITLESS;
 }
 
+/** A part the gated inert merged-transform route (w45-resolver) may draw: it meets EVERY condition
+ *  `neutralSourceHeadFrame` checks except the transform-equals-inverse-head-rest test and the
+ *  socket-is-head test. Engine basis: a non-attached, mergeable part is merged into the body
+ *  skeletal mesh, and skeletal mesh merging takes vertices already skinned in body space with no
+ *  per-part placement input, so the authored LocalPosition/LocalRotation/LocalScale and
+ *  AttachmentSocket are leftover authoring data that cannot move the merged mesh. The part is then
+ *  drawn with the identity placement, exactly where an identity-transform skinned part is drawn
+ *  today. This is a hypothesis the gate exists to check against the icons, not a proven fact:
+ *  static meshes, non-mergeable parts, attached parts and everything else `mergeableSkeletalPart`
+ *  refuses stay refused, with the gate on or off. */
+export function inertMergedPartTransform(part: ResolvedPart, assets: AssemblyAssets): boolean {
+  return mergeableSkeletalPart(part, assets);
+}
+
 /** A part that names nothing to render after its applied rules: no mesh, effect, logic module, optional or
  *  wrap mesh, head role or unresolved rule. The seven catalog cases (11 Oct 2026) are attached parts whose only
  *  rule adds the UltimateS10 Niagara effect; while that tag is active the part carries the effect and is refused. */
@@ -617,31 +862,57 @@ export function emptySourcePart(part: ResolvedPart): boolean {
     !path(p.WrapDeformation?.OptionalWrapDeformerMesh) && !p.bIsHeadMesh && !p.bAttachToHeadMesh;
 }
 
+/** A part whose only renderable is an activated effect — its own `Effect`, or a rule's
+ *  `ReplacementEffect` the resolver applied. The gated "drop" route (w61) renders nothing for it;
+ *  every other unsupported authoring (logic modules, wrap or optional meshes, head roles, an
+ *  unresolved rule) keeps today's refusal, so such a part never takes the route. */
+function activatedEffectSourcePart(part: ResolvedPart): boolean {
+  const p = part.definition, wrap = p.WrapDeformation;
+  return !!part.effect && !part.staticMesh && !part.skeletalMesh && !part.unresolved.length &&
+    !p.LogicModules?.length && !path(p.OptionalAttachmentMesh) && !path(p.OptionalHeadWrapMesh) &&
+    !(wrap?.bIsWrapDeformed || wrap?.bIsWrapDeformedByHeadComponent || path(wrap?.OptionalWrapDeformerMesh)) &&
+    !p.bIsHeadMesh && !p.bAttachToHeadMesh;
+}
+
 // The offline coverage audit and runtime use the same support boundary. An item
 // becomes available only when every active part has its exact mesh and materials.
 export function resolveSourceRigParts(item: SourceOutfit["items"][string], assets: AssemblyAssets,
-  url: (path: string) => string = path => path): SourceRigPart[] {
+  url: (path: string) => string = path => path,
+  gates: SourceResolveGates = assemblyResolveGates(assets)): SourceRigPart[] {
   const shown = item.parts.filter(part => !part.hidden);
   // An empty part beside a real one renders nothing. An item made only of empty parts is not evidence of
   // anything, so its parts go through the checks below and are refused as before.
   const real = shown.filter(part => !emptySourcePart(part));
-  return (real.length ? real : shown).map(part => {
+  const base = real.length ? real : shown;
+  // Gated (w61, signed off 22 Oct 2026 dropActivatedEffectParts): an activated effect part renders
+  // nothing instead of refusing the item, provided the item keeps at least one other part to
+  // render — an item left with no real mesh part is refused exactly as before.
+  const dropped = gates.activatedEffectParts === true && base.length > 1
+    ? base.filter(activatedEffectSourcePart) : [];
+  const parts = dropped.length && dropped.length < base.length
+    ? base.filter(part => !dropped.includes(part)) : base;
+  return parts.map(part => {
     const p = part.definition;
     const attached = !!part.staticMesh && !part.skeletalMesh && !!p.bIsAttached;
     const optionalMesh = path(p.OptionalAttachmentMesh);
-    // The one added route for a nonattached part: an authored local transform that is exactly the
-    // inverse of the preserved head rest. Every other placement below is refused as before.
+    // The two added routes for a nonattached part: an authored local transform that is exactly the
+    // inverse of the preserved head rest, and (gated, w45-resolver) an inert authored transform on
+    // an otherwise eligible merged part. Every other placement below is refused as before. The
+    // inert route takes only a part the refusal below would refuse — a nonidentity authored
+    // transform — so an ordinary identity placement resolves exactly as before under the gate.
+    const nonIdentity = Object.values(p.LocalPosition ?? {}).some(v => v !== 0) ||
+      Object.values(p.LocalRotation ?? {}).some(v => v !== 0) ||
+      Object.values(p.LocalScale ?? {}).some(v => v !== 1);
     const neutral = !attached && neutralSourceHeadFrame(part, assets);
+    const inert = !attached && !neutral && nonIdentity && gates.mergedPartTransforms === true
+      && inertMergedPartTransform(part, assets);
     if (part.unresolved.length || part.effect || p.LogicModules?.length ||
         (attached && (p.WrapDeformation?.bIsWrapDeformed || p.WrapDeformation?.bIsWrapDeformedByHeadComponent || path(p.WrapDeformation?.OptionalWrapDeformerMesh))) ||
         // A socket belongs to the body, to the head component, or to one optional attachment
         // mesh — never to two of them, and never to a part that is not an attached static.
         (p.bAttachToHeadMesh && optionalMesh) || (!attached && (p.bAttachToHeadMesh || optionalMesh)) ||
         p.bIsHeadMesh ||
-        (!attached && !neutral && (part.staticMesh || p.bIsAttached ||
-        Object.values(p.LocalPosition ?? {}).some(v => v !== 0) ||
-        Object.values(p.LocalRotation ?? {}).some(v => v !== 0) ||
-        Object.values(p.LocalScale ?? {}).some(v => v !== 1)))) {
+        (!attached && !neutral && !inert && (part.staticMesh || p.bIsAttached || nonIdentity))) {
       throw new Error(`Unsupported source assembly part ${part.sourceIndex}`);
     }
     let attachment: SourceRigPart['attachment'];
@@ -664,17 +935,33 @@ export function resolveSourceRigParts(item: SourceOutfit["items"][string], asset
         if (!component.bodyBone)
           throw new Error(`Optional attachment mesh anchor is not the preserved body rest: ${component.bone}`);
         frame = { kind: 'optional-mesh', component };
-      } else {
+      } else if (MATRIX(body.restBones[socket])) {
         restMatrix = body.restBones[socket];
-        if (!MATRIX(restMatrix)) throw new Error('Missing preserved source attachment frame');
+      } else {
+        // A socket the mesh-merge skeleton defines on a body bone rather than a bone of its own. It must be
+        // recorded by exactly one skeleton and anchored on the preserved body rest; the rig then follows that
+        // body bone, as for an optional mesh whose anchor is a body bone. Otherwise the part stays refused.
+        const owners = Object.entries(assets.attachmentFrames?.bodySockets ?? {})
+          .filter(([, entry]) => entry?.sockets?.[socket]);
+        if (owners.length !== 1) throw new Error('Missing preserved source attachment frame');
+        const component = socketFrame(owners[0][0], owners[0][1], socket, body, 'body skeleton socket');
+        if (!component.bodyBone)
+          throw new Error(`Body skeleton socket anchor is not the preserved body rest: ${component.bone}`);
+        frame = { kind: 'body-socket', component };
       }
       const position = p.LocalPosition, rotation = p.LocalRotation, scale = p.LocalScale;
       // Authored positive scales, uniform or not, are applied at rest by the rig. Mirrored or
       // singular authored scales stay unsupported; only a socket's own source scale may reflect.
+      // Gated (w45-resolver): a finite nonzero mirrored component is admitted through the existing
+      // mirrored path (reverseWinding, frame = rest * scale^-1 stays a proper rotation); zero and
+      // non-finite values are still refused.
       if (!position || !rotation || !scale ||
           ![...Object.values(position), ...Object.values(rotation), ...Object.values(scale)].every(Number.isFinite) ||
-          Object.values(scale).some(v => !(v > 0))) throw new Error('Unsupported source attachment transform');
+          Object.values(scale).some(v => gates.attachmentMirroredScale === true ? v === 0 : !(v > 0)))
+        throw new Error('Unsupported source attachment transform');
       attachment = { bodyUrl: url(body.url), socket, ...(restMatrix ? { sourceRestMatrix: restMatrix } : {}),
+        ...(gates.attachmentMirroredScale === true && Object.values(scale).some(v => v < 0)
+          ? { mirroredScale: true as const } : {}),
         position: [position.X, position.Y, position.Z], rotation: [rotation.Pitch, rotation.Yaw, rotation.Roll],
         scale: [scale.X, scale.Y, scale.Z], ...(frame ? { frame } : {}) };
     }
@@ -698,12 +985,25 @@ export function resolveSourceRigParts(item: SourceOutfit["items"][string], asset
       sections.push({ materialIndex, slot: slot.slot, defaultSource: slot.material, source, url: materialUrl });
       if (!repeated.has(slot.slot)) materials[slot.slot] = { url: materialUrl, source };
     }
+    // Gated (w50-hair-facial): a material-parameter rule that reaches this part's own slots and also
+    // names slots its mesh does not carry defers those foreign slots (a face-recipient route does not
+    // exist yet); its own-slot overlays resolved as before, exactly as the source rule says for them.
+    // Gate off: no field is written and the part resolves exactly as before.
+    const deferredOverlaySlots = gates.facialHairForeignOverlays === true
+      ? [...new Set((item.materialParameters ?? []).flatMap(parameter => {
+          const own = parameter.slots.filter(slot =>
+            slots.some(name => materialSlotIdentity(name) === materialSlotIdentity(slot)));
+          return own.length && own.length < parameter.slots.length
+            ? parameter.slots.filter(slot => !own.includes(slot)).map(materialSlotIdentity) : [];
+        }))].sort() : undefined;
     const ownMask = assets.itemBodyMasks?.[item.source]?.[sourceMesh];
     return { sourceIndex: part.sourceIndex, sourceMesh, url: url(mesh.url), materials, attachment,
+      ...(deferredOverlaySlots?.length ? { deferredOverlaySlots } : {}),
       ...(repeated.size ? { materialSections: sections } : {}),
       bodyMaskUvTiles: ownMask ? ownMask.uvTiles : mesh.bodyMaskUvTiles,
       bodyMaskUrl: ownMask ? url(ownMask.url) : mesh.bodyMaskUrl ? url(mesh.bodyMaskUrl) : undefined,
       ...(neutral ? { neutralHeadFrame: true as const } : {}),
+      ...(inert ? { inertMergedTransform: true as const } : {}),
       ...(!attached && p.WrapDeformation?.bIsWrapDeformed && p.WrapDeformation?.bIsWrapDeformedByHeadComponent
         ? { headWrap: true as const } : {}) };
   });
