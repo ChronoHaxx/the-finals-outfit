@@ -111,7 +111,8 @@ test('review verdicts win over generic support and missing status data is not fa
   // legacy-only variant).
   const broken = getItemById('streetwear-tightsinglet-cotton-starsstripes')!;
   const ordinary = getItemById('attachment-boombox-01-finals-lumbar')!;
-  assert.equal(getReconstructionReview(eno, new Set(), 'unavailable').status, 'accepted');
+  // Its explicit verdict (polish since the green was withdrawn on 5 Nov 2026) wins over the unavailable status data.
+  assert.equal(getReconstructionReview(eno, new Set(), 'unavailable').status, 'polish');
   assert.equal(getReconstructionReview(broken, new Set([broken.id]), 'ready').status, 'issue');
   assert.equal(getReconstructionReview(ordinary, new Set(), 'unavailable').status, 'unknown');
   assert.equal(getReconstructionReview(ordinary, new Set(), 'ready').status, 'untouched');

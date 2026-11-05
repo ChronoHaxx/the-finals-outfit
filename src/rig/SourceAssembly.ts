@@ -143,6 +143,40 @@ export function parameterOverlays(parameters: SourceMaterialParameters[], slot: 
 
 function path(value?: SoftPath): string { return value?.AssetPathName ?? ""; }
 
+/** The one inert logic module every gate admits (w101-cel-unblock, Claude's decision, 2 Nov 2026):
+ *  "/Script/Angelscript.CharacterCustomizationLogic_IsInFrontend". Face 11 and the anime-archer items author it
+ *  on their visual parts. The Angelscript body is stripped from the dump, and the cel programs' only
+ *  frontend-sensitive input is the record-42 offset-12 selector lane (the w97 cel-family study's Q3 finding:
+ *  it mixes EmissiveMixFrontEnd versus EmissiveMixGame and offsets the sun), which the signed-off family
+ *  records-zero pin already fixes to the IN-GAME state. The reconstruction therefore renders the in-game state,
+ *  where this module's frontend switch is off: the module adds no placement, mesh, material or visibility change
+ *  the route must reproduce. This is an inference from the module name and the shader, NOT a decoded behaviour,
+ *  and it is recorded as such. EVERY other logic module stays refused, exactly as before.
+ *  The face-route planner consumes this same export (scripts/shader-probe/plan-source-skin.mjs gates its parts
+ *  through it); no Python preparer has its own logic-module gate on the routes Face 11 and the archers take. */
+export const INERT_LOGIC_MODULES: ReadonlySet<string> =
+  new Set(["/Script/Angelscript.CharacterCustomizationLogic_IsInFrontend",
+    // (w119 watches, 2 Nov 2026) Every watch part authors exactly this one module beside its WatchSocket attachment.
+    // Its stripped Angelscript drives the time the face shows and the watch arm attachment mesh. The reconstruction
+    // renders the user's signed-off static state instead: watch faces at GameTime 0 (signoffs-2026-10-22.json,
+    // watchFacesGameTimeZero; the face programs are built with that pin), and the arm mesh's WatchSocket at its rest
+    // frame on the preserved lowerarm_l (attachmentFrames.optionalMeshes, as the lumbar jiggle mesh: rest placement
+    // only, not simulated). Like IsInFrontend this is an inference from the module name, the sign-off and the
+    // shaders, not decoded behaviour.
+    "/Script/Angelscript.CharacterCustomizationLogic_Watch"]);
+
+/** Whether a part's authored LogicModules are all and only allowlisted inert modules (an empty or absent list
+ *  qualifies): such a part is admitted everywhere a part without modules is. Exact path string match on
+ *  AssetPathName with no prefix or pattern matching; a SubPathString names a distinct object that is not the
+ *  allowlisted module, and an entry that is not a soft path at all keeps today's refusal. The bAddLogicModules
+ *  TagOverride gates stay separate: a rule ADDING modules is a different thing. */
+export function onlyInertLogicModules(definition: Pick<VisualPart, "LogicModules">): boolean {
+  return (definition.LogicModules ?? []).every(module =>
+    !!module && typeof module === "object" && !Array.isArray(module) &&
+    typeof (module as SoftPath).AssetPathName === "string" && !(module as SoftPath).SubPathString &&
+    INERT_LOGIC_MODULES.has((module as SoftPath).AssetPathName));
+}
+
 // An offset is a no-op only when every component is authored as exactly the numeric identity.
 // A missing, partial, extended, non-numeric or non-identity offset stays unsupported placement.
 const OFFSET_IDENTITY = [
@@ -430,6 +464,10 @@ export interface AssemblyAssets {
    *  review it beforehand. Absent — on every index today — such a part refuses the item exactly as
    *  before. */
   activatedEffectParts?: string;
+  /** (w120) "drop" the Niagara effect riding on a part that also has a real mesh (signed off 4 Nov 2026,
+   *  dropEffectOnMeshPart): the part renders its mesh and only the effect is dropped. Absent — on every index
+   *  today — such a part refuses the item exactly as before. */
+  meshPartEffects?: string;
 }
 
 /** One component's socket rests as the index records them; `bodyBone` is decided while resolving. */
@@ -521,8 +559,17 @@ export interface SourceSkinPart {
   sourceMesh: string;
   url: string;
   boundsOrigin: [number, number, number]; // imported source bounds, Unreal centimetres
-  materials: Record<string, { source: string; defaultSource: string; url?: string; legacyName?: string; parameterOverrides?: string[] }>;
+  /** Head only, for a face the catalog has no legacy preview of (w91-head-skin): the runtime builds the baseline every
+   *  legacy preview contributes instead of reading one (CharacterRig.legacyEquivalentHeadBaseline). */
+  previewBaseline?: typeof LEGACY_EQUIVALENT_HEAD_BASELINE;
+  materials: Record<string, { source: string; defaultSource: string; url?: string; legacyName?: string; parameterOverrides?: string[];
+    /** An unrecovered eye shell or eye edge of a legacy-free head, or of a legacy-preview face that declared the two
+     *  translucent eye layers the invisible-shell baseline because its own preview bakes them opaque
+     *  (w104-legacy-shell-baseline, 2 Nov 2026): the invisible masked shell every legacy preview has. */
+    invisibleShell?: true }>;
 }
+/** The one legacy-equivalent head baseline (scripts/shader-probe/plan-source-skin.mjs LEGACY_EQUIVALENT_BASELINE). */
+export const LEGACY_EQUIVALENT_HEAD_BASELINE = 'legacy-equivalent-v1';
 export interface SourceSkinPair {
   head: SourceSkinPart;
   body: SourceSkinPart;
@@ -531,6 +578,9 @@ export interface SourceSkinPair {
    *  and every visible path are unchanged; the runtime must not request or render it while this is
    *  set, and removing whatever empties it restores the same head through the ordinary path. */
   headOmitted?: SourceHeadOmission;
+  /** (w128) The source indexes of the face's attached statics the index records (sourceSkinPairParts `attached`).
+   *  They are not pair parts; loadSourceSkinPairAttachments resolves them for the rig. */
+  attachedParts?: number[];
 }
 
 /** Why one outfit does not render the head its face authors. A transient outfit state, derived per
@@ -558,7 +608,7 @@ export type SourceScalpSelection =
  *  alone is not evidence, and neither is an occupied slot or a covering item's name. */
 export function explicitlyEmptiedPart(part: ResolvedPart): boolean {
   if (!part.hidden || part.unresolved.length || part.staticMesh || part.skeletalMesh || part.effect) return false;
-  if (part.definition.LogicModules?.length) return false;
+  if (!onlyInertLogicModules(part.definition)) return false;
   if (!part.rules.every(index => {
     const rule = part.definition.TagOverrides?.[index];
     return Number.isInteger(index) && !!rule && rule.MatchingTags.length <= 1 &&
@@ -599,7 +649,7 @@ export function omittedSourceHead(item: SourceOutfit["items"][string], head: Pic
       path(part.definition.SkeletalMesh) !== head.sourceMesh) return undefined;
   const p = part.definition, wrap = p.WrapDeformation;
   if (path(p.StaticMesh) || path(p.Effect) || p.SkeletalMesh.SubPathString || p.bIsAttached || p.bAttachToHeadMesh ||
-      path(p.OptionalAttachmentMesh) || p.LogicModules?.length ||
+      path(p.OptionalAttachmentMesh) || !onlyInertLogicModules(p) ||
       wrap?.bIsWrapDeformed || wrap?.bIsWrapDeformedByHeadComponent || path(wrap?.OptionalWrapDeformerMesh) ||
       Object.values(p.LocalPosition ?? {}).some(v => v !== 0) ||
       Object.values(p.LocalRotation ?? {}).some(v => v !== 0) ||
@@ -612,7 +662,8 @@ export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"]
   parameters: SourceMaterialParameters[] = [], hair?: SourceHairSelection): Promise<SourceSkinPair | undefined> {
   const index = await readJson(`${baseUrl}/skin-pairs.json`) as {
     // The index describes the source, never a transient outfit state: an omission is added here.
-    formatVersion: number; items: Record<string, { head: SourceSkinPart; body: SourceSkinPart; source: string }>;
+    formatVersion: number; items: Record<string, { head: SourceSkinPart; body: SourceSkinPart; source: string;
+      droppedEffectParts?: number[]; attachedParts?: number[] }>;
   };
   if (index.formatVersion !== 1 || !index.items) {
     pending.delete(`${baseUrl}/skin-pairs.json`);
@@ -627,7 +678,19 @@ export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"]
     .some(slot => parameterOverlays(parameters, slot, Object.keys(pair.body.materials)).length));
   const variants = needsVariants
     ? (await readJson(`${baseUrl}/assets.json`) as AssemblyAssets).materialVariants : undefined;
-  if (pair.source !== item.source || item.parts.length !== 2) throw new Error("Source skin pair definition changed");
+  // (w113) Extra parts are admitted only as the activated-effect parts the index's gate drops, and only exactly the
+  // ones the pair records; an ordinary two-part item reads no assets here, as before.
+  const declaredDropped = pair.droppedEffectParts ?? [];
+  // (w128) Likewise attached statics: exactly the ones the pair records leave the pair (loadSourceSkinPairAttachments).
+  const declaredAttached = pair.attachedParts ?? [];
+  let pairParts = item.parts.length;
+  if (declaredDropped.length || declaredAttached.length || item.parts.length !== 2) {
+    const split = sourceSkinPairParts(item, assemblyResolveGates(await readJson(`${baseUrl}/assets.json`) as AssemblyAssets));
+    if (JSON.stringify(split.dropped) !== JSON.stringify(declaredDropped) ||
+        JSON.stringify(split.attached) !== JSON.stringify(declaredAttached)) throw new Error("Source skin pair definition changed");
+    pairParts = split.parts.length;
+  }
+  if (pair.source !== item.source || pairParts !== 2) throw new Error("Source skin pair definition changed");
   const resolve = (part: SourceSkinPart, isHead: boolean): SourceSkinPart => {
     const actual = item.parts.find(p => p.sourceIndex === part.sourceIndex);
     const emptied = isHead && !!omitted;
@@ -639,7 +702,7 @@ export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"]
       : { mesh: actual?.skeletalMesh ?? "", extra: !!actual?.staticMesh || !!actual?.effect };
     if (!actual || actual.hidden !== emptied || actual.unresolved.length || replaced.mesh !== part.sourceMesh ||
         replaced.extra || !!actual.definition.bIsHeadMesh !== isHead || actual.definition.bIsAttached ||
-        actual.definition.LogicModules?.length || Object.values(actual.definition.LocalPosition ?? {}).some(v => v !== 0) ||
+        !onlyInertLogicModules(actual.definition) || Object.values(actual.definition.LocalPosition ?? {}).some(v => v !== 0) ||
         Object.values(actual.definition.LocalRotation ?? {}).some(v => v !== 0) || Object.values(actual.definition.LocalScale ?? {}).some(v => v !== 1))
       throw new Error("Unsupported source skin pair placement or replacement");
     if (part.boundsOrigin.length !== 3 || !part.boundsOrigin.every(Number.isFinite)) throw new Error("Invalid source skin bounds");
@@ -660,7 +723,27 @@ export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"]
     return { ...part, url: url(part.url), materials };
   };
   return { head: resolve(pair.head, true), body: resolve(pair.body, false),
-    ...(omitted ? { headOmitted: omitted } : {}) };
+    ...(omitted ? { headOmitted: omitted } : {}),
+    ...(declaredAttached.length ? { attachedParts: [...declaredAttached] } : {}) };
+}
+
+/** (w128, 4 Nov 2026) The rig parts of a skin pair's recorded attached statics (the hollow-face and ballistic-gel
+ *  skulls), through the ordinary attached-static route: exactly the parts the pair records, and of those only the ones
+ *  this outfit shows (a rule such as HideMesh.FaceReplacement may hide one). Empty when the pair records none, so an
+ *  ordinary face reads nothing more. Every check of resolveSourceRigParts applies, including the indexed mesh. */
+export async function loadSourceSkinPairAttachments(item: SourceOutfit["items"][string], pair: SourceSkinPair,
+  baseUrl: string, override: Parameters<typeof loadSourceRigParts>[2] = {}): Promise<SourceRigPart[]> {
+  const indexes = pair.attachedParts ?? [];
+  if (!indexes.length) return [];
+  const parts = item.parts.filter(part => indexes.includes(part.sourceIndex));
+  if (parts.length !== indexes.length || !parts.every(attachedStaticSourcePart))
+    throw new Error("Source skin pair definition changed");
+  const shown = parts.filter(part => !part.hidden);
+  if (!shown.length) return [];
+  const rig = await loadSourceRigParts({ ...item, parts: shown }, baseUrl, override);
+  if (rig.length !== shown.length || rig.some(part => !part.attachment))
+    throw new Error("Unsupported source skin pair attachment");
+  return rig;
 }
 
 /** The hair TagOverride precedence an index (or a capture-only dev switch) selects
@@ -694,6 +777,9 @@ export interface SourceResolveGates {
    *  provided the item keeps at least one real mesh part; the item's real meshes then render.
    *  Logic modules, wrap or optional meshes, head roles and unresolved rules stay refused. */
   activatedEffectParts?: boolean;
+  /** "drop" the effect on a mesh part (w120, signed off 4 Nov 2026 dropEffectOnMeshPart): a part with a real
+   *  static or skeletal mesh and an effect renders its mesh; every other refusal of the part stands. */
+  meshPartEffects?: boolean;
 }
 
 /** Whether an index (or a capture-only dev switch) selects the gated mirrored attachment scale.
@@ -728,16 +814,25 @@ export function activatedEffectPartsGate(value: string | undefined): boolean {
   return true;
 }
 
+/** Whether an index (or a capture-only dev switch) selects the gated effect drop on mesh parts (w120).
+ *  Absent stays off; any other spelling is refused rather than guessed. */
+export function meshPartEffectsGate(value: string | undefined): boolean {
+  if (value === undefined) return false;
+  if (value !== "drop") throw new Error(`Unknown mesh part effects: ${value}`);
+  return true;
+}
+
 /** The resolve gates an index's assets select, with an optional capture-only override per field
  *  (a dev URL switch wins over the index for that capture only). */
 export function assemblyResolveGates(assets: AssemblyAssets,
   override: { attachmentMirroredScale?: string; mergedPartTransforms?: string;
-    facialHairForeignOverlays?: string; activatedEffectParts?: string } = {}): SourceResolveGates {
+    facialHairForeignOverlays?: string; activatedEffectParts?: string; meshPartEffects?: string } = {}): SourceResolveGates {
   return {
     attachmentMirroredScale: attachmentMirroredScaleGate(override.attachmentMirroredScale ?? assets.attachmentMirroredScale),
     mergedPartTransforms: mergedPartTransformsGate(override.mergedPartTransforms ?? assets.mergedPartTransforms),
     facialHairForeignOverlays: facialHairForeignOverlaysGate(override.facialHairForeignOverlays ?? assets.facialHairForeignOverlays),
     activatedEffectParts: activatedEffectPartsGate(override.activatedEffectParts ?? assets.activatedEffectParts),
+    meshPartEffects: meshPartEffectsGate(override.meshPartEffects ?? assets.meshPartEffects),
   };
 }
 
@@ -799,7 +894,7 @@ function mergeableSkeletalPart(part: ResolvedPart, assets: AssemblyAssets): bool
   // and every face's cage shares that topology, so the part follows the worn head's cage relative to
   // HeadMaster's. The resolver marks such a part (headWrap below); the rig applies the cage (HeadWrap.ts).
   const headWrap = !!wrap?.bIsWrapDeformed && !!wrap?.bIsWrapDeformedByHeadComponent;
-  if (part.hidden || part.unresolved.length || part.effect || path(p.Effect) || p.LogicModules?.length ||
+  if (part.hidden || part.unresolved.length || part.effect || path(p.Effect) || !onlyInertLogicModules(p) ||
       part.staticMesh || path(p.StaticMesh) || path(p.OptionalAttachmentMesh) || path(p.OptionalHeadWrapMesh) ||
       ((wrap?.bIsWrapDeformed || wrap?.bIsWrapDeformedByHeadComponent) && !headWrap) ||
       path(wrap?.OptionalWrapDeformerMesh)) return false;
@@ -858,7 +953,7 @@ export function inertMergedPartTransform(part: ResolvedPart, assets: AssemblyAss
 export function emptySourcePart(part: ResolvedPart): boolean {
   const p = part.definition;
   return !part.staticMesh && !part.skeletalMesh && !part.effect && !part.unresolved.length && !path(p.Effect) &&
-    !p.LogicModules?.length && !path(p.OptionalAttachmentMesh) && !path(p.OptionalHeadWrapMesh) &&
+    onlyInertLogicModules(p) && !path(p.OptionalAttachmentMesh) && !path(p.OptionalHeadWrapMesh) &&
     !path(p.WrapDeformation?.OptionalWrapDeformerMesh) && !p.bIsHeadMesh && !p.bAttachToHeadMesh;
 }
 
@@ -869,7 +964,37 @@ export function emptySourcePart(part: ResolvedPart): boolean {
 function activatedEffectSourcePart(part: ResolvedPart): boolean {
   const p = part.definition, wrap = p.WrapDeformation;
   return !!part.effect && !part.staticMesh && !part.skeletalMesh && !part.unresolved.length &&
-    !p.LogicModules?.length && !path(p.OptionalAttachmentMesh) && !path(p.OptionalHeadWrapMesh) &&
+    onlyInertLogicModules(p) && !path(p.OptionalAttachmentMesh) && !path(p.OptionalHeadWrapMesh) &&
+    !(wrap?.bIsWrapDeformed || wrap?.bIsWrapDeformedByHeadComponent || path(wrap?.OptionalWrapDeformerMesh)) &&
+    !p.bIsHeadMesh && !p.bAttachToHeadMesh;
+}
+
+/** (w113, 2 Nov 2026) The parts a source skin pair is made of. An item of exactly two parts is unchanged. Under the
+ *  signed-off activated-effect drop (dropActivatedEffectParts, the same gate and predicate resolveSourceRigParts
+ *  drops by), a part whose only renderable is an activated effect renders nothing and is not part of the pair (the
+ *  white-valentines blank face's head-socket Niagara hearts); `dropped` lists those parts' source indexes. The skin
+ *  planner and loadSourceSkinPair both use this, and the index records `dropped` as the pair's droppedEffectParts. */
+export function sourceSkinPairParts(item: SourceOutfit["items"][string], gates: SourceResolveGates):
+  { parts: ResolvedPart[]; dropped: number[]; attached: number[] } {
+  // (w128) Authored attached statics are never part of the pair; `attached` lists them, and the index records it as
+  // the pair's attachedParts. An item without one is split exactly as before.
+  const attachedParts = item.parts.filter(attachedStaticSourcePart);
+  const rest = item.parts.filter(part => !attachedParts.includes(part));
+  const attached = attachedParts.map(part => part.sourceIndex);
+  if (rest.length === 2 || gates.activatedEffectParts !== true) return { parts: rest, dropped: [], attached };
+  const dropped = rest.filter(activatedEffectSourcePart);
+  return { parts: rest.filter(part => !dropped.includes(part)), dropped: dropped.map(part => part.sourceIndex), attached };
+}
+
+/** (w128, 4 Nov 2026) An authored attached static part of a face: the hollow-face and ballistic-gel skulls, static
+ *  meshes attached to the body's head socket beside the skin pair. A static mesh with no skeletal mesh or effect,
+ *  attached, with no head role, wrap, optional mesh or live logic. It is decided on the authored definition, so it is
+ *  the same part in every outfit context, hidden by a rule or not. The runtime renders it through the ordinary
+ *  attached-static route (loadSourceSkinPairAttachments), never as part of the pair. */
+export function attachedStaticSourcePart(part: ResolvedPart): boolean {
+  const p = part.definition, wrap = p.WrapDeformation;
+  return !!path(p.StaticMesh) && !path(p.SkeletalMesh) && !path(p.Effect) && !!p.bIsAttached &&
+    onlyInertLogicModules(p) && !path(p.OptionalAttachmentMesh) && !path(p.OptionalHeadWrapMesh) &&
     !(wrap?.bIsWrapDeformed || wrap?.bIsWrapDeformedByHeadComponent || path(wrap?.OptionalWrapDeformerMesh)) &&
     !p.bIsHeadMesh && !p.bAttachToHeadMesh;
 }
@@ -906,7 +1031,9 @@ export function resolveSourceRigParts(item: SourceOutfit["items"][string], asset
     const neutral = !attached && neutralSourceHeadFrame(part, assets);
     const inert = !attached && !neutral && nonIdentity && gates.mergedPartTransforms === true
       && inertMergedPartTransform(part, assets);
-    if (part.unresolved.length || part.effect || p.LogicModules?.length ||
+    // Gated (w120, dropEffectOnMeshPart): an effect riding on a real mesh part is dropped; the mesh renders.
+    const effectDropped = !!part.effect && gates.meshPartEffects === true && !!(part.staticMesh || part.skeletalMesh);
+    if (part.unresolved.length || (part.effect && !effectDropped) || !onlyInertLogicModules(p) ||
         (attached && (p.WrapDeformation?.bIsWrapDeformed || p.WrapDeformation?.bIsWrapDeformedByHeadComponent || path(p.WrapDeformation?.OptionalWrapDeformerMesh))) ||
         // A socket belongs to the body, to the head component, or to one optional attachment
         // mesh — never to two of them, and never to a part that is not an attached static.

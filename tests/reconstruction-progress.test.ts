@@ -9,7 +9,8 @@ test("progress counts each supplied cosmetic once, including reviewed exceptions
   const ids = ["hairs-afrofade", "streetwear-tightsinglet-cotton-enorino", "streetwear-tightsinglet-cotton-starsstripes", "attachment-boombox-01-finals-lumbar"];
   const items = ids.map(id => getItemById(id)!);
   const summary = summarizeReconstruction(items, new Set([ids[0], ids[2], "outside-this-catalog"]), "ready");
-  assert.deepEqual(summary, { total: 4, counts: { untouched: 1, polish: 1, issue: 1, accepted: 1, unknown: 0 } });
+  // ids[1] carries an explicit verdict (polish since its green was withdrawn on 5 Nov 2026), counted whatever the set says.
+  assert.deepEqual(summary, { total: 4, counts: { untouched: 1, polish: 2, issue: 1, accepted: 0, unknown: 0 } });
   const noPreview = { ...items[3], model: undefined, decal: undefined };
   assert.equal(summarizeReconstruction([noPreview], new Set(), "ready").counts.untouched, 1);
   assert.equal(summarizeReconstruction(items.slice(0, 2), new Set([ids[0]]), "ready").total, 2);
@@ -19,7 +20,7 @@ test("failed or loading progress stays unknown while explicit reviews remain, an
   const items = [getItemById("hairs-afrofade")!, getItemById("streetwear-tightsinglet-cotton-enorino")!];
   for (const state of ["loading", "unavailable"] as const) {
     assert.deepEqual(summarizeReconstruction(items, new Set(), state).counts,
-      { untouched: 0, polish: 0, issue: 0, accepted: 1, unknown: 1 });
+      { untouched: 0, polish: 1, issue: 0, accepted: 0, unknown: 1 });
   }
   assert.deepEqual(summarizeReconstruction([], new Set(), "ready"),
     { total: 0, counts: { untouched: 0, polish: 0, issue: 0, accepted: 0, unknown: 0 } });

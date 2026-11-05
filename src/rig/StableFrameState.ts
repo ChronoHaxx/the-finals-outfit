@@ -15,6 +15,12 @@ export class StableFrameState {
   // A visible recovered additive (M_FloatingHologram) material: its One/One blend is exact only in the linear HDR
   // accumulation target, where tone mapping follows blending. Not a recorded input; derived from the materials visited.
   private additive = false;
+  // (w133, 5 Nov 2026) three's renderer sets needsUpdate (version + 1) itself while it draws a double-sided material one
+  // side at a time: a transparent one in its two-pass path (renderObject), and a transmissive one also back-side into
+  // the transmission target. That is the renderer's own bookkeeping, not an input change, yet it moved the recorded
+  // version on every frame, so a glass visor never converged. The bumps made inside renderDiscountingSideFlips are
+  // discounted for exactly those materials; a needsUpdate anywhere else still changes the recorded version.
+  private rendererBumps = new WeakMap<THREE.Material, number>();
 
   private add(value: unknown) {
     if (!Object.is(this.values[this.cursor], value)) this.reason ||= this.category;
@@ -67,6 +73,8 @@ export class StableFrameState {
         for (const entry of Object.values(material.userData)) if (entry instanceof THREE.Texture) this.value(entry);
       } else if (key === 'uniforms') {
         for (const uniform of Object.values(value as Record<string, THREE.IUniform>)) this.value(uniform.value);
+      } else if (key === 'version') {
+        this.add(material.version - (this.rendererBumps.get(material) ?? 0));
       } else if (key !== '_listeners' && typeof value !== 'function') this.value(value);
     }
   }
@@ -98,7 +106,9 @@ export class StableFrameState {
         const materials = Array.isArray(object.material) ? object.material : [object.material];
         for (const material of materials) {
           if (visible && material.visible && material.alphaHash && material.userData.reconstructed) this.masked = true;
-          if (visible && material.visible && material.userData.recoveredAdditive === true) this.additive = true;
+          // (w122) a lit thin-translucent section's multiply/add passes need the same linear target as additive light.
+          if (visible && material.visible && (material.userData.recoveredAdditive === true
+            || material.userData.recoveredThinTranslucent === true)) this.additive = true;
           this.material(material);
         }
         this.category = 'geometry';
@@ -152,5 +162,24 @@ export class StableFrameState {
     return { changed: this.reason, masked: this.masked, additive: this.additive };
   }
 
+  /** One scene render, with the version bumps three makes itself on the side-flipped materials of the last capture
+   *  discounted (see rendererBumps). Any other material, and any bump outside this call, is recorded as before. */
+  renderDiscountingSideFlips(render: () => void) {
+    const flipped = [...this.materials].filter(sideFlippedByRenderer).map(m => [m, m.version] as const);
+    try {
+      render();
+    } finally {
+      for (const [m, before] of flipped)
+        if (m.version !== before) this.rendererBumps.set(m, (this.rendererBumps.get(m) ?? 0) + m.version - before);
+    }
+  }
+
   clear() { this.values.length = 0; this.materials.clear(); this.textures.clear(); this.geometries.clear(); }
+}
+
+/** The materials three's renderer draws one side at a time, setting needsUpdate around each side: double-sided and
+ *  either transparent with forceSinglePass off (renderObject) or transmissive (the transmission back-side pass). */
+function sideFlippedByRenderer(material: THREE.Material): boolean {
+  return material.side === THREE.DoubleSide && ((material.transparent === true && material.forceSinglePass === false)
+    || ((material as THREE.MeshPhysicalMaterial).transmission ?? 0) > 0);
 }

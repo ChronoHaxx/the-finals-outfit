@@ -1,7 +1,7 @@
 {
   "streetwear-tightsinglet-cotton-enorino": {
-    "status": "accepted",
-    "note": "Looks good in the reviewed Medium outfit; user confirmed the result on 11 September 2026."
+    "status": "polish",
+    "note": "Green withdrawn on 5 Nov 2026: the user reported culled body showing under the singlet on the published site, the see-through strip under the back hem in idle (wave 41 escaped defect). That site still ran the 18 Oct release. The fix is this item's own body mask since 21 Oct 2026 (amend-item-masks.py; reconstructed-w42a-maskhole-b1-singlet-coverage-v1, shared by the nine TightSinglet cotton rows; _docs/goal-100-2026-10-11/w42a-maskhole-b1/review-v1/README.md, ACCEPT), which ships in the 5 Nov release. The 11 September 2026 confirmation predates that fix, so human acceptance is pending again. Rechecked 5 Nov in idle and A pose, 8 yaws, the neckline, armholes and hem from below: no culled body (_docs/goal-100-2026-10-11/w137-singlet-cull/)."
   },
   "casual-longcoat-leather-camo": {
     "status": "polish",
@@ -262,5 +262,9 @@
   "alfaacta-trailstove-metal": {
     "status": "issue",
     "note": "Known visual error (w76-s12-wave review, 29 Oct 2026): shape, straps and lower-back placement match, but the metal canister reads pale against the icon's darker metal: the game studio's darker environment reflected in metal, held decision #3 (studio lighting), as the wave 53 guitar plate. Evidence: _docs/goal-100-2026-10-11/w76-s12-wave/review-v1/README.md, _docs/goal-100-2026-10-11/w76-s12-wave/review-prep-v1/zoom-sheets-v1/zoom-03.jpg."
+  },
+  "streetwear-tightsinglet-cotton-orangeevent-a5ee": {
+    "status": "polish",
+    "note": "Reconstructed 29 Oct 2026 from the Season 12 build (w79-s12-roots batch-r3, wave 63; deferred in w73 only behind the then-unexported Season 12 MC_WeatherStates collection) and accepted at full size: cyan singlet with darker blue side panels and hem band, crossed brown bandoliers, hip pouch, back bedroll and the dark right-forearm band all match the icon; identical to the accepted orange sibling but for the team colour. Evidence: _docs/goal-100-2026-10-11/w79-s12-roots/review-r3/README.md, _docs/goal-100-2026-10-11/w79-s12-roots/review-r3/../review-prep-v1/sheets-r3/sheet-01.jpg. Polish: human acceptance pending."
   }
 }

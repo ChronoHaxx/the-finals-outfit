@@ -7,7 +7,7 @@ import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal,
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
 import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
 import { bodyTypePreview, type BodyTypePreview } from "../rig/BodyTypePreview";
-import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
+import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
@@ -647,7 +647,8 @@ export default function CharacterViewer() {
       const eyes = eff.eyes && faceCosmetics.has(eff.eyes) ? eff.eyes : undefined;
       // A supported makeup or body paint keeps its head paint on the decal path; only its eyelash rule restages the face.
       const cosmeticRule = faceCosmeticRule(faceCosmetics, [eyes, eff.blush, eff.bodyPaint]);
-      if (assembly && requestedFace && faceItem?.model?.gltfPath && (requestedHair || !eff.hair)) {
+      // A face without a legacy model takes this path too; it renders only when the index holds its legacy-free pair (w91-head-skin).
+      if (assembly && requestedFace && faceItem && (requestedHair || !eff.hair)) {
         appearanceSlots.add('hair'); appearanceSlots.add('face');
         if (eyes) appearanceSlots.add('eyes');
         try {
@@ -666,9 +667,15 @@ export default function CharacterViewer() {
                 sourceSurfaceView: DEV.debugAlbedo ? 'baseColor' : DEV.surfaceView });
               else removals.push('hair');
             }
-            if (prev.current.face !== faceKey) changes.push({ id: faceItem.id, slot: 'face', url: modelUrl(faceItem.model.gltfPath),
-              sourceSkinPair: pair, sourceSurfaceView: DEV.debugAlbedo ? 'baseColor' : DEV.surfaceView,
-              bodySkin: faceItem.model.bodySkin ? { colorMultiply: faceItem.model.bodySkin.colorMultiply,
+            // (w128) A pair that records attached statics (a face's skull) brings their rig parts; none otherwise.
+            const faceAttachments = pair.attachedParts?.length
+              ? await loadSourceSkinPairAttachments(requestedFace, pair, assetsUrl, resolverGates) : undefined;
+            if (cancelled) return;
+            if (prev.current.face !== faceKey) changes.push({ id: faceItem.id, slot: 'face',
+              url: faceItem.model?.gltfPath ? modelUrl(faceItem.model.gltfPath) : '',
+              sourceSkinPair: pair, ...(faceAttachments?.length ? { sourceParts: faceAttachments } : {}),
+              sourceSurfaceView: DEV.debugAlbedo ? 'baseColor' : DEV.surfaceView,
+              bodySkin: faceItem.model?.bodySkin ? { colorMultiply: faceItem.model.bodySkin.colorMultiply,
                 roughness: faceItem.model.bodySkin.roughness,
                 texUrl: faceItem.model.bodySkin.texPath ? modelUrl(faceItem.model.bodySkin.texPath) : undefined } : undefined });
             if (cancelled) return;
@@ -761,7 +768,24 @@ export default function CharacterViewer() {
             : id;
         if (prev.current[slot] === key) continue;
         const item = id ? getItemById(id) : undefined;
-        if (item && (item.model?.gltfPath || sourceItem)) {
+        // A face without a legacy model renders only through its legacy-free source skin pair (w91-head-skin); with no
+        // pair in the index it stays the empty slot it was.
+        let legacyFreePair: Awaited<ReturnType<typeof loadSourceSkinPair>>;
+        if (item && !item.model?.gltfPath && !sourceItem && skinCandidate) {
+          try {
+            legacyFreePair = await loadSourceSkinPair(item.id, skinCandidate,
+              modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection);
+          } catch (e) {
+            if (cancelled) return;
+            console.error(e);
+            setError("Couldn’t load the selected preview. Some items may still show the previous selection.");
+            delete prev.current[slot];
+            equipFailed = true;
+            continue;
+          }
+          if (cancelled) return;
+        }
+        if (item && (item.model?.gltfPath || sourceItem || legacyFreePair)) {
           try {
             // TODO(M4-dye): override material.regions[].tint from build dyes here.
             const base = item.model ? toRigMaterial(item.model) : undefined;
@@ -780,15 +804,19 @@ export default function CharacterViewer() {
                 : undefined;
             const sourceParts = sourceItem ? await loadSourceRigParts(sourceItem,
               modelUrl("models/reconstructed-assemblies-v1"), resolverGates) : undefined;
-            const sourceSkinPair = skinCandidate ? await loadSourceSkinPair(item.id, skinCandidate,
-              modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection) : undefined;
+            const sourceSkinPair = legacyFreePair ?? (skinCandidate ? await loadSourceSkinPair(item.id, skinCandidate,
+              modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection) : undefined);
+            // (w128) A pair that records attached statics (a face's skull) brings their rig parts instead.
+            const pairAttachments = sourceSkinPair?.attachedParts?.length && skinCandidate
+              ? await loadSourceSkinPairAttachments(skinCandidate, sourceSkinPair,
+                  modelUrl("models/reconstructed-assemblies-v1"), resolverGates) : undefined;
             await rig.equip({
               id: item.id,
               slot,
-              url: item.model?.gltfPath ? modelUrl(item.model.gltfPath) : sourceParts![0]?.url ?? "",
+              url: item.model?.gltfPath ? modelUrl(item.model.gltfPath) : sourceParts?.[0]?.url ?? "",
               sourceMeshUrl: DEV.reconstructed && DEV.sourceMeshes && RECOVERED_ITEMS.includes(item.id)
                 ? modelUrl("models/reconstructed-meshes-v2/SK_Casual_LongCoat_M.glb") : undefined,
-              sourceParts,
+              sourceParts: pairAttachments?.length ? pairAttachments : sourceParts,
               sourceSkinPair,
               sourceSurfaceView: DEV.debugAlbedo ? "baseColor" : DEV.surfaceView,
               headWraps,

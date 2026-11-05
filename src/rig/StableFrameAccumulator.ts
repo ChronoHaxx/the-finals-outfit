@@ -3,6 +3,7 @@ import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js';
 import { OutputShader } from 'three/examples/jsm/shaders/OutputShader.js';
 import { StableFrameState } from './StableFrameState';
 import { StableCamera } from './StableCamera';
+import { setAlphaHashSample } from './AlphaHashSampling';
 
 const toneMappingDefines: Record<number, string> = {
   [THREE.LinearToneMapping]: 'LINEAR_TONE_MAPPING', [THREE.ReinhardToneMapping]: 'REINHARD_TONE_MAPPING',
@@ -136,7 +137,13 @@ export class StableFrameAccumulator {
         if (camera instanceof THREE.PerspectiveCamera) { p[8] += 2 * dx / width; p[9] -= 2 * dy / height; }
         else { p[12] -= 2 * dx / width; p[13] += 2 * dy / height; }
         camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
-        renderer.setRenderTarget(this.sample); renderer.clear(); renderer.render(scene, camera);
+        // Decision #19: samples 1..N-1 draw alpha-hashed coverage from per-pixel stratified thresholds, so the average
+        // converges to the authored opacity; sample 0 keeps three's own hash (AlphaHashSampling).
+        setAlphaHashSample(n, this.status.maxSamples);
+        // (w133) three's own side-flip needsUpdate bumps during this render are not input changes (StableFrameState).
+        renderer.setRenderTarget(this.sample); renderer.clear();
+        this.state.renderDiscountingSideFlips(() => renderer.render(scene, camera));
+        setAlphaHashSample(0);
         this.status.sceneRenders++;
         renderer.setRenderTarget(this.history);
         if (n === 0) { renderer.setClearColor(0, 0); renderer.clear(); }
@@ -168,6 +175,7 @@ export class StableFrameAccumulator {
       this.invalidate('interrupted render');
       throw error;
     } finally {
+      setAlphaHashSample(0);
       camera.projectionMatrix.copy(projection); camera.projectionMatrixInverse.copy(inverse);
       camera.matrixWorld.copy(world); camera.matrixWorldInverse.copy(worldInverse);
       camera.matrixWorldAutoUpdate = worldAutoUpdate; camera.matrixWorldNeedsUpdate = worldNeedsUpdate;
