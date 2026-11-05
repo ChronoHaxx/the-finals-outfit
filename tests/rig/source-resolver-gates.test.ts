@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
 import { attachSourceStatic, sourceAttachmentRest } from "../../src/rig/SourceAttachment.ts";
-import { assemblyResolveGates, attachmentMirroredScaleGate, activatedEffectPartsGate, inertMergedPartTransform,
+import { assemblyResolveGates, attachmentMirroredScaleGate, activatedEffectPartsGate, meshPartEffectsGate, inertMergedPartTransform,
   mergedPartTransformsGate, neutralSourceHeadFrame, resolveSourceOutfit, resolveSourceRigParts,
   type AssemblyAssets, type ResolvedPart, type SourceDefinition, type SourceOutfit } from "../../src/rig/SourceAssembly.ts";
 
@@ -69,7 +69,7 @@ const INERT = { mergedPartTransforms: true };
 const MIRRORED = { attachmentMirroredScale: true };
 
 test("the gate spellings are refused rather than guessed, and absent means off", () => {
-  for (const gate of [attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate]) {
+  for (const gate of [attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, meshPartEffectsGate]) {
     assert.equal(gate(undefined), false);
     assert.throws(() => gate("on"), /Unknown/);
     assert.throws(() => gate("Nonzero"), /Unknown/);
@@ -78,7 +78,7 @@ test("the gate spellings are refused rather than guessed, and absent means off",
   assert.equal(mergedPartTransformsGate("inert"), true);
   assert.equal(activatedEffectPartsGate("drop"), true);
   const off = { attachmentMirroredScale: false, mergedPartTransforms: false,
-    facialHairForeignOverlays: false, activatedEffectParts: false };
+    facialHairForeignOverlays: false, activatedEffectParts: false, meshPartEffects: false };
   const index = assets();
   assert.deepEqual(assemblyResolveGates(index), off);
   assert.deepEqual(assemblyResolveGates(assets({ attachmentMirroredScale: "nonzero", mergedPartTransforms: "inert" })),

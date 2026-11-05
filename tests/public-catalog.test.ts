@@ -15,11 +15,12 @@ test('public display names do not change asset identity or hide unmatched items'
   assert.equal(getBrowseItem(unknown, false)?.id, unknown);
   assert.ok(getBrowseItem(unknown, true));
   assert.ok(getItemById(unknown)); // still available to the renderer / developer catalog
-  // 36 since 25 Sep 2026: 18 hip-socket items (EBodySlot::BackLowerRight only) moved here from other slots.
-  // The public release keeps Season 11 local (87% release, 27 Oct 2026), so these are the 2,866-item counts.
-  assert.equal(getBrowseItemsBySlot('lowerBack', true).length, 36);
-  assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 36);
-  assert.equal(getBrowseItemsBySlot('hair', false).length, 185);
+  // 36 since 25 Sep 2026: 18 hip-socket items (EBodySlot::BackLowerRight only) moved here from other slots;
+  // 41 and 194 hairs since the Season 11 import (18 Oct 2026, 5 lower-back items and 9 hairs);
+  // 44 and 201 since the Season 12 import (28 Oct 2026, 3 lower-back items and 7 hairs).
+  assert.equal(getBrowseItemsBySlot('lowerBack', true).length, 44);
+  assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 44);
+  assert.equal(getBrowseItemsBySlot('hair', false).length, 201);
   assert.ok(getBrowseItem('hairs-afrofade', false));
   assert.equal(PUBLIC_CATALOG_COUNT, getAllItems().length);
 });
@@ -67,7 +68,7 @@ test('fresh exact names fill gaps while keeping original identities and descript
     assert.ok(!/\{\d+\}/.test(name), itemId);
     assert.equal(getBrowseItem(itemId, true)?.name, getItemById(itemId)?.name);
   }
-  assert.equal(PUBLIC_CATALOG_COUNT, 2866);
+  assert.equal(PUBLIC_CATALOG_COUNT, 3255); // 3,113 + 142 Season 12 items (28 Oct 2026)
 });
 
 test('generic source names keep descriptive styles and colours without losing identity', () => {
@@ -109,7 +110,8 @@ test('review verdicts win over generic support and missing status data is not fa
   // legacy-only variant).
   const broken = getItemById('streetwear-tightsinglet-cotton-starsstripes')!;
   const ordinary = getItemById('attachment-boombox-01-finals-lumbar')!;
-  assert.equal(getReconstructionReview(eno, new Set(), 'unavailable').status, 'accepted');
+  // Its explicit verdict (polish since the green was withdrawn on 5 Nov 2026) wins over the unavailable status data.
+  assert.equal(getReconstructionReview(eno, new Set(), 'unavailable').status, 'polish');
   assert.equal(getReconstructionReview(broken, new Set([broken.id]), 'ready').status, 'issue');
   assert.equal(getReconstructionReview(ordinary, new Set(), 'unavailable').status, 'unknown');
   assert.equal(getReconstructionReview(ordinary, new Set(), 'ready').status, 'untouched');

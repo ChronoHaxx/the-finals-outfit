@@ -259282,5 +259282,4546 @@
       }
     },
     "season": 9
+  },
+  {
+    "id": "assets-ammobackpack-arenasecurity",
+    "slot": "upperBack",
+    "name": "Assets Ammo Backpack Arena Security",
+    "imageUrl": "items/upperBack/assets-ammobackpack-arenasecurity.webp",
+    "set": "Military",
+    "tags": [
+      "arenasecurity"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachment-ballistichelmet-black",
+    "slot": "headwear",
+    "name": "Ballistic Helmet Black",
+    "imageUrl": "items/headwear/attachment-ballistichelmet-black.webp",
+    "tags": [
+      "black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachment-mask-welding-02-headwear-engimo",
+    "slot": "facewear",
+    "name": "Mask Welding 02 Headwear Engimo",
+    "imageUrl": "items/facewear/attachment-mask-welding-02-headwear-engimo.webp",
+    "sponsor": "engimo",
+    "tags": [
+      "engimo"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachments-aviatorsunglasses-plastic-black",
+    "slot": "eyewear",
+    "name": "Aviator Sunglasses Plastic Black",
+    "imageUrl": "items/eyewear/attachments-aviatorsunglasses-plastic-black.webp",
+    "tags": [
+      "plastic-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachments-guitar-02-back",
+    "slot": "upperBack",
+    "name": "Guitar 02 Back",
+    "imageUrl": "items/upperBack/attachments-guitar-02-back.webp",
+    "season": 11
+  },
+  {
+    "id": "attachments-knifebandolier-leather-brownlight",
+    "slot": "upperBack",
+    "name": "Knife Bandolier Leather Brown Light",
+    "imageUrl": "items/upperBack/attachments-knifebandolier-leather-brownlight.webp",
+    "tags": [
+      "leather-brownlight"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachments-knifebandolier-nylon-vaiiya",
+    "slot": "upperBack",
+    "name": "Knife Bandolier Nylon Vaiiya",
+    "imageUrl": "items/upperBack/attachments-knifebandolier-nylon-vaiiya.webp",
+    "sponsor": "vaiiya",
+    "tags": [
+      "nylon-vaiiya"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachments-planetring-01",
+    "slot": "headwear",
+    "name": "Planet Ring 01",
+    "imageUrl": "items/headwear/attachments-planetring-01.webp",
+    "season": 11
+  },
+  {
+    "id": "attachments-retroglasses-metal",
+    "slot": "eyewear",
+    "name": "Retro Glasses Metal",
+    "imageUrl": "items/eyewear/attachments-retroglasses-metal.webp",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachments-retroglasses-metal-brown",
+    "slot": "eyewear",
+    "name": "Retro Glasses Metal Brown",
+    "imageUrl": "items/eyewear/attachments-retroglasses-metal-brown.webp",
+    "tags": [
+      "metal-brown"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachments-retroglasses-metal-engimo",
+    "slot": "eyewear",
+    "name": "Retro Glasses Metal Engimo",
+    "imageUrl": "items/eyewear/attachments-retroglasses-metal-engimo.webp",
+    "sponsor": "engimo",
+    "tags": [
+      "metal-engimo"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachments-robot-visor",
+    "slot": "facewear",
+    "name": "Robot Visor",
+    "imageUrl": "items/facewear/attachments-robot-visor.webp",
+    "season": 11
+  },
+  {
+    "id": "attachments-scifisword-metal",
+    "slot": "upperBack",
+    "name": "Sci Fi Sword Metal",
+    "imageUrl": "items/upperBack/attachments-scifisword-metal.webp",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachments-snapbackcappatch-cotton-cometa",
+    "slot": "headwear",
+    "name": "Snapback Cap Patch Cotton Cometa",
+    "imageUrl": "items/headwear/attachments-snapbackcappatch-cotton-cometa.webp",
+    "tags": [
+      "cotton-cometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "attachments-spacetiara-01",
+    "slot": "headwear",
+    "name": "Space Tiara 01",
+    "imageUrl": "items/headwear/attachments-spacetiara-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-bodypaint-alien-01",
+    "slot": "blush",
+    "name": "Body Paint Alien 01",
+    "imageUrl": "items/blush/bodycosmetics-bodypaint-alien-01.webp",
+    "season": 11,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s11-paint-b2-v1/bodycosmetics-bodypaint-alien-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0.800000011920929,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-bodypaint-discobot-01",
+    "slot": "bodyPaint",
+    "name": "Body Paint Disco Bot 01",
+    "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-discobot-01.webp",
+    "season": 11,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-hs-v1/bodycosmetics-bodypaint-discobot-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s11-paint-b1-hs-v1/bodycosmetics-bodypaint-discobot-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-hs-v1/bodycosmetics-bodypaint-discobot-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s11-paint-b1-hs-v1/bodycosmetics-bodypaint-discobot-01-head_m.png",
+          "surfaceOverride": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-bodypaint-iseult-01",
+    "slot": "bodyPaint",
+    "name": "Body Paint Iseul T 01",
+    "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-iseult-01.webp",
+    "sponsor": "iseult",
+    "season": 11,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-v1/bodycosmetics-bodypaint-iseult-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s11-paint-b1-v1/bodycosmetics-bodypaint-iseult-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-bodypaint-reptile-01",
+    "slot": "bodyPaint",
+    "name": "Body Paint Reptile 01",
+    "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-reptile-01.webp",
+    "season": 11,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-w55-paint-b1-v1/bodycosmetics-bodypaint-reptile-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0.8999999761581421,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-w55-paint-b1-v1/bodycosmetics-bodypaint-reptile-01-bodyhands_m.png",
+          "surfaceOverride": 0.5,
+          "normalOverride": 0.10000000149011612
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-w55-paint-b1-v1/bodycosmetics-bodypaint-reptile-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0.8999999761581421,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-w55-paint-b1-v1/bodycosmetics-bodypaint-reptile-01-head_m.png",
+          "surfaceOverride": 0,
+          "normalOverride": 0.10000000149011612
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-earrings-acorn-01",
+    "slot": "earrings",
+    "name": "Earrings Acorn 01",
+    "imageUrl": "items/earrings/bodycosmetics-earrings-acorn-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-earrings-antennaivada-01",
+    "slot": "earrings",
+    "name": "Earrings Antenna Ivada 01",
+    "imageUrl": "items/earrings/bodycosmetics-earrings-antennaivada-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-earrings-bigthinhoops",
+    "slot": "earrings",
+    "name": "Earrings Big Thin Hoops",
+    "imageUrl": "items/earrings/bodycosmetics-earrings-bigthinhoops.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-earrings-peacesign-01",
+    "slot": "earrings",
+    "name": "Earrings Peace Sign 01",
+    "imageUrl": "items/earrings/bodycosmetics-earrings-peacesign-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-earrings-retrospace-01",
+    "slot": "earrings",
+    "name": "Earrings Retro Space 01",
+    "imageUrl": "items/earrings/bodycosmetics-earrings-retrospace-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-earrings-rocket-01",
+    "slot": "earrings",
+    "name": "Earrings Rocket 01",
+    "imageUrl": "items/earrings/bodycosmetics-earrings-rocket-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-earrings-sledgehammerengimo-01",
+    "slot": "earrings",
+    "name": "Earrings Sledgehammer Engimo 01",
+    "imageUrl": "items/earrings/bodycosmetics-earrings-sledgehammerengimo-01.webp",
+    "sponsor": "engimo",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-earrings-star-01-blue",
+    "slot": "earrings",
+    "name": "Earrings Star 01 Blue",
+    "imageUrl": "items/earrings/bodycosmetics-earrings-star-01-blue.webp",
+    "tags": [
+      "blue"
+    ],
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-eyes-alieneyes-01",
+    "slot": "eyes",
+    "name": "Eyes Alien Eyes 01",
+    "imageUrl": "items/eyes/bodycosmetics-eyes-alieneyes-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-makeup-alien-01",
+    "slot": "blush",
+    "name": "Makeup Alien 01",
+    "imageUrl": "items/blush/bodycosmetics-makeup-alien-01.webp",
+    "season": 11,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-w55-paint-b1-v1/bodycosmetics-makeup-alien-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-w55-paint-b1-v1/bodycosmetics-makeup-alien-01-head_m.png",
+          "surfaceOverride": 0,
+          "normalOverride": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-makeup-engimotech-01",
+    "slot": "blush",
+    "name": "Makeup Engimo Tech 01",
+    "imageUrl": "items/blush/bodycosmetics-makeup-engimotech-01.webp",
+    "sponsor": "engimo",
+    "season": 11,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-v1/bodycosmetics-makeup-engimotech-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s11-paint-b1-v1/bodycosmetics-makeup-engimotech-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-v1/bodycosmetics-makeup-engimotech-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-makeup-glitterglam-05",
+    "slot": "blush",
+    "name": "Makeup Glitter Glam 05",
+    "imageUrl": "items/blush/bodycosmetics-makeup-glitterglam-05.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-makeup-iseult-01",
+    "slot": "blush",
+    "name": "Makeup Iseul T 01",
+    "imageUrl": "items/blush/bodycosmetics-makeup-iseult-01.webp",
+    "sponsor": "iseult",
+    "season": 11,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-v1/bodycosmetics-makeup-iseult-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-makeup-scifibody-05",
+    "slot": "bodyPaint",
+    "name": "Makeup Sci Fi Body 05",
+    "imageUrl": "items/bodyPaint/bodycosmetics-makeup-scifibody-05.webp",
+    "season": 11,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-hs-v1/bodycosmetics-makeup-scifibody-05-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s11-paint-b1-hs-v1/bodycosmetics-makeup-scifibody-05-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-hs-v1/bodycosmetics-makeup-scifibody-05-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s11-paint-b1-hs-v1/bodycosmetics-makeup-scifibody-05-head_m.png",
+          "surfaceOverride": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-makeup-spacepilot-01",
+    "slot": "blush",
+    "name": "Makeup Space Pilot 01",
+    "imageUrl": "items/blush/bodycosmetics-makeup-spacepilot-01.webp",
+    "season": 11,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-v1/bodycosmetics-makeup-spacepilot-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-nails-engimo-01",
+    "slot": "nailPolish",
+    "name": "Nails Engimo 01",
+    "imageUrl": "items/nailPolish/bodycosmetics-nails-engimo-01.webp",
+    "sponsor": "engimo",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-nails-flowers-01",
+    "slot": "nailPolish",
+    "name": "Nails Flowers 01",
+    "imageUrl": "items/nailPolish/bodycosmetics-nails-flowers-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-nails-metallic-ivada",
+    "slot": "nailPolish",
+    "name": "Nails Metallic Ivada",
+    "imageUrl": "items/nailPolish/bodycosmetics-nails-metallic-ivada.webp",
+    "tags": [
+      "metallic-ivada"
+    ],
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-nails-planets-01",
+    "slot": "nailPolish",
+    "name": "Nails Planets 01",
+    "imageUrl": "items/nailPolish/bodycosmetics-nails-planets-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-nails-retro-01",
+    "slot": "nailPolish",
+    "name": "Nails Retro 01",
+    "imageUrl": "items/nailPolish/bodycosmetics-nails-retro-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-nails-space-01",
+    "slot": "nailPolish",
+    "name": "Nails Space 01",
+    "imageUrl": "items/nailPolish/bodycosmetics-nails-space-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-nails-stars-01",
+    "slot": "nailPolish",
+    "name": "Nails Stars 01",
+    "imageUrl": "items/nailPolish/bodycosmetics-nails-stars-01.webp",
+    "season": 11
+  },
+  {
+    "id": "bodycosmetics-tattoos-universe-01",
+    "slot": "tattoo",
+    "name": "Tattoos Universe 01",
+    "imageUrl": "items/tattoo/bodycosmetics-tattoos-universe-01.webp",
+    "season": 11,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-v1/bodycosmetics-tattoos-universe-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0,
+          "colorMultiply": "nonMasked"
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s11-paint-b1-v1/bodycosmetics-tattoos-universe-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0,
+          "colorMultiply": "nonMasked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "casual-bangles-metal-blue",
+    "slot": "wrist",
+    "name": "Bangles Metal Blue",
+    "imageUrl": "items/wrist/casual-bangles-metal-blue.webp",
+    "set": "Casual",
+    "tags": [
+      "metal-blue"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-basictshirt-cotton-cometa",
+    "slot": "upperBody",
+    "name": "Basic Tshirt Cotton Cometa",
+    "imageUrl": "items/upperBody/casual-basictshirt-cotton-cometa.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton-cometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-basictshirt-cotton-engimo-blue",
+    "slot": "upperBody",
+    "name": "Basic Tshirt Cotton Engimo Blue",
+    "imageUrl": "items/upperBody/casual-basictshirt-cotton-engimo-blue.webp",
+    "set": "Casual",
+    "sponsor": "engimo",
+    "tags": [
+      "cotton-engimo-blue"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-casualbeanie-wool",
+    "slot": "headwear",
+    "name": "Casual Beanie Wool",
+    "imageUrl": "items/headwear/casual-casualbeanie-wool.webp",
+    "set": "Casual",
+    "tags": [
+      "wool"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-fronttiecroptop-cotton-hippie",
+    "slot": "upperBody",
+    "name": "Front Tie Crop Top Cotton Hippie",
+    "imageUrl": "items/upperBody/casual-fronttiecroptop-cotton-hippie.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton-hippie"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-headphonesantenna-metal",
+    "slot": "headwear",
+    "name": "Headphones Antenna Metal",
+    "imageUrl": "items/headwear/casual-headphonesantenna-metal.webp",
+    "set": "Casual",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-headscarf-cotton",
+    "slot": "headwear",
+    "name": "Headscarf Cotton",
+    "imageUrl": "items/headwear/casual-headscarf-cotton.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-headscarf-cotton-orange",
+    "slot": "headwear",
+    "name": "Headscarf Cotton Orange",
+    "imageUrl": "items/headwear/casual-headscarf-cotton-orange.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton-orange"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-hikingboots-suede-beige",
+    "slot": "feet",
+    "name": "Hiking Boots Suede Beige",
+    "imageUrl": "items/feet/casual-hikingboots-suede-beige.webp",
+    "set": "Casual",
+    "tags": [
+      "suede-beige"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-lowwedgeheels-latex",
+    "slot": "feet",
+    "name": "Low Wedge Heels Latex",
+    "imageUrl": "items/feet/casual-lowwedgeheels-latex.webp",
+    "set": "Casual",
+    "tags": [
+      "latex"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-oversizetrackjacket-nylon-creator",
+    "slot": "upperBody",
+    "name": "Oversize Track Jacket Nylon Creator",
+    "imageUrl": "items/upperBody/casual-oversizetrackjacket-nylon-creator.webp",
+    "set": "Casual",
+    "tags": [
+      "nylon-creator"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-retroglassesscifi-metallic-gold",
+    "slot": "eyewear",
+    "name": "Retro Glasses Scifi Metallic Gold",
+    "imageUrl": "items/eyewear/casual-retroglassesscifi-metallic-gold.webp",
+    "set": "Casual",
+    "tags": [
+      "metallic-gold"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-shortdress-cotton",
+    "slot": "upperBody",
+    "name": "Short Dress Cotton",
+    "imageUrl": "items/upperBody/casual-shortdress-cotton.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-shortdress-latex-silverblue",
+    "slot": "upperBody",
+    "name": "Short Dress Latex Silver Blue",
+    "imageUrl": "items/upperBody/casual-shortdress-latex-silverblue.webp",
+    "set": "Casual",
+    "tags": [
+      "latex-silverblue"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-shortdress-nylon-iseult",
+    "slot": "upperBody",
+    "name": "Short Dress Nylon Iseul T",
+    "imageUrl": "items/upperBody/casual-shortdress-nylon-iseult.webp",
+    "set": "Casual",
+    "sponsor": "iseult",
+    "tags": [
+      "nylon-iseult"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-shortskirt-cotton-black",
+    "slot": "lowerBody",
+    "name": "Short Skirt Cotton Black",
+    "imageUrl": "items/lowerBody/casual-shortskirt-cotton-black.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-shortskirt-cotton-orange",
+    "slot": "lowerBody",
+    "name": "Short Skirt Cotton Orange",
+    "imageUrl": "items/lowerBody/casual-shortskirt-cotton-orange.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton-orange"
+    ],
+    "season": 11
+  },
+  {
+    "id": "casual-tshirt-cotton-cometamerch",
+    "slot": "upperBody",
+    "name": "Tshirt Cotton Cometa Merch",
+    "imageUrl": "items/upperBody/casual-tshirt-cotton-cometamerch.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton-cometamerch"
+    ],
+    "season": 11
+  },
+  {
+    "id": "cowboy-bandolier-leather-browncometa",
+    "slot": "upperBack",
+    "name": "Bandolier Leather Brown Cometa",
+    "imageUrl": "items/upperBack/cowboy-bandolier-leather-browncometa.webp",
+    "set": "Cowboy",
+    "tags": [
+      "leather-browncometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "cowboy-handcloth-nylon-iseult",
+    "slot": "hands",
+    "name": "Hand Cloth Nylon Iseul T",
+    "imageUrl": "items/hands/cowboy-handcloth-nylon-iseult.webp",
+    "set": "Cowboy",
+    "sponsor": "iseult",
+    "tags": [
+      "nylon-iseult"
+    ],
+    "season": 11
+  },
+  {
+    "id": "crosspromo-nrbackpack-metal",
+    "slot": "upperBack",
+    "name": "NRBackpack Metal",
+    "imageUrl": "items/upperBack/crosspromo-nrbackpack-metal.webp",
+    "set": "CrossPromo",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "crosspromo-nrgloves-leather",
+    "slot": "hands",
+    "name": "NRGloves Leather",
+    "imageUrl": "items/hands/crosspromo-nrgloves-leather.webp",
+    "set": "CrossPromo",
+    "tags": [
+      "leather"
+    ],
+    "season": 11
+  },
+  {
+    "id": "crosspromo-nrgloves-nylon",
+    "slot": "hands",
+    "name": "NRGloves Nylon",
+    "imageUrl": "items/hands/crosspromo-nrgloves-nylon.webp",
+    "set": "CrossPromo",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "crosspromo-nrgloves-nylon-black",
+    "slot": "hands",
+    "name": "NRGloves Nylon Black",
+    "imageUrl": "items/hands/crosspromo-nrgloves-nylon-black.webp",
+    "set": "CrossPromo",
+    "tags": [
+      "nylon-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "crosspromo-nrhelmet-metal",
+    "slot": "headwear",
+    "name": "NRHelmet Metal",
+    "imageUrl": "items/headwear/crosspromo-nrhelmet-metal.webp",
+    "set": "CrossPromo",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "crosspromo-nrsuit-nylon",
+    "slot": "upperBody",
+    "name": "NRSuit Nylon",
+    "imageUrl": "items/upperBody/crosspromo-nrsuit-nylon.webp",
+    "set": "CrossPromo",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "facialhairs-mustacheseventies-black",
+    "slot": "facialHair",
+    "name": "Mustache Seventies Black",
+    "imageUrl": "items/facialHair/facialhairs-mustacheseventies-black.webp",
+    "season": 11
+  },
+  {
+    "id": "fromtencent-asianspiritboots-plastic-black",
+    "slot": "feet",
+    "name": "Asian Spirit Boots Plastic Black",
+    "imageUrl": "items/feet/fromtencent-asianspiritboots-plastic-black.webp",
+    "set": "FromTencent",
+    "tags": [
+      "plastic-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "fromtencent-asianspiritboots-plastic-engimo",
+    "slot": "feet",
+    "name": "Asian Spirit Boots Plastic Engimo",
+    "imageUrl": "items/feet/fromtencent-asianspiritboots-plastic-engimo.webp",
+    "set": "FromTencent",
+    "sponsor": "engimo",
+    "tags": [
+      "plastic-engimo"
+    ],
+    "season": 11
+  },
+  {
+    "id": "fromtencent-asianspiritboots-plastic-white",
+    "slot": "feet",
+    "name": "Asian Spirit Boots Plastic White",
+    "imageUrl": "items/feet/fromtencent-asianspiritboots-plastic-white.webp",
+    "set": "FromTencent",
+    "tags": [
+      "plastic-white"
+    ],
+    "season": 11
+  },
+  {
+    "id": "fromtencent-asianspiritpants-silk-iseult",
+    "slot": "lowerBody",
+    "name": "Asian Spirit Pants Silk Iseul T",
+    "imageUrl": "items/lowerBody/fromtencent-asianspiritpants-silk-iseult.webp",
+    "set": "FromTencent",
+    "sponsor": "iseult",
+    "tags": [
+      "silk-iseult"
+    ],
+    "season": 11
+  },
+  {
+    "id": "gothic-bikerjacket-leather",
+    "slot": "upperBody",
+    "name": "Biker Jacket Leather",
+    "imageUrl": "items/upperBody/gothic-bikerjacket-leather.webp",
+    "set": "Gothic",
+    "tags": [
+      "leather"
+    ],
+    "season": 11
+  },
+  {
+    "id": "gothic-cowboyboots-leather",
+    "slot": "feet",
+    "name": "Cowboy Boots Leather",
+    "imageUrl": "items/feet/gothic-cowboyboots-leather.webp",
+    "set": "Gothic",
+    "tags": [
+      "leather"
+    ],
+    "season": 11
+  },
+  {
+    "id": "gothic-pants-leatherworn-black",
+    "slot": "lowerBody",
+    "name": "Pants Leather Worn Black",
+    "imageUrl": "items/lowerBody/gothic-pants-leatherworn-black.webp",
+    "set": "Gothic",
+    "tags": [
+      "leatherworn-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "hairs-afrorounded-black",
+    "slot": "hair",
+    "name": "Afro Rounded Black",
+    "imageUrl": "items/hair/hairs-afrorounded-black.webp",
+    "tags": [
+      "black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "hairs-afrorounded-red",
+    "slot": "hair",
+    "name": "Afro Rounded Red",
+    "imageUrl": "items/hair/hairs-afrorounded-red.webp",
+    "tags": [
+      "red"
+    ],
+    "season": 11
+  },
+  {
+    "id": "hairs-bobcurly-blondeorange",
+    "slot": "hair",
+    "name": "Bob Curly Blonde Orange",
+    "imageUrl": "items/hair/hairs-bobcurly-blondeorange.webp",
+    "tags": [
+      "blondeorange"
+    ],
+    "season": 11
+  },
+  {
+    "id": "hairs-bobstraight-iceblue",
+    "slot": "hair",
+    "name": "Bob Straight Ice Blue",
+    "imageUrl": "items/hair/hairs-bobstraight-iceblue.webp",
+    "tags": [
+      "iceblue"
+    ],
+    "season": 11
+  },
+  {
+    "id": "hairs-coilyslick-black",
+    "slot": "hair",
+    "name": "Coily Slick Black",
+    "imageUrl": "items/hair/hairs-coilyslick-black.webp",
+    "tags": [
+      "black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "hairs-curtainfade-red",
+    "slot": "hair",
+    "name": "Curtain Fade Red",
+    "imageUrl": "items/hair/hairs-curtainfade-red.webp",
+    "tags": [
+      "red"
+    ],
+    "season": 11
+  },
+  {
+    "id": "hairs-highponytail-02-saltpepper",
+    "slot": "hair",
+    "name": "High Ponytail 02 Salt Pepper",
+    "imageUrl": "items/hair/hairs-highponytail-02-saltpepper.webp",
+    "tags": [
+      "saltpepper"
+    ],
+    "season": 11
+  },
+  {
+    "id": "hairs-mulletwavy-black",
+    "slot": "hair",
+    "name": "Mullet Wavy Black",
+    "imageUrl": "items/hair/hairs-mulletwavy-black.webp",
+    "tags": [
+      "black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "hairs-shortwavy-blonde",
+    "slot": "hair",
+    "name": "Short Wavy Blonde",
+    "imageUrl": "items/hair/hairs-shortwavy-blonde.webp",
+    "tags": [
+      "blonde"
+    ],
+    "season": 11
+  },
+  {
+    "id": "head-blankface-galaxy",
+    "slot": "face",
+    "name": "Blank Face Galaxy",
+    "imageUrl": "items/face/head-blankface-galaxy.webp",
+    "tags": [
+      "galaxy"
+    ],
+    "season": 11
+  },
+  {
+    "id": "head-cyborg-01",
+    "slot": "face",
+    "name": "Cyborg 01",
+    "imageUrl": "items/face/head-cyborg-01.webp",
+    "season": 11
+  },
+  {
+    "id": "head-face-28-base",
+    "slot": "face",
+    "name": "Face 28 Base",
+    "imageUrl": "items/face/head-face-28-base.webp",
+    "season": 11
+  },
+  {
+    "id": "head-face-30-base",
+    "slot": "face",
+    "name": "Face 30 Base",
+    "imageUrl": "items/face/head-face-30-base.webp",
+    "season": 11
+  },
+  {
+    "id": "head-face-31-base",
+    "slot": "face",
+    "name": "Face 31 Base",
+    "imageUrl": "items/face/head-face-31-base.webp",
+    "season": 11
+  },
+  {
+    "id": "head-robot-01",
+    "slot": "face",
+    "name": "Robot 01",
+    "imageUrl": "items/face/head-robot-01.webp",
+    "season": 11
+  },
+  {
+    "id": "historic-sandals-leather",
+    "slot": "feet",
+    "name": "Sandals Leather",
+    "imageUrl": "items/feet/historic-sandals-leather.webp",
+    "set": "Historic",
+    "tags": [
+      "leather"
+    ],
+    "season": 11
+  },
+  {
+    "id": "medieval-elfprincessboots-leather-blackcometa",
+    "slot": "feet",
+    "name": "Elf Princess Boots Leather Black Cometa",
+    "imageUrl": "items/feet/medieval-elfprincessboots-leather-blackcometa.webp",
+    "set": "Medieval",
+    "tags": [
+      "leather-blackcometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "medieval-peasantshoulderbag-leather-hippie",
+    "slot": "upperBack",
+    "name": "Peasant Shoulder Bag Leather Hippie",
+    "imageUrl": "items/upperBack/medieval-peasantshoulderbag-leather-hippie.webp",
+    "set": "Medieval",
+    "tags": [
+      "leather-hippie"
+    ],
+    "season": 11
+  },
+  {
+    "id": "medieval-peasantshoulderbag-leather-iseul-t",
+    "slot": "upperBack",
+    "name": "Peasant Shoulder Bag Leather Iseul-T",
+    "imageUrl": "items/upperBack/medieval-peasantshoulderbag-leather-iseul-t.webp",
+    "set": "Medieval",
+    "tags": [
+      "leather-iseul-t"
+    ],
+    "season": 11
+  },
+  {
+    "id": "medieval-pirateknighthelmet-plastic",
+    "slot": "headwear",
+    "name": "Pirate Knight Helmet Plastic",
+    "imageUrl": "items/headwear/medieval-pirateknighthelmet-plastic.webp",
+    "set": "Medieval",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "medieval-techjacketharness-wool-blackgreen",
+    "slot": "upperBody",
+    "name": "Tech Jacket Harness Wool Black Green",
+    "imageUrl": "items/upperBody/medieval-techjacketharness-wool-blackgreen.webp",
+    "set": "Medieval",
+    "tags": [
+      "wool-blackgreen"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-acepilotboots-leather-spacepilot",
+    "slot": "feet",
+    "name": "Ace Pilot Boots Leather Space Pilot",
+    "imageUrl": "items/feet/military-acepilotboots-leather-spacepilot.webp",
+    "set": "Military",
+    "tags": [
+      "leather-spacepilot"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-acepilotboots-leather-spacepilotul-ae7f",
+    "slot": "feet",
+    "name": "Ace Pilot Boots Leather Space Pilot Ultimate",
+    "imageUrl": "items/feet/military-acepilotboots-leather-spacepilotul-ae7f.webp",
+    "set": "Military",
+    "tags": [
+      "leather-spacepilotultimate"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-acepilotgloves-leather-black",
+    "slot": "hands",
+    "name": "Ace Pilot Gloves Leather Black",
+    "imageUrl": "items/hands/military-acepilotgloves-leather-black.webp",
+    "set": "Military",
+    "tags": [
+      "leather-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-acepilothelmet-plastic-black",
+    "slot": "headwear",
+    "name": "Ace Pilot Helmet Plastic Black",
+    "imageUrl": "items/headwear/military-acepilothelmet-plastic-black.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-acepilothelmet-plastic-cometa",
+    "slot": "headwear",
+    "name": "Ace Pilot Helmet Plastic Cometa",
+    "imageUrl": "items/headwear/military-acepilothelmet-plastic-cometa.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-cometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-acepilottop-windbreaker-darkgreen",
+    "slot": "upperBody",
+    "name": "Ace Pilot Top Wind Breaker Dark Green",
+    "imageUrl": "items/upperBody/military-acepilottop-windbreaker-darkgreen.webp",
+    "set": "Military",
+    "tags": [
+      "windbreaker-darkgreen"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-assaultgloves-leather-blackgreen",
+    "slot": "hands",
+    "name": "Assault Gloves Leather Black Green",
+    "imageUrl": "items/hands/military-assaultgloves-leather-blackgreen.webp",
+    "set": "Military",
+    "tags": [
+      "leather-blackgreen"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-hardcase-plastic-ivada",
+    "slot": "lowerBack",
+    "name": "Hardcase Plastic IVADA",
+    "imageUrl": "items/lowerBack/military-hardcase-plastic-ivada.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-ivada"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-industrialglasses-metal",
+    "slot": "eyewear",
+    "name": "Industrial Glasses Metal",
+    "imageUrl": "items/eyewear/military-industrialglasses-metal.webp",
+    "set": "Military",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-marinegloves-plastic-vaiiya",
+    "slot": "hands",
+    "name": "Marine Gloves Plastic Vaiiya",
+    "imageUrl": "items/hands/military-marinegloves-plastic-vaiiya.webp",
+    "set": "Military",
+    "sponsor": "vaiiya",
+    "tags": [
+      "plastic-vaiiya"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-marinepants-canvas-vaiiya",
+    "slot": "lowerBody",
+    "name": "Marine Pants Canvas Vaiiya",
+    "imageUrl": "items/lowerBody/military-marinepants-canvas-vaiiya.webp",
+    "set": "Military",
+    "sponsor": "vaiiya",
+    "tags": [
+      "canvas-vaiiya"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-marinevest-plastic-blackgreen",
+    "slot": "upperBody",
+    "name": "Marine Vest Plastic Black Green",
+    "imageUrl": "items/upperBody/military-marinevest-plastic-blackgreen.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-blackgreen"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-militarymechanicweldinggoggles-pla-4e7e",
+    "slot": "eyewear",
+    "name": "Military Mechanic Welding Goggles Plastic Arena Security",
+    "imageUrl": "items/eyewear/military-militarymechanicweldinggoggles-pla-4e7e.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-arenasecurity"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-pantswithholsterpouch-nylon",
+    "slot": "lowerBody",
+    "name": "Pants With Holster Pouch Nylon",
+    "imageUrl": "items/lowerBody/military-pantswithholsterpouch-nylon.webp",
+    "set": "Military",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-scifiboots-latex",
+    "slot": "feet",
+    "name": "Sci Fi Boots Latex",
+    "imageUrl": "items/feet/military-scifiboots-latex.webp",
+    "set": "Military",
+    "tags": [
+      "latex"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-scifiboots-nylon-black",
+    "slot": "feet",
+    "name": "Sci Fi Boots Nylon Black",
+    "imageUrl": "items/feet/military-scifiboots-nylon-black.webp",
+    "set": "Military",
+    "tags": [
+      "nylon-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-scifiboots-nylon-vaiiya",
+    "slot": "feet",
+    "name": "Sci Fi Boots Nylon Vaiiya",
+    "imageUrl": "items/feet/military-scifiboots-nylon-vaiiya.webp",
+    "set": "Military",
+    "sponsor": "vaiiya",
+    "tags": [
+      "nylon-vaiiya"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-tacticalbackpack-canvas",
+    "slot": "upperBack",
+    "name": "Tactical Backpack Canvas",
+    "imageUrl": "items/upperBack/military-tacticalbackpack-canvas.webp",
+    "set": "Military",
+    "tags": [
+      "canvas"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-tacticalbaglumbar-kevlar",
+    "slot": "lowerBack",
+    "name": "Tactical Bag Lumbar Kevlar",
+    "imageUrl": "items/lowerBack/military-tacticalbaglumbar-kevlar.webp",
+    "set": "Military",
+    "tags": [
+      "kevlar"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-tacticalknifelumbar-metal",
+    "slot": "lowerBack",
+    "name": "Tactical Knife Lumbar Metal",
+    "imageUrl": "items/lowerBack/military-tacticalknifelumbar-metal.webp",
+    "set": "Military",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "military-tacticalshirt-cotton-black",
+    "slot": "upperBody",
+    "name": "Tactical Shirt Cotton Black",
+    "imageUrl": "items/upperBody/military-tacticalshirt-cotton-black.webp",
+    "set": "Military",
+    "tags": [
+      "cotton-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "monsters-bigfootcostumehands-rubber-reptile",
+    "slot": "hands",
+    "name": "Big Foot Costume Hands Rubber Reptile",
+    "imageUrl": "items/hands/monsters-bigfootcostumehands-rubber-reptile.webp",
+    "set": "Monsters",
+    "tags": [
+      "rubber-reptile"
+    ],
+    "season": 11
+  },
+  {
+    "id": "pirate-bandana-cotton",
+    "slot": "facewear",
+    "name": "Bandana Cotton",
+    "imageUrl": "items/facewear/pirate-bandana-cotton.webp",
+    "set": "Pirate",
+    "tags": [
+      "cotton"
+    ],
+    "season": 11
+  },
+  {
+    "id": "pirate-pirateboots-leather",
+    "slot": "feet",
+    "name": "Pirate Boots Leather",
+    "imageUrl": "items/feet/pirate-pirateboots-leather.webp",
+    "set": "Pirate",
+    "tags": [
+      "leather"
+    ],
+    "season": 11
+  },
+  {
+    "id": "pirate-piraterings-gold",
+    "slot": "hands",
+    "name": "Pirate Rings Gold",
+    "imageUrl": "items/hands/pirate-piraterings-gold.webp",
+    "set": "Pirate",
+    "tags": [
+      "gold"
+    ],
+    "season": 11
+  },
+  {
+    "id": "pirate-poetshirtwithvest-silk-blue",
+    "slot": "upperBody",
+    "name": "Poet Shirt With Vest Silk Blue",
+    "imageUrl": "items/upperBody/pirate-poetshirtwithvest-silk-blue.webp",
+    "set": "Pirate",
+    "tags": [
+      "silk-blue"
+    ],
+    "season": 11
+  },
+  {
+    "id": "pirate-scallywagpants-cotton",
+    "slot": "lowerBody",
+    "name": "Scally Wag Pants Cotton",
+    "imageUrl": "items/lowerBody/pirate-scallywagpants-cotton.webp",
+    "set": "Pirate",
+    "tags": [
+      "cotton"
+    ],
+    "season": 11
+  },
+  {
+    "id": "pirate-seabandolier-leather",
+    "slot": "upperBack",
+    "name": "Sea Bandolier Leather",
+    "imageUrl": "items/upperBack/pirate-seabandolier-leather.webp",
+    "set": "Pirate",
+    "tags": [
+      "leather"
+    ],
+    "season": 11
+  },
+  {
+    "id": "racing-gloves-leatherrough-arenasecurity",
+    "slot": "hands",
+    "name": "Gloves Leather Rough Arena Security",
+    "imageUrl": "items/hands/racing-gloves-leatherrough-arenasecurity.webp",
+    "set": "Racing",
+    "tags": [
+      "leatherrough-arenasecurity"
+    ],
+    "season": 11
+  },
+  {
+    "id": "racing-gloves-nylon-blackorange",
+    "slot": "hands",
+    "name": "Gloves Nylon Black Orange",
+    "imageUrl": "items/hands/racing-gloves-nylon-blackorange.webp",
+    "set": "Racing",
+    "tags": [
+      "nylon-blackorange"
+    ],
+    "season": 11
+  },
+  {
+    "id": "racing-shoes-leather-iseult",
+    "slot": "feet",
+    "name": "Shoes Leather Iseul T",
+    "imageUrl": "items/feet/racing-shoes-leather-iseult.webp",
+    "set": "Racing",
+    "sponsor": "iseult",
+    "tags": [
+      "leather-iseult"
+    ],
+    "season": 11
+  },
+  {
+    "id": "retro-cordbracelet-rubber",
+    "slot": "wrist",
+    "name": "Cord Bracelet Rubber",
+    "imageUrl": "items/wrist/retro-cordbracelet-rubber.webp",
+    "set": "Retro",
+    "tags": [
+      "rubber"
+    ],
+    "season": 11
+  },
+  {
+    "id": "retro-retroradio-metal",
+    "slot": "lowerBack",
+    "name": "Retro Radio Metal",
+    "imageUrl": "items/lowerBack/retro-retroradio-metal.webp",
+    "set": "Retro",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "retro-vacuumhelmet-metal",
+    "slot": "headwear",
+    "name": "Vacuum Helmet Metal",
+    "imageUrl": "items/headwear/retro-vacuumhelmet-metal.webp",
+    "set": "Retro",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-discobotgloves-metal",
+    "slot": "hands",
+    "name": "Disco Bot Gloves Metal",
+    "imageUrl": "items/hands/robots-discobotgloves-metal.webp",
+    "set": "Robots",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-discobothelmet-metal",
+    "slot": "headwear",
+    "name": "Disco Bot Helmet Metal",
+    "imageUrl": "items/headwear/robots-discobothelmet-metal.webp",
+    "set": "Robots",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-discojacket-cotton",
+    "slot": "upperBody",
+    "name": "Disco Jacket Cotton",
+    "imageUrl": "items/upperBody/robots-discojacket-cotton.webp",
+    "set": "Robots",
+    "tags": [
+      "cotton"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-discopants-cotton",
+    "slot": "lowerBody",
+    "name": "Disco Pants Cotton",
+    "imageUrl": "items/lowerBody/robots-discopants-cotton.webp",
+    "set": "Robots",
+    "tags": [
+      "cotton"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-discoshoes-leather",
+    "slot": "feet",
+    "name": "Disco Shoes Leather",
+    "imageUrl": "items/feet/robots-discoshoes-leather.webp",
+    "set": "Robots",
+    "tags": [
+      "leather"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-retrorobotbackpack-plastic",
+    "slot": "upperBack",
+    "name": "Retro Robot Backpack Plastic",
+    "imageUrl": "items/upperBack/robots-retrorobotbackpack-plastic.webp",
+    "set": "Robots",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-retrorobotfeet-plastic",
+    "slot": "feet",
+    "name": "Retro Robot Feet Plastic",
+    "imageUrl": "items/feet/robots-retrorobotfeet-plastic.webp",
+    "set": "Robots",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-retrorobotfeet-plastic-black",
+    "slot": "feet",
+    "name": "Retro Robot Feet Plastic Black",
+    "imageUrl": "items/feet/robots-retrorobotfeet-plastic-black.webp",
+    "set": "Robots",
+    "tags": [
+      "plastic-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-retrorobothands-plastic",
+    "slot": "hands",
+    "name": "Retro Robot Hands Plastic",
+    "imageUrl": "items/hands/robots-retrorobothands-plastic.webp",
+    "set": "Robots",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-retrorobothands-plastic-black",
+    "slot": "hands",
+    "name": "Retro Robot Hands Plastic Black",
+    "imageUrl": "items/hands/robots-retrorobothands-plastic-black.webp",
+    "set": "Robots",
+    "tags": [
+      "plastic-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-retrorobothead-plastic",
+    "slot": "headwear",
+    "name": "Retro Robot Head Plastic",
+    "imageUrl": "items/headwear/robots-retrorobothead-plastic.webp",
+    "set": "Robots",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-retrorobotheadultimate-plastic",
+    "slot": "headwear",
+    "name": "Retro Robot Head Ultimate Plastic",
+    "imageUrl": "items/headwear/robots-retrorobotheadultimate-plastic.webp",
+    "set": "Robots",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-retrorobottorso-plastic",
+    "slot": "upperBody",
+    "name": "Retro Robot Torso Plastic",
+    "imageUrl": "items/upperBody/robots-retrorobottorso-plastic.webp",
+    "set": "Robots",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-retrorobottorsoultimate-plastic",
+    "slot": "upperBody",
+    "name": "Retro Robot Torso Ultimate Plastic",
+    "imageUrl": "items/upperBody/robots-retrorobottorsoultimate-plastic.webp",
+    "set": "Robots",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-sportyrobotbackpack-nylon",
+    "slot": "upperBack",
+    "name": "Sporty Robot Backpack Nylon",
+    "imageUrl": "items/upperBack/robots-sportyrobotbackpack-nylon.webp",
+    "set": "Robots",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-sportyrobotbackpack-nylon-black",
+    "slot": "upperBack",
+    "name": "Sporty Robot Backpack Nylon Black",
+    "imageUrl": "items/upperBack/robots-sportyrobotbackpack-nylon-black.webp",
+    "set": "Robots",
+    "tags": [
+      "nylon-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-sportyrobothead-metal",
+    "slot": "headwear",
+    "name": "Sporty Robot Head Metal",
+    "imageUrl": "items/headwear/robots-sportyrobothead-metal.webp",
+    "set": "Robots",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-sportyrobothead-metal-black",
+    "slot": "headwear",
+    "name": "Sporty Robot Head Metal Black",
+    "imageUrl": "items/headwear/robots-sportyrobothead-metal-black.webp",
+    "set": "Robots",
+    "tags": [
+      "metal-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-sportyrobotlegs-metal",
+    "slot": "lowerBody",
+    "name": "Sporty Robot Legs Metal",
+    "imageUrl": "items/lowerBody/robots-sportyrobotlegs-metal.webp",
+    "set": "Robots",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-sportyrobotlegs-metal-black",
+    "slot": "lowerBody",
+    "name": "Sporty Robot Legs Metal Black",
+    "imageUrl": "items/lowerBody/robots-sportyrobotlegs-metal-black.webp",
+    "set": "Robots",
+    "tags": [
+      "metal-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-sportyrobottorso-metal",
+    "slot": "upperBody",
+    "name": "Sporty Robot Torso Metal",
+    "imageUrl": "items/upperBody/robots-sportyrobottorso-metal.webp",
+    "set": "Robots",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-sportyrobottorso-metal-black",
+    "slot": "upperBody",
+    "name": "Sporty Robot Torso Metal Black",
+    "imageUrl": "items/upperBody/robots-sportyrobottorso-metal-black.webp",
+    "set": "Robots",
+    "tags": [
+      "metal-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-urbanoperativehelmet-metal-bluestar",
+    "slot": "headwear",
+    "name": "Urban Operative Helmet Metal Blue Star",
+    "imageUrl": "items/headwear/robots-urbanoperativehelmet-metal-bluestar.webp",
+    "set": "Robots",
+    "tags": [
+      "metal-bluestar"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-urbanoperativehelmet-metal-eclipseblue",
+    "slot": "headwear",
+    "name": "Urban Operative Helmet Metal Eclipse Blue",
+    "imageUrl": "items/headwear/robots-urbanoperativehelmet-metal-eclipseblue.webp",
+    "set": "Robots",
+    "tags": [
+      "metal-eclipseblue"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-urbanoperativehelmet-metal-eclipsere-6fa4",
+    "slot": "headwear",
+    "name": "Urban Operative Helmet Metal Eclipse Red Dwarf",
+    "imageUrl": "items/headwear/robots-urbanoperativehelmet-metal-eclipsere-6fa4.webp",
+    "set": "Robots",
+    "tags": [
+      "metal-eclipsereddwarf"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-urbanoperativehelmet-metal-holtoweclipse",
+    "slot": "headwear",
+    "name": "Urban Operative Helmet Metal Holtow Eclipse",
+    "imageUrl": "items/headwear/robots-urbanoperativehelmet-metal-holtoweclipse.webp",
+    "set": "Robots",
+    "sponsor": "holtow",
+    "tags": [
+      "metal-holtoweclipse"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-urbanoperativehelmet-metal-holtowsun",
+    "slot": "headwear",
+    "name": "Urban Operative Helmet Metal Holtow Sun",
+    "imageUrl": "items/headwear/robots-urbanoperativehelmet-metal-holtowsun.webp",
+    "set": "Robots",
+    "sponsor": "holtow",
+    "tags": [
+      "metal-holtowsun"
+    ],
+    "season": 11
+  },
+  {
+    "id": "robots-urbanoperativehelmet-metal-reddwarf",
+    "slot": "headwear",
+    "name": "Urban Operative Helmet Metal Red Dwarf",
+    "imageUrl": "items/headwear/robots-urbanoperativehelmet-metal-reddwarf.webp",
+    "set": "Robots",
+    "tags": [
+      "metal-reddwarf"
+    ],
+    "season": 11
+  },
+  {
+    "id": "scifi-boots-windbreaker",
+    "slot": "feet",
+    "name": "Boots Wind Breaker",
+    "imageUrl": "items/feet/scifi-boots-windbreaker.webp",
+    "set": "SciFi",
+    "tags": [
+      "windbreaker"
+    ],
+    "season": 11
+  },
+  {
+    "id": "scifi-enforcerhelmet-plastic",
+    "slot": "headwear",
+    "name": "Enforcer Helmet Plastic",
+    "imageUrl": "items/headwear/scifi-enforcerhelmet-plastic.webp",
+    "set": "SciFi",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "scifi-enforcertorso-plastic",
+    "slot": "upperBody",
+    "name": "Enforcer Torso Plastic",
+    "imageUrl": "items/upperBody/scifi-enforcertorso-plastic.webp",
+    "set": "SciFi",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "scifi-hackergloves-rubber-engimo",
+    "slot": "hands",
+    "name": "Hacker Gloves Rubber Engimo",
+    "imageUrl": "items/hands/scifi-hackergloves-rubber-engimo.webp",
+    "set": "SciFi",
+    "sponsor": "engimo",
+    "tags": [
+      "rubber-engimo"
+    ],
+    "season": 11
+  },
+  {
+    "id": "scifi-paddedtechpants-nylon-ivada",
+    "slot": "lowerBody",
+    "name": "Padded Tech Pants Nylon Ivada",
+    "imageUrl": "items/lowerBody/scifi-paddedtechpants-nylon-ivada.webp",
+    "set": "SciFi",
+    "tags": [
+      "nylon-ivada"
+    ],
+    "season": 11
+  },
+  {
+    "id": "scifi-pants-nylon-engimo",
+    "slot": "lowerBody",
+    "name": "Pants Nylon Engimo",
+    "imageUrl": "items/lowerBody/scifi-pants-nylon-engimo.webp",
+    "set": "SciFi",
+    "sponsor": "engimo",
+    "tags": [
+      "nylon-engimo"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-ammobox-metal",
+    "slot": "lowerBack",
+    "name": "Ammo Box Metal",
+    "imageUrl": "items/lowerBack/space-ammobox-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilotgloves-cotton",
+    "slot": "hands",
+    "name": "Astro Pilot Gloves Cotton",
+    "imageUrl": "items/hands/space-astropilotgloves-cotton.webp",
+    "set": "Space",
+    "tags": [
+      "cotton"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilotgloves-cotton-orange",
+    "slot": "hands",
+    "name": "Astro Pilot Gloves Cotton Orange",
+    "imageUrl": "items/hands/space-astropilotgloves-cotton-orange.webp",
+    "set": "Space",
+    "tags": [
+      "cotton-orange"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilotgloves-cotton-white",
+    "slot": "hands",
+    "name": "Astro Pilot Gloves Cotton White",
+    "imageUrl": "items/hands/space-astropilotgloves-cotton-white.webp",
+    "set": "Space",
+    "tags": [
+      "cotton-white"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilothelmet-orange",
+    "slot": "headwear",
+    "name": "Astro Pilot Helmet Orange",
+    "imageUrl": "items/headwear/space-astropilothelmet-orange.webp",
+    "set": "Space",
+    "tags": [
+      "orange"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilothelmet-space",
+    "slot": "headwear",
+    "name": "Astro Pilot Helmet Space",
+    "imageUrl": "items/headwear/space-astropilothelmet-space.webp",
+    "set": "Space",
+    "tags": [
+      "space"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilotpants-cotton",
+    "slot": "lowerBody",
+    "name": "Astro Pilot Pants Cotton",
+    "imageUrl": "items/lowerBody/space-astropilotpants-cotton.webp",
+    "set": "Space",
+    "tags": [
+      "cotton"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilotpants-cotton-green",
+    "slot": "lowerBody",
+    "name": "Astro Pilot Pants Cotton Green",
+    "imageUrl": "items/lowerBody/space-astropilotpants-cotton-green.webp",
+    "set": "Space",
+    "tags": [
+      "cotton-green"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilotshoes-nylon",
+    "slot": "feet",
+    "name": "Astro Pilot Shoes Nylon",
+    "imageUrl": "items/feet/space-astropilotshoes-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilotshoes-nylon-white",
+    "slot": "feet",
+    "name": "Astro Pilot Shoes Nylon White",
+    "imageUrl": "items/feet/space-astropilotshoes-nylon-white.webp",
+    "set": "Space",
+    "tags": [
+      "nylon-white"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilotupper-plastic",
+    "slot": "upperBody",
+    "name": "Astro Pilot Upper Plastic",
+    "imageUrl": "items/upperBody/space-astropilotupper-plastic.webp",
+    "set": "Space",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilotupper-plastic-engimo",
+    "slot": "upperBody",
+    "name": "Astro Pilot Upper Plastic Engimo",
+    "imageUrl": "items/upperBody/space-astropilotupper-plastic-engimo.webp",
+    "set": "Space",
+    "sponsor": "engimo",
+    "tags": [
+      "plastic-engimo"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-astropilotupper-plastic-white",
+    "slot": "upperBody",
+    "name": "Astro Pilot Upper Plastic White",
+    "imageUrl": "items/upperBody/space-astropilotupper-plastic-white.webp",
+    "set": "Space",
+    "tags": [
+      "plastic-white"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-bountyhunterhelmet-metal",
+    "slot": "headwear",
+    "name": "Bounty Hunter Helmet Metal",
+    "imageUrl": "items/headwear/space-bountyhunterhelmet-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-bountyhuntertop-nylon",
+    "slot": "upperBody",
+    "name": "Bounty Hunter Top Nylon",
+    "imageUrl": "items/upperBody/space-bountyhuntertop-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-engineercablebandolier-rubber",
+    "slot": "upperBack",
+    "name": "Engineer Cable Bandolier Rubber",
+    "imageUrl": "items/upperBack/space-engineercablebandolier-rubber.webp",
+    "set": "Space",
+    "tags": [
+      "rubber"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-engineerhelmet-metal",
+    "slot": "headwear",
+    "name": "Engineer Helmet Metal",
+    "imageUrl": "items/headwear/space-engineerhelmet-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-engineersledge-metal",
+    "slot": "upperBack",
+    "name": "Engineer Sledge Metal",
+    "imageUrl": "items/upperBack/space-engineersledge-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-paddedleggings-nylon",
+    "slot": "lowerBody",
+    "name": "Padded Leggings Nylon",
+    "imageUrl": "items/lowerBody/space-paddedleggings-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-pioneerpants-nylon",
+    "slot": "lowerBody",
+    "name": "Pioneer Pants Nylon",
+    "imageUrl": "items/lowerBody/space-pioneerpants-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-pioneershoes-nylon",
+    "slot": "feet",
+    "name": "Pioneer Shoes Nylon",
+    "imageUrl": "items/feet/space-pioneershoes-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-pioneershoes-nylon-arenasecurity",
+    "slot": "feet",
+    "name": "Pioneer Shoes Nylon Arena Security",
+    "imageUrl": "items/feet/space-pioneershoes-nylon-arenasecurity.webp",
+    "set": "Space",
+    "tags": [
+      "nylon-arenasecurity"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-pioneerspacehelmet-metal",
+    "slot": "headwear",
+    "name": "Pioneer Space Helmet Metal",
+    "imageUrl": "items/headwear/space-pioneerspacehelmet-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-pioneerupper-windbreaker",
+    "slot": "upperBody",
+    "name": "Pioneer Upper Wind Breaker",
+    "imageUrl": "items/upperBody/space-pioneerupper-windbreaker.webp",
+    "set": "Space",
+    "tags": [
+      "windbreaker"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-planetbracelet-gold",
+    "slot": "wrist",
+    "name": "Planet Bracelet Gold",
+    "imageUrl": "items/wrist/space-planetbracelet-gold.webp",
+    "set": "Space",
+    "tags": [
+      "gold"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-planets",
+    "slot": "headwear",
+    "name": "Planets",
+    "imageUrl": "items/headwear/space-planets.webp",
+    "set": "Space",
+    "season": 11
+  },
+  {
+    "id": "space-raidertechhelmet-plastic-black",
+    "slot": "headwear",
+    "name": "Raider Tech Helmet Plastic Black",
+    "imageUrl": "items/headwear/space-raidertechhelmet-plastic-black.webp",
+    "set": "Space",
+    "tags": [
+      "plastic-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spaceboots-metal",
+    "slot": "feet",
+    "name": "Space Boots Metal",
+    "imageUrl": "items/feet/space-spaceboots-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacebrain-base",
+    "slot": "headwear",
+    "name": "Space Brain Base",
+    "imageUrl": "items/headwear/space-spacebrain-base.webp",
+    "set": "Space",
+    "tags": [
+      "base"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacecombatboots-metal",
+    "slot": "feet",
+    "name": "Space Combat Boots Metal",
+    "imageUrl": "items/feet/space-spacecombatboots-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacecombatgloves-metal",
+    "slot": "hands",
+    "name": "Space Combat Gloves Metal",
+    "imageUrl": "items/hands/space-spacecombatgloves-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacecombathelmet-metal",
+    "slot": "headwear",
+    "name": "Space Combat Helmet Metal",
+    "imageUrl": "items/headwear/space-spacecombathelmet-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacecombatpants-metal",
+    "slot": "lowerBody",
+    "name": "Space Combat Pants Metal",
+    "imageUrl": "items/lowerBody/space-spacecombatpants-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacecombattorso-metal",
+    "slot": "upperBody",
+    "name": "Space Combat Torso Metal",
+    "imageUrl": "items/upperBody/space-spacecombattorso-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacegloves-nylon",
+    "slot": "hands",
+    "name": "Space Gloves Nylon",
+    "imageUrl": "items/hands/space-spacegloves-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacegloves-nylon-black",
+    "slot": "hands",
+    "name": "Space Gloves Nylon Black",
+    "imageUrl": "items/hands/space-spacegloves-nylon-black.webp",
+    "set": "Space",
+    "tags": [
+      "nylon-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacehelmet-metal",
+    "slot": "headwear",
+    "name": "Space Helmet Metal",
+    "imageUrl": "items/headwear/space-spacehelmet-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spaceheroineboots-metal",
+    "slot": "feet",
+    "name": "Space Heroine Boots Metal",
+    "imageUrl": "items/feet/space-spaceheroineboots-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spaceheroinegauntlet-metal",
+    "slot": "hands",
+    "name": "Space Heroine Gauntlet Metal",
+    "imageUrl": "items/hands/space-spaceheroinegauntlet-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spaceheroinehelmet-metal",
+    "slot": "headwear",
+    "name": "Space Heroine Helmet Metal",
+    "imageUrl": "items/headwear/space-spaceheroinehelmet-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spaceheroineshorts-metal",
+    "slot": "lowerBody",
+    "name": "Space Heroine Shorts Metal",
+    "imageUrl": "items/lowerBody/space-spaceheroineshorts-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spaceheroinetop-metal",
+    "slot": "upperBody",
+    "name": "Space Heroine Top Metal",
+    "imageUrl": "items/upperBody/space-spaceheroinetop-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilotgloves-leather",
+    "slot": "hands",
+    "name": "Space Pilot Gloves Leather",
+    "imageUrl": "items/hands/space-spacepilotgloves-leather.webp",
+    "set": "Space",
+    "tags": [
+      "leather"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilotgloves-leather-black",
+    "slot": "hands",
+    "name": "Space Pilot Gloves Leather Black",
+    "imageUrl": "items/hands/space-spacepilotgloves-leather-black.webp",
+    "set": "Space",
+    "tags": [
+      "leather-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilotheadphones-metal",
+    "slot": "headwear",
+    "name": "Space Pilot Headphones Metal",
+    "imageUrl": "items/headwear/space-spacepilotheadphones-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilotheadphones-plastic-cometa",
+    "slot": "headwear",
+    "name": "Space Pilot Headphones Plastic Cometa",
+    "imageUrl": "items/headwear/space-spacepilotheadphones-plastic-cometa.webp",
+    "set": "Space",
+    "tags": [
+      "plastic-cometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilothelmet-metal",
+    "slot": "headwear",
+    "name": "Space Pilot Helmet Metal",
+    "imageUrl": "items/headwear/space-spacepilothelmet-metal.webp",
+    "set": "Space",
+    "tags": [
+      "metal"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilotjacket-nylon",
+    "slot": "upperBody",
+    "name": "Space Pilot Jacket Nylon",
+    "imageUrl": "items/upperBody/space-spacepilotjacket-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilotjacket-nylon-cometa",
+    "slot": "upperBody",
+    "name": "Space Pilot Jacket Nylon Cometa",
+    "imageUrl": "items/upperBody/space-spacepilotjacket-nylon-cometa.webp",
+    "set": "Space",
+    "tags": [
+      "nylon-cometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilotjacketultimate-nylon",
+    "slot": "upperBody",
+    "name": "Space Pilot Jacket Ultimate Nylon",
+    "imageUrl": "items/upperBody/space-spacepilotjacketultimate-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilotpants-denim",
+    "slot": "lowerBody",
+    "name": "Space Pilot Pants Denim",
+    "imageUrl": "items/lowerBody/space-spacepilotpants-denim.webp",
+    "set": "Space",
+    "tags": [
+      "denim"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilotpants-denim-black",
+    "slot": "lowerBody",
+    "name": "Space Pilot Pants Denim Black",
+    "imageUrl": "items/lowerBody/space-spacepilotpants-denim-black.webp",
+    "set": "Space",
+    "tags": [
+      "denim-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacesoldierbandolier-leather",
+    "slot": "upperBack",
+    "name": "Space Soldier Bandolier Leather",
+    "imageUrl": "items/upperBack/space-spacesoldierbandolier-leather.webp",
+    "set": "Space",
+    "tags": [
+      "leather"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacesoldierhelmet-plastic",
+    "slot": "headwear",
+    "name": "Space Soldier Helmet Plastic",
+    "imageUrl": "items/headwear/space-spacesoldierhelmet-plastic.webp",
+    "set": "Space",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacesoldierjacket-windbreaker",
+    "slot": "upperBody",
+    "name": "Space Soldier Jacket Wind Breaker",
+    "imageUrl": "items/upperBody/space-spacesoldierjacket-windbreaker.webp",
+    "set": "Space",
+    "tags": [
+      "windbreaker"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacesoldierpants-windbreaker",
+    "slot": "lowerBody",
+    "name": "Space Soldier Pants Wind Breaker",
+    "imageUrl": "items/lowerBody/space-spacesoldierpants-windbreaker.webp",
+    "set": "Space",
+    "tags": [
+      "windbreaker"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacesuitpants-nylon",
+    "slot": "lowerBody",
+    "name": "Space Suit Pants Nylon",
+    "imageUrl": "items/lowerBody/space-spacesuitpants-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacesuitpantsultimate-nylon",
+    "slot": "lowerBody",
+    "name": "Space Suit Pants Ultimate Nylon",
+    "imageUrl": "items/lowerBody/space-spacesuitpantsultimate-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacesuittop-nylon",
+    "slot": "upperBody",
+    "name": "Space Suit Top Nylon",
+    "imageUrl": "items/upperBody/space-spacesuittop-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacesuittopultimate-nylon",
+    "slot": "upperBody",
+    "name": "Space Suit Top Ultimate Nylon",
+    "imageUrl": "items/upperBody/space-spacesuittopultimate-nylon.webp",
+    "set": "Space",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacetopvest-plastic",
+    "slot": "upperBody",
+    "name": "Space Top Vest Plastic",
+    "imageUrl": "items/upperBody/space-spacetopvest-plastic.webp",
+    "set": "Space",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "sport-climbingbandolier-canvas-engimo",
+    "slot": "upperBack",
+    "name": "Climbing Bandolier Canvas Engimo",
+    "imageUrl": "items/upperBack/sport-climbingbandolier-canvas-engimo.webp",
+    "set": "Sport",
+    "sponsor": "engimo",
+    "tags": [
+      "canvas-engimo"
+    ],
+    "season": 11
+  },
+  {
+    "id": "starterset-pants-nylon",
+    "slot": "lowerBody",
+    "name": "Pants Nylon",
+    "imageUrl": "items/lowerBody/starterset-pants-nylon.webp",
+    "set": "StarterSet",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "starterset-pants-nylon-blackgreen",
+    "slot": "lowerBody",
+    "name": "Pants Nylon Black Green",
+    "imageUrl": "items/lowerBody/starterset-pants-nylon-blackgreen.webp",
+    "set": "StarterSet",
+    "tags": [
+      "nylon-blackgreen"
+    ],
+    "season": 11
+  },
+  {
+    "id": "starterset-pants-nylon-cometa",
+    "slot": "lowerBody",
+    "name": "Pants Nylon Cometa",
+    "imageUrl": "items/lowerBody/starterset-pants-nylon-cometa.webp",
+    "set": "StarterSet",
+    "tags": [
+      "nylon-cometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-baseballcap-cotton-military",
+    "slot": "headwear",
+    "name": "Baseball Cap Cotton Military",
+    "imageUrl": "items/headwear/streetwear-baseballcap-cotton-military.webp",
+    "set": "Streetwear",
+    "tags": [
+      "cotton-military"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-baseballcap-cotton-racing",
+    "slot": "headwear",
+    "name": "Baseball Cap Cotton Racing",
+    "imageUrl": "items/headwear/streetwear-baseballcap-cotton-racing.webp",
+    "set": "Streetwear",
+    "tags": [
+      "cotton-racing"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-fingerlessshortgloves-leatherrough",
+    "slot": "hands",
+    "name": "Fingerless Short Gloves Leather Rough",
+    "imageUrl": "items/hands/streetwear-fingerlessshortgloves-leatherrough.webp",
+    "set": "Streetwear",
+    "tags": [
+      "leatherrough"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-headband-cotton-hippie",
+    "slot": "headwear",
+    "name": "Headband Cotton Hippie",
+    "imageUrl": "items/headwear/streetwear-headband-cotton-hippie.webp",
+    "set": "Streetwear",
+    "tags": [
+      "cotton-hippie"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-headband-polyester",
+    "slot": "headwear",
+    "name": "Headband Polyester",
+    "imageUrl": "items/headwear/streetwear-headband-polyester.webp",
+    "set": "Streetwear",
+    "tags": [
+      "polyester"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-hoodie-nylon-engimowinners10",
+    "slot": "upperBody",
+    "name": "Hoodie Nylon ENGIMOWinners 10",
+    "imageUrl": "items/upperBody/streetwear-hoodie-nylon-engimowinners10.webp",
+    "set": "Streetwear",
+    "sponsor": "engimo",
+    "tags": [
+      "nylon-engimowinners10"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-messengerbag-nylon",
+    "slot": "upperBack",
+    "name": "Messenger Bag Nylon",
+    "imageUrl": "items/upperBack/streetwear-messengerbag-nylon.webp",
+    "set": "Streetwear",
+    "tags": [
+      "nylon"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-puffervest-latex",
+    "slot": "upperBody",
+    "name": "Puffer Vest Latex",
+    "imageUrl": "items/upperBody/streetwear-puffervest-latex.webp",
+    "set": "Streetwear",
+    "tags": [
+      "latex"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-pusheduppants-cotton-cometa",
+    "slot": "lowerBody",
+    "name": "Pushed Up Pants Cotton Cometa",
+    "imageUrl": "items/lowerBody/streetwear-pusheduppants-cotton-cometa.webp",
+    "set": "Streetwear",
+    "tags": [
+      "cotton-cometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-skimask-cotton-military",
+    "slot": "facewear",
+    "name": "Ski Mask Cotton Military",
+    "imageUrl": "items/facewear/streetwear-skimask-cotton-military.webp",
+    "set": "Streetwear",
+    "tags": [
+      "cotton-military"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-tallboots-latex",
+    "slot": "feet",
+    "name": "Tall Boots Latex",
+    "imageUrl": "items/feet/streetwear-tallboots-latex.webp",
+    "set": "Streetwear",
+    "tags": [
+      "latex"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-techcroptop-nylon-engimo",
+    "slot": "upperBody",
+    "name": "Tech Crop Top Nylon Engimo",
+    "imageUrl": "items/upperBody/streetwear-techcroptop-nylon-engimo.webp",
+    "set": "Streetwear",
+    "sponsor": "engimo",
+    "tags": [
+      "nylon-engimo"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-tracksuittorso-nylon-greencometa",
+    "slot": "upperBody",
+    "name": "Track Suit Torso Nylon Green Cometa",
+    "imageUrl": "items/upperBody/streetwear-tracksuittorso-nylon-greencometa.webp",
+    "set": "Streetwear",
+    "tags": [
+      "nylon-greencometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-tracksuittorso-nylon-orangecometa",
+    "slot": "upperBody",
+    "name": "Track Suit Torso Nylon Orange Cometa",
+    "imageUrl": "items/upperBody/streetwear-tracksuittorso-nylon-orangecometa.webp",
+    "set": "Streetwear",
+    "tags": [
+      "nylon-orangecometa"
+    ],
+    "season": 11
+  },
+  {
+    "id": "streetwear-wristbandcompass-cotton",
+    "slot": "wrist",
+    "name": "Wristband Compass Cotton",
+    "imageUrl": "items/wrist/streetwear-wristbandcompass-cotton.webp",
+    "set": "Streetwear",
+    "tags": [
+      "cotton"
+    ],
+    "season": 11
+  },
+  {
+    "id": "watches-smartretro-01",
+    "slot": "wrist",
+    "name": "Smart Retro 01",
+    "imageUrl": "items/wrist/watches-smartretro-01.webp",
+    "season": 11
+  },
+  {
+    "id": "watches-spacesoldierwatch-01",
+    "slot": "wrist",
+    "name": "Space Soldier Watch 01",
+    "imageUrl": "items/wrist/watches-spacesoldierwatch-01.webp",
+    "season": 11
+  },
+  {
+    "id": "alfaacta-furhat-racoon",
+    "slot": "headwear",
+    "name": "Fur Hat Racoon",
+    "imageUrl": "items/headwear/alfaacta-furhat-racoon.webp",
+    "set": "AlfaActa",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "racoon"
+    ],
+    "season": 12
+  },
+  {
+    "id": "alfaacta-sigilring-metal",
+    "slot": "hands",
+    "name": "Sigil Ring Metal",
+    "imageUrl": "items/hands/alfaacta-sigilring-metal.webp",
+    "set": "AlfaActa",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "alfaacta-trailstove-metal",
+    "slot": "lowerBack",
+    "name": "Trail Stove Metal",
+    "imageUrl": "items/lowerBack/alfaacta-trailstove-metal.webp",
+    "set": "AlfaActa",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "attachment-paperbag-01",
+    "slot": "headwear",
+    "name": "Paper Bag 01",
+    "imageUrl": "items/headwear/attachment-paperbag-01.webp",
+    "season": 12
+  },
+  {
+    "id": "attachment-roundsunglasses-plastic",
+    "slot": "eyewear",
+    "name": "Round Sunglasses Plastic",
+    "imageUrl": "items/eyewear/attachment-roundsunglasses-plastic.webp",
+    "tags": [
+      "plastic"
+    ],
+    "season": 12
+  },
+  {
+    "id": "attachment-roundsunglasses-plastic-brown",
+    "slot": "eyewear",
+    "name": "Round Sunglasses Plastic Brown",
+    "imageUrl": "items/eyewear/attachment-roundsunglasses-plastic-brown.webp",
+    "tags": [
+      "plastic-brown"
+    ],
+    "season": 12
+  },
+  {
+    "id": "attachment-snakehair",
+    "slot": "headwear",
+    "name": "Snake Hair",
+    "imageUrl": "items/headwear/attachment-snakehair.webp",
+    "season": 12
+  },
+  {
+    "id": "attachments-aviatorsunglasses-plastic-blackgold",
+    "slot": "eyewear",
+    "name": "Aviator Sunglasses Plastic Black Gold",
+    "imageUrl": "items/eyewear/attachments-aviatorsunglasses-plastic-blackgold.webp",
+    "tags": [
+      "plastic-blackgold"
+    ],
+    "season": 12
+  },
+  {
+    "id": "attachments-eaglehead-base",
+    "slot": "headwear",
+    "name": "Eagle Head Base",
+    "imageUrl": "items/headwear/attachments-eaglehead-base.webp",
+    "tags": [
+      "base"
+    ],
+    "season": 12
+  },
+  {
+    "id": "attachments-smallhorns-green",
+    "slot": "headwear",
+    "name": "Small Horns Green",
+    "imageUrl": "items/headwear/attachments-smallhorns-green.webp",
+    "tags": [
+      "green"
+    ],
+    "season": 12
+  },
+  {
+    "id": "bodycosmetics-bodypaint-blackgold-01",
+    "slot": "bodyPaint",
+    "name": "Body Paint Black Gold 01",
+    "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-blackgold-01.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-b-v1/bodycosmetics-bodypaint-blackgold-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-b-v1/bodycosmetics-bodypaint-blackgold-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-b-v1/bodycosmetics-bodypaint-blackgold-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-b-v1/bodycosmetics-bodypaint-blackgold-01-head_m.png",
+          "surfaceOverride": 1,
+          "normalOverride": 0.20000000298023224
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-bodypaint-marble-01",
+    "slot": "bodyPaint",
+    "name": "Body Paint Marble 01",
+    "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-marble-01.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-01-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-bodypaint-marble-02",
+    "slot": "bodyPaint",
+    "name": "Body Paint Marble 02",
+    "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-marble-02.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-02-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-02-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-02-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-marble-02-head_m.png",
+          "surfaceOverride": 0,
+          "normalOverride": 0.8999999761581421
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-bodypaint-wraith-03",
+    "slot": "bodyPaint",
+    "name": "Bodypaint Wraith 03",
+    "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-wraith-03.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-wraith-03-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-wraith-03-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-bodypaint-wraith-03-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-earrings-crocodiletooth-01",
+    "slot": "earrings",
+    "name": "Earrings Crocodile Tooth 01",
+    "imageUrl": "items/earrings/bodycosmetics-earrings-crocodiletooth-01.webp",
+    "season": 12
+  },
+  {
+    "id": "bodycosmetics-earrings-curvyorb-01",
+    "slot": "earrings",
+    "name": "Earrings Curvy Orb 01",
+    "imageUrl": "items/earrings/bodycosmetics-earrings-curvyorb-01.webp",
+    "season": 12
+  },
+  {
+    "id": "bodycosmetics-eyes-emissivegreen-04",
+    "slot": "eyes",
+    "name": "Eyes Emissive Green 04",
+    "imageUrl": "items/eyes/bodycosmetics-eyes-emissivegreen-04.webp",
+    "season": 12
+  },
+  {
+    "id": "bodycosmetics-eyes-marble-01",
+    "slot": "eyes",
+    "name": "Eyes Marble 01",
+    "imageUrl": "items/eyes/bodycosmetics-eyes-marble-01.webp",
+    "season": 12
+  },
+  {
+    "id": "bodycosmetics-eyes-marbleblack-01",
+    "slot": "eyes",
+    "name": "Eyes Marble Black 01",
+    "imageUrl": "items/eyes/bodycosmetics-eyes-marbleblack-01.webp",
+    "season": 12
+  },
+  {
+    "id": "bodycosmetics-makeup-fancymakeup-01",
+    "slot": "blush",
+    "name": "Makeup Fancy Makeup 01",
+    "imageUrl": "items/blush/bodycosmetics-makeup-fancymakeup-01.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-fancymakeup-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-makeup-jester-02",
+    "slot": "blush",
+    "name": "Makeup Jester 02",
+    "imageUrl": "items/blush/bodycosmetics-makeup-jester-02.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-jester-02-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-makeup-skull-06",
+    "slot": "bodyPaint",
+    "name": "Makeup Skull 06",
+    "imageUrl": "items/bodyPaint/bodycosmetics-makeup-skull-06.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-skull-06-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked",
+          "surfacePath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-skull-06-bodyhands_m.png",
+          "surfaceOverride": 1
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-skull-06-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-makeup-smudgedeyes-01",
+    "slot": "blush",
+    "name": "Makeup Smudged Eyes 01",
+    "imageUrl": "items/blush/bodycosmetics-makeup-smudgedeyes-01.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-smudgedeyes-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-makeup-smudgedface-01",
+    "slot": "blush",
+    "name": "Makeup Smudged Face 01",
+    "imageUrl": "items/blush/bodycosmetics-makeup-smudgedface-01.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-makeup-smudgedface-01-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 1,
+          "colorMultiply": "masked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-nails-tribal-01",
+    "slot": "nailPolish",
+    "name": "Nails Tribal 01",
+    "imageUrl": "items/nailPolish/bodycosmetics-nails-tribal-01.webp",
+    "season": 12
+  },
+  {
+    "id": "bodycosmetics-tattoos-biker-01",
+    "slot": "tattoo",
+    "name": "Tattoos Biker 01",
+    "imageUrl": "items/tattoo/bodycosmetics-tattoos-biker-01.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-tattoos-biker-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0,
+          "colorMultiply": "nonMasked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-tattoos-halloween2026-01",
+    "slot": "tattoo",
+    "name": "Tattoos Halloween 2026 01",
+    "imageUrl": "items/tattoo/bodycosmetics-tattoos-halloween2026-01.webp",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-tattoos-halloween2026-01-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0,
+          "colorMultiply": "nonMasked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "bodycosmetics-tattoos-sponsorospuze-02",
+    "slot": "tattoo",
+    "name": "Tattoos Sponsor Ospuze 02",
+    "imageUrl": "items/tattoo/bodycosmetics-tattoos-sponsorospuze-02.webp",
+    "sponsor": "ospuze",
+    "season": 12,
+    "decal": {
+      "layers": [
+        {
+          "target": "body",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-tattoos-sponsorospuze-02-bodyhands_c.png",
+          "uv": 1,
+          "uvScale": [
+            0.5,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0.30000001192092896,
+          "colorMultiply": "nonMasked"
+        },
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-g100-s12-paint-a-v1/bodycosmetics-tattoos-sponsorospuze-02-head_c.png",
+          "uv": 0,
+          "uvScale": [
+            1,
+            1
+          ],
+          "uvLayout": "sourceBodyPaint",
+          "colorOverride": 0.4000000059604645,
+          "colorMultiply": "nonMasked"
+        }
+      ]
+    }
+  },
+  {
+    "id": "casual-basictshirt-cotton-sponsoralfaacta",
+    "slot": "upperBody",
+    "name": "Basic Tshirt Cotton Sponsor Alfa Acta",
+    "imageUrl": "items/upperBody/casual-basictshirt-cotton-sponsoralfaacta.webp",
+    "set": "Casual",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "cotton-sponsoralfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-basictshirt-cotton-sponsoriseult",
+    "slot": "upperBody",
+    "name": "Basic Tshirt Cotton Sponsor ISEULT",
+    "imageUrl": "items/upperBody/casual-basictshirt-cotton-sponsoriseult.webp",
+    "set": "Casual",
+    "sponsor": "iseult",
+    "tags": [
+      "cotton-sponsoriseult"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-basictshirt-cotton-sponsorospuzeblack",
+    "slot": "upperBody",
+    "name": "Basic Tshirt Cotton Sponsor OSPUZEBlack",
+    "imageUrl": "items/upperBody/casual-basictshirt-cotton-sponsorospuzeblack.webp",
+    "set": "Casual",
+    "sponsor": "ospuze",
+    "tags": [
+      "cotton-sponsorospuzeblack"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-bikervest-leather-usa",
+    "slot": "upperBody",
+    "name": "Biker Vest Leather USA",
+    "imageUrl": "items/upperBody/casual-bikervest-leather-usa.webp",
+    "set": "Casual",
+    "tags": [
+      "leather-usa"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-headscarf-cotton-black",
+    "slot": "headwear",
+    "name": "Headscarf Cotton Black",
+    "imageUrl": "items/headwear/casual-headscarf-cotton-black.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton-black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-hoodie-cotton-sponsoralfaacta",
+    "slot": "upperBody",
+    "name": "Hoodie Cotton Sponsor Alfa Acta",
+    "imageUrl": "items/upperBody/casual-hoodie-cotton-sponsoralfaacta.webp",
+    "set": "Casual",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "cotton-sponsoralfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-hoodie-cotton-sponsoriseult",
+    "slot": "upperBody",
+    "name": "Hoodie Cotton Sponsor ISEULT",
+    "imageUrl": "items/upperBody/casual-hoodie-cotton-sponsoriseult.webp",
+    "set": "Casual",
+    "sponsor": "iseult",
+    "tags": [
+      "cotton-sponsoriseult"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-hoodie-cotton-sponsorospuzeblack",
+    "slot": "upperBody",
+    "name": "Hoodie Cotton Sponsor OSPUZEBlack",
+    "imageUrl": "items/upperBody/casual-hoodie-cotton-sponsorospuzeblack.webp",
+    "set": "Casual",
+    "sponsor": "ospuze",
+    "tags": [
+      "cotton-sponsorospuzeblack"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-longcoat-leather-red",
+    "slot": "outerwear",
+    "name": "Long Coat Leather Red",
+    "imageUrl": "items/outerwear/casual-longcoat-leather-red.webp",
+    "set": "Casual",
+    "tags": [
+      "leather-red"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-loosejeans-polyester",
+    "slot": "lowerBody",
+    "name": "Loose Jeans Polyester",
+    "imageUrl": "items/lowerBody/casual-loosejeans-polyester.webp",
+    "set": "Casual",
+    "tags": [
+      "polyester"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-oversizedsweater-cotton-halloween2026",
+    "slot": "upperBody",
+    "name": "Oversized Sweater Cotton Halloween 2026",
+    "imageUrl": "items/upperBody/casual-oversizedsweater-cotton-halloween2026.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton-halloween2026"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-punkwristband-spikes-red",
+    "slot": "wrist",
+    "name": "Punk Wristband Spikes Red",
+    "imageUrl": "items/wrist/casual-punkwristband-spikes-red.webp",
+    "set": "Casual",
+    "tags": [
+      "spikes-red"
+    ],
+    "season": 12
+  },
+  {
+    "id": "casual-shortskirt-blackmesh",
+    "slot": "lowerBody",
+    "name": "Short Skirt Black Mesh",
+    "imageUrl": "items/lowerBody/casual-shortskirt-blackmesh.webp",
+    "set": "Casual",
+    "tags": [
+      "blackmesh"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-buffaloskull-bone",
+    "slot": "headwear",
+    "name": "Buffalo Skull Bone",
+    "imageUrl": "items/headwear/cowboy-buffaloskull-bone.webp",
+    "set": "Cowboy",
+    "tags": [
+      "bone"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-drifterbackpack-canvas",
+    "slot": "upperBack",
+    "name": "Drifter Backpack Canvas",
+    "imageUrl": "items/upperBack/cowboy-drifterbackpack-canvas.webp",
+    "set": "Cowboy",
+    "tags": [
+      "canvas"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-drifterbackpack-canvas-black",
+    "slot": "upperBack",
+    "name": "Drifter Backpack Canvas Black",
+    "imageUrl": "items/upperBack/cowboy-drifterbackpack-canvas-black.webp",
+    "set": "Cowboy",
+    "tags": [
+      "canvas-black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-drifterboots-leather",
+    "slot": "feet",
+    "name": "Drifter Boots Leather",
+    "imageUrl": "items/feet/cowboy-drifterboots-leather.webp",
+    "set": "Cowboy",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-drifterboots-leather-black",
+    "slot": "feet",
+    "name": "Drifter Boots Leather Black",
+    "imageUrl": "items/feet/cowboy-drifterboots-leather-black.webp",
+    "set": "Cowboy",
+    "tags": [
+      "leather-black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-driftergloves-leather",
+    "slot": "hands",
+    "name": "Drifter Gloves Leather",
+    "imageUrl": "items/hands/cowboy-driftergloves-leather.webp",
+    "set": "Cowboy",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-drifterhat-leather",
+    "slot": "headwear",
+    "name": "Drifter Hat Leather",
+    "imageUrl": "items/headwear/cowboy-drifterhat-leather.webp",
+    "set": "Cowboy",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-drifterpants-cotton",
+    "slot": "lowerBody",
+    "name": "Drifter Pants Cotton",
+    "imageUrl": "items/lowerBody/cowboy-drifterpants-cotton.webp",
+    "set": "Cowboy",
+    "tags": [
+      "cotton"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-drifterpants-cotton-black",
+    "slot": "lowerBody",
+    "name": "Drifter Pants Cotton Black",
+    "imageUrl": "items/lowerBody/cowboy-drifterpants-cotton-black.webp",
+    "set": "Cowboy",
+    "tags": [
+      "cotton-black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-dustercoat-leather",
+    "slot": "outerwear",
+    "name": "Duster Coat Leather",
+    "imageUrl": "items/outerwear/cowboy-dustercoat-leather.webp",
+    "set": "Cowboy",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-dustercoat-leather-black",
+    "slot": "outerwear",
+    "name": "Duster Coat Leather Black",
+    "imageUrl": "items/outerwear/cowboy-dustercoat-leather-black.webp",
+    "set": "Cowboy",
+    "tags": [
+      "leather-black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cowboy-handcloth-bandage-drifter",
+    "slot": "hands",
+    "name": "Hand Cloth Bandage Drifter",
+    "imageUrl": "items/hands/cowboy-handcloth-bandage-drifter.webp",
+    "set": "Cowboy",
+    "tags": [
+      "bandage-drifter"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cute-bunnygloves-leather-black",
+    "slot": "hands",
+    "name": "Bunny Gloves Leather Black",
+    "imageUrl": "items/hands/cute-bunnygloves-leather-black.webp",
+    "set": "Cute",
+    "tags": [
+      "leather-black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "cute-tailrounded-black",
+    "slot": "lowerBack",
+    "name": "Tail Rounded Black",
+    "imageUrl": "items/lowerBack/cute-tailrounded-black.webp",
+    "set": "Cute",
+    "tags": [
+      "black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "facialhairs-mustachehorseshoe-white",
+    "slot": "facialHair",
+    "name": "Mustache Horseshoe White",
+    "imageUrl": "items/facialHair/facialhairs-mustachehorseshoe-white.webp",
+    "tags": [
+      "white"
+    ],
+    "season": 12
+  },
+  {
+    "id": "fancydress-beret-cotton",
+    "slot": "headwear",
+    "name": "Beret Cotton",
+    "imageUrl": "items/headwear/fancydress-beret-cotton.webp",
+    "set": "FancyDress",
+    "tags": [
+      "cotton"
+    ],
+    "season": 12
+  },
+  {
+    "id": "fancydress-bighat-wool",
+    "slot": "headwear",
+    "name": "Big Hat Wool",
+    "imageUrl": "items/headwear/fancydress-bighat-wool.webp",
+    "set": "FancyDress",
+    "tags": [
+      "wool"
+    ],
+    "season": 12
+  },
+  {
+    "id": "fancydress-boots-leather",
+    "slot": "feet",
+    "name": "Boots Leather",
+    "imageUrl": "items/feet/fancydress-boots-leather.webp",
+    "set": "FancyDress",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "fancydress-boots-polyester",
+    "slot": "feet",
+    "name": "Boots Polyester",
+    "imageUrl": "items/feet/fancydress-boots-polyester.webp",
+    "set": "FancyDress",
+    "tags": [
+      "polyester"
+    ],
+    "season": 12
+  },
+  {
+    "id": "fancydress-gloves-leather",
+    "slot": "hands",
+    "name": "Gloves Leather",
+    "imageUrl": "items/hands/fancydress-gloves-leather.webp",
+    "set": "FancyDress",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "fancydress-gloves-silk",
+    "slot": "hands",
+    "name": "Gloves Silk",
+    "imageUrl": "items/hands/fancydress-gloves-silk.webp",
+    "set": "FancyDress",
+    "tags": [
+      "silk"
+    ],
+    "season": 12
+  },
+  {
+    "id": "fancydress-suitjacket-cotton-red",
+    "slot": "upperBody",
+    "name": "Suit Jacket Cotton Red",
+    "imageUrl": "items/upperBody/fancydress-suitjacket-cotton-red.webp",
+    "set": "FancyDress",
+    "tags": [
+      "cotton-red"
+    ],
+    "season": 12
+  },
+  {
+    "id": "fancydress-suitpants-cotton-blackred",
+    "slot": "lowerBody",
+    "name": "Suit Pants Cotton Black Red",
+    "imageUrl": "items/lowerBody/fancydress-suitpants-cotton-blackred.webp",
+    "set": "FancyDress",
+    "tags": [
+      "cotton-blackred"
+    ],
+    "season": 12
+  },
+  {
+    "id": "fancydress-tacticaldress-cotton",
+    "slot": "upperBody",
+    "name": "Tactical Dress Cotton",
+    "imageUrl": "items/upperBody/fancydress-tacticaldress-cotton.webp",
+    "set": "FancyDress",
+    "tags": [
+      "cotton"
+    ],
+    "season": 12
+  },
+  {
+    "id": "fancydress-tacticaldress-nylon",
+    "slot": "upperBody",
+    "name": "Tactical Dress Nylon",
+    "imageUrl": "items/upperBody/fancydress-tacticaldress-nylon.webp",
+    "set": "FancyDress",
+    "tags": [
+      "nylon"
+    ],
+    "season": 12
+  },
+  {
+    "id": "hairs-bobstraight-blonde",
+    "slot": "hair",
+    "name": "Bob Straight Blonde",
+    "imageUrl": "items/hair/hairs-bobstraight-blonde.webp",
+    "tags": [
+      "blonde"
+    ],
+    "season": 12
+  },
+  {
+    "id": "hairs-dreadsponytail-saltpepper",
+    "slot": "hair",
+    "name": "Dreads Ponytail Salt Pepper",
+    "imageUrl": "items/hair/hairs-dreadsponytail-saltpepper.webp",
+    "tags": [
+      "saltpepper"
+    ],
+    "season": 12
+  },
+  {
+    "id": "hairs-frontbraids-neongreen",
+    "slot": "hair",
+    "name": "Front Braids Neon Green",
+    "imageUrl": "items/hair/hairs-frontbraids-neongreen.webp",
+    "tags": [
+      "neongreen"
+    ],
+    "season": 12
+  },
+  {
+    "id": "hairs-goth-redblack",
+    "slot": "hair",
+    "name": "Goth Red Black",
+    "imageUrl": "items/hair/hairs-goth-redblack.webp",
+    "tags": [
+      "redblack"
+    ],
+    "season": 12
+  },
+  {
+    "id": "hairs-longbraid-saltpepper",
+    "slot": "hair",
+    "name": "Long Braid Salt Pepper",
+    "imageUrl": "items/hair/hairs-longbraid-saltpepper.webp",
+    "tags": [
+      "saltpepper"
+    ],
+    "season": 12
+  },
+  {
+    "id": "hairs-longwavy-saltpepper",
+    "slot": "hair",
+    "name": "Long Wavy Salt Pepper",
+    "imageUrl": "items/hair/hairs-longwavy-saltpepper.webp",
+    "tags": [
+      "saltpepper"
+    ],
+    "season": 12
+  },
+  {
+    "id": "hairs-sideshavedmedium-black",
+    "slot": "hair",
+    "name": "Side Shaved Medium Black",
+    "imageUrl": "items/hair/hairs-sideshavedmedium-black.webp",
+    "tags": [
+      "black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "halloween-batwings-green",
+    "slot": "upperBack",
+    "name": "Bat Wings Green",
+    "imageUrl": "items/upperBack/halloween-batwings-green.webp",
+    "set": "Halloween",
+    "tags": [
+      "green"
+    ],
+    "season": 12
+  },
+  {
+    "id": "halloween-boots-leather",
+    "slot": "feet",
+    "name": "Boots Leather",
+    "imageUrl": "items/feet/halloween-boots-leather.webp",
+    "set": "Halloween",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "halloween-demonmask-canvas",
+    "slot": "facewear",
+    "name": "Demon Mask Canvas",
+    "imageUrl": "items/facewear/halloween-demonmask-canvas.webp",
+    "set": "Halloween",
+    "tags": [
+      "canvas"
+    ],
+    "season": 12
+  },
+  {
+    "id": "halloween-opentop-leather",
+    "slot": "upperBody",
+    "name": "Open Top Leather",
+    "imageUrl": "items/upperBody/halloween-opentop-leather.webp",
+    "set": "Halloween",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "halloween-scarecrowmask-canvas-black",
+    "slot": "facewear",
+    "name": "Scarecrow Mask Canvas Black",
+    "imageUrl": "items/facewear/halloween-scarecrowmask-canvas-black.webp",
+    "set": "Halloween",
+    "tags": [
+      "canvas-black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "head-face-32-base",
+    "slot": "face",
+    "name": "Face 32 Base",
+    "imageUrl": "items/face/head-face-32-base.webp",
+    "season": 12
+  },
+  {
+    "id": "head-statue-01",
+    "slot": "face",
+    "name": "Statue 01",
+    "imageUrl": "items/face/head-statue-01.webp",
+    "season": 12
+  },
+  {
+    "id": "head-statue-02",
+    "slot": "face",
+    "name": "Statue 02",
+    "imageUrl": "items/face/head-statue-02.webp",
+    "season": 12
+  },
+  {
+    "id": "historic-togalower-marble",
+    "slot": "lowerBody",
+    "name": "Toga Lower Marble",
+    "imageUrl": "items/lowerBody/historic-togalower-marble.webp",
+    "set": "Historic",
+    "tags": [
+      "marble"
+    ],
+    "season": 12
+  },
+  {
+    "id": "historic-togaupper-marble",
+    "slot": "upperBody",
+    "name": "Toga Upper Marble",
+    "imageUrl": "items/upperBody/historic-togaupper-marble.webp",
+    "set": "Historic",
+    "tags": [
+      "marble"
+    ],
+    "season": 12
+  },
+  {
+    "id": "medieval-demontail-base-green",
+    "slot": "lowerBack",
+    "name": "Demon Tail Base Green",
+    "imageUrl": "items/lowerBack/medieval-demontail-base-green.webp",
+    "set": "Medieval",
+    "tags": [
+      "base-green"
+    ],
+    "season": 12
+  },
+  {
+    "id": "mexico-mariachishoes-leather-blackred",
+    "slot": "feet",
+    "name": "Mariachi Shoes Leather Black Red",
+    "imageUrl": "items/feet/mexico-mariachishoes-leather-blackred.webp",
+    "set": "Mexico",
+    "tags": [
+      "leather-blackred"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-doubleholsterpants-denim-blackred",
+    "slot": "lowerBody",
+    "name": "Double Holster Pants Denim Black Red",
+    "imageUrl": "items/lowerBody/military-doubleholsterpants-denim-blackred.webp",
+    "set": "Military",
+    "tags": [
+      "denim-blackred"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-paperbag-02",
+    "slot": "headwear",
+    "name": "Paperbag 02",
+    "imageUrl": "items/headwear/military-paperbag-02.webp",
+    "set": "Military",
+    "season": 12
+  },
+  {
+    "id": "military-scytheboots-leather",
+    "slot": "feet",
+    "name": "Scythe Boots Leather",
+    "imageUrl": "items/feet/military-scytheboots-leather.webp",
+    "set": "Military",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-scythegloves-windbreaker",
+    "slot": "hands",
+    "name": "Scythe Gloves Wind Breaker",
+    "imageUrl": "items/hands/military-scythegloves-windbreaker.webp",
+    "set": "Military",
+    "tags": [
+      "windbreaker"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-scythemask-plastic",
+    "slot": "facewear",
+    "name": "Scythe Mask Plastic",
+    "imageUrl": "items/facewear/military-scythemask-plastic.webp",
+    "set": "Military",
+    "tags": [
+      "plastic"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-scythepants-windbreaker",
+    "slot": "lowerBody",
+    "name": "Scythe Pants Wind Breaker",
+    "imageUrl": "items/lowerBody/military-scythepants-windbreaker.webp",
+    "set": "Military",
+    "tags": [
+      "windbreaker"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-scytheupper-windbreaker",
+    "slot": "upperBody",
+    "name": "Scythe Upper Wind Breaker",
+    "imageUrl": "items/upperBody/military-scytheupper-windbreaker.webp",
+    "set": "Military",
+    "tags": [
+      "windbreaker"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-squarepaperbag",
+    "slot": "headwear",
+    "name": "Square Paper Bag",
+    "imageUrl": "items/headwear/military-squarepaperbag.webp",
+    "set": "Military",
+    "season": 12
+  },
+  {
+    "id": "military-tacticaltrousers-cotton-blackgreen",
+    "slot": "lowerBody",
+    "name": "Tactical Trousers Cotton Black Green",
+    "imageUrl": "items/lowerBody/military-tacticaltrousers-cotton-blackgreen.webp",
+    "set": "Military",
+    "tags": [
+      "cotton-blackgreen"
+    ],
+    "season": 12
+  },
+  {
+    "id": "monsters-swampulafeet-base",
+    "slot": "feet",
+    "name": "Swampula Feet Base",
+    "imageUrl": "items/feet/monsters-swampulafeet-base.webp",
+    "set": "Monsters",
+    "tags": [
+      "base"
+    ],
+    "season": 12
+  },
+  {
+    "id": "monsters-swampulagloves-base",
+    "slot": "hands",
+    "name": "Swampula Gloves Base",
+    "imageUrl": "items/hands/monsters-swampulagloves-base.webp",
+    "set": "Monsters",
+    "tags": [
+      "base"
+    ],
+    "season": 12
+  },
+  {
+    "id": "monsters-swampulahead-base",
+    "slot": "headwear",
+    "name": "Swampula Head Base",
+    "imageUrl": "items/headwear/monsters-swampulahead-base.webp",
+    "set": "Monsters",
+    "tags": [
+      "base"
+    ],
+    "season": 12
+  },
+  {
+    "id": "monsters-swampulalegs-base",
+    "slot": "lowerBody",
+    "name": "Swampula Legs Base",
+    "imageUrl": "items/lowerBody/monsters-swampulalegs-base.webp",
+    "set": "Monsters",
+    "tags": [
+      "base"
+    ],
+    "season": 12
+  },
+  {
+    "id": "monsters-swampulatorso-base",
+    "slot": "upperBody",
+    "name": "Swampula Torso Base",
+    "imageUrl": "items/upperBody/monsters-swampulatorso-base.webp",
+    "set": "Monsters",
+    "tags": [
+      "base"
+    ],
+    "season": 12
+  },
+  {
+    "id": "ospuze-boilerhelmet-metal",
+    "slot": "headwear",
+    "name": "Boiler Helmet Metal",
+    "imageUrl": "items/headwear/ospuze-boilerhelmet-metal.webp",
+    "set": "OSPUZE",
+    "sponsor": "ospuze",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-arcadefighterbomberjacket-metal-multico",
+    "slot": "upperBody",
+    "name": "Arcade Fighter Bomber Jacket Metal Multi Co",
+    "imageUrl": "items/upperBody/scifi-arcadefighterbomberjacket-metal-multico.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal-multico"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-arcadefighterbomberjacket-nylon",
+    "slot": "upperBody",
+    "name": "Arcade Fighter Bomber Jacket Nylon",
+    "imageUrl": "items/upperBody/scifi-arcadefighterbomberjacket-nylon.webp",
+    "set": "SciFi",
+    "tags": [
+      "nylon"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-arcadefighterheadphones-metal",
+    "slot": "headwear",
+    "name": "Arcade Fighter Headphones Metal",
+    "imageUrl": "items/headwear/scifi-arcadefighterheadphones-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-arcadefighterjeans-denim",
+    "slot": "lowerBody",
+    "name": "Arcade Fighter Jeans Denim",
+    "imageUrl": "items/lowerBody/scifi-arcadefighterjeans-denim.webp",
+    "set": "SciFi",
+    "tags": [
+      "denim"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-arcadefighterrobotgloves-metal",
+    "slot": "hands",
+    "name": "Arcade Fighter Robot Gloves Metal",
+    "imageUrl": "items/hands/scifi-arcadefighterrobotgloves-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-arcadefightershoes-leather",
+    "slot": "feet",
+    "name": "Arcade Fighter Shoes Leather",
+    "imageUrl": "items/feet/scifi-arcadefightershoes-leather.webp",
+    "set": "SciFi",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-arcadefightervisor-metal",
+    "slot": "facewear",
+    "name": "Arcade Fighter Visor Metal",
+    "imageUrl": "items/facewear/scifi-arcadefightervisor-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-camocombatvest-metal",
+    "slot": "upperBody",
+    "name": "Camo Combat Vest Metal",
+    "imageUrl": "items/upperBody/scifi-camocombatvest-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-camocombatvest-nylon",
+    "slot": "upperBody",
+    "name": "Camo Combat Vest Nylon",
+    "imageUrl": "items/upperBody/scifi-camocombatvest-nylon.webp",
+    "set": "SciFi",
+    "tags": [
+      "nylon"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-camocombatvest-nylon-black",
+    "slot": "upperBody",
+    "name": "Camo Combat Vest Nylon Black",
+    "imageUrl": "items/upperBody/scifi-camocombatvest-nylon-black.webp",
+    "set": "SciFi",
+    "tags": [
+      "nylon-black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-chunkyboots-leather",
+    "slot": "feet",
+    "name": "Chunky Boots Leather",
+    "imageUrl": "items/feet/scifi-chunkyboots-leather.webp",
+    "set": "SciFi",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-chunkyboots-nylon",
+    "slot": "feet",
+    "name": "Chunky Boots Nylon",
+    "imageUrl": "items/feet/scifi-chunkyboots-nylon.webp",
+    "set": "SciFi",
+    "tags": [
+      "nylon"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-jaguarmask",
+    "slot": "facewear",
+    "name": "Jaguar Mask",
+    "imageUrl": "items/facewear/scifi-jaguarmask.webp",
+    "set": "SciFi",
+    "season": 12
+  },
+  {
+    "id": "scifi-jaguarmask-metal",
+    "slot": "facewear",
+    "name": "Jaguar Mask Metal",
+    "imageUrl": "items/facewear/scifi-jaguarmask-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-jaguarmaskside",
+    "slot": "facewear",
+    "name": "Jaguar Mask Side",
+    "imageUrl": "items/facewear/scifi-jaguarmaskside.webp",
+    "set": "SciFi",
+    "season": 12
+  },
+  {
+    "id": "scifi-jaguarskullmask-gold",
+    "slot": "facewear",
+    "name": "Jaguar Skull Mask Gold",
+    "imageUrl": "items/facewear/scifi-jaguarskullmask-gold.webp",
+    "set": "SciFi",
+    "tags": [
+      "gold"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-pantswithstraps-nylon",
+    "slot": "lowerBody",
+    "name": "Pantswith Straps Nylon",
+    "imageUrl": "items/lowerBody/scifi-pantswithstraps-nylon.webp",
+    "set": "SciFi",
+    "tags": [
+      "nylon"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-pantswithstraps-nylon-black",
+    "slot": "lowerBody",
+    "name": "Pantswith Straps Nylon Black",
+    "imageUrl": "items/lowerBody/scifi-pantswithstraps-nylon-black.webp",
+    "set": "SciFi",
+    "tags": [
+      "nylon-black"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-tacticalarcherygloves-nylon",
+    "slot": "hands",
+    "name": "Tactical Archery Gloves Nylon",
+    "imageUrl": "items/hands/scifi-tacticalarcherygloves-nylon.webp",
+    "set": "SciFi",
+    "tags": [
+      "nylon"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-tacticalglovesultimate-leather",
+    "slot": "hands",
+    "name": "Tactical Gloves Ultimate Leather",
+    "imageUrl": "items/hands/scifi-tacticalglovesultimate-leather.webp",
+    "set": "SciFi",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-tacticalquiver-metal",
+    "slot": "upperBack",
+    "name": "Tactical Quiver Metal",
+    "imageUrl": "items/upperBack/scifi-tacticalquiver-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-tigerrobotbomberjacket-nylon",
+    "slot": "upperBody",
+    "name": "Tiger Robot Bomber Jacket Nylon",
+    "imageUrl": "items/upperBody/scifi-tigerrobotbomberjacket-nylon.webp",
+    "set": "SciFi",
+    "tags": [
+      "nylon"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-tigerrobotfeet-metal",
+    "slot": "feet",
+    "name": "Tiger Robot Feet Metal",
+    "imageUrl": "items/feet/scifi-tigerrobotfeet-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-tigerrobothands-metal",
+    "slot": "hands",
+    "name": "Tiger Robot Hands Metal",
+    "imageUrl": "items/hands/scifi-tigerrobothands-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-tigerrobothead-metal",
+    "slot": "headwear",
+    "name": "Tiger Robot Head Metal",
+    "imageUrl": "items/headwear/scifi-tigerrobothead-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-tigerrobotkatana-metal",
+    "slot": "upperBack",
+    "name": "Tiger Robot Katana Metal",
+    "imageUrl": "items/upperBack/scifi-tigerrobotkatana-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "scifi-tigerrobotlegs-metal",
+    "slot": "lowerBody",
+    "name": "Tiger Robot Legs Metal",
+    "imageUrl": "items/lowerBody/scifi-tigerrobotlegs-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 12
+  },
+  {
+    "id": "starterset-tshirt-cotton-halloween2026",
+    "slot": "upperBody",
+    "name": "TShirt Cotton Halloween 2026",
+    "imageUrl": "items/upperBody/starterset-tshirt-cotton-halloween2026.webp",
+    "set": "StarterSet",
+    "tags": [
+      "cotton-halloween2026"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-backwardsbaseballcap-cotton-spon-15d6",
+    "slot": "headwear",
+    "name": "Backwards Baseball Cap Cotton Sponsor OSPUZEBlack",
+    "imageUrl": "items/headwear/streetwear-backwardsbaseballcap-cotton-spon-15d6.webp",
+    "set": "Streetwear",
+    "sponsor": "ospuze",
+    "tags": [
+      "cotton-sponsorospuzeblack"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-baseballcap-cotton-sponsoralfaacta",
+    "slot": "headwear",
+    "name": "Baseball Cap Cotton Sponsor Alfa Acta",
+    "imageUrl": "items/headwear/streetwear-baseballcap-cotton-sponsoralfaacta.webp",
+    "set": "Streetwear",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "cotton-sponsoralfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-baseballcap-cotton-sponsoriseult",
+    "slot": "headwear",
+    "name": "Baseball Cap Cotton Sponsor ISEULT",
+    "imageUrl": "items/headwear/streetwear-baseballcap-cotton-sponsoriseult.webp",
+    "set": "Streetwear",
+    "sponsor": "iseult",
+    "tags": [
+      "cotton-sponsoriseult"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-bikerjackethoodie-wornleather-ha-e8d2",
+    "slot": "upperBody",
+    "name": "Biker Jacket Hoodie Worn Leather Halloween",
+    "imageUrl": "items/upperBody/streetwear-bikerjackethoodie-wornleather-ha-e8d2.webp",
+    "set": "Streetwear",
+    "tags": [
+      "wornleather-halloween"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-closedrainjacket-windbreaker-cns",
+    "slot": "upperBody",
+    "name": "Closed Rain Jacket Wind Breaker CNS",
+    "imageUrl": "items/upperBody/streetwear-closedrainjacket-windbreaker-cns.webp",
+    "set": "Streetwear",
+    "sponsor": "cns",
+    "tags": [
+      "windbreaker-cns"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-drivingglove-leather-red",
+    "slot": "hands",
+    "name": "Driving Glove Leather Red",
+    "imageUrl": "items/hands/streetwear-drivingglove-leather-red.webp",
+    "set": "Streetwear",
+    "tags": [
+      "leather-red"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-pokerglasses-plastic-sponsoriseult",
+    "slot": "eyewear",
+    "name": "Poker Glasses Plastic Sponsor ISEULT",
+    "imageUrl": "items/eyewear/streetwear-pokerglasses-plastic-sponsoriseult.webp",
+    "set": "Streetwear",
+    "sponsor": "iseult",
+    "tags": [
+      "plastic-sponsoriseult"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-punkboots-wornleather-blackgreen",
+    "slot": "feet",
+    "name": "Punk Boots Worn Leather Black Green",
+    "imageUrl": "items/feet/streetwear-punkboots-wornleather-blackgreen.webp",
+    "set": "Streetwear",
+    "tags": [
+      "wornleather-blackgreen"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-tightsinglet-cotton-sponsorospuz-f9f2",
+    "slot": "upperBody",
+    "name": "Tight Singlet Cotton Sponsor OSPUZEBlack",
+    "imageUrl": "items/upperBody/streetwear-tightsinglet-cotton-sponsorospuz-f9f2.webp",
+    "set": "Streetwear",
+    "sponsor": "ospuze",
+    "tags": [
+      "cotton-sponsorospuzeblack"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-widewristband-leather-drifter",
+    "slot": "wrist",
+    "name": "Wide Wristband Leather Drifter",
+    "imageUrl": "items/wrist/streetwear-widewristband-leather-drifter.webp",
+    "set": "Streetwear",
+    "tags": [
+      "leather-drifter"
+    ],
+    "season": 12
+  },
+  {
+    "id": "watches-kidsskeleton-01",
+    "slot": "wrist",
+    "name": "Kids Skeleton 01",
+    "imageUrl": "items/wrist/watches-kidsskeleton-01.webp",
+    "season": 12
+  },
+  {
+    "id": "watches-smartiseult-01",
+    "slot": "wrist",
+    "name": "Smart Iseult 01",
+    "imageUrl": "items/wrist/watches-smartiseult-01.webp",
+    "sponsor": "iseult",
+    "season": 12
+  },
+  {
+    "id": "watches-smartstepcounter-01",
+    "slot": "wrist",
+    "name": "Smart Step Counter 01",
+    "imageUrl": "items/wrist/watches-smartstepcounter-01.webp",
+    "season": 12
+  },
+  {
+    "id": "workuniforms-shirtrolledupsleeves-cotton-white",
+    "slot": "upperBody",
+    "name": "Shirt Rolled Up Sleeves Cotton White",
+    "imageUrl": "items/upperBody/workuniforms-shirtrolledupsleeves-cotton-white.webp",
+    "set": "WorkUniforms",
+    "tags": [
+      "cotton-white"
+    ],
+    "season": 12
   }
 ]

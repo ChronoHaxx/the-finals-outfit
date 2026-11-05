@@ -26,10 +26,16 @@
 
 /** Conservative recovered-sampler target.
  *
- * WebGL2 guarantees 16 fragment texture units. Three's MeshPhysicalMaterial
- * additionally consumes units for the environment map, the LTC transmission /
- * IBL lookups and every shadow map in the viewer scene. 12 leaves four units
- * for that lighting work while still being reachable for every shipped layout.
+ * WebGL2 guarantees 16 fragment texture units (and 32 combined). Three's
+ * MeshPhysicalMaterial additionally samples, in the fragment stage, the
+ * environment map, the DFG lookup (dfgLUT) and every shadow map in the viewer
+ * scene: 3 units with the one shadow-casting key light. 12 leaves room for that
+ * lighting work while still being reachable for every shipped layout; the few
+ * layouts no packing can bring under 13 sit exactly at 16 fragment samplers.
+ * Bone and morph textures are vertex samplers: three's allocator counts them in
+ * the same sequence and warns "Trying to use 16 texture units" on skinned,
+ * morph-fitted garments, but unit 16 is valid under the 32 combined units and
+ * nothing is dropped (w74-texture-units, 27 Oct 2026: no GL error, dfgLUT on 16).
  * A plan that lands under this number is *not* an acceptance signal: it only
  * says the material fits the budget. */
 export const RECOVERED_SAMPLER_TARGET = 12;

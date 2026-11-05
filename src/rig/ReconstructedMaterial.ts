@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { fetchAsset as checkedFetch } from "../lib/asset-fetch";
 import { VerifiedByteCache } from "../lib/verified-bytes";
 import { HAIR_LIGHTING_GLSL } from './HairLighting';
+import { installSampledAlphaHash } from './AlphaHashSampling';
 import {
   RECOVERED_SAMPLER_TARGET, assemblePackedLayers, planReconstructedSamplers, rewriteSamplerGlsl,
   samplerPlanReport, samplerUniformBindings,
@@ -32,7 +33,14 @@ interface Manifest {
   worldSurface?: boolean;
   glassSurface?: boolean;
   blendMode?: string;
-  surfaceKind?: "eye" | "teeth" | "eyelash" | "hair" | "hair-metallic" | "glass" | "hologram";
+  surfaceKind?: "eye" | "teeth" | "eyelash" | "hair" | "hair-metallic" | "glass" | "hologram" | "attachment-family"
+    | "thin-translucent";
+  // (w122, decision #16a) a pinned MSM_ThinTranslucent program (scripts/shader-probe/thin_translucent_contract.py): UE's
+  // dual-source blend Dest = o0 + Dest * o1 drawn as a multiply pass (o1) then an additive pass (o0).
+  thinTranslucentSurface?: boolean;
+  thinTranslucentPolicy?: string;
+  // A qualified attachment-family program (scripts/shader-probe/attachment_family_contract.py), on the worldSurface route.
+  attachmentFamily?: boolean;
   // M_FloatingHologram (scripts/shader-probe/hologram_contract.py): additive unlit emission with screen-space view inputs.
   hologramSurface?: boolean;
   shadingModel?: string;
@@ -45,8 +53,14 @@ interface Manifest {
   requiresVertexColor?: boolean;
   parameterOverrides?: string[];
   recoveredEmissive?: boolean;
-  // Authored opacity mask through the compiled dithered clip (scripts/shader-probe/masked_contract.py).
-  maskedClip?: { policy: string; opacitySource: { slot: string; component: string } };
+  // Preview emission exposure (signed off 29 Oct 2026, _docs/goal-100-2026-10-11/signoffs-2026-10-29.json
+  // emissionHueKeepingExposure): a recovered emission brighter than 1 in any channel is scaled so its peak channel is 1,
+  // keeping its hue, before the Neutral tone curve. Opt-in per manifest; absent, the emission is added unchanged.
+  emissiveExposure?: "hue-keeping";
+  // Authored opacity mask through the compiled dithered clip (scripts/shader-probe/masked_contract.py). cutout: the
+  // attachment-family dither-free cut-out (attachment_family_contract.FAMILY_CUTOUT_POLICY), opacity exactly 0 or 1.
+  maskedClip?: { policy: string; cutout?: boolean; opacitySource: { slot: string; component?: string; texture?: string };
+    neckFade?: { slot: string | null; fade: number[] } };
   // PlasticSheet parametric fresnel opacity through its DitherTemporalAA clip (scripts/shader-probe/plastic_sheet_contract.py):
   // a geometry-dependent kept fraction rendered with alpha hashing; no UV-only coverage, so shadows stay opaque.
   parametricOpacity?: { policy: string; fields?: string[] };
@@ -56,6 +70,12 @@ interface Manifest {
   // 'source-world-or-orthonormal-equivalent' (dot products only, evaluated in reflected view space).
   geometryFrame?: string;
   requiredGeometryFields?: string[];
+  // (w115) the base-pass vertex shader's TEXCOORD record (scripts/shader-probe/vertex_interpolants.py).
+  vertexInterpolants?: unknown;
+  // (w119 watches) a static-mesh (FLocalVertexFactory) base pass of an enrolled root (build-materials STATIC_MESH_POLICY).
+  staticMesh?: { name?: string };
+  // (w115 part 2) vertex_offset.py's record; `value` is the scale with the material constants folded in.
+  vertexOffset?: { value?: unknown };
 }
 
 // Cubemap glass geometry in the source-world frame (scripts/shader-probe/glass_contract.py FRAME_POLICY).
@@ -85,6 +105,11 @@ const GLASS_SOURCE_WORLD_GEOMETRY = `
   recoveredGeometry.handedness = -vRecoveredHandedness;
 `;
 const GLASS_SOURCE_WORLD_FIELDS = new Set(["position", "tangent", "normal", "view", "handedness", "faceSign"]);
+// (w98b cel family, decision #5) the rendering camera's world axes a cameraBasis program reads: cb0[24..26], the
+// right/up/forward rows of View.CameraViewToTranslatedWorld (the cel eyes MI's fake highlight), supplied live by the
+// worldSurface block. cameraForward is also the Lavalamp cameraForward field (cb0[18]); supplying it here does not
+// lift that program's registry stop (its manifest can never be built while it is stopped).
+const CAMERA_BASIS_FIELDS = new Set(["cameraRight", "cameraUp", "cameraForward"]);
 // Two-sided PlasticSheet on the generic reflected view-space route (scripts/shader-probe/plastic_sheet_contract.py): UE's
 // TwoSidedSign is the rasterizer face sign once its Flags and CullingSign pins hold. Its alpha-hashed DoubleSide
 // material draws one pass, so FLIP_SIDED is never defined there and gl_FrontFacing/vNormal are the raw values; the
@@ -96,6 +121,24 @@ const GENERIC_FACE_UNFLIP = `
               #else
                 float recoveredUnflip = 1.0;
               #endif`;
+
+// (w122, decision #16a) Thin-translucent blend passes. A lit section's material is its first pass; THIN_PASSES maps it to
+// the passes three must draw right after it, with the same object, geometry and group. One hook per mesh draws them
+// from onAfterRender, which three calls once per render item right after that item's draw; renderBufferDirect is the
+// call three itself makes for each side of a DoubleSide transparent material. The shadow pass never calls it.
+const THIN_PASSES = new WeakMap<THREE.Material, THREE.Material[]>();
+function installThinPasses(mesh: THREE.Mesh) {
+  if (mesh.userData.recoveredThinPassHook === true) return;
+  mesh.userData.recoveredThinPassHook = true;
+  const previous = mesh.onAfterRender;
+  mesh.onAfterRender = function (renderer, scene, camera, geometry, material, group) {
+    previous.call(this, renderer, scene, camera, geometry, material, group);
+    const rest = THIN_PASSES.get(material);
+    // three's typings name the last argument a Group; at runtime it is the render item's geometry group (or null).
+    if (rest) for (const pass of rest)
+      renderer.renderBufferDirect(camera, scene, geometry, pass, this, group as unknown as THREE.GeometryGroup);
+  };
+}
 
 // M_FloatingHologram preview contract, runtime half (_docs/goal-100-2026-10-11/floatinghologram-contract/, design section 5).
 // The one qualified program, by its CRLF-normalised asm text hash (scripts/shader-probe/hologram_programs.json).
@@ -248,6 +291,7 @@ struct ReconstructedSurface {
   float opacity;
   float scatter;
   vec3 emissive;
+  vec3 transmittance; // (w122) thin-translucent programs only; unwritten elsewhere
 };
 varying vec2 vRecoveredUv0;
 varying vec2 vRecoveredUv1;
@@ -265,6 +309,26 @@ mat3 recoveredTangentFrame(vec3 position, vec3 normal, vec2 uv) {
   return mat3(tangent * scale, bitangent * scale, normal);
 }
 `;
+
+// (w115 part 2) A vertex_offset.py scale expression as GLSL: UV0 (the `uv` attribute), the vertex colour (read as
+// recoveredOffsetColor), finite literals, floor, neg, add and mul. Anything else fails closed.
+function offsetGlsl(e: unknown): string {
+  if (Array.isArray(e)) {
+    const [kind, ...args] = e as unknown[];
+    if (kind === 'uv' && args[0] === 0 && (args[1] === 'x' || args[1] === 'y')) return `uv.${args[1]}`;
+    if (kind === 'color' && typeof args[0] === 'string' && ['x', 'y', 'z', 'w'].includes(args[0]))
+      return `recoveredOffsetColor.${args[0]}`;
+    if (kind === 'const' && args.length === 1 && typeof args[0] === 'number' && Number.isFinite(args[0])) {
+      const text = Math.fround(args[0]).toPrecision(9);
+      return `(${text})`;
+    }
+    if ((kind === 'floor' || kind === 'neg') && args.length === 1)
+      return kind === 'floor' ? `floor(${offsetGlsl(args[0])})` : `(-${offsetGlsl(args[0])})`;
+    if ((kind === 'add' || kind === 'mul') && args.length === 2)
+      return `(${offsetGlsl(args[0])} ${kind === 'add' ? '+' : '*'} ${offsetGlsl(args[1])})`;
+  }
+  throw new Error('Unsupported recovered vertex offset expression');
+}
 
 function replaceChunk(source: string, name: string, replacement: string): string {
   const marker = `#include <${name}>`;
@@ -300,7 +364,21 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     || !(manifest.requiredGeometryFields ?? []).every(field => GLASS_SOURCE_WORLD_FIELDS.has(field))))
     throw new Error('Unsupported recovered cubemap glass contract');
   const glassFaceSign = glassSourceWorld && (manifest.requiredGeometryFields ?? []).includes('faceSign');
-  const usesGeometry = !!manifest.geometryDependentNormals || worldSurface || glass;
+  // (w122, decision #16a) the thin-translucent route: the cubemap glass block's source-world geometry, its own
+  // emission and transmittance outputs, and (lit view) the two blend passes per face side. Nothing else combines with it.
+  const thin = !!manifest.thinTranslucentSurface;
+  if ((thin || manifest.surfaceKind === 'thin-translucent') && (!thin || manifest.surfaceKind !== 'thin-translucent'
+    || manifest.normalSpace !== 'tangent' || manifest.blendMode !== 'BLEND_TranslucentGreyTransmittance'
+    || manifest.shadingModel !== 'MSM_ThinTranslucent' || manifest.geometryFrame !== 'source-world'
+    || typeof manifest.twoSided !== 'boolean' || worldSurface || glass || hologram || manifest.viewDependentCloth
+    || manifest.geometryDependentNormals || manifest.maskedClip !== undefined || manifest.parametricOpacity !== undefined
+    || manifest.coverageShader !== undefined || manifest.vertexInterpolants !== undefined
+    || manifest.vertexOffset !== undefined || manifest.staticMesh !== undefined || manifest.emissiveExposure !== undefined
+    || !(manifest.requiredGeometryFields ?? []).every(field => GLASS_SOURCE_WORLD_FIELDS.has(field))))
+    throw new Error('Unsupported recovered thin-translucent surface contract');
+  const thinFaceSign = thin && (manifest.requiredGeometryFields ?? []).includes('faceSign');
+  const sourceWorldGeometry = glassSourceWorld || thin;
+  const usesGeometry = !!manifest.geometryDependentNormals || worldSurface || glass || thin;
   const hair = manifest.surfaceKind === 'hair';
   // M_Hair_Metallic (scripts/shader-probe/hair_metallic_contract.py): the hair kind's coverage and shadows with the
   // generic DefaultLit PBR lighting, the vertex colour the pinned program reads, and DoubleSide; never the Karis
@@ -311,7 +389,20 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     throw new Error('Unsupported recovered skin coverage');
   const neckFade = manifest.skinCoverage !== undefined;
   const maskedClip = !!manifest.maskedClip;
-  if (maskedClip && (worldSurface || glass || manifest.surfaceKind || typeof manifest.maskedClip?.policy !== 'string'))
+  // 29 Oct 2026 (w85, decision #14): an attachment-family surface's dither-free cut-out (the player-name mask). Its
+  // opacity is exactly 0 or 1 and its coverage is UV-only, so the alpha-hash and UV-only shadow paths keep or discard
+  // each fragment exactly. Only that pairing is admitted on the worldSurface route; skin never.
+  // 29 Oct 2026 (w87 Feather, decision #12): or the kept fraction of a dithered family tail (masked_contract): its
+  // opacity is one authored channel (opacitySource.component) at UV-only coordinates, so the same alpha-hash and
+  // UV-only shadow paths reproduce it as they do on any masked clip.
+  // 2 Nov 2026 (w113 blank-face LED head): or the bare neck fade of a family head program with no hair-card term
+  // (masked_contract NECK_FADE_BARE_POLICY): its kept fraction reads UV v alone, no texture, on the same paths.
+  const familyCutout = maskedClip && manifest.attachmentFamily === true
+    && manifest.surfaceKind === 'attachment-family' && !!manifest.worldSurface && !manifest.skinSurface
+    && (manifest.maskedClip?.cutout === true || typeof manifest.maskedClip?.opacitySource?.component === 'string'
+      || (manifest.maskedClip?.neckFade?.slot === null && Array.isArray(manifest.maskedClip?.neckFade?.fade)));
+  if (maskedClip && (((worldSurface || manifest.surfaceKind) && !familyCutout) || glass
+    || typeof manifest.maskedClip?.policy !== 'string'))
     throw new Error('Unsupported recovered masked clip contract');
   const masked = manifest.surfaceKind === "eyelash" || hair || hairMetallic || neckFade || maskedClip;
   // PlasticSheet (plastic_sheet_contract): parametric opacity on the generic geometry route, BLEND_Masked only.
@@ -319,8 +410,13 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
   if (parametric && (!manifest.geometryDependentNormals || worldSurface || glass || maskedClip || manifest.surfaceKind
     || manifest.blendMode !== 'BLEND_Masked' || typeof manifest.parametricOpacity?.policy !== 'string'))
     throw new Error('Unsupported recovered parametric opacity contract');
+  // The hue-keeping emission exposure applies to a deferred surface's recovered emission only: never the additive
+  // hologram (its light is the whole output) nor the forward glass route.
+  const hueKeeping = manifest.emissiveExposure !== undefined;
+  if (hueKeeping && (manifest.emissiveExposure !== 'hue-keeping' || manifest.recoveredEmissive !== true || hologram || glass))
+    throw new Error('Unsupported recovered emissive exposure');
   // A generic geometry program that reads the rasterizer face (two-sided PlasticSheet); cubemap glass has its own block.
-  const faceSignField = !glass && (manifest.requiredGeometryFields ?? []).includes('faceSign');
+  const faceSignField = !glass && !thin && (manifest.requiredGeometryFields ?? []).includes('faceSign');
   const genericFaceSign = faceSignField && !manifest.worldSurface;
   if (genericFaceSign && (!manifest.geometryDependentNormals || worldSurface))
     throw new Error('Unsupported recovered face sign contract');
@@ -330,6 +426,50 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
   const worldFaceSign = faceSignField && !!manifest.worldSurface;
   if (worldFaceSign && (manifest.skinSurface || manifest.geometryDependentNormals || manifest.twoSided !== true))
     throw new Error('Unsupported recovered face sign contract');
+  // (w98b cel family, decision #5) a worldSurface program that reads the rendering camera's world axes (the cel eyes
+  // MI's fake highlight; reads.cameraBasis in scripts/shader-probe/attachment_family_programs.json, cb0[24..26] =
+  // View.CameraViewToTranslatedWorld's right/up/forward rows): the worldSurface block supplies them live each frame
+  // from the camera's world matrix, in the same source-world frame as view and position. Each field is set only when
+  // the program's own requiredGeometryFields lists it (a folded-dead row stays unset, exactly as the emitted shader's
+  // struct declares it); never on skin.
+  const worldCameraBasis = !glass && worldSurface
+    ? (manifest.requiredGeometryFields ?? []).filter(field => CAMERA_BASIS_FIELDS.has(field)) : [];
+  if (worldCameraBasis.length && (manifest.skinSurface || manifest.geometryDependentNormals))
+    throw new Error('Unsupported recovered camera basis contract');
+  // (w115 vertex interpolators) a program whose base-pass vertex shader passes the raw local position through
+  // (manifest.vertexInterpolants): only the generic geometry route sets it, from the untouched position attribute
+  // (three applies morphs and skinning to `transformed`, never to `position`), in source centimetres and axes:
+  // build-meshes writes GLB = UE (X, Z, Y) * 0.01.
+  const localPosition = (manifest.requiredGeometryFields ?? []).includes('localPosition');
+  if (localPosition && (!manifest.geometryDependentNormals || worldSurface || glass || !manifest.vertexInterpolants))
+    throw new Error('Unsupported recovered local position contract');
+  // (w115 part 2) the world position offset the same vertex shader applies (vertex_offset.py: fur shells pushed out by
+  // layer x Length, M_FurLOD inflated by a vertex-colour term): S along the skinned object normal, in UE centimetres.
+  // Only with the vertex record on the generic route, and masked, so the custom shadow pass carries it too.
+  const vertexOffset = manifest.vertexOffset === undefined ? undefined : offsetGlsl(manifest.vertexOffset?.value);
+  if (vertexOffset !== undefined && (!manifest.geometryDependentNormals || worldSurface || glass
+    || !manifest.vertexInterpolants || !maskedClip))
+    throw new Error('Unsupported recovered vertex offset contract');
+  const offsetColor = vertexOffset?.includes('recoveredOffsetColor') ?? false;
+  // (w119 watches) a static-mesh program that reads the mesh vertex colour (its COLOR0, sm5_slice static_mesh): the
+  // generic geometry route supplies it as the hair kinds do. Only there, and never with the vertex offset's own colour
+  // attribute declaration.
+  const staticColor = manifest.staticMesh?.name === 'static-mesh-base-pass-v1' && manifest.requiresVertexColor === true;
+  if (manifest.staticMesh !== undefined && manifest.staticMesh?.name !== 'static-mesh-base-pass-v1')
+    throw new Error('Unsupported recovered static-mesh contract');
+  if (staticColor && (!manifest.geometryDependentNormals || worldSurface || glass || hair || hairMetallic
+    || vertexOffset !== undefined || !(manifest.requiredGeometryFields ?? []).includes('color')))
+    throw new Error('Unsupported recovered static-mesh colour contract');
+  const offsetVertex = vertexOffset === undefined ? '' : `${offsetColor ? `
+    #if defined( USE_COLOR ) && !defined( USE_COLOR_ALPHA )
+      vec4 recoveredOffsetColor = vec4( color, 1.0 );
+    #else
+      vec4 recoveredOffsetColor = vec4( color );
+    #endif` : ''}
+    transformed += normalize( objectNormal ) * ( ${vertexOffset} ) * 0.01;`;
+  // The vertex colour is a material input here, as for hair; three declares the attribute only with vertexColors.
+  const offsetColorAttribute = offsetColor
+    ? '#if !defined( USE_COLOR ) && !defined( USE_COLOR_ALPHA )\nattribute vec4 color;\n#endif\n' : '';
   const shaderBytes = await verifiedBytes.load(new URL(manifest.shader, base).href, manifest.shaderSha256, "identity");
   let recoveredShader = new TextDecoder().decode(shaderBytes);
   if (hologram && HOLOGRAM_VIEW_STRUCT.test(recoveredShader) !== viewFields.length > 0)
@@ -339,11 +479,15 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
   // kind keeps UV-only coverage. The field must be present either way.
   const coverageColor = hairMetallic && manifest.coverageGeometryFields?.length === 1
     && manifest.coverageGeometryFields[0] === "color";
+  // (w115) a masked cut-out whose clip reads the vertex-recorded local position (M_FurShells' wind mask): its coverage
+  // takes that one field, which the shadow pass supplies from the same untouched position attribute.
+  const coverageLocal = localPosition && maskedClip && manifest.coverageGeometryFields?.length === 1
+    && manifest.coverageGeometryFields[0] === "localPosition";
   if (masked) {
     if (!manifest.coverageShader || !manifest.coverageShaderSha256
       || !(hairMetallic
         ? (manifest.coverageGeometryFields?.length === 0 || coverageColor)
-        : manifest.coverageGeometryFields?.length === 0))
+        : manifest.coverageGeometryFields?.length === 0 || coverageLocal))
       throw new Error("Recovered masked shadows require validated UV-only coverage");
     const bytes = await verifiedBytes.load(new URL(manifest.coverageShader, base).href,
       manifest.coverageShaderSha256, "identity");
@@ -435,7 +579,11 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
   };
   return {
     dispose,
-    apply(mesh: THREE.Mesh, materialIndex?: number, skinOptions?: { boundsOrigin: [number, number, number]; preserveAlpha?: boolean }) {
+    apply(mesh: THREE.Mesh, materialIndex?: number, skinOptions?: { boundsOrigin: [number, number, number]; preserveAlpha?: boolean;
+        requireSourceCoverage?: boolean }) {
+      // A legacy-free head has no legacy alpha for preserveAlpha to keep (w91-head-skin): its skin must bring the source neck coverage.
+      if (skinOptions?.requireSourceCoverage && manifest.skinSurface && !neckFade)
+        throw new Error('A legacy-free head skin requires the source neck coverage');
       if (hair && (manifest.normalSpace !== 'strand-tangent' || !manifest.requiresVertexColor ||
           mesh.geometry.getAttribute('color')?.itemSize !== 4 || !worldSurface))
         throw new Error('Recovered hair requires the original RGBA vertex masks and strand tangent');
@@ -484,10 +632,12 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         mesh.userData.recoveredAdditive = true;
         return;
       }
-      const makeMaterial = (old: THREE.Material) => {
+      // thinPass (w122): one of the lit thin-translucent blend passes, drawn on one face side; release: whether this call
+      // owns disposing the replaced material (the last pass made for a section).
+      const makeMaterial = (old: THREE.Material, thinPass?: 'multiply' | 'add', thinSide?: THREE.Side, release = true) => {
         const material = new THREE.MeshPhysicalMaterial({
-          name: `${manifest.itemId}:recovered`, roughness: 1, metalness: 1,
-          side: manifest.twoSided === undefined ? old.side : manifest.twoSided ? THREE.DoubleSide : THREE.FrontSide,
+          name: `${manifest.itemId}:recovered${thinPass ? `:${thinPass}` : ''}`, roughness: 1, metalness: 1,
+          side: thinPass ? thinSide! : manifest.twoSided === undefined ? old.side : manifest.twoSided ? THREE.DoubleSide : THREE.FrontSide,
         });
         // Spatial alpha hashing consumes the raw material coverage. Native UE
         // temporal dithering is still pending; texture alpha alone is not coverage.
@@ -495,8 +645,19 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         material.alphaHash = masked || parametric;
         // Qualified glass recovers the source material's opacity. It uses the
         // preview's alpha blend and lighting, not UE refraction/transmittance.
-        material.transparent = glass && view === 'lit';
+        material.transparent = (glass && view === 'lit') || !!thinPass;
         material.depthWrite = !material.transparent;
+        if (thinPass) {
+          // UE writes o0 + Dest * o1 with dual-source blending. Pass 1 multiplies what is behind by o1 (Zero/SrcColor);
+          // pass 2 adds o0 (One/One). Alpha keeps the target's coverage (Zero/One). Depth tested, never written. The
+          // multiplier is a linear factor, never tone-mapped; exact in the stable-frame accumulator's linear target.
+          Object.assign(material, {
+            blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendEquationAlpha: THREE.AddEquation,
+            blendSrc: thinPass === 'multiply' ? THREE.ZeroFactor : THREE.OneFactor,
+            blendDst: thinPass === 'multiply' ? THREE.SrcColorFactor : THREE.OneFactor,
+            blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor, forceSinglePass: true,
+          });
+        }
         if (manifest.skinSurface && skinOptions?.preserveAlpha && !neckFade) {
           // Retain the current preview's neck-edge coverage while native skin
           // opacity/depth-offset evaluation is still a separate adapter.
@@ -507,8 +668,14 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         }
         material.defines = { ...material.defines, ...(needsUv1 ? { USE_UV1: "" } : {}),
           ...(mesh.geometry.hasAttribute("tangent") ? { USE_TANGENT: "" } : {}) };
-        material.toneMapped = view === "lit";
+        material.toneMapped = view === "lit" && thinPass !== 'multiply';
         material.userData.reconstructed = true;
+        if (thin) {
+          // OutfitExport bakes it like glass (source opacity, alpha blend); StableFrameState turns the accumulator on.
+          material.userData.thinTranslucentPolicy = manifest.thinTranslucentPolicy ?? 'thin-translucent two-pass blend';
+          material.userData.recoveredThinTranslucent = view === 'lit';
+          material.userData.thinPass = thinPass;
+        }
         material.userData.sourceInstance = manifest.itemId;
         material.userData.sourceSlot = old.userData.sourceSlot;
         material.userData.viewDependentCloth = !!manifest.viewDependentCloth;
@@ -534,13 +701,17 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           const texture = textures.get(resource.key);
           if (texture) material.userData[resource.kind === "pack" ? `recoveredPack${resource.index}` : resource.texture.id] = texture;
         }
-        material.customProgramCacheKey = () => `recovered-v13:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}:${maskedClip}:${parametric}:${genericFaceSign}${hairMetallic ? ":hair-metallic" : ""}${worldFaceSign ? ":world-face-sign" : ""}`;
+        material.customProgramCacheKey = () => `recovered-v13:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}:${maskedClip}:${parametric}:${genericFaceSign}${hairMetallic ? ":hair-metallic" : ""}${worldFaceSign ? ":world-face-sign" : ""}${worldCameraBasis.length ? ":world-camera-basis" : ""}${hueKeeping ? ":hue-keeping" : ""}${vertexOffset ? `:offset:${vertexOffset}` : ""}${thin ? `:thin:${thinPass ?? "single"}` : ""}`;
+        if (hueKeeping) material.userData.emissiveExposurePolicy = 'hue-keeping preview exposure: peak channel scaled to 1 (signoffs-2026-10-29.json)';
         material.onBeforeCompile = (shader) => {
+          // Decision #19: alpha-hashed coverage converges in the stable-frame accumulator (inert without alphaHash).
+          installSampledAlphaHash(shader, material);
           for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
           shader.vertexShader = "varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n" + shader.vertexShader;
           // These channels are material masks, not diffuse vertex colours.
-          if (hair || hairMetallic) shader.vertexShader = 'attribute vec4 color;\nvarying vec4 vRecoveredColor;\n' + shader.vertexShader;
+          if (hair || hairMetallic || staticColor) shader.vertexShader = 'attribute vec4 color;\nvarying vec4 vRecoveredColor;\n' + shader.vertexShader;
           if (usesGeometry) shader.vertexShader = "varying float vRecoveredHandedness;\n" + shader.vertexShader;
+          if (localPosition) shader.vertexShader = "varying vec3 vRecoveredLocalPosition;\n" + shader.vertexShader;
           if (worldSurface) {
             const [x, y, z] = skinOptions!.boundsOrigin;
             shader.uniforms.uRecoveredBoundsOrigin = { value: new THREE.Vector3(x, z, y).multiplyScalar(0.01) };
@@ -550,12 +721,18 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
             #include <uv_vertex>
             vRecoveredUv0 = uv;
             vRecoveredUv1 = ${needsUv1 ? "uv1" : "vec2(0.0)"};
-            ${hair || hairMetallic ? 'vRecoveredColor = color;' : ''}
+            ${hair || hairMetallic || staticColor ? 'vRecoveredColor = color;' : ''}
             ${usesGeometry ? "vRecoveredHandedness = tangent.w;" : ""}
+            ${localPosition ? "vRecoveredLocalPosition = position;" : ""}
             ${worldSurface ? "vRecoveredObjectPosition = (modelMatrix * vec4(uRecoveredBoundsOrigin, 1.0)).xyz;" : ""}
           `);
+          if (vertexOffset) {
+            // After skinning, along the skinned object normal (the vertex shader's world normal before LocalToWorld).
+            shader.vertexShader = offsetColorAttribute + replaceChunk(shader.vertexShader, "skinning_vertex",
+              `#include <skinning_vertex>${offsetVertex}`);
+          }
           let fragment = SURFACE_STRUCT + recoveredShader + "\n" + shader.fragmentShader;
-          if (hair || hairMetallic) fragment = 'varying vec4 vRecoveredColor;\n' + fragment;
+          if (hair || hairMetallic || staticColor) fragment = 'varying vec4 vRecoveredColor;\n' + fragment;
           if (hair) {
             const physical = THREE.ShaderChunk.lights_physical_pars_fragment;
             if (!physical.includes('struct PhysicalMaterial {')) throw new Error('Three physical material structure changed');
@@ -568,6 +745,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
             `);
           }
           if (usesGeometry) fragment = "varying float vRecoveredHandedness;\n" + fragment;
+          if (localPosition) fragment = "varying vec3 vRecoveredLocalPosition;\n" + fragment;
           if (worldSurface) fragment = "varying vec3 vRecoveredObjectPosition;\n" + fragment;
           fragment = replaceChunk(fragment, "map_fragment", `
             ${manifest.viewDependentCloth ? `
@@ -579,7 +757,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               #endif
               vec3 recoveredViewTangent = transpose(recoveredViewFrame) * normalize(vViewPosition);
             ` : ""}
-            ${glassSourceWorld ? GLASS_SOURCE_WORLD_GEOMETRY + (glassFaceSign
+            ${sourceWorldGeometry ? GLASS_SOURCE_WORLD_GEOMETRY + (glassFaceSign || thinFaceSign
               ? "recoveredGeometry.faceSign = (gl_FrontFacing ? 1.0 : -1.0) * glassUnflip;" : "") : ""}
             ${(manifest.geometryDependentNormals || glass) && !glassSourceWorld ? `${genericFaceSign ? GENERIC_FACE_UNFLIP : ""}
               // Differentiate a reflected view-space surface in source centimetres.
@@ -591,7 +769,9 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               recoveredGeometry.normal = vec3(vNormal.x, -vNormal.y, vNormal.z)${genericFaceSign ? " * recoveredUnflip" : ""};
               recoveredGeometry.view = -recoveredGeometry.position;
               recoveredGeometry.handedness = -vRecoveredHandedness;${genericFaceSign ? `
-              recoveredGeometry.faceSign = (gl_FrontFacing ? 1.0 : -1.0) * recoveredUnflip;` : ""}
+              recoveredGeometry.faceSign = (gl_FrontFacing ? 1.0 : -1.0) * recoveredUnflip;` : ""}${staticColor ? `
+              recoveredGeometry.color = vRecoveredColor;` : ""}${localPosition ? `
+              recoveredGeometry.localPosition = vRecoveredLocalPosition.xzy * 100.0;` : ""}
             ` : ""}
             ${worldSurface ? `${worldFaceSign ? GENERIC_FACE_UNFLIP : ""}
               // Skin and facial materials need source world axes for their view,
@@ -609,10 +789,22 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               recoveredGeometry.faceSign = (gl_FrontFacing ? 1.0 : -1.0) * recoveredUnflip;` : ""}
               recoveredGeometry.objectPosition = vRecoveredObjectPosition.xzy * 100.0;
               ${hair || hairMetallic ? 'recoveredGeometry.color = vRecoveredColor;' : ''}
+              ${worldCameraBasis.length ? `
+              // (w98b cel family, decision #5) the rendering camera's world axes, live from the camera's world matrix:
+              // right = the +X column, up = the +Y column, forward = the -Z column in three's world frame, then the
+              // same source-world .xzy conversion view and position use (SourceTransform's UE (X, Y, Z) = three (x, z, y)).
+              // In that frame right x up = forward (UE's left-handed camera basis under the standard cross product).
+              ${worldCameraBasis.includes('cameraRight')
+                ? 'recoveredGeometry.cameraRight = (transpose(mat3(viewMatrix)) * vec3(1.0, 0.0, 0.0)).xzy;' : ''}
+              ${worldCameraBasis.includes('cameraUp')
+                ? 'recoveredGeometry.cameraUp = (transpose(mat3(viewMatrix)) * vec3(0.0, 1.0, 0.0)).xzy;' : ''}
+              ${worldCameraBasis.includes('cameraForward')
+                ? 'recoveredGeometry.cameraForward = (transpose(mat3(viewMatrix)) * vec3(0.0, 0.0, -1.0)).xzy;' : ''}
+` : ''}
             ` : ""}
             ReconstructedSurface recovered = recoveredSurface(vRecoveredUv0, vRecoveredUv1${manifest.viewDependentCloth ? ", recoveredViewTangent" : ""}${usesGeometry ? ", recoveredGeometry" : ""});
             diffuseColor.rgb = recovered.baseColor;
-            ${masked || parametric || (glass && view === 'lit') ? "diffuseColor.a *= clamp(recovered.opacity, 0.0, 1.0);" : ""}
+            ${masked || parametric || (glass && view === 'lit') || thinPass ? "diffuseColor.a *= clamp(recovered.opacity, 0.0, 1.0);" : ""}
             ${manifest.skinSurface && skinOptions?.preserveAlpha && !neckFade ? `
               #ifdef USE_MAP
                 diffuseColor.a *= texture2D(map, vMapUv).a;
@@ -622,7 +814,11 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           `);
           fragment = replaceChunk(fragment, "roughnessmap_fragment", "float roughnessFactor = recovered.roughness;");
           fragment = replaceChunk(fragment, "metalnessmap_fragment", "float metalnessFactor = recovered.metalness;");
-          if (manifest.recoveredEmissive) fragment = replaceChunk(fragment, "emissivemap_fragment", `
+          if (manifest.recoveredEmissive || thin) fragment = replaceChunk(fragment, "emissivemap_fragment", hueKeeping ? `
+            #include <emissivemap_fragment>
+            float recoveredEmissivePeak = max(max(recovered.emissive.r, recovered.emissive.g), recovered.emissive.b);
+            totalEmissiveRadiance += recoveredEmissivePeak > 1.0 ? recovered.emissive / recoveredEmissivePeak : recovered.emissive;
+          ` : `
             #include <emissivemap_fragment>
             totalEmissiveRadiance += recovered.emissive;
           `);
@@ -644,7 +840,12 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               #ifdef DOUBLE_SIDED
                 recoveredFrame[0] *= faceDirection;
                 recoveredFrame[1] *= faceDirection;
-              #endif
+              #endif${thin ? `
+              #ifdef FLIP_SIDED
+                // A back-side pass (w122): three negated the tangent and normal but rebuilt the same bitangent; UE
+                // negates the whole tangent-to-world normal on a back face (TwoSidedSign), as the DOUBLE_SIDED path does.
+                recoveredFrame[1] *= -1.0;
+              #endif` : ""}
               normal = normalize(recoveredFrame * normalize(recovered.normal));
             #else
             normal = normalize(recoveredTangentFrame(-vViewPosition, normal, vRecoveredUv0) * normalize(recovered.normal));
@@ -664,6 +865,24 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               material.hairSpecular = recovered.specular;` : ''}
           `);
           fragment = replaceChunk(fragment, "aomap_fragment", "reflectedLight.indirectDiffuse *= recovered.ao;");
+          if (thinPass === 'multiply') {
+            // o1 (thin_translucent_contract POLICY): exp(log T / NoV) (1 - F)^2 (1 - opacity), NoV = min(|N.V| + 1e-5, 1),
+            // F = F0 (1 - Fc) + saturate(50 F0.g) Fc, Fc = (1 - NoV)^5, F0 = lerp(0.08 Specular, BaseColor, Metallic);
+            // fog excluded. pow(T, 1/NoV) is exp(log T / NoV) for T >= 0, including T = 0.
+            fragment = replaceChunk(fragment, "opaque_fragment", `
+              float recoveredNoV = min(abs(dot(normal, geometryViewDir)) + 1e-5, 1.0);
+              vec3 recoveredF0 = mix(vec3(0.08 * recovered.specular), recovered.baseColor, recovered.metalness);
+              float recoveredFc = pow(1.0 - recoveredNoV, 5.0);
+              vec3 recoveredInvF = 1.0 - (recoveredF0 * (1.0 - recoveredFc) + clamp(50.0 * recoveredF0.g, 0.0, 1.0) * recoveredFc);
+              outgoingLight = pow(max(recovered.transmittance, vec3(0.0)), vec3(1.0 / recoveredNoV))
+                * recoveredInvF * recoveredInvF * (1.0 - clamp(recovered.opacity, 0.0, 1.0));
+              #include <opaque_fragment>`);
+          } else if (thinPass === 'add') {
+            // o0 under the preview lights: (diffuse + emissive) opacity + specular; fog and PreExposure excluded.
+            fragment = replaceChunk(fragment, "opaque_fragment", `
+              outgoingLight = (totalDiffuse + totalEmissiveRadiance) * clamp(recovered.opacity, 0.0, 1.0) + totalSpecular;
+              #include <opaque_fragment>`);
+          }
           if (view !== "lit") {
             const value = view === "baseColor" ? "recovered.baseColor"
               : view === "normal" ? "normalize(recovered.normal) * 0.5 + 0.5" : `vec3(recovered.${view})`;
@@ -671,16 +890,32 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           }
           shader.fragmentShader = fragment;
         };
-        for (const value of Object.values(old)) if (value?.isTexture) value.dispose();
-        old.dispose();
+        if (release) {
+          for (const value of Object.values(old)) if (value?.isTexture) value.dispose();
+          old.dispose();
+        }
         return material;
       };
+      // (w122) a lit thin-translucent section: its passes in UE's per-fragment order, back faces before front faces
+      // (Dest = o0 + Dest * o1 per layer). The section's own material is the first pass; the rest follow it in the same
+      // render item (installThinPasses), exactly as three draws a DoubleSide transparent material's two sides.
+      const makeSection = (old: THREE.Material) => {
+        if (!(thin && view === 'lit')) return makeMaterial(old);
+        const sides = manifest.twoSided ? [THREE.BackSide, THREE.FrontSide] : [THREE.FrontSide];
+        const steps = sides.flatMap(side => (['multiply', 'add'] as const).map(pass => ({ side, pass })));
+        const passes = steps.map((step, i) => makeMaterial(old, step.pass, step.side, i === steps.length - 1));
+        const [first, ...rest] = passes;
+        THIN_PASSES.set(first, rest);
+        first.addEventListener('dispose', () => rest.forEach(pass => pass.dispose()));
+        return first;
+      };
+      if (thin && view === 'lit') installThinPasses(mesh);
       if (Array.isArray(mesh.material)) {
         if (materialIndex !== undefined && !mesh.material[materialIndex]) throw new Error("Missing source material section");
-        mesh.material = mesh.material.map((old, i) => materialIndex === undefined || i === materialIndex ? makeMaterial(old) : old);
+        mesh.material = mesh.material.map((old, i) => materialIndex === undefined || i === materialIndex ? makeSection(old) : old);
       } else {
         if (materialIndex !== undefined && materialIndex !== 0) throw new Error("Missing source material section");
-        mesh.material = makeMaterial(mesh.material);
+        mesh.material = makeSection(mesh.material);
       }
       if (masked) {
         const material = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
@@ -690,20 +925,34 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           shadow.defines = { ...shadow.defines, ...(needsUv1 ? { USE_UV1: "" } : {}) };
           shadow.userData.recoveredCoverage = true;
           shadow.userData.recoveredSamplers = planReport;
-          shadow.customProgramCacheKey = () => `recovered-coverage-v3:${manifest.coverageShaderSha256}:${plan.cacheKey}:${needsUv1}:${hair}:${maskedClip}${hairMetallic ? ":hair-metallic" : ""}`;
+          shadow.customProgramCacheKey = () => `recovered-coverage-v3:${manifest.coverageShaderSha256}:${plan.cacheKey}:${needsUv1}:${hair}:${maskedClip}${hairMetallic ? ":hair-metallic" : ""}${coverageLocal ? ":local" : ""}${vertexOffset ? `:offset:${vertexOffset}` : ""}`;
           shadow.onBeforeCompile = shader => {
+            // Shadow maps redraw for every accumulator sample, so the shadow's coverage converges the same way.
+            installSampledAlphaHash(shader, shadow);
             // Same plan, same uniform mapping as the surface pass.
             for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
             shader.vertexShader = 'varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n' + shader.vertexShader;
             // The metallic kind's coverage may read the vertex colour, so the shadow pass always supplies it.
             if (hairMetallic) shader.vertexShader = 'attribute vec4 color;\nvarying vec4 vRecoveredColor;\n' + shader.vertexShader;
+            if (coverageLocal) shader.vertexShader = 'varying vec3 vRecoveredLocalPosition;\n' + shader.vertexShader;
             shader.vertexShader = replaceChunk(shader.vertexShader, 'uv_vertex', `#include <uv_vertex>
-              vRecoveredUv0 = uv; vRecoveredUv1 = ${needsUv1 ? 'uv1' : 'vec2(0.0)'};${hairMetallic ? ' vRecoveredColor = color;' : ''}`);
+              vRecoveredUv0 = uv; vRecoveredUv1 = ${needsUv1 ? 'uv1' : 'vec2(0.0)'};${hairMetallic ? ' vRecoveredColor = color;' : ''}${coverageLocal ? ' vRecoveredLocalPosition = position;' : ''}`);
+            if (vertexOffset) {
+              // The depth materials compute the skinned normal only with a displacement map; the offset needs it.
+              shader.vertexShader = offsetColorAttribute + replaceChunk(shader.vertexShader, 'skinning_vertex', `#include <skinning_vertex>
+                #ifndef USE_DISPLACEMENTMAP
+                  #include <beginnormal_vertex>
+                  #include <morphnormal_vertex>
+                  #include <skinnormal_vertex>
+                #endif${offsetVertex}`);
+            }
             shader.fragmentShader = SURFACE_STRUCT + coverageShader + '\n'
-              + (hairMetallic ? 'varying vec4 vRecoveredColor;\n' : '') + shader.fragmentShader;
+              + (hairMetallic ? 'varying vec4 vRecoveredColor;\n' : '')
+              + (coverageLocal ? 'varying vec3 vRecoveredLocalPosition;\n' : '') + shader.fragmentShader;
             shader.fragmentShader = replaceChunk(shader.fragmentShader, 'map_fragment', maskedClip ? `
-              // Masked clip coverage was emitted as a UV-only function.
-              diffuseColor.a *= clamp(recoveredSurface(vRecoveredUv0, vRecoveredUv1).opacity, 0.0, 1.0);
+              // Masked clip coverage was emitted as a UV-only function${coverageLocal ? ", plus the source local position (w115)" : ""}.
+              diffuseColor.a *= clamp(recoveredSurface(vRecoveredUv0, vRecoveredUv1${coverageLocal
+                ? ", ReconstructedCoverageGeometry(vRecoveredLocalPosition.xzy * 100.0)" : ""}).opacity, 0.0, 1.0);
             ` : `
               // Coverage was sliced independently. The hair kinds' coverage struct carries the vertex colour:
               // the metallic kind's dither powers can make it live, so the shadow pass passes the real colour;

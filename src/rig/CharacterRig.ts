@@ -13,7 +13,7 @@ import { rebindSourceSkeleton, type SourceBoneAttachment } from "./SourceSkeleto
 import { fittingMorphNames, SourceFitting } from "./SourceFitting";
 import { bodyTypeOffsetMatrix, type BodyTypePreview } from "./BodyTypePreview";
 import { multiplySourceMatrices, type SourceMatrix } from "./SourceTransform";
-import type { SourceRigPart, SourceSkinPair } from "./SourceAssembly";
+import { LEGACY_EQUIVALENT_HEAD_BASELINE, type SourceRigPart, type SourceSkinPair, type SourceSkinPart } from "./SourceAssembly";
 import { applyHeadWrap, bindHeadWrap, headWrapInputs, type HeadWrapBinding, type HeadWrapData } from "./HeadWrap";
 
 export type { RigDecal } from "./BodyDecals";
@@ -225,6 +225,13 @@ export class CharacterRig {
   private bodyMaterials: THREE.MeshStandardMaterial[] = [];
   private equipped = new Map<Slot, EquippedHandle>();
   private sourceHead: SourceHeadComponent | null = null;
+  // (w132, 5 Nov 2026) The head a face's skin pair records when the outfit replaced it with nothing (a
+  // HideMesh.FaceReplacement rule): committed, or staged while that headless appearance waits for its coverings. A
+  // HideMesh rule hides the head's geometry; the head component and its wrap cage stay, and a mask_covers_beard
+  // helmet still swaps the beard to its under-mask mesh rather than hiding it. So a head-wrapped part (an under-mask
+  // beard, a scarf) takes that head's cage. Sockets still need a worn head (sourceHead), exactly as before.
+  private omittedSourceHead: string | null = null;
+  private pendingOmittedHead: { token: object; sourceMesh: string } | null = null;
   private assemblyHiddenSlots = new Set<Slot>();
   private readonly sourceFitting = new SourceFitting();
   private sourceFittingNames = new Set<string>();
@@ -285,6 +292,12 @@ export class CharacterRig {
    *  whenever the worn head does, so callers can tell that such an item has to be staged again. */
   sourceHeadComponentKey(): string | undefined {
     return this.sourceHead ? `${this.sourceHead.id}|${this.sourceHead.sourceMesh}` : undefined;
+  }
+
+  /** (w132) The head whose wrap cage shapes a head-wrapped part: the worn source head; else the head of the committed
+   *  headless face; else that of a headless face staged and waiting for its coverings. None refuses the part. */
+  private sourceWrapHead(): string | undefined {
+    return this.sourceHead?.sourceMesh ?? this.omittedSourceHead ?? this.pendingOmittedHead?.sourceMesh;
   }
 
   setSourceFittingTags(tags: string[]): void {
@@ -462,6 +475,8 @@ export class CharacterRig {
   private releaseBody(): void {
     if (!this.bodyScene) return;
     this.sourceHead = null;
+    this.omittedSourceHead = null;
+    this.pendingOmittedHead = null;
     this.restoreSourceBodySkin();
     this.root.remove(this.bodyScene);
     this.forgetInspectorOverrides(this.bodyScene);
@@ -801,7 +816,11 @@ export class CharacterRig {
     if (items.some(item => !item.sourceSkinPair && !item.sourceParts)) throw new Error('Source transactions require preserved source inputs');
     const version = this.bodyLoadVersion;
     const results = await Promise.allSettled(items.map(item => {
-      if (item.sourceSkinPair) return this.stageSourceSkin(item, item.sourceSkinPair, signal);
+      // (w128) A face whose pair records attached statics brings their rig parts as sourceParts; every other face is
+      // staged exactly as before (sourceParts beside a pair without recorded attachments stay unused, as before).
+      if (item.sourceSkinPair) return item.sourceSkinPair.attachedParts?.length && item.sourceParts?.length
+        ? this.stageSourceSkinWithAttachments(item, item.sourceSkinPair, item.sourceParts, signal)
+        : this.stageSourceSkin(item, item.sourceSkinPair, signal);
       if (item.sourceParts) return this.stageSourceAssembly(item, item.sourceParts, signal);
       throw new Error('Missing source transaction input');
     }));
@@ -889,6 +908,26 @@ export class CharacterRig {
   }
 
   private async stageSourceAssembly(item: RigItem, parts: SourceRigPart[], signal?: AbortSignal): Promise<{ commit: () => void; release: () => void } | undefined> {
+    const built = await this.buildSourceAssembly(item, parts, signal);
+    if (!built) return;
+    const { scene, meshes, attachments, headComponent, release } = built;
+    return { release, commit: () => {
+      this.unequip(item.slot);
+      // A source item replaces a decal-only choice in its slot, such as the legacy grey nail
+      // tint. This also holds for an item whose parts are all hidden (a glove-covered nail).
+      this.decals.clear(item.slot);
+      for (const { parent, root } of attachments) parent.add(root);
+      this.root.add(scene);
+      this.equipped.set(item.slot, { id: item.id, scene, meshes, statics: [], sourceBoneRoots: attachments.map(a => a.root), headComponent });
+      this.commitSourceAssemblyBodyHides(item, parts, meshes);
+    } };
+  }
+
+  /** (w128) A source item's parts loaded, bound and placed, but not yet added to the rig: stageSourceAssembly commits
+   *  it as the slot's item, and a face commits its attached statics with its skin pair (stageSourceSkinWithAttachments). */
+  private async buildSourceAssembly(item: RigItem, parts: SourceRigPart[], signal?: AbortSignal): Promise<{
+    scene: THREE.Group; meshes: THREE.SkinnedMesh[]; attachments: SourceBoneAttachment[]; headComponent?: string;
+    release: () => void } | undefined> {
     const scene = new THREE.Group();
     scene.name = `${item.id}:assembly`;
     scene.userData.rigItemId = item.id;
@@ -942,7 +981,7 @@ export class CharacterRig {
             mesh = attachSourceStatic(candidate, part.attachment, placement.bone, placement.restInverse, placement.socket);
             skeletons.add(mesh.skeleton);
           } else if (!mesh.isSkinnedMesh) throw new Error("Source clothing part must be skinned");
-          if (part.headWrap) wrapToSourceHead(mesh, part.sourceMesh, item.headWraps, this.sourceHead?.sourceMesh,
+          if (part.headWrap) wrapToSourceHead(mesh, part.sourceMesh, item.headWraps, this.sourceWrapHead(),
             this.sourceMorphNames());
           const slots = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
           if (part.materialSections && slots.length !== 1)
@@ -978,21 +1017,44 @@ export class CharacterRig {
     const used = new Set(meshes.map(m => m.skeleton));
     skeletons.forEach(s => { if (!used.has(s)) s.dispose(); });
     this.enableShadows(scene);
+    return { scene, meshes, attachments, headComponent, release };
+  }
+
+  /** (w128, 4 Nov 2026) A face whose skin pair records attached statics (the hollow-face and ballistic-gel skulls on
+   *  the body's head socket): the pair and those statics are staged together and commit as one face, or neither does.
+   *  The statics ride on the face handle's separate under-layer scene, so unequip, visibility, disposal and
+   *  equippedObjects treat them as the face's own; they carry no body-hide masks and no bone branches. */
+  private async stageSourceSkinWithAttachments(item: RigItem, pair: SourceSkinPair, parts: SourceRigPart[],
+    signal?: AbortSignal): Promise<{ commit: () => void; release: () => void } | undefined> {
+    const [skinResult, builtResult] = await Promise.allSettled([this.stageSourceSkin(item, pair, signal),
+      this.buildSourceAssembly(item, parts, signal)]);
+    const skin = skinResult.status === "fulfilled" ? skinResult.value : undefined;
+    const built = builtResult.status === "fulfilled" ? builtResult.value : undefined;
+    const release = () => { skin?.release(); built?.release(); };
+    const failure = [skinResult, builtResult].find(result => result.status === "rejected");
+    if (failure?.status === "rejected") { release(); throw failure.reason; }
+    if (!skin || !built || signal?.aborted) { release(); return; }
+    if (built.attachments.length || parts.some(part => !part.attachment || part.bodyMaskUrl)) {
+      release(); throw new Error("Face attachments must be attached statics");
+    }
     return { release, commit: () => {
-      this.unequip(item.slot);
-      // A source item replaces a decal-only choice in its slot, such as the legacy grey nail
-      // tint. This also holds for an item whose parts are all hidden (a glove-covered nail).
-      this.decals.clear(item.slot);
-      for (const { parent, root } of attachments) parent.add(root);
-      this.root.add(scene);
-      this.equipped.set(item.slot, { id: item.id, scene, meshes, statics: [], sourceBoneRoots: attachments.map(a => a.root), headComponent });
-      this.bodyHideUrls.set(item.slot, [...new Set(parts.flatMap(p => p.bodyMaskUrl ? [p.bodyMaskUrl] : []))]);
-      this.bodyHideLayouts.set(item.slot, Object.fromEntries(parts
-        .filter(p => p.bodyMaskUrl && p.bodyMaskUvTiles).map(p => [p.bodyMaskUrl!, p.bodyMaskUvTiles!])));
-      this.bodyHideSides.set(item.slot, Object.fromEntries(parts.filter(p => p.bodyMaskUrl).map(p =>
-        [p.bodyMaskUrl!, bodyMaskSide(meshes.filter(m => m.userData.sourcePartIndex === p.sourceIndex && m.userData.sourceMesh === p.sourceMesh))])));
-      this.refreshBodyHides();
+      skin.commit();
+      const handle = this.equipped.get(item.slot);
+      if (!handle || handle.id !== item.id || handle.underLayerScene) { built.release(); return; }
+      this.root.add(built.scene);
+      handle.underLayerScene = built.scene;
+      handle.underLayerMeshes = built.meshes;
     } };
+  }
+
+  /** The body-hide masks a committed source item's parts carry (unchanged from the former inline commit). */
+  private commitSourceAssemblyBodyHides(item: RigItem, parts: SourceRigPart[], meshes: THREE.SkinnedMesh[]): void {
+    this.bodyHideUrls.set(item.slot, [...new Set(parts.flatMap(p => p.bodyMaskUrl ? [p.bodyMaskUrl] : []))]);
+    this.bodyHideLayouts.set(item.slot, Object.fromEntries(parts
+      .filter(p => p.bodyMaskUrl && p.bodyMaskUvTiles).map(p => [p.bodyMaskUrl!, p.bodyMaskUvTiles!])));
+    this.bodyHideSides.set(item.slot, Object.fromEntries(parts.filter(p => p.bodyMaskUrl).map(p =>
+      [p.bodyMaskUrl!, bodyMaskSide(meshes.filter(m => m.userData.sourcePartIndex === p.sourceIndex && m.userData.sourceMesh === p.sourceMesh))])));
+    this.refreshBodyHides();
   }
 
   private sourceBodySkin?: { mesh: THREE.SkinnedMesh; previous: THREE.MeshStandardMaterial };
@@ -1048,7 +1110,12 @@ export class CharacterRig {
     scene.userData.rigItemId = item.id;
     scene.userData.sourceSkinPair = true;
     scene.userData.sourceHeadOmitted = pair.headOmitted;
-    return { release, commit: () => {
+    // (w132) While this appearance waits for its coverings, a head-wrapped part staged beside them takes this head's cage.
+    const pending = { token: {}, sourceMesh: pair.head.sourceMesh };
+    this.pendingOmittedHead = pending;
+    const clearPending = () => { if (this.pendingOmittedHead?.token === pending.token) this.pendingOmittedHead = null; };
+    return { release: () => { clearPending(); release(); }, commit: () => {
+      clearPending();
       this.unequip("face");
       this.sourceBodySkin = { mesh: body, previous: body.material as THREE.MeshStandardMaterial };
       this.decals.unregisterTarget("body");
@@ -1061,6 +1128,10 @@ export class CharacterRig {
       // head-socketed accessory to resolve against, and no head-specific body-hide mask: the body
       // shows its own neck here, so cutting it would leave a hole.
       this.sourceHead = null;
+      // (w132) Its head component stays: head-wrapped parts follow this head's cage. A part staged against another
+      // head (the one worn before, or a previous headless face) moves to this cage now.
+      this.omittedSourceHead = pair.head.sourceMesh;
+      this.root.traverse(o => { if ((o as THREE.Mesh).isMesh) retargetHeadWrap(o as THREE.Mesh, pair.head.sourceMesh, this.sourceMorphNames()); });
       this.bodyHideUrls.delete("face");
       this.currentBodySkin = item.bodySkin ?? null;
       this.refreshBodyHides();
@@ -1075,13 +1146,18 @@ export class CharacterRig {
     // This outfit explicitly empties the source head: the resolver has already checked the head's
     // own evidence and the selected hair. Nothing of that head is fetched, staged or committed.
     if (pair.headOmitted) return this.stageSourceSkinWithoutHead(item, pair, body, signal);
+    // A face the catalog has no legacy preview of names the legacy-equivalent baseline instead (w91-head-skin);
+    // a face with a legacy preview never does. Any other spelling is refused rather than guessed.
+    const legacyFree = !item.url;
+    if (pair.head.previewBaseline !== (legacyFree ? LEGACY_EQUIVALENT_HEAD_BASELINE : undefined))
+      throw new Error("Skin pair preview baseline does not match the face's legacy preview");
     const version = this.bodyLoadVersion;
     const recovered = new Map<string, Awaited<ReturnType<typeof loadReconstructedMaterial>>>();
     const roots = new Map<string, THREE.Object3D>();
     const skeletons = new Set<THREE.Skeleton>();
     const urls = [...new Set([pair.head, pair.body].flatMap(p => Object.values(p.materials).flatMap(m => m.url ? [m.url] : [])))];
     const loaded = await Promise.allSettled([
-      ...[["legacy", item.url], ["source", pair.head.url]].map(async ([key, url]) => {
+      ...[...(legacyFree ? [] : [["legacy", item.url]]), ["source", pair.head.url]].map(async ([key, url]) => {
         const gltf = await this.loader.loadAsync(url);
         roots.set(key, gltf.scene);
         gltf.scene.getObjectsByProperty("isSkinnedMesh", true).forEach(m => skeletons.add((m as THREE.SkinnedMesh).skeleton));
@@ -1102,7 +1178,19 @@ export class CharacterRig {
     const meshes = scene.getObjectsByProperty("isSkinnedMesh", true) as THREE.SkinnedMesh[];
     const attachments: SourceBoneAttachment[] = [];
     try {
-      const legacy = new Map(this.collectStandardMaterials(roots.get("legacy")!).map(m => [m.name, m]));
+      const legacy = new Map(legacyFree ? [] : this.collectStandardMaterials(roots.get("legacy")!).map(m => [m.name, m]));
+      // A legacy-free head takes no legacy name: each section is recovered or one of the two invisible eye shells.
+      // A head that keeps its legacy preview may declare those same two shells invisible too (w104-legacy-shell-baseline,
+      // 2 Nov 2026): a face whose legacy preview bakes its translucent eye layers opaque (face 11's cel eye shell is
+      // the composited eyeball, its eye edge solid grey) takes the shared invisible-shell baseline for exactly those
+      // fallbacks, while every other section keeps its legacy clone. An invisible shell on any other slot, or beside
+      // a recovered url, still refuses.
+      const hasBaseline = (slot: string, binding: SourceSkinPart["materials"][string] | undefined) => !!binding && (legacyFree
+        ? !binding.legacyName && (binding.url ? !binding.invisibleShell
+          : binding.invisibleShell === true && LEGACY_EQUIVALENT_SHELL_SLOTS.includes(slot))
+        : binding.invisibleShell === true
+          ? !binding.url && LEGACY_EQUIVALENT_SHELL_SLOTS.includes(slot)
+          : !!binding.legacyName && legacy.has(binding.legacyName));
       const frames = new Map<THREE.Skeleton, ReturnType<typeof rebindSourceSkeleton>>();
       const usedSlots = new Set<string>();
       if (!meshes.length) throw new Error("Source head has no skinned geometry");
@@ -1110,8 +1198,7 @@ export class CharacterRig {
       // A missing later section must not orphan earlier cloned materials.
       for (const mesh of meshes) for (const old of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
         const slot = old.userData.sourceSlot?.MaterialSlotName as string;
-        const name = pair.head.materials[slot]?.legacyName;
-        if (!name || !legacy.has(name)) throw new Error(`Missing exact head preview material: ${slot}`);
+        if (!hasBaseline(slot, pair.head.materials[slot])) throw new Error(`Missing exact head preview material: ${slot}`);
         usedSlots.add(slot);
       }
       if (Object.keys(pair.head.materials).some(slot => !usedSlots.has(slot))) throw new Error("Missing source head sections");
@@ -1120,9 +1207,9 @@ export class CharacterRig {
         const replacements = originals.map(old => {
           const slot = old.userData.sourceSlot?.MaterialSlotName as string;
           const binding = pair.head.materials[slot];
-          const baseline = binding?.legacyName ? legacy.get(binding.legacyName) : undefined;
-          if (!baseline) throw new Error(`Missing exact head preview material: ${slot}`);
-          const material = baseline.clone();
+          if (!hasBaseline(slot, binding)) throw new Error(`Missing exact head preview material: ${slot}`);
+          const material = legacyFree || binding.invisibleShell === true
+            ? legacyEquivalentHeadBaseline(binding) : legacy.get(binding.legacyName!)!.clone();
           // Cloned materials must own their textures after releasing the staging GLB.
           for (const [key, value] of Object.entries(material)) if (value?.isTexture)
             (material as unknown as Record<string, unknown>)[key] = (value as THREE.Texture).clone();
@@ -1134,7 +1221,8 @@ export class CharacterRig {
         for (const [i, material] of replacements.entries()) {
           const slot = material.userData.sourceSlot.MaterialSlotName as string;
           const binding = pair.head.materials[slot];
-          if (binding.url) recovered.get(binding.url)!.apply(mesh, i, { boundsOrigin: pair.head.boundsOrigin, preserveAlpha: true });
+          if (binding.url) recovered.get(binding.url)!.apply(mesh, i, { boundsOrigin: pair.head.boundsOrigin, preserveAlpha: true,
+            requireSourceCoverage: legacyFree });
           const final = Array.isArray(mesh.material) ? mesh.material[i] : mesh.material;
           final.userData.sourceMaterial = binding.source;
           final.userData.previewMaterialFallback = !binding.url;
@@ -1170,7 +1258,7 @@ export class CharacterRig {
     } catch (error) { release(); throw error; }
     const used = new Set(meshes.map(m => m.skeleton));
     skeletons.forEach(s => { if (!used.has(s)) s.dispose(); });
-    disposeObject3D(roots.get("legacy")!);
+    if (!legacyFree) disposeObject3D(roots.get("legacy")!);
     roots.delete('legacy');
     // This head's own bones, by name. Sections may share one rebound skeleton, but two sections
     // must never disagree about a name — a head-attached socket has to resolve to one bone.
@@ -1204,10 +1292,13 @@ export class CharacterRig {
         /^shader_eye(?:left|right)_shader$/i.test(slot) && binding.parameterOverrides?.length))
         this.unequipDecal("eyes");
       this.registerHeadDecalTargets(scene);
-      if (this.collectStandardMaterials(scene).some(m => m.userData.skinCoverage === 'neck-fade'
+      if (legacyFree || this.collectStandardMaterials(scene).some(m => m.userData.skinCoverage === 'neck-fade'
         || m.userData.skinCoverage === 'neck-fade-stubble')) {
         // Keep skin behind the fading edge. The original matching morph pulls
         // the body's upper neck inside the head; a legacy cutout creates holes.
+        // A legacy-free face has no legacy preview to derive a .bodymask.png URL
+        // from (w93 hardsurface face pairs): with no neck-fade coverage the same
+        // delete branch applies; the head-neck-match morph already pulls the neck in.
         this.bodyHideUrls.delete('face');
       } else this.bodyHideUrls.set("face", [item.url.replace(/\.glb(\?.*)?$/, ".bodymask.png$1")]);
       this.currentBodySkin = item.bodySkin ?? null;
@@ -2155,6 +2246,7 @@ export class CharacterRig {
       // Items socketed onto this head's own bones go with it: those bones leave the scene graph,
       // so keeping the attachment would strand it at the pose it happened to be drawn in.
       this.sourceHead = null;
+      this.omittedSourceHead = null;
       for (const [dependent, entry] of [...this.equipped])
         if (dependent !== slot && entry.headComponent) this.unequip(dependent);
       this.restoreSourceBodySkin();
@@ -2359,6 +2451,24 @@ interface HeadWrapState {
 // The unwrapped rest attributes and binding of each head-wrapped mesh, so a fitting change can re-wrap it.
 const headWrapStates = new WeakMap<THREE.Mesh, HeadWrapState>();
 
+// The only head sections a legacy-free face may leave unrecovered - and the only ones a legacy-preview face may
+// declare the invisible-shell baseline for (w104-legacy-shell-baseline, 2 Nov 2026): the translucent eye layers
+// every legacy preview hides.
+const LEGACY_EQUIVALENT_SHELL_SLOTS = ["shader_eyeshell_shader", "shader_eyeEdge_shader"];
+
+/** What every legacy face preview contributes to its recovered head, for a face the catalog has none of (w91-head-skin,
+ *  2 Nov 2026; identical across all 22 active pairs' legacy GLBs), and the eye shells of a face that keeps a legacy
+ *  preview whose own translucent eye layers it bakes opaque (w104-legacy-shell-baseline, 2 Nov 2026). A recovered section only
+ *  takes the baseline's side (the head's manifest states no twoSided) and user data. The eye shell and eye edge are the
+ *  legacy GLTF material exactly: MASK at 0.5 with alpha 0, so nothing of them is drawn. */
+export function legacyEquivalentHeadBaseline(binding: SourceSkinPart["materials"][string]): THREE.MeshStandardMaterial {
+  const name = binding.defaultSource.split(".").at(-1)!, grey = Math.fround(0.8); // the GLB's float32 base colour
+  return binding.invisibleShell
+    ? new THREE.MeshStandardMaterial({ name, color: new THREE.Color(grey, grey, grey), opacity: 0, alphaTest: 0.5,
+      metalness: 0, roughness: 0.5, side: THREE.DoubleSide })
+    : new THREE.MeshStandardMaterial({ name, side: THREE.DoubleSide });
+}
+
 /** Moves a head-wrapped part's rest geometry with the worn head's wrap cage (relative to HeadMaster's), before
  *  skinning: positions, and normals/tangents rotated with their proxy triangle. The cage takes the head's active
  *  fitting morphs. Missing data refuses the part. */
@@ -2378,6 +2488,22 @@ function wrapToSourceHead(mesh: THREE.Mesh, source: string, data: HeadWrapData |
 }
 
 /** Re-evaluates a head-wrapped mesh on its cage with these fitting morphs; false when the mesh is not head-wrapped. */
+/** (w132) Moves a head-wrapped mesh onto another head's cage: the same proxy binding, a new target. A head the release
+ *  has no cage for keeps the mesh on its current cage and reports it; a commit never half-applies. */
+function retargetHeadWrap(mesh: THREE.Mesh, head: string, morphs: ReadonlySet<string>): void {
+  const state = headWrapStates.get(mesh);
+  if (!state || state.head === head) return;
+  const previous = state.head;
+  state.head = head;
+  try {
+    rewrapToSourceHead(mesh, morphs, true);
+  } catch (error) {
+    state.head = previous;
+    rewrapToSourceHead(mesh, morphs, true);
+    console.error(error);
+  }
+}
+
 function rewrapToSourceHead(mesh: THREE.Mesh, morphs: ReadonlySet<string>, force = false): boolean {
   const state = headWrapStates.get(mesh);
   if (!state) return false;
