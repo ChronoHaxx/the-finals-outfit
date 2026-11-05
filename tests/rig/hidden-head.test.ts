@@ -503,3 +503,80 @@ test("uncovering the head restores that exact head and its own resources", async
   assert.notEqual(body.material, omittedSkin, "the body skin was restaged with the head");
   assert.equal((body.material as THREE.Material).userData.sourceMaterial, BODY_MI);
 });
+
+// --- head-wrapped parts under an omitted head (w132, 5 Nov 2026) ----------------------------------
+// A HideMesh.FaceReplacement helmet hides the head's geometry, not its head component: the same helmet's
+// mask_covers_beard swaps a full beard to its under-mask mesh instead of hiding it. A head-wrapped part (the beard, a
+// scarf) therefore takes the omitted head's wrap cage. Before this, every such pair refused the part, and that failed
+// the whole source transaction (715 advertised pairs, _docs/goal-100-2026-10-11/w132-beard-undermask/).
+
+const BEARD_MESH = "/Game/Test/Beards/SK_Beard_UnderMask_M.SK_Beard_UnderMask_M";
+const HEAD_B = "/Game/Test/Heads/SK_Head_Face_10.SK_Head_Face_10";
+const REFERENCE = [0, 0, 0, 0.01, 0, 0, 0, 0.01, 0];
+const lifted = (dy: number) => REFERENCE.map((v, i) => (i % 3 === 1 ? v + dy : v));
+const wraps = () => ({ formatVersion: 1, contract: "finals-head-component-wrap-v1",
+  reference: { source: "/Game/Test/Heads/SK_HeadMaster.SK_HeadMaster", positions: REFERENCE, triangles: [0, 1, 2] },
+  cages: { faceA: { positions: lifted(0.05) }, faceB: { positions: lifted(0.2) } },
+  heads: { [HEAD_MESH]: "faceA", [HEAD_B]: "faceB" }, meshes: { [BEARD_MESH]: { triangles: [0, 1, 2] } } });
+
+function wrappedBeard(served: ReturnType<typeof serve>) {
+  const part: SourceRigPart = { sourceIndex: 0, sourceMesh: BEARD_MESH, url: `${ORIGIN}meshes/beard-undermask.glb`,
+    materials: { shader_head_shader: { url: served.bodyMaterial, source: "/Game/Test/Beards/MI_Beard.MI_Beard" } },
+    headWrap: true };
+  return { id: "facialhairs-beardfull-black", slot: "facialHair" as never, url: part.url, sourceParts: [part],
+    headWraps: wraps() as never };
+}
+const beardLift = (root: THREE.Object3D) => {
+  const meshes = root.getObjectsByProperty("isSkinnedMesh", true).filter(o => o.userData.headWrapMorphs !== undefined);
+  assert.equal(meshes.length, 1, "one head-wrapped mesh is worn");
+  return Math.round(((meshes[0] as THREE.Mesh).geometry.attributes.position.array[1] as number) * 1000) / 1000;
+};
+
+test("a head-wrapped part takes the cage of the head a FaceReplacement omitted", async () => {
+  const { served, pair } = await omittedPair("wrap-omitted");
+  const { rig, root, body, legacyBody } = harness(served.bodyMesh);
+  assert.equal(await rig.equipSourceItems([faceItem(pair, served.legacyHead)]), true);
+  assert.equal(await rig.equipSourceItems([wrappedBeard(served)]), true);
+  assert.equal(beardLift(root), 0.05, "the omitted head's own cage");
+  assert.notEqual(body.material, legacyBody, "the recovered body skin stays");
+  assert.equal(rig.sourceHeadComponentKey(), undefined, "still no head component to socket onto");
+  rig.dispose();
+});
+
+test("a head-wrapped part staged beside a waiting headless appearance takes its head's cage", async () => {
+  const { served, pair } = await omittedPair("wrap-pending");
+  const { rig, root } = harness(served.bodyMesh);
+  const prepared = await rig.prepareSourceItems([faceItem(pair, served.legacyHead)]);
+  assert(prepared);
+  assert.equal(await rig.equipSourceItems([wrappedBeard(served)]), true);
+  assert.equal(beardLift(root), 0.05);
+  assert.equal(prepared.commit(), true);
+  assert.equal(beardLift(root), 0.05, "unchanged once the appearance commits");
+  rig.dispose();
+});
+
+test("a released headless appearance leaves no cage behind, and no face still refuses the part", async () => {
+  const { served, pair } = await omittedPair("wrap-released");
+  const { rig } = harness(served.bodyMesh);
+  await assert.rejects(rig.equipSourceItems([wrappedBeard(served)]), /requires a preserved source head/);
+  const prepared = await rig.prepareSourceItems([faceItem(pair, served.legacyHead)]);
+  assert(prepared); prepared.release();
+  await assert.rejects(rig.equipSourceItems([wrappedBeard(served)]), /requires a preserved source head/);
+  await rig.equipSourceItems([faceItem(pair, served.legacyHead)]);
+  rig.unequip("face" as never);
+  await assert.rejects(rig.equipSourceItems([wrappedBeard(served)]), /requires a preserved source head/);
+  rig.dispose();
+});
+
+test("committing another headless face moves a worn head-wrapped part onto that head's cage", async () => {
+  const { served, pair } = await omittedPair("wrap-retarget");
+  const { rig, root } = harness(served.bodyMesh);
+  await rig.equipSourceItems([faceItem(pair, served.legacyHead)]);
+  await rig.equipSourceItems([wrappedBeard(served)]);
+  assert.equal(beardLift(root), 0.05);
+  const other = JSON.parse(JSON.stringify(pair));
+  other.head.sourceMesh = HEAD_B;
+  assert.equal(await rig.equipSourceItems([faceItem(other, served.legacyHead)]), true);
+  assert.equal(beardLift(root), 0.2, "the new head's cage");
+  rig.dispose();
+});

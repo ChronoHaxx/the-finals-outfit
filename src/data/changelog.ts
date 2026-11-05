@@ -10,6 +10,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-05-seasons-11-12",
+    date: "2026-11-05",
+    title: "Seasons 11 and 12",
+    notes: [
+      "389 cosmetics from Seasons 11 and 12 join the catalog, under their wiki names.",
+      "92% of the catalog's 3,255 cosmetics now have a first-pass 3D reconstruction, up from 84%.",
+      "Gems, glass, fur, glowing LED pieces and more faces render with their recovered materials.",
+      "Outfits download faster, with a progress readout while the character loads.",
+    ],
+  },
+  {
     id: "2026-11-04-new-look",
     date: "2026-11-04",
     title: "New look",

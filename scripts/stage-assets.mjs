@@ -1,7 +1,7 @@
 // Stage exactly the assets the catalog references into _assets-upload/<version>/,
 // ready to publish to whatever host VITE_ASSETS_BASE points at.
 //
-//   node scripts/stage-assets.mjs v2 [--models-only | --reconstruction-only]
+//   node scripts/stage-assets.mjs v2 [--models-only | --reconstruction-only | --icons-only]
 //
 // Why a version directory rather than uploading in place:
 //
@@ -111,6 +111,7 @@ console.log(`\nnext: publish _assets-upload/ to the host, then`);
 console.log({
   models: `  ASSETS_BASE=<existing-icons-host> MODELS_BASE=<new-models-host> npm run validate:catalog`,
   reconstruction: `  ASSETS_BASE=<icons-host> MODELS_BASE=<models-host> RECONSTRUCTION_BASE=<new-reconstruction-host> npm run validate:catalog`,
+  icons: `  ASSETS_BASE=<new-icons-host> MODELS_BASE=<models-host> RECONSTRUCTION_BASE=<reconstruction-host> npm run validate:catalog`,
   all: `  ASSETS_BASE=<host>/${version}/ npm run validate:catalog`,
 }[mode]);
 console.log(`and only switch the ASSETS_BASE repo variable once that passes.`);

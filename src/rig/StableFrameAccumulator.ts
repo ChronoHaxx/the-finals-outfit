@@ -3,6 +3,7 @@ import { FullScreenQuad } from 'three/examples/jsm/postprocessing/Pass.js';
 import { OutputShader } from 'three/examples/jsm/shaders/OutputShader.js';
 import { StableFrameState } from './StableFrameState';
 import { StableCamera } from './StableCamera';
+import { setAlphaHashSample } from './AlphaHashSampling';
 
 const toneMappingDefines: Record<number, string> = {
   [THREE.LinearToneMapping]: 'LINEAR_TONE_MAPPING', [THREE.ReinhardToneMapping]: 'REINHARD_TONE_MAPPING',
@@ -22,7 +23,7 @@ const radicalInverse = (index: number, base: number) => {
  */
 export class StableFrameAccumulator {
   readonly status = { active: false, samples: 0, maxSamples: 32, resets: 0, sceneRenders: 0,
-    reason: 'initial', width: 0, height: 0, targetBytes: 0 };
+    reason: 'initial', width: 0, height: 0, targetBytes: 0, additive: false };
   private state = new StableFrameState();
   private camera = new StableCamera();
   private sample: THREE.WebGLRenderTarget | null = null;
@@ -47,13 +48,23 @@ export class StableFrameAccumulator {
     // Samples over a transparent clear contain premultiplied linear RGB. Recover
     // the covered colour BEFORE the nonlinear display transform, then premultiply
     // for the canvas. Tone-mapping already averaged coverage makes bright fringes.
+    // ADDITIVE_PASS_THROUGH (signed off as hologramBackdropPassThrough, 14 Oct 2026) is defined only while a recovered
+    // additive material is visible and the output is premultiplied. Additive light leaves alpha unchanged, so where
+    // no sample covered anything (alpha 0) the history holds only that light: it is tone-mapped as is and written
+    // un-premultiplied with alpha 0, which a premultiplied canvas composites as light added to the page backdrop.
+    // Without the define the preprocessed program is token-identical to the one before this change.
     const fragmentShader = OutputShader.fragmentShader
       .replace('uniform sampler2D tDiffuse;', 'uniform sampler2D tDiffuse; uniform float historyScale;')
       .replace('gl_FragColor = texture2D( tDiffuse, vUv );', `
         gl_FragColor = texture2D(tDiffuse, vUv) * historyScale;
         gl_FragColor.a = clamp(gl_FragColor.a, 0.0, 1.0);
-        gl_FragColor.rgb = gl_FragColor.a > 0.000001 ? gl_FragColor.rgb / gl_FragColor.a : vec3(0.0);`)
-      .replace(/}\s*$/, '#ifdef PREMULTIPLIED_OUTPUT\n gl_FragColor.rgb *= gl_FragColor.a;\n #endif\n }');
+        #ifdef ADDITIVE_PASS_THROUGH
+        bool additivePassThrough = gl_FragColor.a <= 0.000001;
+        gl_FragColor.rgb = additivePassThrough ? gl_FragColor.rgb : gl_FragColor.rgb / gl_FragColor.a;
+        #else
+        gl_FragColor.rgb = gl_FragColor.a > 0.000001 ? gl_FragColor.rgb / gl_FragColor.a : vec3(0.0);
+        #endif`)
+      .replace(/}\s*$/, '#ifdef PREMULTIPLIED_OUTPUT\n #ifdef ADDITIVE_PASS_THROUGH\n if (!additivePassThrough)\n #endif\n gl_FragColor.rgb *= gl_FragColor.a;\n #endif\n }');
     this.output = new THREE.RawShaderMaterial({
       uniforms: { ...THREE.UniformsUtils.clone(OutputShader.uniforms), historyScale: { value: 1 } },
       vertexShader: OutputShader.vertexShader, fragmentShader,
@@ -77,11 +88,12 @@ export class StableFrameAccumulator {
     this.camera.select(camera, width, height);
     const input = this.state.capture(scene, camera, renderer, this.camera);
     const supported = camera instanceof THREE.PerspectiveCamera || camera instanceof THREE.OrthographicCamera;
-    const active = enabled && input.masked && supported && width > 0 && height > 0
+    // Masked items need the jittered average; additive items need the linear target (and its alpha-0 pass-through).
+    const active = enabled && (input.masked || input.additive) && supported && width > 0 && height > 0
       && renderer.extensions.has('EXT_color_buffer_float') && !renderer.xr.isPresenting;
     if (!active) {
       if (this.status.active) this.releaseTargets();
-      this.status.active = false; this.status.samples = 0; this.invalidated = 'activated';
+      this.status.active = false; this.status.samples = 0; this.status.additive = false; this.invalidated = 'activated';
       renderer.render(scene, camera);
       return;
     }
@@ -125,7 +137,13 @@ export class StableFrameAccumulator {
         if (camera instanceof THREE.PerspectiveCamera) { p[8] += 2 * dx / width; p[9] -= 2 * dy / height; }
         else { p[12] -= 2 * dx / width; p[13] += 2 * dy / height; }
         camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
-        renderer.setRenderTarget(this.sample); renderer.clear(); renderer.render(scene, camera);
+        // Decision #19: samples 1..N-1 draw alpha-hashed coverage from per-pixel stratified thresholds, so the average
+        // converges to the authored opacity; sample 0 keeps three's own hash (AlphaHashSampling).
+        setAlphaHashSample(n, this.status.maxSamples);
+        // (w133) three's own side-flip needsUpdate bumps during this render are not input changes (StableFrameState).
+        renderer.setRenderTarget(this.sample); renderer.clear();
+        this.state.renderDiscountingSideFlips(() => renderer.render(scene, camera));
+        setAlphaHashSample(0);
         this.status.sceneRenders++;
         renderer.setRenderTarget(this.history);
         if (n === 0) { renderer.setClearColor(0, 0); renderer.clear(); }
@@ -134,7 +152,9 @@ export class StableFrameAccumulator {
         this.status.samples++;
       }
       const premultiplied = !!destination || renderer.getContext().getContextAttributes()?.premultipliedAlpha !== false;
-      const outputKey = `${renderer.outputColorSpace}/${renderer.toneMapping}/${premultiplied}`;
+      const passThrough = input.additive && premultiplied;
+      this.status.additive = passThrough;
+      const outputKey = `${renderer.outputColorSpace}/${renderer.toneMapping}/${premultiplied}/${passThrough}`;
       if (outputKey !== this.outputKey) {
         this.outputKey = outputKey;
         this.output.defines = {};
@@ -142,6 +162,7 @@ export class StableFrameAccumulator {
         const tone = toneMappingDefines[renderer.toneMapping];
         if (tone) this.output.defines[tone] = '';
         if (premultiplied) this.output.defines.PREMULTIPLIED_OUTPUT = '';
+        if (passThrough) this.output.defines.ADDITIVE_PASS_THROUGH = '';
         this.output.needsUpdate = true;
       }
       this.output.uniforms.tDiffuse.value = this.history!.texture;
@@ -154,6 +175,7 @@ export class StableFrameAccumulator {
       this.invalidate('interrupted render');
       throw error;
     } finally {
+      setAlphaHashSample(0);
       camera.projectionMatrix.copy(projection); camera.projectionMatrixInverse.copy(inverse);
       camera.matrixWorld.copy(world); camera.matrixWorldInverse.copy(worldInverse);
       camera.matrixWorldAutoUpdate = worldAutoUpdate; camera.matrixWorldNeedsUpdate = worldNeedsUpdate;

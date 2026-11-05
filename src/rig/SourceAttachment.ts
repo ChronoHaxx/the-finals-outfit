@@ -67,12 +67,16 @@ export function attachSourceStatic(original: THREE.Mesh, attachment: SourceAttac
   const scaling = new THREE.Matrix4().makeScale(scale.x, scale.y, scale.z);
   // The socket frame must be a rotation and a translation, and every authored part scale positive,
   // so frame * scale is exactly the invertible source rest. Only a source socket may reflect an
-  // axis; sheared, stretched, singular and nonfinite transforms stay unsupported.
+  // axis; sheared, stretched, singular and nonfinite transforms stay unsupported. Gated
+  // (w45-resolver): when the resolver's attachmentMirroredScale gate admitted the part, a finite
+  // nonzero mirrored authored scale passes here too — det(rest) and det(scale) are both negative,
+  // so frame = rest * scale^-1 stays a proper rotation and the mirrored path below applies — while
+  // zero and non-finite values are still refused.
   const basis = new THREE.Matrix3().setFromMatrix4(frame);
   const orthonormality = basis.clone().transpose().multiply(basis).elements
     .map((v, i) => Math.abs(v - (i % 4 === 0 ? 1 : 0)));
   if (![...rest.elements, ...frame.elements].every(Number.isFinite) ||
-      !attachment.scale.every(v => Number.isFinite(v) && v > 0) ||
+      !attachment.scale.every(v => Number.isFinite(v) && (attachment.mirroredScale ? v !== 0 : v > 0)) ||
       !socket.restScale.every(v => Number.isFinite(v) && v !== 0) ||
       ![scale.x, scale.y, scale.z].every(v => Number.isFinite(v) && v !== 0) ||
       Math.abs(frame.determinant() - 1) > 1e-4 || Math.max(...orthonormality) > 1e-4 ||
