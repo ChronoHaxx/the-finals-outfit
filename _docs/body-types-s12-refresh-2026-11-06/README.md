@@ -6,6 +6,14 @@ Stage 2 of `_docs/body-types-2026-11-06/` (sections 6 and 7). Goal: the body and
 **Status.** Built and agent-reviewed as a preview. Nothing is merged into the live worktree, pushed or published. User
 checks are pending (`functional-review.md`).
 
+**Update, 6 Nov evening.**
+- The active index moved to `acdb9897…`, so the batch was rebuilt on it as `index-v4`: the same 179 repoints; the 14 new
+  backfill meshes were already S12.
+- A data-only, garments-only variant (`index-v4a`, 178 repoints, live body) renders pixel-identically to the full
+  candidate on masculine. It is the recommended merge for production.
+- Recipe, numbers and checks are in `HANDOFF.md` ("Current recipe"). The tables below describe the earlier `index-v3`
+  build.
+
 ## Result in one table
 
 | | Count |

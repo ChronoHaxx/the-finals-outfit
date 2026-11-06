@@ -11,7 +11,9 @@ Details:
   garments together"). The batch is described in `README.md` in this folder.
 - Test this revision: branch `claude/quizzical-hermann-33b51b`. App code is `aa6c2e6` (stage 1, unchanged here); tools
   and docs are in the commits after it. The data under test is
-  `public/models/s12-bodytype-refresh-v1/index-v3` (merge candidate, 179 meshes repointed).
+  `public/models/s12-bodytype-refresh-v1/index-v4`. This is the merge candidate rebuilt on the moved active index
+  (`acdb9897…`) on 6 Nov evening, with the same 179 meshes repointed as `index-v3`. 5195 serves the garments-only
+  variant `index-v4a` (178 repoints, live body), which is the recommended merge for production (`HANDOFF.md`).
 - Open: two local dev servers from this worktree. **5193** is live data and **5194** the S12 merge candidate. Neither
   is the main session's 5174.
 - Prerequisites: none beyond this machine. Nothing is downloaded, and the game is not touched.
@@ -31,7 +33,11 @@ node scripts/body-types/serve-preview.mjs --port 5193
 ```
 
 ```powershell
-node scripts/body-types/serve-preview.mjs --port 5194 --preview ../../../public/models/s12-bodytype-refresh-v1 --index ../../../public/models/s12-bodytype-refresh-v1/index-v3
+node scripts/body-types/serve-preview.mjs --port 5194 --preview ../../../public/models/s12-bodytype-refresh-v1 --index ../../../public/models/s12-bodytype-refresh-v1/index-v4
+```
+
+```powershell
+node scripts/body-types/serve-preview.mjs --port 5195 --preview ../../../public/models/s12-bodytype-refresh-v1 --index ../../../public/models/s12-bodytype-refresh-v1/index-v4a --live-body
 ```
 
 - Each server prints a `Local: http://127.0.0.1:<port>/` line.

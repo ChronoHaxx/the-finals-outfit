@@ -4,6 +4,81 @@ For the session that owns `scripts/generated/catalog-public-worktree` and the ac
 merged, pushed or published. Merge only when you are idle **and** the user has agreed, after their checks in
 `functional-review.md`.
 
+## Current recipe (6 Nov evening): index-v4, rebuilt on the moved index
+
+Everything below `## What the batch is` describes the earlier `index-v3` and `merge-patch-v1`. Those are pinned to the
+old index `ae2c1ac0…` and **must not be applied**.
+
+### The rebuild
+
+The active index moved to `acdb9897…` (waves 104–116 and the kaiju pair). The rebuild was read-only on it, into new
+files:
+- **Census:** `inventory/morph-census-v2.json`. 1,460 meshes, 938 with a body-type morph. The 14 new ones are backfill
+  meshes.
+- **S12 read of the 14:** read offline with the pinned 12.00 mapping (`s12-read/requests-02.json`, raw records in
+  `scripts/generated/shader-probe/s12-bodytype-refresh-v1/read-02`), built into `meshes-w152/` and copied into
+  `meshes/`. The copy added files only; it overwrote nothing.
+- **Proof:** `public/models/s12-bodytype-refresh-v1/morph-only-proof-v2.json`. 695 morph-only and 242 refused.
+  - All 14 new meshes are morph-only with no morph change: the backfill was already built from S12 sources.
+  - The 923 earlier rows are unchanged.
+- **`index-v4`:** the active index plus the same 179 repoints as `index-v3`. Skin pairs are equal.
+- **Coverage:** `coverage-v4.json`. 2,876 supported items: 1,135 S12 throughout, 885 mixed, 856 with no body-type mesh.
+  No existing item changed status.
+- **Patch:** `merge-patch-v2.json`, pinned to assets `acdb9897…` and skin pairs `f15a73a2…`.
+
+### Two ways to merge
+
+| | Garments only (recommended for production now) | With the S12 body |
+|---|---|---|
+| Repoints | 178 garments | 178 garments + `SK_Body_M` |
+| App/tool change | none | yes: the body path is pinned in 12 places (below) |
+| Production (masculine) | 83 garments change shape > 0.1 cm (28 > 1 cm) | the same, plus the body's `push_lower_torso` (0.79 cm, under 148 items) |
+| Masculine captures | pixel-identical to the reviewed full candidate in 64 of 64 shots (16 outfits × 4 cameras) | reviewed earlier: no new defect |
+| Dev-gated feminine | S12 garments on the live body. In the sampled outfits it is clean where the full candidate clipped at the dress hem (b2) and the tube top (b5). The cross-slot belt clips (b3, b4) remain. The live corset poke-through (a7) remains, because only the S12 body fixes it. | as reviewed in README section 6 |
+
+The full-body variant needs these changes in the live worktree, in the same merge:
+- `src/components/CharacterViewer.tsx`: the source-body URL.
+- `src/rig/LegacyBodyCoverage.ts`: the regex gate (otherwise legacy body coverage silently switches off).
+- `src/lib/reconstruction-status.ts`.
+- `tests/legacy-body-coverage.test.ts`.
+- `scripts/check-production.mjs` and `scripts/lib/reconstruction-assets.mjs`.
+- `scripts/shader-probe/check-skin-pair.mjs`, `check-source-fitting.mjs`, `check-hair-rig.mjs`, `check-source-coat-poses.mjs`, `build-companion-masks.mjs` and `catalog-audit.mjs`.
+
+The data part is `apply-merge-patch.py --body-url`. It rewrites `attachmentBody`, the body mesh entry and all 36 skin
+pairs' `body.url`.
+
+### Garments-only recipe
+
+Run in **Git Bash**, from the root checkout `E:\Coding\the-finals-outfit`, while idle:
+
+```bash
+W=.claude/worktrees/quizzical-hermann-33b51b
+A=public/models/reconstructed-assemblies-v1
+sha256sum $A/assets.json $A/skin-pairs.json   # must be acdb9897… and f15a73a2…
+python -I $W/scripts/body-types/apply-merge-patch.py $W/_docs/body-types-s12-refresh-2026-11-06/merge-patch-v2.json $A public/models/s12-bodytype-refresh-v1/merge-out-v2 --garments-only
+```
+
+What to expect, and how to swap the file in:
+- The tool prints `meshesRepointed 178`, `skinPairsRewritten 0`, `assetsSha256 5c36c6b6a08e7d59…`, and skin pairs
+  unchanged (`f15a73a2…`).
+- `public/models/s12-bodytype-refresh-v1/index-v4a/assets.json` is the same output, made earlier with the same command.
+- `git diff --no-index --stat $A/assets.json …/merge-out-v2/assets.json` shows 356 insertions and 356 deletions: a URL
+  and a sha256 line for each of the 178 meshes.
+- Swap it into place your usual way, after backing up the active `assets.json`.
+
+**Publish** the 178 GLBs listed in `publish-list-v2.txt` (126.8 MB, all under
+`public/models/s12-bodytype-refresh-v1/meshes/`). Publish only those, not the whole folder: it also holds 759 other
+rebuilds and the index folders.
+
+**Checks after the merge:**
+- The active `assets.json` hashes to `5c36c6b6…`.
+- The census on the merged index still finds 938 body-type meshes.
+- `morph-only-proof.py` against the merged index, into a new file: the 178 swapped garments now report no morph change,
+  because live is the S12 file. `SK_Body_M` and the held meshes still report changes.
+- The live worktree's usual test and production checks.
+- On 5174, the masculine football hoodie with the municipal pants (`sport-footballhoodie-jersey` +
+  `municipal-pants-nylon`) should match `review-v4a/s12/a8-masculine-change/masculine-*.png`.
+
 ## What the batch is
 
 - **Meshes:** `public/models/s12-bodytype-refresh-v1/meshes/` holds 923 S12 rebuilds. 179 of them are used: 178

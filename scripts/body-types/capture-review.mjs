@@ -35,7 +35,9 @@ const STAGE1_OUTFITS = {
   "tech-crop-top": { ...BASE, upperBody: "streetwear-techcroptop-nylon-ivada" },
 };
 export const OUTFITS = option("--outfits") ? JSON.parse(fs.readFileSync(option("--outfits"), "utf8")) : STAGE1_OUTFITS;
-const BODY_TYPES = ["masculine", "feminine", "androgynous"];
+// --body-types masculine,feminine picks a subset (default: all three).
+const BODY_TYPES = ["masculine", "feminine", "androgynous"]
+  .filter(type => (option("--body-types") ?? "masculine,feminine,androgynous").split(",").includes(type));
 // Waist cameras (front and back at hip height) look at waistbands and hems up close; --cameras picks a subset.
 const ALL_CAMERAS = { front: "0,1.25,1.9,0,1.25,0", side: "1.9,1.25,0,0,1.25,0", full: "0,0.95,4.3,0,0.95,0",
   waist: "0,1.0,1.5,0,1.0,0", waistback: "0,1.0,-1.5,0,1.0,0" };
