@@ -75,7 +75,8 @@ const server = await createServer({
   server: { port, strictPort: true, host: "127.0.0.1",
     // node_modules is a junction, so Vite sees package files (the UI font) at the release worktree's real path.
     fs: { allow: [root, realpathSync(path.join(root, "node_modules"))] },
-    watch: { ignored: ["**/_docs/**", "**/scripts/generated/**"] } },
+    // Vite full-reloads the page on any watched change, even a .py edit (6 Nov 2026: it killed a capture run mid-shot).
+    watch: { ignored: ["**/_docs/**", "**/scripts/generated/**", "**/scripts/body-types/**", "**/*.py"] } },
 });
 await server.listen();
 server.printUrls();
