@@ -108,14 +108,29 @@ read as intended.
 - Remaining: the step 6 edge artifacts on S12 feminine only. Their cause is the S12 body against garments the preview
   holds pre-S12 (jeans, dress).
 
+**Step 7 re-check (6 Nov, after the user's report, at their request).** The captures above load each outfit by link,
+so they never exercised the panel. This re-check did, headless at 1500×1100 on 5191: Lower Body to Active Shorts,
+then Feet to Toboggan Boots, through the panel's own search and tiles.
+- Body types: feminine, then masculine.
+- After each change, every source mesh kept the requested morph (`medium_female` / `medium_male`). The 12 → 13 → 15
+  meshes include the shorts' tights. There were 0 console errors, and `bodyType` stayed in the address.
+- Full-size legs render: clean. The fitted tights, the boots' sock tops and the hips follow the body.
+- Observation outside this change: the yellow Active Shorts show a thin light line along the hem. It is the same on
+  masculine, so it belongs to that item's edge, not to the body type.
+
 **Conclusion.** Season 12 shapes need one whole-catalogue refresh: the body and every garment together. Morph-only
 meshes can be swapped; reworked ones go through the S12 item refresh route. That refresh changes the active index,
 which the main session owns, so it needs coordinating with them.
 
 ## Recorded result
 
-- Tested revision/build: <pending>
-- User reported at: <pending>
-- Passed / failed / untested step numbers: <pending>
-- Readiness: pending user checks
-- Merge authorization: not given
+- Tested revision/build: `claude/gracious-kepler-2ea9a7` at aa6c2e6 (code), docs ad2efac. Servers 5191 (live) and
+  5192 (index-v5), restarted 6 Nov 12:21.
+- User reported at: 6 Nov 2026, about 13:00 London. Their words: "All steps pass".
+- The user added that they may be an unreliable narrator and asked the agent to double-check. The agent re-checked
+  step 7, the one step its captures had not covered (see Agent results); it passed.
+- Step 8 (in-game) can only be checked in the user's own client. The agent cannot verify it.
+- Passed / failed / untested step numbers: 1-8 passed as reported by the user. No failures.
+- Readiness: user checks passed; stage 1 is ready for review as a dev-gated change. The S12 shapes are not part of it
+  (whole-catalogue refresh, separate task).
+- Merge authorization: not given.
