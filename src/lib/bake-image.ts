@@ -18,6 +18,79 @@ export function bakeRect(min: [number, number], max: [number, number], epsilon =
   return { offset: [-min[0] * scale[0], -min[1] * scale[1]] as [number, number], scale };
 }
 
+/** One baked image of a section: the whole UV tile it covers and where a UV lands in it (as in bakeRect). */
+export interface UvTileBake { tile: [number, number]; offset: [number, number]; scale: [number, number] }
+
+/**
+ * How a section's UV0 layout splits into baked images. Many garments place their islands in different whole UV tiles
+ * (the long coat spans u -1.7 to 2.7) and wrap one texture over them. Fitting that whole span into one square left each
+ * tile about 460 of 2048 texels across. Instead each tile gets its own image, at one texel per texel of the tile:
+ * - A triangle belongs to its UV island (triangles joined through shared vertices), and an island to the tile under
+ *   the centre of its bounds. An island that pokes slightly past its tile widens that tile's image to cover it.
+ * - `tileOf` gives each triangle's image, in the order of `indices` (3 vertex indices per triangle); it is null when
+ *   there is one image, which keeps the single-image bake exactly as bakeRect placed it.
+ * - The split is refused, with a note, when one tile's image would also cover another tile's islands (each image is
+ *   drawn from the whole section, and the bake clips by position), or when there are more than `maxTiles` tiles.
+ * `uvs` holds u, v for each vertex index.
+ */
+export function uvTiles(indices: ArrayLike<number>, uvs: ArrayLike<number>, maxTiles = 16, epsilon = 1e-4):
+  { tiles: UvTileBake[]; tileOf: Uint16Array | null; note?: string } {
+  const triangles = Math.floor(indices.length / 3);
+  const parent = new Map<number, number>();
+  const find = (v: number): number => {
+    let root = v;
+    while (parent.get(root) !== root) root = parent.get(root)!;
+    for (let x = v; x !== root;) { const next = parent.get(x)!; parent.set(x, root); x = next; }
+    return root;
+  };
+  for (let k = 0; k < triangles * 3; k++) if (!parent.has(indices[k])) parent.set(indices[k], indices[k]);
+  for (let t = 0; t < triangles; t++) {
+    const a = find(indices[t * 3]);
+    for (let c = 1; c < 3; c++) { const b = find(indices[t * 3 + c]); if (b !== a) parent.set(b, a); }
+  }
+  const islands = new Map<number, { min: [number, number]; max: [number, number] }>();
+  const min: [number, number] = [Infinity, Infinity], max: [number, number] = [-Infinity, -Infinity];
+  for (const v of parent.keys()) {
+    const root = find(v), u = uvs[v * 2], w = uvs[v * 2 + 1];
+    const island = islands.get(root) ?? { min: [Infinity, Infinity], max: [-Infinity, -Infinity] };
+    island.min = [Math.min(island.min[0], u), Math.min(island.min[1], w)];
+    island.max = [Math.max(island.max[0], u), Math.max(island.max[1], w)];
+    islands.set(root, island);
+    min[0] = Math.min(min[0], u); min[1] = Math.min(min[1], w); max[0] = Math.max(max[0], u); max[1] = Math.max(max[1], w);
+  }
+  const single = (note?: string) => {
+    const rect = triangles ? bakeRect(min, max, epsilon) : { offset: [0, 0] as [number, number], scale: [1, 1] as [number, number] };
+    const tile: [number, number] = triangles ? [Math.floor((min[0] + max[0]) / 2), Math.floor((min[1] + max[1]) / 2)] : [0, 0];
+    return { tiles: [{ tile, ...rect }], tileOf: null, ...(note ? { note } : {}) };
+  };
+  const tileOfIsland = new Map<number, string>(), groups = new Map<string, { tile: [number, number]; min: [number, number]; max: [number, number] }>();
+  for (const [root, island] of islands) {
+    const tile: [number, number] = [0, 1].map(i => Math.floor((island.min[i] + island.max[i]) / 2)) as [number, number];
+    const key = `${tile[0]},${tile[1]}`;
+    tileOfIsland.set(root, key);
+    const group = groups.get(key) ?? { tile, min: [tile[0], tile[1]], max: [tile[0] + 1, tile[1] + 1] };
+    for (const i of [0, 1]) { group.min[i] = Math.min(group.min[i], island.min[i]); group.max[i] = Math.max(group.max[i], island.max[i]); }
+    groups.set(key, group);
+  }
+  if (groups.size <= 1) return single();
+  if (groups.size > maxTiles) return single(`${groups.size} UV tiles (more than ${maxTiles}): baked as one image`);
+  // Tiles in row order (v, then u), so the first image is the lowest, leftmost tile.
+  const ordered = [...groups.entries()].sort(([, a], [, b]) => a.tile[1] - b.tile[1] || a.tile[0] - b.tile[0]);
+  for (const [key, group] of ordered) for (const [root, island] of islands) {
+    if (tileOfIsland.get(root) === key) continue;
+    const inside = [0, 1].every(i => island.max[i] > group.min[i] + epsilon && island.min[i] < group.max[i] - epsilon);
+    if (inside) return single(`UV tile ${key} would also cover another tile's islands: baked as one image`);
+  }
+  const ordinal = new Map(ordered.map(([key], i) => [key, i]));
+  const tileOf = new Uint16Array(triangles);
+  for (let t = 0; t < triangles; t++) tileOf[t] = ordinal.get(tileOfIsland.get(find(indices[t * 3]))!)!;
+  const tiles = ordered.map(([, group]) => {
+    const scale = [0, 1].map(i => 1 / (group.max[i] - group.min[i])) as [number, number];
+    return { tile: group.tile, offset: [0, 1].map(i => -group.min[i] * scale[i] || 0) as [number, number], scale };
+  });
+  return { tiles, tileOf };
+}
+
 /**
  * Seam padding. Each pass fills every uncovered texel that touches a covered one with the average of its covered
  * 8-neighbours, so bilinear filtering and mip levels at UV island edges read surface colour instead of the clear

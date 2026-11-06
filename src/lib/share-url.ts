@@ -1,11 +1,17 @@
 import { decodeOutfit, type Outfit } from "./outfit";
 import { getBrowseItem } from "./browse-catalog";
+import { derivedFromCatalog, getCatalogData } from "./catalog";
 import type { Slot } from "./slots";
-import registry from "../data/share-item-ids.json";
 
 export type ShareStyle = "short" | "names";
-const itemCodes = new Map(registry.items.map((id, index) => [id, index.toString(36)]));
-const slotCodes = new Map(registry.slots.map((slot, index) => [slot, index.toString(36)]));
+const shareCodes = derivedFromCatalog(() => {
+  const registry = getCatalogData().shareIds;
+  return {
+    registry,
+    items: new Map(registry.items.map((id, index) => [id, index.toString(36)])),
+    slots: new Map(registry.slots.map((slot, index) => [slot, index.toString(36)])),
+  };
+});
 const nameSlug = (name: string) => name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
   .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "item";
 
@@ -14,6 +20,7 @@ const nameSlug = (name: string) => name.normalize("NFKD").replace(/[\u0300-\u036
 export function buildShareUrl(currentUrl: string, build: Partial<Record<Slot, string | null>>,
   style: ShareStyle = "short"): string {
   const url = new URL(currentUrl);
+  const { items: itemCodes, slots: slotCodes } = shareCodes();
   const parts = Object.entries(build).flatMap(([slot, id]) => {
     if (!id) return [];
     const item = itemCodes.get(id), category = slotCodes.get(slot);
@@ -30,6 +37,7 @@ export function buildShareUrl(currentUrl: string, build: Partial<Record<Slot, st
 
 function decodeCodes(code: string, names: boolean): Outfit {
   if (!code.startsWith("2.") || code.length > 12000) throw new Error("Unsupported outfit link");
+  const { registry } = shareCodes();
   const parts = code.slice(2) ? code.slice(2).split(".") : [];
   if (parts.length > registry.slots.length) throw new Error("Too many outfit items");
   const slots: Outfit["slots"] = {};

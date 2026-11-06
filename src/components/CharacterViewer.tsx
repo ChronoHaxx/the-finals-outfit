@@ -1,15 +1,18 @@
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
 import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
-import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, MissingSourceDefinitionError, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
+import { bodyTypePreview, type BodyTypePreview } from "../rig/BodyTypePreview";
+import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
+import { AnimationControls, AnimationFrameDriver, useRigAnimator } from "./AnimationControls";
+import type { RigAnimator } from "../rig/RigAnimator";
 import MeshInspector from "./MeshInspector";
 import OutfitExportPanel, { type ExportContext } from "./OutfitExportPanel";
 import { createGltfLoader } from "../rig/loaders";
@@ -22,7 +25,9 @@ import { buildShareUrl } from "../lib/share-url";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { setPreviewScene } from "../lib/viewer-handle";
 import { SLOTS, type Slot } from "../lib/slots";
+import { getDownloadProgress, subscribeDownloadProgress } from "../lib/load-progress";
 import type { Item } from "../lib/item";
+import { AUTOMATED } from "../lib/automation";
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
 const NAIL_MASK_URL = modelUrl("models/decals/_shared/nailmask.webp");
@@ -49,6 +54,29 @@ interface DevParams {
   isolate?: boolean;
   temporal?: boolean;
   inspect: boolean;
+  // Capture-only switch for the gated body-type preview (?bodyType=masculine): one of
+  // BODY_TYPE_PREVIEWS, applied before any source staging. Production keeps it off; the
+  // activation path is the "bodyType" field in the active index's assets.json.
+  bodyType?: "masculine";
+  // Capture-only switch for the gated hair TagOverride precedence (?hairPrecedence=agreeing-orderings
+  // or ?hairPrecedence=hide-wins): the gated precedence rule of SourceResolveOptions. Production keeps
+  // it off; the activation path is the "hairOverridePrecedence" field in the active index's assets.json.
+  hairPrecedence?: "agreeing-orderings" | "hide-wins";
+  // Capture-only switch for the gated mirrored attachment scale (?mirroredScale=nonzero, w45-resolver):
+  // accept finite nonzero authored LocalScale components on attached parts for this capture only.
+  // Production keeps it off; the activation path is the "attachmentMirroredScale" field in the
+  // active index's assets.json.
+  mirroredScale?: "nonzero";
+  // Capture-only switch for the gated inert merged-part transforms (?mergedTransforms=inert,
+  // w45-resolver): draw eligible nonattached, mergeable skeletal parts with the identity placement
+  // for this capture only. Production keeps it off; the activation path is the
+  // "mergedPartTransforms" field in the active index's assets.json.
+  mergedTransforms?: "inert";
+  // Capture-only switch for the gated activated effect parts (?activatedEffectParts=drop, w61):
+  // render nothing for a part whose only renderable is an activated effect, for this capture only,
+  // so the item's real meshes render. Production keeps it off; the activation path is the
+  // "activatedEffectParts" field in the active index's assets.json.
+  activatedEffectParts?: "drop";
 }
 function readDevParams(): DevParams {
   if (typeof window === "undefined")
@@ -84,6 +112,18 @@ function readDevParams(): DevParams {
     // ?inspect=1 mounts the DEV MeshInspector. Unlike the tuner it takes its own
     // column rather than overlaying the canvas, so the model is never occluded.
     inspect: p.get("inspect") === "1",
+    // ?bodyType=masculine gates the masculine preview context on for this capture only.
+    bodyType: p.get("bodyType") === "masculine" ? "masculine" : undefined,
+    // ?hairPrecedence=agreeing-orderings or ?hairPrecedence=hide-wins gates that hair precedence
+    // rule on for this capture only.
+    hairPrecedence: p.get("hairPrecedence") === "agreeing-orderings" || p.get("hairPrecedence") === "hide-wins"
+      ? p.get("hairPrecedence") as "agreeing-orderings" | "hide-wins" : undefined,
+    // ?mirroredScale=nonzero gates the mirrored attachment scale on for this capture only.
+    mirroredScale: p.get("mirroredScale") === "nonzero" ? "nonzero" : undefined,
+    // ?mergedTransforms=inert gates the inert merged-part transforms on for this capture only.
+    mergedTransforms: p.get("mergedTransforms") === "inert" ? "inert" : undefined,
+    // ?activatedEffectParts=drop gates the activated-effect-part drop on for this capture only.
+    activatedEffectParts: p.get("activatedEffectParts") === "drop" ? "drop" : undefined,
   };
 }
 const DEV = readDevParams();
@@ -94,6 +134,14 @@ type RigHarness = { __rigIdle?: boolean; __sourceAssembly?: SourceOutfit };
 const rigHarness = () => window as unknown as RigHarness;
 // Cached selections settle almost immediately; only announce work that is still running after this.
 const BUSY_INDICATOR_DELAY_MS = 150;
+
+// The bytes the current pass has downloaded (load-progress.ts): "12.3 / 45.6 MB" while the character loads, whose
+// files are all requested at once, and "12.3 MB" for an outfit, whose files become known only as each item is
+// staged (a total that keeps catching up would read as finished). Nothing until something has been announced.
+const megabytes = (bytes: number) => (bytes / 1048576).toFixed(1);
+function formatDownload(loaded: number, total: number): string | null {
+  return total > 0 ? `${megabytes(Math.min(loaded, total))} / ${megabytes(total)} MB` : null;
+}
 
 const sourcePreviewKey = (id: string, item: SourceOutfit['items'][string], skinParameters: SourceMaterialParameters[] = []) =>
   `${id}|parts:${JSON.stringify(item.parts)}|parameters:${JSON.stringify([item.materialParameters, skinParameters])}`;
@@ -124,6 +172,7 @@ function toRigDecal(decal: NonNullable<Item["decal"]>): RigDecal {
       maskUrl: l.maskPath ? modelUrl(l.maskPath) : undefined,
       surfaceUrl: l.surfacePath ? modelUrl(l.surfacePath) : undefined,
       surfaceOverride: l.surfaceOverride,
+      normalOverride: l.normalOverride,
       uv: l.uv,
       uvScale: l.uvScale,
       uvLayout: l.uvLayout,
@@ -227,14 +276,17 @@ function makeSoftboxScene(): THREE.Scene {
 
 // Hands the export panel (outside the Canvas) the live renderer and camera.
 // Publishes the scene for the share button's preview render while the outfit is fully loaded.
-function PreviewBridge({ root, theme, active }: { root: THREE.Object3D; theme: SceneTheme; active: boolean }) {
+function PreviewBridge({ root, theme, active, animator }: {
+  root: THREE.Object3D; theme: SceneTheme; active: boolean; animator: RigAnimator | null;
+}) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   useEffect(() => {
     if (!active) return;
-    setPreviewScene({ gl, scene, root, backdrop: THEME_BACKDROP[theme] });
+    setPreviewScene({ gl, scene, root, backdrop: THEME_BACKDROP[theme],
+      stillPose: animator ? draw => animator.withStillPose(draw) : undefined });
     return () => setPreviewScene(null);
-  }, [gl, scene, root, theme, active]);
+  }, [gl, scene, root, theme, active, animator]);
   return null;
 }
 
@@ -361,8 +413,12 @@ export default function CharacterViewer() {
   const [missingFittingData, setMissingFittingData] = useState(false);
   const [retryAttempt, setRetryAttempt] = useState(0);
   const [theme, setTheme] = useState<SceneTheme>("studio");
+  // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden).
+  const animator = useRigAnimator();
+  const animationMoving = useCallback(() => !!animator?.state.moving, [animator]);
   const exportContext = useRef<ExportContext | null>(null);
   const build = useBuildStore((s) => s.build);
+  const equippedCount = SLOTS.filter((slot) => build[slot]).length;
   const prev = useRef<Partial<Record<Slot, string | null>>>({});
   // The item whose companion decal is installed for each slot (null: none).
   const companions = useRef<Partial<Record<Slot, string | null>>>({});
@@ -372,8 +428,17 @@ export default function CharacterViewer() {
   const [busy, setBusy] = useState(true);
   const [showBusy, setShowBusy] = useState(false);
   const operation = useRef(0);
+  // Download counters when the current pass began: the indicator shows this pass's bytes only.
+  const progressBase = useRef(getDownloadProgress());
+  const progress = useSyncExternalStore(subscribeDownloadProgress, getDownloadProgress);
+  const download = formatDownload(progress.loaded - progressBase.current.loaded, progress.total - progressBase.current.total);
+  const downloaded = progress.loaded > progressBase.current.loaded
+    ? `${megabytes(progress.loaded - progressBase.current.loaded)} MB` : null;
+  const downloadFraction = progress.total > progressBase.current.total
+    ? (progress.loaded - progressBase.current.loaded) / (progress.total - progressBase.current.total) : 0;
   const beginOperation = useCallback(() => {
     const id = ++operation.current;
+    progressBase.current = getDownloadProgress();
     setBusy(true);
     rigHarness().__rigIdle = false;
     return id;
@@ -455,6 +520,64 @@ export default function CharacterViewer() {
           return;
         }
       }
+      // The gated body-type context (BodyTypePreview.ts): the capture-only dev switch, or the
+      // "bodyType" field a preview index sets in its assets.json — the field the activation will
+      // set in the active index. The active index carries none, so the default stays off.
+      let bodyType: BodyTypePreview | undefined;
+      try {
+        const selected = DEV.bodyType
+          ?? (DEV.reconstructed && DEV.sourceAssembly
+            ? (await loadSourceAssemblyAssets(modelUrl("models/reconstructed-assemblies-v1"))).bodyType
+            : undefined);
+        bodyType = bodyTypePreview(selected);
+      } catch (e) {
+        if (cancelled) return;
+        console.error(e);
+        setError("Couldn’t load the body-type preview context.");
+        return;
+      }
+      // The gated hair TagOverride precedence (w43-hair-precedence): the capture-only dev switch,
+      // or the "hairOverridePrecedence" field a preview index sets in its assets.json — the field
+      // the activation will set in the active index. The active index carries none, so the default
+      // stays off and the resolver refuses exactly as before.
+      let hairPrecedence: HairOverridePrecedence | undefined;
+      try {
+        hairPrecedence = hairOverridePrecedenceGate(DEV.hairPrecedence
+          ?? (DEV.reconstructed && DEV.sourceAssembly
+            ? (await loadSourceAssemblyAssets(modelUrl("models/reconstructed-assemblies-v1"))).hairOverridePrecedence
+            : undefined));
+      } catch (e) {
+        if (cancelled) return;
+        console.error(e);
+        setError("Couldn’t load the hair override precedence context.");
+        return;
+      }
+      // The gated rig-part resolver behaviour (w45-resolver, w61): the capture-only dev switches, or
+      // the "attachmentMirroredScale" / "mergedPartTransforms" / "activatedEffectParts" fields a
+      // preview index sets in its assets.json — the fields the activation will set in the active
+      // index. The active index carries none, so all stay off and the resolver refuses exactly as
+      // before.
+      let resolverGates: { attachmentMirroredScale?: string; mergedPartTransforms?: string; activatedEffectParts?: string };
+      try {
+        const index = DEV.reconstructed && DEV.sourceAssembly
+          ? await loadSourceAssemblyAssets(modelUrl("models/reconstructed-assemblies-v1")) : undefined;
+        resolverGates = {
+          attachmentMirroredScale: DEV.mirroredScale ?? index?.attachmentMirroredScale,
+          mergedPartTransforms: DEV.mergedTransforms ?? index?.mergedPartTransforms,
+          activatedEffectParts: DEV.activatedEffectParts ?? index?.activatedEffectParts,
+        };
+        attachmentMirroredScaleGate(resolverGates.attachmentMirroredScale);
+        mergedPartTransformsGate(resolverGates.mergedPartTransforms);
+        activatedEffectPartsGate(resolverGates.activatedEffectParts);
+      } catch (e) {
+        if (cancelled) return;
+        console.error(e);
+        setError("Couldn’t load the rig resolver gate context.");
+        return;
+      }
+      // Before any source staging: the context's morph and socket offsets apply from the
+      // first equip, and its tag resolves every outfit below as in game.
+      rig.setBodyTypePreview(bodyType);
       const completeCoat = !!build.outerwear && supported.has(build.outerwear);
       const eff = completeCoat ? build : effectiveBuild(build);
       let assembly: SourceOutfit | undefined;
@@ -463,14 +586,16 @@ export default function CharacterViewer() {
         try {
           const ids = Object.values(eff).filter((id): id is string => !!id);
           const sourceUrl = modelUrl("models/reconstructed-assembly-v2");
-          assembly = await loadSourceOutfit(ids, sourceUrl);
+          assembly = await loadSourceOutfit(ids, sourceUrl, bodyType ? [bodyType.tag] : [],
+            { hairOverridePrecedence: hairPrecedence });
           sourceShirtConflict = !!completeCoat && assembly.slotConflicts.some(c =>
             c.slot === "EBodySlot::BodyUpper" && c.items.includes(build.outerwear!) && c.items.includes(build.upperBody!));
           if (sourceShirtConflict) {
             // The coat includes its authored top and occupies BodyUpper. Keep the
             // user's shirt selection for removal of the coat, but it contributes
             // neither geometry nor active tags while that complete coat is worn.
-            assembly = await loadSourceOutfit(ids.filter(id => id !== build.upperBody), sourceUrl);
+            assembly = await loadSourceOutfit(ids.filter(id => id !== build.upperBody), sourceUrl,
+              bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence });
           }
           if (cancelled) return;
         } catch (e) {
@@ -530,7 +655,8 @@ export default function CharacterViewer() {
       const eyes = eff.eyes && faceCosmetics.has(eff.eyes) ? eff.eyes : undefined;
       // A supported makeup or body paint keeps its head paint on the decal path; only its eyelash rule restages the face.
       const cosmeticRule = faceCosmeticRule(faceCosmetics, [eyes, eff.blush, eff.bodyPaint]);
-      if (assembly && requestedFace && faceItem?.model?.gltfPath && (requestedHair || !eff.hair)) {
+      // A face without a legacy model takes this path too; it renders only when the index holds its legacy-free pair (w91-head-skin).
+      if (assembly && requestedFace && faceItem && (requestedHair || !eff.hair)) {
         appearanceSlots.add('hair'); appearanceSlots.add('face');
         if (eyes) appearanceSlots.add('eyes');
         try {
@@ -545,13 +671,19 @@ export default function CharacterViewer() {
             const changes: RigItem[] = [], removals: Slot[] = [];
             if (prev.current.hair !== hairKey) {
               if (requestedHair) changes.push({ id: eff.hair!, slot: 'hair', url: '',
-                sourceParts: await loadSourceRigParts(requestedHair, assetsUrl),
+                sourceParts: await loadSourceRigParts(requestedHair, assetsUrl, resolverGates),
                 sourceSurfaceView: DEV.debugAlbedo ? 'baseColor' : DEV.surfaceView });
               else removals.push('hair');
             }
-            if (prev.current.face !== faceKey) changes.push({ id: faceItem.id, slot: 'face', url: modelUrl(faceItem.model.gltfPath),
-              sourceSkinPair: pair, sourceSurfaceView: DEV.debugAlbedo ? 'baseColor' : DEV.surfaceView,
-              bodySkin: faceItem.model.bodySkin ? { colorMultiply: faceItem.model.bodySkin.colorMultiply,
+            // (w128) A pair that records attached statics (a face's skull) brings their rig parts; none otherwise.
+            const faceAttachments = pair.attachedParts?.length
+              ? await loadSourceSkinPairAttachments(requestedFace, pair, assetsUrl, resolverGates) : undefined;
+            if (cancelled) return;
+            if (prev.current.face !== faceKey) changes.push({ id: faceItem.id, slot: 'face',
+              url: faceItem.model?.gltfPath ? modelUrl(faceItem.model.gltfPath) : '',
+              sourceSkinPair: pair, ...(faceAttachments?.length ? { sourceParts: faceAttachments } : {}),
+              sourceSurfaceView: DEV.debugAlbedo ? 'baseColor' : DEV.surfaceView,
+              bodySkin: faceItem.model?.bodySkin ? { colorMultiply: faceItem.model.bodySkin.colorMultiply,
                 roughness: faceItem.model.bodySkin.roughness,
                 texUrl: faceItem.model.bodySkin.texPath ? modelUrl(faceItem.model.bodySkin.texPath) : undefined } : undefined });
             if (cancelled) return;
@@ -623,7 +755,8 @@ export default function CharacterViewer() {
           try {
             const parameterOutfit = hair === eff.hair ? assembly : await loadSourceOutfit(
               [...Object.entries(eff).filter(([slot]) => slot !== 'hair').map(([, id]) => id), hair]
-                .filter((id): id is string => !!id), modelUrl('models/reconstructed-assembly-v2'));
+                .filter((id): id is string => !!id), modelUrl('models/reconstructed-assembly-v2'),
+              bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence });
             if (cancelled) return;
             skinParameters = parameterOutfit.materialParameters.filter(p => p.itemId === hair || cosmeticRule(p));
           } catch (e) {
@@ -643,7 +776,24 @@ export default function CharacterViewer() {
             : id;
         if (prev.current[slot] === key) continue;
         const item = id ? getItemById(id) : undefined;
-        if (item && (item.model?.gltfPath || sourceItem)) {
+        // A face without a legacy model renders only through its legacy-free source skin pair (w91-head-skin); with no
+        // pair in the index it stays the empty slot it was.
+        let legacyFreePair: Awaited<ReturnType<typeof loadSourceSkinPair>>;
+        if (item && !item.model?.gltfPath && !sourceItem && skinCandidate) {
+          try {
+            legacyFreePair = await loadSourceSkinPair(item.id, skinCandidate,
+              modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection);
+          } catch (e) {
+            if (cancelled) return;
+            console.error(e);
+            setError("Couldn’t load the selected preview. Some items may still show the previous selection.");
+            delete prev.current[slot];
+            equipFailed = true;
+            continue;
+          }
+          if (cancelled) return;
+        }
+        if (item && (item.model?.gltfPath || sourceItem || legacyFreePair)) {
           try {
             // TODO(M4-dye): override material.regions[].tint from build dyes here.
             const base = item.model ? toRigMaterial(item.model) : undefined;
@@ -661,16 +811,20 @@ export default function CharacterViewer() {
                 ? getItemById(item.model.underLayer)?.model?.gltfPath
                 : undefined;
             const sourceParts = sourceItem ? await loadSourceRigParts(sourceItem,
-              modelUrl("models/reconstructed-assemblies-v1")) : undefined;
-            const sourceSkinPair = skinCandidate ? await loadSourceSkinPair(item.id, skinCandidate,
-              modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection) : undefined;
+              modelUrl("models/reconstructed-assemblies-v1"), resolverGates) : undefined;
+            const sourceSkinPair = legacyFreePair ?? (skinCandidate ? await loadSourceSkinPair(item.id, skinCandidate,
+              modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection) : undefined);
+            // (w128) A pair that records attached statics (a face's skull) brings their rig parts instead.
+            const pairAttachments = sourceSkinPair?.attachedParts?.length && skinCandidate
+              ? await loadSourceSkinPairAttachments(skinCandidate, sourceSkinPair,
+                  modelUrl("models/reconstructed-assemblies-v1"), resolverGates) : undefined;
             await rig.equip({
               id: item.id,
               slot,
-              url: item.model?.gltfPath ? modelUrl(item.model.gltfPath) : sourceParts![0]?.url ?? "",
+              url: item.model?.gltfPath ? modelUrl(item.model.gltfPath) : sourceParts?.[0]?.url ?? "",
               sourceMeshUrl: DEV.reconstructed && DEV.sourceMeshes && RECOVERED_ITEMS.includes(item.id)
                 ? modelUrl("models/reconstructed-meshes-v2/SK_Casual_LongCoat_M.glb") : undefined,
-              sourceParts,
+              sourceParts: pairAttachments?.length ? pairAttachments : sourceParts,
               sourceSkinPair,
               sourceSurfaceView: DEV.debugAlbedo ? "baseColor" : DEV.surfaceView,
               headWraps,
@@ -767,11 +921,13 @@ export default function CharacterViewer() {
         if (SLOTS.some(slot => actual[slot] !== eff[slot])) {
           try {
             const ids = Object.values(actual).filter((id): id is string => !!id);
-            assembly = await loadSourceOutfit(ids, modelUrl("models/reconstructed-assembly-v2"));
+            assembly = await loadSourceOutfit(ids, modelUrl("models/reconstructed-assembly-v2"),
+              bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence });
             sourceShirtConflict = !!activeCoat && assembly.slotConflicts.some(c =>
               c.slot === "EBodySlot::BodyUpper" && c.items.includes(activeCoat) && c.items.includes(actual.upperBody!));
             if (sourceShirtConflict) assembly = await loadSourceOutfit(ids.filter(id => id !== actual.upperBody),
-              modelUrl("models/reconstructed-assembly-v2"));
+              modelUrl("models/reconstructed-assembly-v2"), bodyType ? [bodyType.tag] : [],
+              { hairOverridePrecedence: hairPrecedence });
             if (cancelled) return;
           } catch (e) {
             if (cancelled) return;
@@ -831,6 +987,7 @@ export default function CharacterViewer() {
 
   return (
     <div
+      data-viewer=""
       className="relative h-full w-full"
       style={{ background: THEME_BACKGROUND[theme] }}
     >
@@ -859,8 +1016,9 @@ export default function CharacterViewer() {
         {theme === "studio" ? <StudioLights /> : <LobbyLights />}
         <primitive object={rig.root} />
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
-        <PreviewBridge root={rig.root} theme={theme} active={ready && !busy} />
-        {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview />}
+        <PreviewBridge root={rig.root} theme={theme} active={ready && !busy} animator={animator} />
+        {animator && <AnimationFrameDriver animator={animator} />}
+        {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving} />}
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
           enablePan
@@ -870,13 +1028,27 @@ export default function CharacterViewer() {
           makeDefault
         />
       </Canvas>
+      {/* Viewfinder corners. Decorative, and kept out of automated canvas captures. */}
+      {!AUTOMATED && <div aria-hidden="true" className="brackets pointer-events-none absolute inset-3 z-[5]"
+        style={{ "--b": theme === "studio" ? "rgb(9 9 11 / 0.32)" : "rgb(242 239 233 / 0.32)" } as CSSProperties} />}
+      {/* No backdrop-filter on anything over the canvas: the canvas repaints every frame, so a
+          blur behind it would be recomputed every frame too — a real cost on phones. */}
       <button
+        type="button"
         onClick={() => setTheme((t) => (t === "studio" ? "lobby" : "studio"))}
         title="Toggle scene lighting"
-        className="absolute right-2 top-2 z-10 rounded-md bg-black/40 px-2.5 py-1 text-xs font-medium text-white backdrop-blur transition hover:bg-black/60"
+        className="hud absolute right-3 top-3 z-10 flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950"
       >
+        <span aria-hidden="true" className={`size-2.5 border border-fg/60 ${theme === "studio" ? "bg-[#dee4eb]" : "bg-[#1b2740]"}`} />
         {theme === "studio" ? "Studio" : "Lobby"}
       </button>
+      {/* One right-hand column under the theme button, so the animation controls and the developer export panel
+          stack instead of overlapping. It spans to the bottom so the emote picker can fit the viewer's height; only
+          its children take pointer events, so the canvas behind the empty part still orbits. */}
+      <div className="pointer-events-none absolute bottom-3 right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto">
+        {animator && <AnimationControls animator={animator} rig={rig} ready={ready} busy={busy} studio={theme === "studio"} />}
+        {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} animator={animator} />}
+      </div>
       {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && (
         <div className="absolute left-2 top-2 z-10 rounded-md bg-black/70 px-3 py-2 text-xs text-white">
           <span className="mb-1 block">Recovered shader · preview lighting</span>
@@ -896,27 +1068,47 @@ export default function CharacterViewer() {
         </div>
       )}
       {DEV.tune && ready && <MaterialTuner rig={rig} />}
-      {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} />}
       {!ready && !error && (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center text-sm text-neutral-500">
-          Loading model…
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
+          <div className="flex flex-col items-center gap-3">
+            <span className={`hud ${theme === "studio" ? "text-ink-700" : "text-fg-muted"}`}>Loading contestant</span>
+            {/* Download progress (load-progress.ts): a sweep until the first sizes are known, then the fraction. */}
+            <span className="relative block h-0.5 w-32 overflow-hidden bg-ink-950/15">
+              {downloadFraction > 0
+                ? <span className="absolute inset-y-0 left-0 bg-finals transition-[width] duration-200"
+                    style={{ width: `${Math.round(Math.min(1, downloadFraction) * 100)}%` }} />
+                : <span className="absolute inset-y-0 left-0 w-2/5 animate-sweep bg-finals" />}
+            </span>
+            <span className={`hud tabular-nums ${theme === "studio" ? "text-ink-700" : "text-fg-muted"}`}>
+              {download ?? "\u00a0" /* keeps the line height */}
+            </span>
+          </div>
         </div>
       )}
-      {/* Bottom stack: the loading pill sits above any error, so a failed slot never hides
-          the status of the pass that is still running. */}
-      <div className="pointer-events-none absolute inset-x-2 bottom-2 z-10 flex flex-col items-center gap-2">
+      {/* Bottom-left "lower third", as on a broadcast. The loading tag sits above any error, so a
+          failed slot never hides the status of the pass that is still running. */}
+      <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex flex-col items-start gap-2">
         <div role="status" aria-live="polite">
           {!ready && !error ? <span className="sr-only">Loading model…</span> : showBusy && (
-            <span className="flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white shadow-sm backdrop-blur">
-              <span aria-hidden="true" className="h-3 w-3 shrink-0 rounded-full border-2 border-white/30 border-t-white motion-safe:animate-spin" />
-              Loading outfit…
+            <span className="flex h-8 items-center gap-2.5 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3 text-fg">
+              <span aria-hidden="true" className="relative block h-0.5 w-8 overflow-hidden bg-fg/20">
+                <span className="absolute inset-y-0 left-0 w-2/5 animate-sweep bg-finals" />
+              </span>
+              <span className="hud">Loading outfit…</span>
+              {downloaded && <span className="hud tabular-nums text-fg-dim">{downloaded}</span>}
             </span>
           )}
         </div>
+        {!AUTOMATED && ready && !showBusy && !error && (
+          <span aria-hidden="true" className="flex h-8 animate-fade items-center gap-2 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3">
+            <span className="hud text-fg-dim">Contestant</span>
+            <span className="hud text-fg">Medium · {equippedCount} {equippedCount === 1 ? "piece" : "pieces"}</span>
+          </span>
+        )}
         {error && (
-          <div role="alert" className="pointer-events-auto w-full rounded-lg bg-neutral-950/90 p-3 text-center text-sm text-red-300">
-            <p>{error}</p>
-            {!missingFittingData && <button className="mt-2 rounded bg-neutral-700 px-3 py-1.5 text-white hover:bg-neutral-600"
+          <div role="alert" className="pointer-events-auto flex w-full flex-wrap items-center gap-x-4 gap-y-2 border-l-2 border-finals bg-ink-950/95 px-3 py-2.5 text-sm text-fg">
+            <p className="flex-1">{error}</p>
+            {!missingFittingData && <button type="button" className="hud h-8 shrink-0 bg-fg px-3 text-ink-950 hover:bg-white"
               onClick={() => {
                 if (ready) setRetryAttempt(attempt => attempt + 1);
                 else changePreviewOption("isolate", DEV.isolate ? "1" : "0");

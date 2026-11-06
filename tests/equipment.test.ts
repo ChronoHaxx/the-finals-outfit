@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import './helpers/load-catalog';
 import { getItemById } from '../src/lib/catalog';
 import { equipmentConflicts, resolveEquipmentSlots } from '../src/lib/equipment';
 import { migrateOutfit } from '../src/lib/outfit-slots';
@@ -15,8 +16,12 @@ const companions = { face: 'head-face-09-base', hair: 'hairs-afrofade', eyes: 'b
   feet: 'casual-tallsneakers-canvas', nailPolish: 'bodycosmetics-nails-crosses-01' };
 const store = () => useBuildStore.getState();
 
-test('source table covers all 23 dual body garments; metadata and catalog IDs agree', () => {
-  assert.equal(evidence.fullBody.length, 23);
+test('source table covers all 38 dual body garments; metadata and catalog IDs agree', () => {
+  // 27 since the Season 11 import (18 Oct 2026): a short dress, the NR suit and two retro robot torsos.
+  // 29 since the Season 12 import (28 Oct 2026): the two tactical dresses.
+  // 38 since the classifier-gap backfill (6 Nov 2026): the bunny, frog, tanuki and bigfoot costumes, the kaiju, the two
+  // Japanese robots and the two robotic skeletons (game slot tag BodyUpper; the June import had skipped them).
+  assert.equal(evidence.fullBody.length, 38);
   assert.match(evidence.inputSha256, /^[a-f0-9]{64}$/);
   const slots = evidence.slotsByItem as Record<string, string[]>;
   for (const id of evidence.fullBody) {
@@ -79,6 +84,28 @@ test('ordinary layered clothes and unrelated cosmetics remain; invalid links can
   assert.deepEqual(resolveEquipmentSlots(invalid).slots, invalid, 'migration is explicit and separate');
   assert.deepEqual(resolveEquipmentSlots({ lowerBody: 'missing', upperBody: overalls }).slots,
     { lowerBody: 'missing', upperBody: overalls });
+});
+
+test('lower-body garments that take the Shoes slot displace shoes; ordinary trousers do not (policy v2)', () => {
+  const legs = 'robots-sportyrobotlegs-metal', sneakers = companions.feet;
+  // (6 Nov 2026, classifier-gap backfill) the two Japanese robot costumes carry their own feet too.
+  assert.deepEqual([...evidence.spansShoes].sort(), ['robots-japaneserobot-base', 'robots-japaneserobot-base-black',
+    legs, 'robots-sportyrobotlegs-metal-black']);
+  for (const id of evidence.spansShoes) assert.notEqual(getItemById(id)?.slot, 'feet', id);
+  assert.ok(equipmentConflicts('lowerBody', legs, 'feet', sneakers));
+  assert.equal(equipmentConflicts('lowerBody', pants, 'feet', sneakers), false);
+  assert.deepEqual(resolveEquipmentSlots({ lowerBody: legs, feet: sneakers }).slots, { lowerBody: legs });
+  assert.deepEqual(resolveEquipmentSlots({ lowerBody: legs, feet: sneakers }, 'feet').slots, { feet: sneakers });
+  try {
+    store().load({ ...companions, upperBody: shirt, lowerBody: pants });
+    store().equip(getItemById(legs)!);
+    assert.equal(store().build.lowerBody, legs);
+    assert.equal(store().build.feet, null);
+    assert.equal(store().build.upperBody, shirt);
+    store().equip(getItemById(sneakers)!);
+    assert.equal(store().build.feet, sneakers);
+    assert.equal(store().build.lowerBody, null);
+  } finally { store().reset(); }
 });
 
 test('full-body extras use exact game slot occupancy, not category or names', () => {

@@ -1,3 +1,4 @@
+import { gunzipSync } from 'node:zlib';
 import { digest, shardHosts, validateShardPlan } from './asset-shards.mjs';
 import { joinBase } from '../../src/lib/asset-routing.mjs';
 
@@ -23,7 +24,11 @@ export async function verifyShardRelease(plan, config, fetcher = fetch) {
       const row = manifest.files[path];
       if (!/^[a-f0-9]{64}$/.test(row?.sha256 ?? '') || !Number.isInteger(row.bytes) || row.bytes < 0
         || row.bytes > plan.limits.maxFileBytes) throw new Error(`Invalid hosted file metadata: ${path}`);
-      if (!plan.controls.includes(path) && (row.sha256 !== plan.nodes[path].sha256 || row.bytes !== plan.nodes[path].bytes))
+      // A gzip-published mesh (stage-asset-shard --gzip-meshes) pins its source in the row; anything else is the source.
+      if (row.encoding !== undefined && (row.encoding !== 'gzip' || !path.endsWith('.glb') || plan.controls.includes(path)))
+        throw new Error(`Unsupported hosted encoding: ${path}`);
+      const source = row.encoding ? { sha256: row.sourceSha256, bytes: row.sourceBytes } : row;
+      if (!plan.controls.includes(path) && (source.sha256 !== plan.nodes[path].sha256 || source.bytes !== plan.nodes[path].bytes))
         throw new Error(`Hosted file differs from planned source: ${path}`);
     }
     // All roots plus deterministic representatives of each dependency type. The
@@ -39,6 +44,11 @@ export async function verifyShardRelease(plan, config, fetcher = fetch) {
       if (response.status !== 200) throw new Error(`Asset HTTP ${response.status}: ${path}`);
       const bytes = Buffer.from(await response.arrayBuffer()), expected = manifest.files[path];
       if (bytes.length !== expected.bytes || digest(bytes) !== expected.sha256) throw new Error(`Hosted asset bytes differ: ${path}`);
+      if (expected.encoding === 'gzip') {
+        let source;
+        try { source = gunzipSync(bytes); } catch { throw new Error(`Hosted gzip mesh does not decompress: ${path}`); }
+        if (digest(source) !== plan.nodes[path].sha256) throw new Error(`Hosted gzip mesh differs from planned source: ${path}`);
+      }
       if (plan.controls.includes(path)) {
         // A leaf may be republished with identical bytes at a new immutable URL.
         // Membership/hash checks alone cannot detect an old control index still

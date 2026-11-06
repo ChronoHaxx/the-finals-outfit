@@ -1,6 +1,7 @@
 import { useState, type RefObject } from "react";
 import type * as THREE from "three";
 import type { CharacterRig } from "../rig/CharacterRig";
+import type { RigAnimator } from "../rig/RigAnimator";
 import { zipSync, type Zippable } from "three/examples/jsm/libs/fflate.module.js";
 import { exportOutfit, type ExportPose } from "../rig/OutfitExport";
 import { collectSourceFiles } from "../rig/OutfitSourceExport";
@@ -10,8 +11,8 @@ export interface ExportContext { gl: THREE.WebGLRenderer; camera: THREE.Camera }
 
 // Developer catalog only: download the current outfit as a baked .glb for Blender, Unity or Unreal, optionally
 // zipped with the source files behind it (meshes, textures, definitions) in an FModel-style layout.
-export default function OutfitExportPanel({ rig, context, busy }: {
-  rig: CharacterRig; context: RefObject<ExportContext | null>; busy: boolean;
+export default function OutfitExportPanel({ rig, context, busy, animator }: {
+  rig: CharacterRig; context: RefObject<ExportContext | null>; busy: boolean; animator?: RigAnimator | null;
 }) {
   const [textureSize, setTextureSize] = useState(1024);
   const [pose, setPose] = useState<ExportPose>("bind");
@@ -25,6 +26,8 @@ export default function OutfitExportPanel({ rig, context, busy }: {
     if (!ctx || running) return;
     setRunning(true);
     setStatus("Preparing…");
+    // The bake and the copy take many frames: hold the still pose (the one the export has always written) meanwhile.
+    animator?.holdStill(true);
     try {
       const result = await exportOutfit(rig.root, ctx.gl, ctx.camera, { textureSize, pose, onProgress: setStatus });
       const warnings = [...result.warnings];
@@ -55,12 +58,13 @@ export default function OutfitExportPanel({ rig, context, busy }: {
       console.error(error);
       setStatus(`Export failed: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
+      animator?.holdStill(false);
       setRunning(false);
     }
   };
 
   return (
-    <details className="absolute right-2 top-10 z-10 w-60 rounded-md bg-black/60 text-xs text-white backdrop-blur">
+    <details className="w-60 bg-ink-950/90 text-xs text-white">
       <summary className="cursor-pointer select-none px-2.5 py-1 font-medium">Export 3D</summary>
       <div className="space-y-2 px-2.5 pb-2.5">
         <label className="flex items-center justify-between gap-2">

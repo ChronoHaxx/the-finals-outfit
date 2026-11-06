@@ -158,6 +158,14 @@ report without writing, or `-- --aspect=NAME` / `-- --limit=N` to narrow a run.
 Run `npm run validate:catalog` before opening the PR. The workflow blocks
 deploys if the catalog is invalid.
 
+The catalog is not bundled into the app's JavaScript. `src/lib/catalog-files.ts`
+lists each catalog file and what ships from it: the build validates the items,
+keeps only the fields the app reads, and emits each file as a hashed JSON asset that
+`index.html` preloads; the app renders once they have loaded. A new field in, say,
+`wiki-catalog.json` reaches the browser only after it is added to that projection.
+`npm run check:catalog-split` (run in CI after the build) fails if catalog data ends
+up back in a JavaScript chunk.
+
 ## Reporting preview problems
 
 Under the preview, **Report issue** (whole outfit) or the flag beside an equipped
@@ -177,9 +185,28 @@ note the item ID and body, and keep an item purple in
 **Randomise** picks a rules-based outfit (no AI): core slots are always filled,
 optional slots by chance, locked pieces are kept, and a random hat is not paired
 with a random hairstyle. By default it only uses items that already have
-reconstruction work; tick **Any status** to include the rest.
+reconstruction work; tick **Include red** to include the rest.
+
+**Patch notes** live in `src/data/changelog.ts`, newest first. The welcome screen opens
+on a first visit and again whenever the newest entry's `id` differs from the one the
+visitor last dismissed (kept in `localStorage`), so add an entry only for a change worth
+interrupting people for. Under browser automation (`navigator.webdriver`, as in every
+Playwright harness here) the welcome screen and the decorative stage overlays stay hidden,
+so canvas captures and their baselines are unaffected; see `src/lib/automation.ts`.
+Adding an entry also means re-reading [ROADMAP.md](ROADMAP.md), then setting its
+`Reviewed after patch note` line to the new entry's `id` and its `Last reviewed` date to
+today: the build refuses a roadmap that was not reviewed after the newest patch note.
 
 ## Roadmap
+
+The current roadmap is [ROADMAP.md](ROADMAP.md): what is done, the current focus, what
+comes next and what waits on a decision. The app's Roadmap page is built from that file
+(`src/lib/roadmap.ts`, checked by the `roadmap` plugin in `vite.config.ts`), so change the
+roadmap there and nowhere else. Its counts are placeholders such as `{red}`, which the page
+fills from the shipped catalog and status data. `npm run build` refuses the file if a line is
+malformed, a count is typed by hand, or it was last reviewed before the newest patch note
+(matched by `id`, so a second note on the same day counts) or catalog update. Everything else
+in this section is historical.
 
 Reconstruction counts change with each accepted asset release, so this README does
 not pin them. Consult the app’s progress display and the relevant release checkpoint; item
@@ -201,8 +228,8 @@ visibility rules and a bounded fitting-morph preview (`src/rig/SourceAssembly.ts
 `src/rig/SourceFitting.ts`). That path is separate from the legacy catalog fields
 discussed below.
 
-What's next, roughly in the order it's worth doing. Nothing here is committed to
-a date.
+What was next at the time, roughly in the order it was worth doing. For the
+current plan, see [ROADMAP.md](ROADMAP.md).
 
 **0. Lighting and tone calibration.** Everything below that touches colour is
 measured against the official item icons, and that comparison is only meaningful

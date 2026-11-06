@@ -1,0 +1,27 @@
+{
+  "comment": "Showcase clip list (5 Nov 2026). source = AnimSequence name in the exporter run; kind: idle loops, react plays once (outfit-screen slot reactions), emote plays once then returns to the idle.",
+  "defaultIdle": "outfit-idle",
+  "clips": [
+    { "id": "outfit-idle", "source": "HM_Frontend_Outfit_L_Idle_01", "label": "Outfit screen idle", "kind": "idle" },
+    { "id": "outfit-idle-2", "source": "HM_Frontend_Outfit_L_Idle_02", "label": "Outfit screen idle 2", "kind": "idle" },
+    { "id": "outfit-idle-hands", "source": "HM_Frontend_Outfit_L_IdleHandsFront_02", "label": "Hands in front", "kind": "idle" },
+    { "id": "react-head", "source": "HM_Frontend_Outfit_A_React_Head_00", "label": "Check headwear", "kind": "react" },
+    { "id": "react-upper", "source": "HM_Frontend_Outfit_A_React_UpperBody_00", "label": "Check top", "kind": "react" },
+    { "id": "react-lower", "source": "HM_Frontend_Outfit_A_React_LowerBody_00", "label": "Check trousers", "kind": "react" },
+    { "id": "react-feet", "source": "HM_Frontend_Outfit_A_React_Feet_00", "label": "Check shoes", "kind": "react" },
+    { "id": "react-hands", "source": "HM_Frontend_Outfit_A_React_Hands_00", "label": "Check gloves", "kind": "react" },
+    { "id": "wave", "source": "HM_Frontend_Emotes_A_WaveHello_00", "label": "Wave", "kind": "emote" },
+    { "id": "clap", "source": "HM_Frontend_Emotes_A_Clap_00", "label": "Clap", "kind": "emote" },
+    { "id": "flex", "source": "HM_Frontend_Emotes_A_Flex_00", "label": "Flex", "kind": "emote" },
+    { "id": "disco", "source": "HM_Frontend_Emotes_A_Disco_00", "label": "Disco", "kind": "emote" },
+    { "id": "shadow-boxing", "source": "HM_Frontend_Emotes_A_ShadowBoxing_00", "label": "Shadow boxing", "kind": "emote" },
+    { "id": "take-a-bow", "source": "HM_Frontend_Emotes_A_TakeABow_00", "label": "Take a bow", "kind": "emote" },
+    { "id": "robot", "source": "HM_Frontend_Emotes_A_Robot_00", "label": "Robot", "kind": "emote" },
+    { "id": "tap-dance", "source": "HM_Frontend_Emotes_A_TapDance_00", "label": "Tap dance", "kind": "emote" },
+    { "id": "face-palm", "source": "HM_Frontend_Emotes_A_FacePalm_00", "label": "Face palm", "kind": "emote" },
+    { "id": "victory", "source": "HM_Frontend_Emotes_A_VictoryCheer_00", "label": "Victory cheer", "kind": "emote" },
+    { "id": "kung-fu", "source": "HM_Frontend_Emotes_A_KungFuTiger_00", "label": "Kung fu tiger", "kind": "emote" },
+    { "id": "vampire", "source": "HM_Frontend_Emotes_A_VampireDance_00", "label": "Vampire dance", "kind": "emote" },
+    { "id": "skeleton-dance", "source": "HM_Frontend_Emotes_A_CuteSkeletonDance_00", "label": "Skeleton dance", "kind": "emote" }
+  ]
+}

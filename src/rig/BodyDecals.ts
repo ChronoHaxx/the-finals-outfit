@@ -71,15 +71,26 @@ export interface RigDecalLayer {
   // overlay. Honoured only on a sourceBodyPaint layer with a colour texture, which define G and C.
   colorMultiply?: "masked" | "nonMasked";
   // Optional packed surface data for a source body paint, linear RGBA: B = roughness, A = metalness,
-  // RG = normals. Only B/A are composited here; RG are reserved and never interpreted or altered.
+  // RG = normals. B/A compose with the traced surface weight below; RG are the paint's tangent-space
+  // normal, composited by the reoriented-normal-map path when the layer opts in (normalOverride).
   //
-  // Surface composition is an explicit opt-in because it changes compiled GLSL. It needs
-  // surfaceOverride: 1, this body- or head-target layer's sourceBodyPaint transform and a successfully
-  // loaded colour texture, whose alpha (with the same bounds gate as the colour sample) is the
-  // only coverage weight — the packed texture's own alpha is the metalness value, never coverage.
-  // A legacy layer, an omitted/zero switch or a failed/missing pack keeps the existing shading.
+  // Surface composition is an explicit opt-in because it changes compiled GLSL. It needs a positive
+  // surfaceOverride and/or normalOverride, this body- or head-target layer's sourceBodyPaint transform
+  // and a successfully loaded colour texture, whose alpha (with the same bounds gate as the colour
+  // sample) is the only coverage weight — the packed texture's own alpha is the metalness value, never
+  // coverage. A legacy layer, an omitted/zero switch or a failed/missing pack keeps the existing shading.
   surfaceUrl?: string;
-  surfaceOverride?: 0 | 1;
+  // Source BodySurfaceOverride: the traced weight of the pack's B/A over the coverage,
+  // `a * BodySurfaceOverride` (M_Skin asm:401-423; M_Face asm:405-406, 473-474). Any value in [0,1]
+  // follows the same traced mix (w55-paint-normals); 0 keeps the material's own finish while the pack
+  // may still serve the RG paint normals.
+  surfaceOverride?: number;
+  // Source BodyNormalOverride: the traced flatten weight of the pack's RG paint normal,
+  // `w = a * BodyNormalOverride; N_flat = lerp(N, up, w)` followed by the reoriented normal map blend
+  // `N_out = (1-a)*N + a*(dot(N1,n')*N1 - N1.z*n')` with `n' = pn*(-1,-1,1)` and the tile-parity x
+  // mirror `g = floor(uv.y)` (M_Skin asm:153-177 / M_Face asm:151-175; w55-paint-normals). Composited
+  // after the material's own normal is final, on body/head sourceBodyPaint layers only.
+  normalOverride?: number;
   tint?: string;
   emissive?: boolean; // glow: tint is also added as emissive (e.g. emissive eye colors)
   // M_Face FaceShadowMask on a head colour layer (12 Oct 2026): the compiled face mixes the base toward
@@ -97,6 +108,8 @@ interface ResolvedLayer {
   colorTex: THREE.Texture | null;
   maskTex: THREE.Texture | null;
   surfaceTex: THREE.Texture | null; // packed B/A surface, already vetted for composition
+  surfaceOverride: number; // traced B/A weight over the coverage (0 keeps the material's own finish)
+  normalOverride: number | null; // traced RG paint-normal weight (null: not applied)
   uv: 0 | 1;
   uvScale: [number, number] | null;
   uvLayout: "sourceBodyPaint" | null;
@@ -280,6 +293,8 @@ export class BodyDecalManager {
         colorTex,
         maskTex,
         surfaceTex: surfaceEnabled ? surfaceTex : null,
+        surfaceOverride: l.surfaceOverride ?? 0,
+        normalOverride: typeof l.normalOverride === "number" && l.normalOverride > 0 ? l.normalOverride : null,
         uv: l.uvScale ? l.uv ?? 0 : 0, // see RigDecalLayer.uvScale
         uvScale: l.uvScale ?? null,
         uvLayout: l.uvScale ? l.uvLayout ?? null : null,
@@ -338,8 +353,11 @@ export class BodyDecalManager {
     return out;
   }
 
-  // The whole opt-in for packed B/A surface data, in one place. Every clause matters:
-  //   surfaceOverride: 1 — explicit switch, never inferred from the URL's presence;
+  // The whole opt-in for the packed surface, in one place. Every clause matters:
+  //   surfaceOverride > 0 or normalOverride > 0 — the explicit switches, never inferred from the URL's
+  //                       presence: surfaceOverride is the traced B/A weight (M_Skin asm:401-423; M_Face
+  //                       asm:405-406, 473-474) and normalOverride the traced RG paint-normal weight
+  //                       (M_Skin asm:153-177 / M_Face asm:151-175, w55-paint-normals);
   //   target body/head  — the M_Skin body path, or the M_Face head path (12 Oct 2026: M_Face writes metalness
   //                       sat(A*w) with no base term and roughness mix(base, B, w), asm:405-406 and 473-474;
   //                       the head's recovered base metalness is 0, so the shared mix below is that formula);
@@ -349,8 +367,8 @@ export class BodyDecalManager {
   // A layer failing any clause keeps its existing shading and never even requests the pack.
   private static wantsSurface(l: RigDecalLayer): boolean {
     return (
-      l.surfaceOverride === 1 &&
       !!l.surfaceUrl &&
+      ((l.surfaceOverride ?? 0) > 0 || (l.normalOverride ?? 0) > 0) &&
       !!l.colorUrl &&
       (l.target === "body" || l.target === "head") &&
       l.uvScale != null &&
@@ -461,7 +479,11 @@ export class BodyDecalManager {
             `${l.uvOffsetX ? `x${l.uvOffsetX}` : ""}` +
             `${l.colorOverride === null ? "" : `o${l.colorOverride}`}` +
             `${l.colorMultiply ? `*${l.colorMultiply === "nonMasked" ? "n" : "m"}` : ""}` +
-            `${l.faceShadowRoughness === null ? "" : `f${l.faceShadowRoughness}`}`,
+            `${l.faceShadowRoughness === null ? "" : `f${l.faceShadowRoughness}`}` +
+            // The traced B/A weight (a fractional value is a different program from 1) and the RG
+            // paint-normal weight both emit GLSL, so they belong to the program identity too.
+            `${l.surfaceTex && l.surfaceOverride !== 1 ? `w${l.surfaceOverride}` : ""}` +
+            `${l.normalOverride !== null ? `n${l.normalOverride}` : ""}`,
         )
         .join("-");
     const key = `decal-${sig}-${BodyDecalManager.uid++}`;
@@ -607,24 +629,58 @@ export class BodyDecalManager {
       // `= recovered.*` statements, so its anchor is the metalness statement, which is after both
       // declarations. Ordinary materials still carry the standard include.
       let surface = "";
+      let normals = "";
       resolved.forEach((l, i) => {
         if (l.faceShadowRoughness !== null) {
           surface += `  roughnessFactor = clamp( mix( roughnessFactor, ${l.faceShadowRoughness.toFixed(6)}, decalShadowCoverage${i} ), 0.0, 1.0 );\n`;
           return;
         }
         if (!l.surfaceTex) return;
-        surface +=
-          "  {\n" +
-          // Same expression as the colour block above, regenerated because `duv` there is scoped to
-          // its own block; uvOf is the single source of that coordinate contract.
-          `    vec2 duv = ${uvOf(l)};\n` +
-          `    vec4 sp = texture2D( uDecalS${i}, duv );\n` +
-          // B is roughness, A is metalness (RG are normals, reserved and unread). The base term is
-          // the material's own current factor — the source skin base is zero metalness, but a
-          // target's general base finish is preserved rather than assumed away.
-          `    roughnessFactor = clamp( mix( roughnessFactor, sp.b, decalSurfCoverage${i} ), 0.0, 1.0 );\n` +
-          `    metalnessFactor = clamp( mix( metalnessFactor, sp.a, decalSurfCoverage${i} ), 0.0, 1.0 );\n` +
-          "  }\n";
+        if (l.surfaceOverride > 0) {
+          // The traced B/A weight is coverage * BodySurfaceOverride; 1 emits exactly the earlier GLSL.
+          const weight = l.surfaceOverride === 1 ? `decalSurfCoverage${i}`
+            : `( decalSurfCoverage${i} * ${l.surfaceOverride.toFixed(6)} )`;
+          surface +=
+            "  {\n" +
+            // Same expression as the colour block above, regenerated because `duv` there is scoped to
+            // its own block; uvOf is the single source of that coordinate contract.
+            `    vec2 duv = ${uvOf(l)};\n` +
+            `    vec4 sp = texture2D( uDecalS${i}, duv );\n` +
+            // B is roughness, A is metalness (RG are the paint normal, composited below). The base term
+            // is the material's own current factor — the source skin base is zero metalness, but a
+            // target's general base finish is preserved rather than assumed away.
+            `    roughnessFactor = clamp( mix( roughnessFactor, sp.b, ${weight} ), 0.0, 1.0 );\n` +
+            `    metalnessFactor = clamp( mix( metalnessFactor, sp.a, ${weight} ), 0.0, 1.0 );\n` +
+            "  }\n";
+        }
+        if (l.normalOverride !== null) {
+          // The traced paint-normal path (w55-paint-normals; M_Skin asm:153-177 / M_Face asm:151-175),
+          // evaluated in the material's tangent frame, which the recovered skin/face shader leaves in
+          // scope at the anchor below. In tangent space (both traces are identical in structure):
+          //   w = a*BodyNormalOverride; N_flat = lerp(N, up, w); N1 = N_flat + up
+          //   pn.xy = G*(2R-1, 2G-1); pn.z = sqrt(max(1-|pn.xy|^2, 0))
+          //   n' = ((2g-1)*pn.x, -pn.y, pn.z)  (RNM n2 prep; g = floor(uv.y), the tile-parity x mirror)
+          //   N_out = (1-a)*N + a*(dot(N1,n')*N1 - N1.z*n')  (reoriented normal map)
+          // The coverage a is the colour layer's own decalSurfCoverage (gate * alpha); the composite
+          // runs after the material's own normal is final, and the normalize matches the game's
+          // (M_Skin asm:180-182 / M_Face asm:178-180).
+          const set = l.uv === 1 ? "vDecalUv1" : "vMapUv";
+          normals +=
+            "  {\n" +
+            `    vec2 duv = ${uvOf(l)};\n` +
+            `    float ins = ${gateOf(l)!};\n` +
+            `    vec4 sp = texture2D( uDecalS${i}, duv );\n` +
+            `    vec3 decalN = transpose( recoveredFrame ) * normal;\n` +
+            `    vec3 decalNFlat = mix( decalN, vec3( 0.0, 0.0, 1.0 ), decalSurfCoverage${i} * ${l.normalOverride.toFixed(6)} );\n` +
+            `    vec3 decalN1 = decalNFlat + vec3( 0.0, 0.0, 1.0 );\n` +
+            `    vec2 decalPnXY = ins * ( sp.rg * 2.0 - 1.0 );\n` +
+            `    float decalPnZ = sqrt( max( 1.0 - dot( decalPnXY, decalPnXY ), 0.0 ) );\n` +
+            `    float decalTile = floor( ${set}.y );\n` +
+            `    vec3 decalPn = vec3( ( 2.0 * decalTile - 1.0 ) * decalPnXY.x, -decalPnXY.y, decalPnZ );\n` +
+            `    float decalRnm = dot( decalN1, decalPn );\n` +
+            `    normal = normalize( ( 1.0 - decalSurfCoverage${i} ) * normal + decalSurfCoverage${i} * ( recoveredFrame * ( decalRnm * decalN1 - decalN1.z * decalPn ) ) );\n` +
+            "  }\n";
+        }
       });
       const colourAnchor = mat.userData.reconstructed ? "// recovered_surface_ready" : "#include <map_fragment>";
       if (!shader.fragmentShader.includes(colourAnchor)) throw new Error("Body decal colour anchor is missing");
@@ -635,6 +691,15 @@ export class BodyDecalManager {
           : "#include <metalnessmap_fragment>";
         if (!frag.includes(finishAnchor)) throw new Error("Body decal finish anchor is missing");
         frag = frag.replace(finishAnchor, finishAnchor + "\n" + surface);
+      }
+      if (normals) {
+        // The recovered skin/face shader's final normal statement (ReconstructedMaterial's
+        // normal_fragment_maps replacement). Appending inside its #ifdef USE_TANGENT branch keeps the
+        // composite active only where the traced tangent frame exists; a material without the anchor
+        // (a plain MeshStandardMaterial, or a recovered mesh without tangents) keeps its existing
+        // shading, exactly like a layer whose pack failed to load.
+        const normalAnchor = "normal = normalize(recoveredFrame * normalize(recovered.normal));";
+        if (frag.includes(normalAnchor)) frag = frag.replace(normalAnchor, normalAnchor + "\n" + normals);
       }
       if (glow)
         frag = frag.replace(

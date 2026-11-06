@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import './helpers/load-catalog.ts';
 import { classifySlot } from '../scripts/lib/catalog-slots.ts';
 import { LEGACY_SLOT_MIGRATIONS, migrateSlots, migrateOutfit } from '../src/lib/outfit-slots.ts';
 import { encodeOutfit, decodeOutfit } from '../src/lib/outfit.ts';
@@ -26,7 +27,7 @@ test('garment nouns beat ambiguous lower-body modifiers; real trousers and coats
 });
 
 test('every recorded correction exists in its destination and migrates a historical v1 link', () => {
-  assert.equal(LEGACY_SLOT_MIGRATIONS.size, 55);
+  assert.equal(LEGACY_SLOT_MIGRATIONS.size, 56);
   for (const [id, { from, to }] of LEGACY_SLOT_MIGRATIONS) {
     assert.equal(getItemById(id)?.slot, to, id);
     // An unrelated companion piece in a slot the move does not touch.

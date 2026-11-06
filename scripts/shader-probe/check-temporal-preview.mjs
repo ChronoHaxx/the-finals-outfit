@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { chromium } from 'playwright-core';
-const output = 'visual-diff/reconstructed/reference-temporal-01';
+const output = process.env.TEMPORAL_OUT ?? 'visual-diff/reconstructed/reference-temporal-01';
 mkdirSync(output, { recursive: true });
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const errors = [];
@@ -11,7 +11,7 @@ try {
   const page = await browser.newPage();
   page.on('pageerror', error => errors.push(String(error)));
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
-  await page.goto('http://127.0.0.1:5173/?outfit=1.eyJzbG90cyI6e319', { waitUntil: 'networkidle' });
+  await page.goto(`${process.env.TEMPORAL_BASE ?? 'http://127.0.0.1:5173'}/?outfit=1.eyJzbG90cyI6e319`, { waitUntil: 'networkidle' });
   await page.waitForFunction(() => window.__rigIdle);
   const result = await page.evaluate(async () => {
     const T = window.__THREE;

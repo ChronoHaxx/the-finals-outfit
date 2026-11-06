@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Offline animation exporter (showcase-animation, 5 Nov 2026). It links the CUE4Parse build that the
+       shader probe already produced, so no packages are restored. Override ProbeBin to use another build. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ProbeBin Condition="'$(ProbeBin)' == ''">E:\Coding\the-finals-outfit\scripts\generated\shader-probe\catalog-refresh-20261028\opus-probe-bin</ProbeBin>
+  </PropertyGroup>
+  <!-- ACL-compressed animation needs CUE4Parse-Natives.dll. FModel extracts its own copy at startup; this
+       is the copy from the 29 Oct 2026 FModel run. Override NativesDll if that temp folder is cleaned. -->
+  <PropertyGroup>
+    <NativesDll Condition="'$(NativesDll)' == ''">$(LOCALAPPDATA)\Temp\.net\FModel\NTCYngMvBYOV\CUE4Parse-Natives.dll</NativesDll>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(NativesDll)" Link="CUE4Parse-Natives.dll" CopyToOutputDirectory="PreserveNewest" />
+    <!-- PNG encoding (texture mode) goes through SkiaSharp, whose native half is not a .NET reference. -->
+    <None Include="$(ProbeBin)\runtimes\win-x64\native\libSkiaSharp.dll" Link="libSkiaSharp.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="$(ProbeBin)\*.dll" Exclude="$(ProbeBin)\ShaderProbe.dll;$(ProbeBin)\libSkiaSharp.dll">
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

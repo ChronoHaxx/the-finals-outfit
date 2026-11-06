@@ -1,12 +1,14 @@
 // Coverage dates are editorial facts, not the time the app was built or opened.
-// The current 2,866-item catalog has season tags through 10. Do not advance
-// coverage just because a newer game archive or mapping has been downloaded.
+// The 3,331-item catalog has season tags through 12: Season 12 wearables released at
+// Update 12.0.0 (20 Oct 2026; the installed build), matched to the wiki by icon on 28 Oct.
+// 6 Nov 2026: 76 user-facing items from earlier seasons that the June import had skipped
+// (no slot keyword) were added from the game's own slot tag; coverage stays through 12.0.0.
+// Do not advance coverage just because a newer game archive or mapping has been downloaded.
 export const CATALOG_UPDATE = {
-  updatedAt: "2026-09-12",
-  updatedLabel: "12 Sep 2026",
-  throughSeason: 10,
-  nextSeason: 11,
-  latestGamePatch: "11.9.0",
-  checkedAt: "2026-09-12",
-  patchNotes: "https://www.reachthefinals.com/patchnotes/11-90",
+  updatedAt: "2026-11-06",
+  updatedLabel: "6 Nov 2026",
+  throughSeason: 12,
+  latestGamePatch: "12.0.0",
+  checkedAt: "2026-10-28",
+  patchNotes: "https://www.reachthefinals.com/patchnotes/12-00",
 } as const;

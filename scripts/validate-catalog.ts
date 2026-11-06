@@ -100,8 +100,13 @@ if (itemsResult.success && sponsorsResult.success) {
     );
   } else {
     // MODELS_BASE / RECONSTRUCTION_BASE mirror VITE_MODELS_BASE / VITE_RECONSTRUCTION_BASE.
+    // RECONSTRUCTION_ROUTES_FILE names a committed routes file (the map outgrew Windows' env-var limit); both set is refused.
+    const routesFile = process.env.RECONSTRUCTION_ROUTES_FILE?.trim();
+    if (routesFile && process.env.RECONSTRUCTION_ROUTES?.trim())
+      throw new Error("Set RECONSTRUCTION_ROUTES or RECONSTRUCTION_ROUTES_FILE, not both");
+    const routes = routesFile ? readFileSync(resolve(ROOT, routesFile), "utf8") : process.env.RECONSTRUCTION_ROUTES;
     const hostGroups = catalogHostGroups(referenced, assetsBase, process.env.MODELS_BASE, process.env.RECONSTRUCTION_BASE,
-      process.env.RECONSTRUCTION_ROUTES);
+      routes);
     for (const { base, paths, reconstruction } of hostGroups) {
       const reconstructionRoots = reconstruction ? RECONSTRUCTION_ROOTS : [];
 
