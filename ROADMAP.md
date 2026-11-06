@@ -20,7 +20,7 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 # Roadmap
 
 Last reviewed: 2026-11-06
-Reviewed after patch note: 2026-11-05-seasons-11-12
+Reviewed after patch note: 2026-11-06-missing-cosmetics
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -55,15 +55,6 @@ An item that looks right alone can break another: a helmet that hides a beard, o
 - Keep a problem found after release purple until its fix is verified.
 
 ## Next
-
-### Idle animation and emotes
-
-Show the character in the game's idle animation by default, with an emote picker that uses the game's own emote icons. A prototype is being tested; it is not on the site yet.
-
-- A still pose stays available, and is used for reduced-motion settings and share images.
-- Props, effects and facial expressions in emotes come later.
-
-Done when: animation plays smoothly on desktop and phones without changing how items look.
 
 ### Light and Heavy contestants
 
@@ -107,6 +98,12 @@ Hair, cloth and dangling accessories that move when the character does, using th
 
 Theme filters, such as playful or tactical, and outfit suggestions, once item tags and fitting are dependable. Randomise already builds rules-based outfits.
 
+### Emote effects and props
+
+Emotes play without their effects or sound, and a few props are still wrong, such as wings at the wrong angle or a prop at the wrong size.
+
+- Check each emote's props against the game and fix the ones that are off.
+
 ### Contributing fixes
 
 A guide for reproducing a reported problem and checking a fix, so others can help move items from red to blue.
@@ -124,6 +121,10 @@ Meshes and materials are rebuilt from the game's own files for {blue} items so f
 ### Outfits that fit together
 
 Clothing hides the body beneath it, hair swaps to its under-hat shape, and full-body garments fill both upper and lower body.
+
+### Idle animation and emotes
+
+The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and the equipped cosmetics follow the body. One click returns to the still pose, which share images also use.
 
 ### Share, randomise and report
 
