@@ -6,7 +6,7 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
 import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
-import { bodyTypePreview, type BodyTypePreview } from "../rig/BodyTypePreview";
+import { bodyTypePreview, isBodyTypeId, type BodyTypeId, type BodyTypePreview } from "../rig/BodyTypePreview";
 import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
@@ -52,10 +52,10 @@ interface DevParams {
   isolate?: boolean;
   temporal?: boolean;
   inspect: boolean;
-  // Capture-only switch for the gated body-type preview (?bodyType=masculine): one of
-  // BODY_TYPE_PREVIEWS, applied before any source staging. Production keeps it off; the
-  // activation path is the "bodyType" field in the active index's assets.json.
-  bodyType?: "masculine";
+  // Capture-only switch for the gated body-type preview (?bodyType=masculine|feminine|androgynous):
+  // one of BODY_TYPE_PREVIEWS, applied before any source staging. Production reads the "bodyType"
+  // field in the active index's assets.json instead (masculine today).
+  bodyType?: BodyTypeId;
   // Capture-only switch for the gated hair TagOverride precedence (?hairPrecedence=agreeing-orderings
   // or ?hairPrecedence=hide-wins): the gated precedence rule of SourceResolveOptions. Production keeps
   // it off; the activation path is the "hairOverridePrecedence" field in the active index's assets.json.
@@ -110,8 +110,9 @@ function readDevParams(): DevParams {
     // ?inspect=1 mounts the DEV MeshInspector. Unlike the tuner it takes its own
     // column rather than overlaying the canvas, so the model is never occluded.
     inspect: p.get("inspect") === "1",
-    // ?bodyType=masculine gates the masculine preview context on for this capture only.
-    bodyType: p.get("bodyType") === "masculine" ? "masculine" : undefined,
+    // ?bodyType=<id> selects that Season 12 Medium body type for this capture only; anything else
+    // leaves the index's own choice.
+    bodyType: isBodyTypeId(p.get("bodyType")) ? p.get("bodyType") as BodyTypeId : undefined,
     // ?hairPrecedence=agreeing-orderings or ?hairPrecedence=hide-wins gates that hair precedence
     // rule on for this capture only.
     hairPrecedence: p.get("hairPrecedence") === "agreeing-orderings" || p.get("hairPrecedence") === "hide-wins"
@@ -513,8 +514,7 @@ export default function CharacterViewer() {
         }
       }
       // The gated body-type context (BodyTypePreview.ts): the capture-only dev switch, or the
-      // "bodyType" field a preview index sets in its assets.json — the field the activation will
-      // set in the active index. The active index carries none, so the default stays off.
+      // "bodyType" field the index sets in its assets.json (the active index sets "masculine").
       let bodyType: BodyTypePreview | undefined;
       try {
         const selected = DEV.bodyType

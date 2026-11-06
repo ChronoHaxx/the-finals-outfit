@@ -1,0 +1,7 @@
+# Large raw S12 mesh reads stay local (evidence, not source). The property reads (*.properties.json) are committed:
+# tests/rig/body-type-preview.test.ts checks BodyTypePreview.ts against them.
+*.mesh.json
+*.colour-evidence.json
+review-*/
+review-*.log
+*.log

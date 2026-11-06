@@ -1,0 +1,72 @@
+[
+  {
+    "request": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_Feminine.uasset",
+    "path": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_Feminine.uasset",
+    "sha256": "860797D84EADCED9425876BF442856D6685C422837D9D9A451A89AD69508783B",
+    "meshFile": null,
+    "propertiesFile": "DA_BodyType_Feminine.properties.json",
+    "exports": [
+      {
+        "type": "BodyType",
+        "Name": "DA_BodyType_Feminine",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_FeminineMuscular.uasset",
+    "path": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_FeminineMuscular.uasset",
+    "sha256": "71B3D0536987801443545CCACC494CD273ABDCE12640CFEABF9838D4E8804F56",
+    "meshFile": null,
+    "propertiesFile": "DA_BodyType_FeminineMuscular.properties.json",
+    "exports": [
+      {
+        "type": "BodyType",
+        "Name": "DA_BodyType_FeminineMuscular",
+        "propertyCount": 9
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_List.uasset",
+    "path": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_List.uasset",
+    "sha256": "6A17F6EA98A6A6DB01B29CA23D7A132BB512A3B735F12E4B902FACDE5655AFB8",
+    "meshFile": null,
+    "propertiesFile": "DA_BodyType_List.properties.json",
+    "exports": [
+      {
+        "type": "BodyTypeList",
+        "Name": "DA_BodyType_List",
+        "propertyCount": 1
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_Masculine.uasset",
+    "path": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_Masculine.uasset",
+    "sha256": "E191D9ADD86D2E4C36A6583D77B4119FA65ED028EF7E9EDA4F476DA12143ECC9",
+    "meshFile": null,
+    "propertiesFile": "DA_BodyType_Masculine.properties.json",
+    "exports": [
+      {
+        "type": "BodyType",
+        "Name": "DA_BodyType_Masculine",
+        "propertyCount": 7
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_MasculineMuscular.uasset",
+    "path": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_MasculineMuscular.uasset",
+    "sha256": "391E25392CEB6BFF690DA8E663E97DA62B4486DF94B3133B58A0D2385F0C1B8F",
+    "meshFile": null,
+    "propertiesFile": "DA_BodyType_MasculineMuscular.properties.json",
+    "exports": [
+      {
+        "type": "BodyType",
+        "Name": "DA_BodyType_MasculineMuscular",
+        "propertyCount": 9
+      }
+    ]
+  }
+]

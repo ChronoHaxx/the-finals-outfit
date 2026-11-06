@@ -1,0 +1,32 @@
+[
+  {
+    "type": "BodyTypeList",
+    "Name": "DA_BodyType_List",
+    "propertyCount": 1,
+    "properties": {
+      "BodyTypes": [
+        {
+          "ObjectName": "BodyType'DA_BodyType_Androgynous'",
+          "ObjectPath": "/Game/Discovery/Characters/BodyTypes/DA_BodyType_Androgynous.0"
+        },
+        {
+          "ObjectName": "BodyType'DA_BodyType_Feminine'",
+          "ObjectPath": "/Game/Discovery/Characters/BodyTypes/DA_BodyType_Feminine.0"
+        },
+        {
+          "ObjectName": "BodyType'DA_BodyType_Masculine'",
+          "ObjectPath": "/Game/Discovery/Characters/BodyTypes/DA_BodyType_Masculine.0"
+        },
+        {
+          "ObjectName": "BodyType'DA_BodyType_FeminineMuscular'",
+          "ObjectPath": "/Game/Discovery/Characters/BodyTypes/DA_BodyType_FeminineMuscular.0"
+        },
+        {
+          "ObjectName": "BodyType'DA_BodyType_MasculineMuscular'",
+          "ObjectPath": "/Game/Discovery/Characters/BodyTypes/DA_BodyType_MasculineMuscular.0"
+        }
+      ]
+    },
+    "importedBounds": null
+  }
+]
