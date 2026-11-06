@@ -70,7 +70,7 @@ test('fresh exact names fill gaps while keeping original identities and descript
     assert.ok(!/\{\d+\}/.test(name), itemId);
     assert.equal(getBrowseItem(itemId, true)?.name, getItemById(itemId)?.name);
   }
-  assert.equal(getPublicCatalogCount(), 3331); // 3,113 + 142 Season 12 items (28 Oct 2026) + 76 classifier-gap backfill (6 Nov 2026)
+  assert.equal(getPublicCatalogCount(), 3332); // 3,113 + 142 Season 12 items (28 Oct 2026) + 76 classifier-gap backfill (6 Nov 2026) + the Face of Éternel (6 Nov 2026, evening)
 });
 
 test('generic source names keep descriptive styles and colours without losing identity', () => {
