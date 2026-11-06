@@ -16,3 +16,8 @@ interface ImportMetaEnv {
 declare module "virtual:catalog-assets" {
   export const CATALOG_URLS: Readonly<Record<import("./lib/catalog-files").CatalogFileKey, string>>;
 }
+
+// Emitted by the roadmap plugin in vite.config.ts: ROADMAP.md, parsed and checked at build time.
+declare module "virtual:roadmap" {
+  export const ROADMAP: import("./lib/roadmap").Roadmap;
+}

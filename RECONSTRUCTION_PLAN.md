@@ -1,5 +1,7 @@
 # Reconstruction execution plan
 
+*Historical record (September 2026). Its checkpoints and counts are not current; "latest" below means latest at the time. The current plan is [ROADMAP.md](ROADMAP.md), which the app's Roadmap page renders.*
+
 Accepted on 8 September 2026. Implementation is underway following the three-coat shader preview and pipeline audit.
 
 The objective is a faithful outfit viewer across the catalog: correct meshes and body variants, material appearance, valid outfit combinations, hiding and garment fitting, followed by dynamic effects and acceptable runtime performance. The current web viewer remains the delivery target. Exact agreement with the game remains a validation goal, not an established property of the current renderer.

@@ -56,7 +56,7 @@ jobs:
         run: |
           npm run validate:share-links
           node --import tsx --test tests/verified-bytes.test.ts tests/rig/reconstructed-material-cache.test.ts tests/asset-routing.test.mjs scripts/lib/stage-selection.test.mjs tests/rig/hidden-head.test.ts tests/rig/neutral-head-frame.test.ts tests/rig/source-material-recipients.test.ts tests/rig/source-outfit-metadata.test.ts tests/share-preview-worker.test.ts
-          node --import tsx --test tests/reconstruction-progress.test.ts tests/public-catalog.test.ts tests/wiki-catalog-import.test.mjs tests/reconstructed-samplers.test.mjs tests/catalog-host-groups.test.mjs tests/rig/source-identity-offset.test.mjs
+          node --import tsx --test tests/reconstruction-progress.test.ts tests/roadmap.test.ts tests/public-catalog.test.ts tests/wiki-catalog-import.test.mjs tests/reconstructed-samplers.test.mjs tests/catalog-host-groups.test.mjs tests/rig/source-identity-offset.test.mjs
           node --import tsx --test tests/coverage-projection.test.mjs tests/family-active-reuse.test.mjs tests/multipart-family.test.mjs tests/multipart-review-contract.test.mjs tests/outfit-scenario-contract.test.mjs scripts/shader-probe/capture-family.test.mjs scripts/shader-probe/family-fitting-evidence.test.mjs scripts/shader-probe/generate-family-review.test.mjs scripts/shader-probe/source-fitting.test.mjs
 
       - name: Validate catalog
