@@ -27,7 +27,7 @@ import sharp from "sharp";
 import { CatalogSchema, type Item, type Material, type MaterialBinding, type Decal } from "../src/lib/item.ts";
 import { SLOTS, type Slot } from "../src/lib/slots.ts";
 import { composeMaterialBindings, type ImportMaterialSlot } from "./lib/import-material-bindings.ts";
-import { classifySlot } from "./lib/catalog-slots.ts";
+import { classifySlot, gameTagSlot } from "./lib/catalog-slots.ts";
 // @ts-expect-error plain-JS source resolver shared with the material baker
 import { resolveMaterialBindings } from "./lib/material-instances.mjs";
 // @ts-expect-error plain-JS source parser shared with the material baker
@@ -1371,6 +1371,23 @@ interface Draft {
 }
 type Classified = { ok: true; draft: Draft } | { ok: false; reason: string };
 
+// DA name (normalised like assignSeasons) -> the definition's Customization.Slot tag, from
+// the offline name-batch recovery (scripts/extract-customization.mjs). Icons are T_UI_<X>,
+// definitions DA_<X>. Missing file or entry: no tag, and the keyword rules stand alone.
+let gameSlotTags: Map<string, string> | undefined;
+function gameSlotTag(fileToken: string): string | null {
+  if (!gameSlotTags) {
+    gameSlotTags = new Map();
+    const file = resolve(ROOT, "scripts/customization.generated.json");
+    if (existsSync(file)) {
+      const cust = JSON.parse(readFileSync(file, "utf8")) as Record<string, { slot?: string | null }>;
+      for (const [da, v] of Object.entries(cust))
+        if (typeof v.slot === "string") gameSlotTags.set(da.replace(/^DA_/, "").toLowerCase().replace(/[^a-z0-9]/g, ""), v.slot);
+    }
+  }
+  return gameSlotTags.get(fileToken.toLowerCase().replace(/[^a-z0-9]/g, "")) ?? null;
+}
+
 function classify(hit: IconHit): Classified {
   const cat = hit.segs[0];
   const fileToken = basename(hit.segs.at(-1)!, ".png").replace(/^T_UI_/i, "");
@@ -1403,6 +1420,9 @@ function classify(hit: IconHit): Classified {
     if (cat !== "Attachments") setName = cat;
   }
 
+  // No folder or file word named a garment (Durag, Earmuffs, TogaUpper, SimpleRings…): the
+  // item definition's own Customization.Slot tag decides, as in the season import planners.
+  slot ??= gameTagSlot(gameSlotTag(fileToken));
   if (!slot) return { ok: false, reason: `${cat}/${piece ?? "?"}` };
   if (!SLOTS.includes(slot)) return { ok: false, reason: `bad-slot:${slot}` };
 
@@ -1869,8 +1889,9 @@ async function main() {
   lines.push("items per slot:");
   for (const slot of SLOTS) lines.push(`  ${slot.padEnd(12)} ${perSlot[slot]}`);
   lines.push("");
-  lines.push("skipped (reason -> count), top 40:");
-  for (const [reason, n] of Object.entries(skipped).sort((a, b) => b[1] - a[1]).slice(0, 40)) {
+  // Every reason, not a top-N: a one-icon skip (Casual/Durag) hid below the old top-40 cut.
+  lines.push("skipped (reason -> count):");
+  for (const [reason, n] of Object.entries(skipped).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))) {
     lines.push(`  ${String(n).padStart(5)}  ${reason}`);
   }
   const totalSkipped = Object.values(skipped).reduce((a, b) => a + b, 0);

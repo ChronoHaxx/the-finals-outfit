@@ -163,7 +163,15 @@ export const INERT_LOGIC_MODULES: ReadonlySet<string> =
     // frame on the preserved lowerarm_l (attachmentFrames.optionalMeshes, as the lumbar jiggle mesh: rest placement
     // only, not simulated). Like IsInFrontend this is an inference from the module name, the sign-off and the
     // shaders, not decoded behaviour.
-    "/Script/Angelscript.CharacterCustomizationLogic_Watch"]);
+    "/Script/Angelscript.CharacterCustomizationLogic_Watch",
+    // (w149, 5 Nov 2026, Claude's decision) The one part that authors it is the smart step counter watch
+    // (DA_Watches_SmartStepCounter_01), in place of the Watch module beside the same WatchSocket attachment mesh.
+    // Its stripped Angelscript feeds the step count the screen prints through the NumbersFont atlas. The screen
+    // material has no step parameter, so the count can only arrive through the primitive records, which every
+    // build pins to the spawned state (primitiveRecords spawned-zero). The reconstruction therefore shows a count
+    // of zero, and the icon shows exactly that: "0000 STEPS". As with Watch, this is an inference from the module
+    // name, the material's parameters and the icon, not decoded behaviour.
+    "/Script/Angelscript.CharacterCustomizationLogic_StepCounter"]);
 
 /** Whether a part's authored LogicModules are all and only allowlisted inert modules (an empty or absent list
  *  qualifies): such a part is admitted everywhere a part without modules is. Exact path string match on

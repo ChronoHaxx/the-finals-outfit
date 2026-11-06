@@ -69,8 +69,40 @@ export function keywordSlot(text: string): Slot | null {
   return null;
 }
 
+// The game's own catalog slot: the item definition's single `Customization.Slot.<X>` asset
+// tag (recovered as `slot` in scripts/customization.generated.json). Mapped as the live
+// catalog maps it; the Season 11 and 12 import planners use this same table. SPLIT tags
+// cover more than one app slot: a keyword match inside the tag's slots chooses, otherwise
+// the first slot is the default. Pet, VisualEffects and Voice tags map to nothing.
+export const GAME_TAG_SLOT: Readonly<Record<string, Slot>> = {
+  BodyLower: "lowerBody", Shoes: "feet", Hands: "hands", Hair: "hair", Nails: "nailPolish",
+  FacePaint: "blush", Earrings: "earrings", Wrists: "wrist", Eyes: "eyes", BackUpper: "upperBack",
+  Tattoos: "tattoo", BodyPaint: "bodyPaint", FacialHair: "facialHair", Head: "face",
+  Bandolier: "upperBack", Watch: "wrist", TorsoUpperLeft: "upperBack", Eyewear: "eyewear",
+};
+export const GAME_TAG_SPLIT: Readonly<Record<string, readonly Slot[]>> = {
+  Headwear: ["headwear", "facewear"], Facewear: ["facewear", "eyewear"],
+  BodyUpper: ["upperBody", "outerwear"], BackLowerRight: ["lowerBack", "upperBack"],
+};
+
+export function gameTagSlot(tag: string | null | undefined, keyword?: Slot | null): Slot | null {
+  if (!tag) return null;
+  const split = GAME_TAG_SPLIT[tag];
+  if (split) return keyword && split.includes(keyword) ? keyword : split[0];
+  return GAME_TAG_SLOT[tag] ?? null;
+}
+
 /** The importer's lookup: the piece folder decides, and the icon's file token is the
- *  fallback for pieces whose folder name carries no garment word. */
-export function classifySlot(piece: string | null | undefined, fileToken?: string | null): Slot | null {
-  return (piece ? keywordSlot(piece) : null) ?? (fileToken ? keywordSlot(fileToken) : null);
+ *  fallback for pieces whose folder name carries no garment word. When neither names a
+ *  garment, the game's own slot tag decides. Before that fallback, 193 user-facing items
+ *  (the TGM25 durag, earmuffs, togas, rings, costumes, chest badges, back weapons) never
+ *  reached the catalog, because "Durag" and the rest match no keyword. A keyword match
+ *  still wins, so no slot that is already assigned changes. */
+export function classifySlot(
+  piece: string | null | undefined,
+  fileToken?: string | null,
+  gameTag?: string | null,
+): Slot | null {
+  return (piece ? keywordSlot(piece) : null) ?? (fileToken ? keywordSlot(fileToken) : null)
+    ?? gameTagSlot(gameTag);
 }
