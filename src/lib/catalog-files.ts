@@ -31,8 +31,8 @@ export const CATALOG_FILES = {
   shareIds: file("src/data/share-item-ids.json",
     (raw: { slots: string[]; items: string[] }) => ({ slots: raw.slots, items: raw.items })),
   equipmentSlots: file("src/data/source-equipment-slots.json",
-    (raw: { fullBody: string[]; slotsByItem: Record<string, string[]> }) =>
-      ({ fullBody: raw.fullBody, slotsByItem: raw.slotsByItem })),
+    (raw: { fullBody: string[]; spansShoes: string[]; slotsByItem: Record<string, string[]> }) =>
+      ({ fullBody: raw.fullBody, spansShoes: raw.spansShoes, slotsByItem: raw.slotsByItem })),
 };
 
 export type CatalogFileKey = keyof typeof CATALOG_FILES;

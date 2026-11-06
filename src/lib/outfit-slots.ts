@@ -87,6 +87,13 @@ const SOURCE_SLOT_FIXES_2026_10_12: readonly (readonly [string, Slot, Slot])[] =
   ["steampunk-vestwithhood-leather-white", "headwear", "upperBody"],
 ];
 
+// 5 November 2026: Season 12 retagged the S11 robot visor from `Customization.Slot.Facewear` to
+// `Customization.Slot.Eyewear` (and moved its EBodySlot from Facewear to Eyewear), the same retag
+// the app already follows for goggles; its Season 12 definition is the one the viewer now builds.
+const SOURCE_SLOT_FIXES_2026_11_05: readonly (readonly [string, Slot, Slot])[] = [
+  ["attachments-robot-visor", "facewear", "eyewear"],
+];
+
 export interface SlotMigration {
   readonly from: Slot;
   readonly to: Slot;
@@ -97,6 +104,7 @@ export const LEGACY_SLOT_MIGRATIONS: ReadonlyMap<string, SlotMigration> = new Ma
   ...SOURCE_SLOT_FIXES_2026_09_25.map(([id, from, to]) => [id, { from, to }] as const),
   ["casual-onestrapoveralls-denim", { from: "upperBack", to: "upperBody" }],
   ...SOURCE_SLOT_FIXES_2026_10_12.map(([id, from, to]) => [id, { from, to }] as const),
+  ...SOURCE_SLOT_FIXES_2026_11_05.map(([id, from, to]) => [id, { from, to }] as const),
 ]);
 
 export type SlotMap = Partial<Record<Slot, string>>;
