@@ -375,6 +375,108 @@ export class CharacterRig {
   private basePose = new Map<string, THREE.Euler>();
   private pose: "a" | "idle" = "a";
 
+  /** The body scene holding the driver skeleton: the showcase animator (RigAnimator.ts) binds its mixer here, so
+   *  track names resolve to the driver bones and never to a cosmetic glTF's own, unused bone copies. */
+  animationRoot(): THREE.Object3D | null {
+    return this.bodyScene;
+  }
+
+  // (showcase-animation, 5 Nov 2026) Legacy body-authored statics (some hair, helmets) stay under the scene root, not
+  // on a bone: in a static pose that is exact, but they would hang in the air while an animated head moves. While an
+  // animation plays they are pinned to a bone at their bind-pose offset; turning the pins off restores the original
+  // parent and matrix, so the static view is unchanged. Pinned meshes join their handle's statics, so an unequip during
+  // playback still removes and disposes them.
+  // The same applies to a legacy skinned item's own bones (jiggle chains, a legacy head's FACIAL_* bones): the legacy
+  // rebind keeps the cosmetic's unused rest copy for any bone the body lacks, so its weighted vertices would stay behind
+  // while the body moves. While animating, each such branch hangs from the driver bone its rest parent is named after.
+  // The original local TRS is kept as given (not re-derived from the matrix), so restoring is bit-exact: decomposing a
+  // matrix can return the same rotation as the negated quaternion.
+  private animationPins = new Map<THREE.Object3D, { parent: THREE.Object3D; matrix: THREE.Matrix4; position: THREE.Vector3;
+    quaternion: THREE.Quaternion; scale: THREE.Vector3; autoUpdate: boolean; handle: EquippedHandle }>();
+  private pinRecord(object: THREE.Object3D, handle: EquippedHandle) {
+    return { parent: object.parent!, matrix: object.matrix.clone(), position: object.position.clone(), quaternion: object.quaternion.clone(),
+      scale: object.scale.clone(), autoUpdate: object.matrixAutoUpdate, handle };
+  }
+
+  setAnimationPins(on: boolean): void {
+    const live = new Set(this.equipped.values());
+    // An item unequipped during playback: its pinned meshes were disposed with its statics; a pinned bone branch is
+    // not part of any handle list, so take it off the driver here.
+    for (const [object, pin] of this.animationPins) if (!live.has(pin.handle)) {
+      if ((object as THREE.Bone).isBone) object.removeFromParent();
+      this.animationPins.delete(object);
+    }
+    if (!on) {
+      for (const [object, pin] of this.animationPins) {
+        const index = pin.handle.statics.indexOf(object as THREE.Mesh);
+        if (index >= 0) pin.handle.statics.splice(index, 1);
+        pin.parent.add(object);
+        object.position.copy(pin.position);
+        object.quaternion.copy(pin.quaternion);
+        object.scale.copy(pin.scale);
+        object.matrix.copy(pin.matrix);
+        object.matrixAutoUpdate = pin.autoUpdate;
+      }
+      this.animationPins.clear();
+      return;
+    }
+    if (!this.bodyScene) return;
+    this.root.updateMatrixWorld(true);
+    const toRoot = this.root.matrixWorld.clone().invert();
+    const onBody = (object: THREE.Object3D) => { for (let o: THREE.Object3D | null = object; o; o = o.parent) if (o === this.bodyScene) return true; return false; };
+    const branches = new Map<THREE.Bone, { anchor: string; handle: EquippedHandle }>();
+    for (const handle of live)
+      for (const scene of [handle.scene, handle.underLayerScene]) scene?.traverse(o => {
+        const mesh = o as THREE.SkinnedMesh;
+        if (!mesh.isSkinnedMesh) return;
+        for (const bone of mesh.skeleton.bones) {
+          if (this.bonesByName.get(bone.name) === bone || onBody(bone) || this.animationPins.has(bone)) continue;
+          // Climb to the top of the stranded branch: the first ancestor named after a driver bone is its anchor.
+          let top = bone;
+          while (top.parent && (top.parent as THREE.Bone).isBone && !this.bonesByName.has(top.parent.name)) top = top.parent as THREE.Bone;
+          const anchor = top.parent?.name;
+          if (anchor && this.bonesByName.has(anchor) && !this.bonesByName.has(top.name) && !this.animationPins.has(top)) branches.set(top, { anchor, handle });
+        }
+      });
+    for (const [top, { anchor, handle }] of branches) {
+      const restInverse = this.bodyRestInverses.get(anchor)!;
+      this.animationPins.set(top, this.pinRecord(top, handle));
+      restInverse.clone().multiply(toRoot.clone().multiply(top.matrixWorld)).decompose(top.position, top.quaternion, top.scale);
+      top.matrixAutoUpdate = true;
+      this.bonesByName.get(anchor)!.add(top);
+    }
+    const restPositions = [...this.bodyRestInverses].filter(([name]) => !/_vpj_|^(index|middle|ring|pinky|thumb)_/.test(name))
+      .map(([name, inverse]) => [name, new THREE.Vector3().setFromMatrixPosition(inverse.clone().invert())] as const);
+    const headSlots = new Set<Slot>(["hair", "headwear", "facewear", "eyewear", "earrings", "face"]);
+    const pending: { mesh: THREE.Mesh; slot: Slot; handle: EquippedHandle }[] = [];
+    for (const [slot, handle] of this.equipped)
+      for (const scene of [handle.scene, handle.underLayerScene]) scene?.traverse(o => {
+        const mesh = o as THREE.Mesh;
+        if (!mesh.isMesh || (mesh as THREE.SkinnedMesh).isSkinnedMesh || this.animationPins.has(mesh)) return;
+        for (let parent = mesh.parent; parent; parent = parent.parent) if ((parent as THREE.Bone).isBone) return;
+        pending.push({ mesh, slot, handle });
+      });
+    for (const { mesh, slot, handle } of pending) {
+      const world = toRoot.clone().multiply(mesh.matrixWorld); // rig-root space, pose independent (not on a bone)
+      let boneName = headSlots.has(slot) ? "head" : undefined;
+      if (!boneName) {
+        mesh.geometry.computeBoundingBox();
+        const center = mesh.geometry.boundingBox!.getCenter(new THREE.Vector3()).applyMatrix4(world);
+        boneName = restPositions.reduce((best, [name, p]) => !best || p.distanceTo(center) < best[1] ? [name, p.distanceTo(center)] as [string, number] : best,
+          undefined as [string, number] | undefined)?.[0];
+      }
+      const bone = boneName ? this.bonesByName.get(boneName) : undefined;
+      const restInverse = boneName ? this.bodyRestInverses.get(boneName) : undefined;
+      if (!bone || !restInverse) continue;
+      this.animationPins.set(mesh, this.pinRecord(mesh, handle));
+      // bone world (animated) * bone rest^-1 * mesh rest = the mesh carried by the bone's motion since bind.
+      restInverse.clone().multiply(world).decompose(mesh.position, mesh.quaternion, mesh.scale);
+      mesh.matrixAutoUpdate = true;
+      bone.add(mesh);
+      handle.statics.push(mesh);
+    }
+  }
+
   setPose(pose: "a" | "idle"): void {
     this.pose = pose;
     if (!this.skeleton) return;

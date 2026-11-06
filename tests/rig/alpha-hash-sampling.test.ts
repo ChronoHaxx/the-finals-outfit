@@ -5,7 +5,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
 import {
-  alphaHashSalt, alphaHashSample, alphaHashSampleBits, installSampledAlphaHash, setAlphaHashSample,
+  alphaHashMotionFrame, alphaHashSalt, alphaHashSample, alphaHashSampleBits, installSampledAlphaHash, setAlphaHashMotionFrame,
+  setAlphaHashSample,
 } from "../../src/rig/AlphaHashSampling";
 
 const program = (name: "physical" | "depth" | "distance") => ({
@@ -20,6 +21,7 @@ for (const name of ["physical", "depth", "distance"] as const) {
     assert.equal(shader.uniforms.alphaHashSample, alphaHashSample, "the accumulator's shared sample uniform");
     assert.equal(shader.uniforms.alphaHashSampleBits, alphaHashSampleBits);
     assert.equal(shader.uniforms.alphaHashSalt.value, alphaHashSalt(material.uuid));
+    assert.equal(shader.uniforms.alphaHashMotionFrame, alphaHashMotionFrame, "the accumulator's shared motion-frame uniform");
     assert.ok(!shader.fragmentShader.includes("#include <alphahash_fragment>"), "three's own test is replaced");
     assert.match(shader.fragmentShader, /diffuseColor\.a < sampledAlphaHashThreshold\( vPosition \)/);
     // three's spatial hash stays the index-0 path, so it must still be declared before the sampled threshold.
@@ -53,4 +55,13 @@ test("the sample strata cover the sample count", () => {
     setAlphaHashSample(0);
   }
   assert.equal(alphaHashSample.value, 0, "index 0 is three's own hash");
+});
+
+test("motion frames are 1-based and wrap at 64; null turns the motion threshold off", () => {
+  setAlphaHashMotionFrame(0); assert.equal(alphaHashMotionFrame.value, 1);
+  setAlphaHashMotionFrame(63); assert.equal(alphaHashMotionFrame.value, 64);
+  setAlphaHashMotionFrame(64); assert.equal(alphaHashMotionFrame.value, 1);
+  assert.throws(() => setAlphaHashMotionFrame(-1));
+  assert.throws(() => setAlphaHashMotionFrame(1.5));
+  setAlphaHashMotionFrame(null); assert.equal(alphaHashMotionFrame.value, 0, "0: the still path's thresholds");
 });

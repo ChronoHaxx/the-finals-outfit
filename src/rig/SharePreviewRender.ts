@@ -22,6 +22,9 @@ export interface PreviewScene {
   scene: THREE.Scene;
   root: THREE.Object3D; // the character, for framing
   backdrop: { inner: string; middle: string; outer: string };
+  /** Runs a synchronous draw in the outfit's static pose when an animation is playing (RigAnimator.withStillPose),
+   *  so the card always shows the still pose, never a random idle or emote frame. */
+  stillPose?: <T>(draw: () => T) => T;
 }
 
 function visibleBounds(root: THREE.Object3D): THREE.Box3 {
@@ -56,19 +59,20 @@ function floatTargetType(gl: THREE.WebGLRenderer): THREE.TextureDataType {
     ? THREE.HalfFloatType : THREE.UnsignedByteType;
 }
 
-export async function renderSharePreview({ gl, scene, root, backdrop }: PreviewScene): Promise<Blob> {
+export async function renderSharePreview({ gl, scene, root, backdrop, stillPose = draw => draw() }: PreviewScene): Promise<Blob> {
   const width = VIEW_WIDTH * SUPERSAMPLE, height = PREVIEW_HEIGHT * SUPERSAMPLE;
   const linear = new THREE.WebGLRenderTarget(width, height, { type: floatTargetType(gl), samples: 4 });
   const display = new THREE.WebGLRenderTarget(width, height);
   const output = new OutputPass();
   const camera = new THREE.PerspectiveCamera(FOV, VIEW_WIDTH / PREVIEW_HEIGHT, 0.05, 50);
-  const { centerY, distance } = framing(visibleBounds(root));
   const pixels = new Uint8Array(width * height * 4);
   const views: ImageData[] = [];
 
   const previousTarget = gl.getRenderTarget(), previousColor = gl.getClearColor(new THREE.Color());
   const previousAlpha = gl.getClearAlpha(), previousAutoClear = gl.autoClear;
-  try {
+  // Framing and all four views are drawn in one synchronous pass, so they share one (static) pose.
+  try { stillPose(() => {
+    const { centerY, distance } = framing(visibleBounds(root));
     gl.autoClear = true;
     gl.setClearColor(0x000000, 0);
     for (const degrees of VIEWS) {
@@ -99,7 +103,7 @@ export async function renderSharePreview({ gl, scene, root, backdrop }: PreviewS
       }
       views.push(image);
     }
-  } finally {
+  }); } finally {
     gl.setRenderTarget(previousTarget);
     gl.setClearColor(previousColor, previousAlpha);
     gl.autoClear = previousAutoClear;

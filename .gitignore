@@ -64,3 +64,10 @@ scripts/bake-all.report.json
 
 # Reasonix session/state directory.
 /.reasonix/
+
+/scripts/anim-export/bin/
+/scripts/anim-export/obj/
+# Decoded game animation clips (Embark data, same rule as /public/models/).
+/public/animations/
+# Renders of extracted game assets (showcase-animation evidence) stay local, like /probe_*.png.
+/_docs/showcase-animation-2026-11-05/captures/
