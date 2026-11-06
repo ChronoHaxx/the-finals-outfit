@@ -11,6 +11,8 @@ import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmet
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
+import { AnimationControls, AnimationFrameDriver, useRigAnimator } from "./AnimationControls";
+import type { RigAnimator } from "../rig/RigAnimator";
 import MeshInspector from "./MeshInspector";
 import OutfitExportPanel, { type ExportContext } from "./OutfitExportPanel";
 import { createGltfLoader } from "../rig/loaders";
@@ -274,14 +276,17 @@ function makeSoftboxScene(): THREE.Scene {
 
 // Hands the export panel (outside the Canvas) the live renderer and camera.
 // Publishes the scene for the share button's preview render while the outfit is fully loaded.
-function PreviewBridge({ root, theme, active }: { root: THREE.Object3D; theme: SceneTheme; active: boolean }) {
+function PreviewBridge({ root, theme, active, animator }: {
+  root: THREE.Object3D; theme: SceneTheme; active: boolean; animator: RigAnimator | null;
+}) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   useEffect(() => {
     if (!active) return;
-    setPreviewScene({ gl, scene, root, backdrop: THEME_BACKDROP[theme] });
+    setPreviewScene({ gl, scene, root, backdrop: THEME_BACKDROP[theme],
+      stillPose: animator ? draw => animator.withStillPose(draw) : undefined });
     return () => setPreviewScene(null);
-  }, [gl, scene, root, theme, active]);
+  }, [gl, scene, root, theme, active, animator]);
   return null;
 }
 
@@ -408,6 +413,9 @@ export default function CharacterViewer() {
   const [missingFittingData, setMissingFittingData] = useState(false);
   const [retryAttempt, setRetryAttempt] = useState(0);
   const [theme, setTheme] = useState<SceneTheme>("studio");
+  // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden).
+  const animator = useRigAnimator();
+  const animationMoving = useCallback(() => !!animator?.state.moving, [animator]);
   const exportContext = useRef<ExportContext | null>(null);
   const build = useBuildStore((s) => s.build);
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
@@ -979,6 +987,7 @@ export default function CharacterViewer() {
 
   return (
     <div
+      data-viewer=""
       className="relative h-full w-full"
       style={{ background: THEME_BACKGROUND[theme] }}
     >
@@ -1007,8 +1016,9 @@ export default function CharacterViewer() {
         {theme === "studio" ? <StudioLights /> : <LobbyLights />}
         <primitive object={rig.root} />
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
-        <PreviewBridge root={rig.root} theme={theme} active={ready && !busy} />
-        {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview />}
+        <PreviewBridge root={rig.root} theme={theme} active={ready && !busy} animator={animator} />
+        {animator && <AnimationFrameDriver animator={animator} />}
+        {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving} />}
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
           enablePan
@@ -1032,6 +1042,13 @@ export default function CharacterViewer() {
         <span aria-hidden="true" className={`size-2.5 border border-fg/60 ${theme === "studio" ? "bg-[#dee4eb]" : "bg-[#1b2740]"}`} />
         {theme === "studio" ? "Studio" : "Lobby"}
       </button>
+      {/* One right-hand column under the theme button, so the animation controls and the developer export panel
+          stack instead of overlapping. It spans to the bottom so the emote picker can fit the viewer's height; only
+          its children take pointer events, so the canvas behind the empty part still orbits. */}
+      <div className="pointer-events-none absolute bottom-3 right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto">
+        {animator && <AnimationControls animator={animator} rig={rig} ready={ready} busy={busy} studio={theme === "studio"} />}
+        {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} animator={animator} />}
+      </div>
       {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && (
         <div className="absolute left-2 top-2 z-10 rounded-md bg-black/70 px-3 py-2 text-xs text-white">
           <span className="mb-1 block">Recovered shader · preview lighting</span>
@@ -1051,7 +1068,6 @@ export default function CharacterViewer() {
         </div>
       )}
       {DEV.tune && ready && <MaterialTuner rig={rig} />}
-      {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} />}
       {!ready && !error && (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
           <div className="flex flex-col items-center gap-3">
