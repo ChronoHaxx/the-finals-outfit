@@ -266,5 +266,9 @@
   "streetwear-tightsinglet-cotton-orangeevent-a5ee": {
     "status": "polish",
     "note": "Reconstructed 29 Oct 2026 from the Season 12 build (w79-s12-roots batch-r3, wave 63; deferred in w73 only behind the then-unexported Season 12 MC_WeatherStates collection) and accepted at full size: cyan singlet with darker blue side panels and hem band, crossed brown bandoliers, hip pouch, back bedroll and the dark right-forearm band all match the icon; identical to the accepted orange sibling but for the team colour. Evidence: _docs/goal-100-2026-10-11/w79-s12-roots/review-r3/README.md, _docs/goal-100-2026-10-11/w79-s12-roots/review-r3/../review-prep-v1/sheets-r3/sheet-01.jpg. Polish: human acceptance pending."
+  },
+  "attachments-shovel-01-back": {
+    "status": "issue",
+    "note": "Known visual error (w152-backfill review, 6 Nov 2026): shape, wooden shaft and red D-grip match, but the blade reads light grey against the icon's black: its authored base colour is near-black (temporal=0 baseColor about 51,51,52) and the CR alpha makes it partly metallic (ActivateAlphaMetallic_s 1, alpha 0.28-0.46), so it reflects the bright studio: the game studio's darker environment reflected in metal, held decision #3 (studio lighting), as the wave 53 guitar plate and the w76 trail stove. Evidence: _docs/goal-100-2026-10-11/w152-backfill/review/shovel-lit-base.jpg, _docs/goal-100-2026-10-11/w152-backfill/review/shovel-CR.jpg, _docs/goal-100-2026-10-11/w152-backfill/review/zoom-recaptures.jpg."
   }
 }

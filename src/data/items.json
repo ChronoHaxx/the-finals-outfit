@@ -264546,5 +264546,15 @@
       "gold"
     ],
     "season": 9
+  },
+  {
+    "id": "head-blankface-absorbeglitter",
+    "slot": "face",
+    "name": "Face of \u00c9ternel\u2122",
+    "imageUrl": "items/face/head-blankface-absorbeglitter.webp",
+    "tags": [
+      "absorbeglitter"
+    ],
+    "season": 12
   }
 ]
