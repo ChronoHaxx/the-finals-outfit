@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The site is one HTML page. The builder, the roadmap (#/roadmap) and outfit links (#/o/...) are hash routes, which
+  crawlers treat as this same URL. Unknown paths get 404.html with HTTP 404, and the developer catalog is noindex.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://chronohaxx.github.io/the-finals-outfit/</loc>
+  </url>
+</urlset>
