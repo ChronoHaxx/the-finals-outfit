@@ -193,8 +193,18 @@ visitor last dismissed (kept in `localStorage`), so add an entry only for a chan
 interrupting people for. Under browser automation (`navigator.webdriver`, as in every
 Playwright harness here) the welcome screen and the decorative stage overlays stay hidden,
 so canvas captures and their baselines are unaffected; see `src/lib/automation.ts`.
+Adding an entry also means re-reading [ROADMAP.md](ROADMAP.md) and moving its
+`Last reviewed` date: the build refuses a roadmap older than the newest patch note.
 
 ## Roadmap
+
+The current roadmap is [ROADMAP.md](ROADMAP.md): what is done, the current focus, what
+comes next and what waits on a decision. The app's Roadmap page is built from that file
+(`src/lib/roadmap.ts`, checked by the `roadmap` plugin in `vite.config.ts`), so change the
+roadmap there and nowhere else. Its counts are placeholders such as `{red}`, which the page
+fills from the shipped catalog and status data. `npm run build` refuses the file if a line is
+malformed, a count is typed by hand, or it was last reviewed before the newest patch note
+or catalog update. Everything else in this section is historical.
 
 Reconstruction counts change with each accepted asset release, so this README does
 not pin them. Consult the app’s progress display and the relevant release checkpoint; item
@@ -216,8 +226,8 @@ visibility rules and a bounded fitting-morph preview (`src/rig/SourceAssembly.ts
 `src/rig/SourceFitting.ts`). That path is separate from the legacy catalog fields
 discussed below.
 
-What's next, roughly in the order it's worth doing. Nothing here is committed to
-a date.
+What was next at the time, roughly in the order it was worth doing. For the
+current plan, see [ROADMAP.md](ROADMAP.md).
 
 **0. Lighting and tone calibration.** Everything below that touches colour is
 measured against the official item icons, and that comparison is only meaningful

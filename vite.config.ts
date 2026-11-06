@@ -1,14 +1,40 @@
 import { readFileSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { defineConfig, loadEnv, type Plugin } from "vite";
+import { defineConfig, loadEnv, normalizePath, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { DEVELOPER_CATALOG_PATH } from "./src/lib/catalog-mode";
 import { CATALOG_FILES, shippedCatalogJson, type CatalogFileKey } from "./src/lib/catalog-files";
 import { parseReconstructionRoutes } from "./src/lib/asset-routing.mjs";
+import { loadRoadmap } from "./src/lib/roadmap";
 
 const CATALOG_MODULE = "virtual:catalog-assets";
+const ROADMAP_MODULE = "virtual:roadmap";
+
+// The Roadmap page renders ROADMAP.md, parsed and checked here: the page has no copy that could
+// drift, and a malformed roadmap, or one not re-read since the newest patch note or catalog update,
+// fails the build (and shows Vite's error overlay in dev). See src/lib/roadmap.ts.
+function roadmap(): Plugin {
+  let path = "";
+  return {
+    name: "roadmap",
+    configResolved(config) { path = normalizePath(resolve(config.root, "ROADMAP.md")); },
+    resolveId: id => id === ROADMAP_MODULE ? `\0${ROADMAP_MODULE}` : undefined,
+    load(id) {
+      if (id !== `\0${ROADMAP_MODULE}`) return;
+      this.addWatchFile(path);
+      return `export const ROADMAP = ${JSON.stringify(loadRoadmap(readFileSync(path, "utf8")))};`;
+    },
+    handleHotUpdate({ file, server }) {
+      if (normalizePath(file) !== path) return;
+      const module = server.moduleGraph.getModuleById(`\0${ROADMAP_MODULE}`);
+      if (!module) return;
+      server.moduleGraph.invalidateModule(module);
+      return [module];
+    },
+  };
+}
 
 // Ships the catalog JSON as separate content-hashed files instead of inside the entry
 // chunk (src/lib/catalog-load.ts fetches them), and preloads them from index.html so they
@@ -80,7 +106,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: env.VITE_BASE ?? "/",
     define: reconstructionRoutesDefine(env),
-    plugins: [react(), tailwindcss(), catalogAssets(), {
+    plugins: [react(), tailwindcss(), catalogAssets(), roadmap(), {
       name: "developer-catalog-entry",
       enforce: "post",
       generateBundle(_options, bundle) {
