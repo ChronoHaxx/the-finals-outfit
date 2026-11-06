@@ -28,7 +28,7 @@ These are plans, not dated promises. Item counts are live and use the same statu
 
 ### Rebuild the remaining red items
 
-{red} items are still red. Most use material types the preview cannot draw yet: animated screens and holograms, glitch effects, and coats and capes that the game moves with cloth physics. Some also wait on a decision listed below.
+{red} items are still red. Some use material types the preview cannot draw yet: animated screens and holograms, glitch effects, and coats and capes that the game moves with cloth physics. Some wait on a decision listed below. Items newly added to the catalog also start red, showing their icon until their 3D is built.
 
 - Add each missing material type once, so every item and colour variant that uses it moves together.
 - Compare every rebuilt item with its in-game icon before it turns blue.
@@ -111,9 +111,9 @@ A guide for reproducing a reported problem and checking a fix, so others can hel
 
 ## Done
 
-### The whole catalog
+### The catalog
 
-All {total} cosmetics through Season {latestSeason}, under their THE FINALS Wiki names, with colour variants listed separately. Outfit links keep working as the catalog grows.
+{total} cosmetics through Season {latestSeason}, under their THE FINALS Wiki names, with colour variants listed separately. Some cosmetics from earlier seasons were left out when the catalog was first built; adding them is in progress. Outfit links keep working as the catalog grows.
 
 ### A first-pass 3D preview on Medium
 
