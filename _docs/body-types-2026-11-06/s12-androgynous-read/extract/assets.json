@@ -1,0 +1,16 @@
+[
+  {
+    "request": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_Androgynous.uasset",
+    "path": "Discovery/Content/Discovery/Characters/BodyTypes/DA_BodyType_Androgynous.uasset",
+    "sha256": "5C98965CB943D5AF4946A57283870DA9A89172A409BA2106BBD5015981EFBBF4",
+    "meshFile": null,
+    "propertiesFile": "DA_BodyType_Androgynous.properties.json",
+    "exports": [
+      {
+        "type": "BodyType",
+        "Name": "DA_BodyType_Androgynous",
+        "propertyCount": 7
+      }
+    ]
+  }
+]

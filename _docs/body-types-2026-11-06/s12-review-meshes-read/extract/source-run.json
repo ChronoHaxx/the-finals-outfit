@@ -1,0 +1,201 @@
+{
+  "formatVersion": 1,
+  "mode": "assets",
+  "generatedAt": "2026-11-06T00:43:17.2937751+00:00",
+  "mappingSha256": "E5B29E28AE760E6E420D2FBCA103278CD5F71A52256B5BFB5524E111F70F7CFF",
+  "parserVersion": "1.2.2.0",
+  "sourceContainers": [
+    {
+      "name": "global.utoc",
+      "length": 4848,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.7471009Z",
+      "sha256": "950BC0A9CB7B3E66341DAD0C78EF6918A0699786926688CCE84477B3E0A179A8"
+    },
+    {
+      "name": "pakchunk0_s1-WindowsClient.utoc",
+      "length": 9447504,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.653048Z",
+      "sha256": "D80542EAA8AEBC47159F8320126C269F40029E8CAD19D294C32E8ADF7792BE6E"
+    },
+    {
+      "name": "pakchunk0_s10-WindowsClient.utoc",
+      "length": 2005200,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6561648Z",
+      "sha256": "254AE76C0934F7809877ED289FAC377B9BC99C1A294979D5D5D274B17F416991"
+    },
+    {
+      "name": "pakchunk0_s11-WindowsClient.utoc",
+      "length": 1246528,
+      "lastWriteTimeUtc": "2026-10-20T14:10:57.4102958Z",
+      "sha256": "D21A53CF6D47EE93EFF378D9DBD5194EA413AFA375804B8E05D4DD328E75C62F"
+    },
+    {
+      "name": "pakchunk0_s12-WindowsClient.utoc",
+      "length": 1294544,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6561648Z",
+      "sha256": "6E6AF74E674B2FE244FCF83245B73994CF0BE6C5B10FA024CF0FBF5DDE0BC99A"
+    },
+    {
+      "name": "pakchunk0_s13-WindowsClient.utoc",
+      "length": 1277552,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6571637Z",
+      "sha256": "C8FCB6305BBD04A46338415772C04605A829B1BC23084DA7A853425C3E044348"
+    },
+    {
+      "name": "pakchunk0_s14-WindowsClient.utoc",
+      "length": 3284896,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6571637Z",
+      "sha256": "3C397F071136F5111578C31FF8AA3FF573C0FE69CBBFF3D6779A42C63C5D6B70"
+    },
+    {
+      "name": "pakchunk0_s2-WindowsClient.utoc",
+      "length": 2522224,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6581629Z",
+      "sha256": "CFFB91667E0E4BDC4A2AE1743BE816E25966B5A91308368BB0A6B490F4A4E206"
+    },
+    {
+      "name": "pakchunk0_s3-WindowsClient.utoc",
+      "length": 1358800,
+      "lastWriteTimeUtc": "2026-10-20T14:10:57.4152962Z",
+      "sha256": "BAC9306C86DE071F94421DC401B0F87E351380FA47F389D36D92DC620A6172D3"
+    },
+    {
+      "name": "pakchunk0_s4-WindowsClient.utoc",
+      "length": 1912912,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.660164Z",
+      "sha256": "2777392E11546FB3415D641CC03542EA92362EA18A934A10FA81354E5C5CE34D"
+    },
+    {
+      "name": "pakchunk0_s5-WindowsClient.utoc",
+      "length": 2960992,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6621645Z",
+      "sha256": "F18586A1EB7D68E42135E3AEF8F444800AF8CD3B8227FF7A6239CE035FF0D5C1"
+    },
+    {
+      "name": "pakchunk0_s6-WindowsClient.utoc",
+      "length": 1597008,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6621645Z",
+      "sha256": "A80AA4EA579D661CD68EAFB50D4E8BD65B86CC4B84E8A4F4E9723384508E251A"
+    },
+    {
+      "name": "pakchunk0_s7-WindowsClient.utoc",
+      "length": 1482992,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6641634Z",
+      "sha256": "20A0D4FF8EBBFEBB91F6A61148B174B299D0684642ED2ED56C112A72B50B762B"
+    },
+    {
+      "name": "pakchunk0_s8-WindowsClient.utoc",
+      "length": 1245440,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6651631Z",
+      "sha256": "47C70D48D13D92AA983C0B695214BE5CDA7E2C962BF388412B09FC94C6069B8D"
+    },
+    {
+      "name": "pakchunk0_s9-WindowsClient.utoc",
+      "length": 1470544,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6651631Z",
+      "sha256": "C62F764D68D9FEECF2CEDD3F866867FD770D7EB8E2E1E98BC774803D86CCD685"
+    },
+    {
+      "name": "pakchunk0-WindowsClient.utoc",
+      "length": 19910288,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.653048Z",
+      "sha256": "7DF0C6EA3B53C1687D49A6B7FB219FF6020D7545DB509E9E172D3EB86EC1F481"
+    },
+    {
+      "name": "pakchunk10_s1-WindowsClient.utoc",
+      "length": 1784992,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6671647Z",
+      "sha256": "E739EBDBA31352CD86A910C5583CF8FE450F83ACE912A012D64FDBB0B4A2047E"
+    },
+    {
+      "name": "pakchunk10_s2-WindowsClient.utoc",
+      "length": 1548576,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6671647Z",
+      "sha256": "8F2D8AC3DCA37E64C9623079F096DC542AB4F8883FB0F35FDF170E61EE9677FF"
+    },
+    {
+      "name": "pakchunk10_s3-WindowsClient.utoc",
+      "length": 1818992,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6701634Z",
+      "sha256": "3C7158D1F96CCF9F8AABF2D191108D0C4B3E4ABE0811DAEADCA3509649E14506"
+    },
+    {
+      "name": "pakchunk10_s4-WindowsClient.utoc",
+      "length": 1739312,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6701634Z",
+      "sha256": "689751EB2ADDA2F2563AFE55C4076EAC9089293D06CB59D7B094ECE5FE7A7F4C"
+    },
+    {
+      "name": "pakchunk10_s5-WindowsClient.utoc",
+      "length": 1856496,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6711646Z",
+      "sha256": "05D2BA25039605B072E3CF05F73A0DB45253DCB95DCFE3615F0B2E02007427A5"
+    },
+    {
+      "name": "pakchunk10_s6-WindowsClient.utoc",
+      "length": 1814096,
+      "lastWriteTimeUtc": "2026-10-20T14:10:57.421294Z",
+      "sha256": "D3C909B37DE6983042035032C3E98567BC4B5582A16FC3EE92746FC74A6E0B4C"
+    },
+    {
+      "name": "pakchunk10_s7-WindowsClient.utoc",
+      "length": 1975680,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6741716Z",
+      "sha256": "DE4CAADCFE5B0340A4052D394C3E045D613944ED59F923DFEFC31B8E16BD78E6"
+    },
+    {
+      "name": "pakchunk10_s8-WindowsClient.utoc",
+      "length": 2121296,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6796836Z",
+      "sha256": "6056709B9DC33695B370F358EC0402B466C4DA8758A1B05CE7A82392019CA3D0"
+    },
+    {
+      "name": "pakchunk10_s9-WindowsClient.utoc",
+      "length": 1128288,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6806854Z",
+      "sha256": "BBEE5727184566965FE852066EC9AA5FDE0698F6C9053F16CA2F671A1D785E3A"
+    },
+    {
+      "name": "pakchunk10-WindowsClient.utoc",
+      "length": 2630624,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6661644Z",
+      "sha256": "3872C90E5C2576105B27DFC2503DE483E2CCB42E8B3E17AF658F2451E3379CE6"
+    },
+    {
+      "name": "pakchunk5_s1-WindowsClient.utoc",
+      "length": 2350112,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6827229Z",
+      "sha256": "231220B4BF37E32E745E224926392F497065CA26F10A641E47A2F14B78ECBC50"
+    },
+    {
+      "name": "pakchunk5_s2-WindowsClient.utoc",
+      "length": 2403024,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6827229Z",
+      "sha256": "E36B74154C0F11A22F83EA60507705C442999C2106A6199482322CB64EC72FEC"
+    },
+    {
+      "name": "pakchunk5_s3-WindowsClient.utoc",
+      "length": 2328976,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6836933Z",
+      "sha256": "31BA0A3CB3A23C03E7D65F82F9DE25A38678B1E0EFB3F32CFC5C0E620E842ECA"
+    },
+    {
+      "name": "pakchunk5_s4-WindowsClient.utoc",
+      "length": 2905712,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6846925Z",
+      "sha256": "19F91CB7F319084B47AA512533D5B8CFBFA6D71BC3FB0C60C5ACB92CF61BF3FB"
+    },
+    {
+      "name": "pakchunk5_s5-WindowsClient.utoc",
+      "length": 2725312,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6846925Z",
+      "sha256": "CB41DB7EF665616FC6C19E97B8A4BC4F4CE92FB1207E6B3010E92734C3BAFC8E"
+    },
+    {
+      "name": "pakchunk5-WindowsClient.utoc",
+      "length": 5068752,
+      "lastWriteTimeUtc": "2026-10-29T14:31:54.6806854Z",
+      "sha256": "9489390683BB2D206A1B0F388FBAF4682C70EDDEE23C670C070D651B02B0D259"
+    }
+  ]
+}

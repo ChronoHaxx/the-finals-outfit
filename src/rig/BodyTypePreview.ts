@@ -1,23 +1,36 @@
-// The game's body-type preview context (gated OFF by default, 21 Oct 2026).
+// The game's Medium body types (gated; the masculine context is the active default since 21 Oct 2026).
 //
-// A contestant always has one DA_BodyType_* asset active; for the Medium archetype
-// DA_BodyType_Masculine activates the medium_male morph target by name on every mesh that
-// carries it (head, body, garments, attachments), activates the Customization.BodyType.Masculine
-// customization tag, and offsets the clavicle, pet and upper-back attachment sockets
-// (AttachmentSocketData.SocketOffsetsMedium). The preview renders none of that today, which is a
-// shape the game never shows (the raider helmet neck poke, w39h-raider-head-hide/).
+// A contestant always has one DA_BodyType_* asset active. For the Medium archetype that asset:
+// - activates its Medium morph target by name on every mesh that carries it (head, body, garments, attachments);
+// - activates its Customization.BodyType.* customization tag;
+// - offsets the attachment sockets it names (AttachmentSocketData.SocketOffsetsMedium).
 //
-// Every value below is copied exactly from the recovered asset
-// scripts/generated/shader-probe/definitions-v1/DA_BodyType_Masculine.properties.json (byte-identical
-// copy: scripts/generated/shader-probe/catalog-refresh-20261018/properties-01/DA_BodyType_Masculine.properties.json).
-// Nothing is invented and no value is recomputed. Rotations stay the authored FQuat components;
-// the conversion to the preserved GLB frame happens once, in bodyTypeOffsetMatrix below.
+// Season 12 (6 Nov 2026) lists five body types (DA_BodyType_List). Three of them support Medium:
+// - Masculine (medium_male);
+// - Feminine (medium_female);
+// - Androgynous: new in Season 12 and Medium-only. It authors no Medium morph and no Medium socket offsets, so its
+//   Medium body is the unmorphed bind shape.
+// The two Muscular types support Heavy only, so they are absent here until the archetype stage.
 //
-// Gate: this context is applied only when it is selected — by the dev URL switch
-// ?bodyType=masculine, or by the "bodyType" field a preview index sets in its assets.json
-// (SourceAssembly.ts AssemblyAssets; absent from the active index, so every default render,
-// resolver result and test is unchanged until activation sets it there). With the gate off no
-// morph weight, context tag or socket offset is applied anywhere.
+// Every value below is copied exactly from the Season 12 read of the installed paks (probe `properties` mode,
+// pinned 12.00 mapping e5b29e28):
+// - _docs/body-types-2026-11-06/s12-bodytypes-read/extract/DA_BodyType_{Masculine,Feminine}.properties.json
+// - _docs/body-types-2026-11-06/s12-androgynous-read/extract/DA_BodyType_Androgynous.properties.json
+// tests/rig/body-type-preview.test.ts checks every value against those files. Nothing is invented and no value is
+// recomputed. Rotations stay the authored FQuat components; the conversion to the preserved GLB frame happens once,
+// in bodyTypeOffsetMatrix below.
+//
+// Against the pre-S12 copy (shader-probe/definitions-v1), Season 12:
+// - changed Feminine's clavicle offset;
+// - added hat and eyewear sockets, whose Medium offsets are identity;
+// - gave the Muscular types their own tags.
+// Masculine's Medium values are unchanged.
+//
+// Gate: a body type applies only when it is selected:
+// - by the dev URL switch ?bodyType=<id>;
+// - or by the "bodyType" field an index sets in its assets.json (SourceAssembly.ts AssemblyAssets). The active
+//   index sets "masculine".
+// With no body type selected, no morph weight, context tag or socket offset is applied anywhere.
 
 import { composeSourceMatrix, type SourceMatrix, type SourceQuaternion, type SourceVector } from "./SourceTransform";
 
@@ -29,19 +42,30 @@ export interface BodyTypeSocketOffset {
   scale: SourceVector;
 }
 
+export type BodyTypeSocket =
+  "clavicle_attachment" | "pet_attachment" | "upperback_attachment" | "hat_attachment" | "eyewear_attachment";
+
 export interface BodyTypePreview {
   /** The customization tag the asset activates; added to the resolver context when gated on. */
   tag: string;
-  /** The Medium archetype morph the asset activates, applied by name to every mesh that carries it. */
-  mediumMorph: string;
+  /** The Medium archetype morph the asset activates, applied by name to every mesh that carries it.
+   *  Absent when the asset activates none (Androgynous): its Medium body is the bind shape. */
+  mediumMorph?: string;
   /** The sockets the asset offsets, keyed by their exact source names. */
-  socketOffsets: Partial<Record<"clavicle_attachment" | "pet_attachment" | "upperback_attachment",
-    BodyTypeSocketOffset>>;
+  socketOffsets: Partial<Record<BodyTypeSocket, BodyTypeSocketOffset>>;
 }
 
-// DA_BodyType_Masculine: BodyTypeId EBodyType::Masculine, ActivatesMediumMorphTargets medium_male,
-// ActivatesCustomizationTag Customization.BodyType.Masculine, AttachmentSocketData.SocketOffsetsMedium.
+const IDENTITY_HEAD_SOCKET: BodyTypeSocketOffset = {
+  // DA_BodyType_* SocketOffsetsMedium hat_attachment / eyewear_attachment: zero translation and the authored
+  // near-identity quaternion (Y 2.7755576e-17, an FQuat round-off the asset stores).
+  translation: [0, 0, 0],
+  rotation: [0, 2.7755576e-17, 0, 1],
+  scale: [1, 1, 1],
+};
+
 export const BODY_TYPE_PREVIEWS = {
+  // DA_BodyType_Masculine: BodyTypeId EBodyType::Masculine, ActivatesMediumMorphTargets [medium_male],
+  // ActivatesCustomizationTag Customization.BodyType.Masculine, AttachmentSocketData.SocketOffsetsMedium.
   masculine: {
     tag: "Customization.BodyType.Masculine",
     mediumMorph: "medium_male",
@@ -61,18 +85,58 @@ export const BODY_TYPE_PREVIEWS = {
         rotation: [0, 2.0816682e-17, 0, 1],
         scale: [1, 1, 1],
       },
+      hat_attachment: IDENTITY_HEAD_SOCKET,
+      eyewear_attachment: IDENTITY_HEAD_SOCKET,
     },
+  },
+  // DA_BodyType_Feminine: BodyTypeId EBodyType::Feminine (the enum default, so the asset does not serialize it),
+  // ActivatesMediumMorphTargets [medium_female], ActivatesCustomizationTag Customization.BodyType.Feminine,
+  // AttachmentSocketData.SocketOffsetsMedium.
+  feminine: {
+    tag: "Customization.BodyType.Feminine",
+    mediumMorph: "medium_female",
+    socketOffsets: {
+      clavicle_attachment: {
+        translation: [-0.07305206, 0.30822864, 0.16642481],
+        rotation: [0.06270377, 0.0044291476, -0.09631521, 0.993364],
+        scale: [1, 1, 1],
+      },
+      pet_attachment: {
+        translation: [0.012283378, -8.54279e-08, -0.12111688],
+        rotation: [-1.1529222e-06, -0.0747749, -3.3356528e-07, 0.9972004],
+        scale: [1, 1, 1],
+      },
+      upperback_attachment: {
+        translation: [1.4413182e-09, -0.3361784, 1.9533202e-07],
+        rotation: [0, 2.0816682e-17, 0, 1],
+        scale: [1, 1, 1],
+      },
+      hat_attachment: IDENTITY_HEAD_SOCKET,
+      eyewear_attachment: IDENTITY_HEAD_SOCKET,
+    },
+  },
+  // DA_BodyType_Androgynous (new in Season 12): BodyTypeId EBodyType::Androgynous, SupportedArchetypes [Medium],
+  // ActivatesCustomizationTag Customization.BodyType.Androgynous. It authors no ActivatesMediumMorphTargets and no
+  // SocketOffsetsMedium, so it applies no morph and moves no socket for Medium.
+  androgynous: {
+    tag: "Customization.BodyType.Androgynous",
+    socketOffsets: {},
   },
 } as const satisfies Record<string, BodyTypePreview>;
 
 export type BodyTypeId = keyof typeof BODY_TYPE_PREVIEWS;
 
+export const BODY_TYPE_IDS = Object.keys(BODY_TYPE_PREVIEWS) as BodyTypeId[];
+
+export function isBodyTypeId(id: unknown): id is BodyTypeId {
+  return typeof id === "string" && Object.hasOwn(BODY_TYPE_PREVIEWS, id);
+}
+
 /** The named preview context, or undefined when no body type is selected. Unknown names are refused. */
 export function bodyTypePreview(id: string | undefined): BodyTypePreview | undefined {
   if (id === undefined) return undefined;
-  const preview = (BODY_TYPE_PREVIEWS as Record<string, BodyTypePreview>)[id];
-  if (!preview) throw new Error(`Unknown body type preview: ${id}`);
-  return preview;
+  if (!isBodyTypeId(id)) throw new Error(`Unknown body type preview: ${id}`);
+  return BODY_TYPE_PREVIEWS[id];
 }
 
 /** One socket offset in the converted GLB frame the preserved rests use. The reflection is the

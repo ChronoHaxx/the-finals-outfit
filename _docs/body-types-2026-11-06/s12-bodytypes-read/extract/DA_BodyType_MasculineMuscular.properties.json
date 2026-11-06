@@ -1,0 +1,581 @@
+[
+  {
+    "type": "BodyType",
+    "Name": "DA_BodyType_MasculineMuscular",
+    "propertyCount": 9,
+    "properties": {
+      "PersistenceDataAsset": {
+        "ObjectName": "PersistenceDataAsset'DA_Persistence_BodyType_MasculineMuscular'",
+        "ObjectPath": "/Game/Discovery/Characters/BodyTypes/DA_Persistence_BodyType_MasculineMuscular.0"
+      },
+      "BodyTypeId": "EBodyType::MasculineMuscular",
+      "ActivatesLightMorphTargets": [
+        "light_male"
+      ],
+      "ActivatesMediumMorphTargets": [
+        "medium_male"
+      ],
+      "ActivatesHeavyMorphTargets": [
+        "heavy_male_muscular"
+      ],
+      "ActivatesCustomizationTag": {
+        "TagName": "Customization.BodyType.MasculineMuscular"
+      },
+      "SupportedArchetypes": [
+        "EArchetypeSize::Heavy"
+      ],
+      "ActivatesMaterialParameters": [
+        {
+          "MaterialInstance": {
+            "AssetPathName": "/Game/Discovery/Characters/Body/Textures/Muscular/MI_Skin_MuscularMale.MI_Skin_MuscularMale",
+            "SubPathString": ""
+          },
+          "Behavior": "ECustomizationMaterialBehavior::OverrideParameters",
+          "MatchingTags": [
+            "Customization.Archetype.Heavy"
+          ],
+          "SlotNames": []
+        }
+      ],
+      "AttachmentSocketData": {
+        "AttachmentSocketsBasePosition": [
+          {
+            "Key": "watch_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.00070672587,
+                "Y": -0.010195468,
+                "Z": 0.0691481,
+                "W": 0.99755406,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": -0.7988766,
+                "Y": -0.11128722,
+                "Z": -0.01648919
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "clavicle_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.03283371,
+                "Y": 0.65128297,
+                "Z": -0.22163051,
+                "W": 0.7250051,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 24.471354,
+                "Y": 5.1591268,
+                "Z": -9.457216
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "lumbar_attachment_jj",
+            "Value": {
+              "Rotation": {
+                "X": 0.09210952,
+                "Y": 0.70108193,
+                "Z": 0.70108193,
+                "W": 0.09210952,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0000001
+              },
+              "Translation": {
+                "X": 6.458393,
+                "Y": -14.10572,
+                "Z": 10.7710085
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "pet_attachment",
+            "Value": {
+              "Rotation": {
+                "X": -0.014855432,
+                "Y": 0.14036839,
+                "Z": 0.104198724,
+                "W": 0.984489,
+                "IsNormalized": true,
+                "Size": 0.99999994,
+                "SizeSquared": 0.99999994
+              },
+              "Translation": {
+                "X": 15.0,
+                "Y": -0.2140182,
+                "Z": 5.044842
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "upperback_attachment",
+            "Value": {
+              "Rotation": {
+                "X": -0.053255524,
+                "Y": 0.70509845,
+                "Z": 0.053255524,
+                "W": 0.70509845,
+                "IsNormalized": true,
+                "Size": 0.99999994,
+                "SizeSquared": 0.99999994
+              },
+              "Translation": {
+                "X": 17.69765,
+                "Y": -10.092594,
+                "Z": -2.4009472E-09
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "hat_attachment",
+            "Value": {
+              "Rotation": {
+                "X": -0.09189292,
+                "Y": 0.7011103,
+                "Z": 0.09189292,
+                "W": 0.7011103,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 14.493027,
+                "Y": 3.865539,
+                "Z": 0.0
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "eyewear_attachment",
+            "Value": {
+              "Rotation": {
+                "X": -0.09189292,
+                "Y": 0.7011103,
+                "Z": 0.09189292,
+                "W": 0.7011103,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 1.4103,
+                "Y": 14.390727,
+                "Z": 0.0
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          }
+        ],
+        "SocketOffsetLight": [
+          {
+            "Key": "clavicle_attachment",
+            "Value": {
+              "Rotation": {
+                "X": -0.013957218,
+                "Y": 5.7978563E-05,
+                "Z": -3.4826364E-05,
+                "W": 0.9999026,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 0.26684353,
+                "Y": 0.9551667,
+                "Z": -0.121406026
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "pet_attachment",
+            "Value": {
+              "Rotation": {
+                "X": -1.149848E-06,
+                "Y": -0.06572317,
+                "Z": -3.4401324E-07,
+                "W": 0.9978379,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": -2.2703445,
+                "Y": 0.5910535,
+                "Z": -1.166999
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "upperback_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.0,
+                "Y": 2.0816682E-17,
+                "Z": 0.0,
+                "W": 1.0,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 1.4164559E-08,
+                "Y": 1.3030745,
+                "Z": -2.8201683
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "hat_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.0,
+                "Y": 2.7755576E-17,
+                "Z": 0.0,
+                "W": 1.0,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 5.3290705E-15,
+                "Y": 2.7144378E-07,
+                "Z": -2.6470013
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "eyewear_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.0,
+                "Y": 2.7755576E-17,
+                "Z": 0.0,
+                "W": 1.0,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 4.440892E-16,
+                "Y": -2.3896239,
+                "Z": -0.89493066
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          }
+        ],
+        "SocketOffsetsMedium": [
+          {
+            "Key": "clavicle_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 1.0549824E-06,
+                "Y": 2.2451142E-07,
+                "Z": 0.036611296,
+                "W": 0.99932957,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 0.31990716,
+                "Y": 1.6830714,
+                "Z": -0.035146035
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "pet_attachment",
+            "Value": {
+              "Rotation": {
+                "X": -1.1373996E-06,
+                "Y": -0.031531353,
+                "Z": -3.8316787E-07,
+                "W": 0.9995028,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": -0.07107357,
+                "Y": 1.8490414E-06,
+                "Z": 0.70779574
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "upperback_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.0,
+                "Y": 2.0816682E-17,
+                "Z": 0.0,
+                "W": 1.0,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 5.4529394E-09,
+                "Y": -1.2463351,
+                "Z": 1.9533218E-07
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "hat_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.0,
+                "Y": 2.7755576E-17,
+                "Z": 0.0,
+                "W": 1.0,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "eyewear_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.0,
+                "Y": 2.7755576E-17,
+                "Z": 0.0,
+                "W": 1.0,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          }
+        ],
+        "SocketOffsetsHeavy": [
+          {
+            "Key": "clavicle_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.047942154,
+                "Y": 1.7378999E-07,
+                "Z": -1.1967923E-07,
+                "W": 0.9988501,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 1.1952089,
+                "Y": 3.7154605,
+                "Z": -0.77633905
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "pet_attachment",
+            "Value": {
+              "Rotation": {
+                "X": -1.1444738E-06,
+                "Y": -0.05051445,
+                "Z": -3.6149015E-07,
+                "W": 0.9987233,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 1.939927,
+                "Y": -0.4368576,
+                "Z": 4.3298883
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "upperback_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.0,
+                "Y": 2.0816682E-17,
+                "Z": 0.0,
+                "W": 1.0,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": -8.540969E-09,
+                "Y": -6.201804,
+                "Z": 2.0844722
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "hat_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.0,
+                "Y": 2.7755576E-17,
+                "Z": 0.0,
+                "W": 1.0,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 0.0,
+                "Y": -2.0063233E-07,
+                "Z": 1.956479
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          },
+          {
+            "Key": "eyewear_attachment",
+            "Value": {
+              "Rotation": {
+                "X": 0.0,
+                "Y": 2.7755576E-17,
+                "Z": 0.0,
+                "W": 1.0,
+                "IsNormalized": true,
+                "Size": 1.0,
+                "SizeSquared": 1.0
+              },
+              "Translation": {
+                "X": 0.0,
+                "Y": 1.7662435,
+                "Z": 0.6614704
+              },
+              "Scale3D": {
+                "X": 1.0,
+                "Y": 1.0,
+                "Z": 1.0
+              }
+            }
+          }
+        ]
+      }
+    },
+    "importedBounds": null
+  }
+]
