@@ -35,8 +35,12 @@ only fits the body whose morph it was sculpted against. Season 12 re-sculpted th
 - S12 garment layered with a pre-S12 garment: the inner layer can grow through the outer one (stage 1: the S12
   undershirt bulged through the pre-S12 short dress).
 
-The androgynous type activates no morph, so it shows the bind shape, which Season 12 did not change. Androgynous looks
-identical before and after this batch.
+The androgynous type activates no body-type morph, so it shows the bind shape, which Season 12 did not change.
+Androgynous looks identical before and after this batch in every outfit reviewed.
+
+Correction, made later on 6 Nov (`route-review-2026-11-06.md`): S12 also changed the body's `push_lower_torso` fitting
+morph (0.79 cm). Fitting morphs apply in every body type, so the lower torso moves under the 148 items that activate it,
+in androgynous too. It is not visible in the reviewed outfits.
 
 ## Steps and evidence
 
@@ -233,6 +237,10 @@ On masculine, b1–b5 match live: the body's `medium_male` did not change, and n
      rests on the masculine review above: 16 outfits (a1–a8, b1–b5, c1–c3), no new defect. Sixteen outfits are a
      sample.
      Production would still change shape for the 83 garments whose `medium_male` moved more than 0.1 cm.
+- A second opinion and the agent's checks of it are in `route-review-2026-11-06.md`. It recommends route 2 made
+  asymmetric: the fallback applies to `medium_female` only, and `medium_male` uses S12 per mesh, so route 2 contains
+  route 3. That note also records that **the active index has moved** (`acdb9897…`), so `index-v3` and
+  `merge-patch-v1.json` are stale.
 
 ## What merging this changes, and what it needs
 

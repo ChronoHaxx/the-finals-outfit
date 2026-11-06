@@ -56,6 +56,8 @@ Every outfit uses Face 01 and the tall canvas sneakers. Drag to orbit and scroll
   - Expected: no skin or inner layer shows through at those edges. Then try `bodyType=masculine` and
     `bodyType=androgynous`: clean too.
   - Androgynous looks the same on 5193 and 5194.
+  - The sweater activates `push_lower_torso`, the body fitting morph that S12 changed by 0.79 cm in every body type
+    (`route-review-2026-11-06.md`). So this step also checks that the change stays hidden under the sweater.
 - [ ] **3. What every production user would see change (football hoodie, municipal pants, masculine):**
   <http://127.0.0.1:5194/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJ1cHBlckJvZHkiOiJzcG9ydC1mb290YmFsbGhvb2RpZS1qZXJzZXkiLCJsb3dlckJvZHkiOiJtdW5pY2lwYWwtcGFudHMtbnlsb24ifX0&reconstructed=1&bodyType=masculine>
   - Both garments carry new Season 12 `medium_male` morphs (up to 2.55 cm and 1.81 cm).

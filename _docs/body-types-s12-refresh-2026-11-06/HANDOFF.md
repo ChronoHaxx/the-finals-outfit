@@ -41,6 +41,12 @@ derived artefact keyed to the live mesh stays valid: body masks, material bindin
    - an outfit-level morph fallback (a rig change);
    - masculine-only now.
 
+   `route-review-2026-11-06.md` recommends the fallback made asymmetric: `medium_female` only, with `medium_male` S12
+   per mesh. It also records three things:
+   - the fallback needs baked `_s12` targets, including `push_lower_torso` on the body;
+   - it needs per-mesh flags in the index;
+   - the active index is now `acdb9897…`, so the section below applies.
+
 ## If the active index moved since `ae2c1ac0…`
 
 Do not apply the patch. Rebuild the candidate on the new index. All of this is read-only on the active index, and every
