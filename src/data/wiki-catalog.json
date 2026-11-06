@@ -34178,6 +34178,614 @@
       "method": "staged-icon-identical",
       "isHidden": false,
       "isUnreleased": false
+    },
+    "attachments-americanfootballplushie": {
+      "name": "TOUCHDOWN CUTIE",
+      "pageId": 13785,
+      "revisionId": 69238,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-banana-lowerback-apesquad": {
+      "name": "APE SQUAD BACK-NANAS",
+      "pageId": 12551,
+      "revisionId": 71320,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-baseballbat-matte-volpe": {
+      "name": "FLY SWATTER",
+      "pageId": 22003,
+      "revisionId": 68213,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-bearplushie-01": {
+      "name": "CUDDLE SUPPORT",
+      "pageId": 21557,
+      "revisionId": 70906,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-bucketwooden-01": {
+      "name": "BULLHEADED BARREL",
+      "pageId": 19956,
+      "revisionId": 67653,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-cactus-01": {
+      "name": "POTTED PROTECTOR",
+      "pageId": 15547,
+      "revisionId": 69161,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-cashball-01": {
+      "name": "ROLLING RESERVE",
+      "pageId": 12238,
+      "revisionId": 70547,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-catplushie": {
+      "name": "SNUGGLE SUPPORT",
+      "pageId": 13866,
+      "revisionId": 70019,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-cdplayer": {
+      "name": "SPIN CYCLE",
+      "pageId": 13548,
+      "revisionId": 69390,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-ceovaiiya-01": {
+      "name": "MAINFRAME OF MIND",
+      "pageId": 13545,
+      "revisionId": 77163,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-chickenplushie-cotton": {
+      "name": "COOPER FLOCKWELL",
+      "pageId": 13024,
+      "revisionId": 73870,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-christmasgift-01": {
+      "name": "GIFT OF CHAOS",
+      "pageId": 12402,
+      "revisionId": 72005,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-clownnose": {
+      "name": "LAUGH TRIGGER",
+      "pageId": 25767,
+      "revisionId": 80122,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-crystalball": {
+      "name": "PORTABLE DREAMSTATE",
+      "pageId": 18109,
+      "revisionId": 68848,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-drinkingcup": {
+      "name": "ARENA NECTAR CUP",
+      "pageId": 21379,
+      "revisionId": 71805,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-dumplingheadwear": {
+      "name": "STEAM SUPREME",
+      "pageId": 12653,
+      "revisionId": 69051,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-guitar-01-back": {
+      "name": "RIFF AND RECKON",
+      "pageId": 15531,
+      "revisionId": 69147,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-guitar-01-black-back": {
+      "name": "HARMONY BREAKER",
+      "pageId": 20306,
+      "revisionId": 72047,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-lanternchinese-01": {
+      "name": "PAPER LANTERN",
+      "pageId": 14617,
+      "revisionId": 70659,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-log-01": {
+      "name": "LUMBER SUPPORT",
+      "pageId": 20875,
+      "revisionId": 72589,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-lute-01-back-ultimate": {
+      "name": "VELARE NOCTIS' LUTE",
+      "pageId": 18284,
+      "revisionId": 69880,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-newyearheadwear-plastic": {
+      "name": "SPARKLINE BAND",
+      "pageId": 12424,
+      "revisionId": 68270,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-plushiehorse-01": {
+      "name": "STABLE ASSET",
+      "pageId": 20217,
+      "revisionId": 67708,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-shovel-01-back": {
+      "name": "SHOWOFF SHOVEL",
+      "pageId": 16193,
+      "revisionId": 68367,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-skiblade-01-redwhitevolpe": {
+      "name": "LAST DESCENT",
+      "pageId": 21992,
+      "revisionId": 68442,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-spellbook": {
+      "name": "OPEN RIFT CODEX",
+      "pageId": 18316,
+      "revisionId": 69887,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-turtleplushie-01": {
+      "name": "SHELDON SHELLDOME",
+      "pageId": 21127,
+      "revisionId": 54976,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-wizardstaff-01": {
+      "name": "STARSEEKER STAFF",
+      "pageId": 18296,
+      "revisionId": 68939,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-technical-cyberskin-01": {
+      "name": "SUBDERMAL SHINE",
+      "pageId": 21427,
+      "revisionId": 73233,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-technical-dissunimplants-01": {
+      "name": "DISSUN MAGNETIC FIELD",
+      "pageId": 15890,
+      "revisionId": 47293,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-durag-black-gold": {
+      "name": "FINAL FLY DURAG",
+      "pageId": 10078,
+      "revisionId": 42401,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-earmuffs-cotton": {
+      "name": "FROSTBITE MUFFS",
+      "pageId": 12508,
+      "revisionId": 68292,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cowboy-canister-metal": {
+      "name": "OSPUZE RESERVE",
+      "pageId": 22481,
+      "revisionId": 71476,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cute-bunnycostumefur-polyester": {
+      "name": "BANK RABBIT",
+      "pageId": 19711,
+      "revisionId": 74037,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cute-frogcostume-cotton": {
+      "name": "POND DWELLER",
+      "pageId": 23835,
+      "revisionId": 73505,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cute-orfbag-leather": {
+      "name": "ÖRF-VENTURE DAYPACK",
+      "pageId": 20255,
+      "revisionId": 72524,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cute-plushie-cotton-yellow": {
+      "name": "PURRCENARY PLUSHY",
+      "pageId": 13397,
+      "revisionId": 73673,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cute-tanukicostumefur-cotton": {
+      "name": "TRICKPAW TANUKI",
+      "pageId": 14732,
+      "revisionId": 73575,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "fromtencent-backflag-01": {
+      "name": "OPENING STANDARD",
+      "pageId": 15337,
+      "revisionId": 68554,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "historic-censer": {
+      "name": "CENSER OF VIGIL",
+      "pageId": 17822,
+      "revisionId": 67603,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "historic-simplerings-metal": {
+      "name": "LEX MANUS RINGS",
+      "pageId": 14280,
+      "revisionId": 44002,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "historic-togalower-cotton": {
+      "name": "DOMINION DRAPE",
+      "pageId": 14286,
+      "revisionId": 43999,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "historic-vikingshield-metal": {
+      "name": "DEFENDABLE FASHION",
+      "pageId": 12629,
+      "revisionId": 69591,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-coinsack-canvas-beige": {
+      "name": "LEAKY LOOT",
+      "pageId": 18125,
+      "revisionId": 68855,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-elfprincessrings-metal": {
+      "name": "ROOTBOUND RINGS",
+      "pageId": 18231,
+      "revisionId": 68906,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-floatingskull-skeleton-greenglow": {
+      "name": "HEXCROWNED EIDOLON",
+      "pageId": 18253,
+      "revisionId": 69872,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-knightshieldandsword": {
+      "name": "SUNWARD REGALIA",
+      "pageId": 18334,
+      "revisionId": 68958,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-knightsword-steel-black": {
+      "name": "FINAL DECREE",
+      "pageId": 17790,
+      "revisionId": 67587,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-hardcase-plastic-arctic": {
+      "name": "COLDCASE UNIT",
+      "pageId": 22444,
+      "revisionId": 68393,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-hardcase-plastic-brazil": {
+      "name": "LAUNCH CASE",
+      "pageId": 10441,
+      "revisionId": 69517,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-hardcase-plastic-brazilultimate": {
+      "name": "IGNITION CASE",
+      "pageId": 10553,
+      "revisionId": 69750,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-hardcase-plastic-fnatic": {
+      "name": "FNATIC HARD CASE",
+      "pageId": 16296,
+      "revisionId": 71194,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "monsters-bigfootcostumefeet-rubber": {
+      "name": "FORAGER STOMPERS",
+      "pageId": 23900,
+      "revisionId": 72242,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "monsters-bigfootcostumefur-cotton": {
+      "name": "WOODLAND ONESIE",
+      "pageId": 23898,
+      "revisionId": 72240,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "monsters-easterndemonhooves-leather-black": {
+      "name": "INFERNAL HOOVES",
+      "pageId": 16183,
+      "revisionId": 68198,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "monsters-easterndemonsword-metal-gray": {
+      "name": "SOUL DIVIDER",
+      "pageId": 16179,
+      "revisionId": 68196,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "monsters-kaiju-plastic": {
+      "name": "NED'S MAULFIN ONESIE",
+      "pageId": 21797,
+      "revisionId": 71897,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "monsters-kaijufeet-plastic": {
+      "name": "NED'S CHOMPY STEPS",
+      "pageId": 21795,
+      "revisionId": 71896,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "pirate-flaskpouch-leather": {
+      "name": "BUCCANEER CANTEEN",
+      "pageId": 16638,
+      "revisionId": 73194,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-japaneserobot-base": {
+      "name": "PROTOCOL CORE",
+      "pageId": 14812,
+      "revisionId": 73510,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-japaneserobot-base-black": {
+      "name": "SHADOWFRAME SUIT",
+      "pageId": 21086,
+      "revisionId": 71746,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-moonheadwear": {
+      "name": "FULL PHASE",
+      "pageId": 14488,
+      "revisionId": 70643,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-roboticskeleton-plastic-ivada": {
+      "name": "TERMIFRAME CHASSIS",
+      "pageId": 17101,
+      "revisionId": 69736,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-roboticskeleton-plastic-vaiiya": {
+      "name": "SYNAPSE COREFRAME",
+      "pageId": 17087,
+      "revisionId": 69468,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "robots-robotwarriorlegs-metal": {
+      "name": "WARBOUND ROBES",
+      "pageId": 14894,
+      "revisionId": 68536,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-katanas-metal-envy": {
+      "name": "ENVY KATANAS",
+      "pageId": 15938,
+      "revisionId": 71027,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-singlekatana-metal-black": {
+      "name": "IRON FANG",
+      "pageId": 14890,
+      "revisionId": 68534,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-singlekatana-metal-teamsecret": {
+      "name": "TEAM SECRET BLADES",
+      "pageId": 16279,
+      "revisionId": 71179,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "sport-retrorollerskates-nylon-ospuze": {
+      "name": "SKATE STORMER",
+      "pageId": 21706,
+      "revisionId": 73266,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-curvedsword-metal": {
+      "name": "LUCKY DRAW",
+      "pageId": 21102,
+      "revisionId": 70812,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-cybercatplushie-cotton-whitepink": {
+      "name": "PING PAWS",
+      "pageId": 14194,
+      "revisionId": 68430,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-popmic-plastic-black": {
+      "name": "ROARLINE MIC",
+      "pageId": 21749,
+      "revisionId": 68331,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-walkman-plastic-gangnam": {
+      "name": "RADIO RELIC",
+      "pageId": 13463,
+      "revisionId": 74153,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "tech-tvhead-christmas": {
+      "name": "TWINKLE VISION MASK",
+      "pageId": 11485,
+      "revisionId": 68149,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "tech-tvhead": {
+      "name": "MAX VIEWING",
+      "pageId": 16032,
+      "revisionId": 69987,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "traditional-lunarrings-gold": {
+      "name": "ZENITH RINGS",
+      "pageId": 12893,
+      "revisionId": 69098,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
     }
   }
 }

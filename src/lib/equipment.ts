@@ -3,10 +3,12 @@ import { getItemById } from './catalog';
 import { SLOTS, type Slot } from './slots';
 
 type Selection = Readonly<Partial<Record<Slot, string | null>>>;
-const fullBody = new Set(source.fullBody);
+// Spanning garments: source-declared full-body garments, plus garments outside Feet whose source Slots take
+// EBodySlot::Shoes (the sporty robot legs carry their own feet; policy v2).
+const fullBody = new Set([...source.fullBody, ...source.spansShoes]);
 const occupancy: Readonly<Record<string, readonly string[]>> = source.slotsByItem;
 
-// Deliberately limited to source-declared full-body garments. Applying every
+// Deliberately limited to source-declared spanning garments. Applying every
 // source slot as an equipment ban would change existing hair/hat and coat rules.
 export function equipmentConflicts(aSlot: Slot, aId: string, bSlot: Slot, bId: string): boolean {
   if (aSlot === bSlot || (!fullBody.has(aId) && !fullBody.has(bId))) return false;

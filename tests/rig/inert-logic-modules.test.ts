@@ -17,17 +17,22 @@ const INERT = { AssetPathName: "/Script/Angelscript.CharacterCustomizationLogic_
 const OTHER = { AssetPathName: "/Script/Angelscript.CharacterCustomizationLogic_EliminationTimestamps", SubPathString: "" };
 // (w119 watches) the second allowlisted module, under the watch-faces-at-GameTime-0 sign-off.
 const WATCH = { AssetPathName: "/Script/Angelscript.CharacterCustomizationLogic_Watch", SubPathString: "" };
+// (w149) the third allowlisted module: the step counter watch, whose icon shows a zero count.
+const STEPS = { AssetPathName: "/Script/Angelscript.CharacterCustomizationLogic_StepCounter", SubPathString: "" };
 
 // --- the allowlist itself ---------------------------------------------------------------------
 
-test("the allowlist is exactly the two inert modules, matched by exact path string", () => {
+test("the allowlist is exactly the three inert modules, matched by exact path string", () => {
   assert.deepEqual([...INERT_LOGIC_MODULES], ["/Script/Angelscript.CharacterCustomizationLogic_IsInFrontend",
-    "/Script/Angelscript.CharacterCustomizationLogic_Watch"]);
+    "/Script/Angelscript.CharacterCustomizationLogic_Watch",
+    "/Script/Angelscript.CharacterCustomizationLogic_StepCounter"]);
   assert.equal(onlyInertLogicModules({ LogicModules: [WATCH] }), true);
   assert.equal(onlyInertLogicModules({ LogicModules: [WATCH, INERT] }), true);
-  for (const modules of [[WATCH, OTHER], [{ ...WATCH, SubPathString: "Instance" }],
+  // (w149) the step counter watch's module, admitted on the icon's zero count.
+  assert.equal(onlyInertLogicModules({ LogicModules: [STEPS] }), true);
+  for (const modules of [[WATCH, OTHER], [STEPS, OTHER], [{ ...WATCH, SubPathString: "Instance" }],
     [{ ...WATCH, AssetPathName: "/Script/Angelscript.CharacterCustomizationLogic_Watches" }],
-    [{ AssetPathName: "/Script/Angelscript.CharacterCustomizationLogic_StepCounter", SubPathString: "" }],
+    [{ ...STEPS, AssetPathName: "/Script/Angelscript.CharacterCustomizationLogic_StepCounters" }],
     [{ AssetPathName: "/Script/Angelscript.CharacterCustomizationLogic_Revives", SubPathString: "" }]]) {
     assert.equal(onlyInertLogicModules({ LogicModules: modules }), false, JSON.stringify(modules));
   }

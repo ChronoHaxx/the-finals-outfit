@@ -259393,7 +259393,7 @@
   },
   {
     "id": "attachments-robot-visor",
-    "slot": "facewear",
+    "slot": "eyewear",
     "name": "Robot Visor",
     "imageUrl": "items/facewear/attachments-robot-visor.webp",
     "season": 11
@@ -263823,5 +263823,728 @@
       "cotton-white"
     ],
     "season": 12
+  },
+  {
+    "id": "attachments-americanfootballplushie",
+    "slot": "lowerBack",
+    "name": "American Football Plushie",
+    "imageUrl": "items/lowerBack/attachments-americanfootballplushie.webp",
+    "season": 6
+  },
+  {
+    "id": "attachments-banana-lowerback-apesquad",
+    "slot": "lowerBack",
+    "name": "Banana Lower Back Ape Squad",
+    "imageUrl": "items/lowerBack/attachments-banana-lowerback-apesquad.webp",
+    "tags": [
+      "lowerback-apesquad"
+    ],
+    "season": 8
+  },
+  {
+    "id": "attachment-baseballbat-matte-volpe",
+    "slot": "upperBack",
+    "name": "Baseball Bat Matte Volpe",
+    "imageUrl": "items/upperBack/attachment-baseballbat-matte-volpe.webp",
+    "tags": [
+      "matte-volpe"
+    ],
+    "season": 9
+  },
+  {
+    "id": "attachments-bearplushie-01",
+    "slot": "lowerBack",
+    "name": "Bear Plushie 01",
+    "imageUrl": "items/lowerBack/attachments-bearplushie-01.webp",
+    "season": 8
+  },
+  {
+    "id": "attachments-bucketwooden-01",
+    "slot": "headwear",
+    "name": "Bucket Wooden 01",
+    "imageUrl": "items/headwear/attachments-bucketwooden-01.webp",
+    "season": 10
+  },
+  {
+    "id": "attachments-cactus-01",
+    "slot": "lowerBack",
+    "name": "Cactus 01",
+    "imageUrl": "items/lowerBack/attachments-cactus-01.webp",
+    "season": 5
+  },
+  {
+    "id": "attachments-cashball-01",
+    "slot": "lowerBack",
+    "name": "Cash Ball 01",
+    "imageUrl": "items/lowerBack/attachments-cashball-01.webp",
+    "season": 7
+  },
+  {
+    "id": "attachments-catplushie",
+    "slot": "lowerBack",
+    "name": "Cat Plushie",
+    "imageUrl": "items/lowerBack/attachments-catplushie.webp",
+    "season": 3
+  },
+  {
+    "id": "attachment-cdplayer",
+    "slot": "lowerBack",
+    "name": "CDPlayer",
+    "imageUrl": "items/lowerBack/attachment-cdplayer.webp",
+    "season": 7
+  },
+  {
+    "id": "attachments-ceovaiiya-01",
+    "slot": "upperBack",
+    "name": "Ceo Vaiiya 01",
+    "imageUrl": "items/upperBack/attachments-ceovaiiya-01.webp",
+    "sponsor": "vaiiya",
+    "season": 7
+  },
+  {
+    "id": "attachment-chickenplushie-cotton",
+    "slot": "lowerBack",
+    "name": "Chicken Plushie Cotton",
+    "imageUrl": "items/lowerBack/attachment-chickenplushie-cotton.webp",
+    "tags": [
+      "cotton"
+    ],
+    "season": 1
+  },
+  {
+    "id": "attachments-christmasgift-01",
+    "slot": "lowerBack",
+    "name": "Christmas Gift 01",
+    "imageUrl": "items/lowerBack/attachments-christmasgift-01.webp",
+    "season": 5
+  },
+  {
+    "id": "attachment-clownnose",
+    "slot": "facewear",
+    "name": "Clown Nose",
+    "imageUrl": "items/facewear/attachment-clownnose.webp",
+    "season": 8
+  },
+  {
+    "id": "attachments-crystalball",
+    "slot": "lowerBack",
+    "name": "Crystal Ball",
+    "imageUrl": "items/lowerBack/attachments-crystalball.webp",
+    "season": 10
+  },
+  {
+    "id": "attachments-drinkingcup",
+    "slot": "lowerBack",
+    "name": "Drinking Cup",
+    "imageUrl": "items/lowerBack/attachments-drinkingcup.webp",
+    "season": 7
+  },
+  {
+    "id": "attachments-dumplingheadwear",
+    "slot": "headwear",
+    "name": "Dumpling Headwear",
+    "imageUrl": "items/headwear/attachments-dumplingheadwear.webp",
+    "season": 9
+  },
+  {
+    "id": "attachments-guitar-01-back",
+    "slot": "upperBack",
+    "name": "Guitar 01 Back",
+    "imageUrl": "items/upperBack/attachments-guitar-01-back.webp",
+    "season": 5
+  },
+  {
+    "id": "attachments-guitar-01-black-back",
+    "slot": "upperBack",
+    "name": "Guitar 01 Black Back",
+    "imageUrl": "items/upperBack/attachments-guitar-01-black-back.webp",
+    "tags": [
+      "black"
+    ],
+    "season": 5
+  },
+  {
+    "id": "attachments-lanternchinese-01",
+    "slot": "lowerBack",
+    "name": "Lantern Chinese 01",
+    "imageUrl": "items/lowerBack/attachments-lanternchinese-01.webp",
+    "season": 9
+  },
+  {
+    "id": "attachments-log-01",
+    "slot": "lowerBack",
+    "name": "Log 01",
+    "imageUrl": "items/lowerBack/attachments-log-01.webp",
+    "season": 6
+  },
+  {
+    "id": "attachments-lute-01-back-ultimate",
+    "slot": "upperBack",
+    "name": "Lute 01 Back Ultimate",
+    "imageUrl": "items/upperBack/attachments-lute-01-back-ultimate.webp",
+    "season": 10
+  },
+  {
+    "id": "attachments-newyearheadwear-plastic",
+    "slot": "headwear",
+    "name": "New Year Headwear Plastic",
+    "imageUrl": "items/headwear/attachments-newyearheadwear-plastic.webp",
+    "tags": [
+      "plastic"
+    ],
+    "season": 9
+  },
+  {
+    "id": "attachments-plushiehorse-01",
+    "slot": "lowerBack",
+    "name": "Plushie Horse 01",
+    "imageUrl": "items/lowerBack/attachments-plushiehorse-01.webp",
+    "season": 9
+  },
+  {
+    "id": "attachments-shovel-01-back",
+    "slot": "upperBack",
+    "name": "Shovel 01 Back",
+    "imageUrl": "items/upperBack/attachments-shovel-01-back.webp",
+    "season": 9
+  },
+  {
+    "id": "attachments-skiblade-01-redwhitevolpe",
+    "slot": "upperBack",
+    "name": "Ski Blade 01 Red White Volpe",
+    "imageUrl": "items/upperBack/attachments-skiblade-01-redwhitevolpe.webp",
+    "tags": [
+      "redwhitevolpe"
+    ],
+    "season": 9
+  },
+  {
+    "id": "attachments-spellbook",
+    "slot": "lowerBack",
+    "name": "Spell Book",
+    "imageUrl": "items/lowerBack/attachments-spellbook.webp",
+    "season": 10
+  },
+  {
+    "id": "attachments-turtleplushie-01",
+    "slot": "lowerBack",
+    "name": "Turtle Plushie 01",
+    "imageUrl": "items/lowerBack/attachments-turtleplushie-01.webp",
+    "season": 4
+  },
+  {
+    "id": "attachments-wizardstaff-01",
+    "slot": "upperBack",
+    "name": "Wizard Staff 01",
+    "imageUrl": "items/upperBack/attachments-wizardstaff-01.webp",
+    "season": 10
+  },
+  {
+    "id": "bodycosmetics-technical-cyberskin-01",
+    "slot": "bodyPaint",
+    "name": "Technical Cyber Skin 01",
+    "imageUrl": "items/bodyPaint/bodycosmetics-technical-cyberskin-01.webp",
+    "season": 4
+  },
+  {
+    "id": "bodycosmetics-technical-dissunimplants-01",
+    "slot": "bodyPaint",
+    "name": "Technical Dissun Implants 01",
+    "imageUrl": "items/bodyPaint/bodycosmetics-technical-dissunimplants-01.webp",
+    "sponsor": "dissun",
+    "season": 3
+  },
+  {
+    "id": "casual-durag-black-gold",
+    "slot": "headwear",
+    "name": "Durag Black Gold",
+    "imageUrl": "items/headwear/casual-durag-black-gold.webp",
+    "set": "Casual",
+    "tags": [
+      "black-gold"
+    ],
+    "season": 8
+  },
+  {
+    "id": "casual-earmuffs-cotton",
+    "slot": "headwear",
+    "name": "Earmuffs Cotton",
+    "imageUrl": "items/headwear/casual-earmuffs-cotton.webp",
+    "set": "Casual",
+    "tags": [
+      "cotton"
+    ],
+    "season": 9
+  },
+  {
+    "id": "cowboy-canister-metal",
+    "slot": "upperBack",
+    "name": "Canister Metal",
+    "imageUrl": "items/upperBack/cowboy-canister-metal.webp",
+    "set": "Cowboy",
+    "tags": [
+      "metal"
+    ],
+    "season": 8
+  },
+  {
+    "id": "cute-bunnycostumefur-polyester",
+    "slot": "upperBody",
+    "name": "Bunny Costume Fur Polyester",
+    "imageUrl": "items/upperBody/cute-bunnycostumefur-polyester.webp",
+    "set": "Cute",
+    "tags": [
+      "polyester"
+    ],
+    "season": 2
+  },
+  {
+    "id": "cute-frogcostume-cotton",
+    "slot": "upperBody",
+    "name": "Frog Costume Cotton",
+    "imageUrl": "items/upperBody/cute-frogcostume-cotton.webp",
+    "set": "Cute",
+    "tags": [
+      "cotton"
+    ],
+    "season": 3
+  },
+  {
+    "id": "cute-orfbag-leather",
+    "slot": "upperBack",
+    "name": "ORFBag Leather",
+    "imageUrl": "items/upperBack/cute-orfbag-leather.webp",
+    "set": "Cute",
+    "tags": [
+      "leather"
+    ],
+    "season": 6
+  },
+  {
+    "id": "cute-plushie-cotton-yellow",
+    "slot": "lowerBack",
+    "name": "Plushie Cotton Yellow",
+    "imageUrl": "items/lowerBack/cute-plushie-cotton-yellow.webp",
+    "set": "Cute",
+    "tags": [
+      "cotton-yellow"
+    ],
+    "season": 1
+  },
+  {
+    "id": "cute-tanukicostumefur-cotton",
+    "slot": "upperBody",
+    "name": "Tanuki Costume Fur Cotton",
+    "imageUrl": "items/upperBody/cute-tanukicostumefur-cotton.webp",
+    "set": "Cute",
+    "tags": [
+      "cotton"
+    ],
+    "season": 3
+  },
+  {
+    "id": "fromtencent-backflag-01",
+    "slot": "upperBack",
+    "name": "Back Flag 01",
+    "imageUrl": "items/upperBack/fromtencent-backflag-01.webp",
+    "set": "FromTencent",
+    "season": 9
+  },
+  {
+    "id": "historic-censer",
+    "slot": "lowerBack",
+    "name": "Censer",
+    "imageUrl": "items/lowerBack/historic-censer.webp",
+    "set": "Historic",
+    "season": 10
+  },
+  {
+    "id": "historic-simplerings-metal",
+    "slot": "hands",
+    "name": "Simple Rings Metal",
+    "imageUrl": "items/hands/historic-simplerings-metal.webp",
+    "set": "Historic",
+    "tags": [
+      "metal"
+    ],
+    "season": 9
+  },
+  {
+    "id": "historic-togalower-cotton",
+    "slot": "lowerBody",
+    "name": "Toga Lower Cotton",
+    "imageUrl": "items/lowerBody/historic-togalower-cotton.webp",
+    "set": "Historic",
+    "tags": [
+      "cotton"
+    ],
+    "season": 9
+  },
+  {
+    "id": "historic-vikingshield-metal",
+    "slot": "upperBack",
+    "name": "Viking Shield Metal",
+    "imageUrl": "items/upperBack/historic-vikingshield-metal.webp",
+    "set": "Historic",
+    "tags": [
+      "metal"
+    ],
+    "season": 8
+  },
+  {
+    "id": "medieval-coinsack-canvas-beige",
+    "slot": "upperBack",
+    "name": "Coin Sack Canvas Beige",
+    "imageUrl": "items/upperBack/medieval-coinsack-canvas-beige.webp",
+    "set": "Medieval",
+    "tags": [
+      "canvas-beige"
+    ],
+    "season": 10
+  },
+  {
+    "id": "medieval-elfprincessrings-metal",
+    "slot": "hands",
+    "name": "Elf Princess Rings Metal",
+    "imageUrl": "items/hands/medieval-elfprincessrings-metal.webp",
+    "set": "Medieval",
+    "tags": [
+      "metal"
+    ],
+    "season": 10
+  },
+  {
+    "id": "medieval-floatingskull-skeleton-greenglow",
+    "slot": "face",
+    "name": "Floating Skull Skeleton Green Glow",
+    "imageUrl": "items/face/medieval-floatingskull-skeleton-greenglow.webp",
+    "set": "Medieval",
+    "tags": [
+      "skeleton-greenglow"
+    ],
+    "season": 10
+  },
+  {
+    "id": "medieval-knightshieldandsword",
+    "slot": "upperBack",
+    "name": "Knight Shield And Sword",
+    "imageUrl": "items/upperBack/medieval-knightshieldandsword.webp",
+    "set": "Medieval",
+    "season": 10
+  },
+  {
+    "id": "medieval-knightsword-steel-black",
+    "slot": "upperBack",
+    "name": "Knight Sword Steel Black",
+    "imageUrl": "items/upperBack/medieval-knightsword-steel-black.webp",
+    "set": "Medieval",
+    "tags": [
+      "steel-black"
+    ],
+    "season": 10
+  },
+  {
+    "id": "military-hardcase-plastic-arctic",
+    "slot": "lowerBack",
+    "name": "Hardcase Plastic Arctic",
+    "imageUrl": "items/lowerBack/military-hardcase-plastic-arctic.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-arctic"
+    ],
+    "season": 9
+  },
+  {
+    "id": "military-hardcase-plastic-brazil",
+    "slot": "lowerBack",
+    "name": "Hardcase Plastic Brazil",
+    "imageUrl": "items/lowerBack/military-hardcase-plastic-brazil.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-brazil"
+    ],
+    "season": 8
+  },
+  {
+    "id": "military-hardcase-plastic-brazilultimate",
+    "slot": "lowerBack",
+    "name": "Hardcase Plastic Brazil Ultimate",
+    "imageUrl": "items/lowerBack/military-hardcase-plastic-brazilultimate.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-brazilultimate"
+    ],
+    "season": 8
+  },
+  {
+    "id": "military-hardcase-plastic-fnatic",
+    "slot": "lowerBack",
+    "name": "Hardcase Plastic Fnatic",
+    "imageUrl": "items/lowerBack/military-hardcase-plastic-fnatic.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-fnatic"
+    ],
+    "season": 8
+  },
+  {
+    "id": "monsters-bigfootcostumefeet-rubber",
+    "slot": "feet",
+    "name": "Big Foot Costume Feet Rubber",
+    "imageUrl": "items/feet/monsters-bigfootcostumefeet-rubber.webp",
+    "set": "Monsters",
+    "tags": [
+      "rubber"
+    ],
+    "season": 5
+  },
+  {
+    "id": "monsters-bigfootcostumefur-cotton",
+    "slot": "upperBody",
+    "name": "Big Foot Costume Fur Cotton",
+    "imageUrl": "items/upperBody/monsters-bigfootcostumefur-cotton.webp",
+    "set": "Monsters",
+    "tags": [
+      "cotton"
+    ],
+    "season": 5
+  },
+  {
+    "id": "monsters-easterndemonhooves-leather-black",
+    "slot": "feet",
+    "name": "Eastern Demon Hooves Leather Black",
+    "imageUrl": "items/feet/monsters-easterndemonhooves-leather-black.webp",
+    "set": "Monsters",
+    "tags": [
+      "leather-black"
+    ],
+    "season": 9
+  },
+  {
+    "id": "monsters-easterndemonsword-metal-gray",
+    "slot": "lowerBack",
+    "name": "Eastern Demon Sword Metal Gray",
+    "imageUrl": "items/lowerBack/monsters-easterndemonsword-metal-gray.webp",
+    "set": "Monsters",
+    "tags": [
+      "metal-gray"
+    ],
+    "season": 9
+  },
+  {
+    "id": "monsters-kaiju-plastic",
+    "slot": "upperBody",
+    "name": "Kaiju Plastic",
+    "imageUrl": "items/upperBody/monsters-kaiju-plastic.webp",
+    "set": "Monsters",
+    "tags": [
+      "plastic"
+    ],
+    "season": 7
+  },
+  {
+    "id": "monsters-kaijufeet-plastic",
+    "slot": "feet",
+    "name": "Kaiju Feet Plastic",
+    "imageUrl": "items/feet/monsters-kaijufeet-plastic.webp",
+    "set": "Monsters",
+    "tags": [
+      "plastic"
+    ],
+    "season": 7
+  },
+  {
+    "id": "pirate-flaskpouch-leather",
+    "slot": "lowerBack",
+    "name": "Flask Pouch Leather",
+    "imageUrl": "items/lowerBack/pirate-flaskpouch-leather.webp",
+    "set": "Pirate",
+    "tags": [
+      "leather"
+    ],
+    "season": 4
+  },
+  {
+    "id": "robots-japaneserobot-base",
+    "slot": "upperBody",
+    "name": "Japanese Robot Base",
+    "imageUrl": "items/upperBody/robots-japaneserobot-base.webp",
+    "set": "Robots",
+    "tags": [
+      "base"
+    ],
+    "season": 3
+  },
+  {
+    "id": "robots-japaneserobot-base-black",
+    "slot": "upperBody",
+    "name": "Japanese Robot Base Black",
+    "imageUrl": "items/upperBody/robots-japaneserobot-base-black.webp",
+    "set": "Robots",
+    "tags": [
+      "base-black"
+    ],
+    "season": 7
+  },
+  {
+    "id": "robots-moonheadwear",
+    "slot": "headwear",
+    "name": "Moon Headwear",
+    "imageUrl": "items/headwear/robots-moonheadwear.webp",
+    "set": "Robots",
+    "season": 9
+  },
+  {
+    "id": "robots-roboticskeleton-plastic-ivada",
+    "slot": "upperBody",
+    "name": "Robotic Skeleton Plastic IVADA",
+    "imageUrl": "items/upperBody/robots-roboticskeleton-plastic-ivada.webp",
+    "set": "Robots",
+    "tags": [
+      "plastic-ivada"
+    ],
+    "season": 7
+  },
+  {
+    "id": "robots-roboticskeleton-plastic-vaiiya",
+    "slot": "upperBody",
+    "name": "Robotic Skeleton Plastic VAIIYA",
+    "imageUrl": "items/upperBody/robots-roboticskeleton-plastic-vaiiya.webp",
+    "set": "Robots",
+    "sponsor": "vaiiya",
+    "tags": [
+      "plastic-vaiiya"
+    ],
+    "season": 7
+  },
+  {
+    "id": "robots-robotwarriorlegs-metal",
+    "slot": "lowerBody",
+    "name": "Robot Warrior Legs Metal",
+    "imageUrl": "items/lowerBody/robots-robotwarriorlegs-metal.webp",
+    "set": "Robots",
+    "tags": [
+      "metal"
+    ],
+    "season": 9
+  },
+  {
+    "id": "scifi-katanas-metal-envy",
+    "slot": "upperBack",
+    "name": "Katanas Metal Envy",
+    "imageUrl": "items/upperBack/scifi-katanas-metal-envy.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal-envy"
+    ],
+    "season": 8
+  },
+  {
+    "id": "scifi-singlekatana-metal-black",
+    "slot": "upperBack",
+    "name": "Single Katana Metal Black",
+    "imageUrl": "items/upperBack/scifi-singlekatana-metal-black.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal-black"
+    ],
+    "season": 9
+  },
+  {
+    "id": "scifi-singlekatana-metal-teamsecret",
+    "slot": "upperBack",
+    "name": "Single Katana Metal Team Secret",
+    "imageUrl": "items/upperBack/scifi-singlekatana-metal-teamsecret.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal-teamsecret"
+    ],
+    "season": 8
+  },
+  {
+    "id": "sport-retrorollerskates-nylon-ospuze",
+    "slot": "lowerBack",
+    "name": "Retro Roller Skates Nylon OSPUZE",
+    "imageUrl": "items/lowerBack/sport-retrorollerskates-nylon-ospuze.webp",
+    "set": "Sport",
+    "sponsor": "ospuze",
+    "tags": [
+      "nylon-ospuze"
+    ],
+    "season": 4
+  },
+  {
+    "id": "streetwear-curvedsword-metal",
+    "slot": "lowerBack",
+    "name": "Curved Sword Metal",
+    "imageUrl": "items/lowerBack/streetwear-curvedsword-metal.webp",
+    "set": "Streetwear",
+    "tags": [
+      "metal"
+    ],
+    "season": 8
+  },
+  {
+    "id": "streetwear-cybercatplushie-cotton-whitepink",
+    "slot": "lowerBack",
+    "name": "Cyber Cat Plushie Cotton White Pink",
+    "imageUrl": "items/lowerBack/streetwear-cybercatplushie-cotton-whitepink.webp",
+    "set": "Streetwear",
+    "tags": [
+      "cotton-whitepink"
+    ],
+    "season": 9
+  },
+  {
+    "id": "streetwear-popmic-plastic-black",
+    "slot": "facewear",
+    "name": "Pop Mic Plastic Black",
+    "imageUrl": "items/facewear/streetwear-popmic-plastic-black.webp",
+    "set": "Streetwear",
+    "tags": [
+      "plastic-black"
+    ],
+    "season": 9
+  },
+  {
+    "id": "streetwear-walkman-plastic-gangnam",
+    "slot": "lowerBack",
+    "name": "Walkman Plastic Gangnam",
+    "imageUrl": "items/lowerBack/streetwear-walkman-plastic-gangnam.webp",
+    "set": "Streetwear",
+    "tags": [
+      "plastic-gangnam"
+    ],
+    "season": 1
+  },
+  {
+    "id": "tech-tvhead-christmas",
+    "slot": "headwear",
+    "name": "TVHead Christmas",
+    "imageUrl": "items/headwear/tech-tvhead-christmas.webp",
+    "set": "Tech",
+    "tags": [
+      "christmas"
+    ],
+    "season": 5
+  },
+  {
+    "id": "tech-tvhead",
+    "slot": "headwear",
+    "name": "TVHead",
+    "imageUrl": "items/headwear/tech-tvhead.webp",
+    "set": "Tech",
+    "season": 2
+  },
+  {
+    "id": "traditional-lunarrings-gold",
+    "slot": "hands",
+    "name": "Lunar Rings Gold",
+    "imageUrl": "items/hands/traditional-lunarrings-gold.webp",
+    "set": "Traditional",
+    "tags": [
+      "gold"
+    ],
+    "season": 9
   }
 ]

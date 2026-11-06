@@ -20,10 +20,15 @@ for (const item of catalog) {
     source: definition.source, sourceSha256: definition.sourceSha256, propertiesSha256: definition.propertiesSha256 });
 }
 const fullBody = rows.filter(r => r.slots.includes('EBodySlot::BodyUpper') && r.slots.includes('EBodySlot::BodyLower'));
-const relevant = new Set(fullBody.flatMap(r => r.slots));
+// v2 (5 Nov 2026, w139): a garment outside Feet whose source Slots also take EBodySlot::Shoes (the sporty robot legs
+// carry their own robot feet) displaces the worn shoes, as the game's slot occupancy does. Only Shoes is added;
+// every other cross-slot occupancy stays out (hair/hat and coat rules are unchanged).
+const spansShoes = rows.filter(r => r.slot !== 'feet' && r.slots.includes('EBodySlot::Shoes'));
+const relevant = new Set([...fullBody.flatMap(r => r.slots), ...(spansShoes.length ? ['EBodySlot::Shoes'] : [])]);
 const inputSha256 = sha(JSON.stringify(rows.map(r => [r.id, r.slot, r.definitionSha256])));
-const data = { version: 1, policy: 'source-full-body-occupancy-v1', inputSha256,
+const data = { version: 1, policy: 'source-full-body-occupancy-v2', inputSha256,
   fullBody: fullBody.map(r => r.id).sort(),
+  spansShoes: spansShoes.map(r => r.id).sort(),
   slotsByItem: Object.fromEntries(rows.flatMap(r => {
     const slots = r.slots.filter(s => relevant.has(s));
     return slots.length ? [[r.id, slots]] : [];
@@ -31,8 +36,9 @@ const data = { version: 1, policy: 'source-full-body-occupancy-v1', inputSha256,
 fs.writeFileSync(path.join(root, 'src/data/source-equipment-slots.json'), JSON.stringify(data) + '\n');
 const report = { inputSha256, catalogItems: catalog.length, definitions: rows.length, missing,
   multipleSourceSlots: rows.filter(r => r.slots.length > 1).length,
-  fullBodyItems: fullBody.length, relevantItemCount: Object.keys(data.slotsByItem).length,
-  policy: data.policy, fullBody, sourceDefinitions: rows };
+  fullBodyItems: fullBody.length, spansShoesItems: spansShoes.length, relevantItemCount: Object.keys(data.slotsByItem).length,
+  policy: data.policy, fullBody, spansShoes, sourceDefinitions: rows };
 if (process.argv[3]) fs.writeFileSync(path.resolve(process.argv[3]), JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
 console.log(JSON.stringify({ inputSha256, catalogItems: catalog.length, definitions: rows.length, missing,
-  multipleSourceSlots: report.multipleSourceSlots, fullBodyItems: fullBody.length, relevantItemCount: report.relevantItemCount }));
+  multipleSourceSlots: report.multipleSourceSlots, fullBodyItems: fullBody.length, spansShoesItems: spansShoes.length,
+  relevantItemCount: report.relevantItemCount }));
