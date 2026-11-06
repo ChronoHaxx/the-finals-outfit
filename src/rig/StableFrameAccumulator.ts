@@ -180,7 +180,11 @@ export class StableFrameAccumulator {
       camera.projectionMatrix.copy(this.camera.projectionMatrix);
       camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
       renderer.autoClear = false; renderer.setScissorTest(false);
-      let presented = this.history!, presentedScale = this.status.maxSamples / Math.max(1, this.status.samples);
+      // The motion branch presents its average as is; the still path presents the history's mean, scaled by the
+      // sample count AFTER this frame's sample is added (below). (6 Nov fix: computing it here, before the increment,
+      // drew every partly converged still frame too bright, 2x on the second sample after a reset, then 1.5x, 1.33x...:
+      // a flash after every still restart, seen as flicker while a drag settled and after a window resize.)
+      let motionPresented: THREE.WebGLRenderTarget | null = null;
       if (moving) {
         const m = this.status.motionFrames % 8; // an 8-point Halton jitter cycle
         const dx = radicalInverse(m + 1, 2) - .5, dy = radicalInverse(m + 1, 3) - .5;
@@ -209,7 +213,7 @@ export class StableFrameAccumulator {
         this.quad.material = this.resolve; this.quad.render(renderer);
         this.motionInHistory = next === this.history;
         this.status.motionFrames++;
-        presented = next; presentedScale = 1;
+        motionPresented = next;
       } else if (this.status.samples < this.status.maxSamples) {
         const n = this.status.samples;
         // The first frame is unjittered: moving cameras/poses never reuse old pixels.
@@ -246,8 +250,8 @@ export class StableFrameAccumulator {
         if (passThrough) this.output.defines.ADDITIVE_PASS_THROUGH = '';
         this.output.needsUpdate = true;
       }
-      this.output.uniforms.tDiffuse.value = presented.texture;
-      this.output.uniforms.historyScale.value = presentedScale;
+      this.output.uniforms.tDiffuse.value = (motionPresented ?? this.history!).texture;
+      this.output.uniforms.historyScale.value = motionPresented ? 1 : this.status.maxSamples / this.status.samples;
       this.output.uniforms.toneMappingExposure.value = renderer.toneMappingExposure;
       renderer.setRenderTarget(destination, face, mip);
       renderer.setViewport(viewport); renderer.setScissor(scissor); renderer.setScissorTest(scissorTest);

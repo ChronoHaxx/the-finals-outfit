@@ -99,11 +99,28 @@ the cup floats beside the hand." A real-phone check is not part of this list: th
 - Defects the user noticed alongside (not checklist failures; the user chose "publish as is, fix later" for the emote
   ones):
   * The image flickers while a drag slows to a stop, and when the browser window changes shape (Firefox: pressing
-    Alt shows the menu bar).
+    Alt shows the menu bar). This was an escaped defect from this branch, not a pre-existing one as first reported.
+    The still view drew partly converged frames too bright. Fixed on branch `claude/still-view-flicker-2026-11-06`
+    (README "Fix (6 Nov)").
   * Valkyria's Embrace: the wings look wrong (mesh or effect; no in-game reference here).
   * Jetpack emote: the prop is far too big.
   * Death emote: the wings are rotated 90 degrees.
   * Other emotes have wrong props too (not listed).
 - Explicitly waived checks, if any: none
 - Readiness: user PASS on the dev build; the user asked to publish as is (6 Nov)
-- Merge authorization: "lets just publish as is imo for now then fix more later" (6 Nov)
+- Merge authorization: "lets just publish as is imo for now then fix more later", then "Yes, publish" and "Merge
+  when green" (6 Nov)
+- Merged: PR #22 as `e9f870e` on 6 Nov 2026 at 13:30 UTC, after CI (`build`, `compatibility`) passed at head
+  `e99a377`. Animation host `cd858839`.
+- Live-site agent check (6 Nov, after deploy run 42226092408 succeeded):
+  * https://chronohaxx.github.io/the-finals-outfit/ serves `index-Czpohymp.js`, which names the animation host.
+  * Played headless, Fancy a Cuppa paused with the cup, saucer and tea bag in the hands (screenshot reviewed by eye).
+  * 54 animation-host responses, all 200; no console errors (`publish/live-check.json`).
+  * This is agent PASS only. The user has not re-checked the live site.
+- Flicker fix (branch `claude/still-view-flicker-2026-11-06`, commit `66a2718`, dev server 5181):
+  * Agent checks: GPU 102 + 38 pass (new check "partly converged frames are unbiased"), unit tests and typecheck
+    clean, flicker probe before/after, frames compared by eye (README "Fix (6 Nov)").
+  * User check of the two steps (drag and release in the still pose; Firefox Alt / resize), 6 Nov: "Checked, ship
+    it". Also noted: "the grain effect still exist on hair, this is not new, its been like this since we got hair
+    support" (pre-existing damping grain, not part of this fix).
+  * Ship authorization: "Checked, ship it" (push, PR, merge when green).

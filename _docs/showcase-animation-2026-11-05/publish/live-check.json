@@ -1,0 +1,20 @@
+{
+  "controls": "Animate",
+  "animResponses": 54,
+  "animSample": [
+    "200 manifest.json",
+    "200 set-5/icons/T_UI_Icon_Emote_WarriorSpear.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_RobotCassette.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_GoblinHorn.webp",
+    "200 props-7/props.json",
+    "200 set-5/icons/T_UI_Icon_Emote_KissTheRing.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_OspuzePromote_Plasma.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_RocketSurf.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_FemmeElegant.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_Knight.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_WizardSatue.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_JesterDrum.webp"
+  ],
+  "animNon200": [],
+  "errors": []
+}

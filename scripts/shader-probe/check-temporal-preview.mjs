@@ -56,6 +56,13 @@ try {
       check(`coverage ${opacity} keeps premultiplied colour`, averaged.premultiplyError < .006, { error: averaged.premultiplyError });
       if (opacity > 0 && opacity < 1) check(`coverage ${opacity} reduces grain`, averaged.variance < first.variance * .12, { first: first.variance, averaged: averaged.variance });
     }
+    // Every partly converged frame shows the mean of the samples so far, not just the first and the last. (6 Nov 2026:
+    // a scale taken before the sample count was incremented drew frames 2, 3, 4... at 2x, 1.5x, 1.33x: a flash after
+    // every reset that the first-frame and converged checks above could not see.)
+    material.opacity = .45; const partial = [];
+    for (let n = 1; n <= 6; n++) { draw(); partial.push({ samples: pass.status.samples, mean: stats(pixels()).mean }); }
+    check('partly converged frames are unbiased', partial.every(p => Math.abs(p.mean - .45) < .03), { partial });
+    material.opacity = 1; finish();
     const rendered = pass.status.sceneRenders;
     for (let i = 0; i < 8; i++) draw();
     check('converged history stops scene draws', pass.status.sceneRenders === rendered);
