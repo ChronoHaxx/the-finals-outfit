@@ -56,6 +56,15 @@ export function CloseIcon({ className, size = 16 }: IconProps) {
   return <svg {...base(size, className)}><path d="m4 4 8 8M12 4l-8 8" /></svg>;
 }
 
+// Full screen: viewfinder corners pointing out; exit: the same corners pointing in.
+export function ExpandIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" /></svg>;
+}
+
+export function CollapseIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}><path d="M6 2.5V6H2.5M13.5 6H10V2.5M10 13.5V10h3.5M2.5 10H6v3.5" /></svg>;
+}
+
 export function CheckIcon({ className, size = 12 }: IconProps) {
   return <svg {...base(size, className)} strokeWidth={2.4}><path d="m3.5 8.5 3 3 6-7" /></svg>;
 }
