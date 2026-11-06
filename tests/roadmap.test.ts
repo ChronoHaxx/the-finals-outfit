@@ -11,7 +11,8 @@ import {
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (path: string) => readFileSync(resolve(root, path), "utf8");
 
-const HEAD = "# Roadmap\n\nLast reviewed: 2026-11-05\n\nIntro.\n\n";
+// Six lines, so the line numbers asserted below count from line 7.
+const HEAD = "# Roadmap\nLast reviewed: 2026-11-05\nReviewed after patch note: note-1\n\nIntro.\n\n";
 const problems = (source: string) => {
   try { parseRoadmap(source); } catch (error) {
     assert.ok(error instanceof RoadmapError);
@@ -22,6 +23,7 @@ const problems = (source: string) => {
 
 test("the repository's ROADMAP.md loads as the build loads it, and every placeholder fills", () => {
   const roadmap = loadRoadmap(read("ROADMAP.md"));
+  assert.equal(roadmap.reviewedAfter, CHANGELOG[0].id);
   assert.ok(roadmap.sections.find(section => section.stage === "Current focus")?.items.length);
   const values = roadmapTokenValues(3255, { untouched: 209, polish: 3036, issue: 10, accepted: 1 }, true);
   const texts = [...roadmap.intro, ...roadmap.sections.flatMap(section => section.items.flatMap(item =>
@@ -58,7 +60,7 @@ Done when: all done.
 Thing.
 `);
   assert.deepEqual(roadmap, {
-    reviewed: "2026-11-05", intro: ["Intro."],
+    reviewed: "2026-11-05", reviewedAfter: "note-1", intro: ["Intro."],
     sections: [
       { stage: "Current focus", items: [{ title: "Rebuild {red} items", description: ["First line continues here."],
         tasks: ["A task that wraps.", "Second task."], doneWhen: "all done." }] },
@@ -85,7 +87,10 @@ test("the parser refuses what the page would drop or show wrongly, naming the li
     [`${HEAD}## Current focus\n\n### A\nText.\n\n## Next\n`, /section "Next" has no items/],
     [`${HEAD}## Next\n\n### A\nText.\n`, /missing the "## Current focus" section/],
     [`# Roadmap\n\n## Current focus\n\n### A\nText.\n`, /missing "Last reviewed/],
+    [`# Roadmap\n\n## Current focus\n\n### A\nText.\n`, /missing "Reviewed after patch note: <id of the newest patch note/],
     [`# Roadmap\n\nLast reviewed: 5 Nov 2026\n\n## Current focus\n\n### A\nText.\n`, /needs an ISO date/],
+    [`${HEAD}## Current focus\n\nReviewed after patch note: note-2\n\n### A\nText.\n`, /line 9: "Reviewed after patch note:" must appear once, before the first section/],
+    [`# Roadmap\nLast reviewed: 2026-11-05\nReviewed after patch note: Seasons 11 and 12\n\n## Current focus\n\n### A\nText.\n`, /line 3: "Reviewed after patch note:" needs the id/],
     [`${HEAD}## Current focus\n\n### A\nText. <!-- never closed\n`, /never closed/],
   ];
   for (const [source, expected] of cases) assert.match(problems(source).join("\n"), expected, source);
@@ -94,14 +99,35 @@ test("the parser refuses what the page would drop or show wrongly, naming the li
 });
 
 test("the roadmap is stale once a patch note or catalog update is newer than its review", () => {
-  const evidence = [{ label: "patch note", date: "2026-11-06" }, { label: "catalog update", date: "2026-11-05" }];
-  assert.deepEqual(roadmapStaleness("2026-11-06", evidence), []);
-  const stale = roadmapStaleness("2026-11-05", evidence);
+  const evidence = [{ id: "note-1", label: "patch note one", date: "2026-11-06" },
+    { label: "catalog update", date: "2026-11-05" }];
+  assert.deepEqual(roadmapStaleness({ reviewed: "2026-11-06", reviewedAfter: "note-1" }, evidence), []);
+  // The id matches but the date was not moved.
+  const stale = roadmapStaleness({ reviewed: "2026-11-05", reviewedAfter: "note-1" }, evidence);
   assert.equal(stale.length, 1);
-  assert.match(stale[0], /older than the patch note, dated 2026-11-06/);
+  assert.match(stale[0], /older than the patch note one it names, dated 2026-11-06/);
+  // A catalog update has no id, so its date decides.
+  assert.match(roadmapStaleness({ reviewed: "2026-11-04", reviewedAfter: "note-1" },
+    [{ id: "note-1", label: "patch note one", date: "2026-11-04" }, { label: "catalog update", date: "2026-11-05" }]).join("\n"),
+  /older than the catalog update, dated 2026-11-05/);
   assert.throws(() => loadRoadmap(`${HEAD}## Current focus\n\n### A\nText.\n`, evidence), RoadmapError);
-  // The build checks against every shipped patch note, newest included.
-  assert.ok(ROADMAP_EVIDENCE.some(entry => entry.date === CHANGELOG[0].date && entry.label.includes(CHANGELOG[0].title)));
+  // The build checks against every shipped patch note, newest first and by id.
+  assert.deepEqual(ROADMAP_EVIDENCE.find(entry => entry.id), {
+    id: CHANGELOG[0].id, date: CHANGELOG[0].date, label: `patch note "${CHANGELOG[0].title}" (src/data/changelog.ts)` });
+});
+
+test("a second patch note on the day of the review still makes the roadmap stale", () => {
+  // 6 Nov 2026: the roadmap was reviewed that morning, then a release added a patch note dated the same day.
+  const evidence = [{ id: "2026-11-06-later", label: 'patch note "Later"', date: "2026-11-06" },
+    { id: "2026-11-06-earlier", label: 'patch note "Earlier"', date: "2026-11-06" },
+    { label: "catalog update", date: "2026-11-06" }];
+  const stale = roadmapStaleness({ reviewed: "2026-11-06", reviewedAfter: "2026-11-06-earlier" }, evidence);
+  assert.equal(stale.length, 1);
+  assert.match(stale[0], /reviewed after patch note "2026-11-06-earlier", but a newer patch note "Later" has been added since, id "2026-11-06-later"/);
+  assert.deepEqual(roadmapStaleness({ reviewed: "2026-11-06", reviewedAfter: "2026-11-06-later" }, evidence), []);
+  // An id that is not a patch note at all (a typo, or a note from another branch) is refused too.
+  assert.match(roadmapStaleness({ reviewed: "2026-11-06", reviewedAfter: "2026-11-07-elsewhere" }, evidence)[0],
+    /names no patch note in src\/data\/changelog\.ts; the newest is "2026-11-06-later"/);
 });
 
 test("live placeholders wait for the status index, while the catalog size is always known", () => {

@@ -8,9 +8,10 @@ parses it, and the `roadmap` plugin in vite.config.ts checks it, so `npm run bui
   {latestSeason}; the page fills them from the shipped catalog and status data, like the progress bar.
   Here on GitHub they show as placeholders;
 - the text uses bold, code, links or HTML, which the page would show as raw characters;
-- "Last reviewed" is older than the newest patch note (src/data/changelog.ts) or the catalog update
-  (src/data/catalog-update.ts). Whenever you ship either, re-read this file, fix what changed and
-  move the date.
+- "Reviewed after patch note" is not the id of the newest patch note (src/data/changelog.ts), or
+  "Last reviewed" is older than that patch note or the catalog update (src/data/catalog-update.ts).
+  Whenever you ship either, re-read this file, fix what changed, then set both lines. The id is what
+  catches a second patch note on the day of the last review.
 Keep it player-facing: what a visitor will notice, no internal batch names, no claims the census
 does not support. Leave out internal work: hosting, asset protection, repository access and
 developer-only tools such as the 3D export. Comments like this one are not shown on the page.
@@ -19,6 +20,7 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 # Roadmap
 
 Last reviewed: 2026-11-06
+Reviewed after patch note: 2026-11-05-seasons-11-12
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 

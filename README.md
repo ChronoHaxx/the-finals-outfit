@@ -193,8 +193,9 @@ visitor last dismissed (kept in `localStorage`), so add an entry only for a chan
 interrupting people for. Under browser automation (`navigator.webdriver`, as in every
 Playwright harness here) the welcome screen and the decorative stage overlays stay hidden,
 so canvas captures and their baselines are unaffected; see `src/lib/automation.ts`.
-Adding an entry also means re-reading [ROADMAP.md](ROADMAP.md) and moving its
-`Last reviewed` date: the build refuses a roadmap older than the newest patch note.
+Adding an entry also means re-reading [ROADMAP.md](ROADMAP.md), then setting its
+`Reviewed after patch note` line to the new entry's `id` and its `Last reviewed` date to
+today: the build refuses a roadmap that was not reviewed after the newest patch note.
 
 ## Roadmap
 
@@ -204,7 +205,8 @@ comes next and what waits on a decision. The app's Roadmap page is built from th
 roadmap there and nowhere else. Its counts are placeholders such as `{red}`, which the page
 fills from the shipped catalog and status data. `npm run build` refuses the file if a line is
 malformed, a count is typed by hand, or it was last reviewed before the newest patch note
-or catalog update. Everything else in this section is historical.
+(matched by `id`, so a second note on the same day counts) or catalog update. Everything else
+in this section is historical.
 
 Reconstruction counts change with each accepted asset release, so this README does
 not pin them. Consult the app’s progress display and the relevant release checkpoint; item

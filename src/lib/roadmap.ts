@@ -23,6 +23,9 @@ export interface RoadmapSection { stage: RoadmapStage; items: readonly RoadmapIt
 export interface Roadmap {
   /** ISO date of the last full read-through of the file. */
   reviewed: string;
+  /** Id of the newest patch note (src/data/changelog.ts) at that read-through. A date alone cannot tell
+   *  whether a patch note from the same day was written before or after the review. */
+  reviewedAfter: string;
   intro: readonly string[];
   sections: readonly RoadmapSection[];
 }
@@ -35,6 +38,8 @@ export class RoadmapError extends Error {
 }
 
 const DONE_WHEN = "Done when: ";
+const LAST_REVIEWED = "Last reviewed:";
+const REVIEWED_AFTER = "Reviewed after patch note:";
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 // Bold, italics, code, links and HTML would reach the page as raw characters.
 const INLINE_MARKUP = /\*|__|`|\]\(|<[a-z/!]/i;
@@ -64,6 +69,7 @@ export function parseRoadmap(source: string): Roadmap {
 
   let title = false;
   let reviewed = "";
+  let reviewedAfter = "";
   const intro: string[] = [];
   type DraftItem = { title: string; line: number; description: string[]; tasks: string[]; doneWhen?: string };
   const sections: { stage: RoadmapStage; line: number; items: DraftItem[] }[] = [];
@@ -98,17 +104,23 @@ export function parseRoadmap(source: string): Roadmap {
     const content = raw.trimEnd();
     if (!content.trim()) return flush();
     if (bullet && /^ {2,}\S/.test(content)) { bullet.text += ` ${content.trim()}`; return; }
-    if (/^#{1,3} /.test(content) || content.startsWith("- ") || content.startsWith("Last reviewed:")) flush();
+    if (/^#{1,3} /.test(content) || content.startsWith("- ") || content.startsWith(LAST_REVIEWED)
+      || content.startsWith(REVIEWED_AFTER)) flush();
 
     if (content.startsWith("# ")) {
-      if (title || reviewed || intro.length || sections.length) problems.push(`line ${line}: "# " title must come first, once`);
+      if (title || reviewed || reviewedAfter || intro.length || sections.length) problems.push(`line ${line}: "# " title must come first, once`);
       else if (content !== "# Roadmap") problems.push(`line ${line}: the title must be "# Roadmap"`);
       title = true;
-    } else if (content.startsWith("Last reviewed:")) {
-      const date = content.slice("Last reviewed:".length).trim();
-      if (reviewed || sections.length) problems.push(`line ${line}: "Last reviewed:" must appear once, before the first section`);
-      else if (!ISO_DATE.test(date) || Number.isNaN(Date.parse(date))) problems.push(`line ${line}: "Last reviewed:" needs an ISO date such as 2026-11-05`);
+    } else if (content.startsWith(LAST_REVIEWED)) {
+      const date = content.slice(LAST_REVIEWED.length).trim();
+      if (reviewed || sections.length) problems.push(`line ${line}: "${LAST_REVIEWED}" must appear once, before the first section`);
+      else if (!ISO_DATE.test(date) || Number.isNaN(Date.parse(date))) problems.push(`line ${line}: "${LAST_REVIEWED}" needs an ISO date such as 2026-11-05`);
       else reviewed = date;
+    } else if (content.startsWith(REVIEWED_AFTER)) {
+      const id = content.slice(REVIEWED_AFTER.length).trim();
+      if (reviewedAfter || sections.length) problems.push(`line ${line}: "${REVIEWED_AFTER}" must appear once, before the first section`);
+      else if (!/^\S+$/.test(id)) problems.push(`line ${line}: "${REVIEWED_AFTER}" needs the id of the newest patch note in src/data/changelog.ts, such as 2026-11-05-seasons-11-12`);
+      else reviewedAfter = id;
     } else if (content.startsWith("## ")) {
       const stage = content.slice(3).trim() as RoadmapStage;
       if (!ROADMAP_STAGES.includes(stage)) problems.push(`line ${line}: unknown section "${stage}"; use one of ${ROADMAP_STAGES.join(", ")}`);
@@ -135,7 +147,8 @@ export function parseRoadmap(source: string): Roadmap {
   flush();
 
   if (!title) problems.push('missing the "# Roadmap" title');
-  if (!reviewed) problems.push('missing "Last reviewed: YYYY-MM-DD"');
+  if (!reviewed) problems.push(`missing "${LAST_REVIEWED} YYYY-MM-DD"`);
+  if (!reviewedAfter) problems.push(`missing "${REVIEWED_AFTER} <id of the newest patch note in src/data/changelog.ts>"`);
   if (!sections.some(existing => existing.stage === "Current focus")) problems.push('missing the "## Current focus" section');
   for (const { stage, line, items } of sections) {
     if (!items.length) problems.push(`line ${line}: section "${stage}" has no items`);
@@ -143,30 +156,49 @@ export function parseRoadmap(source: string): Roadmap {
   }
   if (problems.length) throw new RoadmapError(problems);
   return {
-    reviewed, intro,
+    reviewed, reviewedAfter, intro,
     sections: sections.map(({ stage, items }) => ({ stage, items: items.map(({ title, description, tasks, doneWhen }) =>
       ({ title, description, tasks, ...(doneWhen ? { doneWhen } : {}) })) })),
   };
 }
 
-export interface RoadmapEvidence { label: string; date: string }
+/** A shipped change the roadmap may have gone stale against. Patch notes carry their id; the first entry
+ *  with an id is the newest patch note, as in src/data/changelog.ts. */
+export interface RoadmapEvidence { label: string; date: string; id?: string }
 
 // Things that ship without touching the roadmap. Each one is a moment the roadmap may have gone stale.
 export const ROADMAP_EVIDENCE: readonly RoadmapEvidence[] = [
-  ...CHANGELOG.map(entry => ({ label: `patch note "${entry.title}" (src/data/changelog.ts)`, date: entry.date })),
+  ...CHANGELOG.map(entry => ({ id: entry.id, label: `patch note "${entry.title}" (src/data/changelog.ts)`, date: entry.date })),
   { label: "catalog update (src/data/catalog-update.ts)", date: CATALOG_UPDATE.updatedAt },
 ];
 
-/** Problems for every shipped change dated after the roadmap's last review. */
-export function roadmapStaleness(reviewed: string, evidence: readonly RoadmapEvidence[] = ROADMAP_EVIDENCE): string[] {
-  return evidence.filter(({ date }) => date > reviewed).map(({ label, date }) =>
-    `"Last reviewed: ${reviewed}" is older than the ${label}, dated ${date}. Re-read ROADMAP.md, update what changed, then set "Last reviewed:" to today.`);
+/** Problems for every shipped change the roadmap's last review did not see. Patch notes are matched by id,
+ *  so a second patch note on the day of the review still counts. The catalog update has no id, so it is
+ *  matched by date. */
+export function roadmapStaleness({ reviewed, reviewedAfter }: Pick<Roadmap, "reviewed" | "reviewedAfter">,
+  evidence: readonly RoadmapEvidence[] = ROADMAP_EVIDENCE): string[] {
+  const redo = `Re-read ROADMAP.md, update what changed, then set "${REVIEWED_AFTER}" to the newest patch note's id and "${LAST_REVIEWED}" to today.`;
+  const problems: string[] = [];
+  const notes = evidence.filter(entry => entry.id);
+  const newest = notes[0];
+  const named = notes.find(entry => entry.id === reviewedAfter);
+  if (newest && !named) {
+    problems.push(`"${REVIEWED_AFTER} ${reviewedAfter}" names no patch note in src/data/changelog.ts; the newest is "${newest.id}".`);
+  } else if (newest && named !== newest) {
+    problems.push(`ROADMAP.md was reviewed after patch note "${reviewedAfter}", but a newer ${newest.label} has been added since, id "${newest.id}". ${redo}`);
+  } else if (named && named.date > reviewed) {
+    problems.push(`"${LAST_REVIEWED} ${reviewed}" is older than the ${named.label} it names, dated ${named.date}. ${redo}`);
+  }
+  for (const { id, label, date } of evidence) {
+    if (!id && date > reviewed) problems.push(`"${LAST_REVIEWED} ${reviewed}" is older than the ${label}, dated ${date}. ${redo}`);
+  }
+  return problems;
 }
 
 /** Parse and check freshness: what the build runs. */
 export function loadRoadmap(source: string, evidence: readonly RoadmapEvidence[] = ROADMAP_EVIDENCE): Roadmap {
   const roadmap = parseRoadmap(source);
-  const stale = roadmapStaleness(roadmap.reviewed, evidence);
+  const stale = roadmapStaleness(roadmap, evidence);
   if (stale.length) throw new RoadmapError(stale);
   return roadmap;
 }
