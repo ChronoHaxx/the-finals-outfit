@@ -76,11 +76,17 @@ test('reads the hosts from the deploy workflow and the routes file', () => {
   assert.throws(() => config(WORKFLOW.replace(host('icons'), 'http://insecure.example/')), /plain https URL/);
 });
 
-test('the real deploy.yml and routes file parse, and every shard gets a file the app requests', () => {
+test('the real deploy.yml and routes file parse, and every host gets a file the app requests', () => {
   const cfg = readDeployConfig();
   const items = JSON.parse(readFileSync(resolve(REPO_ROOT, 'src/data/items.json'), 'utf8'));
   assert(cfg.hosts.length >= 2 && cfg.hosts.every(h => h.base.startsWith('https://') && h.base.endsWith('/')));
   for (const sample of sampleAssets(items, cfg)) {
+    // A new routed shard can hold only files the app reaches through the assembly index, never named in items.json.
+    // The live check then probes that deployment's manifest.json. The other hosts must always have a real file.
+    if (!sample.fromCatalogue) {
+      assert.match(sample.role, /^reconstruction shard \(/, `the ${sample.role} host has no file in items.json to probe`);
+      continue;
+    }
     const routed = sample.path.startsWith('models/') ? joinBase(modelBase(sample.path, cfg.bases), '') : cfg.bases.assetsBase;
     assert.equal(routed, sample.base, `${sample.path} is not served by the ${sample.role} host`);
   }
@@ -92,6 +98,15 @@ test('the always-loaded samples are still what the app loads first', () => {
   assert(viewer.includes(`modelUrl("${ALWAYS_LOADED[0]}")`));
   assert(viewer.includes('modelUrl("models/reconstructed-assemblies-v1")'));
   assert(assembly.includes('${baseUrl}/supported-items.json') && ALWAYS_LOADED[1].endsWith('/supported-items.json'));
+});
+
+test('a routed shard that items.json never names falls back to its manifest; other hosts do not', () => {
+  const cfg = config();
+  const leaf2 = sampleAssets(ITEMS, cfg).find(s => s.base === host('leaf2'));
+  assert.deepEqual([leaf2.path, leaf2.fromCatalogue, /^reconstruction shard \(/.test(leaf2.role)], ['manifest.json', false, true]);
+  const noIcons = sampleAssets([], cfg).find(s => s.role === 'icons');
+  assert.deepEqual([noIcons.path, noIcons.fromCatalogue], ['manifest.json', false]);
+  assert.doesNotMatch(noIcons.role, /^reconstruction shard \(/);
 });
 
 test('a healthy site passes with one HEAD per host and no large downloads', async () => {
