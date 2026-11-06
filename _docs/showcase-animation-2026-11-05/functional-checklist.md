@@ -117,3 +117,10 @@ the cup floats beside the hand." A real-phone check is not part of this list: th
   * Played headless, Fancy a Cuppa paused with the cup, saucer and tea bag in the hands (screenshot reviewed by eye).
   * 54 animation-host responses, all 200; no console errors (`publish/live-check.json`).
   * This is agent PASS only. The user has not re-checked the live site.
+- Flicker fix (branch `claude/still-view-flicker-2026-11-06`, commit `66a2718`, dev server 5181):
+  * Agent checks: GPU 102 + 38 pass (new check "partly converged frames are unbiased"), unit tests and typecheck
+    clean, flicker probe before/after, frames compared by eye (README "Fix (6 Nov)").
+  * User check of the two steps (drag and release in the still pose; Firefox Alt / resize), 6 Nov: "Checked, ship
+    it". Also noted: "the grain effect still exist on hair, this is not new, its been like this since we got hair
+    support" (pre-existing damping grain, not part of this fix).
+  * Ship authorization: "Checked, ship it" (push, PR, merge when green).

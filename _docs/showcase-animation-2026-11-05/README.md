@@ -377,6 +377,9 @@ pressing Alt). On first measurement I called it pre-existing. **That was wrong.*
 - **Checks:**
   - GPU: `check-temporal-preview.mjs` 102 pass (one new); `check-motion-resolve.mjs` 38 pass.
   - Unit tests 37/41 (0 failed); typecheck clean.
+- **User check (6 Nov, dev server 5181, commit `66a2718`):** two steps (drag and release in the still pose; Firefox
+  Alt / resize). The user answered "Checked, ship it" and added: "the grain effect still exist on hair, this is not
+  new, its been like this since we got hair support". That matches the pre-existing damping grain above.
 
 ## Known gaps
 
