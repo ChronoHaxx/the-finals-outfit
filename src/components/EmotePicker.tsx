@@ -174,7 +174,7 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
       style={dock ?? undefined}
       className={dock ? "z-40 flex flex-col border border-line bg-ink-950 shadow-2xl"
         : desktop ? "flex min-h-0 w-[23rem] max-w-[calc(100vw-2rem)] flex-col border border-line bg-ink-950/95 shadow-2xl"
-        : "fixed inset-x-0 bottom-0 top-(--stage-h) z-40 flex flex-col border-t border-line bg-ink-950"}>
+        : "fixed inset-x-0 bottom-0 top-(--stage-h) z-40 flex flex-col border-t border-line bg-ink-950 pb-[env(safe-area-inset-bottom)]"}>
       <div className="flex shrink-0 items-center gap-1 border-b border-line pl-2 pr-1">
         {tabButton("emotes", <>Emotes <span className="text-fg-dim">{emotes.length}</span></>)}
         {tabButton("more", "More")}
