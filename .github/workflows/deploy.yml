@@ -25,9 +25,9 @@ jobs:
     env:
       # Pin code and artwork in the same revision. The immutable deployment also
       # leaves the older production asset URL available during review/rollback.
-      ASSETS_BASE: https://d0b954a8.the-finals-outfit-assets.pages.dev/
+      ASSETS_BASE: https://a073f8c4.the-finals-outfit-assets.pages.dev/
       MODELS_BASE: https://a029b249.the-finals-outfit-assets.pages.dev/
-      RECONSTRUCTION_BASE: https://29ae13de.the-finals-outfit-assets.pages.dev/
+      RECONSTRUCTION_BASE: https://04c0f6ef.the-finals-outfit-assets.pages.dev/
       # Link-preview Worker (workers/share-preview). Blank hides the "Link with preview image" option.
       SHARE_PREVIEW_BASE: https://the-finals-outfit-share.chronohaxx.workers.dev
       # Showcase animation: emote clips, icons and prop GLBs (scripts/anim-export, 6 Nov 2026). Without it the
