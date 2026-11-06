@@ -29,9 +29,11 @@ refuses a malformed, hand-counted or stale roadmap, so the page can't silently g
     doesn't have (`ENOENT`, ski-blade fixture and base-body GLBs); none touch the roadmap.
   - `tsc -b --noEmit`: PASS.
   - `npm run build`: PASS, with the existing chunk-size warning. `check:catalog-split`: PASS.
-  - Negative builds (before `0842b45`):
+  - Negative builds:
     - A `Last reviewed: 2026-11-04` date fails, naming the 5 Nov "Seasons 11 and 12" patch note.
     - A hand-typed "209" fails, naming the line.
+    - `Reviewed after patch note: 2026-11-04-new-look` fails (`npm run build`, after `0842b45`), naming the newer
+      "Seasons 11 and 12" patch note and its id.
   - Against the 6 Nov release's patch notes (branch `claude/release-2026-11-06`, loaded read-only):
     - this `ROADMAP.md` fails, naming patch note "76 missing cosmetics" and its id;
     - it passes once `Reviewed after patch note:` is set to that id.
@@ -78,9 +80,11 @@ Stop it with Ctrl+C. The first page load can take about 30 seconds while Vite wa
   `### Default lighting test` and save.
   Expected: within a few seconds, without reloading, the page's first "Waiting on a decision" item reads
   "Default lighting test". Undo the edit and save; the page reverts.
-- [ ] **5. The build gate:** on line 33 of `ROADMAP.md`, replace `{red}` with `209`. On line 23, change
-  `Reviewed after patch note: 2026-11-05-seasons-11-12` to `Reviewed after patch note: 2026-11-04-new-look` (an older
-  patch note). Save. In the same PowerShell directory (a second window if the dev server is running), run:
+- [ ] **5. The build gate:** two edits, one at a time. Run each build in the same PowerShell directory (a second
+  window if the dev server is running). A file that doesn't parse reports only its parse problems, so the second
+  message appears only once the first edit is undone.
+
+  a. On line 33 of `ROADMAP.md`, replace `{red}` with `209` and save, then run:
 
   ```powershell
   npm run build
@@ -88,9 +92,7 @@ Stop it with Ctrl+C. The first page load can take about 30 seconds while Vite wa
 
   Expected:
   - the build fails with `line 33: hand-typed figure "209"; use a placeholder such as {red}...`;
-  - it also says the file was reviewed after patch note "2026-11-04-new-look", but a newer patch note "Seasons 11 and
-    12" has been added since;
-  - the dev page shows Vite's red error overlay with the same messages.
+  - the dev page shows Vite's red error overlay with the same message.
 
   Undo with:
 
@@ -98,7 +100,11 @@ Stop it with Ctrl+C. The first page load can take about 30 seconds while Vite wa
   git restore ROADMAP.md
   ```
 
-  The overlay clears.
+  b. On line 23, change `Reviewed after patch note: 2026-11-05-seasons-11-12` to
+  `Reviewed after patch note: 2026-11-04-new-look` (an older patch note) and save. Run `npm run build` again.
+  Expected: the build fails with `ROADMAP.md was reviewed after patch note "2026-11-04-new-look", but a newer patch
+  note "Seasons 11 and 12" ... has been added since, id "2026-11-05-seasons-11-12"`. Undo with `git restore ROADMAP.md`
+  as above; the overlay clears.
 - [ ] **6. Nearby ordinary use:** on the roadmap page, click "← Back to your outfit", then the header's "Roadmap" link,
   then "Patch notes" in the header.
   Expected:
