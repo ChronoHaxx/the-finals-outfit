@@ -10,6 +10,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-06-missing-cosmetics",
+    date: "2026-11-06",
+    title: "76 missing cosmetics",
+    notes: [
+      "76 cosmetics from earlier seasons that the catalog had skipped, the Final Fly Durag among them, join it under their wiki names. They show their icons for now; 3D comes later.",
+      "30 more cosmetics render in 3D, among them the sci-fi knight tops, the paper tiger heads, the Christmas-light sweaters and the smart step counter.",
+      "3,037 of the catalog's 3,331 cosmetics now have a first-pass 3D reconstruction. The share reads 91% because the catalog grew.",
+      "Robot legs that come with their own feet now replace your shoes, as in game.",
+    ],
+  },
+  {
     id: "2026-11-05-seasons-11-12",
     date: "2026-11-05",
     title: "Seasons 11 and 12",
