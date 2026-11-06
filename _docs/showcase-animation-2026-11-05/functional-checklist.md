@@ -99,7 +99,9 @@ the cup floats beside the hand." A real-phone check is not part of this list: th
 - Defects the user noticed alongside (not checklist failures; the user chose "publish as is, fix later" for the emote
   ones):
   * The image flickers while a drag slows to a stop, and when the browser window changes shape (Firefox: pressing
-    Alt shows the menu bar).
+    Alt shows the menu bar). This was an escaped defect from this branch, not a pre-existing one as first reported.
+    The still view drew partly converged frames too bright. Fixed on branch `claude/still-view-flicker-2026-11-06`
+    (README "Fix (6 Nov)").
   * Valkyria's Embrace: the wings look wrong (mesh or effect; no in-game reference here).
   * Jetpack emote: the prop is far too big.
   * Death emote: the wings are rotated 90 degrees.

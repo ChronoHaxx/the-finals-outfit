@@ -1,0 +1,675 @@
+{
+  "checks": [
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "coverage 0 is unbiased",
+      "passed": true,
+      "measured": 0
+    },
+    {
+      "name": "coverage 0 keeps premultiplied colour",
+      "passed": true,
+      "error": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "coverage 0.15 is unbiased",
+      "passed": true,
+      "measured": 0.15472984313964844
+    },
+    {
+      "name": "coverage 0.15 keeps premultiplied colour",
+      "passed": true,
+      "error": 0.0002441704273223877
+    },
+    {
+      "name": "coverage 0.15 reduces grain",
+      "passed": true,
+      "first": 0.13145798072218895,
+      "averaged": 0.0040739911746641155
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "coverage 0.5 is unbiased",
+      "passed": true,
+      "measured": 0.5067768096923828
+    },
+    {
+      "name": "coverage 0.5 keeps premultiplied colour",
+      "passed": true,
+      "error": 0.0010742187500000222
+    },
+    {
+      "name": "coverage 0.5 reduces grain",
+      "passed": true,
+      "first": 0.2499445527791977,
+      "averaged": 0.0077978672889003064
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "coverage 0.9 is unbiased",
+      "passed": true,
+      "measured": 0.9026927947998047
+    },
+    {
+      "name": "coverage 0.9 keeps premultiplied colour",
+      "passed": true,
+      "error": 0.0016601562500000444
+    },
+    {
+      "name": "coverage 0.9 reduces grain",
+      "passed": true,
+      "first": 0.08595126867294312,
+      "averaged": 0.0027428094144852366
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "coverage 1 is unbiased",
+      "passed": true,
+      "measured": 1
+    },
+    {
+      "name": "coverage 1 keeps premultiplied colour",
+      "passed": true,
+      "error": 0.0016601562500000444
+    },
+    {
+      "name": "partly converged frames are unbiased",
+      "passed": true,
+      "partial": [
+        {
+          "samples": 1,
+          "mean": 0.45355224609375
+        },
+        {
+          "samples": 2,
+          "mean": 0.4522705078125
+        },
+        {
+          "samples": 3,
+          "mean": 0.4548136499524844
+        },
+        {
+          "samples": 4,
+          "mean": 0.4554595947265625
+        },
+        {
+          "samples": 5,
+          "mean": 0.45390626061544026
+        },
+        {
+          "samples": 6,
+          "mean": 0.4551188248751714
+        }
+      ]
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "converged history stops scene draws",
+      "passed": true
+    },
+    {
+      "name": "exactly two accumulation targets",
+      "passed": true,
+      "textures": 3
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "overlapping cards preserve independent coverage and colour",
+      "passed": true,
+      "expected": [
+        0.298,
+        0.224,
+        0.272,
+        0.76
+      ],
+      "actual": [
+        0.3020070155935173,
+        0.2217629632700664,
+        0.2669358732891851,
+        0.7585220336914062
+      ],
+      "maxError": 0.005064126710814909
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "opaque silhouette remains sharp within two pixels per edge",
+      "passed": true,
+      "partialEdgePixels": 2
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "HDR coverage edges retain display colour",
+      "passed": true,
+      "tone": 0,
+      "colorSpace": "srgb-linear",
+      "maxError": 0.006569602272727071
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "HDR coverage edges retain display colour",
+      "passed": true,
+      "tone": 0,
+      "colorSpace": "srgb",
+      "maxError": 0.0015830451791936095
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "HDR coverage edges retain display colour",
+      "passed": true,
+      "tone": 7,
+      "colorSpace": "srgb-linear",
+      "maxError": 0.000630864730248093
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "HDR coverage edges retain display colour",
+      "passed": true,
+      "tone": 7,
+      "colorSpace": "srgb",
+      "maxError": 0.0006026121286245578
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "HDR coverage edges retain display colour",
+      "passed": true,
+      "tone": 4,
+      "colorSpace": "srgb-linear",
+      "maxError": 0.0002847955777094957
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "HDR coverage edges retain display colour",
+      "passed": true,
+      "tone": 4,
+      "colorSpace": "srgb",
+      "maxError": 0.00027762468044578714
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "object motion invalidates history immediately",
+      "passed": true,
+      "reason": "scene"
+    },
+    {
+      "name": "object motion leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "camera motion invalidates history immediately",
+      "passed": true,
+      "reason": "camera"
+    },
+    {
+      "name": "camera motion leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "camera projection invalidates history immediately",
+      "passed": true,
+      "reason": "camera"
+    },
+    {
+      "name": "camera projection leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "subpixel control tail retains the sampling camera",
+      "passed": true
+    },
+    {
+      "name": "subpixel damping reuses identical sharp pixels",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "slow cumulative camera motion cannot retain stale history",
+      "passed": true
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "material colour invalidates history immediately",
+      "passed": true,
+      "reason": "material"
+    },
+    {
+      "name": "material colour leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "coverage invalidates history immediately",
+      "passed": true,
+      "reason": "material"
+    },
+    {
+      "name": "coverage leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "texture binding invalidates history immediately",
+      "passed": true,
+      "reason": "material"
+    },
+    {
+      "name": "texture binding leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "texture pixels invalidates history immediately",
+      "passed": true,
+      "reason": "material"
+    },
+    {
+      "name": "texture pixels leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "texture transform invalidates history immediately",
+      "passed": true,
+      "reason": "material"
+    },
+    {
+      "name": "texture transform leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "vertex buffer invalidates history immediately",
+      "passed": true,
+      "reason": "geometry"
+    },
+    {
+      "name": "vertex buffer leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "light colour invalidates history immediately",
+      "passed": true,
+      "reason": "lighting"
+    },
+    {
+      "name": "light colour leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "light intensity invalidates history immediately",
+      "passed": true,
+      "reason": "lighting"
+    },
+    {
+      "name": "light intensity leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "background invalidates history immediately",
+      "passed": true,
+      "reason": "lighting"
+    },
+    {
+      "name": "background leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "display exposure invalidates history immediately",
+      "passed": true,
+      "reason": "lighting"
+    },
+    {
+      "name": "display exposure leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "explicit custom shader invalidation invalidates history immediately",
+      "passed": true,
+      "reason": "custom uniform"
+    },
+    {
+      "name": "explicit custom shader invalidation leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "hidden parent bypasses and releases history",
+      "passed": true
+    },
+    {
+      "name": "visible again starts fresh",
+      "passed": true
+    },
+    {
+      "name": "explicit bypass releases targets",
+      "passed": true
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "morph deformation invalidates history immediately",
+      "passed": true,
+      "reason": "geometry"
+    },
+    {
+      "name": "morph deformation leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "converges to bounded sample count",
+      "passed": true,
+      "samples": 32
+    },
+    {
+      "name": "bone deformation invalidates history immediately",
+      "passed": true,
+      "reason": "geometry"
+    },
+    {
+      "name": "bone deformation leaves no previous-frame contribution",
+      "passed": true,
+      "maxError": 0
+    },
+    {
+      "name": "resize replaces both targets at physical resolution",
+      "passed": true
+    },
+    {
+      "name": "resizes do not leak target textures",
+      "passed": true
+    },
+    {
+      "name": "jitter restores existing camera view and matrices",
+      "passed": true
+    },
+    {
+      "name": "pass restores renderer state and target",
+      "passed": true
+    },
+    {
+      "name": "interrupted draw restores camera and renderer",
+      "passed": true
+    },
+    {
+      "name": "interrupted history is discarded",
+      "passed": true
+    },
+    {
+      "name": "all fixture and pass textures released",
+      "passed": true,
+      "textures": 0
+    }
+  ],
+  "coverage": [
+    {
+      "opacity": 0,
+      "first": {
+        "mean": 0,
+        "variance": 0,
+        "premultiplyError": 0
+      },
+      "averaged": {
+        "mean": 0,
+        "variance": 0,
+        "premultiplyError": 0
+      },
+      "varianceReduction": 0
+    },
+    {
+      "opacity": 0.15,
+      "first": {
+        "mean": 0.15570068359375,
+        "variance": 0.13145798072218895,
+        "premultiplyError": 0.0002929687499999556
+      },
+      "averaged": {
+        "mean": 0.15472984313964844,
+        "variance": 0.0040739911746641155,
+        "premultiplyError": 0.0002441704273223877
+      },
+      "varianceReduction": 0.9690091757664093
+    },
+    {
+      "opacity": 0.5,
+      "first": {
+        "mean": 0.5074462890625,
+        "variance": 0.2499445527791977,
+        "premultiplyError": 0.0002929687499999556
+      },
+      "averaged": {
+        "mean": 0.5067768096923828,
+        "variance": 0.0077978672889003064,
+        "premultiplyError": 0.0010742187500000222
+      },
+      "varianceReduction": 0.9688016113886307
+    },
+    {
+      "opacity": 0.9,
+      "first": {
+        "mean": 0.905029296875,
+        "variance": 0.08595126867294312,
+        "premultiplyError": 0.0002929687499999556
+      },
+      "averaged": {
+        "mean": 0.9026927947998047,
+        "variance": 0.0027428094144852366,
+        "premultiplyError": 0.0016601562500000444
+      },
+      "varianceReduction": 0.9680887849960421
+    },
+    {
+      "opacity": 1,
+      "first": {
+        "mean": 1,
+        "variance": 0,
+        "premultiplyError": 0.0002929687499999556
+      },
+      "averaged": {
+        "mean": 1,
+        "variance": 0,
+        "premultiplyError": 0.0016601562500000444
+      },
+      "varianceReduction": 0
+    }
+  ],
+  "display": [
+    {
+      "tone": 0,
+      "colorSpace": "srgb-linear",
+      "maxError": 0.006569602272727071
+    },
+    {
+      "tone": 0,
+      "colorSpace": "srgb",
+      "maxError": 0.0015830451791936095
+    },
+    {
+      "tone": 7,
+      "colorSpace": "srgb-linear",
+      "maxError": 0.000630864730248093
+    },
+    {
+      "tone": 7,
+      "colorSpace": "srgb",
+      "maxError": 0.0006026121286245578
+    },
+    {
+      "tone": 4,
+      "colorSpace": "srgb-linear",
+      "maxError": 0.0002847955777094957
+    },
+    {
+      "tone": 4,
+      "colorSpace": "srgb",
+      "maxError": 0.00027762468044578714
+    }
+  ],
+  "layered": {
+    "expected": [
+      0.298,
+      0.224,
+      0.272,
+      0.76
+    ],
+    "actual": [
+      0.3020070155935173,
+      0.2217629632700664,
+      0.2669358732891851,
+      0.7585220336914062
+    ],
+    "maxError": 0.005064126710814909
+  },
+  "partialEdgePixels": 2,
+  "errors": []
+}

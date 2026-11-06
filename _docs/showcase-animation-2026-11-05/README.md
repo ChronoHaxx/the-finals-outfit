@@ -345,6 +345,39 @@ hiding, detach, the curve, the picker's summary) and an animator test that attac
      <alias> --commit-dirty=true`.
   3. Run `node _docs/showcase-animation-2026-11-05/publish/verify-hosted.mjs <folder> <host>/` from the worktree root.
 
+## Fix (6 Nov): the still view flashed after every restart (escaped defect, live in PR #22)
+
+After the release the user reported flicker while a drag slows to a stop, and when the window changes shape (Firefox:
+pressing Alt). On first measurement I called it pre-existing. **That was wrong.** It was a regression from this branch.
+
+- **Cause:** while adding motion mode I moved the still path's presentation scale (`maxSamples / samples`) above the
+  accumulation step. Every partly converged still frame was therefore scaled by the count before its sample was added.
+  Frame 1 after a reset was right; frames 2, 3, 4 and on were drawn 2×, 1.5×, 1.33× too bright. Converged frames were
+  right again. Each still restart flashed.
+- **When it showed:** after a resize. Also at the end of every drag: OrbitControls damping keeps the camera creeping
+  for 3+ s, and in the tail it moves only every other frame, so the still view alternated 1, 2, 1, 2 samples and
+  strobed. With the idle playing, motion mode was not affected, except when pausing.
+- **Why the checks missed it:** they only compared the first frame after a change and the converged frame.
+  `check-temporal-preview.mjs` now also requires frames 1–6 after a reset to show unbiased coverage.
+  - Against the live code that check fails: frames 1–6 read 0.454, 0.699, 0.633, 0.592, 0.562 and 0.544 for a true
+    0.45.
+  - With the fix they read 0.452–0.455.
+- **Fix:** the scale is taken after the sample is added, as on main. In effect the still presentation is main's code
+  again.
+- **Measured** (`flicker-2026-11-06/summaries.json`, `probe-flicker.mjs`: drag and release, or resize, then compare every
+  frame):
+  - still view, resize: peak 13.8% of crop pixels reversing → 1.2%;
+  - still view, drag tail: change into each 2-sample frame 4.88 → 0.28; reversing pixels 0.69% → 0.16%;
+  - idle (motion mode): unchanged, 0.16% after a drag and a 2.0% peak after a resize.
+- **Seen:** the second sample after a resize. With the bug, the T-shirt and skin are washed out to light grey; with
+  the fix, the same frame matches the settled colours (`captures/flicker/`).
+- **Still true, and pre-existing on main:** while the damping lasts (3+ s), each still frame is a single fresh sample,
+  so hair and sheer fabric show moving grain until the camera settles. The idle hides it. Optional follow-up: smooth
+  continuous changes with the motion average, then fade into the still result.
+- **Checks:**
+  - GPU: `check-temporal-preview.mjs` 102 pass (one new); `check-motion-resolve.mjs` 38 pass.
+  - Unit tests 37/41 (0 failed); typecheck clean.
+
 ## Known gaps
 
 * **Facial animation**: every clip carries 37 `Face_*` expression curves (blink, jaw, brows…). The heads have 305
