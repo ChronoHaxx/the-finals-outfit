@@ -12,7 +12,8 @@ parses it, and the `roadmap` plugin in vite.config.ts checks it, so `npm run bui
   (src/data/catalog-update.ts). Whenever you ship either, re-read this file, fix what changed and
   move the date.
 Keep it player-facing: what a visitor will notice, no internal batch names, no claims the census
-does not support. Comments like this one are not shown on the page.
+does not support. Leave out internal work: hosting, asset protection, repository access and
+developer-only tools such as the 3D export. Comments like this one are not shown on the page.
 -->
 
 # Roadmap
@@ -86,14 +87,6 @@ Some gloves, masks and makeup change the colour of the hands, face or hair they 
 ### Animated noise on some screens and visors
 
 A few glowing screens and visors draw a random-noise pattern that the preview reproduces only approximately. Whether that difference is close enough is still open.
-
-### Downloading your outfit as a 3D file
-
-An export of the current outfit as a 3D file works in the developer catalog. Whether to offer it on the public site is undecided.
-
-### Protecting the 3D files
-
-A plan to stop bulk downloading of the hosted 3D files, without slowing normal outfit loads, is ready. It waits on hosting choices.
 
 ## Later
 
