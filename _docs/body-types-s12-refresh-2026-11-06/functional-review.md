@@ -19,7 +19,8 @@ Details:
 - Prerequisites: none beyond this machine. Nothing is downloaded, and the game is not touched.
 - Approximate hands-on time: 10–15 minutes.
 - Agent checks: see **Agent results** below.
-- User checks: **PENDING**. Agent results do not tick the boxes below.
+- User checks: **WAIVED, not run** (relayed by the main session; see **Recorded result**). Agent results do not tick
+  the boxes below.
 
 ## Get it running
 
@@ -130,9 +131,30 @@ feminine piecemeal (see the findings).
 
 ## Recorded result
 
-- Tested revision/build: <pending>
-- User reported at: <pending>
-- Passed / failed / untested step numbers: <pending>
-- Explicitly waived checks, if any: none
-- Readiness: pending user checks
-- Merge authorization: not given
+Recorded 6 Nov 2026, evening, from the main session's relay (session `local_5cf48e40`, the release owner). This
+session did not see the user's words itself.
+
+- Tested revision/build: none. The user did not run the checks.
+- User reported at: about 19:30 London, 6 Nov 2026, in the main session's chat.
+- Passed / failed / untested step numbers: steps 1–7 untested.
+- Explicitly waived checks: all 7. The user selected the S12 body-type refresh among the pending pieces to ship. The
+  main session reports that the option's label named 179 meshes and said the checks were pending. The user's words,
+  verbatim as relayed:
+  1. "also please merge everything we have locally so its live"
+  2. "obviously for all of them check with the owner session so eveyrthing goes smoothly, after merge done and
+     confirmed live only then archive the session (make sure no outstanding or parked issue lost),PR #15 SEO
+     basics,PR #24 site health,S12 body-type refresh,Face of Éternel"
+- What shipped: the **garments-only** variant (178 meshes, live body), on this session's recommendation. The user's
+  selection named 179; nobody re-asked them about 178 against 179.
+  - The main session applied `merge-patch-v2.json` with `--garments-only` to the active index at 19:57 UTC: 178
+    repointed, 0 skin pairs rewritten.
+  - The log is in the root checkout at `_docs/goal-100-2026-10-11/release-evening/s12-garments-merge/apply-v2.log`.
+  - Verified here afterwards: the active `assets.json` is sha256 `5c36c6b6a08e7d59…`, identical to `index-v4a`, and
+    `skin-pairs.json` is unchanged at `f15a73a2…`.
+- Readiness: shipped on the waiver, with agent evidence only (**Agent results**).
+  - Steps 1–6 target 5194, the full candidate with the S12 body. Steps 1 (corset fix) and 6 (tube-top neckline)
+    depend on that body, so they do not describe what shipped.
+  - Steps 3 and 4 are the masculine changes visitors see, captured by the agent on both variants.
+  - No agent capture covers step 7, changing items in the panel, or free orbiting. Those stay unchecked until someone
+    looks at live.
+- Merge authorization: the user, through the main session, which ships it in the 6 Nov release PR.

@@ -6,6 +6,10 @@ merged, pushed or published. Merge only when you are idle **and** the user has a
 
 ## Current recipe (6 Nov evening): index-v4, rebuilt on the moved index
 
+**Applied.** The main session ran the garments-only recipe below on 6 Nov at 19:57 UTC: 178 repointed. The active
+index is now `assets.json` `5c36c6b6…` with skin pairs unchanged at `f15a73a2…`. It ships in the 6 Nov release PR.
+Record: `functional-review.md` ("Recorded result").
+
 Everything below `## What the batch is` describes the earlier `index-v3` and `merge-patch-v1`. Those are pinned to the
 old index `ae2c1ac0…` and **must not be applied**.
 

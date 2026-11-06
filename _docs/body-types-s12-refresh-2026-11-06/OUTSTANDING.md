@@ -5,16 +5,16 @@ lives. Paths are relative to this folder unless they start with `public/`, `scri
 
 ## Decisions and acceptance
 
-1. **The merge variant.**
-   - The user approved shipping the S12 body-type refresh. The approval was relayed by the main session (about 19:30
-     London, 6 Nov) and is not verified in this session.
-   - The approved scope was "179 repointed meshes". The agent recommends the data-only garments-only variant
-     (178, live body); see `HANDOFF.md` ("Current recipe").
-   - Which variant ships is the user's call.
-2. **The guided checks.**
-   - The 7 checks in `functional-review.md` are pending. The relayed approval says the option text named them as
-     pending, so selecting it waived them.
-   - Record that waiver there, verbatim, once the main session confirms the user's words.
+1. **The merge variant: garments-only shipped; 178 against 179 was never put to the user.**
+   - The user approved shipping the S12 body-type refresh, about 19:30 London, 6 Nov. The approval was relayed by the
+     main session; the exact words are in `functional-review.md` ("Recorded result").
+   - The option they picked named 179 meshes. The main session applied the garments-only variant (178, live body) on
+     this session's recommendation, at 19:57 UTC, and ships it in the 6 Nov release PR.
+   - Nobody re-asked the user. If they want the body too, that is item 4.
+2. **The guided checks: waived, never run.**
+   - The waiver is recorded verbatim (as relayed) in `functional-review.md`.
+   - Step 7 (changing items in the panel) and free orbiting have no agent evidence. A look at live after the release
+     covers them.
 3. **The route for feminine** (`route-review-2026-11-06.md`). Recommended: the outfit-level fallback for
    `medium_female` only. Not built. It needs:
    - baked `_s12` targets with normals, including the body's `push_lower_torso`;
@@ -63,5 +63,7 @@ lives. Paths are relative to this folder unless they start with `public/`, `scri
   - `scripts/generated/shader-probe/s12-bodytype-refresh-v1/`: raw reads `read-01` (2.3 GB) and `read-02`, logs.
 - **Captures copied out of the worktree:** `.claude/evidence/body-types-s12-refresh-2026-11-06-local/`, same relative
   paths: `review-v1*`, `review-v4a*`, pairs, crops, triptychs and logs.
-- **The tools the merge recipe runs live on branch `claude/quizzical-hermann-33b51b`.** That branch is committed but not
-  pushed. Keep the worktree until the merge is done, or move the tools onto `main` through a PR.
+- **The tools and these docs** are on branch `claude/quizzical-hermann-33b51b`, pushed to the remote. They go to `main`
+  through that branch's PR, which the main session merges after the release.
+- **The 178 shipped GLBs exist only in the ignored root-checkout folder** `public/models/s12-bodytype-refresh-v1/meshes/`
+  (`publish-list-v2.txt`). Keep that folder until the release's asset host is confirmed to serve all 178.
