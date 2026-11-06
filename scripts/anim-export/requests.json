@@ -1,0 +1,29 @@
+{
+  "skeleton": "_3P_MasterSkeleton",
+  "meshes": [
+    "SK_Body_M"
+  ],
+  "anims": [
+    "HM_Frontend_Outfit_L_Idle_01",
+    "HM_Frontend_Outfit_L_Idle_02",
+    "HM_Frontend_Outfit_L_IdleHandsFront_02",
+    "HM_Frontend_Outfit_A_React_Head_00",
+    "HM_Frontend_Outfit_A_React_UpperBody_00",
+    "HM_Frontend_Outfit_A_React_LowerBody_00",
+    "HM_Frontend_Outfit_A_React_Feet_00",
+    "HM_Frontend_Outfit_A_React_Hands_00",
+    "HM_Frontend_Emotes_A_WaveHello_00",
+    "HM_Frontend_Emotes_A_Clap_00",
+    "HM_Frontend_Emotes_A_Flex_00",
+    "HM_Frontend_Emotes_A_Disco_00",
+    "HM_Frontend_Emotes_A_ShadowBoxing_00",
+    "HM_Frontend_Emotes_A_TakeABow_00",
+    "HM_Frontend_Emotes_A_Robot_00",
+    "HM_Frontend_Emotes_A_TapDance_00",
+    "HM_Frontend_Emotes_A_FacePalm_00",
+    "HM_Frontend_Emotes_A_VictoryCheer_00",
+    "HM_Frontend_Emotes_A_KungFuTiger_00",
+    "HM_Frontend_Emotes_A_VampireDance_00",
+    "HM_Frontend_Emotes_A_CuteSkeletonDance_00"
+  ]
+}

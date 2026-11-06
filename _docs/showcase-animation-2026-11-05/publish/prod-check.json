@@ -1,0 +1,20 @@
+{
+  "controls": "Animate",
+  "animResponses": 54,
+  "animSample": [
+    "200 manifest.json",
+    "200 set-5/icons/T_UI_Icon_Emote_Demonesa.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_FemmeElegant.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_UndeadDance.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_Knight.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_KissTheRing.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_StarBound.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_Hippie.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_JesterDrum.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_SpaceProtector.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_Knighted.webp",
+    "200 set-5/icons/T_UI_Icon_Emote_ISEULT_S12.webp"
+  ],
+  "animNon200": [],
+  "errors": []
+}

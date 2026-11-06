@@ -1,0 +1,14 @@
+{
+  "base": "https://cd858839.the-finals-outfit-assets.pages.dev/",
+  "files": 568,
+  "identical": 568,
+  "mismatched": [],
+  "glbHeaders": {
+    "file": "props-7/BP_Emote_BlackSmith_Hammer_Prop.glb",
+    "type": "model/gltf-binary",
+    "cors": "*",
+    "cache": "public, max-age=31536000, immutable"
+  },
+  "missingStatus": 404,
+  "ok": true
+}
