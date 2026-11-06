@@ -106,4 +106,12 @@ the cup floats beside the hand." A real-phone check is not part of this list: th
   * Other emotes have wrong props too (not listed).
 - Explicitly waived checks, if any: none
 - Readiness: user PASS on the dev build; the user asked to publish as is (6 Nov)
-- Merge authorization: "lets just publish as is imo for now then fix more later" (6 Nov)
+- Merge authorization: "lets just publish as is imo for now then fix more later", then "Yes, publish" and "Merge
+  when green" (6 Nov)
+- Merged: PR #22 as `e9f870e` on 6 Nov 2026 at 13:30 UTC, after CI (`build`, `compatibility`) passed at head
+  `e99a377`. Animation host `cd858839`.
+- Live-site agent check (6 Nov, after deploy run 42226092408 succeeded):
+  * https://chronohaxx.github.io/the-finals-outfit/ serves `index-Czpohymp.js`, which names the animation host.
+  * Played headless, Fancy a Cuppa paused with the cup, saucer and tea bag in the hands (screenshot reviewed by eye).
+  * 54 animation-host responses, all 200; no console errors (`publish/live-check.json`).
+  * This is agent PASS only. The user has not re-checked the live site.
