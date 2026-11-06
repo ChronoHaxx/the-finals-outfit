@@ -7,8 +7,9 @@ refuses a malformed, hand-counted or stale roadmap, so the page can't silently g
 
 - PR / originating issue: none yet (not pushed). Your request: "our roadmap page is so outdated... we should have
   single source of truth (in repo)".
-- Test this revision: branch `claude/stoic-ramanujan-5621c7`, commit `f9fba90cceb94ea4b658fa5610b1c05c1c385ed9`
-  (based on `main` 11b4185 = the merged 5 Nov release, PR #19). The later commit that adds this file changes no code.
+- Test this revision: branch `claude/stoic-ramanujan-5621c7`, commit `799a6702d9f4b1fc086542535a3bf47f2438ad22`
+  (based on `main` 11b4185 = the merged 5 Nov release, PR #19). It is `f9fba90` plus your 6 Nov edit, which
+  dropped the two internal 3D-file items. The later commit that updates this file changes no code.
 - Open: http://localhost:5186/#/roadmap in a browser.
 - Prerequisites: none beyond the worktree's own `node_modules` (installed). A gitignored
   `.env.development.local` in the worktree points the dev server at the production asset hosts from `deploy.yml`, so
@@ -56,11 +57,11 @@ Stop it with Ctrl+C. The first page load can take about 30 seconds while Vite wa
   - the purple count equals the Purple card (10);
   - "All 3,255 cosmetics through Season 12".
   - No `{…}` placeholder shows anywhere.
-- [ ] **3. Content:** read every section, expanding the items. Look hardest at the two items under "Waiting on a
-  decision" that are about the 3D files: "Downloading your outfit as a 3D file" and "Protecting the 3D files". They
-  go public with this page.
-  Expected: nothing is wrong, overclaimed or something you'd rather not publish. If anything is, name it; this step
-  is judgement, not mechanics.
+- [ ] **3. Content:** read every section, expanding the items. "Waiting on a decision" should have four items:
+  default lighting, cloth physics, items that recolour another item, and animated noise. Nothing should mention 3D
+  export, asset protection or hosting (removed 6 Nov at your request).
+  Expected: nothing is wrong, overclaimed, internal or something you'd rather not publish. If anything is, name it;
+  this step is judgement, not mechanics.
 - [ ] **4. One source:** open `ROADMAP.md` in the worktree. Change line 74 from `### Default lighting` to
   `### Default lighting test` and save.
   Expected: within a few seconds, without reloading, the page's first "Waiting on a decision" item reads
