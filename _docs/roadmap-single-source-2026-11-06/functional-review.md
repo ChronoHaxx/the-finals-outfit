@@ -7,12 +7,15 @@ refuses a malformed, hand-counted or stale roadmap, so the page can't silently g
 
 - PR / originating issue: none yet (not pushed). Your request: "our roadmap page is so outdated... we should have
   single source of truth (in repo)".
-- Test this revision: branch `claude/stoic-ramanujan-5621c7`, commit `0b808628aa662efd6fe15cb6b46063efd5dc448d`
-  (based on `main` 11b4185 = the merged 5 Nov release, PR #19). It is `f9fba90` plus two 6 Nov edits:
+- Test this revision: branch `claude/stoic-ramanujan-5621c7`, commit `0842b45888fc989ee140e63a0312fe8977c78c3e`
+  (based on `main` 11b4185 = the merged 5 Nov release, PR #19). It is `f9fba90` plus three 6 Nov edits:
   - your request to drop the two internal 3D-file items (`799a670`);
   - a text fix (`0b80862`). The catalog item no longer claims to be complete, because the 6 Nov release adds 76
     cosmetics the catalog had skipped and more are still being added. The red-items text no longer says "most" are
     material-type gaps, since no current count supports that.
+  - the same-day gap you asked to close (`0842b45`). `ROADMAP.md` now records `Reviewed after patch note:`, the id of
+    the newest patch note at the last review. The build refuses the file once a newer patch note exists, even one
+    dated the same day.
 
   The later commit that updates this file changes no code.
 - Open: http://localhost:5186/#/roadmap in a browser.
@@ -21,14 +24,17 @@ refuses a malformed, hand-counted or stale roadmap, so the page can't silently g
   the counts match the live site. The main session's dev server on 5174 is untouched.
 - Approximate hands-on time: 8 minutes, most of it reading the roadmap text (step 3).
 - Agent checks (6 Nov 2026):
-  - `tests/roadmap.test.ts`: 6/6 PASS.
+  - `tests/roadmap.test.ts`: 7/7 PASS, including a same-day second patch note and an unknown id.
   - `npm test`: 648 PASS, 8 FAIL, 1 skipped. All 8 failures need gitignored extracted assets that a fresh worktree
-    doesn't have (`ENOENT`, ski-blade fixture); none touch the roadmap.
+    doesn't have (`ENOENT`, ski-blade fixture and base-body GLBs); none touch the roadmap.
   - `tsc -b --noEmit`: PASS.
   - `npm run build`: PASS, with the existing chunk-size warning. `check:catalog-split`: PASS.
-  - Negative builds:
+  - Negative builds (before `0842b45`):
     - A `Last reviewed: 2026-11-04` date fails, naming the 5 Nov "Seasons 11 and 12" patch note.
-    - A hand-typed "209" fails, naming line 30.
+    - A hand-typed "209" fails, naming the line.
+  - Against the 6 Nov release's patch notes (branch `claude/release-2026-11-06`, loaded read-only):
+    - this `ROADMAP.md` fails, naming patch note "76 missing cosmetics" and its id;
+    - it passes once `Reviewed after patch note:` is set to that id.
   - Dev page in the browser pane:
     - The placeholders fill from the deployed status data (238 red, 10 purple, 3,255 total, Season 12).
     - Editing `ROADMAP.md` updates the open page in place.
@@ -68,20 +74,23 @@ Stop it with Ctrl+C. The first page load can take about 30 seconds while Vite wa
   export, asset protection or hosting (removed 6 Nov at your request).
   Expected: nothing is wrong, overclaimed, internal or something you'd rather not publish. If anything is, name it;
   this step is judgement, not mechanics.
-- [ ] **4. One source:** open `ROADMAP.md` in the worktree. Change line 74 from `### Default lighting` to
+- [ ] **4. One source:** open `ROADMAP.md` in the worktree. Change line 77 from `### Default lighting` to
   `### Default lighting test` and save.
   Expected: within a few seconds, without reloading, the page's first "Waiting on a decision" item reads
   "Default lighting test". Undo the edit and save; the page reverts.
-- [ ] **5. The build gate:** on line 30 of `ROADMAP.md`, replace `{red}` with `209` and save. In the same PowerShell
-  directory (a second window if the dev server is running), run:
+- [ ] **5. The build gate:** on line 33 of `ROADMAP.md`, replace `{red}` with `209`. On line 22, change
+  `Reviewed after patch note: 2026-11-05-seasons-11-12` to `Reviewed after patch note: 2026-11-04-new-look` (an older
+  patch note). Save. In the same PowerShell directory (a second window if the dev server is running), run:
 
   ```powershell
   npm run build
   ```
 
   Expected:
-  - the build fails with `line 30: hand-typed figure "209"; use a placeholder such as {red}...`;
-  - the dev page shows Vite's red error overlay with the same message.
+  - the build fails with `line 33: hand-typed figure "209"; use a placeholder such as {red}...`;
+  - it also says the file was reviewed after patch note "2026-11-04-new-look", but a newer patch note "Seasons 11 and
+    12" has been added since;
+  - the dev page shows Vite's red error overlay with the same messages.
 
   Undo with:
 
@@ -104,13 +113,16 @@ If something fails, stop at that step and report its number and what happened. R
 ## What changes for the release workflow
 
 Adding a patch note (`src/data/changelog.ts`) or moving `CATALOG_UPDATE.updatedAt` now also means re-reading
-`ROADMAP.md` and moving its `Last reviewed` date. Otherwise `npm run build`, and so the deploy, fails with a message
-that says exactly that. This is the staleness guard, so a release will hit it deliberately.
+`ROADMAP.md`. Then set `Reviewed after patch note:` to the newest patch note's `id`, and `Last reviewed:` to today.
+Otherwise `npm run build`, and so the deploy, fails with a message that says exactly that. This is the staleness
+guard, so a release will hit it deliberately.
 
-Known gap: the check compares calendar days. A patch note dated the same day as `Last reviewed` passes even if it
-was written after the review. That is the case today: the 6 Nov release (branch `claude/release-2026-11-06`, not yet
-merged) passes against this file unchanged. Checked by loading this `ROADMAP.md` with that branch's patch notes: it
-passes on 6 Nov, and a 5 Nov review date fails.
+- Patch notes are matched by `id`, so a second patch note on the day of the review still fails the build. Until
+  `0842b45` the check compared days, and the 6 Nov release passed unread.
+- Whichever of this branch and the 6 Nov release (`claude/release-2026-11-06`) merges second must set the line to
+  `2026-11-06-missing-cosmetics`, after re-reading the roadmap.
+- The catalog update has no id, so it is still matched by date. In practice it ships with a patch note, which the
+  id does catch.
 
 ## Recorded result
 
