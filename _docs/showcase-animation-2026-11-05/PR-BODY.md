@@ -7,7 +7,7 @@ ports the game's deformation Control Rig. One click goes back to the old still p
 
 - **Clips, icons and props** are decoded offline from the game's own files (`scripts/anim-export`). They are hosted
   like the models, not committed: `ANIMATIONS_BASE` in `deploy.yml` points at the immutable deployment
-  `__ANIM_HOST__.the-finals-outfit-assets.pages.dev`. It holds 569 files, 103 MB: 191 clips, 201 icons, 174 prop
+  `cd858839.the-finals-outfit-assets.pages.dev`. It holds 569 files, 103 MB: 191 clips, 201 icons, 174 prop
   GLBs, the manifest and `props.json`. A deployment without that host hides the animation controls.
 - **Accumulator:** while the pose moves, the still view's accumulation switches to a motion mode, a clamped running
   average with a motion-specific alpha-hash pattern. Paused frames converge exactly as before. `?temporal=0` still
@@ -25,7 +25,12 @@ Evidence, decisions and commands: `_docs/showcase-animation-2026-11-05/README.md
   - captures reviewed by eye at full size (props, joints, picker on desktop and phone, moving and paused);
   - typecheck clean; full test suite 664/677 (the 8 failures are pre-existing asset-fixture tests unrelated to this
     branch; 5 skipped);
-  - production build checked against the hosted animation deployment (__PROD_CHECK__).
+  - the hosted deployment matches the staged files: all 568 are byte-identical, GLBs are served as
+    `model/gltf-binary` with CORS `*` and immutable caching, and a missing file returns 404
+    (`publish/deployment-anim.json`);
+  - a production build with `deploy.yml`'s settings, served at `/the-finals-outfit/`, played Fancy a Cuppa with the
+    cup, saucer and tea bag loaded from the host. There were 54 animation-host responses, all 200, and no console
+    errors (`publish/prod-check.json`).
 
 ### Known gaps (shipping as is, by the user's choice)
 

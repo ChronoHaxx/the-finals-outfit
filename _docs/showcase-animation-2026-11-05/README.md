@@ -325,6 +325,26 @@ hiding, detach, the curve, the picker's summary) and an animator test that attac
   glass, the hologram guessed as unlit translucent cyan); listed in props.json `approximateMaterials`.
 * Size: 174 GLBs, 59 MB in total, loaded per emote (median 231 KB, largest 1.8 MB). Not yet meshopt-compressed.
 
+## Published (6 Nov, the user's "Yes, publish")
+
+- **Host:** `https://cd858839.the-finals-outfit-assets.pages.dev/`. This is an immutable Cloudflare Pages preview
+  deployment on the `the-finals-outfit-assets` project, branch alias `anim-1106-showcase`, made with wrangler 4.131.1.
+  It holds the pointer `manifest.json`, `set-5/` and `props-7/`, plus a `_headers` file with CORS `*` and immutable
+  caching, the same as `scripts/stage-assets.mjs`. In total: 569 files, 103 MB.
+- **Wiring:** `deploy.yml` sets `ANIMATIONS_BASE` and passes it to both builds as `VITE_ANIMATIONS_BASE`. A later
+  clip set needs a new deployment and a new hash, never an overwrite (the files are cached for a year).
+- **Receipts in `publish/`:**
+  - `deployment-anim.json`: all 568 files byte-identical, headers checked, a missing file returns 404;
+  - `prod-check.json`: a production build played a prop emote from the host;
+  - `upload-anim.log`;
+  - the two scripts that produced these.
+- **How to republish:**
+  1. Stage into a new folder (`manifest.json` + `set-N/` + `props-N/` + `_headers`).
+  2. In PowerShell or Git Bash, from that folder's parent, run
+     `node <wrangler 4.131.1>/bin/wrangler.js pages deploy <folder> --project-name the-finals-outfit-assets --branch
+     <alias> --commit-dirty=true`.
+  3. Run `node _docs/showcase-animation-2026-11-05/publish/verify-hosted.mjs <folder> <host>/` from the worktree root.
+
 ## Known gaps
 
 * **Facial animation**: every clip carries 37 `Face_*` expression curves (blink, jaw, brows…). The heads have 305
