@@ -78,7 +78,7 @@ Stop it with Ctrl+C. The first page load can take about 30 seconds while Vite wa
   `### Default lighting test` and save.
   Expected: within a few seconds, without reloading, the page's first "Waiting on a decision" item reads
   "Default lighting test". Undo the edit and save; the page reverts.
-- [ ] **5. The build gate:** on line 33 of `ROADMAP.md`, replace `{red}` with `209`. On line 22, change
+- [ ] **5. The build gate:** on line 33 of `ROADMAP.md`, replace `{red}` with `209`. On line 23, change
   `Reviewed after patch note: 2026-11-05-seasons-11-12` to `Reviewed after patch note: 2026-11-04-new-look` (an older
   patch note). Save. In the same PowerShell directory (a second window if the dev server is running), run:
 
