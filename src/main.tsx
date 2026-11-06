@@ -9,6 +9,10 @@ import Roadmap from "./pages/Roadmap";
 import { ReconstructionProgressProvider } from "./context/ReconstructionProgress";
 import { loadCatalog } from "./lib/catalog-load";
 import IntroDialog from "./components/IntroDialog";
+import { startAnalytics } from "./lib/analytics";
+
+// Before the catalog: a visit whose catalog fails to load is the one worth counting. No-op outside production.
+if (import.meta.env.PROD) startAnalytics();
 
 // The catalog getters are synchronous, so nothing renders until the catalog is in.
 // Until then the static shell in index.html stays on screen.

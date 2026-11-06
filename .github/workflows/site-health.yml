@@ -20,6 +20,8 @@ on:
       - 'scripts/lib/site-health*'
       - 'src/data/reconstruction-routes.json'
       - 'src/lib/asset-routing.mjs'
+      - 'src/lib/analytics.ts'
+      - 'tests/analytics.test.ts'
 
 permissions:
   contents: read
@@ -62,5 +64,5 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Test the monitor
-        run: node --import tsx --test scripts/lib/site-health.test.mjs
+      - name: Test the monitor and the analytics gate
+        run: node --import tsx --test scripts/lib/site-health.test.mjs tests/analytics.test.ts
