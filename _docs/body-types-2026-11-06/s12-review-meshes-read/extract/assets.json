@@ -1,0 +1,232 @@
+[
+  {
+    "request": "Discovery/Content/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.uasset",
+    "sha256": "0880F99CEB687B007CB46049657F773814A5E0DE500B0E710D3B8CBEA8FAA01B",
+    "meshFile": "SK_Head_Face_01_Base.mesh.json",
+    "propertiesFile": "SK_Head_Face_01_Base.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "default_brows",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "default_chin",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "default_ears",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "default_face",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "default_nose",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "head_neck_match",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "heavy_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "heavy_female_muscular",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "heavy_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "heavy_male_muscular",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "light_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "light_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Head_Face_01_Base",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Casual/Assets/BasicTshirt/SK_Casual_BasicTshirt_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Casual/Assets/BasicTshirt/SK_Casual_BasicTshirt_M.uasset",
+    "sha256": "6D3DDCC06681DEA8196A6E1B29C9C29AD82C0D82C09DD117BDC1F32DDFF56EEC",
+    "meshFile": "SK_Casual_BasicTshirt_M.mesh.json",
+    "propertiesFile": "SK_Casual_BasicTshirt_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "shrink_under_vest",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Casual_BasicTshirt_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Casual/Assets/LooseJeans/SK_Casual_LooseJeans_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Casual/Assets/LooseJeans/SK_Casual_LooseJeans_M.uasset",
+    "sha256": "956BE405E3568F49D0BE2030F242A4CDC3279A043EED1ED315E249F9F8D828CB",
+    "meshFile": "SK_Casual_LooseJeans_M.mesh.json",
+    "propertiesFile": "SK_Casual_LooseJeans_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "shrink_pants_in_lowboots",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "shrink_pants_in_tallboots",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Casual_LooseJeans_M",
+        "propertyCount": 7
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Casual/Assets/TallSneakers/SK_Casual_TallSneakers_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Casual/Assets/TallSneakers/SK_Casual_TallSneakers_M.uasset",
+    "sha256": "0B5BD6A4F87A04269D8EF4C2F98330E832A3D6CEB37C4E58219CFB1AC68DF73E",
+    "meshFile": "SK_Casual_TallSneakers_M.mesh.json",
+    "propertiesFile": "SK_Casual_TallSneakers_M.properties.json",
+    "exports": [
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Casual_TallSneakers_M",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Casual/Assets/ShortDress/SK_Casual_ShortDress_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Casual/Assets/ShortDress/SK_Casual_ShortDress_M.uasset",
+    "sha256": "3B70E5D176BA6C041114A720388180B1771FB610B47CDB9A827231D894156A54",
+    "meshFile": "SK_Casual_ShortDress_M.mesh.json",
+    "propertiesFile": "SK_Casual_ShortDress_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_2",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Casual_ShortDress_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      }
+    ]
+  }
+]

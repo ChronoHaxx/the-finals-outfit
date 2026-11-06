@@ -1,0 +1,186 @@
+[
+  {
+    "request": "Discovery/Content/Discovery/Characters/Body/SK_Body_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Body/SK_Body_M.uasset",
+    "sha256": "154F1B18B111E87EF00A14254BBD4328C25AF13A3D631E8B2AB65150F78A3CA8",
+    "meshFile": "SK_Body_M.mesh.json",
+    "propertiesFile": "SK_Body_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "head_neck_match",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_armsleeves",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_crotch",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_full_jacket",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_full_pants",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_gloves",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_heels",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_left_arm",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_long_sleeves",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_lower_feet",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_lower_torso",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_right_calf",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_robot_arm",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_sleeves",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_socks_crew",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_socks_knee_high",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_socks_quarter",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_socks_thigh_high",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_stomach",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_thighs",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_tights",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_torso",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_torso_arms_armpits",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_upper_back",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_upper_calves",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_upper_pants",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_upper_sleeves",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_upper_thighs",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_upper_torso",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_waist",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_wrists",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Body_M",
+        "propertyCount": 7
+      }
+    ]
+  }
+]

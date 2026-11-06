@@ -123,15 +123,60 @@ Report: `public/models/s12-bodytype-preview-v1/morph-only-proof-v3.json`.
 
 Refused meshes need the S12 item refresh route, not a morph swap.
 
+`morph-only-proof-v4.json` widens this to 36 meshes, adding the other meshes the review items can show: **24
+morph-only, 12 refused**. The two new refusals are the utility belt and the Engimo hologram jacket.
+
 ### Preview
 
 `public/models/s12-bodytype-preview-v1/` holds:
-- `meshes/`: the 30 S12 rebuilds;
-- `index-v2/assets.json`: built by `build-preview-index.py` from the active index, swapping only the 20 proven meshes;
-- `index-v2/skin-pairs.json`: built by `rewrite-skin-pairs.py`, since faces load their head through skin pairs.
+- `meshes/` (30) and `meshes-v2/` (36): the S12 rebuilds. The body is byte-identical in both.
+- `index-v2` … `index-v5`: each holds an `assets.json` built by `build-preview-index.py` from the active index, and a
+  `skin-pairs.json` built by `rewrite-skin-pairs.py`, since faces load their head through skin pairs.
+  - index-v2 swapped every proven mesh. It is kept as the review-v1 evidence.
+  - **index-v5** is current. It applies the item rule below and swaps 8 meshes: the body, Face 01 head, zip hoodie,
+    oversized bomber, padded shirt, tall sneakers, tactical head cloth and double-bun braids.
+  - It holds 16 proven meshes, the loose jeans and rolled-sleeve shirt among them, because an item that shows them
+    also shows a mesh that stays pre-S12.
+- The top-level `assets.json` / `skin-pairs.json` are the first attempt (it rewrote the body URL, which the rig
+  refuses). They are kept, not used.
+
+**Item rule.** A mesh is swapped only when every supported item that can show it on Medium is S12 throughout. Items
+are counted from their visual parts and every TagOverride replacement that can match on Medium. The set the preview
+shows as S12 is computed to a fixpoint: holding a mesh whose morphs changed can make another item mixed.
 
 The body keeps its preserved path, because the rig accepts skin pairs only on it. `scripts/body-types/serve-preview.mjs`
 answers that path with the S12 body. The active index is only read.
+
+## 7. Visual review (stage 1)
+
+**Captures.** `capture-review.mjs` shot 7 outfits × 3 body types × 3 cameras (torso front, torso side, full) in the
+default idle pose, on the live-index server (5191) and the S12 preview server (5192). The review sheets come from
+`review-sheets.py`. Captures stay local (`review-*`, ignored).
+- `review-v1`: 126 shots.
+- `review-v2`: S12 recaptured on the item-consistent index-v5; live copied from v1.
+- No console errors in any shot, and every source mesh carries exactly its body type's Medium morph (none for
+  androgynous).
+
+**Live data: clean.**
+- Masculine has the broad chest, feminine a fuller chest and wider hips, androgynous the straight bind shape.
+- Nothing pokes through: tee, zip hoodie, bomber, padded shirt, rolled sleeves, short dress, tech crop top.
+
+**S12 preview.**
+- The S12 feminine chest is visibly fuller than live on the fully S12 items (hoodie, bomber, padded shirt).
+- Defect found in review-v1 and fixed: the S12 undershirt bulged through the pre-S12 short-dress shell. This led to
+  item consistency in `build-preview-index.py` (fixpoint over what the preview shows as S12). In index-v5 the short
+  dress is clean.
+- Remaining mixed-build artifacts (review-v2): a light sliver under the short-dress hem, and the jeans' light inner
+  waistband above the belt. Both appear only on S12 feminine, where bare skin meets a pre-S12 garment edge. The cause
+  is the S12 body against pre-S12 garment morphs (jeans and dress are held). The body under a garment is masked, but
+  the body surface still sets where hems and waistbands meet skin.
+
+**Conclusion.**
+- Stage 1 is correct on the live data as it stands.
+- The S12 body-type shapes must land as one refresh: the body plus every garment, each item complete, through the
+  morph-only proof and the item rule. Morph-only meshes swap directly. S12-reworked meshes (12 of 36 in proof v4) need
+  the S12 item refresh route.
+- That refresh changes the active index, so it belongs with the main session.
 
 ## Scripts
 

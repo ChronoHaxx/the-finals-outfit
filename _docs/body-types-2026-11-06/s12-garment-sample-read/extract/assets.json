@@ -1,0 +1,953 @@
+[
+  {
+    "request": "Discovery/Content/Discovery/Characters/ActionHero/Assets/SentinelTop/SK_ActionHero_SentinelTop_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/ActionHero/Assets/SentinelTop/SK_ActionHero_SentinelTop_M.uasset",
+    "sha256": "AE41628ACCF0B2C7B76B14B9525C3E8F4055C90E583B525337D2B5AEC428ED10",
+    "meshFile": "SK_ActionHero_SentinelTop_M.mesh.json",
+    "propertiesFile": "SK_ActionHero_SentinelTop_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_ActionHero_SentinelTop_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Casual/Assets/CropTopUndershirt/SK_Casual_CropTopUndershirt_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Casual/Assets/CropTopUndershirt/SK_Casual_CropTopUndershirt_M.uasset",
+    "sha256": "5BA37B3F66FAF7CE8260823AB0FF69CF81CCFFB2A7A543CACFCD45344DAB3B62",
+    "meshFile": "SK_Casual_CropTopUndershirt_M.mesh.json",
+    "propertiesFile": "SK_Casual_CropTopUndershirt_M.properties.json",
+    "exports": [
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Casual_CropTopUndershirt_M",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Casual/Assets/HoodieZipup/SK_Casual_HoodieZipup_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Casual/Assets/HoodieZipup/SK_Casual_HoodieZipup_M.uasset",
+    "sha256": "7CEE9D7338F77DBF668D199EB93FB01E9A8565B23EDBED6225BB1ECE37626158",
+    "meshFile": "SK_Casual_HoodieZipup_M.mesh.json",
+    "propertiesFile": "SK_Casual_HoodieZipup_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Casual_HoodieZipup_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_2",
+        "propertyCount": 5
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Casual/Assets/ShirtRolledUpSleeves/SK_Casual_ShirtRolledUpSleeves_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Casual/Assets/ShirtRolledUpSleeves/SK_Casual_ShirtRolledUpSleeves_M.uasset",
+    "sha256": "5DEE37F379694FFC9EB6E91D25B1CCC57A7741E8B104FDEE281A148B6D076887",
+    "meshFile": "SK_Casual_ShirtRolledUpSleeves_M.mesh.json",
+    "propertiesFile": "SK_Casual_ShirtRolledUpSleeves_M.properties.json",
+    "exports": [
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Casual_ShirtRolledUpSleeves_M",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Christmas/Assets/ElfTop/SK_Christmas_ElfTop_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Christmas/Assets/ElfTop/SK_Christmas_ElfTop_M.uasset",
+    "sha256": "3E0B465620F3CD95C454C16BC0B23409AC37E20B4E93EA28965E870AE9468216",
+    "meshFile": "SK_Christmas_ElfTop_M.mesh.json",
+    "propertiesFile": "SK_Christmas_ElfTop_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "hat_grows_hood",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Christmas_ElfTop_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/FancyDress/Assets/DressShoes/SK_FancyDress_DressShoes_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/FancyDress/Assets/DressShoes/SK_FancyDress_DressShoes_M.uasset",
+    "sha256": "BEF85821973C31544896076BF288EB54620F83209F3A25B71C5366ED39DE396D",
+    "meshFile": "SK_FancyDress_DressShoes_M.mesh.json",
+    "propertiesFile": "SK_FancyDress_DressShoes_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_FancyDress_DressShoes_M",
+        "propertyCount": 7
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/FromTencent/Assets/AsianSpiritJacket/SK_FromTencent_AsianSpiritJacket_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/FromTencent/Assets/AsianSpiritJacket/SK_FromTencent_AsianSpiritJacket_M.uasset",
+    "sha256": "EB3A132707A3716B0AD7330CEC5BA56F742DD48C88EA26886EB3BB703EA7D55A",
+    "meshFile": "SK_FromTencent_AsianSpiritJacket_M.mesh.json",
+    "propertiesFile": "SK_FromTencent_AsianSpiritJacket_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_FromTencent_AsianSpiritJacket_M",
+        "propertyCount": 7
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Hairs/DoubleBunHangingBraids/SK_DoubleBunHangingBraids_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Hairs/DoubleBunHangingBraids/SK_DoubleBunHangingBraids_M.uasset",
+    "sha256": "C1053FD7DD68469715CD12CDDFA93A95A6CFE666285E4D6A133BCDEC24EBDE03",
+    "meshFile": "SK_DoubleBunHangingBraids_M.mesh.json",
+    "propertiesFile": "SK_DoubleBunHangingBraids_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "hat_covers_upper_hair",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_DoubleBunHangingBraids_M",
+        "propertyCount": 8
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Hologram/Assets/EngimoSeason6TorsoHologram/SK_Hologram_CombatVestSamuraiHologram_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Hologram/Assets/EngimoSeason6TorsoHologram/SK_Hologram_CombatVestSamuraiHologram_M.uasset",
+    "sha256": "F3DA8363DB0C7157D068E9FFC1321A988D72BEE250AF44BE0AA3C11BD1AD4954",
+    "meshFile": "SK_Hologram_CombatVestSamuraiHologram_M.mesh.json",
+    "propertiesFile": "SK_Hologram_CombatVestSamuraiHologram_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Hologram_CombatVestSamuraiHologram_M",
+        "propertyCount": 7
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Medieval/Assets/KnightTop/SK_Medieval_KnightTop_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Medieval/Assets/KnightTop/SK_Medieval_KnightTop_M.uasset",
+    "sha256": "A70C5E9071C7C0E504CDFF333103539FAAFD30B40BFEB18177A955C5E8D358D9",
+    "meshFile": "SK_Medieval_KnightTop_M.mesh.json",
+    "propertiesFile": "SK_Medieval_KnightTop_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "first_person",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Medieval_KnightTop_M",
+        "propertyCount": 9
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 5
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_2",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Mexico/Assets/RancheroJacket/SK_Mexico_RancheroJacket_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Mexico/Assets/RancheroJacket/SK_Mexico_RancheroJacket_M.uasset",
+    "sha256": "2C19E0AD7455F512390600697CEC25AC437A4E3D61558BD83B6CABFC02129E71",
+    "meshFile": "SK_Mexico_RancheroJacket_M.mesh.json",
+    "propertiesFile": "SK_Mexico_RancheroJacket_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Mexico_RancheroJacket_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Military/Assets/DedeVest/SK_Military_DedeVest_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Military/Assets/DedeVest/SK_Military_DedeVest_M.uasset",
+    "sha256": "330D1F148B082E4E896438D831BF484D38FCBAD18F447DED3366D9A50C7B27E0",
+    "meshFile": "SK_Military_DedeVest_M.mesh.json",
+    "propertiesFile": "SK_Military_DedeVest_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Military_DedeVest_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Military/Assets/RiotMedievalLowerJacket/SK_Military_RiotMedievalLowerJacket_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Military/Assets/RiotMedievalLowerJacket/SK_Military_RiotMedievalLowerJacket_M.uasset",
+    "sha256": "C9CDE5CC4DE228678E761B7E25023E917FF4F42E56621D75B6D9EFCB964BB9E2",
+    "meshFile": "SK_Military_RiotMedievalLowerJacket_M.mesh.json",
+    "propertiesFile": "SK_Military_RiotMedievalLowerJacket_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "ChaosClothConfig",
+        "Name": "ChaosClothConfig",
+        "propertyCount": 0
+      },
+      {
+        "type": "ChaosClothSharedSimConfig",
+        "Name": "ChaosClothSharedSimConfig_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "ClothingAssetCommon",
+        "Name": "M_ClothSim_0",
+        "propertyCount": 9
+      },
+      {
+        "type": "EmbarkClothConfig",
+        "Name": "EmbarkClothConfig",
+        "propertyCount": 2
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Military_RiotMedievalLowerJacket_M",
+        "propertyCount": 8
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Ninja/Assets/ShinobiJacket/SK_Ninja_ShinobiJacket_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Ninja/Assets/ShinobiJacket/SK_Ninja_ShinobiJacket_M.uasset",
+    "sha256": "7A6095BC079CA60551FC8136C8D55761A7F3D69F08CABFBA690FEE684AA17075",
+    "meshFile": "SK_Ninja_ShinobiJacket_M.mesh.json",
+    "propertiesFile": "SK_Ninja_ShinobiJacket_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Ninja_ShinobiJacket_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Robots/Assets/RobotVest/SK_Robots_RobotVest_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Robots/Assets/RobotVest/SK_Robots_RobotVest_M.uasset",
+    "sha256": "57A095DD32AB2CF32205D448FC7EAE6792F7F81706E268D3C30B91DB2E642CF7",
+    "meshFile": "SK_Robots_RobotVest_M.mesh.json",
+    "propertiesFile": "SK_Robots_RobotVest_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Robots_RobotVest_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 5
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_2",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/SciFi/Assets/CamoCombatVestPouches/SK_SciFi_CamoCombatVestPouches_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/SciFi/Assets/CamoCombatVestPouches/SK_SciFi_CamoCombatVestPouches_M.uasset",
+    "sha256": "5D00FA90DF18198E8A263B827821C2931E6D07943FE0F899E9DD8E4E95C78784",
+    "meshFile": "SK_SciFi_CamoCombatVestPouches_M.mesh.json",
+    "propertiesFile": "SK_SciFi_CamoCombatVestPouches_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_SciFi_CamoCombatVestPouches_M",
+        "propertyCount": 7
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Space/Assets/BountyHunterTop/SK_Space_BountyHunterTop_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Space/Assets/BountyHunterTop/SK_Space_BountyHunterTop_M.uasset",
+    "sha256": "366361B96AB34B196A7BBC9105EEC9E0BC77B8B23F12E606A703E123B55BCBFC",
+    "meshFile": "SK_Space_BountyHunterTop_M.mesh.json",
+    "propertiesFile": "SK_Space_BountyHunterTop_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Space_BountyHunterTop_M",
+        "propertyCount": 7
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Space/Assets/SpaceSuitTop/SK_Space_SpaceSuitTop_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Space/Assets/SpaceSuitTop/SK_Space_SpaceSuitTop_M.uasset",
+    "sha256": "48A2D5CB262AAB57B16843C5494E1D3F6A788EA8A8D093C0C9E9A3C8D5765325",
+    "meshFile": "SK_Space_SpaceSuitTop_M.mesh.json",
+    "propertiesFile": "SK_Space_SpaceSuitTop_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "shrin_under_vest",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Space_SpaceSuitTop_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Sport/Assets/PaddedShirt/SK_Sport_PaddedShirt_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Sport/Assets/PaddedShirt/SK_Sport_PaddedShirt_M.uasset",
+    "sha256": "3B38130E66BA15A961826301965E2BAB9A5BA5A3574D8B43ED6CB3A53500A009",
+    "meshFile": "SK_Sport_PaddedShirt_M.mesh.json",
+    "propertiesFile": "SK_Sport_PaddedShirt_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Sport_PaddedShirt_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_2",
+        "propertyCount": 5
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Streetwear/Assets/BikerJacketHoodie/SK_Streetwear_BikerJacketHoodie_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Streetwear/Assets/BikerJacketHoodie/SK_Streetwear_BikerJacketHoodie_M.uasset",
+    "sha256": "EE3B2E5C24BABF1FA6814FAFA90BF9EE15E7D56910E79019671AB6AD2DEDF91D",
+    "meshFile": "SK_Streetwear_BikerJacketHoodie_M.mesh.json",
+    "propertiesFile": "SK_Streetwear_BikerJacketHoodie_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_3",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Streetwear_BikerJacketHoodie_M",
+        "propertyCount": 9
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_2",
+        "propertyCount": 5
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Streetwear/Assets/CroppedTshirtOversize/SK_Streetwear_CroppedTshirtOversize_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Streetwear/Assets/CroppedTshirtOversize/SK_Streetwear_CroppedTshirtOversize_M.uasset",
+    "sha256": "182C8F0744056C0D6C54329162ECD01D575F9702E5718D3AF555D2F75C10199B",
+    "meshFile": "SK_Streetwear_CroppedTshirtOversize_M.mesh.json",
+    "propertiesFile": "SK_Streetwear_CroppedTshirtOversize_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Streetwear_CroppedTshirtOversize_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Streetwear/Assets/OversizedBomberJacket/SK_Streetwear_OversizedBomberJacket_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Streetwear/Assets/OversizedBomberJacket/SK_Streetwear_OversizedBomberJacket_M.uasset",
+    "sha256": "0B2ED96084A956A0C4D15A85F97F7C825817FE292104D61F91EEB6A6342A5ACC",
+    "meshFile": "SK_Streetwear_OversizedBomberJacket_M.mesh.json",
+    "propertiesFile": "SK_Streetwear_OversizedBomberJacket_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Streetwear_OversizedBomberJacket_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_2",
+        "propertyCount": 5
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Streetwear/Assets/TechCropTop/SK_Streetwear_TechCropTop_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Streetwear/Assets/TechCropTop/SK_Streetwear_TechCropTop_M.uasset",
+    "sha256": "223894690B4DDFA4687E6871CE808406367715860A8288AE391FDB7E74A7A7D9",
+    "meshFile": "SK_Streetwear_TechCropTop_M.mesh.json",
+    "propertiesFile": "SK_Streetwear_TechCropTop_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "first_person",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "shrink_under_vest",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Streetwear_TechCropTop_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_2",
+        "propertyCount": 5
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Streetwear/Assets/UncappedOversizedJacket/SK_Streetwear_UncappedOversizedJacket_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Streetwear/Assets/UncappedOversizedJacket/SK_Streetwear_UncappedOversizedJacket_M.uasset",
+    "sha256": "3E69329D331A393382D56E29B50E2C2AF0635042787C8539DD25FDB2C35D6B52",
+    "meshFile": "SK_Streetwear_UncappedOversizedJacket_M.mesh.json",
+    "propertiesFile": "SK_Streetwear_UncappedOversizedJacket_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Streetwear_UncappedOversizedJacket_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_1",
+        "propertyCount": 5
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_2",
+        "propertyCount": 5
+      }
+    ]
+  }
+]

@@ -1,0 +1,206 @@
+[
+  {
+    "request": "Discovery/Content/Discovery/Characters/Streetwear/Assets/BaseTankTop/SK_Streetwear_BaseTankTop_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Streetwear/Assets/BaseTankTop/SK_Streetwear_BaseTankTop_M.uasset",
+    "sha256": "43014404187D8B01A2C2B5D324BCE52FAA033CCE2565A61626053262987C1B7B",
+    "meshFile": "SK_Streetwear_BaseTankTop_M.mesh.json",
+    "propertiesFile": "SK_Streetwear_BaseTankTop_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 0
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "bandolier_squeeze",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Streetwear_BaseTankTop_M",
+        "propertyCount": 7
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Streetwear/Assets/UtilityBelt/SK_Streetwear_UtilityBelt_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Streetwear/Assets/UtilityBelt/SK_Streetwear_UtilityBelt_M.uasset",
+    "sha256": "8F9895532FC7C95A7A7B76111E4C82C22BBD40F3CD8FEDF26408B7F3DA3CAB3C",
+    "meshFile": "SK_Streetwear_UtilityBelt_M.mesh.json",
+    "propertiesFile": "SK_Streetwear_UtilityBelt_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_belt",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Streetwear_UtilityBelt_M",
+        "propertyCount": 7
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Casual/Assets/OneStrapOveralls/SK_Casual_OneStrapOveralls_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Casual/Assets/OneStrapOveralls/SK_Casual_OneStrapOveralls_M.uasset",
+    "sha256": "CE6E579FF91DEA434461EE317683CA8887891901562529ED1809F73AE0DB26FE",
+    "meshFile": "SK_Casual_OneStrapOveralls_M.mesh.json",
+    "propertiesFile": "SK_Casual_OneStrapOveralls_M.properties.json",
+    "exports": [
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "shrink_pants_in_lowboots",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "shrink_pants_in_tallboots",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "shrink_pants_in_wideboots",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Casual_OneStrapOveralls_M",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Cowboy/Assets/CrossBandolier/SK_Cowboy_CrossBandolier_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Cowboy/Assets/CrossBandolier/SK_Cowboy_CrossBandolier_M.uasset",
+    "sha256": "7135C31F31DB726FA1C20F635414A1E079B40EBDC7A0D03079FD3D82F6548E7D",
+    "meshFile": "SK_Cowboy_CrossBandolier_M.mesh.json",
+    "propertiesFile": "SK_Cowboy_CrossBandolier_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_0",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Cowboy_CrossBandolier_M",
+        "propertyCount": 8
+      },
+      {
+        "type": "SkeletalMeshSocket",
+        "Name": "SkeletalMeshSocket_0",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Hologram/Assets/EngimoJacketHologram/SK_Hologram_EngimoJacketHologram_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Hologram/Assets/EngimoJacketHologram/SK_Hologram_EngimoJacketHologram_M.uasset",
+    "sha256": "AADEAA2457ACE2239787992EF4C058A531F7B5CCD5E5179BCC2FFCF52924F0A2",
+    "meshFile": "SK_Hologram_EngimoJacketHologram_M.mesh.json",
+    "propertiesFile": "SK_Hologram_EngimoJacketHologram_M.properties.json",
+    "exports": [
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Hologram_EngimoJacketHologram_M",
+        "propertyCount": 6
+      }
+    ]
+  },
+  {
+    "request": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalHeadCloth/SK_Military_TacticalHeadCloth_M.uasset",
+    "path": "Discovery/Content/Discovery/Characters/Military/Assets/TacticalHeadCloth/SK_Military_TacticalHeadCloth_M.uasset",
+    "sha256": "D591DE3CCF59E0F6D8C4796B63F7C0BA21A5BDBFDBD426EB85BF94AF4D959866",
+    "meshFile": "SK_Military_TacticalHeadCloth_M.mesh.json",
+    "propertiesFile": "SK_Military_TacticalHeadCloth_M.properties.json",
+    "exports": [
+      {
+        "type": "AnimCurveMetaData",
+        "Name": "AnimCurveMetaData_1",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "hood_covers_head",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_female",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "medium_male",
+        "propertyCount": 1
+      },
+      {
+        "type": "MorphTarget",
+        "Name": "push_net_down",
+        "propertyCount": 1
+      },
+      {
+        "type": "SkeletalMesh",
+        "Name": "SK_Military_TacticalHeadCloth_M",
+        "propertyCount": 8
+      }
+    ]
+  }
+]

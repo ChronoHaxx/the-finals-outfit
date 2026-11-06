@@ -1,0 +1,7 @@
+{
+ "Discovery/Content/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.uasset": "../reconstructed-meshes-v2/SK_Head_Face_01_Base.glb",
+ "Discovery/Content/Discovery/Characters/Casual/Assets/BasicTshirt/SK_Casual_BasicTshirt_M.uasset": "../reconstructed-meshes-v2/SK_Casual_BasicTshirt_M.glb",
+ "Discovery/Content/Discovery/Characters/Casual/Assets/LooseJeans/SK_Casual_LooseJeans_M.uasset": "../reconstructed-meshes-v2/SK_Casual_LooseJeans_M.glb",
+ "Discovery/Content/Discovery/Characters/Casual/Assets/TallSneakers/SK_Casual_TallSneakers_M.uasset": "../reconstructed-meshes-v2/SK_Casual_TallSneakers_M.glb",
+ "Discovery/Content/Discovery/Characters/Casual/Assets/ShortDress/SK_Casual_ShortDress_M.uasset": "../reconstructed-meshes-batch-01/SK_Casual_ShortDress_M.glb"
+}
