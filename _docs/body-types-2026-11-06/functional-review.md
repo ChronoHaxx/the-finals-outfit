@@ -133,4 +133,9 @@ which the main session owns, so it needs coordinating with them.
 - Passed / failed / untested step numbers: 1-8 passed as reported by the user. No failures.
 - Readiness: user checks passed; stage 1 is ready for review as a dev-gated change. The S12 shapes are not part of it
   (whole-catalogue refresh, separate task).
-- Merge authorization: not given.
+- Merge authorization: given 6 Nov 2026, about 18:00 London, for this PR (#21). The user's words: "ask main
+  session to merge it and deploy to live". The main session (the one that owns releases and the live worktree) merges
+  and deploys it. The Season 12 whole-catalogue refresh (branch `claude/quizzical-hermann-33b51b`) is not part of
+  this authorization; its own user checks are still pending.
+- Live effect: none for visitors. `?bodyType=` is read only in dev builds (`import.meta.env.DEV`), so production keeps
+  the index's masculine body. Showing body types to visitors needs a production control (a later stage).
