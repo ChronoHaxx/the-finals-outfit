@@ -11,7 +11,9 @@ import { getReconstructionReview, REVIEW_LABELS } from "../lib/reconstruction-st
 import { useReconstructionProgress } from "../context/ReconstructionProgress";
 import { REPOSITORY_URL } from "./ProjectLinks";
 import ShareBuild from "./ShareBuild";
+import { OutfitNotices, OutfitSwitcher, OutfitToast } from "./SavedOutfits";
 import { DiceIcon, FlagIcon, LockIcon, ResetIcon } from "./Icons";
+import { randomiseOutfit, resetOutfit } from "../store/useSavedOutfits";
 import { hideBroken } from "../lib/hide-broken";
 
 const ghost = "flex h-8 items-center gap-1.5 px-2 hud text-fg-muted transition-colors hover:text-fg";
@@ -20,8 +22,6 @@ const ghost = "flex h-8 items-center gap-1.5 px-2 hud text-fg-muted transition-c
 export default function OutfitBar() {
   const build = useBuildStore((s) => s.build);
   const unequip = useBuildStore((s) => s.unequip);
-  const reset = useBuildStore((s) => s.reset);
-  const load = useBuildStore((s) => s.load);
   const { workedOn, state } = useReconstructionProgress();
   const [locked, setLocked] = useState<ReadonlySet<Slot>>(new Set());
   const [includeUntouched, setIncludeUntouched] = useState(false);
@@ -44,7 +44,8 @@ export default function OutfitBar() {
       .filter(item => (item.model || item.decal || workedOn.has(item.id))
         && (includeUntouched || statusOf(item) !== "untouched"))
       .map(item => item.id) });
-    load(Object.fromEntries(Object.entries(next).filter(([, id]) => id)) as Partial<Record<Slot, string>>);
+    // A hand-made outfit is kept: the roll goes into an outfit of its own (src/store/useSavedOutfits.ts).
+    randomiseOutfit(Object.fromEntries(Object.entries(next).filter(([, id]) => id)) as Partial<Record<Slot, string>>);
   };
   // Issue links encode the whole outfit, so build them once per outfit change, not on every render.
   const reports = useMemo(() => {
@@ -59,16 +60,18 @@ export default function OutfitBar() {
   }, [build, workedOn, state]); // equipped and statusOf are derived from exactly these
 
   return (
-    <div className="flex flex-col gap-3 border-b border-line bg-ink-950 px-3 py-3 lg:h-full lg:border lg:bg-ink-900 lg:px-4">
-      <div className="flex items-center gap-2">
-        <h2 className="display text-[24px]">Outfit</h2>
-        <span className="hud mt-1 tabular-nums text-fg-dim">{equipped.length} {equipped.length === 1 ? "piece" : "pieces"}</span>
-        <div className="-mr-2 ml-auto flex items-center">
+    <div className="relative flex flex-col gap-3 border-b border-line bg-ink-950 px-3 py-3 lg:h-full lg:border lg:bg-ink-900 lg:px-4">
+      <OutfitToast />
+      <div className="relative flex items-center gap-2">
+        <OutfitSwitcher />
+        <span className="hud mt-1 hidden tabular-nums text-fg-dim sm:inline">{equipped.length} {equipped.length === 1 ? "piece" : "pieces"}</span>
+        <div className="-mr-2 ml-auto flex shrink-0 items-center">
           <a href={reports.all} target="_blank" rel="noreferrer" className={ghost}
             title="Opens a prefilled GitHub issue for you to review; nothing is sent automatically">
-            <FlagIcon size={13} />Report issue
+            <FlagIcon size={13} /><span className="hidden min-[400px]:inline">Report issue</span><span className="min-[400px]:hidden">Report</span>
           </a>
-          <button type="button" onClick={reset} className={ghost} title="Back to the starting outfit">
+          <button type="button" onClick={resetOutfit} className={ghost}
+            title="Back to the starting outfit. An outfit you made yourself is kept; this starts a new one">
             <ResetIcon size={13} />Reset
           </button>
         </div>
@@ -111,6 +114,8 @@ export default function OutfitBar() {
           })}
         </ul>
       )}
+
+      <OutfitNotices />
 
       <div className="flex items-center gap-2.5 sm:gap-3">
         <button type="button" onClick={randomize} title="Random outfit (rules-based); locked pieces are kept"
