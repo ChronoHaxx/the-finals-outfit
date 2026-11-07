@@ -1,0 +1,71 @@
+# Dev server (http://localhost:5191/), 7 Nov 2026
+PASS first visit names the outfit Outfit 1
+PASS an edit is journaled synchronously, before the debounced write — journal keys: 1
+PASS after a renderer crash the last edit is back — AFRO FADE BLACK
+HAIR | FACE 01 BASE
+FACE | SPECTATOR STANDARD
+UPPER BODY | BUCKL
+PASS the journal replayed into IndexedDB and settled — records 1, hair hairs-afrofade-black, journal 0
+PASS Randomise over a hand-made outfit starts Random 1
+PASS the toast says the old outfit is kept
+PASS Undo goes back to Outfit 1
+PASS the undone roll is a tombstone, Outfit 1 untouched — live 1, stored 2
+PASS a share link opens as an unsaved draft
+PASS opening the link saved nothing and kept Outfit 1
+PASS the link stays in the address bar while it is a draft
+PASS a reload shows the same draft
+PASS the first edit saves the draft as its own outfit
+PASS …and the link leaves the address bar — http://localhost:5191/#/
+PASS a reload now restores the saved Shared outfit
+PASS rename
+PASS duplicate switches to the copy
+PASS deleting the current outfit switches away
+PASS Undo restores the deleted outfit
+PASS three live outfits stored — Night shift copy, Night shift, Outfit 1
+PASS missing pieces are named
+PASS an edit keeps the missing pieces and unknown fields — {"hair":"hairs-afrofade","face":"head-face-01-base","feet":"retired-boots-zzz","wrist":"retired-watch-zzz"}
+PASS an idle second tab picks up the change — AFRO FADE BLONDE
+HAIR | FACE 01 BASE
+FACE
+PASS no horizontal overflow at phone width — overflow 0px
+PASS blocked storage: the app runs and says saving is off
+PASS blocked storage: edits still work
+PASS blocked storage: no page errors
+
+27/27 passed
+
+# Production build (vite preview, http://localhost:5192/the-finals-outfit/), 7 Nov 2026
+PASS first visit names the outfit Outfit 1
+PASS an edit is journaled synchronously, before the debounced write — journal keys: 1
+PASS after a renderer crash the last edit is back — AFRO FADE BLACK
+HAIR | FACE 01 BASE
+FACE | SPECTATOR STANDARD
+UPPER BODY | BUCKL
+PASS the journal replayed into IndexedDB and settled — records 1, hair hairs-afrofade-black, journal 0
+PASS Randomise over a hand-made outfit starts Random 1
+PASS the toast says the old outfit is kept
+PASS Undo goes back to Outfit 1
+PASS the undone roll is a tombstone, Outfit 1 untouched — live 1, stored 2
+PASS a share link opens as an unsaved draft
+PASS opening the link saved nothing and kept Outfit 1
+PASS the link stays in the address bar while it is a draft
+PASS a reload shows the same draft
+PASS the first edit saves the draft as its own outfit
+PASS …and the link leaves the address bar — http://localhost:5192/the-finals-outfit/#/
+PASS a reload now restores the saved Shared outfit
+PASS rename
+PASS duplicate switches to the copy
+PASS deleting the current outfit switches away
+PASS Undo restores the deleted outfit
+PASS three live outfits stored — Night shift copy, Night shift, Outfit 1
+PASS missing pieces are named
+PASS an edit keeps the missing pieces and unknown fields — {"hair":"hairs-afrofade","face":"head-face-01-base","feet":"retired-boots-zzz","wrist":"retired-watch-zzz"}
+PASS an idle second tab picks up the change — AFRO FADE BLONDE
+HAIR | FACE 01 BASE
+FACE
+PASS no horizontal overflow at phone width — overflow 0px
+PASS blocked storage: the app runs and says saving is off
+PASS blocked storage: edits still work
+PASS blocked storage: no page errors
+
+27/27 passed

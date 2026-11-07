@@ -78,7 +78,7 @@ All on this branch, 7 Nov 2026. These are agent checks; they do not tick the box
   cap, storage off, and an unreadable link.
 - Real browser (`check-saved-outfits.mjs` in this folder, headless Chrome, 1440×900 and a 375×812 touch phone):
   27/27 PASS on the dev server and on the production build served under `/the-finals-outfit/`. Log:
-  `agent-browser-check.log`. It includes a renderer crash right after an edit, two tabs, and every storage API
+  `agent-browser-check.txt`. It includes a renderer crash right after an edit, two tabs, and every storage API
   throwing `SecurityError`.
 - Visual check: desktop and phone screenshots looked at full size (panel, toast, missing-pieces notice, saving off).
   They show game artwork, so they are not committed.
