@@ -17,8 +17,12 @@ const blankBuild = (): Build =>
 // First-paint / Reset look: a complete neutral character instead of a headless bare body.
 // Ids must exist in the catalog with converted models (verified; harmless if one goes
 // missing — the slot just renders empty).
+// The default face. It also stands in, at render time only, for a face with nothing to render (see
+// withRenderableFace below).
+export const FALLBACK_FACE = "head-face-01-base";
+
 const DEFAULT_BUILD: Partial<Record<Slot, string>> = {
-  face: "head-face-01-base",
+  face: FALLBACK_FACE,
   upperBody: "casual-basictshirt-cotton-black",
   lowerBody: "casual-loosejeans-denim-darkblue",
   feet: "casual-tallsneakers-canvas",
@@ -43,6 +47,14 @@ export function effectiveBuild(build: Build): Build {
   // outerwear item) so its open back reads as tonal layering; fall back to the neutral base top.
   const under = coat?.underLayer ?? FALLBACK_UPPER_BODY;
   return { ...build, upperBody: under };
+}
+
+// An icon-only face replaces the head with nothing: no legacy model, no source reconstruction, no skin pair. Without
+// this the viewer showed a headless body (6 Nov 2026: Hexcrowned Eidolon, Synthetic Citizen, Face of Éternel). The
+// viewer renders the default face in its place. Like effectiveBuild, this is render-time only: the build, share links
+// and the outfit panel keep the user's choice.
+export function withRenderableFace(build: Build, renderable: (id: string) => boolean): Build {
+  return build.face && build.face !== FALLBACK_FACE && !renderable(build.face) ? { ...build, face: FALLBACK_FACE } : build;
 }
 
 interface BuildState {

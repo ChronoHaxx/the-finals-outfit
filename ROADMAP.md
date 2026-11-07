@@ -20,7 +20,7 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 # Roadmap
 
 Last reviewed: 2026-11-06
-Reviewed after patch note: 2026-11-06-missing-cosmetics
+Reviewed after patch note: 2026-11-06-54-more-in-3d
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
