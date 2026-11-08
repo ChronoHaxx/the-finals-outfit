@@ -84,11 +84,17 @@ extracted assets).
 What the agent could not check: a real phone (touch pinch, Android back gesture, real notch, iPhone Safari itself).
 Steps 2, 5 and 6 cover those.
 
+Re-run after merging main (8 Nov 2026; main at `25c0837`, the evening release #28, which also edits
+`CharacterViewer.tsx`): clean merge; typecheck and production build clean; `npm test` 707 pass, 5 skipped, the same 8
+model-file failures; the phone and desktop drive above repeated with identical geometry, 0 stretched frames, scroll
+restored to 900 px, an emote playing inside full screen; screenshots reviewed at full size.
+
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given
+- Tested revision/build: none by the user
+- User reported at: 8 Nov 2026, no step results
+- Passed / failed / untested step numbers: untested 1-7
+- Explicitly waived checks, if any: none named; the user asked for the merge without running them
+- Readiness: agent checks PASS; user checks not run
+- Merge authorization: given 8 Nov 2026, verbatim: "ask main session to merge this feature then archive this
+  chat/session"
