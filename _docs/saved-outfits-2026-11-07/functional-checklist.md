@@ -88,9 +88,25 @@ and a real full disk.
 
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given
+- Tested revision/build: none by the user. Agent checks were re-run on the branch after main (with PR #27,
+  full-screen mode) was merged in on 8 Nov (merge commit `2dc675d`). Results are in "Re-test after merging main" below.
+- User reported at: 8 Nov 2026, in the saved-outfits session.
+- Passed / failed / untested step numbers: steps 1-7 **untested** by the user. Their words: "i didnt do the 7 checks
+  exaclty but seems good and i trust u".
+- Explicitly waived checks, if any: steps 1-7, waived by that message. Unknowns that remain: Safari and Firefox,
+  real phones, a real private window, and a real full disk (see above).
+- Readiness: waived checks; agent checks PASS.
+- Merge authorization: same message: "ask main session to merge it, i think its good enough". Relayed to the main
+  session ("Codex peer session review") to merge.
+
+## Re-test after merging main (8 Nov 2026)
+
+Main had moved on to PR #27 (full-screen mode). The only conflict was the import lines in `src/pages/Builder.tsx`,
+resolved as the union of both sides' imports, minus the `useBuildStore` import that is no longer used. Full-screen
+mode does not touch history or the URL, so it does not interact with the share-link handling.
+
+- `npx tsc -b --noEmit`: PASS.
+- `npm test`: 736 pass (PR #27's tests included), with the same 8 failures that need extracted model files.
+- Real browser on the production build of the merged branch: 27/27 PASS (appended to `agent-browser-check.txt`).
+- In the browser pane, entering full screen hides the outfit panel along with the rest of the page, and leaving it
+  brings the panel back with "Outfit 1" still selected.
