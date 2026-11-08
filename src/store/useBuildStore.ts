@@ -30,6 +30,9 @@ const DEFAULT_BUILD: Partial<Record<Slot, string>> = {
 
 const defaultBuild = (): Build => ({ ...blankBuild(), ...DEFAULT_BUILD });
 
+/** The starting look's pieces (Reset, and a new saved outfit). */
+export const startingOutfit = (): Partial<Record<Slot, string>> => ({ ...DEFAULT_BUILD });
+
 // In-game the torso is never bare: equipping Outerwear over an empty Upper Body slot still
 // shows a base top underneath (the icon-capture mannequin always wears one). Substituted only
 // at render time (see CharacterViewer) so the serializable `build` — and therefore share links

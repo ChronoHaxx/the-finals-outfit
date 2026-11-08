@@ -1,17 +1,14 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CharacterViewer from "../components/CharacterViewer";
 import SlotPicker from "../components/SlotPicker";
 import OutfitBar from "../components/OutfitBar";
-import { readOutfitLink } from "../lib/share-url";
-import { migrateOutfit } from "../lib/outfit-slots";
-import { filterBrowseBuild } from "../lib/browse-catalog";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import CatalogProgress from "../components/CatalogProgress";
 import TopBar from "../components/ProjectLinks";
 import CatalogUpdateNote from "../components/CatalogUpdateNote";
 import { CloseIcon } from "../components/Icons";
-import { useBuildStore } from "../store/useBuildStore";
+import { openFromUrl, setUrlCleaner } from "../store/useSavedOutfits";
 import { useImmersiveMode } from "../lib/immersive-mode";
 
 export default function Builder() {
@@ -33,27 +30,19 @@ export default function Builder() {
   const [omittedItems, setOmittedItems] = useState(false);
   const [linkError, setLinkError] = useState(false);
   const routerLocation = useLocation();
-  // Support legacy query links and compact hash navigation without a page reload.
-  // Migrate historical slots before filtering availability; report omissions or
-  // malformed codes instead of presenting a different outfit without explanation.
+  const navigate = useNavigate();
+  // Once a share link has done its job it leaves the address bar, through the router so it notices.
   useEffect(() => {
-    try {
-      const decoded = readOutfitLink(window.location.href);
-      setLinkError(false);
-      if (!decoded) {
-        useBuildStore.getState().reset();
-        setOmittedItems(false);
-        return;
-      }
-      const outfit = migrateOutfit(decoded);
-      const valid = filterBrowseBuild(outfit.slots);
-      setOmittedItems(Object.keys(valid).length < Object.keys(outfit.slots).length);
-      useBuildStore.getState().load(valid);
-    } catch (e) {
-      setLinkError(true);
-      setOmittedItems(false);
-      console.warn("[outfit] ignoring invalid share code", e);
-    }
+    setUrlCleaner(() => navigate({ pathname: "/", search: "" }, { replace: true }));
+    return () => setUrlCleaner(undefined);
+  }, [navigate]);
+  // Support legacy query links and compact hash navigation without a page reload. A link opens as an
+  // unsaved draft beside the saved outfits (src/store/useSavedOutfits.ts); no link shows the saved outfit
+  // you were last on. Report omissions or malformed codes instead of a different outfit without explanation.
+  useEffect(() => {
+    const result = openFromUrl(window.location.href);
+    setLinkError(result.error);
+    setOmittedItems(result.omitted);
   }, [routerLocation.search]);
   const dismissNotice = () => { setOmittedItems(false); setLinkError(false); };
 
