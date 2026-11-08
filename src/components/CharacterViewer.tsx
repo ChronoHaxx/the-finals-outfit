@@ -7,7 +7,7 @@ import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal,
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
 import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
 import { bodyTypePreview, isBodyTypeId, type BodyTypeId, type BodyTypePreview } from "../rig/BodyTypePreview";
-import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
+import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
@@ -16,7 +16,7 @@ import type { RigAnimator } from "../rig/RigAnimator";
 import MeshInspector from "./MeshInspector";
 import OutfitExportPanel, { type ExportContext } from "./OutfitExportPanel";
 import { createGltfLoader } from "../rig/loaders";
-import { useBuildStore, effectiveBuild } from "../store/useBuildStore";
+import { useBuildStore, effectiveBuild, withRenderableFace } from "../store/useBuildStore";
 import { equipmentConflicts } from "../lib/equipment";
 import { getItemById } from "../lib/catalog";
 import { getBrowseItem } from "../lib/browse-catalog";
@@ -517,12 +517,16 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
       let supported = new Set<string>();
       let faceCosmetics = new Map<string, string[]>();
       let headWraps: HeadWrapData | undefined;
+      // Every item with a source reconstruction (assemblies, skin pairs, face cosmetics): the picker's "3D" set. Known
+      // only when the source data loaded; undefined keeps the old behaviour.
+      let sourceRenderable: ReadonlySet<string> | undefined;
       if (DEV.reconstructed && DEV.sourceMeshes && DEV.sourceAssembly) {
         try {
-          [supported, faceCosmetics, headWraps] = await Promise.all([
+          [supported, faceCosmetics, headWraps, sourceRenderable] = await Promise.all([
             loadSourceAssemblyItems(modelUrl("models/reconstructed-assemblies-v1")),
             loadSourceFaceCosmetics(modelUrl("models/reconstructed-assemblies-v1")),
-            loadHeadWraps(modelUrl("models/reconstructed-assemblies-v1"))]);
+            loadHeadWraps(modelUrl("models/reconstructed-assemblies-v1")),
+            loadSourceReconstructionItems(modelUrl("models/reconstructed-assemblies-v1"))]);
           if (cancelled) return;
         } catch (e) {
           if (cancelled) return;
@@ -589,7 +593,12 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
       // first equip, and its tag resolves every outfit below as in game.
       rig.setBodyTypePreview(bodyType);
       const completeCoat = !!build.outerwear && supported.has(build.outerwear);
-      const eff = completeCoat ? build : effectiveBuild(build);
+      const covered = completeCoat ? build : effectiveBuild(build);
+      // An icon-only face renders the default face instead of a headless body (render-time only).
+      const renderableSet = sourceRenderable;
+      const eff = renderableSet
+        ? withRenderableFace(covered, id => !!getItemById(id)?.model || renderableSet.has(id))
+        : covered;
       let assembly: SourceOutfit | undefined;
       let sourceShirtConflict = false;
       if (DEV.reconstructed && DEV.sourceAssembly) {

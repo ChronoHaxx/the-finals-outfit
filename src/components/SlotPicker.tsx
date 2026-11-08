@@ -98,11 +98,18 @@ const Tile = memo(function Tile({ item, equipped, status, note, renderable, eage
           onError={hideBroken}
           className="size-full object-contain transition-transform duration-200 ease-out group-hover:scale-[1.05]"
         />
-        {renderable && (
+        {renderable ? (
           <span title={note} aria-label={`3D preview: ${note}`}
             data-reconstruction-status={status}
             className={`absolute left-1 top-1 px-1 py-[3px] text-[8px] font-bold leading-none ${REVIEW_STYLES[status]}`}>
             3D
+          </span>
+        ) : (
+          // Icon-only items count as red in the progress bar too; without a label they read as unclassified.
+          <span title="Icon only: no 3D preview yet" aria-label="Icon only: no 3D preview yet"
+            data-reconstruction-status={status} data-icon-only=""
+            className={`absolute left-1 top-1 px-1 py-[3px] text-[8px] font-bold leading-none ${REVIEW_STYLES[status]}`}>
+            ICON
           </span>
         )}
         {equipped && <span aria-hidden="true" className="absolute right-1 top-1 grid size-4 place-items-center bg-fg text-ink-950"><CheckIcon size={10} /></span>}
