@@ -28,6 +28,8 @@ import { SLOTS, type Slot } from "../lib/slots";
 import { getDownloadProgress, subscribeDownloadProgress } from "../lib/load-progress";
 import type { Item } from "../lib/item";
 import { AUTOMATED } from "../lib/automation";
+import type { ImmersiveMode } from "../lib/immersive-mode";
+import { CollapseIcon, ExpandIcon } from "./Icons";
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
 const NAIL_MASK_URL = modelUrl("models/decals/_shared/nailmask.webp");
@@ -156,6 +158,13 @@ const THEME_BACKDROP: Record<SceneTheme, { inner: string; middle: string; outer:
   studio: { inner: "#f0f3f7", middle: "#dee4eb", outer: "#c5cdd7" },
   lobby: { inner: "#1b2740", middle: "#0a0e17", outer: "#05060a" },
 };
+
+// The overlay controls sit inside the screen's safe area (index.html sets viewport-fit=cover). The sides always
+// count: on a phone the stage spans the full width, so landscape puts its edge under the notch. Top and bottom only
+// in immersive mode, where the stage reaches the screen's edges; in the page layout its bottom is mid-screen, and
+// following the bottom inset there would make the lower third jump as Safari's toolbar hides on scroll.
+const SAFE_SIDES: CSSProperties = { top: 0, bottom: 0, left: "env(safe-area-inset-left, 0px)", right: "env(safe-area-inset-right, 0px)" };
+const SAFE_ALL: CSSProperties = { ...SAFE_SIDES, top: "env(safe-area-inset-top, 0px)", bottom: "env(safe-area-inset-bottom, 0px)" };
 
 const THEME_BACKGROUND: Record<SceneTheme, string> = {
   // Sampled from the icon corners (light grey-blue studio backdrop).
@@ -399,7 +408,8 @@ function LobbyLights() {
   );
 }
 
-export default function CharacterViewer() {
+/** `immersive`: the page's full-screen mode (lib/immersive-mode), when the page supports one; adds its button. */
+export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMode } = {}) {
   const rig = useMemo(
     () =>
       new CharacterRig(createGltfLoader(), undefined, NAIL_MASK_URL, {
@@ -1037,26 +1047,73 @@ export default function CharacterViewer() {
           makeDefault
         />
       </Canvas>
-      {/* Viewfinder corners. Decorative, and kept out of automated canvas captures. */}
-      {!AUTOMATED && <div aria-hidden="true" className="brackets pointer-events-none absolute inset-3 z-[5]"
-        style={{ "--b": theme === "studio" ? "rgb(9 9 11 / 0.32)" : "rgb(242 239 233 / 0.32)" } as CSSProperties} />}
-      {/* No backdrop-filter on anything over the canvas: the canvas repaints every frame, so a
-          blur behind it would be recomputed every frame too — a real cost on phones. */}
-      <button
-        type="button"
-        onClick={() => setTheme((t) => (t === "studio" ? "lobby" : "studio"))}
-        title="Toggle scene lighting"
-        className="hud absolute right-3 top-3 z-10 flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950"
-      >
-        <span aria-hidden="true" className={`size-2.5 border border-fg/60 ${theme === "studio" ? "bg-[#dee4eb]" : "bg-[#1b2740]"}`} />
-        {theme === "studio" ? "Studio" : "Lobby"}
-      </button>
-      {/* One right-hand column under the theme button, so the animation controls and the developer export panel
-          stack instead of overlapping. It spans to the bottom so the emote picker can fit the viewer's height; only
-          its children take pointer events, so the canvas behind the empty part still orbits. */}
-      <div className="pointer-events-none absolute bottom-3 right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto">
-        {animator && <AnimationControls animator={animator} rig={rig} ready={ready} busy={busy} studio={theme === "studio"} />}
-        {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} animator={animator} />}
+      {/* The overlay controls, inset by the safe area (SAFE_SIDES). The frame takes no pointer events, so the canvas
+          behind every empty part still orbits; each control opts back in. */}
+      <div className="pointer-events-none absolute z-10" style={immersive?.immersive ? SAFE_ALL : SAFE_SIDES}>
+        {/* Viewfinder corners. Decorative, and kept out of automated canvas captures. */}
+        {!AUTOMATED && <div aria-hidden="true" className="brackets pointer-events-none absolute inset-3 z-[5]"
+          style={{ "--b": theme === "studio" ? "rgb(9 9 11 / 0.32)" : "rgb(242 239 233 / 0.32)" } as CSSProperties} />}
+        {/* No backdrop-filter on anything over the canvas: the canvas repaints every frame, so a
+            blur behind it would be recomputed every frame too — a real cost on phones. */}
+        <div className="absolute right-3 top-3 z-10 flex gap-1.5 *:pointer-events-auto">
+          {immersive && (
+            // The same button enters and leaves, in the same place; leaving also says so in words.
+            <button type="button" onClick={immersive.toggle}
+              aria-label={immersive.immersive ? "Exit full screen" : "Full screen"}
+              title={immersive.immersive ? "Exit full screen (Esc)" : "Full screen: hide everything but the character"}
+              className={`hud flex h-8 items-center gap-2 whitespace-nowrap bg-ink-950/80 text-fg transition-colors hover:bg-ink-950 ${immersive.immersive ? "px-3" : "w-8 justify-center"}`}>
+              {immersive.immersive ? <CollapseIcon size={14} /> : <ExpandIcon size={14} />}
+              {immersive.immersive && "Exit full screen"}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setTheme((t) => (t === "studio" ? "lobby" : "studio"))}
+            title="Toggle scene lighting"
+            className="hud flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950"
+          >
+            <span aria-hidden="true" className={`size-2.5 border border-fg/60 ${theme === "studio" ? "bg-[#dee4eb]" : "bg-[#1b2740]"}`} />
+            {theme === "studio" ? "Studio" : "Lobby"}
+          </button>
+        </div>
+        {/* One right-hand column under the theme button, so the animation controls and the developer export panel
+            stack instead of overlapping. It spans to the bottom so the emote picker can fit the viewer's height; only
+            its children take pointer events, so the canvas behind the empty part still orbits. */}
+        <div className="pointer-events-none absolute bottom-3 right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto">
+          {animator && <AnimationControls animator={animator} rig={rig} ready={ready} busy={busy} studio={theme === "studio"} />}
+          {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} animator={animator} />}
+        </div>
+        {/* Bottom-left "lower third", as on a broadcast. The loading tag sits above any error, so a
+            failed slot never hides the status of the pass that is still running. */}
+        <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex flex-col items-start gap-2">
+          <div role="status" aria-live="polite">
+            {!ready && !error ? <span className="sr-only">Loading model…</span> : showBusy && (
+              <span className="flex h-8 items-center gap-2.5 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3 text-fg">
+                <span aria-hidden="true" className="relative block h-0.5 w-8 overflow-hidden bg-fg/20">
+                  <span className="absolute inset-y-0 left-0 w-2/5 animate-sweep bg-finals" />
+                </span>
+                <span className="hud">Loading outfit…</span>
+                {downloaded && <span className="hud tabular-nums text-fg-dim">{downloaded}</span>}
+              </span>
+            )}
+          </div>
+          {!AUTOMATED && ready && !showBusy && !error && (
+            <span aria-hidden="true" className="flex h-8 animate-fade items-center gap-2 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3">
+              <span className="hud text-fg-dim">Contestant</span>
+              <span className="hud text-fg">Medium · {equippedCount} {equippedCount === 1 ? "piece" : "pieces"}</span>
+            </span>
+          )}
+          {error && (
+            <div role="alert" className="pointer-events-auto flex w-full flex-wrap items-center gap-x-4 gap-y-2 border-l-2 border-finals bg-ink-950/95 px-3 py-2.5 text-sm text-fg">
+              <p className="flex-1">{error}</p>
+              {!missingFittingData && <button type="button" className="hud h-8 shrink-0 bg-fg px-3 text-ink-950 hover:bg-white"
+                onClick={() => {
+                  if (ready) setRetryAttempt(attempt => attempt + 1);
+                  else changePreviewOption("isolate", DEV.isolate ? "1" : "0");
+                }}>Retry preview</button>}
+            </div>
+          )}
+        </div>
       </div>
       {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && (
         <div className="absolute left-2 top-2 z-10 rounded-md bg-black/70 px-3 py-2 text-xs text-white">
@@ -1094,37 +1151,6 @@ export default function CharacterViewer() {
           </div>
         </div>
       )}
-      {/* Bottom-left "lower third", as on a broadcast. The loading tag sits above any error, so a
-          failed slot never hides the status of the pass that is still running. */}
-      <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex flex-col items-start gap-2">
-        <div role="status" aria-live="polite">
-          {!ready && !error ? <span className="sr-only">Loading model…</span> : showBusy && (
-            <span className="flex h-8 items-center gap-2.5 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3 text-fg">
-              <span aria-hidden="true" className="relative block h-0.5 w-8 overflow-hidden bg-fg/20">
-                <span className="absolute inset-y-0 left-0 w-2/5 animate-sweep bg-finals" />
-              </span>
-              <span className="hud">Loading outfit…</span>
-              {downloaded && <span className="hud tabular-nums text-fg-dim">{downloaded}</span>}
-            </span>
-          )}
-        </div>
-        {!AUTOMATED && ready && !showBusy && !error && (
-          <span aria-hidden="true" className="flex h-8 animate-fade items-center gap-2 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3">
-            <span className="hud text-fg-dim">Contestant</span>
-            <span className="hud text-fg">Medium · {equippedCount} {equippedCount === 1 ? "piece" : "pieces"}</span>
-          </span>
-        )}
-        {error && (
-          <div role="alert" className="pointer-events-auto flex w-full flex-wrap items-center gap-x-4 gap-y-2 border-l-2 border-finals bg-ink-950/95 px-3 py-2.5 text-sm text-fg">
-            <p className="flex-1">{error}</p>
-            {!missingFittingData && <button type="button" className="hud h-8 shrink-0 bg-fg px-3 text-ink-950 hover:bg-white"
-              onClick={() => {
-                if (ready) setRetryAttempt(attempt => attempt + 1);
-                else changePreviewOption("isolate", DEV.isolate ? "1" : "0");
-              }}>Retry preview</button>}
-          </div>
-        )}
-      </div>
       {DEV.inspect && ready && <MeshInspector rig={rig} />}
     </div>
   );
