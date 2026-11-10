@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useBuildStore } from "../store/useBuildStore";
 import { buildShareUrl, type ShareStyle } from "../lib/share-url";
-import { previewLink, SHARE_PREVIEW_BASE, sharePreviewAvailable, shortCode } from "../lib/share-preview";
+import { previewLink, SHARE_PREVIEW_BASE, sharePreviewAvailable, shortCode, uploadQuery } from "../lib/share-preview";
+import { formatPoseTime, poseKey, type PoseCapture } from "../lib/share-pose";
+import { getPoseCapture, subscribePose } from "../lib/viewer-handle";
 import { CloseIcon, ShareIcon } from "./Icons";
 
 type LinkStyle = ShareStyle | "preview";
@@ -20,31 +22,56 @@ async function copyText(text: Promise<string>): Promise<string> {
   return value;
 }
 
+// The cache identity of a preview: the outfit code and the exact frame its card shows.
+const previewKey = (code: string | null, pose: PoseCapture | null) => code === null ? "" : uploadQuery(code, pose);
+
 // One click copies the link. The panel that opens shows what was copied and lets you switch style.
+//
+// Poses (10 Nov 2026): when an emote is on screen (playing or paused), or the idle is paused, the link records that
+// frame and the preview card shows it. The frame is read at the click, in the same task as the card's render, so the
+// two always agree even while the emote plays on. "Include this frame" leaves it out.
 export default function ShareBuild() {
   const build = useBuildStore(s => s.build);
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState("");
   const [style, setStyle] = useState<LinkStyle>(SHARE_PREVIEW_BASE ? "preview" : "short");
-  const [preview, setPreview] = useState<{ code: string; url: string } | null>(null);
+  const [preview, setPreview] = useState<{ key: string; url: string } | null>(null);
+  const [withPose, setWithPose] = useState(true);
+  // The pose of the last copy (a playing emote moves on; the panel keeps showing the frame that was copied).
+  const [copiedPose, setCopiedPose] = useState<PoseCapture | null>(null);
+  // What is on screen now, as "has it changed": a clip and its paused frame, or a clip playing (see poseKey).
+  const livePose = useSyncExternalStore(subscribePose, () => poseKey(getPoseCapture()));
   const root = useRef<HTMLDivElement>(null);
+  const pose = withPose ? copiedPose : null;
   // Derive from the current selection so an already-open copy box never goes stale.
-  const short = buildShareUrl(window.location.href, build, "short");
+  const short = buildShareUrl(window.location.href, build, "short", pose);
   const code = shortCode(short);
-  const link = style === "preview" ? (preview && preview.code === code ? preview.url : short)
-    : buildShareUrl(window.location.href, build, style);
-  const status = message.startsWith("Link copied") && copiedLink !== link ? "Link changed · copy again" : message;
+  const link = style === "preview" ? (preview && preview.key === previewKey(code, pose) ? preview.url : short)
+    : buildShareUrl(window.location.href, build, style, pose);
+  const poseMoved = withPose && livePose !== poseKey(copiedPose);
+  const status = message.startsWith("Link copied") && (copiedLink !== link || poseMoved) ? "Link changed · copy again" : message;
 
   const share = async () => {
+    // Everything up to the first await runs in this click's task: the pose read here and the card rendered by
+    // previewLink are the same frame, whatever the animation does next.
+    const capture = getPoseCapture();
+    const now = withPose ? capture : null;
+    setCopiedPose(capture);
     setOpen(true);
+    const shortNow = buildShareUrl(window.location.href, build, "short", now);
+    const codeNow = shortCode(shortNow);
     let result: Promise<{ url: string; note: string }>;
-    if (style !== "preview" || !code) result = Promise.resolve({ url: link, note: "Link copied" });
-    else if (!sharePreviewAvailable()) result = Promise.resolve({ url: short, note: "Outfit still loading · plain link copied" });
+    if (style !== "preview" || !codeNow)
+      result = Promise.resolve({ url: buildShareUrl(window.location.href, build, style === "preview" ? "short" : style, now),
+        note: now ? `Link copied · opens on frame ${now.frame}` : "Link copied" });
+    else if (!sharePreviewAvailable()) result = Promise.resolve({ url: shortNow, note: "Outfit still loading · plain link copied" });
     else {
       setMessage("Making preview…");
-      result = previewLink(code).then(url => { setPreview({ code, url }); return { url, note: "Link copied · with preview image" }; },
-        error => { console.warn("[share preview]", error); return { url: short, note: "Preview unavailable · plain link copied" }; });
+      result = previewLink(codeNow, now).then(url => {
+        setPreview({ key: previewKey(codeNow, now), url });
+        return { url, note: now ? `Link copied · preview shows frame ${now.frame}` : "Link copied · with preview image" };
+      }, error => { console.warn("[share preview]", error); return { url: shortNow, note: "Preview unavailable · plain link copied" }; });
     }
     try {
       const copied = await copyText(result.then(r => r.url));
@@ -85,6 +112,14 @@ export default function ShareBuild() {
           className="h-9 min-w-0 flex-1 border border-line bg-ink-950 px-2 font-mono text-xs text-fg-muted outline-none focus:border-ink-600" />
         <button type="button" onClick={share} className="hud h-9 shrink-0 bg-fg px-3 text-ink-950 hover:bg-white">Copy</button>
       </div>
+      {copiedPose && <label className="mt-3 flex items-center gap-2.5 text-xs text-fg-muted">
+        <input type="checkbox" checked={withPose} onChange={e => setWithPose(e.target.checked)} className="size-4 accent-finals" />
+        <span className="min-w-0">Include this frame
+          <span className="block truncate text-fg-dim">
+            {copiedPose.label} · {formatPoseTime(copiedPose.time)} s · frame {copiedPose.frame}{copiedPose.paused ? " · paused" : ""}
+          </span>
+        </span>
+      </label>}
       <label className="mt-3 flex items-center justify-between gap-3">
         <span className="hud text-fg-dim">Link style</span>
         <select aria-label="Share link style" value={style} onChange={e => setStyle(e.target.value as LinkStyle)}

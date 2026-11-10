@@ -11,6 +11,13 @@ its own page and image:
 3. A crawler fetching that link gets `og:image` and `twitter:card=summary_large_image`. A person is sent straight on
    to the builder with the outfit loaded.
 
+**Poses (10 Nov 2026).** When an emote is on screen (playing or paused), the card shows that frame with a caption, and
+the upload adds the app's pose parameters: `POST /api/share?o=<code>&emote=<clip id>&t=<seconds>[&paused=1]`. The
+Worker validates them (a clip slug, seconds to the millisecond, `paused=1`), stores them in the entry's metadata beside
+`o`, returns them in the link, and its page sends people to `#/?o=<code>&emote=...` so the builder opens on that frame.
+og:description says "frozen 1.567 s into an emote" (identifiers and numbers only, never free text). Entries and links
+made before poses have none and behave as before; an old app never sends a pose.
+
 If anything fails (Worker down, quota reached, outfit still loading), the app copies the plain short link instead.
 
 ## Safeguards
@@ -20,7 +27,8 @@ If anything fails (Worker down, quota reached, outfit still loading), the app co
 | Overwriting someone's preview | Ids are random, 62¹² ≈ 3×10²¹; nothing is ever overwritten. A link's own `?o=` is used only after its entry has expired. |
 | Hosting arbitrary files | Only JPEGs whose frame header says exactly 1200×630, at most 250 KB, served as `image/jpeg` with `nosniff` and `default-src 'none'`. |
 | Scripted uploads | The `Origin` must be in `ALLOWED_ORIGINS`, and the rate limit is 6 uploads a minute per IP (Workers rate-limit binding). |
-| Injection | Outfit codes must match the app's short-link grammar; everything put into HTML is escaped. Redirects only go to `APP_URL`. |
+| Injection | Outfit codes must match the app's short-link grammar, and poses its pose grammar (`src/lib/share-pose.ts`); everything put into HTML is escaped. Redirects only go to `APP_URL`. |
+| Swapping a pose under a card | Like the code, a stored pose wins over the link's own; a link's pose is used only once its entry expired. |
 | Storage growth | Every entry expires after a year (`expirationTtl`). An expired link still opens its outfit, with the generic card. |
 | Cost | The Free plan has no overage billing. Past 1,000 KV writes a day or 1 GB, uploads fail and the app falls back to plain links. |
 | Emergency stop | Set `UPLOADS_DISABLED` to `"1"` and redeploy. Existing links keep working. |
@@ -45,6 +53,20 @@ WRANGLER_SEND_METRICS=false npx --yes wrangler@4.131.1 dev --port 8787 --ip 127.
 2. `npx --yes wrangler@4.131.1 deploy` from this folder. Note the `https://the-finals-outfit-share.<subdomain>.workers.dev` URL.
 3. Set `SHARE_PREVIEW_BASE` to that URL in `.github/workflows/deploy.yml` (passed to the build as `VITE_SHARE_PREVIEW_BASE`)
    and merge. Until then the app hides the preview option.
+
+## Redeploying for poses (10 Nov 2026)
+
+The pose change is backward compatible both ways, but deploy the Worker **before** merging the app change: an old
+Worker ignores the pose, so its links would open the outfit without the frame the card shows. From this folder
+(PowerShell or Git Bash), with the account already logged in from 20 Oct:
+
+```bash
+npx --yes wrangler@4.131.1 deploy
+```
+
+Then check: `https://the-finals-outfit-share.chronohaxx.workers.dev/s/AAAAAAAAAAAA?o=2.&emote=wave&t=1&paused=1`
+should answer a page whose `location.replace` ends in `#/?o=2.&emote=wave&t=1&paused=1` (an unknown id falls back to
+the link's own pose). No KV or binding changes.
 
 ## Live deployment (20 Oct 2026)
 

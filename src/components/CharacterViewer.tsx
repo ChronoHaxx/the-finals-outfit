@@ -13,7 +13,8 @@ import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
 import { AutoGraphics, GraphicsMenu, type TemporalStatusRef } from "./GraphicsSetting";
 import { effectiveTier, TIER_INFO, useGraphicsStore } from "../lib/graphics-quality";
-import { AnimationControls, AnimationFrameDriver, clockHeldStill, useRigAnimator } from "./AnimationControls";
+import { AnimationControls, AnimationFrameDriver, clockHeldStill, useAnimatorState, useRigAnimator } from "./AnimationControls";
+import { EmoteTimeline } from "./EmoteTimeline";
 import type { RigAnimator } from "../rig/RigAnimator";
 import MeshInspector from "./MeshInspector";
 import OutfitExportPanel, { type ExportContext } from "./OutfitExportPanel";
@@ -428,7 +429,11 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
   const [theme, setTheme] = useState<SceneTheme>("studio");
   // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden).
   const animator = useRigAnimator();
-  const animationMoving = useCallback(() => !!animator?.state.moving && !clockHeldStill(), [animator]);
+  // A timeline drag changes the pose every frame while paused: the still view treats it as motion too.
+  const animationMoving = useCallback(() => (!!animator?.state.moving || !!animator?.scrubbing) && !clockHeldStill(), [animator]);
+  // The emote timeline sits along the bottom while an emote is in front; the right-hand column stops above it.
+  useAnimatorState(animator);
+  const timelineShown = ready && !!animator?.timeline();
   // Graphics setting (6 Nov): the tier sets the canvas pixel density and the still-view accumulator's quality.
   const graphicsTier = useGraphicsStore(effectiveTier);
   const temporalStatus = useRef<{ motion: boolean } | null>(null) as TemporalStatusRef;
@@ -1088,7 +1093,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
         {/* One right-hand column under the theme button, so the animation controls and the developer export panel
             stack instead of overlapping. It spans to the bottom so the emote picker can fit the viewer's height; only
             its children take pointer events, so the canvas behind the empty part still orbits. */}
-        <div className="pointer-events-none absolute bottom-3 right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto">
+        <div className={`pointer-events-none absolute right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto ${timelineShown ? "bottom-15 pointer-coarse:bottom-17" : "bottom-3"}`}>
           {animator && <AnimationControls animator={animator} rig={rig} ready={ready} busy={busy} studio={theme === "studio"} />}
           {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} animator={animator} />}
         </div>
@@ -1107,7 +1112,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
             )}
           </div>
           {!AUTOMATED && ready && !showBusy && !error && (
-            <span aria-hidden="true" className="flex h-8 animate-fade items-center gap-2 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3">
+            <span aria-hidden="true" className={`flex h-8 animate-fade items-center gap-2 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3 ${timelineShown ? "max-lg:hidden" : ""}`}>
               <span className="hud text-fg-dim">Contestant</span>
               <span className="hud text-fg">Medium · {equippedCount} {equippedCount === 1 ? "piece" : "pieces"}</span>
             </span>
@@ -1122,6 +1127,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
                 }}>Retry preview</button>}
             </div>
           )}
+          {animator && ready && <EmoteTimeline animator={animator} />}
         </div>
       </div>
       {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && (

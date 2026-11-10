@@ -2,6 +2,7 @@ import { decodeOutfit, type Outfit } from "./outfit";
 import { getBrowseItem } from "./browse-catalog";
 import { derivedFromCatalog, getCatalogData } from "./catalog";
 import type { Slot } from "./slots";
+import { POSE_KEYS, poseParams, type SharePose } from "./share-pose";
 
 export type ShareStyle = "short" | "names";
 const shareCodes = derivedFromCatalog(() => {
@@ -17,8 +18,9 @@ const nameSlug = (name: string) => name.normalize("NFKD").replace(/[\u0300-\u036
 
 // Append-only IDs make links independent of current catalog order and names.
 // The readable label is informational; its stable suffix identifies the variant.
+// `pose` (share-pose.ts) adds the animation frame on screen beside the outfit; a link without one opens as before.
 export function buildShareUrl(currentUrl: string, build: Partial<Record<Slot, string | null>>,
-  style: ShareStyle = "short"): string {
+  style: ShareStyle = "short", pose: SharePose | null = null): string {
   const url = new URL(currentUrl);
   const { items: itemCodes, slots: slotCodes } = shareCodes();
   const parts = Object.entries(build).flatMap(([slot, id]) => {
@@ -28,10 +30,14 @@ export function buildShareUrl(currentUrl: string, build: Partial<Record<Slot, st
     const code = category + item;
     return [style === "names" ? `${nameSlug(getBrowseItem(id)?.name ?? id)}--${code}` : code];
   });
-  for (const key of ["outfit", "o", "look"]) url.searchParams.delete(key);
+  for (const key of ["outfit", "o", "look", ...POSE_KEYS]) url.searchParams.delete(key);
   url.hash = "";
-  if (style === "short") url.hash = `/?o=2.${parts.join(".")}`;
-  else url.searchParams.set("look", `2.${parts.join(".")}`);
+  const posed = pose ? poseParams(pose) : [];
+  if (style === "short") url.hash = `/?o=2.${parts.join(".")}${posed.map(([key, value]) => `&${key}=${encodeURIComponent(value)}`).join("")}`;
+  else {
+    url.searchParams.set("look", `2.${parts.join(".")}`);
+    for (const [key, value] of posed) url.searchParams.set(key, value);
+  }
   return url.href;
 }
 

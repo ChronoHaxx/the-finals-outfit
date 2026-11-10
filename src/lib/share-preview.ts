@@ -1,13 +1,17 @@
 import { renderSharePreview } from "../rig/SharePreviewRender";
 import { getPreviewScene } from "./viewer-handle";
+import { poseParams, type PoseCapture } from "./share-pose";
 
 // Share links with a preview image. The app is static and its outfit lives in the URL fragment, which link
 // crawlers never see, so the preview Worker (workers/share-preview) hosts a small page per shared outfit that
 // carries an og:image rendered here. Off unless VITE_SHARE_PREVIEW_BASE is set at build time.
+//
+// With a pose (an emote frame on screen, 10 Nov 2026) the card shows that frame and says which it is, and the pose
+// rides in the upload so the Worker's page opens the builder on it.
 
-export const SHARE_PREVIEW_BASE = (import.meta.env.VITE_SHARE_PREVIEW_BASE ?? "").replace(/\/$/, "");
+export const SHARE_PREVIEW_BASE = (import.meta.env?.VITE_SHARE_PREVIEW_BASE ?? "").replace(/\/$/, ""); // no env in node tests
 
-const links = new Map<string, Promise<string>>(); // outfit code -> preview link, so a repeat click reuses it
+const links = new Map<string, Promise<string>>(); // outfit code + exact pose -> preview link, so a repeat click reuses it
 
 export const sharePreviewAvailable = () => SHARE_PREVIEW_BASE !== "" && getPreviewScene() !== null;
 
@@ -17,25 +21,37 @@ export function shortCode(shortUrl: string): string | null {
   return hash.startsWith("#/?") ? new URLSearchParams(hash.slice(3)).get("o") : null;
 }
 
-async function create(code: string): Promise<string> {
+/** The upload's query: the outfit code, then the pose's parameters (share-pose.ts grammar). */
+export function uploadQuery(code: string, pose: PoseCapture | null): string {
+  const params = new URLSearchParams({ o: code });
+  for (const [key, value] of pose ? poseParams(pose) : []) params.set(key, value);
+  return params.toString();
+}
+
+async function create(code: string, pose: PoseCapture | null): Promise<string> {
   const scene = getPreviewScene();
   if (!scene) throw new Error("The viewer is not ready");
-  const image = await renderSharePreview(scene);
-  const response = await fetch(`${SHARE_PREVIEW_BASE}/api/share?o=${encodeURIComponent(code)}`, {
+  // Runs synchronously up to its first await, so the frame drawn is the one on screen when the click arrived.
+  const image = await renderSharePreview(scene, pose);
+  const response = await fetch(`${SHARE_PREVIEW_BASE}/api/share?${uploadQuery(code, pose)}`, {
     method: "POST", headers: { "Content-Type": "image/jpeg" }, body: image });
   const body = await response.json().catch(() => ({})) as { url?: unknown; error?: unknown };
   if (!response.ok || typeof body.url !== "string" || !body.url.startsWith(`${SHARE_PREVIEW_BASE}/s/`))
     throw new Error(typeof body.error === "string" ? body.error : `Preview upload failed (${response.status})`);
+  // A Worker from before poses ignores them: its link opens the outfit only. Still a working link; say so in the console.
+  if (pose && !new URL(body.url).searchParams.has("emote")) console.warn("[share preview] the share Worker dropped the pose");
   return body.url;
 }
 
-/** A link whose card shows the outfit. Rejects (and forgets the attempt) when the render or the upload fails. */
-export function previewLink(code: string): Promise<string> {
-  let link = links.get(code);
+/** A link whose card shows the outfit (and the pose, when one is given). Rejects (and forgets the attempt) when the
+ *  render or the upload fails. Call it in the same task as reading the pose, before any frame can move it. */
+export function previewLink(code: string, pose: PoseCapture | null = null): Promise<string> {
+  const key = pose ? `${code}&${uploadQuery("", pose)}` : code;
+  let link = links.get(key);
   if (!link) {
-    link = create(code);
-    links.set(code, link);
-    link.catch(() => links.delete(code));
+    link = create(code, pose);
+    links.set(key, link);
+    link.catch(() => links.delete(key));
   }
   return link;
 }

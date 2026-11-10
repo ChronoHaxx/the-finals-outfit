@@ -71,3 +71,4 @@ scripts/bake-all.report.json
 /public/animations/
 # Renders of extracted game assets (showcase-animation evidence) stay local, like /probe_*.png.
 /_docs/showcase-animation-2026-11-05/captures/
+/_docs/emote-timeline-2026-11-10/shots/

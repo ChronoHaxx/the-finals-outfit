@@ -10,7 +10,8 @@ import { ReconstructionProgressProvider } from "./context/ReconstructionProgress
 import { loadCatalog } from "./lib/catalog-load";
 import IntroDialog from "./components/IntroDialog";
 import { startAnalytics } from "./lib/analytics";
-import { openFromUrl, startSavedOutfits } from "./store/useSavedOutfits";
+import { startSavedOutfits } from "./store/useSavedOutfits";
+import { openLink } from "./store/open-link";
 
 // Before the catalog: a visit whose catalog fails to load is the one worth counting. No-op outside production.
 if (import.meta.env.PROD) startAnalytics();
@@ -39,7 +40,7 @@ function showCatalogFailure(error: unknown) {
 function mount() {
   // Put the saved (or linked) outfit on before the first render, so the viewer never starts loading the
   // starting look first. Builder runs the same call again; it is idempotent.
-  try { openFromUrl(window.location.href); } catch (error) { console.error("[saved outfits]", error); }
+  try { openLink(window.location.href); } catch (error) { console.error("[saved outfits]", error); }
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <HashRouter>
