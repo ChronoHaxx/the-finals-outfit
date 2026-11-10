@@ -1,11 +1,15 @@
 // Player-facing patch notes, newest first. The welcome screen opens again whenever the first
 // entry's id differs from the one a visitor last dismissed, so add a new entry (with a new id)
 // only for changes worth interrupting someone for. Keep claims to what shipped.
+// Titles and notes are public text: the build checks them with the rules in src/lib/public-text.ts.
 export interface ChangelogEntry {
   id: string;
   date: string; // ISO date the change reached the live site
   title: string;
   notes: readonly string[];
+  /** Ids of the ROADMAP.md items this change advanced ("<!-- id: ... -->" under each item title).
+   *  Optional; an id that ROADMAP.md does not contain fails the build. */
+  items?: readonly string[];
 }
 
 export const CHANGELOG: readonly ChangelogEntry[] = [

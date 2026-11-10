@@ -3,9 +3,11 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { CHANGELOG } from "../src/data/changelog";
+import { CHANGELOG, type ChangelogEntry } from "../src/data/changelog";
+import { lintPublicText, parseDenylist } from "../src/lib/public-text";
 import {
-  fillRoadmapText, loadRoadmap, parseRoadmap, RoadmapError, roadmapStaleness, roadmapTokenValues, ROADMAP_EVIDENCE,
+  fillRoadmapText, loadRoadmap, parseRoadmap, patchNoteProblems, RoadmapError, roadmapStaleness, roadmapTokenValues,
+  ROADMAP_EVIDENCE,
 } from "../src/lib/roadmap";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -45,6 +47,7 @@ spanning lines -->
 ${HEAD}## Current focus
 
 ### Rebuild {red} items
+<!-- id: red-items -->
 First line
 continues here.
 
@@ -57,14 +60,15 @@ Done when: all done.
 ## Done
 
 ### Shipped
+<!--   id:   shipped   -->
 Thing.
 `);
   assert.deepEqual(roadmap, {
     reviewed: "2026-11-05", reviewedAfter: "note-1", intro: ["Intro."],
     sections: [
-      { stage: "Current focus", items: [{ title: "Rebuild {red} items", description: ["First line continues here."],
+      { stage: "Current focus", items: [{ id: "red-items", title: "Rebuild {red} items", description: ["First line continues here."],
         tasks: ["A task that wraps.", "Second task."], doneWhen: "all done." }] },
-      { stage: "Done", items: [{ title: "Shipped", description: ["Thing."], tasks: [] }] },
+      { stage: "Done", items: [{ id: "shipped", title: "Shipped", description: ["Thing."], tasks: [] }] },
     ],
   });
 });
@@ -95,7 +99,81 @@ test("the parser refuses what the page would drop or show wrongly, naming the li
   ];
   for (const [source, expected] of cases) assert.match(problems(source).join("\n"), expected, source);
   // Every problem is reported at once, not only the first.
-  assert.equal(problems(`${HEAD}## Current focus\n\n### A\nOnly 209 and {x}.\n`).length, 2);
+  assert.equal(problems(`${HEAD}## Current focus\n\n### A\n<!-- id: a -->\nOnly 209 and {x}.\n`).length, 2);
+});
+
+test("every item carries a stable id directly under its title", () => {
+  const ids = loadRoadmap(read("ROADMAP.md")).sections.flatMap(section => section.items.map(item => item.id));
+  assert.ok(ids.length > 0);
+  assert.equal(new Set(ids).size, ids.length, "ROADMAP.md ids are unique");
+  const cases: [string, RegExp][] = [
+    [`${HEAD}## Current focus\n\n### A\nText.\n`, /line 9: item "A" needs an "<!-- id: \.\.\. -->" line directly under its title/],
+    [`${HEAD}## Current focus\n\n### A\n<!-- id: Not_Kebab -->\nText.\n`, /line 10: id "Not_Kebab" must be kebab-case/],
+    [`${HEAD}## Current focus\n\n### A\n\n<!-- id: a -->\nText.\n`, /line 11: an "<!-- id: \.\.\. -->" line must come directly under its "### " item title/],
+    [`${HEAD}<!-- id: early -->\n## Current focus\n\n### A\n<!-- id: a -->\nText.\n`, /line 7: an "<!-- id: \.\.\. -->" line must come directly under/],
+    [`${HEAD}## Current focus\n\n### A\n<!-- id: same -->\nText.\n\n### B\n<!-- id: same -->\nText.\n`, /line 14: id "same" is already used by "A"/],
+  ];
+  for (const [source, expected] of cases) assert.match(problems(source).join("\n"), expected, source);
+});
+
+test("public-text rules catch the usual leaks and pass player-facing text", () => {
+  const leaks: [string, RegExp][] = [
+    ["Fixed in 0842b45.", /commit hash/],
+    ["See src/lib/roadmap.ts for details.", /file path/],
+    ["Merged from claude/stoic-ramanujan.", /branch name/],
+    ["Shipped in PR #23.", /pull request or issue number/],
+    ["The MI_Jacket_01 material now draws.", /game asset name/],
+    ["ShadeAsCloth now feeds the sheen.", /shader internal/],
+    ["Rebuilt with FModel.", /how game data is read/],
+    ["Meshes were extracted again.", /how game data is read/],
+    ["Nothing is injected into the game.", /running game/],
+    ["Moved to Cloudflare.", /internal work/],
+    ["A new admin page.", /internal work/],
+    ["The 3D export is faster.", /internal work/],
+    ["Codex reviewed it.", /tooling behind the project/],
+    ["Done in w152.", /internal batch name/],
+  ];
+  for (const [text, why] of leaks) assert.match(lintPublicText(text, "t").join("\n"), why, text);
+  const roadmap = loadRoadmap(read("ROADMAP.md"));
+  const plain = [
+    ...roadmap.intro, ...roadmap.sections.flatMap(section => section.items.flatMap(item => [item.title, ...item.description, ...item.tasks])),
+    "The Dumpling Headwear and the Vapor Wave Glasses render in 3D.",
+    "3,091 of the catalog's 3,332 cosmetics now have a first-pass 3D reconstruction.",
+  ];
+  for (const text of plain) assert.deepEqual(lintPublicText(text, "t"), [], text);
+});
+
+test("patch notes link to roadmap items by id and are checked as public text", () => {
+  const source = `${HEAD}## Current focus\n\n### A\n<!-- id: a -->\nText.\n`;
+  const evidence = [{ id: "note-1", label: "patch note one", date: "2026-11-05" }];
+  const note = (extra: Partial<ChangelogEntry>): ChangelogEntry =>
+    ({ id: "note-1", date: "2026-11-05", title: "Update", notes: ["3,091 of 3,332 cosmetics now render in 3D."], ...extra });
+  // Dated figures are fine in a patch note, unlike in ROADMAP.md.
+  assert.equal(loadRoadmap(source, evidence, { changelog: [note({ items: ["a"] })] }).sections[0].items[0].id, "a");
+  assert.throws(() => loadRoadmap(source, evidence, { changelog: [note({ items: ["missing"] })] }),
+    /patch note "note-1" \(src\/data\/changelog\.ts\): items names "missing", which is not an id in ROADMAP\.md/);
+  assert.throws(() => loadRoadmap(source, evidence, { changelog: [note({ notes: ["Fine.", "Built in w152."] })] }),
+    /patch note "note-1" \(src\/data\/changelog\.ts\) note 2: public text uses an internal batch name/);
+  assert.throws(() => loadRoadmap(source, evidence, { changelog: [note({ title: "Rebuilt with FModel" })] }), /title: public text describes how game data is read/);
+  // Every shipped patch note passes, and links only to ids that exist.
+  assert.deepEqual(patchNoteProblems(CHANGELOG, loadRoadmap(read("ROADMAP.md"))), []);
+});
+
+test("private denylist terms are caught by whole words, and never printed", () => {
+  const terms = parseDenylist("Secret Project\nsomeone-real, ,");
+  assert.deepEqual(terms, ["secret project", "someone real"]);
+  const found = lintPublicText("Thanks to Someone Real for the SECRET-project idea.", "line 3", terms);
+  assert.equal(found.length, 2);
+  assert.match(found[0], /^line 3: public text matches private denylist term 1;/);
+  assert.match(found[1], /private denylist term 2;/);
+  for (const problem of found) assert.doesNotMatch(problem, /secret|someone/i);
+  assert.deepEqual(lintPublicText("A secretive project by someone really good.", "t", terms), []);
+  assert.throws(() => parseRoadmap(`${HEAD}## Current focus\n\n### A\n<!-- id: a -->\nA secret project.\n`, { privateTerms: terms }),
+    /line 11: public text matches private denylist term 1/);
+  // The build reads the list from a plain environment variable: a VITE_ prefix would put it in the app bundle.
+  assert.match(read("vite.config.ts"), /parseDenylist\(process\.env\.PUBLIC_TEXT_DENYLIST\)/);
+  assert.match(read(".github/workflows/deploy.yml"), /^\s+PUBLIC_TEXT_DENYLIST: \$\{\{ secrets\.PUBLIC_TEXT_DENYLIST \}\}$/m);
+  assert.doesNotMatch(read(".github/workflows/deploy.yml") + read("vite.config.ts"), /VITE_PUBLIC_TEXT_DENYLIST/);
 });
 
 test("the roadmap is stale once a patch note or catalog update is newer than its review", () => {

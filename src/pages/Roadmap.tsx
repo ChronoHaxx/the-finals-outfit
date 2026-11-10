@@ -76,7 +76,7 @@ export default function Roadmap() {
       {ROADMAP.sections.map(section => <section key={section.stage} aria-labelledby={sectionId(section.stage)}>
         <h2 id={sectionId(section.stage)} className="display text-[40px]">{section.stage}</h2>
         <ol className="mt-4 border-t border-line">
-          {section.items.map((item, index) => <RoadmapEntry key={item.title} item={item} index={index} section={section} fill={fill} />)}
+          {section.items.map((item, index) => <RoadmapEntry key={item.id} item={item} index={index} section={section} fill={fill} />)}
         </ol>
       </section>)}
 
