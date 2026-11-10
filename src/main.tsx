@@ -9,10 +9,17 @@ import Roadmap from "./pages/Roadmap";
 import { ReconstructionProgressProvider } from "./context/ReconstructionProgress";
 import { loadCatalog } from "./lib/catalog-load";
 import IntroDialog from "./components/IntroDialog";
+import { startAnalytics } from "./lib/analytics";
+import { openFromUrl, startSavedOutfits } from "./store/useSavedOutfits";
+
+// Before the catalog: a visit whose catalog fails to load is the one worth counting. No-op outside production.
+if (import.meta.env.PROD) startAnalytics();
 
 // The catalog getters are synchronous, so nothing renders until the catalog is in.
-// Until then the static shell in index.html stays on screen.
-loadCatalog().then(mount, showCatalogFailure);
+// Until then the static shell in index.html stays on screen. Saved outfits open alongside; that
+// never fails the page (with no usable storage, saving is simply off).
+Promise.all([loadCatalog(), startSavedOutfits().catch(error => console.error("[saved outfits]", error))])
+  .then(mount, showCatalogFailure);
 
 function showCatalogFailure(error: unknown) {
   console.error("[catalog] could not load", error);
@@ -30,6 +37,9 @@ function showCatalogFailure(error: unknown) {
 }
 
 function mount() {
+  // Put the saved (or linked) outfit on before the first render, so the viewer never starts loading the
+  // starting look first. Builder runs the same call again; it is idempotent.
+  try { openFromUrl(window.location.href); } catch (error) { console.error("[saved outfits]", error); }
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <HashRouter>

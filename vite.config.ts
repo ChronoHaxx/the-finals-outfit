@@ -112,8 +112,13 @@ export default defineConfig(({ mode }) => {
       generateBundle(_options, bundle) {
         const entry = bundle["index.html"];
         if (!entry || entry.type !== "asset" || typeof entry.source !== "string") throw new Error("Missing app HTML entry");
+        // noindex, and no canonical link: a noindex page that names the production page as its canonical
+        // sends search engines conflicting signals.
+        const canonical = /\s*<link rel="canonical"[^>]*>/;
+        if (!canonical.test(entry.source)) throw new Error("App HTML entry has no canonical link to strip");
         this.emitFile({ type: "asset", fileName: `${DEVELOPER_CATALOG_PATH}/index.html`,
           source: entry.source.replace("<head>", '<head>\n    <meta name="robots" content="noindex, nofollow" />')
+            .replace(canonical, "")
             .replace(/<title>.*?<\/title>/, '<title>Developer cosmetic catalog</title>') });
       },
     }],

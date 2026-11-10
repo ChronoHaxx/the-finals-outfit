@@ -119,6 +119,38 @@ Run `node scripts/check-production.mjs` against a production preview before
 release. Set `PRODUCTION_URL` and `ASSETS_BASE` to check a deployed release;
 `--local-assets` intercepts asset requests with local files for pre-upload checks.
 
+### Monitoring and visitor analytics
+
+**Site health** (`.github/workflows/site-health.yml`) runs hourly, after each deploy of the default branch, and on
+"Run workflow". It is read-only: GET and HEAD requests, about 1 MB per run. It reads the expected hosts from
+`deploy.yml` and the routes file, so a release that swaps hosts needs no change to it. It fails when:
+
+- the live page, its script, stylesheet or a preloaded catalogue file does not answer;
+- the live bundle is missing one of `deploy.yml`'s hosts or names another asset host (a failed or stuck deploy,
+  or a regression to an old host);
+- the icon, model, control-shard or routed-shard file it samples does not answer 200 with its own content type,
+  cross-origin access and long-lived caching (meshes and textures are probed with HEAD);
+- the animation host lists no clips, or its idle clip or a prop is missing.
+
+It retries for about 10 minutes before failing, which covers a check that lands mid-deploy. GitHub emails a
+failure to whoever last changed the workflow's schedule. Run it locally with `npm run check:site -- --once`
+(`PRODUCTION_URL` checks another site). It does not render the outfit; the release browser scenarios do that.
+
+**Visitor analytics** use Cloudflare Web Analytics (`src/lib/analytics.ts`) on the production site only. They do
+not run on localhost, forks, UI previews, the developer catalogue or in automated browsers, nor for visitors
+whose browser sends Global Privacy Control or Do Not Track. The beacon sets no cookies and stores nothing in the
+browser. Each page load sends:
+
+- the page address without its query string or `#` fragment, so outfit codes stay private;
+- the referrer;
+- the browser engine and OS versions;
+- load timings and Core Web Vitals, naming the page element they measured (for example an item icon's URL).
+
+Cloudflare also sees the request's IP address and user agent, as with any request. Route changes inside the app
+are not reported (`spa: false`): the address the beacon sends is the same on every route, so they would only
+repeat the page view. Blocking the beacon changes nothing in the app. The dashboard is Cloudflare →
+Web Analytics → `chronohaxx.github.io`.
+
 ## Contributing catalog entries
 
 The cosmetic catalog lives in `src/data/items.json`. Each entry must satisfy

@@ -10,6 +10,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-06-54-more-in-3d",
+    date: "2026-11-06",
+    title: "54 more in 3D",
+    notes: [
+      "54 of this morning's 76 added cosmetics now render in 3D, among them the plushies, guitars and lutes, swords and shields, hard cases, TV heads, rings, and the frog, Bigfoot and Kaiju costumes.",
+      "The Face of Éternel joins the catalog with its icon. Its 3D comes later.",
+      "A face without 3D yet now keeps the default head in the preview instead of leaving the body headless, and items with only an icon are labelled ICON in the picker.",
+      "3,091 of the catalog's 3,332 cosmetics now have a first-pass 3D reconstruction.",
+    ],
+  },
+  {
     id: "2026-11-06-missing-cosmetics",
     date: "2026-11-06",
     title: "76 missing cosmetics",
