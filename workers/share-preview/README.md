@@ -68,6 +68,12 @@ Then check: `https://the-finals-outfit-share.chronohaxx.workers.dev/s/AAAAAAAAAA
 should answer a page whose `location.replace` ends in `#/?o=2.&emote=wave&t=1&paused=1` (an unknown id falls back to
 the link's own pose). No KV or binding changes.
 
+**Deployed 10 Nov 2026, 22:59 London** (on the user's "go"): version `3a05274f-fbd0-4bed-b1a6-a279d7e6a37a`, replacing
+`051be245-2d15-4dba-bdc5-e86280e2df2f` (20 Oct; `npx --yes wrangler@4.131.1 rollback 051be245-2d15-4dba-bdc5-e86280e2df2f`
+restores it). Live checks after the deploy: the pose URL above now keeps the pose (before: `#/?o=2.`); the 20 Oct link
+`/s/XkVfZU1EMmnr` still opens its outfit and serves its 73 KB card; root redirect; foreign origin 403; a malformed pose
+400 `bad pose` (refused before anything is stored). Bindings unchanged.
+
 ## Live deployment (20 Oct 2026)
 
 - Worker `the-finals-outfit-share` at https://the-finals-outfit-share.chronohaxx.workers.dev (account subdomain renamed from the
