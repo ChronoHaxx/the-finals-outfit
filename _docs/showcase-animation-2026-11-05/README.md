@@ -381,6 +381,25 @@ pressing Alt). On first measurement I called it pre-existing. **That was wrong.*
   Alt / resize). The user answered "Checked, ship it" and added: "the grain effect still exist on hair, this is not
   new, its been like this since we got hair support". That matches the pre-existing damping grain above.
 
+## Open items (6 Nov, evening)
+
+Shipped and live: PR #22 (showcase animation, `e9f870e`), PR #25 (still-view flicker fix, `7e3294d`). Only agent
+checks covered the live site; the user has not re-checked it.
+
+1. **Wrong emote props (user, 6 Nov; shipped as is by their choice):** Valkyria's Embrace wings look wrong (mesh or
+   effect; no in-game reference here); the Jetpack prop is far too big; Death's wings are rotated 90 degrees; other
+   emotes have wrong props too (not listed). Suggested: "known issue" badges in the emote picker (the user's
+   legend-label idea).
+2. **Hair grain while anything moves (in progress):** the moving view's average is screen-locked. Fix: motion vectors
+   (reprojection) plus a Graphics setting (High / Balanced / Low, Auto by default). Plan reviewed by Fable on 6 Nov;
+   branch `claude/hair-motion-vectors-2026-11-06`, uncommitted work in progress. Evidence: `hair-grain-2026-11-06/`.
+   It also covers the still view's grain while a drag eases to a stop.
+3. **PR #22's description** still calls the flicker pre-existing. That was wrong; PR #25's text corrects it. Editing
+   #22 needs the user's OK.
+4. **Facial animation and cloth simulation:** see Known gaps below.
+5. **Uncommitted evidence on the branch above:** the PR #25 merge and live-check record (functional-checklist.md),
+   `flicker-2026-11-06/live-flicker-check.*`, `hair-grain-2026-11-06/`. Docs only; they ride with the next PR.
+
 ## Known gaps
 
 * **Facial animation**: every clip carries 37 `Face_*` expression curves (blink, jaw, brows…). The heads have 305

@@ -11,7 +11,9 @@ import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmet
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
-import { AnimationControls, AnimationFrameDriver, useRigAnimator } from "./AnimationControls";
+import { AutoGraphics, GraphicsMenu, type TemporalStatusRef } from "./GraphicsSetting";
+import { effectiveTier, TIER_INFO, useGraphicsStore } from "../lib/graphics-quality";
+import { AnimationControls, AnimationFrameDriver, clockHeldStill, useRigAnimator } from "./AnimationControls";
 import type { RigAnimator } from "../rig/RigAnimator";
 import MeshInspector from "./MeshInspector";
 import OutfitExportPanel, { type ExportContext } from "./OutfitExportPanel";
@@ -416,7 +418,10 @@ export default function CharacterViewer() {
   const [theme, setTheme] = useState<SceneTheme>("studio");
   // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden).
   const animator = useRigAnimator();
-  const animationMoving = useCallback(() => !!animator?.state.moving, [animator]);
+  const animationMoving = useCallback(() => !!animator?.state.moving && !clockHeldStill(), [animator]);
+  // Graphics setting (6 Nov): the tier sets the canvas pixel density and the still-view accumulator's quality.
+  const graphicsTier = useGraphicsStore(effectiveTier);
+  const temporalStatus = useRef<{ motion: boolean } | null>(null) as TemporalStatusRef;
   const exportContext = useRef<ExportContext | null>(null);
   const build = useBuildStore((s) => s.build);
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
@@ -1000,7 +1005,7 @@ export default function CharacterViewer() {
           position: DEV.cam ? [DEV.cam[0], DEV.cam[1], DEV.cam[2]] : [0, 1.0, 3.6],
           fov: DEV.fov ?? 35,
         }}
-        dpr={[1, 2]}
+        dpr={[1, TIER_INFO[graphicsTier].maxDpr]}
         shadows={theme === "studio" ? "soft" : false}
         gl={{
           alpha: true,
@@ -1018,7 +1023,9 @@ export default function CharacterViewer() {
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
         <PreviewBridge root={rig.root} theme={theme} active={ready && !busy} animator={animator} />
         {animator && <AnimationFrameDriver animator={animator} />}
-        {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving} />}
+        {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving}
+          quality={TIER_INFO[graphicsTier].reproject ? "high" : "balanced"} statusRef={temporalStatus} />}
+        <AutoGraphics status={temporalStatus} active={ready && !busy} />
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
           enablePan
@@ -1033,15 +1040,18 @@ export default function CharacterViewer() {
         style={{ "--b": theme === "studio" ? "rgb(9 9 11 / 0.32)" : "rgb(242 239 233 / 0.32)" } as CSSProperties} />}
       {/* No backdrop-filter on anything over the canvas: the canvas repaints every frame, so a
           blur behind it would be recomputed every frame too — a real cost on phones. */}
-      <button
-        type="button"
-        onClick={() => setTheme((t) => (t === "studio" ? "lobby" : "studio"))}
-        title="Toggle scene lighting"
-        className="hud absolute right-3 top-3 z-10 flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950"
-      >
-        <span aria-hidden="true" className={`size-2.5 border border-fg/60 ${theme === "studio" ? "bg-[#dee4eb]" : "bg-[#1b2740]"}`} />
-        {theme === "studio" ? "Studio" : "Lobby"}
-      </button>
+      <div className="absolute right-3 top-3 z-10 flex items-center gap-1.5">
+        <GraphicsMenu />
+        <button
+          type="button"
+          onClick={() => setTheme((t) => (t === "studio" ? "lobby" : "studio"))}
+          title="Toggle scene lighting"
+          className="hud flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950"
+        >
+          <span aria-hidden="true" className={`size-2.5 border border-fg/60 ${theme === "studio" ? "bg-[#dee4eb]" : "bg-[#1b2740]"}`} />
+          {theme === "studio" ? "Studio" : "Lobby"}
+        </button>
+      </div>
       {/* One right-hand column under the theme button, so the animation controls and the developer export panel
           stack instead of overlapping. It spans to the bottom so the emote picker can fit the viewer's height; only
           its children take pointer events, so the canvas behind the empty part still orbits. */}

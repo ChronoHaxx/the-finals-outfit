@@ -255,8 +255,8 @@ test("only a visible additive material reports additive to the stable-frame accu
   group.add(holo);
   scene.add(group, opaque);
   const state = new StableFrameState();
-  assert.deepEqual(state.capture(scene, camera, renderer), { changed: "camera", masked: false, additive: true });
-  assert.deepEqual(state.capture(scene, camera, renderer), { changed: "", masked: false, additive: true });
+  assert.deepEqual(state.capture(scene, camera, renderer), { changed: "camera", masked: false, additive: true, reprojectable: false });
+  assert.deepEqual(state.capture(scene, camera, renderer), { changed: "", masked: false, additive: true, reprojectable: false });
   additive.visible = false;
   assert.equal(state.capture(scene, camera, renderer).additive, false);
   additive.visible = true; holo.visible = false;
@@ -268,7 +268,7 @@ test("only a visible additive material reports additive to the stable-frame accu
   // A scene without additive materials records exactly what it did before: stable on the second capture.
   scene.remove(group);
   state.capture(scene, camera, renderer);
-  assert.deepEqual(state.capture(scene, camera, renderer), { changed: "", masked: false, additive: false });
+  assert.deepEqual(state.capture(scene, camera, renderer), { changed: "", masked: false, additive: false, reprojectable: false });
 });
 
 // The accumulator's output fragment as the code before the hologram runtime built it.

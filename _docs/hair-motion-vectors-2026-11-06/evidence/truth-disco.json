@@ -1,0 +1,340 @@
+{
+ "clip": "disco",
+ "steps": [
+  30,
+  60,
+  90,
+  120,
+  180,
+  240
+ ],
+ "reference": {
+  "log": [
+   {
+    "k": 30,
+    "motion": false,
+    "samples": 32,
+    "motionFrames": 0,
+    "reprojected": false,
+    "reason": "motion ended"
+   },
+   {
+    "k": 60,
+    "motion": false,
+    "samples": 32,
+    "motionFrames": 0,
+    "reprojected": false,
+    "reason": "motion ended"
+   },
+   {
+    "k": 90,
+    "motion": false,
+    "samples": 32,
+    "motionFrames": 0,
+    "reprojected": false,
+    "reason": "motion ended"
+   },
+   {
+    "k": 120,
+    "motion": false,
+    "samples": 32,
+    "motionFrames": 0,
+    "reprojected": false,
+    "reason": "motion ended"
+   },
+   {
+    "k": 180,
+    "motion": false,
+    "samples": 32,
+    "motionFrames": 0,
+    "reprojected": false,
+    "reason": "motion ended"
+   },
+   {
+    "k": 240,
+    "motion": false,
+    "samples": 32,
+    "motionFrames": 0,
+    "reprojected": false,
+    "reason": "motion ended"
+   }
+  ],
+  "errors": []
+ },
+ "runs": {
+  "balanced": {
+   "hairError": 13.75,
+   "hairOffBy16Pct": 17.4,
+   "bodyError": 7.06,
+   "bodyOffBy16Pct": 8.1,
+   "rows": [
+    {
+     "k": 30,
+     "hair": {
+      "pixels": 54055,
+      "error": 14.57,
+      "offBy16Pct": 17.9
+     },
+     "body": {
+      "pixels": 187862,
+      "error": 7.4,
+      "offBy16Pct": 8.5
+     }
+    },
+    {
+     "k": 60,
+     "hair": {
+      "pixels": 52366,
+      "error": 12.27,
+      "offBy16Pct": 14.8
+     },
+     "body": {
+      "pixels": 217422,
+      "error": 6.33,
+      "offBy16Pct": 6.8
+     }
+    },
+    {
+     "k": 90,
+     "hair": {
+      "pixels": 46595,
+      "error": 17.07,
+      "offBy16Pct": 23.4
+     },
+     "body": {
+      "pixels": 193778,
+      "error": 7.23,
+      "offBy16Pct": 9.3
+     }
+    },
+    {
+     "k": 120,
+     "hair": {
+      "pixels": 45467,
+      "error": 15.3,
+      "offBy16Pct": 20.4
+     },
+     "body": {
+      "pixels": 176672,
+      "error": 7.63,
+      "offBy16Pct": 9.1
+     }
+    },
+    {
+     "k": 180,
+     "hair": {
+      "pixels": 57262,
+      "error": 10.66,
+      "offBy16Pct": 12.1
+     },
+     "body": {
+      "pixels": 225140,
+      "error": 5.62,
+      "offBy16Pct": 5.4
+     }
+    },
+    {
+     "k": 240,
+     "hair": {
+      "pixels": 57772,
+      "error": 12.63,
+      "offBy16Pct": 15.9
+     },
+     "body": {
+      "pixels": 172609,
+      "error": 8.17,
+      "offBy16Pct": 9.7
+     }
+    }
+   ],
+   "log": [
+    {
+     "k": 30,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 30,
+     "reprojected": false,
+     "reason": "motion"
+    },
+    {
+     "k": 60,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 60,
+     "reprojected": false,
+     "reason": "motion"
+    },
+    {
+     "k": 90,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 90,
+     "reprojected": false,
+     "reason": "motion"
+    },
+    {
+     "k": 120,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 120,
+     "reprojected": false,
+     "reason": "motion"
+    },
+    {
+     "k": 180,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 180,
+     "reprojected": false,
+     "reason": "motion"
+    },
+    {
+     "k": 240,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 240,
+     "reprojected": false,
+     "reason": "motion"
+    }
+   ],
+   "errors": []
+  },
+  "high": {
+   "hairError": 11.12,
+   "hairOffBy16Pct": 15.1,
+   "bodyError": 5.69,
+   "bodyOffBy16Pct": 6.8,
+   "rows": [
+    {
+     "k": 30,
+     "hair": {
+      "pixels": 54055,
+      "error": 19.65,
+      "offBy16Pct": 24.6
+     },
+     "body": {
+      "pixels": 188062,
+      "error": 8.66,
+      "offBy16Pct": 10.4
+     }
+    },
+    {
+     "k": 60,
+     "hair": {
+      "pixels": 52366,
+      "error": 6.24,
+      "offBy16Pct": 7.7
+     },
+     "body": {
+      "pixels": 217620,
+      "error": 3.57,
+      "offBy16Pct": 3.5
+     }
+    },
+    {
+     "k": 90,
+     "hair": {
+      "pixels": 46595,
+      "error": 9.98,
+      "offBy16Pct": 14.1
+     },
+     "body": {
+      "pixels": 193768,
+      "error": 4.67,
+      "offBy16Pct": 5.9
+     }
+    },
+    {
+     "k": 120,
+     "hair": {
+      "pixels": 45467,
+      "error": 7.68,
+      "offBy16Pct": 12.2
+     },
+     "body": {
+      "pixels": 176297,
+      "error": 4.37,
+      "offBy16Pct": 5.3
+     }
+    },
+    {
+     "k": 180,
+     "hair": {
+      "pixels": 57262,
+      "error": 6.64,
+      "offBy16Pct": 9.9
+     },
+     "body": {
+      "pixels": 225429,
+      "error": 3.84,
+      "offBy16Pct": 4.1
+     }
+    },
+    {
+     "k": 240,
+     "hair": {
+      "pixels": 57772,
+      "error": 16.51,
+      "offBy16Pct": 22
+     },
+     "body": {
+      "pixels": 172473,
+      "error": 9.05,
+      "offBy16Pct": 11.6
+     }
+    }
+   ],
+   "log": [
+    {
+     "k": 30,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 30,
+     "reprojected": true,
+     "reason": "motion"
+    },
+    {
+     "k": 60,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 60,
+     "reprojected": true,
+     "reason": "motion"
+    },
+    {
+     "k": 90,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 90,
+     "reprojected": true,
+     "reason": "motion"
+    },
+    {
+     "k": 120,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 120,
+     "reprojected": true,
+     "reason": "motion"
+    },
+    {
+     "k": 180,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 180,
+     "reprojected": true,
+     "reason": "motion"
+    },
+    {
+     "k": 240,
+     "motion": true,
+     "samples": 0,
+     "motionFrames": 240,
+     "reprojected": true,
+     "reason": "motion"
+    }
+   ],
+   "errors": []
+  }
+ }
+}

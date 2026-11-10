@@ -30,16 +30,22 @@ export const alphaHashSampleBits = { value: 5 };
  * of frames, and the clamp then erases the surface. Motion frames use an ordered 3-periodic pattern instead (the idea
  * behind UE's temporal-AA dither): any 3x3 window holds each of nine threshold bands once, so a surface above 1/9
  * opacity always shows a covered pixel there (measured: 0 empty windows at 10%, against 36-39% for the random hash and
- * 17.6% for interleaved gradient noise, tried first). The bands rotate per frame so every pixel visits all of them (no
- * fixed screen door), and a per-triangle, per-material, per-side offset keeps stacked cards independent, as in the
- * still path. Below 1/9 opacity a window can still come up empty, so very faint surfaces thin out while moving.
+ * 17.6% for interleaved gradient noise, tried first). Each 9-frame cycle walks every pixel through all nine bands (no
+ * fixed screen door). Below 1/9 opacity a window can still come up empty, so very faint surfaces thin out while moving.
+ *
+ * Stacked layers (6 Nov 2026 fix): each layer (triangle, material, side) walks the bands in its own order, an affine
+ * permutation mod 9 re-drawn every cycle, with its own offset inside the band. Until then every layer stepped one band
+ * per frame from a fixed per-layer offset, so two cards over a pixel stayed a constant number of bands apart: their
+ * combined coverage was wrong by a fixed amount per pixel and per triangle pair (too dense here, too thin there), a
+ * pattern no averaging removed. It showed as grain crawling over moving hair, and as 1.5-3 levels of extra darkness on
+ * a held pose (measured against the converged still frame, 6 Nov).
  */
 export const alphaHashMotionFrame = { value: 0 };
 
 /** Draw motion frame `frame` (>= 0) with the neighbourhood-stratified threshold, or turn it off with null. */
 export function setAlphaHashMotionFrame(frame: number | null) {
   if (frame !== null && (!Number.isInteger(frame) || frame < 0)) throw new Error('Invalid alpha-hash motion frame');
-  alphaHashMotionFrame.value = frame === null ? 0 : (frame % 64) + 1;
+  alphaHashMotionFrame.value = frame === null ? 0 : (frame % 576) + 1; // whole 9-frame cycles
 }
 
 /** Draw sample `index` of `count` (index 0: three's own hash). */
@@ -91,15 +97,17 @@ float sampledAlphaHashThreshold( vec3 position ) {
 		// The ranks rotate each frame (every pixel visits every band). The position inside its band is random per pixel
 		// and frame: one shared offset made a whole surface below 1/9 opacity empty (and vanish) on the same frames, and
 		// a 50% surface pulse between 4/9 and 5/9; scattered, the rare empty windows only thin a faint surface a little.
-		// The per-layer offset (stacked cards stay independent) is a whole-band rotation plus a shift that wraps inside
-		// the band: added after the bands, it pushed pixels into the next band and could empty band 0 of a window.
+		// Each layer walks the bands in its own affine order, re-drawn every 9-frame cycle (stacked cards independent,
+		// see alphaHashMotionFrame); the offset inside the band is the layer's own too. The order is the same for every
+		// pixel of the layer, so each 3x3 window still holds all nine bands on every frame.
 		const uint ranks[ 9 ] = uint[ 9 ]( 0u, 7u, 3u, 5u, 2u, 8u, 6u, 4u, 1u );
+		const uint units[ 6 ] = uint[ 6 ]( 1u, 2u, 4u, 5u, 7u, 8u );
 		uint frame = alphaHashMotionFrame - 1u;
 		uvec2 cell = pixel % 3u;
 		uint layer = alphaHashMix( vAlphaHashVertex ^ alphaHashMix( alphaHashSalt ^ ( gl_FrontFacing ? 0u : 0x9e3779b9u ) ) );
-		uint band = ( ranks[ cell.y * 3u + cell.x ] + frame + layer % 9u ) % 9u;
-		float inside = fract( float( alphaHashMix( pixel.x ^ alphaHashMix( pixel.y ^ alphaHashMix( frame ^ 0x2545f491u ) ) ) >> 8u ) * ( 1.0 / 16777216.0 )
-			+ float( layer >> 8u ) * ( 1.0 / 16777216.0 ) );
+		uint order = alphaHashMix( layer ^ alphaHashMix( ( frame / 9u ) ^ 0x68e31da4u ) );
+		uint band = ( ranks[ cell.y * 3u + cell.x ] + units[ order % 6u ] * ( frame % 9u ) + ( order >> 8u ) % 9u ) % 9u;
+		float inside = float( alphaHashMix( pixel.x ^ alphaHashMix( pixel.y ^ alphaHashMix( frame ^ layer ^ 0x2545f491u ) ) ) >> 8u ) * ( 1.0 / 16777216.0 );
 		threshold = max( ( float( band ) + inside ) / 9.0, 1.0e-6 );
 	} else if ( alphaHashSample != 0u ) {
 		uint seed = alphaHashMix( pixel.x ^ alphaHashMix( pixel.y ^ alphaHashMix( vAlphaHashVertex

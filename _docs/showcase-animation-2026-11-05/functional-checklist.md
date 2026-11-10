@@ -124,3 +124,10 @@ the cup floats beside the hand." A real-phone check is not part of this list: th
     it". Also noted: "the grain effect still exist on hair, this is not new, its been like this since we got hair
     support" (pre-existing damping grain, not part of this fix).
   * Ship authorization: "Checked, ship it" (push, PR, merge when green).
+  * Merged: PR #25 as `7e3294d` on 6 Nov 2026 at 18:28 UTC, after CI (`build`, `compatibility`) passed at head `108ac6e`
+    (main `af8a203` merged in and re-tested first: GPU 102 + 38 pass, unit 678/691 with the 8 known model-fixture
+    failures, typecheck clean). User: "CI green, merge".
+  * Live-site agent check (deploy run 42271091178 succeeded): the site serves `index-iok8ao9s.js`, which contains the
+    fixed scale. A headless resize in the still view showed no frame brighter than the settled image; the worst was
+    0.19 luma below it. The frames after the resize match the fixed dev frames by eye
+    (`flicker-2026-11-06/live-flicker-check.*`). This is agent PASS only; the user has not re-checked the live site.

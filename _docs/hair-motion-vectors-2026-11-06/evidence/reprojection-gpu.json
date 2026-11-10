@@ -1,0 +1,275 @@
+{
+  "checks": [
+    {
+      "name": "stacked 0.5+0.5: High keeps independent coverage",
+      "passed": true,
+      "layers": [
+        0.5,
+        0.5
+      ],
+      "expected": 0.75,
+      "balanced": 0.8741784244775772,
+      "high": 0.7532015442848206
+    },
+    {
+      "name": "stacked 0.8+0.5: High keeps independent coverage",
+      "passed": true,
+      "layers": [
+        0.8,
+        0.5
+      ],
+      "expected": 0.9,
+      "balanced": 0.9765674769878387,
+      "high": 0.8920528888702393
+    },
+    {
+      "name": "stacked 0.3+0.3+0.3: High keeps independent coverage",
+      "passed": true,
+      "layers": [
+        0.3,
+        0.3,
+        0.3
+      ],
+      "expected": 0.657,
+      "balanced": 0.6878488510847092,
+      "high": 0.655189573764801
+    },
+    {
+      "name": "moving card: motion vectors in use",
+      "passed": true,
+      "status": {
+        "active": true,
+        "samples": 0,
+        "maxSamples": 32,
+        "resets": 1,
+        "sceneRenders": 40,
+        "reason": "size",
+        "width": 256,
+        "height": 256,
+        "targetBytes": 3407872,
+        "additive": false,
+        "motion": true,
+        "motionFrames": 40,
+        "reprojected": true,
+        "fading": false,
+        "velocityRenders": 40,
+        "firstOther": ""
+      }
+    },
+    {
+      "name": "moving card: High matches the converged frame of where it is",
+      "passed": true,
+      "balanced": 0.023122819387651816,
+      "high": 0.005681843719745672
+    },
+    {
+      "name": "moving card: High beats screen-locked Balanced by 2x",
+      "passed": true,
+      "balanced": 0.023122819387651816,
+      "high": 0.005681843719745672
+    },
+    {
+      "name": "crossing card leaves no ghost behind it",
+      "passed": true,
+      "behind": 0,
+      "left": 99
+    },
+    {
+      "name": "turning skinned card: High matches the converged frame",
+      "passed": true,
+      "balanced": 0.04191923904566153,
+      "high": 0.01443244660738742
+    },
+    {
+      "name": "turning skinned card: High beats Balanced",
+      "passed": true,
+      "balanced": 0.04191923904566153,
+      "high": 0.01443244660738742
+    },
+    {
+      "name": "High crossfades from the motion average",
+      "passed": true,
+      "status": {
+        "active": true,
+        "samples": 1,
+        "maxSamples": 32,
+        "resets": 2,
+        "sceneRenders": 61,
+        "reason": "motion ended",
+        "width": 256,
+        "height": 256,
+        "targetBytes": 3407872,
+        "additive": false,
+        "motion": false,
+        "motionFrames": 0,
+        "reprojected": false,
+        "fading": true,
+        "velocityRenders": 60,
+        "firstOther": "camera@0: undefined -> OrthographicCamera (OrthographicCamera)"
+      }
+    },
+    {
+      "name": "High converges to exactly the still frame",
+      "passed": true,
+      "worst": 0
+    },
+    {
+      "name": "High releases the motion average and velocity targets once converged",
+      "passed": true,
+      "textures": 4,
+      "fixtureTextures": 2,
+      "bytes": 1310720
+    },
+    {
+      "name": "first still frame after motion: High jumps at most a third as much as Balanced",
+      "passed": true,
+      "balanced": 0.23888822201184823,
+      "high": 0.007563579782704721
+    },
+    {
+      "name": "a camera move in a still pose reprojects",
+      "passed": true,
+      "status": {
+        "active": true,
+        "samples": 0,
+        "maxSamples": 32,
+        "resets": 2,
+        "sceneRenders": 33,
+        "reason": "reprojected",
+        "width": 256,
+        "height": 256,
+        "targetBytes": 3407872,
+        "additive": false,
+        "motion": true,
+        "motionFrames": 1,
+        "reprojected": true,
+        "fading": false,
+        "velocityRenders": 1,
+        "firstOther": ""
+      }
+    },
+    {
+      "name": "quiet frames keep the reprojected average briefly",
+      "passed": true,
+      "status": {
+        "active": true,
+        "samples": 0,
+        "maxSamples": 32,
+        "resets": 2,
+        "sceneRenders": 36,
+        "reason": "reprojected",
+        "width": 256,
+        "height": 256,
+        "targetBytes": 3407872,
+        "additive": false,
+        "motion": true,
+        "motionFrames": 4,
+        "reprojected": true,
+        "fading": false,
+        "velocityRenders": 4,
+        "firstOther": ""
+      }
+    },
+    {
+      "name": "then the still view takes over with a crossfade",
+      "passed": true,
+      "status": {
+        "active": true,
+        "samples": 1,
+        "maxSamples": 32,
+        "resets": 3,
+        "sceneRenders": 37,
+        "reason": "motion ended",
+        "width": 256,
+        "height": 256,
+        "targetBytes": 3407872,
+        "additive": false,
+        "motion": false,
+        "motionFrames": 0,
+        "reprojected": false,
+        "fading": true,
+        "velocityRenders": 4,
+        "firstOther": ""
+      }
+    },
+    {
+      "name": "a material change restarts from a fresh frame",
+      "passed": true,
+      "status": {
+        "active": true,
+        "samples": 1,
+        "maxSamples": 32,
+        "resets": 4,
+        "sceneRenders": 69,
+        "reason": "material",
+        "width": 256,
+        "height": 256,
+        "targetBytes": 1310720,
+        "additive": false,
+        "motion": false,
+        "motionFrames": 0,
+        "reprojected": false,
+        "fading": false,
+        "velocityRenders": 4,
+        "firstOther": "material@159: 0.7 -> 0.1"
+      }
+    },
+    {
+      "name": "quality switches restart cleanly",
+      "passed": true,
+      "reason": "quality",
+      "textures": 4,
+      "fixtureTextures": 2
+    },
+    {
+      "name": "all fixture and pass textures released",
+      "passed": true,
+      "textures": 0
+    }
+  ],
+  "numbers": {
+    "stacked": [
+      {
+        "layers": [
+          0.5,
+          0.5
+        ],
+        "expected": 0.75,
+        "balanced": 0.8741784244775772,
+        "high": 0.7532015442848206
+      },
+      {
+        "layers": [
+          0.8,
+          0.5
+        ],
+        "expected": 0.9,
+        "balanced": 0.9765674769878387,
+        "high": 0.8920528888702393
+      },
+      {
+        "layers": [
+          0.3,
+          0.3,
+          0.3
+        ],
+        "expected": 0.657,
+        "balanced": 0.6878488510847092,
+        "high": 0.655189573764801
+      }
+    ],
+    "movingCard": {
+      "balanced": 0.023122819387651816,
+      "high": 0.005681843719745672
+    },
+    "turningSkinned": {
+      "balanced": 0.04191923904566153,
+      "high": 0.01443244660738742
+    },
+    "handOver": {
+      "balanced": 0.23888822201184823,
+      "high": 0.007563579782704721
+    }
+  },
+  "errors": []
+}

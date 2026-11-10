@@ -57,10 +57,13 @@ test("the sample strata cover the sample count", () => {
   assert.equal(alphaHashSample.value, 0, "index 0 is three's own hash");
 });
 
-test("motion frames are 1-based and wrap at 64; null turns the motion threshold off", () => {
+// 6 Nov 2026: the wrap is 576 = 64 whole 9-frame cycles (each layer walks the nine bands once per cycle, in its own
+// order); 64 cut a cycle short at every wrap.
+test("motion frames are 1-based and wrap after whole 9-frame cycles (576); null turns the motion threshold off", () => {
   setAlphaHashMotionFrame(0); assert.equal(alphaHashMotionFrame.value, 1);
-  setAlphaHashMotionFrame(63); assert.equal(alphaHashMotionFrame.value, 64);
-  setAlphaHashMotionFrame(64); assert.equal(alphaHashMotionFrame.value, 1);
+  setAlphaHashMotionFrame(575); assert.equal(alphaHashMotionFrame.value, 576);
+  setAlphaHashMotionFrame(576); assert.equal(alphaHashMotionFrame.value, 1);
+  assert.equal(576 % 9, 0);
   assert.throws(() => setAlphaHashMotionFrame(-1));
   assert.throws(() => setAlphaHashMotionFrame(1.5));
   setAlphaHashMotionFrame(null); assert.equal(alphaHashMotionFrame.value, 0, "0: the still path's thresholds");
