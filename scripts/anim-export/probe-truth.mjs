@@ -16,7 +16,8 @@ import { join } from "node:path";
 
 const [clip = "outfit-idle", qualityList = "balanced,high", stepList = "30,60,90,120,180,240"] = process.argv.slice(2);
 // A quality entry is a label, optionally with its own query: "high", or "high-b8=high&rpBlend=0.125".
-const qualities = qualityList.split(",").map(entry => { const [label, query] = entry.split("="); return { label, query: query ?? label }; }), steps = stepList.split(",").map(Number);
+// Split at the first "=" only: the query itself holds "=" (10 Nov fix; "high-b8=high&rpBlend=0.125" used to lose rpBlend).
+const qualities = qualityList.split(",").map(entry => { const at = entry.indexOf("="); return at < 0 ? { label: entry, query: entry } : { label: entry.slice(0, at), query: entry.slice(at + 1) }; }), steps = stepList.split(",").map(Number);
 const BASE = process.env.TEMPORAL_BASE ?? "http://127.0.0.1:5181";
 const CAM = process.env.TRUTH_CAM ?? "0.55,1.72,0.75,0,1.62,-0.05";
 const OUT = join(process.env.TRUTH_OUT ?? "scripts/generated/anim-export/truth", clip);
