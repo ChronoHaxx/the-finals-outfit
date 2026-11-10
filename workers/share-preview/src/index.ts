@@ -2,17 +2,22 @@
 // which link crawlers (Discord, X, Slack, iMessage...) never send, so every shared link unfurls as the same generic
 // card. This Worker gives a shared outfit its own URL:
 //
-//   POST /api/share?o=<outfit code>   body: a 1200x630 JPEG rendered in the browser -> { url }
-//   GET  /s/<id>?o=<outfit code>      the page crawlers read: og:image + summary_large_image; people are sent on
-//                                     to the builder with the outfit loaded
+//   POST /api/share?o=<outfit code>[&emote=<clip>&t=<s>&paused=1]   body: a 1200x630 JPEG rendered in the browser
+//                                     -> { url }
+//   GET  /s/<id>?o=<outfit code>[&emote=..]   the page crawlers read: og:image + summary_large_image; people are
+//                                     sent on to the builder with the outfit (and the pose, if any) loaded
 //   GET  /i/<id>.jpg                  the preview image
 //
 // Abuse limits: uploads need an allowed Origin, are rate limited per IP, must be a baseline/progressive JPEG of exactly
 // 1200x630 under MAX_BYTES, and get a random unguessable id (nothing can be overwritten). Entries expire after
 // TTL_SECONDS; the outfit code also rides in the link, so an expired link still opens the outfit with the generic card.
+// The optional pose (10 Nov 2026: an emote frame the card shows) is stored and carried the same way as the code.
 // Free-plan quotas (1,000 KV writes a day) are a hard ceiling: past it uploads fail and the app shares a plain link.
 
-import { HEIGHT, jpegSize, MAX_BYTES, newId, previewPage, TTL_SECONDS, validCode, validId, WIDTH, type Env } from "./share";
+import {
+  HEIGHT, jpegSize, MAX_BYTES, newId, poseMetadata, poseQuery, previewPage, readPose, storedPose, TTL_SECONDS, validCode,
+  validId, WIDTH, type Env,
+} from "./share";
 
 function cors(env: Env, request: Request): Record<string, string> | null {
   const origin = request.headers.get("Origin");
@@ -33,6 +38,8 @@ async function upload(request: Request, env: Env, url: URL): Promise<Response> {
   if (env.UPLOADS_DISABLED === "1") return json({ error: "uploads disabled" }, 503, headers);
   const code = url.searchParams.get("o");
   if (!validCode(code)) return json({ error: "bad outfit code" }, 400, headers);
+  const pose = readPose(url.searchParams);
+  if (pose === null) return json({ error: "bad pose" }, 400, headers);
   if (env.UPLOAD_LIMIT) {
     const ip = request.headers.get("CF-Connecting-IP") ?? "unknown";
     if (!(await env.UPLOAD_LIMIT.limit({ key: ip })).success) return json({ error: "slow down" }, 429, headers);
@@ -44,11 +51,11 @@ async function upload(request: Request, env: Env, url: URL): Promise<Response> {
   if (!size || size.width !== WIDTH || size.height !== HEIGHT) return json({ error: `need a ${WIDTH}x${HEIGHT} JPEG` }, 415, headers);
   const id = newId();
   try {
-    await env.SHARES.put(`s:${id}`, bytes, { expirationTtl: TTL_SECONDS, metadata: { o: code } });
+    await env.SHARES.put(`s:${id}`, bytes, { expirationTtl: TTL_SECONDS, metadata: { o: code, ...poseMetadata(pose) } });
   } catch {
     return json({ error: "storage unavailable" }, 503, headers); // e.g. the daily write quota
   }
-  return json({ url: `${url.origin}/s/${id}?o=${code}` }, 201, headers);
+  return json({ url: `${url.origin}/s/${id}?o=${code}${poseQuery(pose)}` }, 201, headers);
 }
 
 export default {
@@ -68,13 +75,16 @@ export default {
 
     const page = /^\/s\/([^/]+)$/.exec(url.pathname);
     if (page && validId(page[1])) {
-      const stored = await env.SHARES.getWithMetadata<{ o?: string }>(`s:${page[1]}`, { type: "stream", cacheTtl: 86400 });
+      const stored = await env.SHARES.getWithMetadata<Record<string, unknown>>(`s:${page[1]}`, { type: "stream", cacheTtl: 86400 });
       await stored.value?.cancel();
-      // The stored code belongs to the stored image; the link's own code only opens the outfit once the entry expired.
+      // The stored code and pose belong to the stored image; the link's own only open the outfit once the entry expired.
       const linked = url.searchParams.get("o");
-      const code = stored.value && validCode(stored.metadata?.o ?? null) ? stored.metadata!.o! : validCode(linked) ? linked : null;
-      const self = `${url.origin}/s/${page[1]}${code ? `?o=${code}` : ""}`;
-      return new Response(previewPage(env, self, stored.value ? `${url.origin}/i/${page[1]}.jpg` : null, code), {
+      const storedCode = typeof stored.metadata?.o === "string" ? stored.metadata.o : null;
+      const fromStore = !!stored.value && validCode(storedCode);
+      const code = fromStore ? storedCode : validCode(linked) ? linked : null;
+      const pose = !code ? undefined : fromStore ? storedPose(stored.metadata) : readPose(url.searchParams) ?? undefined;
+      const self = `${url.origin}/s/${page[1]}${code ? `?o=${code}${poseQuery(pose)}` : ""}`;
+      return new Response(previewPage(env, self, stored.value ? `${url.origin}/i/${page[1]}.jpg` : null, code, pose), {
         headers: { ...security, "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
     }
     return Response.redirect(env.APP_URL, 302);

@@ -4,6 +4,8 @@ import * as THREE from "three";
 import type { CharacterRig } from "../rig/CharacterRig";
 import { initialClip, loadAnimationManifest, RigAnimator, type AnimatorState } from "../rig/RigAnimator";
 import { AUTOMATED } from "../lib/automation";
+import { pendingPose, subscribePendingPose, takePendingPose } from "../lib/share-pose";
+import { setPoseSource } from "../lib/viewer-handle";
 import { EmotePicker, missingSummary } from "./EmotePicker";
 
 // Showcase animation UI (5 Nov 2026): Animate / Static toggle, pause, and the emote picker (EmotePicker.tsx: every
@@ -18,6 +20,11 @@ import { EmotePicker, missingSummary } from "./EmotePicker";
 // &animTime=<seconds> then holds it at that time, paused (a deterministic mid-motion frame); ?anim=0 opens still;
 // ?sway=0 starts with the approximate secondary motion off; ?deform=0 leaves the twist/volume joints at rest (the
 // game's deformation rig off, for comparisons).
+//
+// Share links can carry a pose (10 Nov 2026, lib/share-pose.ts: &emote=<clip>&t=<s>[&paused=1]). The builder hands it
+// over before the link is tidied away; it is applied here once the outfit has loaded, instead of the default idle,
+// and wins over ?anim=. A paused pose holds its frame; one without paused plays on from it (held still for reduced
+// motion and automated browsers). The pose on screen is published for the Share button (lib/viewer-handle.ts).
 
 // Per-viewer convenience: "still" after the viewer stops the idle, removed when they start it again. Storage can be
 // missing or blocked (private windows, previews): every access is guarded and the default then applies.
@@ -104,7 +111,15 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
     rig.setAnimationPins(state.active);
     const root = rig.animationRoot();
     if (state.active && root) animator.rememberStillPose(root); // bones a mid-playback outfit change added
-    if (state.active && state.sway) animator.springs.rebuild(root);
+    if (state.active && state.sway) {
+      animator.springs.rebuild(root);
+      // Paused: the rebuilt chains hang at rest. Hold the same frame again, with the preroll, so they carry the
+      // motion leading into it (also settles a link's pose that arrived while its outfit was still changing).
+      if (animator.state.paused) {
+        const at = animator.timeline()?.time ?? animator.sharePose()?.time;
+        if (at !== undefined) animator.seek(at);
+      }
+    }
   }, [animator, rig, ready, busy, state.active, state.sway]);
   useEffect(() => () => { animator.springs.reset(); rig.setAnimationPins(false); }, [animator, rig]);
   const prepare = (root: THREE.Object3D) => {
@@ -112,21 +127,42 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
     if (animator.state.sway) animator.springs.rebuild(root);
   };
 
-  // The default idle (see the top of this file), ?anim=<id>&animTime=<s>, and window.__rigAnim for scripted captures.
-  const [autoStarted, setAutoStarted] = useState(false);
+  // The first motion once the outfit has loaded: a link's pose, else the default idle (see the top of this file) or
+  // ?anim=<id>&animTime=<s>. One effect decides, so the two can never both start. A pose arriving later (a link opened
+  // inside the app) is applied the same way. window.__rigAnim is for scripted captures.
+  const started = useRef(false);
+  const linkPose = useSyncExternalStore(subscribePendingPose, pendingPose);
   useEffect(() => {
-    if (!ready || busy || autoStarted) return;
-    setAutoStarted(true);
+    if (!ready || busy) return;
+    const pose = takePendingPose();
+    if (pose && !animator.info(pose.clip)) console.warn(`[animation] the link's pose names an unknown clip "${pose.clip}"`);
+    const posed = pose && animator.info(pose.clip) ? pose : null;
+    if (!posed && started.current) return;
+    started.current = true;
     const params = new URLSearchParams(window.location.search);
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
     const id = initialClip({ anim: params.get("anim"), defaultIdle: animator.manifest.defaultIdle, automated: AUTOMATED,
-      reducedMotion: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false, savedStill: savedStill() });
-    const time = Number(params.get("animTime"));
+      reducedMotion, savedStill: savedStill() });
     const root = rig.animationRoot();
-    if (!id || !root || !animator.info(id)) return;
+    if (!root) return;
+    if (posed) {
+      prepare(root);
+      // The idle runs under an emote when the viewer would be animating anyway, so it comes back when the emote ends.
+      animator.openPose(root, posed, { idle: id === animator.manifest.defaultIdle ? id : null, play: !reducedMotion && !AUTOMATED })
+        .catch(error => console.error(error));
+      return;
+    }
+    const time = Number(params.get("animTime"));
+    if (!id || !animator.info(id)) return;
     prepare(root);
     animator.play(root, id).then(() => { if (params.has("animTime") && Number.isFinite(time)) animator.seek(time); })
       .catch(error => console.error(error));
-  }, [animator, rig, ready, busy, autoStarted]);
+  }, [animator, rig, ready, busy, linkPose]);
+  // The frame on screen, for the Share button (outside the canvas).
+  useEffect(() => {
+    setPoseSource({ capture: () => animator.sharePose(), subscribe: listener => animator.subscribePose(listener) });
+    return () => setPoseSource(null);
+  }, [animator]);
   useEffect(() => {
     const host = window as unknown as { __rigAnim?: unknown };
     host.__rigAnim = {

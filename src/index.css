@@ -90,6 +90,27 @@
 }
 
 /* Native <select> without the platform chrome, keeping native keyboard and touch behaviour. */
+/* The emote timeline's slider (EmoteTimeline.tsx): a thin track, the played part in the site's red (--played, set
+   inline; Firefox draws it itself), and a square thumb, bigger on touch screens. The input fills the bar's height so a
+   press anywhere on it starts a drag. */
+@utility timeline-range {
+  appearance: none;
+  background: transparent;
+  height: 100%;
+  &::-webkit-slider-runnable-track {
+    height: 4px;
+    background: linear-gradient(to right, var(--color-finals) var(--played, 0%), rgb(242 239 233 / 0.22) var(--played, 0%));
+  }
+  &::-moz-range-track { height: 4px; background: rgb(242 239 233 / 0.22); }
+  &::-moz-range-progress { height: 4px; background: var(--color-finals); }
+  &::-webkit-slider-thumb { appearance: none; width: 10px; height: 16px; margin-top: -6px; border: 0; background: var(--color-fg); }
+  &::-moz-range-thumb { width: 10px; height: 16px; border: 0; border-radius: 0; background: var(--color-fg); }
+  @media (pointer: coarse) {
+    &::-webkit-slider-thumb { width: 16px; height: 24px; margin-top: -10px; }
+    &::-moz-range-thumb { width: 16px; height: 24px; }
+  }
+}
+
 @utility select-plain {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6' fill='none' stroke='%23a6a4ab' stroke-width='1.5'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
