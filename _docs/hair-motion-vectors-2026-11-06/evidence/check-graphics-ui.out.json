@@ -1,0 +1,39 @@
+{
+ "initial": "auto",
+ "options": [
+  "Auto · High",
+  "High",
+  "Balanced",
+  "Low"
+ ],
+ "auto": {
+  "motion": true,
+  "reprojected": true,
+  "width": 608,
+  "dpr": 1,
+  "canvas": 608
+ },
+ "high": {
+  "motion": true,
+  "reprojected": true,
+  "width": 608,
+  "dpr": 1,
+  "canvas": 608
+ },
+ "balanced": {
+  "motion": true,
+  "reprojected": false,
+  "width": 608,
+  "dpr": 1,
+  "canvas": 608
+ },
+ "low": {
+  "motion": true,
+  "reprojected": false,
+  "width": 608,
+  "dpr": 1,
+  "canvas": 608
+ },
+ "saved": "{\"auto\":{\"device\":\"ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 (0x00002206) Direct3D11 vs_5_0 ps_5_0, D3D11)|1|1500x1000\",\"tier\":\"high\",\"cpuBound\":false},\"choice\":\"auto\"}",
+ "errors": []
+}

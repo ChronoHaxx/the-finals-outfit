@@ -1,0 +1,63 @@
+{
+ "idle-raw": {
+  "label": "idle-raw",
+  "still": "idle-raw-f422.png",
+  "moving": 9,
+  "hairPixels": 35898,
+  "errorVsStill": 23.8,
+  "offBy16Pct": 31.3,
+  "shimmerSd": 12.39,
+  "paused": true,
+  "extra": "&cam=0.55,1.72,0.75,0,1.62,-0.05&temporal=0"
+ },
+ "idle-head": {
+  "label": "idle-head",
+  "still": "idle-head-f378.png",
+  "moving": 9,
+  "hairPixels": 26505,
+  "errorVsStill": 22.91,
+  "offBy16Pct": 29.4,
+  "shimmerSd": 3.6,
+  "paused": true,
+  "extra": "&cam=0.55,1.72,0.75,0,1.62,-0.05"
+ },
+ "disco-head": {
+  "label": "disco-head",
+  "still": "disco-head-f296.png",
+  "moving": 9,
+  "hairPixels": 24406,
+  "errorVsStill": 46.74,
+  "offBy16Pct": 55.7,
+  "shimmerSd": 6.72,
+  "paused": true,
+  "extra": "&cam=0.55,1.72,0.75,0,1.62,-0.05"
+ },
+ "idle-b04": {
+  "label": "idle-b04",
+  "still": "idle-b04-f302.png",
+  "moving": 9,
+  "hairPixels": 24888,
+  "errorVsStill": 28.5,
+  "offBy16Pct": 37.2,
+  "shimmerSd": 2.03,
+  "paused": true,
+  "extra": "&cam=0.55,1.72,0.75,0,1.62,-0.05"
+ },
+ "disco-b04": {
+  "label": "disco-b04",
+  "still": "disco-b04-f292.png",
+  "moving": 9,
+  "hairPixels": 36033,
+  "errorVsStill": 3.6,
+  "offBy16Pct": 5.6,
+  "shimmerSd": 2.59,
+  "paused": false,
+  "extra": "&cam=0.55,1.72,0.75,0,1.62,-0.05"
+ },
+ "notes": {
+  "levels": "luma levels of 255, frame composited over white; mask = dark covered pixels of the converged still frame, dilated 2 px",
+  "idle-raw": "temporal=0: its still frame is also a raw single sample, so errorVsStill is not meaningful; shimmer is",
+  "idle-b04/disco-b04": "MOTION_BLEND 0.04 experiment (restored to 0.1); disco-b04 invalid: the emote ended before Pause",
+  "errorVsStill": "includes a small pose shift between the last moving frame and the paused pose"
+ }
+}

@@ -56,6 +56,18 @@ export function useAnimatorState(animator: RigAnimator | null): AnimatorState {
   );
 }
 
+/**
+ * Capture clock for test rigs (6 Nov 2026), reached through window.__rigAnim.clock. `fixed` replaces each frame's
+ * real time step with a fixed one, so a run plays the same poses on every machine and at any frame rate. `steps` counts
+ * the animator updates. Once `steps` reaches `freezeAt` the animation holds (no further updates) and the view counts as
+ * still, so the still path converges on exactly that pose: a ground-truth frame to score the moving frames against.
+ * The defaults (real time, never frozen) leave the app unchanged.
+ */
+export const frameClock = { fixed: null as number | null, freezeAt: Infinity, steps: 0, frozenMoving: false };
+export const clockFrozen = () => frameClock.steps >= frameClock.freezeAt;
+/** Frozen but still drawn as moving (`frozenMoving`): what the moving view converges to on a pose that holds. */
+export const clockHeldStill = () => clockFrozen() && !frameClock.frozenMoving;
+
 // Orbiting the camera counts as turning the character for the sway springs (SpringBones.turn), as the game turns
 // the character itself. A jump larger than this in one frame is a camera reset, not a turn; a fast flick is capped.
 const TELEPORT = 0.6, MAX_TURN = 0.15; // radians per frame
@@ -64,6 +76,7 @@ const TELEPORT = 0.6, MAX_TURN = 0.15; // radians per frame
 export function AnimationFrameDriver({ animator }: { animator: RigAnimator }) {
   const lastAzimuth = useRef<number | null>(null);
   useFrame(({ camera, controls }, delta) => {
+    if (clockFrozen()) return;
     const target = (controls as unknown as { target?: THREE.Vector3 } | null)?.target;
     const azimuth = Math.atan2(camera.position.x - (target?.x ?? 0), camera.position.z - (target?.z ?? 0));
     const last = lastAzimuth.current;
@@ -72,7 +85,8 @@ export function AnimationFrameDriver({ animator }: { animator: RigAnimator }) {
       const change = Math.atan2(Math.sin(azimuth - last), Math.cos(azimuth - last)); // wrapped to (-pi, pi]
       if (Math.abs(change) < TELEPORT) animator.springs.turn(THREE.MathUtils.clamp(change, -MAX_TURN, MAX_TURN));
     }
-    animator.update(delta);
+    animator.update(frameClock.fixed ?? delta);
+    frameClock.steps++;
   });
   return null;
 }
@@ -129,6 +143,7 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
       sway: (on: boolean) => animator.setSway(on),
       deform: (on: boolean) => animator.setDeform(on),
       state: () => animator.state,
+      clock: frameClock,
     };
     return () => { delete host.__rigAnim; };
   }, [animator, rig]);

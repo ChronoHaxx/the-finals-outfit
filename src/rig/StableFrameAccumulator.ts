@@ -4,6 +4,7 @@ import { OutputShader } from 'three/examples/jsm/shaders/OutputShader.js';
 import { StableFrameState } from './StableFrameState';
 import { StableCamera } from './StableCamera';
 import { setAlphaHashMotionFrame, setAlphaHashSample } from './AlphaHashSampling';
+import { VelocityPass } from './VelocityPass';
 
 const toneMappingDefines: Record<number, string> = {
   [THREE.LinearToneMapping]: 'LINEAR_TONE_MAPPING', [THREE.ReinhardToneMapping]: 'REINHARD_TONE_MAPPING',
@@ -30,6 +31,20 @@ const radicalInverse = (index: number, base: number) => {
 // whose thresholds are spread evenly over every 3x3 block.
 const MOTION_BLEND = 0.1;
 
+// High quality (6 Nov 2026): the same running average, but each pixel's history is read from where its surface was in
+// the previous frame (motion vectors, VelocityPass), so a moving strand keeps averaging with itself instead of with
+// whatever passed through that pixel; with the history following the surface the average can run longer. Camera and
+// transform changes in a still pose (a drag, a seek) take the same path, which keeps going for SETTLE_FRAMES quiet
+// frames after the last change. Then the still path takes over, presented as a crossfade from the moving average into
+// its own growing mean (still weight samples / maxSamples), so the end of a drag or a clip does not drop back to one
+// grainy sample; the converged still frame is exactly the one Balanced converges to. Entering the motion path from a
+// still frame seeds the average with it. Any other change still restarts from a fresh frame. Balanced (the default) is
+// the screen-locked average above, unchanged.
+const REPROJECTED_BLEND = 1 / 16;
+const SETTLE_FRAMES = 4;
+const SEEDED_FRAMES = 16; // a seeded average counts as this many frames already averaged
+export type AccumulatorQuality = 'high' | 'balanced';
+
 /** Bounded still-view supersampling, not motion-reprojected/native engine TAA.
  * One linear HDR sample per frame, with a fresh first frame whenever inputs change.
  * Two targets only; the converged view needs just one full-screen presentation draw.
@@ -37,13 +52,28 @@ const MOTION_BLEND = 0.1;
  */
 export class StableFrameAccumulator {
   readonly status = { active: false, samples: 0, maxSamples: 32, resets: 0, sceneRenders: 0,
-    reason: 'initial', width: 0, height: 0, targetBytes: 0, additive: false, motion: false, motionFrames: 0 };
+    reason: 'initial', width: 0, height: 0, targetBytes: 0, additive: false, motion: false, motionFrames: 0,
+    reprojected: false, fading: false, velocityRenders: 0, firstOther: '' };
+  /** Balanced: the screen-locked motion average (as shipped 5 Nov). High: reprojected with motion vectors (above). */
+  quality: AccumulatorQuality = 'balanced';
+  /** High's tuning, exposed for test rigs (StablePreview's ?rpBlend= / ?rpCubic=0 in dev). */
+  readonly reprojection = { blend: REPROJECTED_BLEND, cubic: true };
   private state = new StableFrameState();
   private camera = new StableCamera();
   private sample: THREE.WebGLRenderTarget | null = null;
   private history: THREE.WebGLRenderTarget | null = null;
   private motionHistory: THREE.WebGLRenderTarget | null = null; // the motion average ping-pongs with `history`
   private motionInHistory = false; // which of the two holds the latest motion average
+  private velocity: VelocityPass | null = null; // High only
+  private targetsHigh = false; // targets made for High (linear filtering: reprojection reads between pixels)
+  private settle = 0; // High: motion-path frames left after the last transform change
+  private fading = false; // High: the still path is crossfading in from the motion average (kept in motionHistory)
+  private motionCount = 0; // frames in the current motion average (sets its blend weight)
+  private seedFrom: 'still' | 'motion' | null = null;
+  private seedScale = 1;
+  private reproject: THREE.ShaderMaterial;
+  private crossfade: THREE.ShaderMaterial;
+  private viewProjection = new THREE.Matrix4();
   private copy: THREE.ShaderMaterial;
   private resolve: THREE.ShaderMaterial;
   private output: THREE.RawShaderMaterial;
@@ -77,6 +107,84 @@ export class StableFrameAccumulator {
           }
           gl_FragColor = mix(clamp(texture2D(previous, vUv), low, high), now, blend);
         }`,
+      blending: THREE.NoBlending, depthTest: false, depthWrite: false, toneMapped: false,
+    });
+    // High: the same clamped average, with the history read at this pixel minus its motion. The motion is taken from
+    // the nearest surface in the 3x3 neighbourhood (closest-depth dilation): silhouettes and thin strands move with the
+    // surface in front. A history position off screen has nothing to offer, so that pixel restarts from the sample.
+    // `previousScale` turns a still history's sum into its mean when a still frame seeds the average.
+    this.reproject = new THREE.ShaderMaterial({
+      uniforms: { current: { value: null }, previous: { value: null }, velocity: { value: null }, texel: { value: new THREE.Vector2() },
+        blend: { value: 1 }, previousScale: { value: 1 }, cubic: { value: true }, trustAll: { value: false },
+        previousVelocity: { value: null }, previousValid: { value: false } },
+      vertexShader: 'varying vec2 vUv; void main() { vUv=uv; gl_Position=vec4(position,1.0); }',
+      fragmentShader: `uniform sampler2D current; uniform sampler2D previous; uniform sampler2D velocity; uniform vec2 texel;
+        uniform float blend; uniform float previousScale; uniform bool cubic; uniform bool trustAll;
+        uniform sampler2D previousVelocity; uniform bool previousValid;
+        varying vec2 vUv;
+        // Catmull-Rom history read in five bilinear taps (the corner taps dropped, weights renormalised): re-reading the
+        // history between pixels every frame with plain bilinear filtering blurs it a little each time, which adds up
+        // over the average's ~16 frames; the cubic kernel's negative lobes keep it sharp. Its overshoot is clamped below.
+        vec4 readHistory(vec2 uv) {
+          if (!cubic) return texture2D(previous, uv);
+          vec2 size = 1.0 / texel, position = uv * size, centre = floor(position - 0.5) + 0.5, f = position - centre;
+          vec2 w0 = f * (-0.5 + f * (1.0 - 0.5 * f)), w1 = 1.0 + f * f * (-2.5 + 1.5 * f);
+          vec2 w2 = f * (0.5 + f * (2.0 - 1.5 * f)), w3 = f * f * (-0.5 + 0.5 * f);
+          vec2 w12 = w1 + w2, middle = (centre + w2 / w12) * texel, before = (centre - 1.0) * texel, after = (centre + 2.0) * texel;
+          float a = w12.x * w0.y, b = w0.x * w12.y, c = w12.x * w12.y, d = w3.x * w12.y, e = w12.x * w3.y;
+          vec4 sum = texture2D(previous, vec2(middle.x, before.y)) * a + texture2D(previous, vec2(before.x, middle.y)) * b
+            + texture2D(previous, middle) * c + texture2D(previous, vec2(after.x, middle.y)) * d + texture2D(previous, vec2(middle.x, after.y)) * e;
+          return sum / (a + b + c + d + e);
+        }
+        void main() {
+          vec4 now = texture2D(current, vUv), low = now, high = now;
+          vec2 motion = vec2(0.0), centre = texture2D(velocity, vUv).rg, slowest = centre, fastest = centre;
+          float nearest = 1.0e30, expected = 0.0; bool hashed = false;
+          for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++) {
+            vec2 offset = vec2(float(x), float(y)) * texel;
+            vec4 near = texture2D(current, vUv + offset);
+            low = min(low, near); high = max(high, near);
+            vec4 moved = texture2D(velocity, vUv + offset);
+            float depth = moved.b != 0.0 ? abs(moved.b) : 1.0e30; // 0: nothing drawn there; negative: alpha-hashed
+            if (depth < nearest) { nearest = depth; motion = moved.rg; expected = moved.a; hashed = moved.b < 0.0; }
+            slowest = min(slowest, moved.rg); fastest = max(fastest, moved.rg);
+          }
+          vec2 from = vUv - motion;
+          bool onScreen = all(greaterThanEqual(from, vec2(0.0))) && all(lessThanEqual(from, vec2(1.0)));
+          // Clamp only where the neighbourhood's motion disagrees (by more than a quarter pixel, fully from one pixel):
+          // a silhouette or a surface being uncovered, where the history really is someone else's. Where everything
+          // around moves together the reprojected history is the same surface and is kept as is: clamping it to one
+          // frame's 3x3 range there ratchets stacked dithered layers towards full cover (a window of stacked hair cards
+          // is often entirely covered in a single frame), which drew hair too dense and grainy (6 Nov, measured).
+          float spread = length((fastest - slowest) / texel);
+          // And only where the history was this surface: last frame's depth at the reprojected spot must be this point's
+          // depth last frame ("expected"; 0 for background). A mismatch is a surface uncovered, or background where the
+          // character was (without this, background kept ghost trails of a dancing character).
+          float there = abs(texture2D(previousVelocity, from).b);
+          bool same = !previousValid || abs(there - expected) <= 0.02 + 0.03 * max(there, expected);
+          // No surface anywhere in the 3x3 (the velocity pass draws every card whole): background, so never trusted. Else a
+          // ghost painted next to a silhouette (dilated motion) stayed "consistent background" once the hair moved on.
+          bool surface = nearest < 1.0e29;
+          float trust = trustAll ? 1.0 : same && surface ? 1.0 - smoothstep(0.25, 1.0, spread) : 0.0;
+          vec4 reprojected = readHistory(from) * previousScale;
+          reprojected = vec4(max(reprojected.rgb, vec3(0.0)), clamp(reprojected.a, 0.0, 1.0)); // the cubic read's overshoot
+          // Trusted dithered surfaces (alpha-hashed hair, lace): only the upper bound. The ratchet above is the lower
+          // bound alone (lifting the history to a window that is entirely covered this frame); the upper bound still
+          // removes what the window cannot show now, e.g. the shirt that was visible through a swinging ponytail's gaps,
+          // dragged along with the hair's motion. Opaque surfaces have no dither to ratchet and keep the full clamp,
+          // which drops shading the surface no longer shows (lights stay put while the character turns).
+          vec4 history = mix(clamp(reprojected, low, high), min(reprojected, high), hashed ? trust : 0.0);
+          gl_FragColor = mix(history, now, onScreen ? blend : 1.0);
+        }`,
+      blending: THREE.NoBlending, depthTest: false, depthWrite: false, toneMapped: false,
+    });
+    // High: the still path's crossfade in from the motion average (still weight = samples / maxSamples).
+    this.crossfade = new THREE.ShaderMaterial({
+      uniforms: { motion: { value: null }, still: { value: null }, stillScale: { value: 1 }, weight: { value: 0 } },
+      vertexShader: 'varying vec2 vUv; void main() { vUv=uv; gl_Position=vec4(position,1.0); }',
+      fragmentShader: `uniform sampler2D motion; uniform sampler2D still; uniform float stillScale; uniform float weight;
+        varying vec2 vUv;
+        void main() { gl_FragColor = mix(texture2D(motion, vUv), texture2D(still, vUv) * stillScale, weight); }`,
       blending: THREE.NoBlending, depthTest: false, depthWrite: false, toneMapped: false,
     });
     // Samples over a transparent clear contain premultiplied linear RGB. Recover
@@ -113,6 +221,9 @@ export class StableFrameAccumulator {
   private releaseTargets() {
     this.sample?.dispose(); this.history?.dispose(); this.sample = null; this.history = null;
     this.motionHistory?.dispose(); this.motionHistory = null; this.status.motionFrames = 0;
+    this.velocity?.dispose(); this.velocity = null;
+    this.settle = 0; this.fading = false; this.motionCount = 0; this.seedFrom = null;
+    this.status.reprojected = false; this.status.fading = false;
     this.status.width = 0; this.status.height = 0; this.status.targetBytes = 0;
     this.copy.uniforms.map.value = null; this.output.uniforms.tDiffuse.value = null;
   }
@@ -124,6 +235,7 @@ export class StableFrameAccumulator {
     const { x: width, y: height } = this.size;
     this.camera.select(camera, width, height);
     const input = this.state.capture(scene, camera, renderer, this.camera);
+    if (input.changed) this.status.firstOther = this.state.firstOther;
     const supported = camera instanceof THREE.PerspectiveCamera || camera instanceof THREE.OrthographicCamera;
     // Masked items need the jittered average; additive items need the linear target (and its alpha-0 pass-through).
     const active = enabled && (input.masked || input.additive) && supported && width > 0 && height > 0
@@ -136,35 +248,61 @@ export class StableFrameAccumulator {
       return;
     }
     this.status.active = true;
-    if (!this.sample || width !== this.status.width || height !== this.status.height) {
+    const high = this.quality === 'high';
+    if (!this.sample || width !== this.status.width || height !== this.status.height || high !== this.targetsHigh) {
+      const qualityChanged = !!this.sample && high !== this.targetsHigh;
       this.releaseTargets();
-      this.sample = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
-      this.history = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, depthBuffer: false, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
+      // High reads the history between pixels (reprojection), so its targets filter linearly; Balanced's stay nearest.
+      const filter = high ? THREE.LinearFilter : THREE.NearestFilter;
+      this.sample = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, minFilter: filter, magFilter: filter });
+      this.history = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, depthBuffer: false, minFilter: filter, magFilter: filter });
       this.sample.texture.name = 'Stable preview sample'; this.history.texture.name = 'Stable preview history';
       this.status.width = width; this.status.height = height;
       this.status.targetBytes = width * height * (8 + 4 + 8); // two RGBA16F buffers + sample depth
-      this.invalidate('size');
+      this.targetsHigh = high;
+      this.invalidate(qualityChanged ? 'quality' : 'size');
     }
-    if (moving) {
+    // High: a transform-only change (camera, object or bone matrices) in a still pose goes through the reprojected
+    // motion path, which runs on for SETTLE_FRAMES quiet frames; any other change or invalidation ends it.
+    let motionPath = moving;
+    if (high && !moving) {
+      if (this.invalidated || (input.changed && !input.reprojectable)) this.settle = 0;
+      else if (input.changed) this.settle = SETTLE_FRAMES;
+      else if (this.settle > 0) this.settle--;
+      motionPath = this.settle > 0;
+    }
+    const stillSamples = this.status.samples;
+    if (motionPath) {
       // Any explicit invalidation (size, custom uniforms) restarts the average; ordinary per-frame changes do not.
       if (!this.status.motion || this.invalidated) {
-        this.status.motionFrames = 0; this.status.resets++;
-        this.status.reason = this.invalidated || 'motion'; this.invalidated = '';
+        // High: start from what is on screen (a still frame's mean, or the motion average still crossfading out).
+        this.seedFrom = high && !this.invalidated ? (stillSamples > 0 ? 'still' : this.fading ? 'motion' : null) : null;
+        this.seedScale = this.seedFrom === 'still' ? this.status.maxSamples / stillSamples : 1;
+        this.status.motionFrames = 0; this.motionCount = this.seedFrom ? SEEDED_FRAMES : 0; this.status.resets++;
+        this.status.reason = this.invalidated || (moving ? 'motion' : 'reprojected'); this.invalidated = '';
+        if (!this.seedFrom) this.velocity?.forget();
       }
       this.status.motion = true; this.status.samples = 0;
     } else if (this.status.motion) {
-      // Back to a still pose: the still path starts a fresh history (the motion average is a mean, not its sum), and
-      // the third target goes, so a still view holds exactly the two it always had.
+      // Back to a still pose: the still path starts a fresh history (the motion average is a mean, not its sum). In
+      // Balanced the third target goes, so a still view holds exactly the two it always had; High keeps the motion
+      // average in it while the still path crossfades in, then lets it go.
       this.status.motion = false; this.status.motionFrames = 0; this.invalidate('motion ended');
-      if (this.motionHistory) { this.motionHistory.dispose(); this.motionHistory = null; this.status.targetBytes -= width * height * 8; }
+      if (high && this.motionHistory) {
+        if (this.motionInHistory) [this.history, this.motionHistory] = [this.motionHistory, this.history!];
+        this.motionInHistory = false; this.fading = true;
+      } else if (this.motionHistory) { this.motionHistory.dispose(); this.motionHistory = null; }
     }
-    if (!moving && (this.invalidated || input.changed)) {
+    if (!motionPath && (this.invalidated || input.changed)) {
+      // A real change (anything but leaving the motion path): nothing left to fade from.
+      if (this.fading && (this.invalidated !== 'motion ended' || (input.changed && !input.reprojectable))) this.endFade(width, height);
       this.status.samples = 0; this.status.resets++;
       this.status.reason = this.invalidated || input.changed; this.invalidated = '';
       // Every new history starts at the exact current pose, even if the old
       // camera was retained within the subpixel damping tolerance.
       this.camera.clear(); this.camera.select(camera, width, height);
       this.state.capture(scene, camera, renderer, this.camera);
+      if (high) this.velocity?.forget();
     }
 
     const clearColor = renderer.getClearColor(new THREE.Color()), clearAlpha = renderer.getClearAlpha();
@@ -185,7 +323,7 @@ export class StableFrameAccumulator {
       // drew every partly converged still frame too bright, 2x on the second sample after a reset, then 1.5x, 1.33x...:
       // a flash after every still restart, seen as flicker while a drag settled and after a window resize.)
       let motionPresented: THREE.WebGLRenderTarget | null = null;
-      if (moving) {
+      if (motionPath) {
         const m = this.status.motionFrames % 8; // an 8-point Halton jitter cycle
         const dx = radicalInverse(m + 1, 2) - .5, dy = radicalInverse(m + 1, 3) - .5;
         const p = camera.projectionMatrix.elements;
@@ -198,21 +336,47 @@ export class StableFrameAccumulator {
         setAlphaHashMotionFrame(null);
         this.status.sceneRenders++;
         if (!this.motionHistory) {
-          this.motionHistory = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, depthBuffer: false, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter });
+          const filter = high ? THREE.LinearFilter : THREE.NearestFilter;
+          this.motionHistory = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, depthBuffer: false, minFilter: filter, magFilter: filter });
           this.motionHistory.texture.name = 'Stable preview motion history';
-          this.status.targetBytes += width * height * 8;
         }
-        const first = this.status.motionFrames === 0;
-        const previous = this.motionInHistory ? this.history! : this.motionHistory;
-        const next = this.motionInHistory ? this.motionHistory : this.history!;
-        this.resolve.uniforms.current.value = this.sample!.texture;
-        this.resolve.uniforms.previous.value = first ? this.sample!.texture : previous.texture;
-        this.resolve.uniforms.texel.value.set(1 / width, 1 / height);
-        this.resolve.uniforms.blend.value = first ? 1 : Math.max(MOTION_BLEND, 1 / (this.status.motionFrames + 1));
-        renderer.setRenderTarget(next);
-        this.quad.material = this.resolve; this.quad.render(renderer);
+        const seed = this.status.motionFrames === 0 ? this.seedFrom : null;
+        // A still seed is in `history` (its sum): average into motionHistory. A fading motion average is in
+        // motionHistory: average into history. Otherwise ping-pong as before.
+        const previous = seed === 'still' ? this.history! : seed === 'motion' ? this.motionHistory
+          : this.motionInHistory ? this.history! : this.motionHistory;
+        const next = previous === this.history ? this.motionHistory : this.history!;
+        const first = this.motionCount === 0;
+        const blend = first ? 1 : Math.max(high ? this.reprojection.blend : MOTION_BLEND, 1 / (this.motionCount + 1));
+        if (high) {
+          // Motion vectors from the unjittered sampling camera, against the previous frame's (VelocityPass.remember).
+          camera.projectionMatrix.copy(this.camera.projectionMatrix);
+          camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+          if (!this.velocity) this.velocity = new VelocityPass(width, height);
+          this.velocity.render(renderer, scene, camera);
+          this.status.velocityRenders++;
+          this.reproject.uniforms.current.value = this.sample!.texture;
+          this.reproject.uniforms.previous.value = first ? this.sample!.texture : previous.texture;
+          this.reproject.uniforms.velocity.value = this.velocity.target.texture;
+          this.reproject.uniforms.previousVelocity.value = this.velocity.previous.texture;
+          this.reproject.uniforms.previousValid.value = this.velocity.previousValid;
+          this.reproject.uniforms.texel.value.set(1 / width, 1 / height);
+          this.reproject.uniforms.blend.value = blend;
+          this.reproject.uniforms.cubic.value = this.reprojection.cubic;
+          this.reproject.uniforms.previousScale.value = !first && seed === 'still' ? this.seedScale : 1;
+          renderer.setRenderTarget(next);
+          this.quad.material = this.reproject; this.quad.render(renderer);
+        } else {
+          this.resolve.uniforms.current.value = this.sample!.texture;
+          this.resolve.uniforms.previous.value = first ? this.sample!.texture : previous.texture;
+          this.resolve.uniforms.texel.value.set(1 / width, 1 / height);
+          this.resolve.uniforms.blend.value = blend;
+          renderer.setRenderTarget(next);
+          this.quad.material = this.resolve; this.quad.render(renderer);
+        }
         this.motionInHistory = next === this.history;
-        this.status.motionFrames++;
+        this.status.motionFrames++; this.motionCount++;
+        this.fading = false;
         motionPresented = next;
       } else if (this.status.samples < this.status.maxSamples) {
         const n = this.status.samples;
@@ -235,6 +399,33 @@ export class StableFrameAccumulator {
         this.copy.uniforms.map.value = this.sample!.texture;
         this.quad.material = this.copy; this.quad.render(renderer);
         this.status.samples++;
+      }
+      if (!motionPresented && this.fading) {
+        if (this.status.samples >= this.status.maxSamples || !this.motionHistory) this.endFade(width, height);
+        else {
+          // The still mean so far, weighed in against the motion average it replaces; drawn into the sample target,
+          // which is free until the next frame's render.
+          this.crossfade.uniforms.motion.value = this.motionHistory.texture;
+          this.crossfade.uniforms.still.value = this.history!.texture;
+          this.crossfade.uniforms.stillScale.value = this.status.maxSamples / this.status.samples;
+          this.crossfade.uniforms.weight.value = this.status.samples / this.status.maxSamples;
+          renderer.setRenderTarget(this.sample);
+          this.quad.material = this.crossfade; this.quad.render(renderer);
+          motionPresented = this.sample;
+        }
+      }
+      this.status.reprojected = high && this.status.motion;
+      // GPU memory held: sample (RGBA16F + depth) and history, the motion average while it lives, and High's velocities.
+      this.status.targetBytes = width * height * (8 + 4 + 8) + (this.motionHistory ? width * height * 8 : 0) + (this.velocity?.bytes ?? 0);
+      this.status.fading = this.fading;
+      if (high) {
+        // Next frame's "previous": this frame's unjittered sampling camera and every mesh's transforms and bones.
+        const view = new THREE.Matrix4().copy(this.camera.matrixWorld).invert();
+        this.viewProjection.copy(this.camera.projectionMatrix).multiply(view);
+        if (!this.velocity) this.velocity = new VelocityPass(width, height);
+        // Converged and still: the velocity targets wait for the next motion (remember() keeps working without them).
+        if (!this.status.motion && !this.fading && this.status.samples >= this.status.maxSamples) this.velocity.releaseTargets();
+        this.velocity.remember(scene, this.viewProjection, view);
       }
       const premultiplied = !!destination || renderer.getContext().getContextAttributes()?.premultipliedAlpha !== false;
       const passThrough = input.additive && premultiplied;
@@ -270,8 +461,15 @@ export class StableFrameAccumulator {
     }
   }
 
+  /** High: the crossfade is over (converged, or replaced by a real change): drop the motion average and its target. */
+  private endFade(width: number, height: number) {
+    this.fading = false; this.status.fading = false;
+    if (this.motionHistory) { this.motionHistory.dispose(); this.motionHistory = null; this.status.targetBytes = width * height * (8 + 4 + 8) + (this.velocity?.bytes ?? 0); }
+  }
+
   dispose() {
-    this.releaseTargets(); this.copy.dispose(); this.resolve.dispose(); this.output.dispose(); this.quad.dispose(); this.state.clear(); this.camera.clear();
+    this.releaseTargets(); this.copy.dispose(); this.resolve.dispose(); this.reproject.dispose(); this.crossfade.dispose();
+    this.output.dispose(); this.quad.dispose(); this.state.clear(); this.camera.clear();
     this.status.active = false; this.status.samples = 0; this.invalidate('disposed');
   }
 }

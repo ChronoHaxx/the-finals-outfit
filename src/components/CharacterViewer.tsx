@@ -11,7 +11,9 @@ import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmet
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
-import { AnimationControls, AnimationFrameDriver, useRigAnimator } from "./AnimationControls";
+import { AutoGraphics, GraphicsMenu, type TemporalStatusRef } from "./GraphicsSetting";
+import { effectiveTier, TIER_INFO, useGraphicsStore } from "../lib/graphics-quality";
+import { AnimationControls, AnimationFrameDriver, clockHeldStill, useRigAnimator } from "./AnimationControls";
 import type { RigAnimator } from "../rig/RigAnimator";
 import MeshInspector from "./MeshInspector";
 import OutfitExportPanel, { type ExportContext } from "./OutfitExportPanel";
@@ -426,7 +428,10 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
   const [theme, setTheme] = useState<SceneTheme>("studio");
   // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden).
   const animator = useRigAnimator();
-  const animationMoving = useCallback(() => !!animator?.state.moving, [animator]);
+  const animationMoving = useCallback(() => !!animator?.state.moving && !clockHeldStill(), [animator]);
+  // Graphics setting (6 Nov): the tier sets the canvas pixel density and the still-view accumulator's quality.
+  const graphicsTier = useGraphicsStore(effectiveTier);
+  const temporalStatus = useRef<{ motion: boolean } | null>(null) as TemporalStatusRef;
   const exportContext = useRef<ExportContext | null>(null);
   const build = useBuildStore((s) => s.build);
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
@@ -1019,7 +1024,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
           position: DEV.cam ? [DEV.cam[0], DEV.cam[1], DEV.cam[2]] : [0, 1.0, 3.6],
           fov: DEV.fov ?? 35,
         }}
-        dpr={[1, 2]}
+        dpr={[1, TIER_INFO[graphicsTier].maxDpr]}
         shadows={theme === "studio" ? "soft" : false}
         gl={{
           alpha: true,
@@ -1037,7 +1042,9 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
         <PreviewBridge root={rig.root} theme={theme} active={ready && !busy} animator={animator} />
         {animator && <AnimationFrameDriver animator={animator} />}
-        {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving} />}
+        {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving}
+          quality={TIER_INFO[graphicsTier].reproject ? "high" : "balanced"} statusRef={temporalStatus} />}
+        <AutoGraphics status={temporalStatus} active={ready && !busy} />
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
           enablePan
@@ -1056,6 +1063,8 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
         {/* No backdrop-filter on anything over the canvas: the canvas repaints every frame, so a
             blur behind it would be recomputed every frame too — a real cost on phones. */}
         <div className="absolute right-3 top-3 z-10 flex gap-1.5 *:pointer-events-auto">
+          {/* Graphics quality (Auto by default). Left out in full screen, where the wider exit button needs the room. */}
+          {!immersive?.immersive && <GraphicsMenu />}
           {immersive && (
             // The same button enters and leaves, in the same place; leaving also says so in words.
             <button type="button" onClick={immersive.toggle}

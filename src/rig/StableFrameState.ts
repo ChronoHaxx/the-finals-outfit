@@ -21,10 +21,29 @@ export class StableFrameState {
   // version on every frame, so a glass visor never converged. The bumps made inside renderDiscountingSideFlips are
   // discounted for exactly those materials; a needsUpdate anywhere else still changes the recorded version.
   private rendererBumps = new WeakMap<THREE.Material, number>();
+  // (6 Nov 2026, motion vectors) Whether every recorded value that changed was a transform: the sampling camera's
+  // matrices, an object's world matrix or a bone's. Those changes can be followed by reprojecting the history (the
+  // accumulator's High quality); any other change (a material, a texture, a light, visibility, the scene's structure)
+  // cannot, and still restarts the history.
+  private onlyTransforms = true;
+  /** Diagnostics: the first non-transform input that changed in the last capture. */
+  firstOther = '';
+  private inTransform = false;
 
   private add(value: unknown) {
-    if (!Object.is(this.values[this.cursor], value)) this.reason ||= this.category;
+    if (!Object.is(this.values[this.cursor], value)) {
+      this.reason ||= this.category;
+      if (!this.inTransform && this.onlyTransforms) {
+        this.onlyTransforms = false;
+        this.firstOther = `${this.category}@${this.cursor}: ${describe(this.values[this.cursor])} -> ${describe(value)}`;
+      }
+    }
     this.values[this.cursor++] = value;
+  }
+
+  private transform(matrix: THREE.Matrix4) {
+    this.inTransform = true;
+    try { this.value(matrix); } finally { this.inTransform = false; }
   }
 
   private numbers(values: ArrayLike<number>) {
@@ -80,11 +99,11 @@ export class StableFrameState {
   }
 
   capture(scene: THREE.Scene, camera: THREE.Camera, renderer: THREE.WebGLRenderer, samplingCamera = camera as Pick<THREE.Camera, 'matrixWorld' | 'projectionMatrix'>) {
-    this.cursor = 0; this.reason = ''; this.masked = false; this.additive = false;
+    this.cursor = 0; this.reason = ''; this.masked = false; this.additive = false; this.onlyTransforms = true; this.firstOther = '';
     this.materials.clear(); this.textures.clear(); this.geometries.clear();
     scene.updateMatrixWorld(true); camera.updateMatrixWorld(true);
     this.category = 'camera';
-    this.add(camera); this.value(samplingCamera.matrixWorld); this.value(samplingCamera.projectionMatrix); this.add(camera.layers.mask);
+    this.add(camera); this.transform(samplingCamera.matrixWorld); this.transform(samplingCamera.projectionMatrix); this.add(camera.layers.mask);
     this.category = 'lighting';
     this.value(scene.environment); this.add(scene.environmentIntensity); this.value(scene.environmentRotation);
     this.value(scene.background); this.add(scene.backgroundIntensity); this.add(scene.backgroundBlurriness); this.value(scene.backgroundRotation);
@@ -99,7 +118,7 @@ export class StableFrameState {
     const visit = (object: THREE.Object3D, parentVisible: boolean) => {
       this.category = 'scene';
       this.add(object); this.add(object.visible); this.add(object.layers.mask);
-      this.value(object.matrixWorld); this.add(object.renderOrder); this.add(object.frustumCulled);
+      this.transform(object.matrixWorld); this.add(object.renderOrder); this.add(object.frustumCulled);
       this.add(object.castShadow); this.add(object.receiveShadow);
       const visible = parentVisible && object.visible && camera.layers.test(object.layers);
       if (object instanceof THREE.Mesh) {
@@ -127,10 +146,11 @@ export class StableFrameState {
         }
         this.value(object.morphTargetInfluences);
         if (object instanceof THREE.SkinnedMesh) {
-          this.add(object.skeleton); this.value(object.bindMatrix); this.value(object.bindMatrixInverse);
+          // In three's default attached bind mode bindMatrixInverse follows the mesh's own world matrix: a transform.
+          this.add(object.skeleton); this.transform(object.bindMatrix); this.transform(object.bindMatrixInverse);
           // Bones can live outside the rendered subtree. Their transforms still
           // determine the skinning even when the mesh itself is stationary.
-          for (const bone of object.skeleton.bones) { bone.updateWorldMatrix(true, false); this.value(bone.matrixWorld); }
+          for (const bone of object.skeleton.bones) { bone.updateWorldMatrix(true, false); this.transform(bone.matrixWorld); }
           for (const inverse of object.skeleton.boneInverses) this.value(inverse);
         }
         if (object instanceof THREE.InstancedMesh) {
@@ -157,9 +177,10 @@ export class StableFrameState {
       for (const child of object.children) visit(child, parentVisible && object.visible);
     };
     visit(scene, true);
-    if (this.cursor !== this.values.length) this.reason ||= 'scene';
+    if (this.cursor !== this.values.length) { this.reason ||= 'scene'; this.onlyTransforms = false; }
     this.values.length = this.cursor;
-    return { changed: this.reason, masked: this.masked, additive: this.additive };
+    return { changed: this.reason, masked: this.masked, additive: this.additive,
+      reprojectable: this.reason !== '' && this.onlyTransforms };
   }
 
   /** One scene render, with the version bumps three makes itself on the side-flipped materials of the last capture
@@ -182,4 +203,10 @@ export class StableFrameState {
 function sideFlippedByRenderer(material: THREE.Material): boolean {
   return material.side === THREE.DoubleSide && ((material.transparent === true && material.forceSinglePass === false)
     || ((material as THREE.MeshPhysicalMaterial).transmission ?? 0) > 0);
+}
+
+function describe(value: unknown): string {
+  if (value === null || value === undefined || typeof value !== 'object') return String(value);
+  const named = value as { constructor?: { name?: string }; name?: string; type?: string };
+  return `${named.constructor?.name ?? 'object'}${named.name ? ` "${named.name}"` : ''}${named.type ? ` (${named.type})` : ''}`;
 }
