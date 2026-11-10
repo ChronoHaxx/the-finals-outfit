@@ -56,10 +56,17 @@ step numbers), or e.g. "3 fails: the slider jumps back while I drag".
 
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given. The share Worker must be redeployed **before** this merges (see the PR); the
-  merge itself needs your checks above or an explicit waiver.
+- Tested revision/build: none by the user. The waiver applies to commit `2a30baa` (local build `index-BZcEuSAM.js`).
+- User reported at: 10 Nov 2026, 22:54 London, in the session: "Waive the checks" (verbatim).
+- Passed / failed / untested step numbers: 1-7 untested by the user.
+- Explicitly waived checks, if any: 1-7, by the user's instruction above. Unknowns the waiver accepts: a real phone
+  and real touch drags, Safari and Firefox, a real Discord/X unfurl from the deployed Worker.
+- Agent re-check after the waiver (same build, Playwright Chromium, 22:50 London), covering what the earlier agent run
+  had not: step 3's end (an emote paused once, then played, stays on its last frame 3.667 / 3.667 s paused; play
+  restarts it); step 5's untick (status "Link changed · copy again", then a plain link without `emote=` and the
+  still-pose card, `shots/17`); step 6 (a posed link to another outfit opens as "Shared outfit · Not saved" on its
+  frame; one edit saves it as "Shared outfit", the address is tidied to `#/`, "Outfit 1" is untouched; a reload shows
+  the saved outfit and does not re-apply the old pose). All PASS. Steps 1, 2, 4 were covered by the earlier run
+  (`README.md`); step 7 only by an emulated phone.
+- Readiness: checks explicitly waived (not user-verified).
+- Merge authorization: not yet given. The share Worker must be redeployed **before** this merges (see the PR).
