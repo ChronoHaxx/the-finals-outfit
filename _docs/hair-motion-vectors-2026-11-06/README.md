@@ -156,6 +156,25 @@ All error figures are luma levels (/255) of the frame over white, measured again
   - the choice is remembered;
   - no page errors.
 
+### After merging main (10 Nov, merge `be75f9b`, main `cd14c85`)
+
+Main had gained full-screen mode (PR #27) and saved outfits (PR #29). The one conflict was the viewer's top-right
+button row. Resolution: main's layout, with the Graphics dropdown first. It is left out in full screen, where the wider
+"Exit full screen" button needs the room. Re-run on the merged code:
+
+| Check | Result |
+| --- | --- |
+| Typecheck | clean |
+| Unit tests | 743 pass; the same 8 model-fixture failures; 5 skipped |
+| Production build | builds |
+| `check-reprojection.mjs` | 19 pass, same numbers |
+| `check-graphics-ui.mjs` | Auto · High kept, tiers switch, choice saved, no page errors |
+
+The browser pane, without `?reconstructed=1`:
+- At desktop width the button row takes 288 of the viewer's 410 px.
+- At 375 px phone width (coarse pointer) it reads "Auto · Balanced" and fits within the viewer.
+- Full screen hides the dropdown, and leaving brings it back.
+
 ## Known limits
 
 - Fast swings of semi-transparent hair keep a faint trailing band.
