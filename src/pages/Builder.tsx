@@ -8,7 +8,8 @@ import CatalogProgress from "../components/CatalogProgress";
 import TopBar from "../components/ProjectLinks";
 import CatalogUpdateNote from "../components/CatalogUpdateNote";
 import { CloseIcon } from "../components/Icons";
-import { openFromUrl, setUrlCleaner } from "../store/useSavedOutfits";
+import { setUrlCleaner } from "../store/useSavedOutfits";
+import { openLink } from "../store/open-link";
 import { useImmersiveMode } from "../lib/immersive-mode";
 import { probeWebGL2 } from "../lib/webgl-support";
 import { ViewerUnavailable } from "../components/ViewerUnavailable";
@@ -42,8 +43,9 @@ export default function Builder() {
   // Support legacy query links and compact hash navigation without a page reload. A link opens as an
   // unsaved draft beside the saved outfits (src/store/useSavedOutfits.ts); no link shows the saved outfit
   // you were last on. Report omissions or malformed codes instead of a different outfit without explanation.
+  // A link can also carry a pose (an emote frame): store/open-link.ts hands it to the viewer.
   useEffect(() => {
-    const result = openFromUrl(window.location.href);
+    const result = openLink(window.location.href);
     setLinkError(result.error);
     setOmittedItems(result.omitted);
   }, [routerLocation.search]);

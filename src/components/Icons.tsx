@@ -115,3 +115,19 @@ export function TrashIcon({ className, size = 14 }: IconProps) {
     <path d="M2.5 4.5h11M6.5 4.5V3h3v1.5M4 4.5l.7 9h6.6l.7-9" />
   </svg>;
 }
+
+// Transport (the emote timeline): filled shapes read better than strokes at this size.
+export function PlayIcon({ className, size = 14 }: IconProps) {
+  return <svg {...base(size, className)} fill="currentColor" stroke="none"><path d="M4.5 2.8v10.4L13 8 4.5 2.8Z" /></svg>;
+}
+
+export function PauseIcon({ className, size = 14 }: IconProps) {
+  return <svg {...base(size, className)} fill="currentColor" stroke="none"><path d="M4 3h3v10H4zM9 3h3v10H9z" /></svg>;
+}
+
+/** One frame back (the bar on the left) or, with `forward`, one frame on. */
+export function FrameStepIcon({ className, size = 14, forward }: IconProps & { forward?: boolean }) {
+  return <svg {...base(size, className)} fill="currentColor" stroke="none">
+    <g transform={forward ? "matrix(-1 0 0 1 16 0)" : undefined}><path d="M3 3h2v10H3zM13 3v10L6 8l7-5Z" /></g>
+  </svg>;
+}

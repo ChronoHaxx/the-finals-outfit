@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { DeformationRig } from "./DeformationRig";
 import { EmoteProps, type AttachBone, type ComponentSpace } from "./EmoteProps";
 import { SpringBones } from "./SpringBones";
+import { frameAt, type PoseCapture, type SharePose } from "../lib/share-pose";
 
 // Showcase animation playback (5 Nov 2026). Plays the game's own front-end clips (outfit-screen idles, slot
 // reactions, emotes) on the body's driver skeleton. Every cosmetic follows for free: each one is skinned (or
@@ -16,6 +17,13 @@ import { SpringBones } from "./SpringBones";
 // deformation Control Rig does (no clip keys them; left at rest a twisted wrist collapses).
 //
 // Emote props (EmoteProps.ts) appear on their sockets in the windows the emote's notifies give.
+//
+// Transport (10 Nov 2026, the emote timeline): the mixer has two pause switches, three's per-action `paused` (which it
+// also sets itself when a clamped one-shot reaches its end) and our `mixer.timeScale`. Only timeScale means "paused"
+// here; every hold clears the action's own flag, and "at the end" is read from the time, never from either flag. A
+// pause is a hold: the clip in front alone at its time, fades and the clips under it stopped, so a paused frame is
+// exactly (clip, time) and a share link can reproduce it. An emote the viewer has paused, scrubbed or stepped is
+// "inspected": at its end it stays on the last frame, paused, as a video player does, instead of returning to the idle.
 //
 // What this does NOT animate (known gaps, see _docs/showcase-animation-2026-11-05/README.md): cloth simulation
 // (coat tails, capes, loose straps stay rigid on their bones), facial curves (Face_* expression curves are recorded in
@@ -96,6 +104,15 @@ export function propClock(data: Pick<ClipData, "frameTime" | "propTime">): ((tim
   };
 }
 
+/** The emote in front, for the timeline (seconds; frames from the clip's own frame time). */
+export interface Timeline {
+  clip: string;
+  time: number;
+  duration: number;
+  frameTime: number;
+  paused: boolean;
+}
+
 export interface AnimatorState {
   /** An idle or emote is applied to the skeleton (including while fading back to the static pose). */
   active: boolean;
@@ -171,6 +188,7 @@ export class RigAnimator {
   private clips = new Map<string, Promise<THREE.AnimationClip>>(); // by clip id: its name is the id the state reports
   private files = new Map<string, Promise<ClipData>>(); // by file: emotes that share an animation download it once
   private propClocks = new Map<string, (time: number) => number>(); // by clip id, for clips with a prop clock
+  private frameTimes = new Map<string, number>(); // by clip id: seconds per frame, from its file
   private idleAction: THREE.AnimationAction | null = null;
   private emoteAction: THREE.AnimationAction | null = null;
   // Actions replaced mid-play (an emote picked during another, an idle swapped): still fading out, owned by neither
@@ -180,6 +198,14 @@ export class RigAnimator {
   private stopping = false;
   private request = 0; // latest play/stop wins when clip downloads overlap
   private listeners = new Set<() => void>();
+  private poseListeners = new Set<() => void>(); // the held frame moved (seek, scrub, step): no state change
+  // The emote in front was paused, scrubbed or stepped by the viewer: it stays on its last frame instead of returning
+  // to the idle. Set by the viewer's transport only (a link that plays on from its time still returns to the idle).
+  private inspecting = false;
+  private seeking = false; // inside hold(): a preroll reaching the clip's end is not the emote ending
+  private pendingScrub: number | null = null; // a slider drag's latest time, applied once per frame by update()
+  /** The viewer is dragging the timeline: the pose changes every frame (the still view uses its motion path). */
+  scrubbing = false;
   // The static pose of every bone, captured as playback starts (and for bones an outfit change adds while it plays),
   // so a still render (the share card, an export) can be drawn mid-animation. Cleared once the pose is static again.
   private still = new Map<THREE.Object3D, [THREE.Vector3, THREE.Quaternion, THREE.Vector3]>();
@@ -230,6 +256,13 @@ export class RigAnimator {
     return () => this.listeners.delete(listener);
   }
 
+  /** Notified on every state change and whenever a held frame moves (a seek, scrub or step while paused). */
+  subscribePose(listener: () => void): () => void {
+    const unsubscribe = this.subscribe(listener);
+    this.poseListeners.add(listener);
+    return () => { unsubscribe(); this.poseListeners.delete(listener); };
+  }
+
   private publish(patch: Partial<AnimatorState>) {
     const next = { ...this.snapshot, ...patch };
     next.active = !!(this.idleAction || this.emoteAction);
@@ -241,6 +274,33 @@ export class RigAnimator {
   }
 
   info(id: string): ClipInfo | undefined { return this.manifest.clips.find(c => c.id === id); }
+
+  /** Seconds per frame of a clip (from its file; 1/30, the exporter's rate, until that has loaded). */
+  frameTime(id: string): number { return this.frameTimes.get(id) ?? 1 / 30; }
+
+  /** The clip in front: the emote while one is up, else the idle. */
+  private front(): THREE.AnimationAction | null { return this.emoteAction ?? this.idleAction; }
+
+  /** The emote in front and where it is, or null without one (the idle alone has no timeline). */
+  timeline(): Timeline | null {
+    const action = this.emoteAction;
+    if (!this.mixer || !action || this.stopping) return null;
+    const clip = action.getClip();
+    return { clip: clip.name, time: THREE.MathUtils.clamp(this.pendingScrub ?? action.time, 0, clip.duration),
+      duration: clip.duration, frameTime: this.frameTime(clip.name), paused: this.snapshot.paused };
+  }
+
+  /** The frame a share records: the emote in front, playing or paused, or the idle when paused on it. Null while the
+   *  idle simply plays (the default) or nothing does: the share then shows the still pose, as before poses. */
+  sharePose(): PoseCapture | null {
+    if (!this.mixer || this.stopping || this.holding) return null;
+    const action = this.emoteAction ?? (this.snapshot.paused ? this.idleAction : null);
+    if (!action) return null;
+    const clip = action.getClip(), frameTime = this.frameTime(clip.name);
+    const pose: SharePose = { clip: clip.name, time: THREE.MathUtils.clamp(action.time, 0, clip.duration), paused: this.snapshot.paused };
+    return { ...pose, label: this.info(clip.name)?.label ?? clip.name,
+      frame: frameAt(pose.time, frameTime), lastFrame: frameAt(clip.duration, frameTime) };
+  }
 
   /** A clip's thumbnail URL, if the set has one. */
   iconUrl(info: ClipInfo): string | null { return info.icon ? this.clipBase + info.icon : null; }
@@ -313,6 +373,7 @@ export class RigAnimator {
       pending = data.then(json => {
         const clock = propClock(json);
         if (clock) this.propClocks.set(id, clock);
+        if (json.frameTime > 0) this.frameTimes.set(id, json.frameTime);
         return buildClip(json, id);
       });
       pending.catch(() => this.clips.delete(id));
@@ -336,23 +397,48 @@ export class RigAnimator {
   }
 
   private onFinished = (event: { action: THREE.AnimationAction }) => {
-    if (event.action !== this.emoteAction) return;
-    // An emote ends: return to the idle when one plays, else to the static pose.
+    // Not an end: a preroll inside hold() touching the last frame, or an emote fading out under stop().
+    if (event.action !== this.emoteAction || this.seeking || this.stopping) return;
+    if (this.inspecting) {
+      // Being studied: stay on the last frame, paused (three set its own flag at the clamp; ours is the timeScale).
+      event.action.paused = false;
+      this.mixer!.timeScale = 0;
+      this.publish({ paused: true });
+      return;
+    }
+    this.returnFromEmote();
+    this.publish({});
+  };
+
+  /** The emote in front ends: back to the idle when one plays (or ran under it), else to the static pose. */
+  private returnFromEmote(): void {
     const ended = this.emoteAction;
+    if (!ended) return;
     this.emoteAction = null;
+    this.inspecting = false;
+    this.pendingScrub = null;
     this.props.setEmote(null);
+    ended.paused = true; // its frame holds while it fades out (the fade runs on the mixer's clock, not the action's)
     if (this.idleAction) {
       this.idleAction.enabled = true;
       this.idleAction.setEffectiveWeight(1);
+      // Keep the idle starting from its own first frame, as the game re-enters it.
       ended.crossFadeTo(this.idleAction.reset().play(), FADE, false);
       this.fading.add(ended);
-      // Keep the idle starting from its own first frame, as the game re-enters it.
     } else {
       ended.fadeOut(FADE);
       this.stopping = true;
     }
-    this.publish({});
-  };
+  }
+
+  /** The viewer leaves the emote (the timeline's close button): as if it had ended. */
+  leaveEmote(): void {
+    if (!this.mixer || !this.emoteAction) return;
+    ++this.request;
+    this.returnFromEmote();
+    this.mixer.timeScale = 1;
+    this.publish({ paused: false, loading: null });
+  }
 
   /** Play an idle (loops, becomes the resting motion) or a one-shot emote/reaction (returns to the idle after). */
   async play(root: THREE.Object3D, id: string): Promise<void> {
@@ -370,6 +456,8 @@ export class RigAnimator {
     }
     if (request !== this.request) return; // superseded while downloading
     const mixer = this.bind(root);
+    this.inspecting = false;
+    this.pendingScrub = null;
     if (!this.snapshot.active) { this.still.clear(); this.rememberStillPose(root); } // nothing applied yet: static
     const action = mixer.clipAction(clip);
     this.fading.delete(action); // picked again while it faded out: it is the incoming action now
@@ -408,6 +496,8 @@ export class RigAnimator {
   /** Fade back to the static pose. */
   stop(): void {
     ++this.request;
+    this.inspecting = false;
+    this.pendingScrub = null;
     if (!this.mixer) return;
     for (const action of [this.emoteAction, this.idleAction]) action?.fadeOut(FADE);
     this.props.setEmote(null);
@@ -416,57 +506,123 @@ export class RigAnimator {
     this.publish({ paused: false, loading: null });
   }
 
+  /** Pause or resume. A pause is a hold of the frame on screen (see the top of this file); pausing an emote marks it
+   *  inspected. Resuming an emote that sits on its last frame plays it again from the start. */
   setPaused(paused: boolean): void {
-    if (!this.mixer || !this.snapshot.active) return;
-    this.mixer.timeScale = paused ? 0 : 1;
-    this.publish({ paused });
-  }
-
-  /** Capture/test hook: hold the current clip at an exact time (seconds), paused. With sway on, the last 1.5 s are
-   *  played through first at 60 Hz so the chains carry the motion that leads into that frame. */
-  seek(seconds: number): void {
-    const action = this.emoteAction ?? this.idleAction;
-    if (!this.mixer || !action) return;
-    for (const other of [this.emoteAction, this.idleAction, ...this.fading]) if (other && other !== action) other.stop();
-    this.fading.clear();
-    action.stopFading().setEffectiveWeight(1);
-    const target = Math.max(0, Math.min(seconds, action.getClip().duration));
-    const preroll = this.snapshot.sway && this.springs.count ? Math.min(1.5, target) : 0;
-    action.time = target - preroll;
+    const action = this.front();
+    if (!this.mixer || !this.snapshot.active || !action || this.stopping) return;
+    if (paused) {
+      if (action === this.emoteAction) this.inspecting = true;
+      this.hold(action.time, false); // no preroll: the chains keep the swing they have
+      return;
+    }
+    this.pendingScrub = null;
+    if (action === this.emoteAction && action.time >= action.getClip().duration - 1e-4) action.reset(); // still scheduled
     action.paused = false;
     this.mixer.timeScale = 1;
-    this.mixer.update(0);
-    this.runDeform();
-    for (let t = 0; t < preroll - 1e-6; t += 1 / 60) {
-      const step = Math.min(1 / 60, preroll - t);
-      this.mixer.update(step);
+    this.publish({ paused: false });
+  }
+
+  /** Hold the clip in front at a time (seconds), paused. `preroll` (default on): with sway on, the last 1.5 s are
+   *  played through first at 60 Hz so the chains carry the motion leading into that frame. `inspect`: the viewer's
+   *  own seek (the timeline), which keeps an emote on its last frame at its end. Captures and links leave it off. */
+  seek(seconds: number, options: { preroll?: boolean; inspect?: boolean } = {}): void {
+    if (options.inspect && this.emoteAction) this.inspecting = true;
+    this.hold(seconds, options.preroll ?? true);
+  }
+
+  /** A timeline drag: the latest time is held on the next frame without the preroll (one hold per frame, however
+   *  many input events arrive). A seek on release settles the chains. */
+  scrub(seconds: number): void {
+    if (!this.emoteAction) return;
+    this.inspecting = true;
+    this.pendingScrub = seconds;
+    this.poseListeners.forEach(listener => listener());
+  }
+
+  /** Step whole frames from the frame on screen (between two frames, one step reaches the next boundary), paused. */
+  step(frames: number): void {
+    const action = this.front();
+    if (!this.mixer || !action || !frames) return;
+    const clip = action.getClip(), frameTime = this.frameTime(clip.name);
+    const at = (this.pendingScrub ?? action.time) / frameTime;
+    const frame = frames > 0 ? Math.floor(at + 1e-3) + frames : Math.ceil(at - 1e-3) + frames;
+    this.seek(THREE.MathUtils.clamp(frame * frameTime, 0, clip.duration), { inspect: true });
+  }
+
+  private hold(seconds: number, preroll: boolean): void {
+    const action = this.front();
+    if (!this.mixer || !action) return;
+    this.pendingScrub = null;
+    for (const other of [this.emoteAction, this.idleAction, ...this.fading]) if (other && other !== action) other.stop();
+    this.fading.clear();
+    action.enabled = true;
+    action.stopFading().setEffectiveWeight(1);
+    const target = Math.max(0, Math.min(seconds, action.getClip().duration));
+    const lead = preroll && this.snapshot.sway && this.springs.count ? Math.min(1.5, target) : 0;
+    this.seeking = true;
+    try {
+      action.time = target - lead;
+      action.paused = false;
+      this.mixer.timeScale = 1;
+      this.mixer.update(0);
       this.runDeform();
-      this.springs.update(step);
+      for (let t = 0; t < lead - 1e-6; t += 1 / 60) {
+        const step = Math.min(1 / 60, lead - t);
+        this.mixer.update(step);
+        this.runDeform();
+        this.springs.update(step);
+      }
+      action.time = target; // exact, whatever rounding the steps left
+      action.paused = false; // three sets it if the lead touched the end of a one-shot
+      this.mixer.timeScale = 0;
+      this.mixer.update(0);
+      this.runDeform();
+    } finally {
+      this.seeking = false;
     }
-    action.time = target; // exact, whatever rounding the steps left
-    this.mixer.timeScale = 0;
-    this.mixer.update(0);
-    this.runDeform();
     this.props.update(action === this.emoteAction ? action.time : null);
-    this.publish({ paused: true });
+    if (this.snapshot.paused) this.poseListeners.forEach(listener => listener());
+    else this.publish({ paused: true });
+  }
+
+  /** Open a shared pose (lib/share-pose.ts): its clip at its time, held there or playing on. `idle`, for an emote:
+   *  the idle to start under it first when none runs (it comes back when the emote ends). Resolves false when the
+   *  clip is unknown or the viewer picked something else meanwhile. */
+  async openPose(root: THREE.Object3D, pose: SharePose, options: { idle?: string | null; play?: boolean } = {}): Promise<boolean> {
+    const info = this.info(pose.clip);
+    if (!info) return false;
+    if (options.idle && !info.loop && !this.idleAction && this.info(options.idle)) {
+      await this.play(root, options.idle);
+      if (this.snapshot.idle !== options.idle) return false;
+    }
+    await this.play(root, pose.clip);
+    if (this.front()?.getClip().name !== pose.clip) return false; // superseded: never seek what the viewer chose
+    // A link's milliseconds name a frame: land on it exactly (1.233 s at 30 fps is frame 37, 1.2333... s).
+    const frameTime = this.frameTime(pose.clip), frames = pose.time / frameTime;
+    const time = Math.abs(frames - Math.round(frames)) < 0.02 ? Math.round(frames) * frameTime : pose.time;
+    this.seek(time, { inspect: pose.paused });
+    if (!pose.paused && options.play !== false) this.setPaused(false);
+    return true;
   }
 
   update(delta: number): void {
     if (!this.mixer) return;
     if (this.holding) { if (this.snapshot.active) this.applyStill(); return; }
+    if (this.pendingScrub !== null) this.hold(this.pendingScrub, false);
     const step = Math.min(delta, 0.1); // a hidden tab must not jump half an emote
     this.mixer.update(step);
     this.runDeform();
     this.props.update(this.emoteAction ? this.emoteAction.time : null);
     for (const action of this.fading) {
       if (action === this.emoteAction || action === this.idleAction) this.fading.delete(action);
-      else if (action.getEffectiveWeight() <= 0 || !action.isRunning()) { action.stop(); this.fading.delete(action); }
+      else if (action.getEffectiveWeight() <= 0 || !action.isScheduled()) { action.stop(); this.fading.delete(action); }
     }
     if (this.snapshot.sway && this.snapshot.moving) this.springs.update(step);
     if (this.stopping) {
       // Every action has faded to zero weight: deactivate them so three restores the static pose exactly.
       const live = [this.emoteAction, this.idleAction].filter((a): a is THREE.AnimationAction => !!a);
-      if (live.every(action => action.getEffectiveWeight() <= 0 || !action.isRunning())) {
+      if (live.every(action => action.getEffectiveWeight() <= 0 || !action.isScheduled())) {
         this.mixer.stopAllAction();
         this.fading.clear();
         this.deform?.restore(); // the mixer restores the bones it animated; the rig's joints are put back here
@@ -495,6 +651,9 @@ export class RigAnimator {
     this.idleAction = this.emoteAction = null;
     this.fading.clear();
     this.stopping = false;
+    this.inspecting = false;
+    this.seeking = false;
+    this.pendingScrub = null;
     this.still.clear();
     this.held = null; // a new body: the old bones' poses mean nothing (a running hold stays, as its owner expects)
     if (this.snapshot.active || this.snapshot.paused) this.publish({ paused: false });

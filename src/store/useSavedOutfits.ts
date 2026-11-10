@@ -16,6 +16,7 @@ import {
 import { MemoryBackend, openOutfitStorage, requestPersistentStorage, type StorageEnvironment } from "../lib/outfit-storage";
 import { keepMissing, labelsFor, resolveSavedSlots, sameBuild, type MissingPiece } from "../lib/saved-outfit-pieces";
 import { readOutfitLink } from "../lib/share-url";
+import { POSE_KEYS } from "../lib/share-pose";
 import { migrateOutfit } from "../lib/outfit-slots";
 import type { Slot } from "../lib/slots";
 import { startingOutfit, useBuildStore } from "./useBuildStore";
@@ -213,13 +214,14 @@ function leavingDraft(): boolean {
   return true;
 }
 
-/** Remove the share link from the address bar once it has done its job, so a reload shows the saved outfit. */
+/** Remove the share link from the address bar once it has done its job, so a reload shows the saved outfit. A link's
+ *  pose (share-pose.ts) goes with it: the builder read it before this could run. */
 function cleanUrl() {
   if (typeof window === "undefined") return;
   try {
     const url = new URL(window.location.href);
     let changed = false;
-    for (const key of ["outfit", "o", "look"]) if (url.searchParams.has(key)) { url.searchParams.delete(key); changed = true; }
+    for (const key of ["outfit", "o", "look", ...POSE_KEYS]) if (url.searchParams.has(key)) { url.searchParams.delete(key); changed = true; }
     if (changed) window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
     const hashLink = url.hash.startsWith("#/?") && new URLSearchParams(url.hash.slice(3)).has("o");
     if (!hashLink) return;
@@ -251,7 +253,8 @@ function ensureCurrent(createIfEmpty: boolean) {
 
 // ------------------------------------------------------------------ opening the page
 
-export interface LinkResult { omitted: boolean; error: boolean }
+/** `declined`: the viewer chose to keep an unsaved draft instead (the link's pose must not apply either). */
+export interface LinkResult { omitted: boolean; error: boolean; declined?: boolean }
 
 /**
  * Show what the address asks for. Idempotent (StrictMode runs effects twice; the router re-runs it after
@@ -286,7 +289,7 @@ export function openFromUrl(href: string): LinkResult {
     return result;
   }
   if (current?.kind === "draft" && current.draft.edited && !confirmLeave(
-    `“${current.draft.name}” is not saved (you have ${lib.cap} saved outfits). Open the link anyway?`)) return result;
+    `“${current.draft.name}” is not saved (you have ${lib.cap} saved outfits). Open the link anyway?`)) return { ...result, declined: true };
   const match = lib.live().find(record => sameBuild(resolveSavedSlots(record.slots, record.labels).build, resolved.build));
   if (match) {
     own(() => lib.select(match.id));

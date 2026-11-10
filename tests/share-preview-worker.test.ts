@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import worker from "../workers/share-preview/src/index";
-import { jpegSize, newId, validCode, type Env } from "../workers/share-preview/src/share";
+import { jpegSize, newId, readPose, validCode, type Env } from "../workers/share-preview/src/share";
 
 // A minimal JPEG: SOI, an APP0 segment, a baseline frame header with the given size, a scan, EOI.
 function jpeg(width: number, height: number, { frame = 0xc0, padTo = 0 } = {}): Uint8Array {
@@ -144,4 +144,64 @@ test("anything else redirects to the builder, and only GET reads", async () => {
   assert.equal(root.headers.get("Location"), APP);
   assert.equal((await worker.fetch(new Request(`${BASE}/s/AAAAAAAAAAAA`, { method: "DELETE" }), e)).status, 405);
   assert.equal((await worker.fetch(new Request(`${BASE}/i/nope.jpg`), e)).status, 302);
+});
+
+// Poses (10 Nov 2026): an emote frame shown on the card rides with the outfit code, in the app's grammar.
+const uploadPosed = (e: Env, query: string, code = "2.12a") =>
+  worker.fetch(new Request(`${BASE}/api/share?o=${code}${query}`, { method: "POST", body: jpeg(1200, 630),
+    headers: { Origin: "https://chronohaxx.github.io", "Content-Type": "image/jpeg", "CF-Connecting-IP": "203.0.113.7" } }), e);
+
+test("pose parameters follow the app's grammar: a clip slug, seconds to the millisecond, paused=1", () => {
+  const read = (query: string) => readPose(new URLSearchParams(query));
+  assert.equal(read("o=2.12a"), undefined);
+  assert.deepEqual(read("emote=ace-pilot&t=1.233&paused=1"), { emote: "ace-pilot", t: "1.233", paused: true });
+  assert.deepEqual(read("emote=outfit-idle"), { emote: "outfit-idle", t: "0", paused: false });
+  for (const bad of ["t=1", "paused=1", "emote=%22%3E", "emote=-x", "emote=ace&t=1.2345", "emote=ace&t=-1", "emote=ace&t=1e3",
+    "emote=ace&t=1000", "emote=ace&paused=true", `emote=${"a".repeat(97)}`])
+    assert.equal(read(bad), null, bad);
+});
+
+test("a posed upload stores its pose, returns it in the link, and the page opens the builder on that frame", async () => {
+  const e = env();
+  const response = await uploadPosed(e, "&emote=ace-pilot&t=1.233&paused=1");
+  assert.equal(response.status, 201);
+  const { url } = await response.json() as { url: string };
+  const id = /\/s\/([0-9A-Za-z]{12})\?o=2\.12a&emote=ace-pilot&t=1\.233&paused=1$/.exec(url)?.[1];
+  assert.ok(id, url);
+  assert.deepEqual(e.SHARES.entries.get(`s:${id}`)!.metadata, { o: "2.12a", emote: "ace-pilot", t: "1.233", paused: "1" });
+  const page = await (await worker.fetch(new Request(url), e)).text();
+  assert.match(page, /location\.replace\("https:\/\/chronohaxx\.github\.io\/the-finals-outfit\/#\/\?o=2\.12a&emote=ace-pilot&t=1\.233&paused=1"\)/);
+  assert.match(page, /og:description" content="[^"]*frozen 1\.233 s into an emote/);
+  assert.ok(page.includes(`og:url" content="${BASE}/s/${id}?o=2.12a&#38;emote=ace-pilot&#38;t=1.233&#38;paused=1"`));
+
+  const playing = await (await uploadPosed(e, "&emote=wave&t=0.5")).json() as { url: string };
+  assert.match(playing.url, /\?o=2\.12a&emote=wave&t=0\.5$/);
+  assert.match(await (await worker.fetch(new Request(playing.url), e)).text(), /caught 0\.5 s into an emote/);
+});
+
+test("a malformed pose is refused; the stored pose wins over the link's; old entries and expired links keep working", async () => {
+  const e = env();
+  for (const bad of ["&emote=%22%3E%3Cscript%3E", "&emote=wave&t=abc", "&t=1", "&emote=wave&paused=yes"])
+    assert.equal((await uploadPosed(e, bad)).status, 400, bad);
+  assert.equal(e.SHARES.entries.size, 0);
+
+  // An entry stored before poses existed: a pose added to its link is not trusted while the entry lives.
+  const plain = await (await upload(e, jpeg(1200, 630), { code: "2.12a" })).json() as { url: string };
+  assert.match(plain.url, /\?o=2\.12a$/);
+  const id = /\/s\/(\w{12})/.exec(plain.url)![1];
+  const tampered = await (await worker.fetch(new Request(`${plain.url}&emote=wave&t=1`), e)).text();
+  assert.match(tampered, /#\/\?o=2\.12a"\)/);
+  assert.doesNotMatch(tampered, /emote/);
+
+  const posed = await (await uploadPosed(e, "&emote=bow&t=2")).json() as { url: string };
+  const posedId = /\/s\/(\w{12})/.exec(posed.url)![1];
+  const swapped = await (await worker.fetch(new Request(`${BASE}/s/${posedId}?o=2.12a&emote=wave&t=9`), e)).text();
+  assert.match(swapped, /#\/\?o=2\.12a&emote=bow&t=2"\)/);
+  assert.notEqual(id, posedId);
+
+  // Expired: the link's own (valid) pose still opens the frame; a junk one is dropped, the outfit still opens.
+  const expired = await (await worker.fetch(new Request(`${BASE}/s/AAAAAAAAAAAA?o=2.12a&emote=wave&t=1.5&paused=1`), e)).text();
+  assert.match(expired, /#\/\?o=2\.12a&emote=wave&t=1\.5&paused=1"\)/);
+  const junk = await (await worker.fetch(new Request(`${BASE}/s/AAAAAAAAAAAA?o=2.12a&emote=%22%3E&t=1`), e)).text();
+  assert.match(junk, /#\/\?o=2\.12a"\)/);
 });

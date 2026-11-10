@@ -17,6 +17,35 @@ const CODE = /^2\.(?:[0-9a-z]{2,5}(?:\.[0-9a-z]{2,5}){0,39})?$/;
 
 export const validCode = (code: string | null): code is string => code !== null && CODE.test(code);
 
+// An animation frame shown with the outfit (10 Nov 2026), in the app's pose grammar (src/lib/share-pose.ts):
+// emote=<clip id>&t=<seconds, up to 3 decimals>&paused=1. Identifiers and numbers only, never free text.
+export interface Pose { emote: string; t: string; paused: boolean }
+const CLIP = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,95}$/;
+const TIME = /^\d{1,3}(?:\.\d{1,3})?$/;
+
+/** The pose in these parameters: undefined when there is none, null when it is malformed. */
+export function readPose(params: URLSearchParams): Pose | null | undefined {
+  const emote = params.get("emote"), t = params.get("t"), paused = params.get("paused");
+  if (emote === null) return t === null && paused === null ? undefined : null;
+  if (!CLIP.test(emote) || (t !== null && !TIME.test(t)) || (paused !== null && paused !== "1")) return null;
+  return { emote, t: t ?? "0", paused: paused === "1" };
+}
+
+/** The pose's parameters, to follow `o=<code>` in a link ("" without a pose). Validated values need no escaping. */
+export const poseQuery = (pose: Pose | undefined) =>
+  pose ? `&emote=${pose.emote}&t=${pose.t}${pose.paused ? "&paused=1" : ""}` : "";
+
+/** KV metadata beside the outfit code (absent fields for an outfit without a pose, as before). */
+export const poseMetadata = (pose: Pose | undefined): Record<string, string> =>
+  pose ? { emote: pose.emote, t: pose.t, ...(pose.paused ? { paused: "1" } : {}) } : {};
+
+/** The pose stored with an entry (entries made before poses have none). */
+export function storedPose(metadata: Record<string, unknown> | null | undefined): Pose | undefined {
+  const params = new URLSearchParams();
+  for (const key of ["emote", "t", "paused"]) if (typeof metadata?.[key] === "string") params.set(key, metadata[key] as string);
+  return readPose(params) ?? undefined;
+}
+
 /** Width and height of a JPEG from its first SOF marker, or null when the bytes are not a well-formed JPEG. */
 export function jpegSize(bytes: Uint8Array): { width: number; height: number } | null {
   if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8 || bytes[2] !== 0xff) return null;
@@ -49,17 +78,19 @@ export function newId(): string {
 }
 
 const escape = (text: string) => text.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
-const appLink = (env: Env, code: string | null) => `${env.APP_URL}${code ? `#/?o=${code}` : ""}`;
+const appLink = (env: Env, code: string | null, pose?: Pose) => `${env.APP_URL}${code ? `#/?o=${code}${poseQuery(pose)}` : ""}`;
 
-export function previewPage(env: Env, self: string, image: string | null, code: string | null): string {
-  const app = appLink(env, code);
+export function previewPage(env: Env, self: string, image: string | null, code: string | null, pose?: Pose): string {
+  if (!code) pose = undefined; // a pose belongs to an outfit
+  const app = appLink(env, code, pose);
   const title = code ? "THE FINALS outfit" : "the-finals-outfit";
+  const posed = pose ? `, ${pose.paused ? "frozen" : "caught"} ${pose.t} s into an emote` : "";
   const meta = [
     ["og:site_name", "the-finals-outfit"], ["og:type", "website"], ["og:title", title],
-    ["og:description", "A look made in the fan-made THE FINALS outfit builder. Open it to turn it around in 3D."],
+    ["og:description", `A look made in the fan-made THE FINALS outfit builder${posed}. Open it to turn it around in 3D.`],
     ["og:url", self],
     ...(image ? [["og:image", image], ["og:image:width", String(WIDTH)], ["og:image:height", String(HEIGHT)],
-      ["og:image:type", "image/jpeg"], ["og:image:alt", "The outfit from the front, three-quarter, side and back"]] : []),
+      ["og:image:type", "image/jpeg"], ["og:image:alt", `The outfit from the front, three-quarter, side and back${pose ? ", mid-emote" : ""}`]] : []),
   ].map(([property, content]) => `<meta property="${property}" content="${escape(content)}">`);
   const twitter = [["twitter:card", image ? "summary_large_image" : "summary"], ["twitter:title", title],
     ...(image ? [["twitter:image", image]] : [])].map(([name, content]) => `<meta name="${name}" content="${escape(content)}">`);
