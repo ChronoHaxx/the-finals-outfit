@@ -125,6 +125,17 @@ interface ActiveDecal {
   owned: THREE.Texture[]; // textures this decal allocated (disposed on clear)
 }
 
+// (w163, 11 Nov 2026) The face-shadow companion layer stands in for a BlackEyes-style FaceShadowMask override, which the
+// game applies only where the head's master declares that input. Of the 36 skin-pair faces' roots, M_Face (30) and
+// M_Face_Hardsurface (3) declare FaceShadow/FaceShadowColor/FaceShadowMask; M_Face_LEDScreen and M_Face_Space (3 blank
+// faces) declare none (_docs/goal-100-2026-10-11/w163-demonmask/face-master-check-v1). A head material with no recorded
+// root (legacy heads, M_Face bakes) keeps the layer, as before.
+export const FACE_SHADOW_ROOTS: ReadonlySet<string> = new Set(["M_Face", "M_Face_Hardsurface"]);
+export function faceShadowApplies(mat: THREE.Material): boolean {
+  const root = mat.userData.sourceRoot;
+  return typeof root !== "string" || FACE_SHADOW_ROOTS.has(root);
+}
+
 export class BodyDecalManager {
   private static uid = 0;
   // 1x1 white stand-in map for UNTEXTURED targets (the CNS base head has no albedo map, only a
@@ -434,7 +445,8 @@ export class BodyDecalManager {
     if (!mats) return;
     const layers = this.layersFor(name);
     const hide = name === "body" ? this.bodyHideTex : null;
-    for (const mat of mats) this.patch(mat, layers, hide);
+    for (const mat of mats)
+      this.patch(mat, faceShadowApplies(mat) ? layers : layers.filter((l) => l.faceShadowRoughness === null), hide);
   }
 
   private patch(

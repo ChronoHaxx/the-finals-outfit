@@ -3,19 +3,74 @@ import { fetchAsset as checkedFetch } from "../lib/asset-fetch";
 import { VerifiedByteCache } from "../lib/verified-bytes";
 import { HAIR_LIGHTING_GLSL } from './HairLighting';
 import { installSampledAlphaHash } from './AlphaHashSampling';
+import { STUDIO_LIGHTING_V2 } from './StudioLighting';
 import {
   RECOVERED_SAMPLER_TARGET, assemblePackedLayers, planReconstructedSamplers, rewriteSamplerGlsl,
   samplerPlanReport, samplerUniformBindings,
 } from "./ReconstructedSamplers";
 import type { SamplerPackResource, SamplerPlan, SamplerTextureSpec } from "./ReconstructedSamplers";
 
-export const SURFACE_VIEWS = ["lit", "baseColor", "normal", "roughness", "metalness", "ao", "specular"] as const;
+export const SURFACE_VIEWS = ["lit", "baseColor", "normal", "roughness", "metalness", "ao", "specular", "subsurfaceColor"] as const;
+
+// w157 lighting study (10 Nov 2026), dev builds only: ?clothSky=1 approximates UE's sky-light subsurface term on cloth
+// (ShadeAsCloth / viewDependentCloth) materials. UE adds SubsurfaceColor to the diffuse colour for sky lighting of
+// subsurface shading models; this experiment assumes SubsurfaceColor ~= BaseColor and back-face irradiance ~= front-face,
+// i.e. it doubles the indirect diffuse. A measurement aid only; production never reads the parameter.
+const DEV_CLOTH_SKY = typeof window !== "undefined" && !!import.meta.env.DEV
+  && new URLSearchParams(window.location.search).get("clothSky") === "1";
+// w157 second experiment, dev builds only: ?clothSss=<c> applies UE's MSM_Subsurface lighting to viewDependentCloth
+// materials with SubsurfaceColor = c * BaseColor (the layered masters write exactly c * BaseColor, c = the
+// ShadeAsCloth-weighted layer sum, which the slicer does not capture yet; the caller passes the item's known c) and
+// subsurface opacity 1: indirect diffuse uses (DiffuseColor + SubsurfaceColor), direct light adds SubsurfaceBxDF
+// transmission. Validates the magnitude before the per-pixel capture is built; production never reads it.
+// w157 hair experiment (11 Nov 2026), dev builds only: ?hairScatter=ue swaps the Karis paper's multiple-scattering
+// wrap term for UE's HairBxDF form, (1/PI) lerp((F.L + 1)/4, 1 - |T.L|, 0.33) (the 0.33 Kajiya lerp). Measures whether
+// it lights the authored vertex-AO-0 hair cards (horse mane, emperor plumes, tanuki) like their icons; production never
+// reads the parameter.
+const DEV_HAIR_UE_SCATTER = typeof window !== "undefined" && !!import.meta.env.DEV
+  && new URLSearchParams(window.location.search).get("hairScatter") === "ue";
+// Same study, dev builds only: ?hairShadow=0 stops recovered hair receiving shadow-map shadows (an upper bound for
+// UE's soft hair transmission shadow, which lets light through thin cards; three treats each card as opaque).
+const DEV_HAIR_NO_SHADOW = typeof window !== "undefined" && !!import.meta.env.DEV
+  && new URLSearchParams(window.location.search).get("hairShadow") === "0";
+// Same study, dev builds only: ?hairAo=1 previews what the existing batch opt-in hairAoExclusion emits (the hair
+// program's COLOR_0.G GBuffer AO-slot packing excluded, AO 1) without a rebuild.
+const DEV_HAIR_AO_ONE = typeof window !== "undefined" && !!import.meta.env.DEV
+  && new URLSearchParams(window.location.search).get("hairAo") === "1";
+const DEV_CLOTH_SSS = (() => {
+  if (typeof window === "undefined" || !import.meta.env.DEV) return null;
+  const raw = new URLSearchParams(window.location.search).get("clothSss");
+  const value = raw === null ? NaN : Number(raw);
+  return Number.isFinite(value) && value >= 0 ? value : null;
+})();
+const RECOVERED_SUBSURFACE_DIRECT_GLSL = `
+vec3 recoveredSubsurfaceColor = vec3(0.0);
+float recoveredSubsurfaceOpacity = 1.0;
+float recoveredSubsurfaceAo = 1.0;
+// UE SubsurfaceBxDF (ShadingModels.ush): DefaultLit plus a transmission term that ignores N.L.
+void RE_Direct_RecoveredSubsurface(const in IncidentLight directLight, const in vec3 geometryPosition,
+    const in vec3 geometryNormal, const in vec3 geometryViewDir, const in vec3 geometryClearcoatNormal,
+    const in PhysicalMaterial material, inout ReflectedLight reflectedLight) {
+  RE_Direct_Physical(directLight, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight);
+  float op = recoveredSubsurfaceOpacity;
+  vec3 halfVector = normalize(geometryViewDir + directLight.direction);
+  float inScatter = pow(saturate(dot(directLight.direction, -geometryViewDir)), 12.0) * mix(3.0, 0.1, op);
+  float normalContribution = saturate(dot(geometryNormal, halfVector) * op + 1.0 - op);
+  float backScatter = recoveredSubsurfaceAo * normalContribution / (2.0 * PI);
+  reflectedLight.directDiffuse += directLight.color * mix(backScatter, 1.0, inScatter) * recoveredSubsurfaceColor;
+}
+#undef RE_Direct
+#define RE_Direct RE_Direct_RecoveredSubsurface
+`;
 export type SurfaceView = (typeof SURFACE_VIEWS)[number];
 
 type TextureSpec = SamplerTextureSpec;
 interface Manifest {
   formatVersion: number;
   itemId: string;
+  // The root master material the instance compiles from (e.g. M_Face, M_Face_LEDScreen). BodyDecals reads it to keep a
+  // face-shadow companion layer off heads whose master declares no FaceShadow input (w163 face-master-check-v1).
+  sourceRoot?: string;
   shader: string;
   shaderSha256: string;
   coverageShader?: string;
@@ -23,6 +78,11 @@ interface Manifest {
   coverageGeometryFields?: string[];
   textures: TextureSpec[];
   viewDependentCloth?: boolean;
+  // (w157, 10 Nov 2026) the slice captured an MSM_Subsurface program's o4 subsurface colour; the runtime applies UE's
+  // subsurface lighting (indirect DiffuseColor + SubsurfaceColor, direct SubsurfaceBxDF transmission) with the solid
+  // garment's subsurface opacity 1 (subsurfaceOpacityPolicy: o4.w carries engine dissolve/proximity-fade effects).
+  subsurfaceShading?: boolean;
+  subsurfaceOpacityPolicy?: string;
   geometryDependentNormals?: boolean;
   requiredUvSets?: number[];
   skinSurface?: boolean;
@@ -678,6 +738,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         }
         material.userData.sourceInstance = manifest.itemId;
         material.userData.sourceSlot = old.userData.sourceSlot;
+        material.userData.sourceRoot = manifest.sourceRoot;
         material.userData.viewDependentCloth = !!manifest.viewDependentCloth;
         material.userData.geometryDependentNormals = !!manifest.geometryDependentNormals;
         material.userData.skinSurface = !!manifest.skinSurface;
@@ -701,7 +762,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           const texture = textures.get(resource.key);
           if (texture) material.userData[resource.kind === "pack" ? `recoveredPack${resource.index}` : resource.texture.id] = texture;
         }
-        material.customProgramCacheKey = () => `recovered-v13:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}:${maskedClip}:${parametric}:${genericFaceSign}${hairMetallic ? ":hair-metallic" : ""}${worldFaceSign ? ":world-face-sign" : ""}${worldCameraBasis.length ? ":world-camera-basis" : ""}${hueKeeping ? ":hue-keeping" : ""}${vertexOffset ? `:offset:${vertexOffset}` : ""}${thin ? `:thin:${thinPass ?? "single"}` : ""}`;
+        material.customProgramCacheKey = () => `recovered-v13:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}:${maskedClip}:${parametric}:${genericFaceSign}${hairMetallic ? ":hair-metallic" : ""}${worldFaceSign ? ":world-face-sign" : ""}${worldCameraBasis.length ? ":world-camera-basis" : ""}${hueKeeping ? ":hue-keeping" : ""}${vertexOffset ? `:offset:${vertexOffset}` : ""}${thin ? `:thin:${thinPass ?? "single"}` : ""}${DEV_CLOTH_SKY && manifest.viewDependentCloth ? ":dev-cloth-sky" : ""}${DEV_CLOTH_SSS !== null && manifest.viewDependentCloth && !hair ? `:dev-cloth-sss:${DEV_CLOTH_SSS}` : ""}${manifest.subsurfaceShading && !hair && STUDIO_LIGHTING_V2 ? ":subsurface" : ""}${hair && DEV_HAIR_UE_SCATTER ? ":dev-hair-ue-scatter" : ""}${hair && DEV_HAIR_NO_SHADOW ? ":dev-hair-no-shadow" : ""}${hair && DEV_HAIR_AO_ONE ? ":dev-hair-ao-one" : ""}`;
         if (hueKeeping) material.userData.emissiveExposurePolicy = 'hue-keeping preview exposure: peak channel scaled to 1 (signoffs-2026-10-29.json)';
         material.onBeforeCompile = (shader) => {
           // Decision #19: alpha-hashed coverage converges in the stable-frame accumulator (inert without alphaHash).
@@ -737,12 +798,24 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
             const physical = THREE.ShaderChunk.lights_physical_pars_fragment;
             if (!physical.includes('struct PhysicalMaterial {')) throw new Error('Three physical material structure changed');
             fragment = replaceChunk(fragment, 'lights_physical_pars_fragment', physical.replace('struct PhysicalMaterial {',
-              'struct PhysicalMaterial { vec3 hairTangent; float hairScatter; float hairRoughness; float hairSpecular;') + HAIR_LIGHTING_GLSL);
+              'struct PhysicalMaterial { vec3 hairTangent; float hairScatter; float hairRoughness; float hairSpecular;')
+              + (DEV_HAIR_UE_SCATTER ? '\n#define RECOVERED_HAIR_UE_SCATTER\n' : '') + HAIR_LIGHTING_GLSL);
+            if (DEV_HAIR_NO_SHADOW) fragment = replaceChunk(fragment, 'lights_fragment_begin',
+              THREE.ShaderChunk.lights_fragment_begin.replaceAll('&& receiveShadow )', '&& false )'));
             fragment = replaceChunk(fragment, 'lights_fragment_maps', `
               #if defined(USE_ENVMAP) && defined(ENVMAP_TYPE_CUBE_UV)
                 iblIrradiance += getIBLIrradiance(recoveredHairFacingNormal(geometryViewDir, material.hairTangent));
               #endif
             `);
+          }
+          // (w157) UE MSM_Subsurface lighting: the captured o4 subsurface colour when the slice recorded subsurfaceShading
+          // and Studio lighting v2 is on (it ships with the recalibrated rig, rig/StudioLighting.ts); otherwise only the dev
+          // measurement (?clothSss=c, colour = c * base colour). Subsurface opacity is the solid garment's 1.
+          const subsurfaceShading = !!manifest.subsurfaceShading && !hair && STUDIO_LIGHTING_V2;
+          const devClothSss = !subsurfaceShading && DEV_CLOTH_SSS !== null && !!manifest.viewDependentCloth && !hair;
+          if (subsurfaceShading || devClothSss) {
+            fragment = replaceChunk(fragment, 'lights_physical_pars_fragment',
+              THREE.ShaderChunk.lights_physical_pars_fragment + RECOVERED_SUBSURFACE_DIRECT_GLSL);
           }
           if (usesGeometry) fragment = "varying float vRecoveredHandedness;\n" + fragment;
           if (localPosition) fragment = "varying vec3 vRecoveredLocalPosition;\n" + fragment;
@@ -804,6 +877,9 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
             ` : ""}
             ReconstructedSurface recovered = recoveredSurface(vRecoveredUv0, vRecoveredUv1${manifest.viewDependentCloth ? ", recoveredViewTangent" : ""}${usesGeometry ? ", recoveredGeometry" : ""});
             diffuseColor.rgb = recovered.baseColor;
+            ${subsurfaceShading ? `recoveredSubsurfaceColor = max(recovered.subsurfaceColor, vec3(0.0));
+            recoveredSubsurfaceAo = recovered.ao;` : devClothSss ? `recoveredSubsurfaceColor = ${DEV_CLOTH_SSS!.toFixed(4)} * recovered.baseColor;
+            recoveredSubsurfaceAo = recovered.ao;` : ""}
             ${masked || parametric || (glass && view === 'lit') || thinPass ? "diffuseColor.a *= clamp(recovered.opacity, 0.0, 1.0);" : ""}
             ${manifest.skinSurface && skinOptions?.preserveAlpha && !neckFade ? `
               #ifdef USE_MAP
@@ -864,7 +940,10 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
               material.hairRoughness = recovered.roughness;
               material.hairSpecular = recovered.specular;` : ''}
           `);
-          fragment = replaceChunk(fragment, "aomap_fragment", "reflectedLight.indirectDiffuse *= recovered.ao;");
+          fragment = replaceChunk(fragment, "aomap_fragment", (DEV_CLOTH_SKY && manifest.viewDependentCloth
+            ? "reflectedLight.indirectDiffuse *= 2.0;\n" : "")
+            + (subsurfaceShading || devClothSss ? "reflectedLight.indirectDiffuse += (irradiance + iblIrradiance) * BRDF_Lambert(recoveredSubsurfaceColor);\n" : "")
+            + (hair && DEV_HAIR_AO_ONE ? "" : "reflectedLight.indirectDiffuse *= recovered.ao;"));
           if (thinPass === 'multiply') {
             // o1 (thin_translucent_contract POLICY): exp(log T / NoV) (1 - F)^2 (1 - opacity), NoV = min(|N.V| + 1e-5, 1),
             // F = F0 (1 - Fc) + saturate(50 F0.g) Fc, Fc = (1 - NoV)^5, F0 = lerp(0.08 Specular, BaseColor, Metallic);

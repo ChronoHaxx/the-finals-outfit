@@ -498,6 +498,24 @@ test('a face-shadow layer mixes roughness by its own coverage after every paint 
   assert.match(h.key(), /f0\.75/, 'the shadow enters the program identity');
 });
 
+// (w163) A BlackEyes FaceShadowMask override only shows where the head's master declares FaceShadow: M_Face and
+// M_Face_Hardsurface do, the LED-screen and Space blank faces do not (w163-demonmask/face-master-check-v1).
+test('a face-shadow layer skips heads whose root master declares no FaceShadow, keeping other head paint', async () => {
+  const shadow: RigDecalLayer = { target: 'head', colorUrl: 'models/masks/blackeyes_shadow.png', faceShadowRoughness: 0.75 };
+  const paint: RigDecalLayer = { ...SURFACE_PAINT, target: 'head', uv: 0, uvScale: [1, 1] };
+  for (const [root, applies] of [['M_Face', true], ['M_Face_Hardsurface', true], [undefined, true],
+    ['M_Face_LEDScreen', false], ['M_Face_Space', false]] as const) {
+    const h = harness({ reconstructed: true });
+    h.material.userData.sourceRoot = root;
+    await h.decals.set('companion:facewear', { layers: [shadow] });
+    await h.decals.set('blush', { layers: [paint] });
+    const { fragmentShader } = h.compile();
+    assert.equal(/decalShadowCoverage/.test(fragmentShader), applies, `face shadow on ${root}`);
+    assert.match(fragmentShader, /decalSurfCoverage0 = dc\.a/, `head paint still composites on ${root}`);
+    assert.equal(/f0\.75/.test(h.key()), applies, `program identity on ${root}`);
+  }
+});
+
 test('faceShadowRoughness is ignored off the head or on a source paint layout', async () => {
   for (const layer of [{ target: 'body', colorUrl: 'x_c.png', faceShadowRoughness: 0.75 },
     { ...PAINT, target: 'head', uv: 0, uvScale: [1, 1], faceShadowRoughness: 0.75 }] as RigDecalLayer[]) {

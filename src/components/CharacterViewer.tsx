@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
+import { STUDIO_LIGHTING_V2, STUDIO_RIG_V1, STUDIO_RIG_V2 } from "../rig/StudioLighting";
 import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
 import { bodyTypePreview, isBodyTypeId, type BodyTypeId, type BodyTypePreview } from "../rig/BodyTypePreview";
 import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
@@ -134,6 +135,23 @@ function readDevParams(): DevParams {
   };
 }
 const DEV = readDevParams();
+
+// The Studio rig's numbers in one place (w157 lighting calibration, 8-10 Nov 2026): v1 is the rig as it shipped through
+// PR #28, v2 the recalibrated rig that ships with the cloth subsurface lighting (rig/StudioLighting.ts). Dev builds only:
+// ?light=key:value,... overrides single values for a capture (e.g. ?light=room:0.1,env:1,key:2.5,fill:0.8); production
+// ignores the parameter.
+const STUDIO_RIG_DEFAULTS = STUDIO_LIGHTING_V2 ? STUDIO_RIG_V2 : STUDIO_RIG_V1;
+type StudioRig = typeof STUDIO_RIG_DEFAULTS;
+function readStudioRig(): StudioRig {
+  const rig = { ...STUDIO_RIG_DEFAULTS };
+  if (typeof window === "undefined" || !import.meta.env.DEV) return rig;
+  for (const pair of new URLSearchParams(window.location.search).get("light")?.split(",") ?? []) {
+    const [key, raw] = pair.split(":"), value = Number(raw);
+    if (key in rig && Number.isFinite(value) && value >= 0) rig[key as keyof StudioRig] = value;
+  }
+  return rig;
+}
+const STUDIO_RIG = readStudioRig();
 
 // Browser harness contract (visual-diff and shader-probe checks): `__rigIdle` is false while
 // body or outfit work is in flight and true once that work settles, including after a failure.
@@ -268,7 +286,7 @@ function toRigMaterialBindings(
 function makeSoftboxScene(): THREE.Scene {
   const scene = new THREE.Scene();
   const roomMaterial = new THREE.MeshBasicMaterial({ side: THREE.BackSide });
-  roomMaterial.color.setScalar(0.4); // linear radiance, not an sRGB colour swatch
+  roomMaterial.color.setScalar(STUDIO_RIG.room); // linear radiance, not an sRGB colour swatch
   const room = new THREE.Mesh(
     new THREE.BoxGeometry(14, 14, 14),
     roomMaterial,
@@ -282,9 +300,9 @@ function makeSoftboxScene(): THREE.Scene {
     m.lookAt(0, 1, 0);
     scene.add(m);
   };
-  panel(8, 6, 7, [1.5, 6, 3]); // top-front key softbox
-  panel(8, 6, 3, [-4.5, 2.5, 2]); // camera-left fill
-  panel(6, 6, 2, [4.5, 2, -2.5]); // back-right accent
+  panel(8, 6, STUDIO_RIG.keyPanel, [1.5, 6, 3]); // top-front key softbox
+  panel(8, 6, STUDIO_RIG.fillPanel, [-4.5, 2.5, 2]); // camera-left fill
+  panel(6, 6, STUDIO_RIG.accentPanel, [4.5, 2, -2.5]); // back-right accent
   return scene;
 }
 
@@ -365,7 +383,7 @@ function KeyLight() {
     <directionalLight
       ref={ref}
       position={[2.5, 6, 4]}
-      intensity={1.2}
+      intensity={STUDIO_RIG.key}
       color="#ffffff"
       castShadow
       shadow-mapSize-width={mapSize}
@@ -381,11 +399,13 @@ function KeyLight() {
 function StudioLights() {
   return (
     <>
-      <StudioEnvironment intensity={1.5} softbox />
-      <hemisphereLight args={["#e8edf4", "#c4c8ce", 0.5]} />
+      <StudioEnvironment intensity={STUDIO_RIG.env} softbox />
+      <hemisphereLight args={["#e8edf4", "#c4c8ce", STUDIO_RIG.hemi]} />
       <KeyLight />
+      {/* unshadowed direct fill from the camera-left fill panel's direction (w157; 0 = absent, as shipped) */}
+      {STUDIO_RIG.fill > 0 && <directionalLight position={[-4.5, 2.5, 2]} intensity={STUDIO_RIG.fill} color="#ffffff" />}
       {/* neutral back-top rim for silhouette separation */}
-      <directionalLight position={[-3, 4.5, -4]} intensity={0.5} color="#ffffff" />
+      <directionalLight position={[-3, 4.5, -4]} intensity={STUDIO_RIG.rim} color="#ffffff" />
       <ContactShadows
         position={[0, 0, 0]}
         opacity={0.35}
@@ -1053,7 +1073,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
             : theme === "studio"
               ? THREE.NeutralToneMapping
               : THREE.ACESFilmicToneMapping,
-          toneMappingExposure: theme === "studio" ? 1.0 : 1.05,
+          toneMappingExposure: theme === "studio" ? STUDIO_RIG.exposure : 1.05,
           outputColorSpace: THREE.SRGBColorSpace,
         }}
       >

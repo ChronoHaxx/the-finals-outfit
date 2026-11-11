@@ -270,5 +270,13 @@
   "attachments-shovel-01-back": {
     "status": "issue",
     "note": "Known visual error (w152-backfill review, 6 Nov 2026): shape, wooden shaft and red D-grip match, but the blade reads light grey against the icon's black: its authored base colour is near-black (temporal=0 baseColor about 51,51,52) and the CR alpha makes it partly metallic (ActivateAlphaMetallic_s 1, alpha 0.28-0.46), so it reflects the bright studio: the game studio's darker environment reflected in metal, held decision #3 (studio lighting), as the wave 53 guitar plate and the w76 trail stove. Evidence: _docs/goal-100-2026-10-11/w152-backfill/review/shovel-lit-base.jpg, _docs/goal-100-2026-10-11/w152-backfill/review/shovel-CR.jpg, _docs/goal-100-2026-10-11/w152-backfill/review/zoom-recaptures.jpg."
+  },
+  "cute-tanukicostumefur-cotton": {
+    "status": "issue",
+    "note": "Known visual error (w154-small-reds review, 7 Nov 2026): body, sleeves, tail and hood match, but the two side fur-plane cards read near-black in the Studio view against the icon's pale wisps. Their base colour is the authored pale beige; their AO is the authored vertex colour G = 0 (all 8,967 vertices), which removes indirect light, and the Studio view is mostly indirect light; in the Lobby view they render pale like the icon. Held decision #3 (studio lighting), as the w152 shovel. Evidence: _docs/goal-100-2026-10-11/w154-small-reds/review/ (sheet-tanuki.jpg, head-base-y0, head-ao-y0, head-lobby-y0, fable-hair-ao-v1.md)."
+  },
+  "halloween-demonmask-canvas": {
+    "status": "polish",
+    "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 11 Nov 2026): the skin around the eyes goes black inside the ragged eye holes, as in the icon. Faces 01/05/21 reviewed (w163-demonmask/review-v2, zoom-eyes.png)."
   }
 }

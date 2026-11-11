@@ -263124,7 +263124,17 @@
     "tags": [
       "canvas"
     ],
-    "season": 12
+    "season": 12,
+    "companionDecal": {
+      "layers": [
+        {
+          "target": "head",
+          "colorPath": "models/reconstructed-face-shadow-v4/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+          "colorLinear": true,
+          "faceShadowRoughness": 0.75
+        }
+      ]
+    }
   },
   {
     "id": "halloween-opentop-leather",
