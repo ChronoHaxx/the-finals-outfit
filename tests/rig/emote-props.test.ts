@@ -10,6 +10,7 @@ import type { ClipInfo } from "../../src/rig/RigAnimator";
 // browser and no GLB decoding: props.json is stubbed through fetch and templates come from an injected loader.
 
 const SEQ = "HM_Test_Emote_00";
+const SEQ_TRANSFORMS = "HM_Test_Emote_Transforms_00";
 const manifest: PropsManifest = {
   formatVersion: 1,
   sockets: { item_attach: { bone: "hand_r", translation: [0.1, 0, 0], rotation: [0, 0, 0, 1], scale: [1, 1, 1] } },
@@ -24,6 +25,14 @@ const manifest: PropsManifest = {
       { actor: "Wings", socket: null, start: 0.5, duration: 5, shown: true },
       { actor: "Teddy", socket: "item_attach", start: 1, duration: 3, shown: true },
       { actor: "Sparks_FX", socket: null, start: 0, duration: 1, shown: false },
+    ],
+    // The spawn notify's RelativeTransform (football: scale 0.16; office chair: 90 degrees), next to a plain spawn of the
+    // same actor on the same socket, and a socket on a bone chain under the root (ik_hand_root > ik_hand_l).
+    [SEQ_TRANSFORMS]: [
+      { actor: "Bat", socket: "prop_01", start: 0, duration: 4, shown: true,
+        transform: { translation: [0.3, 0, 0], rotation: [0.7071068, 0, 0, 0.7071068], scale: [0.16, 0.16, 0.16] } },
+      { actor: "Bat", socket: "prop_01", start: 0, duration: 4, shown: true },
+      { actor: "Bat", socket: "ik_hand_l", start: 0, duration: 4, shown: true },
     ],
   },
 };
@@ -121,6 +130,34 @@ test("skeletal props run on the emote's PropAnimSequenceTime or from spawn, set 
   assert.ok(Math.abs(teddy.position.x - 1.5) < 1e-6, "the same time gives the same pose (paused frames converge)");
   props.update(2.0);
   assert.ok(Math.abs(teddy.position.x - 1.0) < 1e-6, "seeking back works");
+});
+
+test("a notify transform places that spawn only: not the socket node, the template, or another spawn of the actor", async () => {
+  const bones = [...attachBones,
+    { name: "ik_hand_root", parent: "root", position: [0, 0, 0], quaternion: [0, 0, 0, 1] },
+    { name: "ik_hand_l", parent: "ik_hand_root", position: [0.2, 1, 0], quaternion: [0, 0, 0, 1] }];
+  const props = new EmoteProps("http://test/animations/props/props.json", bones, componentSpace, loader);
+  const rig = body();
+  props.attach(rig.scene);
+  await props.prepare(SEQ_TRANSFORMS);
+  props.setEmote(SEQ_TRANSFORMS);
+  props.update(1);
+  const prop01 = rig.scene.getObjectByName("prop_01")!;
+  const onProp01 = prop01.children.filter(c => c.name === "emote-prop:Bat");
+  assert.equal(onProp01.length, 2, "both spawns hang from prop_01 itself");
+  const [moved, plain] = onProp01;
+  assert.deepEqual(moved.position.toArray().map(v => +v.toFixed(6)), [0.3, 0, 0]);
+  assert.ok(Math.abs(moved.quaternion.x - 0.7071068) < 1e-6 && Math.abs(moved.quaternion.w - 0.7071068) < 1e-6, "90 degrees about x");
+  assert.deepEqual(moved.scale.toArray().map(v => +v.toFixed(6)), [0.16, 0.16, 0.16]);
+  assert.deepEqual([plain.position.toArray(), plain.quaternion.toArray(), plain.scale.toArray()], [[0, 0, 0], [0, 0, 0, 1], [1, 1, 1]],
+    "a spawn without a transform stays at the socket");
+  assert.deepEqual(prop01.scale.toArray(), [1, 1, 1], "the shared socket bone is not scaled");
+  assert.ok(Math.abs(prop01.position.z + 1.2487) < 1e-9, "nor moved");
+  const ik = rig.scene.getObjectByName("ik_hand_l")!;
+  assert.equal(ik.parent?.name, "ik_hand_root", "an attach bone chain under the root is added parent first");
+  assert.equal(ik.parent?.parent?.name, "root");
+  assert.equal(ik.children.filter(c => c.name === "emote-prop:Bat").length, 1, "its prop hangs there, not at the character origin");
+  props.detach();
 });
 
 test("hidden for still-pose draws, back afterwards only inside the window; a new emote drops the old props", async () => {

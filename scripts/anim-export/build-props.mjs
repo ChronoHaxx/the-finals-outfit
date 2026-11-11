@@ -35,6 +35,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import sharp from "sharp";
+import { notifyTransform } from "./notify-transform.mjs";
 
 const [mode = "build", ...rest] = process.argv.slice(2);
 const args = Object.fromEntries(rest.reduce((pairs, arg, i, all) => arg.startsWith("--") ? [...pairs, [arg.slice(2), all[i + 1]]] : pairs, []));
@@ -517,12 +518,18 @@ for (const e of skeletonFile ? JSON.parse(readFileSync(skeletonFile, "utf8")).fi
   const p = e.Properties ?? {};
   sockets[p.SocketName.toLowerCase()] = { bone: p.BoneName, translation: toThreeT(p.RelativeLocation), rotation: toThreeQ(rotatorQuat(p.RelativeRotation)), scale: toThreeS(p.RelativeScale) };
 }
+// Each window carries its notify's RelativeTransform (notify-transform.mjs: it places the actor relative to its socket;
+// dropped until 10 Nov 2026, so the football showed 6x too big and chairs lay on their side). It composes with the
+// actor's own components baked into the GLB, the RainCoat soil's root scale 0.35 included (x notify 0.4).
 const emotes = {};
 for (const e of catalog) {
-  const props = e.notifies.filter(n => n.kind === "prop").map(n => ({
-    actor: n.asset, socket: n.socket ? n.socket.toLowerCase() : null, start: n.start, duration: n.duration,
-    shown: !!actors[n.asset],
-  }));
+  const props = e.notifies.filter(n => n.kind === "prop").map(n => {
+    const transform = notifyTransform(n.relativeTransform);
+    return {
+      actor: n.asset, socket: n.socket ? n.socket.toLowerCase() : null, start: n.start, duration: n.duration,
+      shown: !!actors[n.asset], ...(transform ? { transform } : {}),
+    };
+  });
   if (props.length) emotes[e.sequence] = props;
 }
 const manifest = { formatVersion: 1, generatedAt: new Date().toISOString(), tool: "scripts/anim-export/build-props.mjs", maxTexture,
