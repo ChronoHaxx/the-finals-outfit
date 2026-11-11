@@ -121,6 +121,8 @@ export interface AnimatorState {
   paused: boolean;
   /** Approximate secondary motion on garment jiggle chains (SpringBones.ts) while the pose moves. */
   sway: boolean;
+  /** Emotes and reactions repeat from their first frame instead of returning to the idle (the timeline's Loop). */
+  loopEmote: boolean;
   idle: string | null;
   current: string | null; // the clip in front: an emote while it plays, else the idle
   loading: string | null;
@@ -211,7 +213,7 @@ export class RigAnimator {
   private still = new Map<THREE.Object3D, [THREE.Vector3, THREE.Quaternion, THREE.Vector3]>();
   private holding = false;
   private held: PoseRecord | null = null;
-  private snapshot: AnimatorState = { active: false, moving: false, paused: false, sway: true, idle: null, current: null, loading: null, error: null };
+  private snapshot: AnimatorState = { active: false, moving: false, paused: false, sway: true, loopEmote: false, idle: null, current: null, loading: null, error: null };
   /** Rebuilt by the viewer once an outfit pass settles (the chains change with the outfit); reset before unpinning. */
   readonly springs = new SpringBones();
   /** The body's ported deformation rig (null for a body without the helper joints); built when the mixer binds. */
@@ -222,8 +224,9 @@ export class RigAnimator {
   readonly props: EmoteProps;
 
   constructor(readonly manifest: AnimationManifest, private readonly clipBase: string,
-    options: { sway?: boolean; deform?: boolean; propsUrl?: string | null } = {}) {
+    options: { sway?: boolean; deform?: boolean; loopEmote?: boolean; propsUrl?: string | null } = {}) {
     this.snapshot.sway = options.sway ?? true;
+    this.snapshot.loopEmote = options.loopEmote ?? false;
     this.deformEnabled = options.deform ?? true;
     this.props = new EmoteProps(options.propsUrl ?? null, manifest.attachBones ?? [], manifest.componentSpace ?? null);
   }
@@ -247,6 +250,21 @@ export class RigAnimator {
   setSway(on: boolean): void {
     if (!on) this.springs.reset();
     this.publish({ sway: on });
+  }
+
+  /** Loop emotes (11 Nov 2026): the emote in front, and every emote after it, repeats until turned off, closed or
+   *  replaced. Turned off mid-play, it finishes its current pass and returns to the idle as before. */
+  setLoopEmote(on: boolean): void {
+    this.publish({ loopEmote: on });
+    if (this.emoteAction) this.emoteLoop(this.emoteAction);
+  }
+
+  /** A one-shot clip's loop mode. Off: once, clamped on its last frame, so "finished" fires (see onFinished). On: three
+   *  wraps the clock past the end and never fires "finished"; the props follow the wrapped time (props.update). */
+  private emoteLoop(action: THREE.AnimationAction): void {
+    if (this.snapshot.loopEmote) action.setLoop(THREE.LoopRepeat, Infinity);
+    else action.setLoop(THREE.LoopOnce, 1);
+    action.clampWhenFinished = true;
   }
 
   get state(): AnimatorState { return this.snapshot; }
@@ -478,8 +496,7 @@ export class RigAnimator {
       this.idleAction = action;
       this.props.setEmote(null);
     } else {
-      action.setLoop(THREE.LoopOnce, 1);
-      action.clampWhenFinished = true;
+      this.emoteLoop(action);
       const previous = this.emoteAction ?? this.idleAction;
       action.reset().play();
       if (previous && previous !== action) previous.crossFadeTo(action, FADE, false); else if (!previous) action.fadeIn(FADE);

@@ -126,10 +126,10 @@ sharpness (1 = the converged still frame).
 | Clip | Old Low / Balanced (screen-locked) | Old High | Now (every preset) |
 | --- | --- | --- | --- |
 | Idle | 13.9 / 0.85 | 6.6 / 0.92 | 4.95 / 0.975 |
-| Clap | 27.1 / 0.65 | 13.5 / 0.81 | CLAP_NEW |
-| Shadow-boxing | 29.0 / 0.59 | 17.2 / 0.73 | BOXING_NEW |
+| Clap | 27.1 / 0.65 | 13.5 / 0.81 | 7.49 / 0.96 |
+| Shadow-boxing | 29.0 / 0.59 | 17.2 / 0.73 | 8.50 / 0.96 |
 
-- Held pose on the moving path (frame-to-frame change on print pixels, levels): old High HOLD_OLD, now HOLD_NEW.
+- Held pose on the moving path (frame-to-frame change on print pixels, levels): old High 0.64, now 1.38.
 - Hair ground truth (`scripts/anim-export/probe-truth.mjs`, 1x, old High vs now): idle ponytail hair 6.64 vs 6.65, whole
   character 2.31 vs 2.25; Disco hair 11.05 vs 10.74, whole character 5.68 vs 4.91. Hair is unchanged, as intended
   (alpha-hashed pixels keep 1/16).

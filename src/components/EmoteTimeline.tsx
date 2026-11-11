@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { RigAnimator } from "../rig/RigAnimator";
 import { frameAt } from "../lib/share-pose";
-import { useAnimatorState } from "./AnimationControls";
-import { CloseIcon, FrameStepIcon, PauseIcon, PlayIcon } from "./Icons";
+import { setEmoteLoop, useAnimatorState } from "./AnimationControls";
+import { CloseIcon, FrameStepIcon, LoopIcon, PauseIcon, PlayIcon } from "./Icons";
 
 // The emote timeline (10 Nov 2026): people use the viewer as a pose reference, so an emote can be paused, dragged
 // through and stepped a frame at a time, and the frame shared (ShareBuild.tsx records it).
@@ -15,6 +15,10 @@ import { CloseIcon, FrameStepIcon, PauseIcon, PlayIcon } from "./Icons";
 //
 // Pausing, dragging or stepping marks the emote "inspected": at its end it stays on the last frame instead of returning
 // to the idle; play from there starts it again; the close button goes back to the idle.
+//
+// Loop (11 Nov 2026): the emote repeats from its first frame until Loop is turned off (it then finishes the pass and
+// returns to the idle), the close button, or another pick. It applies to every later emote too, and is remembered in
+// this browser.
 
 /** Keys typed into a field are the field's. Sliders, buttons and boxes do not take , or . themselves. */
 function typing(target: EventTarget | null): boolean {
@@ -118,6 +122,11 @@ export function EmoteTimeline({ animator }: { animator: RigAnimator }) {
         <span className="text-fg normal-case">{seconds}&thinsp;s</span>
         <span className="block text-fg-dim">{frame}&thinsp;/&thinsp;{lastFrame}</span>
       </span>
+      <button type="button" className={`${button} ${state.loopEmote ? "text-finals" : "text-fg-muted"}`}
+        onClick={() => setEmoteLoop(animator, !state.loopEmote)} aria-pressed={state.loopEmote} aria-label="Loop"
+        title={state.loopEmote ? "Looping: play once instead" : "Loop the emote"}>
+        <LoopIcon />
+      </button>
       <button type="button" className={`${button} text-fg-muted`} onClick={() => animator.leaveEmote()}
         aria-label="Close the emote" title="Back to the idle">
         <CloseIcon size={12} />
