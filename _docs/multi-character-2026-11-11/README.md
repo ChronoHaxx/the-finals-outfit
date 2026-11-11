@@ -4,7 +4,11 @@ The request (11 Nov): "maybe the whole add more characters blender/3d editor mod
 one scene, each with its own outfit, emote and pose, plus an editor mode: select a character, move and rotate it with
 a gizmo, set each one's emote and time, frame the camera. Group shots and dioramas.
 
-This is a design only. Nothing is implemented. The decisions at the end are yours.
+This is a design only. Nothing is implemented yet.
+
+**Decision (11 Nov 2026, the user): "Recommended MVP".** Read as the MVP below with its stated defaults: a separate
+Scene page, 3 characters on desktop / 2 on phones, characters hold a copy of their outfit, floor-only gizmo, links
+and Save image before the Worker card. Still open: which learning parts the user builds (decision 7).
 
 ## TLDR
 
@@ -15,7 +19,11 @@ This is a design only. Nothing is implemented. The decisions at the end are your
   in `CharacterViewer`, the outfit picker writes straight into the one global outfit, and saved outfits autosave
   whatever that global outfit holds. Scene mode built naively would **overwrite your saved outfits**. Step 1 is a
   refactor that changes nothing on screen.
-- **Cost per extra character** (measured, see "Measured cost"): about **270-350 MB of GPU memory** (raw 2048² textures are most of it) and **35-70 MB of download** (less when outfits share pieces or a face). Four characters drew at **38-58 ms a frame** on this PC while animating, against 11-14 ms for one, and a quarter of the pixels did not help: it is geometry/CPU bound, so the cap matters more than resolution.
+- **Cost per extra character** (measured, see "Measured cost"): about **270-350 MB of GPU memory** (raw 2048²
+  textures are most of it) and **35-70 MB of download** (less when outfits share pieces or a face). Four characters
+  drew at 38-58 ms a frame on this PC while animating, against 11-14 ms for one. A CPU profile shows that is all
+  JavaScript, mostly two fixable hot spots (bone matrices recomputed per render pass, bones walked per mesh), which
+  would also speed up today's builder.
 - **MVP I recommend:** a separate **Scene** page, up to 3 characters (2 on phones), each a copy of a
   saved outfit with its own emote/time, a **floor-only gizmo** (slide on the ground, turn around the vertical axis),
   click or list to select, "frame all / frame selected" camera, scenes saved like outfits (separate store, nothing
@@ -24,8 +32,10 @@ This is a design only. Nothing is implemented. The decisions at the end are your
 - **Never lose work:** saved outfits are not touched or migrated at all. Scenes get their own store with the same
   rules (records, journal, tombstones, keep unknown fields). Scene characters hold a copy of their outfit, so editing
   or deleting the outfit never breaks a scene.
-- **Phases:** 0 measure and decide → 1 refactor, no visible change → 2 two characters on the Scene page → 3 editor
-  (gizmo, picking, camera, save) → 4 sharing → 5 extras (body types, more characters, shared GPU memory).
+- **Phases:** 0 measure and decide (done on desktop) → 1 refactor, no visible change (5 separate commits) → 2 two
+  characters on the Scene page behind a flag, with saved scenes → 3 editor (gizmo, picking, camera, save image) →
+  4 sharing → 5 extras (body types, more characters, shared GPU memory).
+- **Reviewed by Fable** against the code; its corrections are folded in (see "Plan review").
 - **Parts you could build yourself** (you're learning this): the gizmo + raycast picking, the "frame all" camera
   maths, the placement-invariance test. Each is a self-contained exercise; see the end.
 
@@ -44,7 +54,14 @@ This is a design only. Nothing is implemented. The decisions at the end are your
 | `CharacterViewer.tsx:367-395, 409-416` | Key-light shadow frustum ±1.4 m × ±1.6 m around the origin; `ContactShadows` 3 m square at the origin | Characters further than about 1.4 m from the centre lose their shadows |
 | `src/rig/SharePreviewRender.ts` | Four angles of one character, framed on its pelvis | A group needs one framed view, not four turntable angles |
 | `src/lib/share-url.ts`, `workers/share-preview/src/share.ts:16` | `2.` codec: one outfit; Worker validates exactly that grammar | One outfit per link and card |
-| `src/rig/CharacterRig.ts:806-855` | Legacy statics: "is this near the ground" test on **world** y, head statics placed from **world** position without subtracting the bone's | Equips assume the rig root sits at the world origin, unrotated |
+| `src/rig/CharacterRig.ts:832-842` | Legacy head statics (earrings, glasses, masks, hats on a bone): the mesh's matrix is taken while its glTF scene is still detached, the socket bone's from the live, posed, placed skeleton, and the two are mixed | On a turned character the static keeps world-forward instead of the character's forward; equipping mid-emote also bakes the current pose into the offset (unverified). (The "near the ground" test at `:809` runs detached and is placement-safe.) |
+| `src/components/AnimationControls.tsx:107-160` | After each outfit pass: animation pins, spring rebuild, `rememberStillPose`, the first-motion start, `takePendingPose()` (a module singleton, `lib/share-pose.ts:82`), the remembered still/animated flag | Per-character logic inside a UI component; the pending link pose goes to whichever instance mounts first |
+| `AnimationControls.tsx:73` | `frameClock` (test clock): `steps++` once per frame driver | N drivers break `freezeAt` |
+| `src/lib/load-progress.ts` | Global download counters behind "Loading outfit… 12 MB" | Per-character progress only works with strictly sequential loads |
+| `ShareBuild`, `ProjectLinks`, `OutfitExportPanel`, `MaterialTuner` | Read `useBuildStore` | Would show the builder's outfit on the Scene page |
+| `CharacterViewer.tsx:1055` | `key={theme-canvasGeneration}` remounts the canvas on a theme toggle | With several rigs that re-uploads every texture (about 1 GB at four); the scene page must switch themes without a remount |
+| `CharacterViewer.tsx:538-541` | Body-load cleanup resets `prev` but not `companions` | Harmless today; matters once the outfit unit outlives the component (reload after context loss) |
+| `src/rig/loaders.ts:21` | In-flight download sharing is per loader instance; `mesh-bytes.ts` has no cache | Rigs must share one loader, or rely on the HTTP cache |
 | Harness globals | `__rigRoot`, `__rigIdle`, `__rigAnim`, `__sourceAssembly` | One character; the visual-diff and probe scripts read them |
 | Body types | `setBodyTypePreview` is per rig already, but production pins one Medium body; L/H meshes are not extracted | Per-character body type waits on the body-type project, not on this |
 
@@ -59,7 +76,14 @@ Things that are already fine for several characters:
   second or turned character shaded wrong. Ours has no such global per-character uniform; worth one capture to
   confirm.)
 - The accumulator tracks every object's world matrix and treats a transform-only change as reprojectable
-  (`StableFrameState.ts:23-28`), so dragging a character reprojects instead of resetting.
+  (`StableFrameState.ts:23-28`), so dragging a character reprojects instead of resetting, **but only with TAA on the
+  High path** (`StableFrameAccumulator.ts:335-340`); MSAA, Off and Balanced restart the average on every drag frame.
+  Anything recorded as a non-transform input resets it too: refitting the shadow camera mid-drag would
+  (`StableFrameState.ts:163-171`), so refit on release.
+- Placement must stay "floor position + turn about the vertical axis": `DeformationRig` aims with world-up vectors
+  (`DeformationRig.ts:179-191`), safe for yaw and translation only. `SpringBones` simulates in world space, so a jump
+  (loading a scene, undo, snapping) would fling hair and straps: reset the springs on any placement change that is
+  not a drag. `OutfitExport.ts:146` bakes the placement into an export.
 
 ## Concepts (the mechanisms, briefly)
 
@@ -67,7 +91,9 @@ Things that are already fine for several characters:
 `matrixWorld` is its parent's `matrixWorld × its own local matrix`. Put each character under its own `Group` (call it
 the *placement*), and moving that group moves everything below it: body, bones, clothes, props. The rig itself never
 needs to know where it stands, **as long as its own code only uses positions relative to its root**. That is the
-"placement invariance" the legacy-statics code above breaks (it reads `matrixWorld`, which includes the placement).
+"placement invariance" the legacy head-statics code above breaks (it mixes a detached mesh's matrix with a placed,
+posed bone's `matrixWorld`). The fix computes the socket from the bones' rest matrices in rig space, as the
+animation pins already do (`CharacterRig.ts:424-470`), which also removes the dependence on the pose at equip time.
 
 **Instancing vs cloning vs separate loads.** Three ways to show "more of the same":
 
@@ -95,9 +121,12 @@ and a skinned mesh's bounding sphere is computed once and goes stale when it ani
 *proxy* (a capsule that follows the pelvis), which is one cheap ray test per character.
 
 **Why the gizmo must be an overlay here.** Every frame the still view renders the scene with a sub-pixel jitter and
-averages the results. A gizmo drawn into that scene would be averaged and blurred, and its handles' hash-dithered
-edges would never settle. The gizmo, the selection ring and any guides belong in a second, small scene drawn on top
-after the accumulator has presented its frame.
+averages the results. A gizmo inside that scene would be jittered and averaged with it, every hover highlight is a
+material change that restarts the average, the velocity and contact-shadow passes would draw it, and it would end
+up in a saved image. The gizmo, the selection ring and any guides belong in a second, small scene drawn on top
+after the accumulator has presented its frame. One catch: the still view presents its result as a full-screen
+picture, so the screen has no depth left for the overlay to test against. A floor ring then draws over the feet;
+accept that (it reads as a highlight) or draw a cheap depth-only stand-in for each character first.
 
 ## Measured cost
 
@@ -138,10 +167,46 @@ option B's shared body cache; GPU texture compression (biggest, but lossy agains
 | 1 character, idle | 63 | 0.57 M | 11.0 / 13.6 | 11.8 |
 | 4 characters | 228 | 2.29 M | 38.1 / 58.5 | 58.6 |
 
-Linear in characters, and **not fill-bound**: a quarter of the pixels changed nothing with four. The cost is per
-object (four passes each: main, velocity, shadow, contact shadow; CPU state capture and skinning), so lowering the
-resolution will not rescue a crowded scene; fewer characters, cheaper contact shadows and skipping the velocity
-pass for still characters will. A still scene converges and then stops redrawing, so photos are unaffected.
+Linear in characters, and **not fill-bound**: a quarter of the pixels changed nothing with four. The probe ran on
+the real GPU (`ANGLE (NVIDIA GeForce RTX 3080, D3D11)`, recorded by `turned-invariance.mjs`).
+
+**Where the time goes** (`profile-frame.mjs` → `profile-v1.json`: Chrome's sampling profiler, outfit B idling,
+graphics pinned to High, 4 s windows). The frame is **entirely main-thread JavaScript**:
+
+| | JS per frame | `Skeleton.update` | bone `updateWorldMatrix` + `multiplyMatrices` | still-view capture (`StableFrameState.value/visit/material`) |
+| --- | --- | --- | --- | --- |
+| 1 character | 8.1 ms | 1.2 ms | 2.1 ms | 1.7 ms |
+| 4 characters | 43.4 ms | 14.1 ms | 10.5 ms | 6.8 ms |
+
+Two causes, both fixable without touching what is drawn:
+
+1. three runs `Skeleton.update()` (bone matrices × inverse binds, then a bone-texture upload) once per skeleton **per
+   `render()` call** (its per-object update map is keyed on `info.render.frame`, which counts `render()` calls). The
+   still view makes several scene renders a frame (main, velocity, contact shadows), and every cosmetic has its own
+   skeleton bound to the same body bones, so each character's bones are multiplied out dozens of times a frame.
+   Fix: update each skeleton once per animation frame.
+2. The still view's input capture calls `bone.updateWorldMatrix(true, false)` for every bone of every skinned mesh
+   (`StableFrameState.ts:153`), which walks each bone up to the scene root, again per mesh. Fix: capture each
+   distinct bone once per frame after one scene-wide matrix update.
+
+Both also speed up today's builder (8 ms a frame, a lot of it on a phone). Lowering the resolution will not rescue a
+crowded scene; these two will. A still scene converges and then stops redrawing, so photos are unaffected. The cap
+of 3 stands for now and is re-measured after the fixes.
+
+**Turning a character** (`turned-invariance.mjs`, `turned-diff.mjs`; captures local in `shots/`, git-ignored). The
+character, camera, lights and environment map were turned together by 90° and 180° about the vertical axis. A renderer
+with no hidden "faces +Z" assumption gives the same image. Mean absolute difference over the character (0-255):
+
+| Outfit | 90° | 180° | Verdict |
+| --- | --- | --- | --- |
+| Street (face 01, ponytail, bomber jacket, jeans, sneakers) | 0 (max 10) | 0 (max 11) | invariant: skin, hair, layered cloth are safe to turn |
+| Cel (anime-archer top, skirt, geta) | 2.7 (6.5% of pixels over 16) | 4.8 (11%) | **not invariant**: every cel garment shades darker turned; face, hair and skin unchanged |
+
+The cel family carries a world-fixed lighting term that our lights do not drive (its notes record a pinned in-game
+sun, but a vertical sun alone would not change under a yaw turn, so another term is involved; not identified yet).
+In a scene that means a turned cel contestant shades as if lit from a fixed world direction, whatever the studio
+lights do. To investigate before Phase 3 (which pins, how many items use them); not a blocker for Phase 1.
+(The environment map turns by +θ with the scene, not −θ: the −θ capture at 90° differed by 0.96 on the street outfit.)
 
 ## Options
 
@@ -151,7 +216,7 @@ Each character is a `SceneCharacter` = placement `Group` → its own `CharacterR
 own `RigAnimator` + an `OutfitSync` (today's effect, extracted). One canvas, one light rig, one accumulator, one
 orbit camera.
 
-- Shares: downloads (HTTP cache, the loader's in-flight dedupe, the 128 MB verified-byte cache in
+- Shares: downloads (HTTP cache, the in-flight dedupe of one shared `createGltfLoader()`, the 128 MB verified-byte cache in
   `lib/verified-bytes.ts`), compiled shader programs for identical reconstructed materials (their cache keys are
   content keys), animation clip files and emote prop templates (once their caches move to module level).
 - Does not share: GPU textures, geometry and materials (per-character masks, tints, decals; the head-wrap path edits
@@ -225,16 +290,25 @@ interface SceneCharacter {
 ```
 
 - **No migration of anything existing.** Scenes live in their own IndexedDB database (not a new object store in
-  `finals-outfit`, which would need a version bump that another open tab can block) and their own journal key prefix.
+  `finals-outfit`, which would need a version bump that another open tab can block) under a **disjoint key root**,
+  `finals-scene:` for the journal, localStorage fallback, tab key and BroadcastChannel. The outfit storage scans
+  `finals-outfit:journal:` and `finals-outfit:outfit:` by prefix (`outfit-storage.ts:190, 251`), so a scene key
+  under either would be replayed as an outfit; a test opens the outfit library beside scene data and sees none of it.
   The same core (`lib/outfit-library.ts`) generalised to a record type, or a sibling module with the same tests.
-- **Copies, not links.** Deleting or editing a saved outfit cannot break a scene; a scene character whose item left
+- **Characters are merged one by one.** Each character has its own `updatedAt` and a tombstone when removed, so two
+  tabs editing different characters merge instead of forking the whole scene, and "remove" survives a closed tab.
+  Writes go per character by id and never rebuild the list from what is on screen: a 3-character scene opened on a
+  phone that shows 2 keeps the third on every write-back.
+- **Copies, not links.** A character copies the outfit's whole content (not only `slots` and `labels`, so a future
+  field such as dyes comes along). Deleting or editing a saved outfit cannot break a scene; a scene character whose item left
   the catalogue keeps the id and label, shows the gap, and the rest still renders (the same "missing pieces kept" rule
   saved outfits use).
 - **Scene edits never reach `useBuildStore`.** The picker and outfit bar get the outfit they edit injected (a small
   `BuildTarget` context: `build`, `toggle`, `unequip`); the builder passes the global store, the scene page passes
   the selected character. This removes the autosave-overwrite trap at the source instead of suspending autosave.
 - **Save as it goes**: every add, remove, move (on release), emote change and camera "save view" is one write;
-  removing a character is undoable; deleting a scene is a tombstone with undo.
+  removing a character is a per-character tombstone with undo; deleting a scene is a tombstone with undo. The scene
+  page is never user-visible without this persistence (Phase 2 stays behind a flag).
 - **Loss tests** before Phase 3 ships: kill mid-drag, two tabs editing one scene, an outfit deleted under a scene, an
   item removed from the catalogue under a scene, a scene written by a newer schema opened by older code.
 
@@ -246,7 +320,8 @@ interface SceneCharacter {
   link does today.
 - **Card (Phase 4, needs your OK for the Worker deploy)**: one wide view from the scene's camera instead of four
   turntable angles; the Worker gains a second grammar (`s=`) beside `o=`. Until then, scene links share without a card.
-- **Save image (MVP)**: no network, no Worker.
+- **Save image (MVP)**: no network, no Worker. The canvas has no `preserveDrawingBuffer`, so the image is read from
+  the still view's converged target (overlay excluded), not from the canvas.
 - **Export 3D (dev panel)** stays per character; a scene export (several rigs in one glb) is a later, separate change.
 
 ## Risks
@@ -254,27 +329,40 @@ interface SceneCharacter {
 | Risk | Why | Mitigation |
 | --- | --- | --- |
 | Saved outfits overwritten from scene mode | autosave watches the global build | `BuildTarget` injection; a test that scene edits never change `useBuildStore` |
-| Refactor changes the builder | the outfit effect has years of edge cases (face/hair transactions, conflicts, companions) | Phase 1 is a pure extraction verified by the existing scenario checks and visual-diff before any scene code |
-| Statics misplaced on a moved character | world-space code in `CharacterRig` equip paths | Placement-invariance fix + a test: equip every slot kind under a moved/turned placement, compare root-relative matrices with an equip at the origin |
+| Refactor changes the builder | the outfit effect has years of edge cases (face/hair transactions, conflicts, companions) and its diff is path-dependent | Phase 1 moves the body verbatim and keeps the React effect; `phase1-equivalence.mjs` records the rig's structure after each of 12 scripted edits before and after (baseline recorded 11 Nov) |
+| Statics misplaced on a turned character | `CharacterRig.ts:832-842` mixes a detached mesh matrix with a placed, posed bone | Socket from rest matrices in rig space; a test equips every head-static kind under a turned placement (and mid-emote) and compares rig-space matrices with an equip at the origin |
 | GPU memory on phones | linear per character; context loss already handled by remounting | Cap per device class, load characters one at a time, measure in Phase 0, reload sequentially after a context loss |
-| Frame time | accumulator, velocity pass, shadows and contact shadows all draw every character | measured lower bound below; graphics presets already lower resolution; contact shadows can run less often |
-| Shadows cut off | fixed ±1.4 m frustum at the origin | fit the key light's frustum and the contact-shadow plane to the group's bounds each change (sharper shadows when characters stand close) |
+| Frame time | CPU: `Skeleton.update` per `render()` call and per-mesh bone walks in the still-view capture (profiled) | update skeletons once per frame; capture each bone once; re-profile before raising the cap |
+| Shadows cut off | fixed ±1.4 m frustum at the origin | fit the key light's frustum and the contact-shadow plane to the group's bounds on release, not mid-drag (a refit resets the still view) |
+| Springs flung | world-space spring simulation | reset springs on any non-drag placement change (load, undo, snap) |
+| Cel items turned | a world-fixed term in the cel family (measured) | identify the pin before Phase 3; until then a turned cel contestant may shade darker |
 | Gizmo blur / never converging | drawn through the accumulator | overlay scene after the still view |
 | Shader compile hitches | tinted legacy materials compile one program each (`CharacterRig.ts:2176`, `tintUid`) | reconstructed ones share programs; load characters sequentially; `compileAsync` |
 | Harness contracts | `__rigRoot`/`__rigIdle` are single-character | keep them meaning the builder's one character; scene gets `__scene` |
 
 ## Phased plan
 
-0. **Measure and decide (this doc).** Remaining measurements before Phase 2: a real second rig on a phone (memory,
-   frame time), and a turned-character capture of a face and a cel item.
-1. **Refactor, no visible change.** Extract `OutfitSync` from `CharacterViewer`; `BuildTarget` context for the
-   picker and outfit bar; animator clip and prop caches to module level; placement-invariance fixes and test. Checks:
-   existing tests, scenario captures and visual-diff identical before/after.
-2. **Two characters on `#/scene`.** Scene store (memory only), placement groups, per-character animator and
-   `OutfitSync`, sequential loading with per-character progress, accumulator `isMoving` over all animators, shadow
-   frustum fitting. Checks: frame time and memory with 2 and the cap, both themes.
-3. **Editor.** Overlay scene, floor gizmo, capsule picking, selection list, camera presets and frame all/selected,
-   transport, persistent scene library with loss tests, Save image, phone layout. Then your functional checklist.
+0. **Measure and decide (this doc).** Done on desktop: costs, CPU profile, turned characters. Still open: a real
+   second rig on your phone (memory, frame time), and what the cel family's world-fixed term is.
+1. **Refactor, no visible change**, as separate commits, each checked on its own:
+   1. Move the outfit effect's async body verbatim into `runOutfitPass(rig, build, state, signal, report)`; keep the
+      effect, its dependencies, overlapping-pass behaviour and the `__rigIdle`/`__sourceAssembly` timing. Reset
+      `companions` with `prev`. Check: `phase1-equivalence.mjs` identical to the baseline, tests, typecheck.
+   2. Move the per-character animation bookkeeping out of `AnimationControls` into a non-UI binding (pins, springs,
+      still pose, first motion, the pending link pose taken once by the builder's character).
+   3. One shared `createGltfLoader()`; clip and emote-prop template caches at module level.
+   4. Per-frame CPU: skeletons updated once per animation frame; the still-view capture visits each bone once.
+      Check: equivalence and still-view convergence unchanged, profile before/after.
+   5. Placement fix for head statics (rest matrices), with its test. This one changes equip code, so it is checked
+      on its own (and it is learning part 3).
+2. **Two characters on `#/scene`, behind a flag.** Placement groups, per-character animator and outfit pass, one
+   shared loader, sequential loading with per-character progress, `isMoving` over all animators, theme switch
+   without a canvas remount, shadow frustum fitting on release. The scene library with its loss tests lands here
+   too, before any editor work. Checks: frame time and memory with 2 and the cap, both themes, the loss tests.
+3. **Editor.** `BuildTarget` for the picker and outfit bar (needed from the first scene-character edit), overlay
+   scene, floor gizmo, capsule picking, selection list, camera presets and frame all/selected (from posed points
+   or the capsules, never skinned bounding boxes), transport, Save image from the still view's target, phone
+   layout. Then your functional checklist.
 4. **Sharing.** Scene links (no Worker change), then the scene card (Worker change and deploy, your OK).
 5. **Extras.** Per-character body type (when the body-type production control exists), more characters, the shared
    body/texture cache (option B) if phones need it, scene Export 3D.
@@ -305,4 +393,27 @@ when it works.
 
 ## Plan review
 
-Not done yet: the Fable plan review (authorised until 14 Nov) ran out of time in this session. Run it on this doc before Phase 1.
+Fable 5.2 reviewed this doc against the code on 11 Nov (an Agent subagent on the Fable model, read-only; no API
+credit). Each finding below was checked in the code before adopting it.
+
+Adopted:
+- **The cost was CPU, not geometry.** It asked for a profile before fixing the cap; the profile (above) found
+  `Skeleton.update` per `render()` call and per-mesh bone walks in the still-view capture. Its suggested culprit
+  (`StableFrameState.ts:153`) is one of the two.
+- **Reprojection while dragging is TAA-High only**, and a shadow refit mid-drag resets the still view
+  (`StableFrameAccumulator.ts:335-340`, `StableFrameState.ts:163-171`).
+- **The gizmo-overlay reasoning** (hover = material change, velocity/contact passes, saved images) and the missing
+  depth for the overlay.
+- **The placement defect is at `:832-842`, not `:809`** (verified: the glTF scene is added to the rig at `:870`,
+  after the test at `:809`), and the fix should use rest matrices. Placement = floor position + yaw; springs reset on
+  jumps.
+- **Missing single-character assumptions**, now in the table: `AnimationControls` bookkeeping, `takePendingPose`,
+  `frameClock`, load-progress counters, other `useBuildStore` readers, the canvas remount on theme change,
+  `companions` not reset, per-loader in-flight sharing.
+- **Phase 1 as separate commits** with a path-dependent, scripted before/after check; `BuildTarget` moved to Phase 3.
+- **Storage**: disjoint `finals-scene:` root (the outfit storage scans by prefix), per-character write-back and
+  tombstones, whole-outfit copies, per-character timestamps; persistence before the editor, Phase 2 behind a flag.
+- **Save image** from the still view's target; **Frame all** from posed points or proxies.
+
+Nothing was rejected. Its unverified aside (equipping glasses mid-emote bakes in the pose) goes into the placement
+test rather than being assumed.
