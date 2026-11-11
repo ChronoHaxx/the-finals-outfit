@@ -11,6 +11,10 @@ import { createGltfLoader } from "./loaders";
 // which hang under spine_03 (through weapon_buffer) and are animated by every emote clip: the clip moves the prop.
 // The rest are skeleton sockets (an offset from a hand), plain bones, or none (the character's own origin).
 //
+// The notify can also carry a RelativeTransform (rotation, offset, scale) that places the actor relative to its socket;
+// props.json carries it per window as `transform` (added 10 Nov 2026: it had been dropped, so footballs showed 6x too
+// big and chairs lay on their side).
+//
 // Here: scripts/anim-export/build-props.mjs rebuilt each prop actor as a GLB and wrote props.json (actors, sockets,
 // per-emote windows). convert-clips.mjs keeps the attach bones' tracks and lists their rest pose (`attachBones`), so
 // this class adds them as plain nodes under the body BEFORE the mixer binds (three resolves a track's target by name
@@ -30,7 +34,10 @@ export interface AttachBone { name: string; parent: string; position: number[]; 
 export interface ComponentSpace { under: string; quaternion: number[] }
 
 interface SocketInfo { bone: string; translation: number[]; rotation: number[]; scale: number[] }
-export interface PropWindow { actor: string; socket: string | null; start: number; duration: number; shown: boolean }
+/** The spawn notify's RelativeTransform, converted to the app's frame by build-props.mjs (absent: identity). */
+export interface PropTransform { translation?: number[]; rotation?: number[]; scale?: number[] }
+export interface PropWindow { actor: string; socket: string | null; start: number; duration: number; shown: boolean;
+  transform?: PropTransform }
 export interface PropsManifest {
   formatVersion: 1;
   sockets: Record<string, SocketInfo>;
@@ -220,6 +227,13 @@ export class EmoteProps {
         const parent = template ? this.socket(inCharacterSpace ? null : w.socket) : null;
         if (template && parent) {
           instance = cloneSkinned(template.scene);
+          // The notify places the actor relative to its socket (the football is authored ~1.1 m and scaled 0.16; the
+          // office chair is turned 90 degrees). It goes on this clone, never on the socket node or the template: those
+          // are shared with every other prop on the same socket and every later spawn.
+          const t = w.transform;
+          if (t?.translation) instance.position.fromArray(t.translation);
+          if (t?.rotation) instance.quaternion.fromArray(t.rotation);
+          if (t?.scale) instance.scale.fromArray(t.scale);
           parent.add(instance);
           this.instances[i] = instance;
           if (template.clips.length) {

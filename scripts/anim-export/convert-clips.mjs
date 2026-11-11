@@ -25,7 +25,8 @@
 // The output directory must not exist yet (each run is kept). public/animations/manifest.json is then pointed at it.
 // Clip lists from build-emote-catalog.mjs add, per clip, an `icon` (a thumbnail next to that clips.json, copied into
 // the set's icons/) and `emote` details (name, rarity, season, props/effects the preview does not show), both carried
-// into the manifest (--activate [--props <dir>] also points the app at the set and its props). Several emotes may play one animation: it is converted once and its file shared. A clip that
+// into the manifest (--activate [--props <dir>] also points the app at the set and its props; --props also adds the
+// bones the props' sockets need, so run build-props.mjs first). Several emotes may play one animation: it is converted once and its file shared. A clip that
 // cannot be converted (an additive animation, a missing export) is left out and listed under `skipped`.
 import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -85,14 +86,37 @@ if (worstNonRoot > 2e-4) throw new Error(`Joint ${worstNonRootName} does not fol
 const roots = [...frameFix.keys()];
 
 // --- Prop attach bones (from the master skeleton; each must hang under a body joint or another attach bone) ----------
-const ATTACH_BONES = ["weapon_buffer", "weapon_root", "prop_01"];
+// Always weapon_buffer > weapon_root / prop_01 (most props hang there). With --props <dir> (build-props.mjs output, run
+// first), also every other master-skeleton bone a shown prop's socket names (directly, or as a skeleton socket's bone)
+// that the body lacks, with its missing ancestors, parent first. Without that, such a prop fell back to the character
+// origin (10 Nov 2026: a Terracotta flower box on weapon_belt_01, the Botanist's props on ik_hand_l and
+// weapon_dynamic_part_attach_01). A bone under the root needs no frame fix of its own: the root's GLB local is
+// P * conv(UE local), so P is a left factor and every child of the root converts plainly (pelvis passes the check above).
+const BASE_ATTACH_BONES = ["weapon_buffer", "weapon_root", "prop_01"];
 const masterBones = JSON.parse(readFileSync(join(run, "skeleton.json"), "utf8")).bones;
+const masterIndex = new Map(masterBones.map((b, i) => [b.name.toLowerCase(), i]));
+const socketBones = new Set();
+if (args.props) {
+  const propsManifest = JSON.parse(readFileSync(join(resolve(args.props), "props.json"), "utf8"));
+  for (const windows of Object.values(propsManifest.emotes ?? {}))
+    for (const w of windows) if (w.shown && w.socket) socketBones.add(propsManifest.sockets?.[w.socket]?.bone ?? w.socket);
+}
+const ATTACH_BONES = [];
+for (const name of [...BASE_ATTACH_BONES, ...[...socketBones].sort()]) {
+  const index = masterIndex.get(name.toLowerCase());
+  if (index === undefined) {
+    if (BASE_ATTACH_BONES.includes(name)) throw new Error(`Attach bone ${name} is not in the master skeleton`);
+    console.warn(`Prop socket ${name} is not a master-skeleton bone; its props stay at the character origin`);
+    continue;
+  }
+  const chain = [];
+  for (let i = index; i >= 0 && !jointByName.has(masterBones[i].name); i = masterBones[i].parent ?? -1) chain.unshift(masterBones[i].name);
+  for (const bone of chain) if (!ATTACH_BONES.includes(bone)) ATTACH_BONES.push(bone);
+}
 const attachBones = ATTACH_BONES.map(name => {
-  const ref = masterBones.find(b => b.name === name);
-  if (!ref) throw new Error(`Attach bone ${name} is not in the master skeleton`);
+  const ref = masterBones[masterIndex.get(name.toLowerCase())];
   const parent = masterBones[ref.parent]?.name;
   if (!jointByName.has(parent) && !ATTACH_BONES.includes(parent)) throw new Error(`Attach bone ${name} hangs under ${parent}, which the body lacks`);
-  if (frameFix.has(parent)) throw new Error(`Attach bone ${name} hangs under the root; its frame would need the root fix`);
   return { name, parent, ref, local: convM(ref.t, ref.r) };
 });
 console.log(`Driver: ${joints.length} joints; mirror relation holds for every non-root joint (max element error ${worstNonRoot.toExponential(2)}); root frame fix on ${roots.join(", ")}`);
