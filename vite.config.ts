@@ -8,6 +8,7 @@ import { DEVELOPER_CATALOG_PATH } from "./src/lib/catalog-mode";
 import { CATALOG_FILES, shippedCatalogJson, type CatalogFileKey } from "./src/lib/catalog-files";
 import { parseReconstructionRoutes } from "./src/lib/asset-routing.mjs";
 import { loadRoadmap } from "./src/lib/roadmap";
+import { parseDenylist } from "./src/lib/public-text";
 
 const CATALOG_MODULE = "virtual:catalog-assets";
 const ROADMAP_MODULE = "virtual:roadmap";
@@ -15,6 +16,8 @@ const ROADMAP_MODULE = "virtual:roadmap";
 // The Roadmap page renders ROADMAP.md, parsed and checked here: the page has no copy that could
 // drift, and a malformed roadmap, or one not re-read since the newest patch note or catalog update,
 // fails the build (and shows Vite's error overlay in dev). See src/lib/roadmap.ts.
+// The roadmap and the patch notes are also checked for internal detail (src/lib/public-text.ts),
+// including the private denylist in PUBLIC_TEXT_DENYLIST: a repository secret in CI, unset locally.
 function roadmap(): Plugin {
   let path = "";
   return {
@@ -24,7 +27,8 @@ function roadmap(): Plugin {
     load(id) {
       if (id !== `\0${ROADMAP_MODULE}`) return;
       this.addWatchFile(path);
-      return `export const ROADMAP = ${JSON.stringify(loadRoadmap(readFileSync(path, "utf8")))};`;
+      const privateTerms = parseDenylist(process.env.PUBLIC_TEXT_DENYLIST);
+      return `export const ROADMAP = ${JSON.stringify(loadRoadmap(readFileSync(path, "utf8"), undefined, { privateTerms }))};`;
     },
     handleHotUpdate({ file, server }) {
       if (normalizePath(file) !== path) return;

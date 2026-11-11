@@ -74,6 +74,10 @@ jobs:
           VITE_SHARE_PREVIEW_BASE: ${{ env.SHARE_PREVIEW_BASE }}
           VITE_ANIMATIONS_BASE: ${{ env.ANIMATIONS_BASE }}
           VITE_RECONSTRUCTION_ROUTES_FILE: ${{ env.RECONSTRUCTION_ROUTES_FILE }}
+          # Terms public text must never contain (src/lib/public-text.ts). Only the build reads it, and it
+          # never prints a term. No VITE_ prefix, so it never reaches the app bundle. Empty when the secret
+          # is unset, and in pull requests from forks.
+          PUBLIC_TEXT_DENYLIST: ${{ secrets.PUBLIC_TEXT_DENYLIST }}
         run: npm run build
 
       - name: Check the catalog ships beside the entry chunk

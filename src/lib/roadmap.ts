@@ -1,5 +1,6 @@
 import { CATALOG_UPDATE } from "../data/catalog-update";
-import { CHANGELOG } from "../data/changelog";
+import { CHANGELOG, type ChangelogEntry } from "../data/changelog";
+import { lintPublicText } from "./public-text";
 
 // ROADMAP.md at the repository root is the roadmap's only source. The `roadmap` plugin in
 // vite.config.ts parses and checks it with this module at build time and hands the page the
@@ -14,6 +15,9 @@ export const ROADMAP_TOKENS = ["total", "blue", "red", "purple", "green", "lates
 export type RoadmapToken = (typeof ROADMAP_TOKENS)[number];
 
 export interface RoadmapItem {
+  /** Stable kebab-case id from the item's "<!-- id: ... -->" line. Patch notes and the internal board
+   *  refer to items by it, so it never changes and is never reused. */
+  id: string;
   title: string;
   description: readonly string[];
   tasks: readonly string[];
@@ -38,6 +42,9 @@ export class RoadmapError extends Error {
 }
 
 const DONE_WHEN = "Done when: ";
+// The one comment the parser reads: an item's id, on the line directly under its "### " title.
+const ID_COMMENT = /^<!--\s*id:\s*(.*?)\s*-->$/;
+const ITEM_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const LAST_REVIEWED = "Last reviewed:";
 const REVIEWED_AFTER = "Reviewed after patch note:";
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -46,8 +53,9 @@ const INLINE_MARKUP = /\*|__|`|\]\(|<[a-z/!]/i;
 // A count or percentage typed by hand goes stale with the next release: 209, 3,036, 92.4%.
 const HAND_TYPED_FIGURE = /\d[\d,.]*\s*%|\b\d{1,3}(?:,\d{3})+\b|\b\d{3,}\b/;
 
-function checkText(text: string, line: number, problems: string[]) {
+function checkText(text: string, line: number, problems: string[], privateTerms: readonly string[]) {
   const at = `line ${line}`;
+  problems.push(...lintPublicText(text, at, privateTerms));
   if (INLINE_MARKUP.test(text)) problems.push(`${at}: plain text only; the page does not render bold, code, links or HTML`);
   for (const [, name] of text.matchAll(/\{([^{}]*)\}/g)) {
     if (!(ROADMAP_TOKENS as readonly string[]).includes(name))
@@ -59,11 +67,23 @@ function checkText(text: string, line: number, problems: string[]) {
   if (figure) problems.push(`${at}: hand-typed figure "${figure[0]}"; use a placeholder such as {red} so the page shows the live count`);
 }
 
+export interface PublicTextOptions {
+  /** Terms from the private denylist (src/lib/public-text.ts), already parsed. */
+  privateTerms?: readonly string[];
+}
+
 /** Parses ROADMAP.md. Throws a RoadmapError listing every problem, with line numbers. */
-export function parseRoadmap(source: string): Roadmap {
+export function parseRoadmap(source: string, { privateTerms = [] }: PublicTextOptions = {}): Roadmap {
   const problems: string[] = [];
+  const normalised = source.replace(/\r\n?/g, "\n");
+  // Item ids are read before comments are blanked; every other comment is a maintainer note.
+  const idLines = new Map<number, string>();
+  normalised.split("\n").forEach((raw, index) => {
+    const match = raw.trim().match(ID_COMMENT);
+    if (match) idLines.set(index + 1, match[1]);
+  });
   // Blank out HTML comments (maintainer notes) while keeping the line numbering.
-  const text = source.replace(/\r\n?/g, "\n").replace(/<!--[\s\S]*?-->/g, comment => comment.replace(/[^\n]/g, ""));
+  const text = normalised.replace(/<!--[\s\S]*?-->/g, comment => comment.replace(/[^\n]/g, ""));
   if (text.includes("<!--")) problems.push("an HTML comment is never closed");
   const lines = text.split("\n");
 
@@ -71,7 +91,8 @@ export function parseRoadmap(source: string): Roadmap {
   let reviewed = "";
   let reviewedAfter = "";
   const intro: string[] = [];
-  type DraftItem = { title: string; line: number; description: string[]; tasks: string[]; doneWhen?: string };
+  type DraftItem = { id?: string; title: string; line: number; description: string[]; tasks: string[]; doneWhen?: string };
+  const ids = new Map<string, string>();
   const sections: { stage: RoadmapStage; line: number; items: DraftItem[] }[] = [];
   let paragraph: { text: string; line: number } | null = null;
   let bullet: { text: string; line: number } | null = null;
@@ -81,7 +102,7 @@ export function parseRoadmap(source: string): Roadmap {
   const flush = () => {
     if (paragraph) {
       const { text, line } = paragraph;
-      checkText(text, line, problems);
+      checkText(text, line, problems, privateTerms);
       const current = item();
       if (current) {
         if (!text.startsWith(DONE_WHEN)) current.description.push(text);
@@ -91,7 +112,7 @@ export function parseRoadmap(source: string): Roadmap {
       else intro.push(text);
     }
     if (bullet) {
-      checkText(bullet.text, bullet.line, problems);
+      checkText(bullet.text, bullet.line, problems, privateTerms);
       const current = item();
       if (current) current.tasks.push(bullet.text);
       else problems.push(`line ${bullet.line}: a "- " bullet must belong to a "### " item`);
@@ -101,6 +122,15 @@ export function parseRoadmap(source: string): Roadmap {
 
   lines.forEach((raw, index) => {
     const line = index + 1;
+    const id = idLines.get(line);
+    if (id !== undefined) {
+      const current = item();
+      if (!current || current.line !== line - 1) problems.push(`line ${line}: an "<!-- id: ... -->" line must come directly under its "### " item title`);
+      else if (!ITEM_ID.test(id)) problems.push(`line ${line}: id "${id}" must be kebab-case (a-z, 0-9, -)`);
+      else if (ids.has(id)) problems.push(`line ${line}: id "${id}" is already used by "${ids.get(id)}"`);
+      else { current.id = id; ids.set(id, current.title); }
+      return;
+    }
     const content = raw.trimEnd();
     if (!content.trim()) return flush();
     if (bullet && /^ {2,}\S/.test(content)) { bullet.text += ` ${content.trim()}`; return; }
@@ -128,7 +158,7 @@ export function parseRoadmap(source: string): Roadmap {
       else sections.push({ stage, line, items: [] });
     } else if (content.startsWith("### ")) {
       const itemTitle = content.slice(4).trim();
-      checkText(itemTitle, line, problems);
+      checkText(itemTitle, line, problems, privateTerms);
       if (!section()) problems.push(`line ${line}: item "${itemTitle}" must be inside a "## " section`);
       else if (section()!.items.some(existing => existing.title === itemTitle)) problems.push(`line ${line}: item "${itemTitle}" appears twice in "${section()!.stage}"`);
       else section()!.items.push({ title: itemTitle, line, description: [], tasks: [] });
@@ -152,13 +182,16 @@ export function parseRoadmap(source: string): Roadmap {
   if (!sections.some(existing => existing.stage === "Current focus")) problems.push('missing the "## Current focus" section');
   for (const { stage, line, items } of sections) {
     if (!items.length) problems.push(`line ${line}: section "${stage}" has no items`);
-    for (const entry of items) if (!entry.description.length) problems.push(`line ${entry.line}: item "${entry.title}" needs a description paragraph`);
+    for (const entry of items) {
+      if (!entry.description.length) problems.push(`line ${entry.line}: item "${entry.title}" needs a description paragraph`);
+      if (!entry.id) problems.push(`line ${entry.line}: item "${entry.title}" needs an "<!-- id: ... -->" line directly under its title`);
+    }
   }
   if (problems.length) throw new RoadmapError(problems);
   return {
     reviewed, reviewedAfter, intro,
-    sections: sections.map(({ stage, items }) => ({ stage, items: items.map(({ title, description, tasks, doneWhen }) =>
-      ({ title, description, tasks, ...(doneWhen ? { doneWhen } : {}) })) })),
+    sections: sections.map(({ stage, items }) => ({ stage, items: items.map(({ id, title, description, tasks, doneWhen }) =>
+      ({ id: id!, title, description, tasks, ...(doneWhen ? { doneWhen } : {}) })) })),
   };
 }
 
@@ -195,11 +228,32 @@ export function roadmapStaleness({ reviewed, reviewedAfter }: Pick<Roadmap, "rev
   return problems;
 }
 
-/** Parse and check freshness: what the build runs. */
-export function loadRoadmap(source: string, evidence: readonly RoadmapEvidence[] = ROADMAP_EVIDENCE): Roadmap {
-  const roadmap = parseRoadmap(source);
-  const stale = roadmapStaleness(roadmap, evidence);
-  if (stale.length) throw new RoadmapError(stale);
+/** Problems with the patch notes: the public-text rules (dated figures are fine there, unlike in
+ *  ROADMAP.md), and roadmap item ids that ROADMAP.md does not contain. */
+export function patchNoteProblems(changelog: readonly ChangelogEntry[], roadmap: Roadmap,
+  { privateTerms = [] }: PublicTextOptions = {}): string[] {
+  const ids = new Set(roadmap.sections.flatMap(section => section.items.map(item => item.id)));
+  const problems: string[] = [];
+  for (const entry of changelog) {
+    const at = `patch note "${entry.id}" (src/data/changelog.ts)`;
+    problems.push(...lintPublicText(entry.title, `${at} title`, privateTerms));
+    entry.notes.forEach((note, index) => problems.push(...lintPublicText(note, `${at} note ${index + 1}`, privateTerms)));
+    for (const id of entry.items ?? []) if (!ids.has(id)) problems.push(`${at}: items names "${id}", which is not an id in ROADMAP.md`);
+  }
+  return problems;
+}
+
+export interface LoadRoadmapOptions extends PublicTextOptions {
+  /** The patch notes to check; the shipped ones by default. */
+  changelog?: readonly ChangelogEntry[];
+}
+
+/** Parse, then check freshness and the patch notes: what the build runs. */
+export function loadRoadmap(source: string, evidence: readonly RoadmapEvidence[] = ROADMAP_EVIDENCE,
+  { changelog = CHANGELOG, privateTerms = [] }: LoadRoadmapOptions = {}): Roadmap {
+  const roadmap = parseRoadmap(source, { privateTerms });
+  const problems = [...roadmapStaleness(roadmap, evidence), ...patchNoteProblems(changelog, roadmap, { privateTerms })];
+  if (problems.length) throw new RoadmapError(problems);
   return roadmap;
 }
 
