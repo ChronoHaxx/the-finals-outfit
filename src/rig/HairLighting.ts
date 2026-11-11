@@ -48,7 +48,15 @@ vec3 recoveredHairScattering(vec3 L, vec3 V, vec3 T, vec3 color,
   // The paper's unshadowed multiple-scattering approximation, weighted by the
   // recovered Scatter input. Three supplies regular filtered shadow visibility;
   // it cannot supply the native exponential volume path-length term yet.
+#ifdef RECOVERED_HAIR_UE_SCATTER
+  // Dev experiment (?hairScatter=ue): UE HairBxDF global scattering, (1/PI) lerp(wrap N.L, Kajiya, 0.33) with
+  // wrap N.L = saturate((F.L + 1) / 4) and Kajiya = 1 - |T.L|. ScatterTint is 1 when unshadowed; three applies the
+  // shadow to the light colour before this call.
+  float wrap = mix(clamp((dot(recoveredHairFacingNormal(V, T), L) + 1.0) / 4.0, 0.0, 1.0), 1.0 - abs(dot(T, L)), 0.33)
+    / 3.14159265359;
+#else
   float wrap = (dot(recoveredHairFacingNormal(V, T), L) + 1.0) / (4.0 * 3.14159265359);
+#endif
   vec3 multiple = sqrt(C) * clamp(scatter, 0.0, 1.0) * max(0.0, wrap);
   return vec3(R) + (environment ? vec3(0.0) : TT) + TRT + multiple;
 }
