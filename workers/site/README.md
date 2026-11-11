@@ -23,6 +23,12 @@ requests per outfit instead of about 7, which Workers Free cannot carry (see Lim
 - Meshes are served `Cache-Control: private` and `Cross-Origin-Resource-Policy: same-origin`. The browser keeps them,
   shared caches do not, and other sites cannot embed them.
 - A missing mesh is a 404, never the app page the single-page-app fallback would return.
+- Meshes are uploaded to an unlisted folder, `/_<MESH_STORE>/<host label>/…`, never to `/m/`. `MESH_STORE` is a
+  secret no client sees.
+  - Why: Cloudflare matches static files with its own path handling, so spellings such as `/%6d/…`, `//m/…` or
+    `/m%2F…` could reach a file at `/m/` without running the Worker.
+  - Every `/_*` request runs the Worker and is refused with a 404, even when it names the right folder.
+  - Checked locally on 11 Nov 2026: 11 direct and encoded spellings, none returned mesh bytes.
 - If the Durable Object fails, the mesh is still served and the failure is logged (`budget-unavailable`). An outage
   must not take every mesh down.
 
@@ -83,7 +89,10 @@ changes the hosts this stages from, and the site health check reads hosts from `
    `the-finals-outfit.chronohaxx.workers.dev`). Its public site key is `vars.TURNSTILE_SITEKEY` in `wrangler.jsonc`, and
    the staging script builds it in by default.
 3. Secrets go up with the first deploy, so the Worker never runs without them. `.secrets.production.env` (gitignored)
-   holds `SESSION_SECRET` (any long random string) and `TURNSTILE_SECRET` (the widget's secret key, pasted by the owner).
+   holds three values:
+   - `SESSION_SECRET`: any long random string;
+   - `TURNSTILE_SECRET`: the widget's secret key, pasted by the owner;
+   - `MESH_STORE`: added by the staging script on its first run.
    Delete the file once the deploy succeeds; Cloudflare keeps the values.
 4. Stage from the repo root. Each `--source` pairs a production host (from `deploy.yml` and the routes file) with the
    folder that was uploaded to it:
@@ -112,6 +121,7 @@ check failed…") instead of a hang.
 
 Local run, with Turnstile's test keys:
 - `.dev.vars` holds `SESSION_SECRET=<anything>` and `TURNSTILE_SECRET=1x0000000000000000000000000000000AA`.
+- Stage with `--secrets workers/site/.dev.vars`; that adds a local `MESH_STORE` there.
 - Stage with `--sitekey 1x00000000000000000000BB` (always passes) or `2x00000000000000000000AB` (always fails, which
   simulates a hardened browser).
 - Start the Worker:

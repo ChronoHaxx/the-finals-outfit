@@ -9,7 +9,8 @@
 import { Budget } from "./budget";
 import { detect, digest } from "./detect";
 import {
-  COOKIE, MESH_PATH, cookieValue, ipTag, json, mintSession, readSession, sessionCookie, setting, type Env,
+  COOKIE, MESH_PATH, MESH_STORE, STORE_PREFIX, cookieValue, ipTag, json, meshStorePath, mintSession, readSession,
+  sessionCookie, setting, type Env,
 } from "./gate";
 
 export { Budget };
@@ -127,7 +128,8 @@ async function mesh(request: Request, env: Env, url: URL): Promise<Response> {
     if (!budget.ok && (refused = refuse(401, "budget", sid, { "Set-Cookie": sessionCookie("", 0) }))) return refused;
   }
 
-  const asset = await env.ASSETS.fetch(new Request(new URL(url.pathname, "https://assets.local"),
+  // The file lives in the unlisted store folder, never at /m/ itself (gate.ts, meshStorePath).
+  const asset = await env.ASSETS.fetch(new Request(new URL(meshStorePath(env.MESH_STORE, url.pathname), "https://assets.local"),
     { method: request.method, headers: { Accept: "model/gltf-binary", "Sec-Fetch-Mode": "cors" } }));
   // A missing file can come back as the app's index.html (single-page-application fallback): that is a 404 here.
   if (!asset.ok || (asset.headers.get("Content-Type") ?? "").toLowerCase().startsWith("text/html")) {
@@ -147,9 +149,11 @@ async function mesh(request: Request, env: Env, url: URL): Promise<Response> {
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
-    // Secrets are set after the first deploy; until then the gate answers plainly instead of throwing on every mesh.
+    // The unlisted mesh store is reachable only through the ASSETS binding, never by URL, whatever the spelling.
+    if (url.pathname.startsWith(STORE_PREFIX)) return json({ error: "not found" }, 404);
+    // Secrets arrive with the first deploy; without them the gate answers plainly instead of throwing on every mesh.
     if ((url.pathname === "/api/session" || url.pathname.startsWith("/m/"))
-      && ((env.SESSION_SECRET ?? "").length < 16 || !env.TURNSTILE_SECRET))
+      && ((env.SESSION_SECRET ?? "").length < 16 || !env.TURNSTILE_SECRET || !MESH_STORE.test(env.MESH_STORE ?? "")))
       return json({ error: "not configured" }, 503, { "Retry-After": "300" });
     if (url.pathname === "/api/session") return session(request, env, url);
     if (url.pathname.startsWith("/m/")) return mesh(request, env, url);

@@ -13,9 +13,14 @@
 // --build runs the app build with deploy.yml's production settings plus VITE_BASE=/, VITE_MESH_BASE=/m/ and the
 // Turnstile site key; without it, --app names an existing build. Every catalog mesh must be staged (--allow-missing
 // only for local trials). No manifest or file list is written into the upload: the gate must not publish an index.
+//
+// Meshes are staged into the unlisted folder _<MESH_STORE>/<host label>/<path>, never at m/ (workers/site/src/gate.ts).
+// MESH_STORE is a secret read from --secrets (default workers/site/.secrets.production.env; use .dev.vars locally).
+// If the file has none, a random one is appended to it. The name is never printed or written into the upload.
 
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { randomBytes } from "node:crypto";
+import { appendFileSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { collectAssetRefs } from "./lib/asset-refs.mjs";
@@ -78,8 +83,8 @@ function walk(dir, out = []) {
 }
 const posix = (path) => path.split(sep).join("/");
 const appFiles = walk(appDir).map(f => posix(relative(appDir, f)));
-const leaks = appFiles.filter(f => /\.map$/.test(f) || /(^|\/)manifest\.json$/.test(f) || f.startsWith("m/"));
-if (leaks.length) throw new Error(`the app build must not contain source maps, manifests or an m/ folder: ${leaks.slice(0, 5).join(", ")}`);
+const leaks = appFiles.filter(f => /\.map$/.test(f) || /(^|\/)manifest\.json$/.test(f) || f.startsWith("m/") || f.startsWith("_"));
+if (leaks.length) throw new Error(`the app build must not contain source maps, manifests, an m/ folder or a top-level _ entry: ${leaks.slice(0, 5).join(", ")}`);
 const bundle = appFiles.filter(f => f.endsWith(".js")).map(f => readFileSync(join(appDir, f), "utf8")).join("\n");
 // Vite inlines import.meta.env.VITE_MESH_BASE as a string literal next to the gate client's Turnstile action.
 if (!/"\/m\/"/.test(bundle) || !bundle.includes('"mesh-session"'))
@@ -114,6 +119,17 @@ if (missing.length || unsourced.length) {
   if (!flag("--allow-missing")) process.exit(1);
 }
 
+// The unlisted store folder's name, from the secrets file the deploy uploads (created there if absent).
+const secretsFile = resolve(value("--secrets", join(ROOT, "workers/site/.secrets.production.env")));
+if (!existsSync(secretsFile)) throw new Error(`no secrets file at ${secretsFile} (--secrets)`);
+let store = readFileSync(secretsFile, "utf8").match(/^MESH_STORE=([0-9a-f]{32,64})\s*$/m)?.[1];
+if (!store) {
+  store = randomBytes(16).toString("hex");
+  appendFileSync(secretsFile,
+    `\n# Unlisted asset folder holding the meshes (stage-site-worker.mjs); keep it secret.\nMESH_STORE=${store}\n`);
+  console.log(`added a new MESH_STORE to ${secretsFile}`);
+}
+
 // 3. Write the upload folder. Only a folder this script made is ever deleted.
 const out = resolve(value("--out", join(ROOT, "workers/site/public")));
 if (existsSync(out)) {
@@ -134,7 +150,7 @@ const place = (from, to) => {
   total += size; largest = Math.max(largest, size);
 };
 for (const file of appFiles) place(join(appDir, file), file);
-for (const [path, file] of meshes) place(file, `m/${path}`);
+for (const [path, file] of meshes) place(file, `_${store}/${path}`);
 const count = appFiles.length + meshes.size;
 if (count > MAX_FILES) throw new Error(`${count} files; Workers Free allows ${MAX_FILES} per version`);
 // wrangler reads .assetsignore and never uploads it; it doubles as this script's ownership marker.

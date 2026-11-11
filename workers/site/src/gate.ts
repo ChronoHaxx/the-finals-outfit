@@ -22,6 +22,7 @@ export interface Env {
   MINT_LIMIT?: RateLimit;     // new sessions per IP per minute
   SESSION_SECRET: string;     // secret: signs session cookies and salts the IP tags
   TURNSTILE_SECRET: string;   // secret: the Turnstile widget's secret key
+  MESH_STORE: string;         // secret: the unlisted asset folder holding the meshes (see meshStorePath)
   GATE_MODE?: string;         // "enforce" (default) or "log": serve everything, record what would be refused
   TURNSTILE_HOSTNAME_CHECK?: string; // "0" skips the hostname match (only for Turnstile's test keys in local dev)
   SESSION_HOURS?: string;
@@ -40,6 +41,15 @@ export interface Env {
 export const COOKIE = "tfo_m";
 // Every segment starts with a word character or "-", so none can be "." or ".." or empty.
 export const MESH_PATH = /^\/m\/[\w-][\w.-]*(?:\/[\w-][\w.-]*)*\.glb$/;
+
+// Meshes are not uploaded under /m/. They sit in an unlisted folder, "/_<MESH_STORE>/", named by a secret that no
+// client ever sees. Static assets are matched by Cloudflare's own path handling, which can resolve spellings such as
+// /%6d/… or //m/… without running this script. With the meshes stored elsewhere, such a spelling of /m/ finds nothing.
+// Every "/_*" request runs this script (wrangler.jsonc) and is refused, so the folder is reachable only through the
+// ASSETS binding.
+export const MESH_STORE = /^[0-9a-f]{32,64}$/;
+export const STORE_PREFIX = "/_";
+export const meshStorePath = (store: string, meshPath: string) => `${STORE_PREFIX}${store}/${meshPath.slice("/m/".length)}`;
 
 export function setting(value: string | undefined, fallback: number): number {
   const n = Number(value);

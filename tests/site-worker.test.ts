@@ -6,6 +6,7 @@ import { step } from "../workers/site/src/budget";
 import { detect, heavyClientsSql, mergeBans, offenders } from "../workers/site/src/detect";
 
 const SECRET = "test-secret-0123456789";
+const STORE = "0123456789abcdef0123456789abcdef";
 const ORIGIN = "https://site.example.workers.dev";
 const IP = "203.0.113.7";
 
@@ -28,10 +29,11 @@ function harness(overrides: Partial<Env> = {}) {
   const env = {
     ASSETS: { fetch: async (request: Request) => {
       const path = new URL(request.url).pathname;
-      if (path === "/m/models/cosmetics/hat.glb") return new Response("glTF-bytes", { headers: { "Content-Length": "10", "Content-Type": "model/gltf-binary", "Cache-Control": "public, max-age=0" } });
+      if (path === `/_${STORE}/models/cosmetics/hat.glb`) return new Response("glTF-bytes", { headers: { "Content-Length": "10", "Content-Type": "model/gltf-binary", "Cache-Control": "public, max-age=0" } });
       // Like not_found_handling: "single-page-application", a miss answers 200 with the app's page.
-      if (path === "/m/models/fallback.glb") return new Response("<!doctype html>", { headers: { "Content-Type": "text/html; charset=utf-8" } });
-      return new Response(path === "/" || path === "/index.html" ? "<html>app</html>" : "missing", { status: path.startsWith("/m/") ? 404 : 200 });
+      if (path === `/_${STORE}/models/fallback.glb`) return new Response("<!doctype html>", { headers: { "Content-Type": "text/html; charset=utf-8" } });
+      // Nothing is stored at /m/ itself; a miss elsewhere is a 404.
+      return new Response(path === "/" || path === "/index.html" ? "<html>app</html>" : "missing", { status: path === "/" || path === "/index.html" ? 200 : 404 });
     } },
     BANS: { get: async (key: string) => (kv.has(key) ? JSON.parse(kv.get(key)!) : null), put: async (key: string, value: string) => { kv.set(key, value); } },
     BUDGET: {
@@ -49,6 +51,7 @@ function harness(overrides: Partial<Env> = {}) {
     MINT_LIMIT: limiter(() => true),
     SESSION_SECRET: SECRET,
     TURNSTILE_SECRET: "turnstile-secret",
+    MESH_STORE: STORE,
     GATE_MODE: "enforce",
     ...overrides,
   } as unknown as Env;
@@ -313,5 +316,18 @@ test("without its secrets the gate answers 503 instead of throwing, and the app'
     assert.deepEqual(await mesh.json(), { error: "not configured" });
     assert.equal((await worker.fetch(sessionRequest({ token: "t" }), h.env)).status, 503);
     assert.equal((await worker.fetch(new Request(`${ORIGIN}/`), h.env)).status, 200);
+  }
+});
+
+test("the unlisted mesh store is never reachable by URL, and a missing store name is 'not configured'", async () => {
+  const h = harness();
+  const cookie = await cookieFor();
+  for (const path of [`/_${STORE}/models/cosmetics/hat.glb`, "/_anything", `/_${STORE}/`])
+    assert.equal((await worker.fetch(meshRequest(path, { cookie }), h.env)).status, 404, path);
+  // The gate reads from the store: /m/ resolves there, and nothing sits at /m/ itself.
+  assert.equal(await (await worker.fetch(meshRequest(HAT, { cookie }), h.env)).text(), "glTF-bytes");
+  for (const MESH_STORE of ["", "short", "NOT-HEX-0123456789abcdef0123456789"]) {
+    const bad = harness({ MESH_STORE } as Partial<Env>);
+    assert.equal((await worker.fetch(meshRequest(HAT, { cookie }), bad.env)).status, 503, MESH_STORE);
   }
 });
