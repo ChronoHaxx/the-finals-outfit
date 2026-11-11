@@ -38,7 +38,22 @@ function saveMotion(still: boolean): void {
   } catch { /* the choice just is not remembered */ }
 }
 
-const IDLE_STATE: AnimatorState = { active: false, moving: false, paused: false, sway: true, idle: null, current: null, loading: null, error: null };
+// The timeline's Loop toggle (11 Nov 2026), remembered the same way: "1" while on. Automated browsers ignore it, so
+// scripted captures always see an emote end and return to the idle.
+const LOOP_KEY = "finals-outfit.emote-loop";
+function savedLoop(): boolean {
+  if (AUTOMATED) return false;
+  try { return window.localStorage.getItem(LOOP_KEY) === "1"; } catch { return false; }
+}
+/** The viewer's Loop click: loop emotes (or stop looping) and remember it for the next visit. */
+export function setEmoteLoop(animator: RigAnimator, on: boolean): void {
+  animator.setLoopEmote(on);
+  try {
+    if (on) window.localStorage.setItem(LOOP_KEY, "1"); else window.localStorage.removeItem(LOOP_KEY);
+  } catch { /* the choice just is not remembered */ }
+}
+
+const IDLE_STATE: AnimatorState = { active: false, moving: false, paused: false, sway: true, loopEmote: false, idle: null, current: null, loading: null, error: null };
 
 /** The animator, once this deployment's clip manifest has loaded (null: no clips published, or still loading). */
 export function useRigAnimator(): RigAnimator | null {
@@ -48,7 +63,7 @@ export function useRigAnimator(): RigAnimator | null {
     loadAnimationManifest().then(loaded => {
       const params = new URLSearchParams(window.location.search);
       if (!cancelled && loaded) setAnimator(new RigAnimator(loaded.manifest, loaded.clipBase,
-        { sway: params.get("sway") !== "0", deform: params.get("deform") !== "0", propsUrl: loaded.propsUrl }));
+        { sway: params.get("sway") !== "0", deform: params.get("deform") !== "0", loopEmote: savedLoop(), propsUrl: loaded.propsUrl }));
     }).catch(error => console.warn("[animation] manifest unavailable", error));
     return () => { cancelled = true; };
   }, []);

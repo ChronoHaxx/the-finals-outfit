@@ -125,6 +125,16 @@ export function PauseIcon({ className, size = 14 }: IconProps) {
   return <svg {...base(size, className)} fill="currentColor" stroke="none"><path d="M4 3h3v10H4zM9 3h3v10H9z" /></svg>;
 }
 
+/** Repeat (the emote timeline's Loop): two arrows chasing each other round. */
+export function LoopIcon({ className, size = 14 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <path d="M2.5 7.5V6.5a2 2 0 0 1 2-2h8.5" />
+    <path d="M11 2.5l2 2-2 2" />
+    <path d="M13.5 8.5v1a2 2 0 0 1-2 2H3" />
+    <path d="M5 13.5l-2-2 2-2" />
+  </svg>;
+}
+
 /** One frame back (the bar on the left) or, with `forward`, one frame on. */
 export function FrameStepIcon({ className, size = 14, forward }: IconProps & { forward?: boolean }) {
   return <svg {...base(size, className)} fill="currentColor" stroke="none">

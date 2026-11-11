@@ -362,9 +362,33 @@ function StudioEnvironment({ intensity, softbox }: { intensity: number; softbox?
   return null;
 }
 
+// Sun direction (11 Nov 2026, the user's request): the Studio key light, the one that casts the character's shadow,
+// turns around the vertical axis through the character. 0° is the reviewed rig (w157 Studio v2); positive turns it to
+// the viewer's right and round behind. Remembered in this browser; automated browsers (audit and visual-diff captures)
+// always get the reviewed 0°.
+const SUN_KEY = "finals-outfit.sun";
+const KEY_POSITION = new THREE.Vector3(2.5, 6, 4);
+function savedSun(): number {
+  if (AUTOMATED) return 0;
+  try {
+    const value = Math.round(Number(window.localStorage.getItem(SUN_KEY)));
+    return Number.isFinite(value) && Math.abs(value) <= 180 ? value : 0;
+  } catch { return 0; }
+}
+function saveSun(degrees: number): void {
+  try {
+    if (degrees) window.localStorage.setItem(SUN_KEY, String(degrees)); else window.localStorage.removeItem(SUN_KEY);
+  } catch { /* the choice just is not remembered */ }
+}
+function keyLightPosition(degrees: number): [number, number, number] {
+  const p = KEY_POSITION.clone().applyAxisAngle(THREE.Object3D.DEFAULT_UP, THREE.MathUtils.degToRad(degrees));
+  return [p.x, p.y, p.z];
+}
+
 // White key light with a shadow frustum tightened around the character (the default
-// ±5m ortho frustum wastes most of the shadow map's resolution).
-function KeyLight() {
+// ±5m ortho frustum wastes most of the shadow map's resolution). The frustum is centred on the light's target (the
+// origin), so it stays on the character whichever way the sun turns.
+function KeyLight({ sun }: { sun: number }) {
   const ref = useRef<THREE.DirectionalLight>(null);
   const mapSize = IS_TOUCH ? 1024 : 2048;
   useEffect(() => {
@@ -382,7 +406,7 @@ function KeyLight() {
   return (
     <directionalLight
       ref={ref}
-      position={[2.5, 6, 4]}
+      position={keyLightPosition(sun)}
       intensity={STUDIO_RIG.key}
       color="#ffffff"
       castShadow
@@ -396,12 +420,12 @@ function KeyLight() {
 
 // Neutral studio preview. Shared lighting is reviewed against multiple material
 // families; recovered material values remain independent of the environment choice.
-function StudioLights() {
+function StudioLights({ sun }: { sun: number }) {
   return (
     <>
       <StudioEnvironment intensity={STUDIO_RIG.env} softbox />
       <hemisphereLight args={["#e8edf4", "#c4c8ce", STUDIO_RIG.hemi]} />
-      <KeyLight />
+      <KeyLight sun={sun} />
       {/* unshadowed direct fill from the camera-left fill panel's direction (w157; 0 = absent, as shipped) */}
       {STUDIO_RIG.fill > 0 && <directionalLight position={[-4.5, 2.5, 2]} intensity={STUDIO_RIG.fill} color="#ffffff" />}
       {/* neutral back-top rim for silhouette separation */}
@@ -448,6 +472,8 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
   const [missingFittingData, setMissingFittingData] = useState(false);
   const [retryAttempt, setRetryAttempt] = useState(0);
   const [theme, setTheme] = useState<SceneTheme>("studio");
+  const [sun, setSun] = useState(savedSun);
+  const changeSun = (degrees: number) => { setSun(degrees); saveSun(degrees); };
   // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden).
   const animator = useRigAnimator();
   // A timeline drag changes the pose every frame while paused: the still view treats it as motion too.
@@ -1060,7 +1086,14 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
           fov: DEV.fov ?? 35,
         }}
         dpr={canvasDpr}
-        onCreated={({ gl }) => gl.domElement.addEventListener("webglcontextlost", () => setContextLost(true))}
+        onCreated={({ gl }) => {
+          const canvas = gl.domElement;
+          // Only a loss on the canvas still on the page is a failure. Switching Lobby/Studio (or Restart) remounts the
+          // Canvas through its key, and r3f calls forceContextLoss() on the old, already-removed canvas 500 ms later to
+          // free its graphics memory. That deliberate loss showed "3D view stopped" on every switch (11 Nov 2026, Chrome
+          // and Firefox; _docs/goal-100-2026-10-11/studio-sun-tests).
+          canvas.addEventListener("webglcontextlost", () => { if (canvas.isConnected) setContextLost(true); });
+        }}
         shadows={theme === "studio" ? "soft" : false}
         gl={{
           alpha: true,
@@ -1077,7 +1110,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
           outputColorSpace: THREE.SRGBColorSpace,
         }}
       >
-        {theme === "studio" ? <StudioLights /> : <LobbyLights />}
+        {theme === "studio" ? <StudioLights sun={sun} /> : <LobbyLights />}
         <primitive object={rig.root} />
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
         <PreviewBridge root={rig.root} theme={theme} active={ready && !busy} animator={animator} />
@@ -1133,6 +1166,19 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
             stack instead of overlapping. It spans to the bottom so the emote picker can fit the viewer's height; only
             its children take pointer events, so the canvas behind the empty part still orbits. */}
         <div className={`pointer-events-none absolute right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto ${timelineShown ? "bottom-15 pointer-coarse:bottom-17" : "bottom-3"}`}>
+          {theme === "studio" && (
+            // The sun (see keyLightPosition): drag to turn the shadow round the character; double-click resets.
+            <label className="hud flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg"
+              title="Turn the sun (the light casting the shadow) round the character. Double-click to reset.">
+              <span aria-hidden="true">☀</span>Sun
+              <input type="range" min={-180} max={180} step={1} value={sun}
+                onChange={(event) => changeSun(Number(event.target.value))}
+                onDoubleClick={() => changeSun(0)}
+                aria-label="Sun direction" aria-valuetext={`${sun} degrees${sun === 0 ? ", default" : ""}`}
+                className="timeline-range h-full w-24 cursor-pointer pointer-coarse:w-32"
+                style={{ "--played": `${((sun + 180) / 360) * 100}%` } as CSSProperties} />
+            </label>
+          )}
           {animator && <AnimationControls animator={animator} rig={rig} ready={ready} busy={busy} studio={theme === "studio"} />}
           {DEVELOPER_CATALOG && ready && <OutfitExportPanel rig={rig} context={exportContext} busy={busy} animator={animator} />}
         </div>
