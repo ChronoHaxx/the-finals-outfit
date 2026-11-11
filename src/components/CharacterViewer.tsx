@@ -35,6 +35,7 @@ import type { Item } from "../lib/item";
 import { AUTOMATED } from "../lib/automation";
 import type { ImmersiveMode } from "../lib/immersive-mode";
 import { CollapseIcon, ExpandIcon } from "./Icons";
+import { MeshGateError } from "../lib/mesh-gate";
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
 const NAIL_MASK_URL = modelUrl("models/decals/_shared/nailmask.webp");
@@ -557,7 +558,8 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
       .catch((e) => {
         console.error(e);
         if (cancelled) return;
-        setError("Failed to load the base body model.");
+        // A mesh-gate refusal (bot check, rate limit, daily quota) says what happened and what to do.
+        setError(e instanceof MeshGateError ? e.message : "Failed to load the base body model.");
         endOperation(operationId);
       });
     return () => {
