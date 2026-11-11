@@ -1,0 +1,47 @@
+// The site Worker (README.md): the app as static assets, plus gated meshes. Deploying is an account-side step.
+{
+  "name": "the-finals-outfit",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-01",
+  "workers_dev": true,
+  // Version preview URLs run the same gate, but there is no reason to publish them.
+  "preview_urls": false,
+  "assets": {
+    // Built by scripts/stage-site-worker.mjs: the app build at the root and meshes under m/. Not committed.
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // Only these run the script (and count against the daily request quota). Everything else is a free static file.
+    "run_worker_first": ["/m/*", "/api/*"]
+  },
+  "durable_objects": { "bindings": [{ "name": "BUDGET", "class_name": "Budget" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Budget"] }],
+  "kv_namespaces": [
+    // Created 6 Nov 2026 with `wrangler kv namespace create BANS`.
+    { "binding": "BANS", "id": "7b677173eecb4c37a4df552edad05bca" }
+  ],
+  "analytics_engine_datasets": [{ "binding": "LOG", "dataset": "tfo_mesh_log" }],
+  "ratelimits": [
+    // A default outfit is 7 meshes; randomising quickly is a few dozen a minute.
+    { "name": "SESSION_LIMIT", "namespace_id": "4201", "simple": { "limit": 120, "period": 60 } },
+    { "name": "IP_LIMIT", "namespace_id": "4202", "simple": { "limit": 240, "period": 60 } },
+    { "name": "MINT_LIMIT", "namespace_id": "4203", "simple": { "limit": 6, "period": 60 } }
+  ],
+  "triggers": { "crons": ["*/10 * * * *", "0 8 * * *"] },
+  "vars": {
+    // "log" first: serve every mesh, record what enforcing would refuse. Switch to "enforce" once the log looks right.
+    "GATE_MODE": "log",
+    // Public site key of the "the-finals-outfit mesh gate" Turnstile widget (created 10 Nov 2026, Managed, hostname
+    // the-finals-outfit.chronohaxx.workers.dev). The Worker does not read it; stage-site-worker.mjs builds it into the app.
+    "TURNSTILE_SITEKEY": "0x4AAAAAAF8DI4RDlo4VliQz",
+    "SESSION_HOURS": "6",
+    "MESHES_PER_SESSION": "300",
+    "SESSIONS_PER_IP_PER_DAY": "12",
+    "ALERT_MESHES_PER_HOUR": "300",
+    "ALERT_REFUSALS_PER_HOUR": "600",
+    "BAN_HOURS": "24",
+    "LOG_DATASET": "tfo_mesh_log",
+    "ACCOUNT_ID": ""
+  }
+  // Secrets (wrangler secret put): SESSION_SECRET, TURNSTILE_SECRET, ANALYTICS_TOKEN, DISCORD_WEBHOOK_URL.
+}

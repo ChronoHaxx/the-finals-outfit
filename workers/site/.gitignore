@@ -1,0 +1,8 @@
+# Staged by scripts/stage-site-worker.mjs: the app build plus extracted meshes, which never enter git.
+public/
+.wrangler/
+# Local secrets for wrangler dev.
+.dev.vars
+stage-report.json
+# Production secrets for the first deploy (wrangler deploy --secrets-file); never committed.
+.secrets*.env

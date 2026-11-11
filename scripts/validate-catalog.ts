@@ -3,6 +3,7 @@ import { Agent, request as httpsRequest } from "node:https";
 import { collectAssetRefs } from "./lib/asset-refs.mjs";
 import { RECONSTRUCTION_ROOTS } from "./lib/reconstruction-assets.mjs";
 import { catalogHostGroups } from "./lib/catalog-host-groups.mjs";
+import { isMeshPath } from "../src/lib/asset-routing.mjs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { CatalogSchema, SponsorsSchema } from "../src/lib/item.ts";
@@ -105,8 +106,13 @@ if (itemsResult.success && sponsorsResult.success) {
     if (routesFile && process.env.RECONSTRUCTION_ROUTES?.trim())
       throw new Error("Set RECONSTRUCTION_ROUTES or RECONSTRUCTION_ROUTES_FILE, not both");
     const routes = routesFile ? readFileSync(resolve(ROOT, routesFile), "utf8") : process.env.RECONSTRUCTION_ROUTES;
-    const hostGroups = catalogHostGroups(referenced, assetsBase, process.env.MODELS_BASE, process.env.RECONSTRUCTION_BASE,
-      routes);
+    // With MESH_BASE (mirrors VITE_MESH_BASE) the meshes are behind the gated site Worker, which answers only a browser
+    // session and publishes no manifest. scripts/stage-site-worker.mjs checks that every one of them was staged.
+    const gatedMeshes = new Set(process.env.MESH_BASE?.trim() ? [...referenced].filter(isMeshPath) : []);
+    if (gatedMeshes.size)
+      warnings.push(`${gatedMeshes.size} meshes are served by the gated site Worker; their presence is checked by stage-site-worker.mjs`);
+    const hostGroups = catalogHostGroups(new Set([...referenced].filter((p) => !gatedMeshes.has(p))), assetsBase,
+      process.env.MODELS_BASE, process.env.RECONSTRUCTION_BASE, routes);
     for (const { base, paths, reconstruction } of hostGroups) {
       const reconstructionRoots = reconstruction ? RECONSTRUCTION_ROOTS : [];
 
