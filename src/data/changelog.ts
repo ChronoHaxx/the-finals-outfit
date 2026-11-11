@@ -14,6 +14,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-11-new-studio-light",
+    date: "2026-11-11",
+    title: "New Studio light",
+    notes: [
+      "The default Studio light was rebuilt from measurements against the in-game icons. Dark clothing no longer washes out to grey, and fabrics catch the light the way they do in the game.",
+      "18 more cosmetics render in 3D, among them the bunny costume, the Eastern emperor helmets, the sci-fi knight bottoms, the military ski mask, the red-glow tactical helmet and more beards and hair.",
+      "3,109 of the catalog's 3,332 cosmetics now have a first-pass 3D reconstruction.",
+      "Since the last notes: up to 100 saved outfits in your browser, a full-screen view, an emote timeline that pauses on any frame and shares that pose, and graphics settings for quality and resolution.",
+    ],
+    items: ["default-lighting", "red-items", "idle-emotes"],
+  },
+  {
     id: "2026-11-06-54-more-in-3d",
     date: "2026-11-06",
     title: "54 more in 3D",

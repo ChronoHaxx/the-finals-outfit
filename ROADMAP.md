@@ -25,8 +25,8 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 
 # Roadmap
 
-Last reviewed: 2026-11-06
-Reviewed after patch note: 2026-11-06-54-more-in-3d
+Last reviewed: 2026-11-11
+Reviewed after patch note: 2026-11-11-new-studio-light
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -74,11 +74,6 @@ The preview shows the Medium contestant only. Light and Heavy bodies, and the bo
 - Report each item's status per body, so blue on Medium does not imply blue on Heavy.
 
 ## Waiting on a decision
-
-### Default lighting
-<!-- id: default-lighting -->
-
-Metal, gems and glossy pieces read paler in the default Studio light than in their icons; the Lobby light matches the icons more closely. Changing the default light changes how every item looks, so it needs a deliberate decision rather than a quiet tweak.
 
 ### Jackets and capes moved by cloth physics
 <!-- id: cloth-physics -->
@@ -139,6 +134,11 @@ A guide for reproducing a reported problem and checking a fix, so others can hel
 
 Meshes and materials are rebuilt from the game's own files for {blue} items so far. Recovered materials include layered fabrics, glass and gems, fur, hair, eyes and faces, makeup and glowing LED pieces.
 
+### Default lighting
+<!-- id: default-lighting -->
+
+The default Studio light was rebuilt from measurements against the in-game icons. Dark clothing no longer washes out to grey, and fabrics catch the light the way they do in the game. The Lobby light is still one click away.
+
 ### Outfits that fit together
 <!-- id: outfit-fitting -->
 
@@ -147,7 +147,7 @@ Clothing hides the body beneath it, hair swaps to its under-hat shape, and full-
 ### Idle animation and emotes
 <!-- id: idle-emotes -->
 
-The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and the equipped cosmetics follow the body. One click returns to the still pose, which share images also use.
+The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and the equipped cosmetics follow the body. A timeline pauses an emote on any frame, and a share link keeps that pose. One click returns to the still pose.
 
 ### Share, randomise and report
 <!-- id: share-randomise-report -->
@@ -157,4 +157,4 @@ Share links come with a four-angle preview image. Randomise builds a rules-based
 ### A faster builder that works on phones
 <!-- id: faster-builder -->
 
-The builder was redesigned around the 3D preview. Outfits download faster, with a loading readout, and on phones the preview stays on screen while you browse.
+The builder was redesigned around the 3D preview. Outfits download faster, with a loading readout, and on phones the preview stays on screen while you browse. Your outfits are saved in your browser as you work, a full-screen view shows only the character, and graphics settings trade quality for speed.
