@@ -11,8 +11,9 @@ import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmet
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
-import { AutoGraphics, GraphicsMenu, type TemporalStatusRef } from "./GraphicsSetting";
-import { effectiveTier, TIER_INFO, useGraphicsStore } from "../lib/graphics-quality";
+import { AutoGraphics, FpsMeter, FpsOverlay, GraphicsMenu, useDevicePixelRatio, type TemporalStatusRef } from "./GraphicsSetting";
+import { effectiveTier, renderDpr, useGraphicsStore } from "../lib/graphics-quality";
+import { ViewerUnavailable } from "./ViewerUnavailable";
 import { AnimationControls, AnimationFrameDriver, clockHeldStill, useAnimatorState, useRigAnimator } from "./AnimationControls";
 import { EmoteTimeline } from "./EmoteTimeline";
 import type { RigAnimator } from "../rig/RigAnimator";
@@ -434,9 +435,18 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
   // The emote timeline sits along the bottom while an emote is in front; the right-hand column stops above it.
   useAnimatorState(animator);
   const timelineShown = ready && !!animator?.timeline();
-  // Graphics setting (6 Nov): the tier sets the canvas pixel density and the still-view accumulator's quality.
+  // Graphics settings (6 Nov; 10 Nov: anti-aliasing, resolution override, FPS counter). The preset or the hand-picked
+  // resolution sets the canvas pixel density; anti-aliasing sets how the still-view accumulator draws.
   const graphicsTier = useGraphicsStore(effectiveTier);
-  const temporalStatus = useRef<{ motion: boolean } | null>(null) as TemporalStatusRef;
+  const antiAliasing = useGraphicsStore((s) => s.aa);
+  const resolution = useGraphicsStore((s) => s.resolution);
+  const showFps = useGraphicsStore((s) => s.showFps);
+  const deviceDpr = useDevicePixelRatio();
+  const canvasDpr = renderDpr(graphicsTier, resolution, deviceDpr);
+  const temporalStatus = useRef(null) as TemporalStatusRef;
+  // The graphics context was lost (driver reset, out of graphics memory): say so, and remount the canvas on request.
+  const [contextLost, setContextLost] = useState(false);
+  const [canvasGeneration, setCanvasGeneration] = useState(0);
   const exportContext = useRef<ExportContext | null>(null);
   const build = useBuildStore((s) => s.build);
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
@@ -1023,16 +1033,21 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
       {/* key={theme} remounts the Canvas so renderer-level state (tone mapping, shadow
           type) applies cleanly — three recompiles all programs for the new renderer. */}
       <Canvas
-        key={theme}
+        key={`${theme}-${canvasGeneration}`}
         aria-busy={busy}
         camera={{
           position: DEV.cam ? [DEV.cam[0], DEV.cam[1], DEV.cam[2]] : [0, 1.0, 3.6],
           fov: DEV.fov ?? 35,
         }}
-        dpr={[1, TIER_INFO[graphicsTier].maxDpr]}
+        dpr={canvasDpr}
+        onCreated={({ gl }) => gl.domElement.addEventListener("webglcontextlost", () => setContextLost(true))}
         shadows={theme === "studio" ? "soft" : false}
         gl={{
           alpha: true,
+          // No multisampled back buffer: every frame is drawn by the still-view accumulator into its own targets
+          // (StablePreview alwaysOn), whose anti-aliasing is the Graphics setting; the canvas only receives one
+          // full-screen copy. (r3f's default 4x MSAA buffer cost up to ~190 MB at 3000x2000 for nothing.)
+          antialias: false,
           toneMapping: DEV.debugAlbedo
             ? THREE.NoToneMapping
             : theme === "studio"
@@ -1048,8 +1063,9 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
         <PreviewBridge root={rig.root} theme={theme} active={ready && !busy} animator={animator} />
         {animator && <AnimationFrameDriver animator={animator} />}
         {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving}
-          quality={TIER_INFO[graphicsTier].reproject ? "high" : "balanced"} statusRef={temporalStatus} />}
-        <AutoGraphics status={temporalStatus} active={ready && !busy} />
+          aa={antiAliasing} statusRef={temporalStatus} />}
+        <AutoGraphics status={temporalStatus} active={ready && !busy} deviceDpr={deviceDpr} />
+        {showFps && <FpsMeter status={temporalStatus} />}
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
           enablePan
@@ -1059,6 +1075,9 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
           makeDefault
         />
       </Canvas>
+      {contextLost && <div className="absolute inset-0 z-20">
+        <ViewerUnavailable lost onRetry={() => { setContextLost(false); setCanvasGeneration((n) => n + 1); }} />
+      </div>}
       {/* The overlay controls, inset by the safe area (SAFE_SIDES). The frame takes no pointer events, so the canvas
           behind every empty part still orbits; each control opts back in. */}
       <div className="pointer-events-none absolute z-10" style={immersive?.immersive ? SAFE_ALL : SAFE_SIDES}>
@@ -1067,9 +1086,9 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
           style={{ "--b": theme === "studio" ? "rgb(9 9 11 / 0.32)" : "rgb(242 239 233 / 0.32)" } as CSSProperties} />}
         {/* No backdrop-filter on anything over the canvas: the canvas repaints every frame, so a
             blur behind it would be recomputed every frame too — a real cost on phones. */}
-        <div className="absolute right-3 top-3 z-10 flex gap-1.5 *:pointer-events-auto">
+        <div className="absolute right-3 top-3 z-20 flex gap-1.5 *:pointer-events-auto">
           {/* Graphics quality (Auto by default). Left out in full screen, where the wider exit button needs the room. */}
-          {!immersive?.immersive && <GraphicsMenu />}
+          {!immersive?.immersive && <GraphicsMenu deviceDpr={deviceDpr} />}
           {immersive && (
             // The same button enters and leaves, in the same place; leaving also says so in words.
             <button type="button" onClick={immersive.toggle}
@@ -1100,6 +1119,8 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
         {/* Bottom-left "lower third", as on a broadcast. The loading tag sits above any error, so a
             failed slot never hides the status of the pass that is still running. */}
         <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex flex-col items-start gap-2">
+          {/* FPS counter (Graphics menu): stacked above the status tags, clear of the button row at any width. */}
+          {showFps && <FpsOverlay />}
           <div role="status" aria-live="polite">
             {!ready && !error ? <span className="sr-only">Loading model…</span> : showBusy && (
               <span className="flex h-8 items-center gap-2.5 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3 text-fg">

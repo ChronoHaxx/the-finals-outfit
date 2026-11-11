@@ -12,6 +12,21 @@ const toneMappingDefines: Record<number, string> = {
   [THREE.AgXToneMapping]: 'AGX_TONE_MAPPING', [THREE.NeutralToneMapping]: 'NEUTRAL_TONE_MAPPING',
   [THREE.CustomToneMapping]: 'CUSTOM_TONE_MAPPING',
 };
+// Largest MSAA sample count this GPU supports for RGBA16F render buffers (the sample target), per context. WebGL2 needs
+// EXT_color_buffer_float for RGBA16F to be renderable at all; the accumulator only runs with it.
+const halfFloatSamples = new WeakMap<WebGL2RenderingContext, number>();
+function maxHalfFloatSamples(renderer: THREE.WebGLRenderer): number {
+  const gl = renderer.getContext() as WebGL2RenderingContext;
+  let max = halfFloatSamples.get(gl);
+  if (max === undefined) {
+    try {
+      const counts = gl.getInternalformatParameter(gl.RENDERBUFFER, gl.RGBA16F, gl.SAMPLES) as Int32Array | null;
+      max = counts && counts.length ? Math.max(...counts) : 0;
+    } catch { max = 0; }
+    halfFloatSamples.set(gl, max);
+  }
+  return max;
+}
 const radicalInverse = (index: number, base: number) => {
   let result = 0, fraction = 1 / base;
   while (index > 0) { result += (index % base) * fraction; index = Math.floor(index / base); fraction /= base; }
@@ -38,9 +53,23 @@ const MOTION_BLEND = 0.1;
 // frames after the last change. Then the still path takes over, presented as a crossfade from the moving average into
 // its own growing mean (still weight samples / maxSamples), so the end of a drag or a clip does not drop back to one
 // grainy sample; the converged still frame is exactly the one Balanced converges to. Entering the motion path from a
-// still frame seeds the average with it. Any other change still restarts from a fresh frame. Balanced (the default) is
-// the screen-locked average above, unchanged.
+// still frame seeds the average with it. Any other change still restarts from a fresh frame. Since 10 Nov every graphics
+// preset uses this path (the screen-locked average above smeared garment print on Balanced and Low); quality
+// 'balanced' keeps the screen-locked one for test rigs (?quality=balanced).
 const REPROJECTED_BLEND = 1 / 16;
+// Opaque surfaces (10 Nov 2026, feedback "blurry at times"): the 1/16 history exists to average alpha-hash dither, which
+// opaque surfaces do not have; for them it only lags and softens. So opaque pixels take a shorter history that shortens
+// further with speed (a fast surface is resampled at large sub-pixel offsets every frame), and drop it where last
+// frame's depth says it belonged to another surface (an arm uncovering the print). Alpha-hashed pixels keep 1/16.
+// Measured on a printed jacket at 1x (_docs/graphics-options-2026-11-10; detail error against the converged still pose,
+// sharpness 1 = as sharp as it, flicker = frame-to-frame change on a held pose, luma levels):
+//   history          idle          clap emote    shadow-boxing   held-pose flicker
+//   1/16 (before)    6.6 / 0.92    13.5 / 0.81   17.2 / 0.73     0.64
+//   1/8 -> 1/3       5.0 / 0.98     7.8 / 0.95    9.3 / 0.92     1.38
+//   1/4 -> 1/2       4.2 / 0.99     7.0 / 0.98    8.5 / 0.96     2.76
+// 1/4 shimmers on fine print when nearly still; 1/8 keeps most of the gain at half that.
+const OPAQUE_BLEND = 1 / 8;
+const OPAQUE_FAST_BLEND = 1 / 2; // at 4 or more pixels per frame
 const SETTLE_FRAMES = 4;
 const SEEDED_FRAMES = 16; // a seeded average counts as this many frames already averaged
 export type AccumulatorQuality = 'high' | 'balanced';
@@ -53,11 +82,27 @@ export type AccumulatorQuality = 'high' | 'balanced';
 export class StableFrameAccumulator {
   readonly status = { active: false, samples: 0, maxSamples: 32, resets: 0, sceneRenders: 0,
     reason: 'initial', width: 0, height: 0, targetBytes: 0, additive: false, motion: false, motionFrames: 0,
-    reprojected: false, fading: false, velocityRenders: 0, firstOther: '' };
+    reprojected: false, fading: false, velocityRenders: 0, firstOther: '',
+    /** The caller's animation is playing (whatever path drew the frame): Auto's measurer and the FPS counter read it. */
+    animating: false,
+    /** MSAA samples per pixel in the sample target (0: none). */
+    msaa: 0 };
   /** Balanced: the screen-locked motion average (as shipped 5 Nov). High: reprojected with motion vectors (above). */
   quality: AccumulatorQuality = 'balanced';
-  /** High's tuning, exposed for test rigs (StablePreview's ?rpBlend= / ?rpCubic=0 in dev). */
-  readonly reprojection = { blend: REPROJECTED_BLEND, cubic: true };
+  /** High's tuning, exposed for test rigs (StablePreview's ?rpBlend= / ?rpCubic=0 / ?rpOpaque= ... in dev). */
+  readonly reprojection = { blend: REPROJECTED_BLEND, cubic: true, opaqueBlend: OPAQUE_BLEND, opaqueFastBlend: OPAQUE_FAST_BLEND, opaqueReset: true };
+  /**
+   * Sub-pixel jitter (10 Nov). On: temporal anti-aliasing. Off (the MSAA and Off settings): every sample is drawn at the
+   * pixel centre, so the still view's average only converges alpha-hashed coverage and opaque pixels equal one raw frame.
+   */
+  jitter = true;
+  /** MSAA samples for the sample target (10 Nov, the MSAA setting); capped by what this GPU supports for RGBA16F. */
+  msaaSamples = 0;
+  /**
+   * Stay active with no masked or additive item in view (10 Nov), so every outfit gets the same anti-aliasing and the
+   * canvas needs no multisampled back buffer of its own. Off by default: the GPU checks drive the bare pass.
+   */
+  alwaysOn = false;
   private state = new StableFrameState();
   private camera = new StableCamera();
   private sample: THREE.WebGLRenderTarget | null = null;
@@ -116,11 +161,13 @@ export class StableFrameAccumulator {
     this.reproject = new THREE.ShaderMaterial({
       uniforms: { current: { value: null }, previous: { value: null }, velocity: { value: null }, texel: { value: new THREE.Vector2() },
         blend: { value: 1 }, previousScale: { value: 1 }, cubic: { value: true }, trustAll: { value: false },
-        previousVelocity: { value: null }, previousValid: { value: false } },
+        previousVelocity: { value: null }, previousValid: { value: false },
+        opaqueBlend: { value: OPAQUE_BLEND }, opaqueFastBlend: { value: OPAQUE_FAST_BLEND }, opaqueReset: { value: true } },
       vertexShader: 'varying vec2 vUv; void main() { vUv=uv; gl_Position=vec4(position,1.0); }',
       fragmentShader: `uniform sampler2D current; uniform sampler2D previous; uniform sampler2D velocity; uniform vec2 texel;
         uniform float blend; uniform float previousScale; uniform bool cubic; uniform bool trustAll;
         uniform sampler2D previousVelocity; uniform bool previousValid;
+        uniform float opaqueBlend; uniform float opaqueFastBlend; uniform bool opaqueReset;
         varying vec2 vUv;
         // Catmull-Rom history read in five bilinear taps (the corner taps dropped, weights renormalised): re-reading the
         // history between pixels every frame with plain bilinear filtering blurs it a little each time, which adds up
@@ -174,7 +221,13 @@ export class StableFrameAccumulator {
           // dragged along with the hair's motion. Opaque surfaces have no dither to ratchet and keep the full clamp,
           // which drops shading the surface no longer shows (lights stay put while the character turns).
           vec4 history = mix(clamp(reprojected, low, high), min(reprojected, high), hashed ? trust : 0.0);
-          gl_FragColor = mix(history, now, onScreen ? blend : 1.0);
+          // Opaque surfaces (10 Nov): a shorter history, shorter still the faster the surface moves on screen, and none
+          // where last frame's depth says the history was another surface (the full clamp alone keeps it inside printed
+          // text, where every window holds both ink and fabric colours). Alpha-hashed surfaces keep \`blend\`.
+          float speed = length(motion / texel);
+          float opaque = max(blend, mix(opaqueBlend, opaqueFastBlend, smoothstep(0.0, 4.0, speed)));
+          bool uncovered = opaqueReset && !hashed && !same;
+          gl_FragColor = mix(history, now, !onScreen || uncovered ? 1.0 : hashed ? blend : opaque);
         }`,
       blending: THREE.NoBlending, depthTest: false, depthWrite: false, toneMapped: false,
     });
@@ -217,6 +270,12 @@ export class StableFrameAccumulator {
 
   invalidate(reason = 'explicit') { this.invalidated = reason; }
 
+  /** Sample (RGBA16F + depth, times the MSAA samples, plus its resolved texture) and history (RGBA16F). */
+  private baseBytes(width: number, height: number) {
+    const msaa = this.status.msaa;
+    return width * height * ((8 + 4) * Math.max(1, msaa) + (msaa ? 8 : 0) + 8);
+  }
+
 
   private releaseTargets() {
     this.sample?.dispose(); this.history?.dispose(); this.sample = null; this.history = null;
@@ -224,12 +283,17 @@ export class StableFrameAccumulator {
     this.velocity?.dispose(); this.velocity = null;
     this.settle = 0; this.fading = false; this.motionCount = 0; this.seedFrom = null;
     this.status.reprojected = false; this.status.fading = false;
-    this.status.width = 0; this.status.height = 0; this.status.targetBytes = 0;
+    this.status.width = 0; this.status.height = 0; this.status.targetBytes = 0; this.status.msaa = 0;
     this.copy.uniforms.map.value = null; this.output.uniforms.tDiffuse.value = null;
   }
 
-  /** `moving`: the caller animates the pose every frame (motion mode, see the top of this file). */
-  render(renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, enabled = true, moving = false) {
+  /**
+   * `moving`: the caller animates the pose every frame (motion mode, see the top of this file). `animating`: the
+   * animation plays, even when the caller draws it without the motion path (MSAA and Off reset every changed frame);
+   * only reported in `status.animating`.
+   */
+  render(renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera, enabled = true, moving = false, animating = moving) {
+    this.status.animating = animating;
     const destination = renderer.getRenderTarget();
     if (destination) this.size.set(destination.width, destination.height); else renderer.getDrawingBufferSize(this.size);
     const { x: width, y: height } = this.size;
@@ -238,7 +302,7 @@ export class StableFrameAccumulator {
     if (input.changed) this.status.firstOther = this.state.firstOther;
     const supported = camera instanceof THREE.PerspectiveCamera || camera instanceof THREE.OrthographicCamera;
     // Masked items need the jittered average; additive items need the linear target (and its alpha-0 pass-through).
-    const active = enabled && (input.masked || input.additive) && supported && width > 0 && height > 0
+    const active = enabled && (input.masked || input.additive || this.alwaysOn) && supported && width > 0 && height > 0
       && renderer.extensions.has('EXT_color_buffer_float') && !renderer.xr.isPresenting;
     if (!active) {
       if (this.status.active) this.releaseTargets();
@@ -249,16 +313,20 @@ export class StableFrameAccumulator {
     }
     this.status.active = true;
     const high = this.quality === 'high';
-    if (!this.sample || width !== this.status.width || height !== this.status.height || high !== this.targetsHigh) {
-      const qualityChanged = !!this.sample && high !== this.targetsHigh;
+    const msaa = this.msaaSamples > 0 ? Math.min(this.msaaSamples, maxHalfFloatSamples(renderer)) : 0;
+    if (!this.sample || width !== this.status.width || height !== this.status.height || high !== this.targetsHigh
+      || msaa !== this.status.msaa) {
+      const qualityChanged = !!this.sample && (high !== this.targetsHigh || msaa !== this.status.msaa);
       this.releaseTargets();
       // High reads the history between pixels (reprojection), so its targets filter linearly; Balanced's stay nearest.
       const filter = high ? THREE.LinearFilter : THREE.NearestFilter;
-      this.sample = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, minFilter: filter, magFilter: filter });
+      // MSAA: only the sample is multisampled; three resolves it into the texture at the end of each render().
+      this.sample = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, minFilter: filter, magFilter: filter, samples: msaa });
+      this.status.msaa = msaa;
       this.history = new THREE.WebGLRenderTarget(width, height, { type: THREE.HalfFloatType, depthBuffer: false, minFilter: filter, magFilter: filter });
       this.sample.texture.name = 'Stable preview sample'; this.history.texture.name = 'Stable preview history';
       this.status.width = width; this.status.height = height;
-      this.status.targetBytes = width * height * (8 + 4 + 8); // two RGBA16F buffers + sample depth
+      this.status.targetBytes = this.baseBytes(width, height);
       this.targetsHigh = high;
       this.invalidate(qualityChanged ? 'quality' : 'size');
     }
@@ -363,6 +431,9 @@ export class StableFrameAccumulator {
           this.reproject.uniforms.texel.value.set(1 / width, 1 / height);
           this.reproject.uniforms.blend.value = blend;
           this.reproject.uniforms.cubic.value = this.reprojection.cubic;
+          this.reproject.uniforms.opaqueBlend.value = this.reprojection.opaqueBlend;
+          this.reproject.uniforms.opaqueFastBlend.value = this.reprojection.opaqueFastBlend;
+          this.reproject.uniforms.opaqueReset.value = this.reprojection.opaqueReset;
           this.reproject.uniforms.previousScale.value = !first && seed === 'still' ? this.seedScale : 1;
           renderer.setRenderTarget(next);
           this.quad.material = this.reproject; this.quad.render(renderer);
@@ -380,8 +451,10 @@ export class StableFrameAccumulator {
         motionPresented = next;
       } else if (this.status.samples < this.status.maxSamples) {
         const n = this.status.samples;
-        // The first frame is unjittered: moving cameras/poses never reuse old pixels.
-        const dx = n ? radicalInverse(n, 2) - .5 : 0, dy = n ? radicalInverse(n, 3) - .5 : 0;
+        // The first frame is unjittered: moving cameras/poses never reuse old pixels. Without jitter (MSAA, Off) every
+        // sample is: only the alpha-hash thresholds change between samples.
+        const jittered = n > 0 && this.jitter;
+        const dx = jittered ? radicalInverse(n, 2) - .5 : 0, dy = jittered ? radicalInverse(n, 3) - .5 : 0;
         const p = camera.projectionMatrix.elements;
         if (camera instanceof THREE.PerspectiveCamera) { p[8] += 2 * dx / width; p[9] -= 2 * dy / height; }
         else { p[12] -= 2 * dx / width; p[13] += 2 * dy / height; }
@@ -416,7 +489,7 @@ export class StableFrameAccumulator {
       }
       this.status.reprojected = high && this.status.motion;
       // GPU memory held: sample (RGBA16F + depth) and history, the motion average while it lives, and High's velocities.
-      this.status.targetBytes = width * height * (8 + 4 + 8) + (this.motionHistory ? width * height * 8 : 0) + (this.velocity?.bytes ?? 0);
+      this.status.targetBytes = this.baseBytes(width, height) + (this.motionHistory ? width * height * 8 : 0) + (this.velocity?.bytes ?? 0);
       this.status.fading = this.fading;
       if (high) {
         // Next frame's "previous": this frame's unjittered sampling camera and every mesh's transforms and bones.
@@ -464,7 +537,7 @@ export class StableFrameAccumulator {
   /** High: the crossfade is over (converged, or replaced by a real change): drop the motion average and its target. */
   private endFade(width: number, height: number) {
     this.fading = false; this.status.fading = false;
-    if (this.motionHistory) { this.motionHistory.dispose(); this.motionHistory = null; this.status.targetBytes = width * height * (8 + 4 + 8) + (this.velocity?.bytes ?? 0); }
+    if (this.motionHistory) { this.motionHistory.dispose(); this.motionHistory = null; this.status.targetBytes = this.baseBytes(width, height) + (this.velocity?.bytes ?? 0); }
   }
 
   dispose() {

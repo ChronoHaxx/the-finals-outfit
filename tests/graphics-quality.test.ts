@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { initialTier, judgeWindow, percentile, SLOW_FACTOR, TARGET_PERIOD, type AutoState } from "../src/lib/graphics-quality";
+import { initialTier, isResolution, judgeWindow, percentile, rememberedAuto, renderDpr, SLOW_FACTOR, TARGET_PERIOD, tierDpr, type AutoState } from "../src/lib/graphics-quality";
 
 // Auto graphics (6 Nov 2026): the decision rule on measured windows of moving frame times (seconds).
 const fresh = (tier: AutoState["tier"] = "high"): AutoState => ({ tier, settled: false, cpuBound: false, slowWindows: 0 });
@@ -53,4 +53,37 @@ test("after settling, too, one slow window is tolerated and two in a row step do
   const low = { ...fresh("low"), settled: true };
   assert.equal(judgeWindow(judgeWindow(low, JANKY), JANKY).tier, "low", "Low is the floor");
   assert.equal(judgeWindow({ ...fresh("balanced"), settled: true }, frames(1 / 240)).tier, "balanced", "fast frames never step up");
+});
+
+// 10 Nov 2026: every preset has motion vectors; presets differ only in pixel density, so a step must lower it.
+test("presets are pixel densities, capped by the screen and never below 1x", () => {
+  assert.deepEqual([tierDpr("high", 3), tierDpr("balanced", 3), tierDpr("low", 3)], [2, 1.5, 1]);
+  assert.deepEqual([tierDpr("high", 1.25), tierDpr("balanced", 1.25), tierDpr("low", 1.25)], [1.25, 1.25, 1]);
+  assert.equal(tierDpr("high", 0.8), 1, "a zoomed-out page still draws at least 1x, as dpr={[1, max]} did");
+});
+
+test("a hand-picked resolution is a share of the screen's own pixels and overrides the preset", () => {
+  assert.equal(renderDpr("low", "auto", 2), 1);
+  assert.equal(renderDpr("low", 1, 2), 2, "100% on a 2x screen is 2x whatever the preset");
+  assert.equal(renderDpr("high", 0.5, 2), 1);
+  assert.equal(renderDpr("high", 0.5, 0.4), 0.25, "never below a quarter");
+  assert.ok(isResolution("auto") && isResolution(0.75) && !isResolution(0) && !isResolution(2) && !isResolution("75"));
+});
+
+test("Auto skips presets that draw the same pixels on this screen (Fable review, 10 Nov)", () => {
+  const twice = (state: AutoState, dpr: number) => judgeWindow(judgeWindow(state, JANKY, dpr), JANKY, dpr);
+  // 150% Windows scaling: High and Balanced are both 1.5x, so the step goes straight to Low.
+  const at150 = twice(fresh(), 1.5);
+  assert.deepEqual([at150.tier, at150.previous?.tier], ["low", "high"]);
+  // A 1x screen: nothing draws fewer pixels. Settle without calling the device processor-bound.
+  assert.deepEqual(twice(fresh(), 1), { ...fresh(), settled: true });
+  assert.equal(twice(fresh(), 1).cpuBound, false);
+});
+
+test("Auto's result from before the presets changed is not reused", () => {
+  const device = "GPU|2|2560x1440";
+  assert.equal(rememberedAuto({ auto: { device, tier: "low" } }, device), null, "unversioned (6 Nov) result ignored");
+  assert.equal(rememberedAuto({ auto: { device: "other", tier: "low", version: 2 } }, device), null);
+  assert.deepEqual(rememberedAuto({ auto: { device, tier: "balanced", cpuBound: true, version: 2 } }, device),
+    { tier: "balanced", settled: true, cpuBound: true, slowWindows: 0 });
 });

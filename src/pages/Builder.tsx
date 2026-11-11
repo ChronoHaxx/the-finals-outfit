@@ -11,6 +11,9 @@ import { CloseIcon } from "../components/Icons";
 import { setUrlCleaner } from "../store/useSavedOutfits";
 import { openLink } from "../store/open-link";
 import { useImmersiveMode } from "../lib/immersive-mode";
+import { probeWebGL2 } from "../lib/webgl-support";
+import { ViewerUnavailable } from "../components/ViewerUnavailable";
+import { SlowScriptNotice } from "../components/SlowScriptNotice";
 
 export default function Builder() {
   // Full screen (lib/immersive-mode): the stage becomes a fixed full-viewport layer and everything else is hidden
@@ -47,6 +50,9 @@ export default function Builder() {
     setOmittedItems(result.omitted);
   }, [routerLocation.search]);
   const dismissNotice = () => { setOmittedItems(false); setLinkError(false); };
+  // No WebGL 2 (LibreWolf's default, some privacy setups): say so in place of the 3D view instead of a blank box; the
+  // viewer is not mounted at all, so it downloads nothing (lib/webgl-support).
+  const [webgl] = useState(probeWebGL2);
 
   // Phone: the page scrolls; the stage is sticky at the top and the slot strip sticks under it,
   // so the outfit stays in view while you browse. Desktop (lg): a fixed-height three-pane layout
@@ -68,6 +74,7 @@ export default function Builder() {
             <CloseIcon size={12} />
           </button>
         </div>}
+        {webgl.ok && <SlowScriptNotice />}
       </div>
 
       <main className="grid flex-1 lg:min-h-0 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[minmax(0,1fr)_auto] lg:gap-3 lg:p-3">
@@ -76,7 +83,7 @@ export default function Builder() {
         <section aria-label="3D outfit preview"
           className={immersive ? "fixed inset-0 z-30 overflow-hidden bg-ink-900"
             : "sticky top-0 z-20 h-(--stage-h) overflow-hidden bg-ink-900 lg:static lg:h-auto lg:min-h-0 lg:border lg:border-line"}>
-          <CharacterViewer immersive={immersiveMode} />
+          {webgl.ok ? <CharacterViewer immersive={immersiveMode} /> : <ViewerUnavailable support={webgl} />}
         </section>
         <section aria-label="Your outfit" className={`min-w-0 lg:col-start-1 lg:row-start-2 ${away}`}>
           <OutfitBar />
