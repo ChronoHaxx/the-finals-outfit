@@ -369,9 +369,6 @@ for (const actor of survey) {
   const ensureNode = c => {
     if (nodeOf.has(c.name)) return nodeOf.get(c.name);
     const node = { name: c.name.replace(/_GEN_VARIABLE$/, "") };
-    if (c.location) node.translation = toThreeT(c.location);
-    if (c.rotation) node.rotation = toThreeQ(rotatorQuat(c.rotation));
-    if (c.scale) node.scale = toThreeS(c.scale);
     const index = glb.json.nodes.push(node) - 1;
     nodeOf.set(c.name, index);
     const parent = c.name === "Mesh" ? null : find(c.parent ?? "Mesh");
@@ -381,6 +378,24 @@ for (const actor of survey) {
     if (bone !== null) (glb.json.nodes[bone].children ??= []).push(index);
     else if (parent && parent !== c) { const p = ensureNode(parent); (glb.json.nodes[p].children ??= []).push(index); }
     else glb.json.scenes[0].nodes.push(index);
+    // The actor's root component carries no template transform: the root's transform IS the actor transform, which
+    // the spawn notify sets (socket x RelativeTransform), so the game replaces it. The raw meshes prove it (12 Nov
+    // 2026): JetPack (41 cm tall) has root scale 100, the roller skate (31 cm), phone (13 cm) and tablet (46 cm) have
+    // 3; baked, they showed 41 m, 92 cm, 40 cm and 1.4 m. Seven actors instead scale a child under an empty root,
+    // the usual workaround for a root scale the game ignores. Child components keep their relative transforms.
+    // Only root scales have been seen and checked; a root location or rotation stops the build until one is.
+    const isRoot = bone === null && !(parent && parent !== c);
+    const unit = s => Math.abs(s.X - 1) < 1e-4 && Math.abs(s.Y - 1) < 1e-4 && Math.abs(s.Z - 1) < 1e-4;
+    if (isRoot) {
+      if (c.location || c.rotation)
+        throw new Error(`${actor.actor}: root component ${node.name} has a template location/rotation (unverified case; check it in game data before dropping or keeping it)`);
+      if (c.scale && !unit(c.scale))
+        notes.push(`root ${node.name} template scale ${c.scale.X} left out: the spawn notify places the actor (root transform replaced)`);
+    } else {
+      if (c.location) node.translation = toThreeT(c.location);
+      if (c.rotation) node.rotation = toThreeQ(rotatorQuat(c.rotation));
+      if (c.scale) node.scale = toThreeS(c.scale);
+    }
     if (c.attachSocket && bone === null) notes.push(`${node.name} attaches to socket ${c.attachSocket} on its parent (not a bone of a skeletal parent: ignored)`);
     if (bone !== null) notes.push(`${node.name} hangs from bone ${c.attachSocket} of ${parent.name.replace(/_GEN_VARIABLE$/, "")}`);
     return index;
@@ -610,8 +625,8 @@ if (report.missingTextures.size && !("allow-missing-textures" in args))
   throw new Error(`Textures missing from ${join(research, "prop-textures")} (export them, or pass --allow-missing-textures):\n  ${[...report.missingTextures].sort().join("\n  ")}`);
 
 // Each window carries its notify's RelativeTransform (notify-transform.mjs: it places the actor relative to its socket;
-// dropped until 10 Nov 2026, so the football showed 6x too big and chairs lay on their side). It composes with the
-// actor's own components baked into the GLB, the RainCoat soil's root scale 0.35 included (x notify 0.4).
+// dropped until 10 Nov 2026, so the football showed 6x too big and chairs lay on their side). It replaces the actor's
+// root component transform (left out of the GLB, see ensureNode) and composes with the child components below it.
 // A window whose notify names a CurveDrivenTransformPrefix also carries `curve`: the emote's own float curves move it
 // every frame, under the notify transform (prop-placement.mjs). They come from the emote sequences' AnimExport records
 // (--anims, the run convert-clips.mjs converted).
