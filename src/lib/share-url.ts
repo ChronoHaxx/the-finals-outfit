@@ -3,6 +3,7 @@ import { getBrowseItem } from "./browse-catalog";
 import { derivedFromCatalog, getCatalogData } from "./catalog";
 import type { Slot } from "./slots";
 import { POSE_KEYS, poseParams, type SharePose } from "./share-pose";
+import { builderHashParams } from "./site-mode";
 
 export type ShareStyle = "short" | "names";
 const shareCodes = derivedFromCatalog(() => {
@@ -60,7 +61,9 @@ function decodeCodes(code: string, names: boolean): Outfit {
 
 export function readOutfitLink(currentUrl: string): Outfit | null {
   const url = new URL(currentUrl);
-  const fragment = url.hash.startsWith("#/?") ? new URLSearchParams(url.hash.slice(3)) : new URLSearchParams();
+  // The builder's route, global (#/?o=) or Chinals (#/chinals?o=: the mode toggle keeps an unsaved link draft's
+  // address, so a reload there must still open it). Never another page's query (lib/site-mode.ts).
+  const fragment = builderHashParams(url.hash) ?? new URLSearchParams();
   const short = fragment.get("o") ?? url.searchParams.get("o");
   if (short !== null) return decodeCodes(short, false);
   const names = url.searchParams.get("look");

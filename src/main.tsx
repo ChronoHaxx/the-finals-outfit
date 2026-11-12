@@ -46,8 +46,15 @@ function mount() {
       <HashRouter>
         <ReconstructionProgressProvider>
           <Routes>
-            <Route path="/" element={<Builder />} />
+            {/* One layout route for both builder modes (lib/site-mode.ts), so switching keeps the same Builder and
+                3D viewer: the character is not reloaded, only the emote set changes. */}
+            <Route element={<Builder />}>
+              {/* element={null}: the page is the layout's Builder; without it the router warns of an empty leaf. */}
+              <Route index element={null} />
+              <Route path="chinals" element={null} />
+            </Route>
             <Route path="/roadmap" element={<Roadmap />} />
+            <Route path="/chinals/roadmap" element={<Roadmap />} />
             <Route path="/o/:code" element={<Outfit />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

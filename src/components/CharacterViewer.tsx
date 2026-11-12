@@ -17,7 +17,8 @@ import { effectiveTier, renderDpr, useGraphicsStore } from "../lib/graphics-qual
 import { ViewerUnavailable } from "./ViewerUnavailable";
 import { AnimationControls, AnimationFrameDriver, clockHeldStill, useAnimatorState, useRigAnimator } from "./AnimationControls";
 import { EmoteTimeline } from "./EmoteTimeline";
-import type { RigAnimator } from "../rig/RigAnimator";
+import { animationsBaseUrl, type RigAnimator } from "../rig/RigAnimator";
+import { chinalsAnimationsBase, type SiteMode } from "../lib/site-mode";
 import MeshInspector from "./MeshInspector";
 import OutfitExportPanel, { type ExportContext } from "./OutfitExportPanel";
 import { createGltfLoader } from "../rig/loaders";
@@ -458,7 +459,7 @@ function LobbyLights() {
 }
 
 /** `immersive`: the page's full-screen mode (lib/immersive-mode), when the page supports one; adds its button. */
-export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMode } = {}) {
+export default function CharacterViewer({ immersive, mode = "global" }: { immersive?: ImmersiveMode; mode?: SiteMode } = {}) {
   const rig = useMemo(
     () =>
       new CharacterRig(createGltfLoader(), undefined, NAIL_MASK_URL, {
@@ -475,8 +476,9 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
   const [theme, setTheme] = useState<SceneTheme>("studio");
   const [sun, setSun] = useState(savedSun);
   const changeSun = (degrees: number) => { setSun(degrees); saveSun(degrees); };
-  // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden).
-  const animator = useRigAnimator();
+  // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden). Chinals mode
+  // (lib/site-mode.ts) plays its own clip set: a mode switch replaces the animator, the character stays loaded.
+  const animator = useRigAnimator(mode === "chinals" ? chinalsAnimationsBase() : animationsBaseUrl());
   // A timeline drag changes the pose every frame while paused: the still view treats it as motion too.
   const animationMoving = useCallback(() => (!!animator?.state.moving || !!animator?.scrubbing) && !clockHeldStill(), [animator]);
   // The emote timeline sits along the bottom while an emote is in front; the right-hand column stops above it.

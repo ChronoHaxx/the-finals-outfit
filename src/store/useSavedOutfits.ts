@@ -17,6 +17,7 @@ import { MemoryBackend, openOutfitStorage, requestPersistentStorage, type Storag
 import { keepMissing, labelsFor, resolveSavedSlots, sameBuild, type MissingPiece } from "../lib/saved-outfit-pieces";
 import { readOutfitLink } from "../lib/share-url";
 import { POSE_KEYS } from "../lib/share-pose";
+import { builderHashMode, builderHashParams, builderPath } from "../lib/site-mode";
 import { migrateOutfit } from "../lib/outfit-slots";
 import type { Slot } from "../lib/slots";
 import { startingOutfit, useBuildStore } from "./useBuildStore";
@@ -223,10 +224,11 @@ function cleanUrl() {
     let changed = false;
     for (const key of ["outfit", "o", "look", ...POSE_KEYS]) if (url.searchParams.has(key)) { url.searchParams.delete(key); changed = true; }
     if (changed) window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
-    const hashLink = url.hash.startsWith("#/?") && new URLSearchParams(url.hash.slice(3)).has("o");
+    // Either builder route (lib/site-mode.ts): tidying a link away never leaves Chinals mode.
+    const hashLink = builderHashParams(url.hash)?.has("o") ?? false;
     if (!hashLink) return;
     if (urlCleaner) urlCleaner();
-    else window.history.replaceState(window.history.state, "", url.pathname + url.search + "#/");
+    else window.history.replaceState(window.history.state, "", url.pathname + url.search + "#" + builderPath(builderHashMode(url.hash) ?? "global"));
   } catch (error) {
     console.warn("[saved outfits] could not tidy the address bar", error);
   }
