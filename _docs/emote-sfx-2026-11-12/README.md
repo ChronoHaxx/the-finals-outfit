@@ -180,7 +180,7 @@ with the local `sounds-1`.
 - `manifest.json`, which differs from the live one only by `"sounds": "sounds-1/sounds.json"`.
 
 **Upload:** wrangler 4.131.1 `pages deploy` (see `_docs/showcase-animation-2026-11-05/README.md`): 277 new files,
-567 deduplicated ([upload-anim-ab913ac8.log](upload-anim-ab913ac8.log)).
+567 deduplicated ([upload-anim-ab913ac8.txt](upload-anim-ab913ac8.txt)).
 
 **Verified** ([deployment-anim-ab913ac8.json](deployment-anim-ab913ac8.json)):
 - All 844 files are byte-identical to staging.
