@@ -21,8 +21,10 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
       "Outfits, first in the wardrobe, lists the game's own 352 outfits with their in-game icons. One tap puts a whole outfit on and keeps your face and skin.",
       "An outfit you put on is not saved until you change something or press Save, so your saved outfits stay as they were. Pieces the catalog does not have yet, and effects the preview cannot show, are listed rather than left out.",
       "150 cosmetics join the catalog, among them the practice-range mannequin, Bull’s Eye Barry, and its wooden twin, Bull’s Eye Barrel. They show their icons for now; 3D comes later.",
+      "42 more cosmetics render in 3D, among them the space pilot jackets, capes and skirts, the tiger pants and hoodie, the ballistic and demon LED masks, the carbon racing helmet and more hair. 15 cosmetics with a glitch pattern also render in 3D, without that effect, which the preview cannot show yet.",
+      "3,151 of the catalog's 3,482 cosmetics now have a first-pass 3D reconstruction. The share reads 90% because the catalog grew.",
     ],
-    items: ["in-game-outfits", "catalog"],
+    items: ["in-game-outfits", "catalog", "red-items"],
   },
   {
     id: "2026-11-11-new-studio-light",
