@@ -26,6 +26,66 @@ reviewed a first draft, and its corrections are folded in (see "Review" at the e
   - The menu also changes every season and for every event.
   - So any build has to read the installed S12 paks.
 - **Leave the real 3D room (option C) for later or never.** Show whole maps only as panoramas at chosen spots.
+- **Updated after the user's screenshots (section 0):** the intro is the S12 tunnel. Both scenes are one-sided views from
+  a fixed camera, so both need turntable mode. The panorama (B) no longer fits either scene. Recommended now: D for the
+  menu, A for the tunnel.
+
+## 0. The user's screenshots (12 Nov)
+
+The user sent two images, "something like this".
+
+**The main-menu home screen** (build CL1439418, the character is the Bull's Eye Barry mannequin):
+
+| Visible | Asset |
+| --- | --- |
+| A huge blue A mark behind the character: the left triangle and the slash at the top right are its legs, seen through fine LED dots | `T_THEFINALS_01_IconStroke_A` (the A mark with a glow halo; checked by decoding it) on an LED-dot material: the title LED (`LEDTiling`) or the screen wall. P1 finds out which. |
+| A regular grid of large white dots | `MI_Frontend_HomeScreenLights` (a light grid with flares) |
+| Haze over the floor | `MI_FogPlane_Background`, `MI_FakeFog_03` |
+| A thin glowing arc at floor level | the edge of the LED floor circle (`MI_Frontend_FloorLED`, vignette) |
+| A dark floor with soft reflections | `MI_MainStageFloor` |
+
+**The intro**, a square image with no HUD and no character:
+
+| Visible | Asset |
+| --- | --- |
+| A wet, mirror-like tiled floor with gutters | `MI_Floor_IntroPodium_01` (`T_TileFloor_01`) and `MI_Drainage_IntroPodium_01` on `SM_TunnelSegment_IntroPodium_01` |
+| Ribbed blue glass panels with faint A marks | `SM_Glass_IntroPodium_01` and `MI_GlassIntroPodium_01_MPCColors` (`LogoEmissive`). Its background colour comes from the team-colour parameter collection, so blue is one team's colour. |
+| Curved ducts in the ceiling | `SM_CielingAdd_IntroPodium_01` (12.2 × 6 m) |
+| A glowing logo with a light bar on each side at the end | `SM_TunnelEnd_IntroPodium_01` with the strips `MI_IntroPodium_Emissive_01`. The stacked logo comes from the end effect or the screen; P1 confirms. |
+
+So the "arena intro" is the S12 intro tunnel in `G_IntroPodium_01`, not the per-map flyover.
+
+**The game patched on 12 Nov at 12:26 UTC.** The first probe ran on the 29 Oct files, so the scene packages were
+probed again on the patched build:
+- meshes and textures are identical;
+- material-instance parameters are identical;
+- master materials changed only in packaging and shader flags;
+- the old usmap parsed everything.
+
+Details are in `evidence/patch-2026-11-12-diff.txt`.
+
+**What the screenshots change:**
+- **Both views are one-sided, from a fixed camera.**
+  - The menu is a stage wall in front of the character, with nothing behind it.
+  - The tunnel is about 4.2 m wide, and our orbit camera sits 3.6 m from the character. Orbiting sideways would take the
+    camera through the walls, and orbiting round would show the empty back of the menu stage.
+  - So both scenes need turntable mode (section 3): the camera stays put and a drag turns the character, as in the game.
+    The alternative is orbit limited to about ±30°.
+- **The panorama (B) drops out.** A panorama is correct only from the point it was captured at. Its error grows with the
+  camera's distance from that point compared with the distance to the walls. Seen from 3.6 m away, walls 2 m from the
+  centre would bend badly, and `GroundedSkybox` corrects only the floor.
+- **The menu stays D (live stage).** It keeps its animation (glitch, smoke, flicker) and stays sharp at any window size.
+  Turntable mode makes it simpler, because the stage is only ever seen from the front.
+- **The tunnel becomes A (plate),** rendered inside the tunnel looking at the logo end, as in the screenshot.
+  - The floor in the screenshot is a mirror, so a character standing there should reflect in it.
+  - A plate can't show that. An optional reflection layer would: the character drawn mirrored under the floor line,
+    blurred and faded.
+  - It needs care with the still view, because that reflection changes whenever the character moves.
+- **The screenshot itself could be the plate,** if the tunnel image is a real in-game frame.
+  - First solve its camera from the tunnel's known sizes: segments 4.18 m wide, square tiles and a known vanishing point
+    (what fSpy does).
+  - That would beat any relight for the look. It needs the image's source, and ideally a wider (16:9 or 21:9) capture at
+    full resolution.
 
 ## 1. What the two scenes are made of
 
@@ -320,11 +380,11 @@ Teaching notes:
 
 | Step | Who | What | Size |
 | --- | --- | --- | --- |
-| P0 | the user | Send the two screenshots. Say which intro is meant (podium or arena flyover), whether any in-game screen shows the stage without a character, and pick the routes and the orbit behaviour. | — |
+| P0 | the user | Screenshots: received 12 Nov; the intro is the tunnel. Still open: the tunnel image's source, the routes, and turntable mode or limited orbit. | — |
 | P1 | agent | The probe reads `.umap`. Get the S12 actor lists, the camera sensor and field of view, and the `_BuiltData` contents. Assemble the scenes (a local `.blend` for the podium, a placement JSON for the menu); neither is committed. | about half a day |
 | P2-menu | user or agent | Option D: port the 5 emissive shaders, build the backdrop pass, ground the character in Lobby, add the share-card still and tests. | 2-4 days |
-| P2-podium | user or agent | Match materials and lighting in Blender against the screenshot. Render the plate (A, with the turntable mode) or the panorama (B, with a sharp floor near the feet and a 2048 phone version). | 1-2 days, plus about 1 day in the viewer |
-| P3 | agent | Hosting, the release, and the visual-diff check that the default is unchanged. | about 1 day |
+| P2-tunnel | user or agent | Option A. Either solve the screenshot's camera and use a clean in-game frame as the plate, or match materials and lighting in Blender against it and render the plate from inside the tunnel. Optional: the floor reflection layer. | 1-2 days (relight) or about half a day (camera solve), plus about 1 day in the viewer |
+| P3 | agent | Turntable mode for scenes, hosting, the release, and the visual-diff check that the default is unchanged. | 1-2 days |
 | P4 | — | Option C or whole maps: a separate proposal. | — |
 
 **Doing it yourself versus handing it over** (the user is learning rendering):
@@ -335,13 +395,13 @@ Teaching notes:
   - The `GroundedSkybox` hookup. It teaches projection: how a sphere of directions becomes a floor.
 - **Worth handing over:** P1's probe and assembler plumbing, and P3's hosting.
 
-**Decisions for the user:**
-1. Routes: D for the menu and A or B for the podium, as recommended, or something else?
-2. For a plate: turntable mode (the camera stays put and you turn the character, as in the game), or keep orbiting and
-   accept the drift?
-3. Which intro is meant?
-4. Is there an in-game screen that shows the stage without the character? A real capture would beat any relight.
-5. For P1: our own assembler from probe JSON, which needs no download (recommended), or a community Blender umap
+**Decisions for the user** (updated after the screenshots):
+1. Routes: D (live stage) for the menu and A (plate) for the tunnel, as recommended, or something else?
+2. Turntable mode while a scene is on (the camera stays put and a drag turns the character, as in the game), or orbit
+   limited to about ±30°?
+3. Where is the tunnel image from? If it is an in-game frame, can you capture a wider, full-resolution one with no
+   character?
+4. For P1: our own assembler from probe JSON, which needs no download (recommended), or a community Blender umap
    importer, which would be a download that needs your OK.
 
 ## Review
