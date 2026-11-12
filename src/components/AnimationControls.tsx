@@ -9,6 +9,7 @@ import { loadSourceFaceMask } from "../rig/SourceAssembly";
 import { pendingPose, subscribePendingPose, takePendingPose } from "../lib/share-pose";
 import { setPoseSource } from "../lib/viewer-handle";
 import { EmotePicker, missingSummary } from "./EmotePicker";
+import { EmoteSoundControl } from "./EmoteSoundControl";
 
 // Showcase animation UI (5 Nov 2026): Animate / Static toggle, pause, and the emote picker (EmotePicker.tsx: every
 // emote with its icon, plus outfit-screen reactions and idles). Hidden unless the deployment publishes a clip manifest
@@ -64,13 +65,14 @@ export function useRigAnimator(): RigAnimator | null {
     let cancelled = false;
     loadAnimationManifest().then(loaded => {
       const params = new URLSearchParams(window.location.search);
+      // Automated browsers get no sounds at all (no audio device, no downloads): captures stay silent and deterministic.
       if (!cancelled && loaded) setAnimator(new RigAnimator(loaded.manifest, loaded.clipBase,
         { sway: params.get("sway") !== "0", deform: params.get("deform") !== "0", loopEmote: savedLoop(), propsUrl: loaded.propsUrl,
-          facesUrl: loaded.facesUrl, face: params.get("face") !== "0" }));
+          facesUrl: loaded.facesUrl, face: params.get("face") !== "0", soundsUrl: AUTOMATED ? null : loaded.soundsUrl }));
     }).catch(error => console.warn("[animation] manifest unavailable", error));
     return () => { cancelled = true; };
   }, []);
-  useEffect(() => () => animator?.reset(), [animator]);
+  useEffect(() => () => { animator?.reset(); animator?.sounds.dispose(); }, [animator]);
   return animator;
 }
 
@@ -238,6 +240,7 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
   return (
     <div ref={controls} className="flex min-h-0 flex-col items-end gap-1.5">
       <div className="flex gap-1.5">
+        {emote && animator.sounds.hasSound(emote.source) && <EmoteSoundControl sounds={animator.sounds} />}
         {state.active && (
           <button type="button" className={button} disabled={disabled}
             aria-pressed={state.paused} title={state.paused ? "Resume the animation" : "Freeze this frame"}
