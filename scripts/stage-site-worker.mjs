@@ -48,6 +48,16 @@ const production = {
   SHARE_PREVIEW_BASE: envFromWorkflow("SHARE_PREVIEW_BASE"),
 };
 if (!production.ASSETS_BASE) throw new Error("deploy.yml has no ASSETS_BASE");
+// Every VITE_* setting deploy.yml's Build step passes as `${{ env.NAME }}`, resolved from the job's env block. The gated
+// build must get all of them, or it silently loses a feature. A fixed list here once dropped VITE_ANIMATIONS_BASE: no
+// idle pose, no emotes. The first step wins: the preview step maps the same names.
+const viteFromWorkflow = {};
+for (const [, key, name] of workflow.matchAll(/^\s*(VITE_\w+):\s*\$\{\{\s*env\.(\w+)\s*\}\}\s*$/gm))
+  if (!(key in viteFromWorkflow)) viteFromWorkflow[key] = envFromWorkflow(name);
+// A VITE_* line in another form would be dropped; stop instead (VITE_BASE is replaced below).
+const unmapped = [...new Set([...workflow.matchAll(/^\s*(VITE_\w+):/gm)].map(m => m[1]))]
+  .filter(key => key !== "VITE_BASE" && !(key in viteFromWorkflow));
+if (unmapped.length) throw new Error(`deploy.yml sets ${unmapped.join(", ")} in a form this script cannot copy; update it`);
 const bases = {
   assetsBase: production.ASSETS_BASE, modelsBase: production.MODELS_BASE, reconstructionBase: production.RECONSTRUCTION_BASE,
   reconstructionRoutes: production.RECONSTRUCTION_ROUTES_FILE
@@ -64,10 +74,8 @@ if (flag("--build")) {
   };
   const sitekey = value("--sitekey", process.env.VITE_TURNSTILE_SITEKEY || configured());
   if (!sitekey) throw new Error("--build needs --sitekey (or VITE_TURNSTILE_SITEKEY)");
-  const env = { ...process.env, VITE_BASE: "/", VITE_MESH_BASE: "/m/", VITE_TURNSTILE_SITEKEY: sitekey,
-    VITE_ASSETS_BASE: production.ASSETS_BASE, VITE_MODELS_BASE: production.MODELS_BASE,
-    VITE_RECONSTRUCTION_BASE: production.RECONSTRUCTION_BASE, VITE_RECONSTRUCTION_ROUTES_FILE: production.RECONSTRUCTION_ROUTES_FILE,
-    VITE_SHARE_PREVIEW_BASE: value("--share-preview-base", production.SHARE_PREVIEW_BASE) };
+  const env = { ...process.env, ...viteFromWorkflow, VITE_BASE: "/", VITE_MESH_BASE: "/m/", VITE_TURNSTILE_SITEKEY: sitekey,
+    VITE_SHARE_PREVIEW_BASE: value("--share-preview-base", viteFromWorkflow.VITE_SHARE_PREVIEW_BASE ?? "") };
   const built = spawnSync("npm", ["run", "build"], { cwd: ROOT, env, stdio: "inherit", shell: process.platform === "win32" });
   if (built.status !== 0) throw new Error("app build failed");
   appDir = join(ROOT, "dist");
@@ -89,6 +97,16 @@ const bundle = appFiles.filter(f => f.endsWith(".js")).map(f => readFileSync(joi
 // Vite inlines import.meta.env.VITE_MESH_BASE as a string literal next to the gate client's Turnstile action.
 if (!/"\/m\/"/.test(bundle) || !bundle.includes('"mesh-session"'))
   console.warn("WARNING: this build does not route meshes to /m/ (VITE_MESH_BASE); it will keep loading them from public hosts.");
+// Every production host deploy.yml builds in must be in this bundle too (a build that dropped one loses that feature).
+const absent = Object.entries(viteFromWorkflow)
+  .filter(([key, url]) => /^https:\/\//.test(url) && !(key === "VITE_SHARE_PREVIEW_BASE" && flag("--share-preview-base"))
+    && !bundle.includes(new URL(url).host))
+  .map(([key, url]) => `${key}=${url}`);
+if (absent.length) {
+  const message = `the app build is missing production settings: ${absent.join(", ")}`;
+  if (flag("--build")) throw new Error(message);
+  console.warn(`WARNING: ${message}`);
+}
 
 // 2. Every mesh of every production model host, under its host label.
 const sources = new Map(values("--source").map(spec => {
