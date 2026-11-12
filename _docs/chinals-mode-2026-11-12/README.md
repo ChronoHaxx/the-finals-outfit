@@ -1,7 +1,7 @@
 # Chinals mode, emotes first (12 Nov 2026)
 
 **Result: the builder has a labelled Chinals mode at `#/chinals`. It plays the 45 Chinals emotes on the visitor's
-outfit, and it stays switched off until a Chinals asset host is set.** The site owner chose option B ("labelled
+outfit. Its emotes are published on their own host, and merging this PR turns the mode on.** The site owner chose option B ("labelled
 Chinals mode") from the Chinals intake decisions. The intake notes stay outside the repository, since they concern
 the community member who supplied the files. This first step is emotes only: there are no Chinals cosmetics on the
 site yet.
@@ -43,8 +43,8 @@ site yet.
     without binding, instead of building a mixer on the shared body that nothing updates.
   - A Chinals pose that arrives on the global set waits in `share-pose.ts` until the Chinals set has loaded. It is
     never taken and dropped by the global viewer.
-- **Off switch.** `VITE_CHINALS_ANIMATIONS_BASE` (deploy variable `CHINALS_ANIMATIONS_BASE`) is blank in
-  `deploy.yml`, so merging changes nothing for visitors. With the mode off:
+- **Off switch.** `VITE_CHINALS_ANIMATIONS_BASE` (deploy variable `CHINALS_ANIMATIONS_BASE` in `deploy.yml`) turns
+  the mode on. Blanking it turns the mode off. With the mode off:
   - the switch is hidden;
   - a `#/chinals` address, or a link with a Chinals pose, shows "Chinals mode isn't available on this site right
     now…", keeps the address, and still opens the outfit.
@@ -61,9 +61,11 @@ the replace-not-push point, and suggested keeping the link form.
 - 41 icons decoded offline from the local Chinals paks with ChinalsProbe's texture mode.
 
 It writes a new set directory (`set-3`) and keeps the previous manifest as `manifest.set-2.json`. The output is local
-and gitignored (`scripts/generated/chinals-emotes/`); nothing has been published.
+and gitignored (`scripts/generated/chinals-emotes/`). The props are `props-2`, built before PR #39's placement fixes
+(AnimBlueprint root overrides, curve-driven props, child components). The Chinals props were checked by eye and look
+right; a rebuild with those fixes would be a new `props-N`, on a new deployment.
 
-## Agent checks (12 Nov 2026, branch `claude/chinals-mode-2026-11-12` on main `b930467`, uncommitted)
+## Agent checks (12 Nov 2026, branch `claude/chinals-mode-2026-11-12` on main `b930467`)
 
 - **Type check:** `npm run typecheck` PASS.
 - **Tests:** `npm test` 813 pass, 8 fail. The 8 also fail without this change: the worktree lacks the ski-blade
@@ -83,24 +85,37 @@ and gitignored (`scripts/generated/chinals-emotes/`); nothing has been published
 - **Browser, mode off:** no switch; a Chinals link and a bare `#/chinals` both show the notice, keep the address and
   still open the outfit.
 - **Not checked:** a real phone, Safari or Firefox, and the share Worker's preview card for a Chinals pose.
+- **Security review (automatic, after the first push):** the preview server's `--proxy` would fetch any host for a
+  request like `/animations//other-host/x`. Fixed: it fetches only plain relative paths under the proxy's own folder.
 
 ## Open decisions for the site owner
 
 1. **Banner wording and credit.** It says "supplied by a community member". Name them, or keep it anonymous?
 2. **Translations.** 24 names show this site's own translation, marked unofficial. Keep them, replace them with
    credited community translations, or show "untranslated" instead (intake decision 5)?
-3. **Hosting.** Publish the Chinals set to its own Cloudflare Pages project, then set `CHINALS_ANIMATIONS_BASE`. Both
-   need the owner's go-ahead; until then the mode stays off on the live site.
+3. **Going live.** Done up to the merge: the set is published (below) and `CHINALS_ANIMATIONS_BASE` points at it.
+   Merging after checks 1-7 turns the mode on with the banner and names as they are now.
 4. **Share cards.** The Worker's card says "caught N s into an emote", and the image caption uses the emote's label.
    A card for a Chinese-named emote shows the Chinese name. Changing the Worker's text would need a Worker deploy.
 
-## Publishing (only with the owner's yes)
+## Published (12 Nov 2026, the owner's "yes please")
 
-1. Upload `scripts/generated/chinals-emotes/` (`manifest.json`, `set-3/`, `props-2/`) to a new Pages project, for
-   example `the-finals-outfit-chinals-assets`, with the same CORS headers as the global assets host.
-2. Set `CHINALS_ANIMATIONS_BASE` in `.github/workflows/deploy.yml` to that deployment's immutable URL.
-3. Withdrawing: blank the variable and redeploy the site; old Chinals links then show the notice, and their outfits
-   still open.
+- **Host:** `https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/`, an immutable preview deployment on the new
+  Cloudflare Pages project `the-finals-outfit-chinals-assets` (branch alias `chinals-1112-emotes`, wrangler 4.131.1).
+  - Wrangler 4.131.1 now hands new Pages projects to Workers and failed there, so the project was created with
+    `--force` as a classic Pages project, like `the-finals-outfit-assets`. Later commands need no `--force`.
+- **Contents:** `manifest.json`, `set-3/` (46 clips, 41 icons), `props-2/` (54 GLBs and `props.json`) and `_headers`
+  (CORS `*`, a year's immutable caching). That is 143 files, 61 MB. Before upload the manifests were checked for local
+  paths and names: none.
+- **Checks:**
+  - `verify-hosted.mjs`: all 143 files byte-identical, GLBs `model/gltf-binary` with CORS `*` and immutable caching,
+    404 for a missing file.
+  - The app with `VITE_CHINALS_ANIMATIONS_BASE` set to the host: a Chinals link opened the mode and held Unchained at
+    3.00 s with the bat in hand, every Chinals file coming from the host.
+- **Wiring:** `deploy.yml` sets `CHINALS_ANIMATIONS_BASE` to the host, so merging turns the mode on. A later set needs a
+  new deployment and a new hash, never an overwrite.
+- **Withdrawing:** blank the variable and redeploy the site (old Chinals links then show the notice, and their outfits
+  still open); deleting the Pages project removes the files too.
 
 # Guided functional review: Chinals mode
 
@@ -112,7 +127,7 @@ switch, and a Chinals link dropping its emote.
 
 - PR / originating issue: not opened yet (intake decision 2, option B, 12 Nov 2026).
 - Test this revision: branch `claude/chinals-mode-2026-11-12` in worktree
-  `E:\Coding\the-finals-outfit\.claude\worktrees\stoic-golick-17e361`, uncommitted on main `b930467`.
+  `E:\Coding\the-finals-outfit\.claude\worktrees\stoic-golick-17e361`: the PR's head commit, based on main `b930467`.
 - Open: http://127.0.0.1:5191/ after the command below.
 - Prerequisites: the local Chinals set in `scripts/generated/chinals-emotes/` (already there) and an internet
   connection for the global emotes.

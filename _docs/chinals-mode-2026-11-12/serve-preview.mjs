@@ -62,7 +62,13 @@ const plugin = {
       let body;
       try { body = await readFile(file); } catch {
         if (!(proxy && prefix === '/animations/')) { res.statusCode = 404; return res.end(); }
-        const remote = await fetch(new URL(pathname.slice(prefix.length), proxy)).catch(() => null);
+        // Only a plain relative path under the proxy's own folder: "//host/x", "..", "%2e%2e" or a scheme in the request
+        // must never turn this into a fetch from another host (security review, 12 Nov 2026).
+        const rel = pathname.slice(prefix.length);
+        const base = new URL(proxy.endsWith('/') ? proxy : `${proxy}/`);
+        const target = /^[A-Za-z0-9._~\-/]+$/.test(rel) && !rel.startsWith('/') && !rel.split('/').includes('..') ? new URL(rel, base) : null;
+        if (!target || target.origin !== base.origin || !target.pathname.startsWith(base.pathname)) { res.statusCode = 400; return res.end(); }
+        const remote = await fetch(target).catch(() => null);
         if (!remote?.ok) { res.statusCode = remote?.status ?? 502; return res.end(); }
         body = Buffer.from(await remote.arrayBuffer());
       }
