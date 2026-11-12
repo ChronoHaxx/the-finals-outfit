@@ -34,15 +34,15 @@ const wardrobe = derivedFromCatalog(() => {
 const isRenderable = (i: { id: string; model?: unknown; decal?: unknown }, sourceItems: ReadonlySet<string>) =>
   !!(i.model || i.decal || sourceItems.has(i.id));
 
-// Phone layout: the 3D stage is sticky at the top of the page (see Builder), so the slot strip
-// sticks just below it. Desktop: everything lives in fixed panes with their own scrolling.
+// Phone layout: the picker scrolls inside the items drawer (Builder, ItemsDrawer) and the slot strip sticks to the
+// drawer's top. Desktop: everything lives in fixed panes with their own scrolling.
 const PHONE = "(max-width: 1023px)";
 
 function SlotRail({ slot, onSelect }: { slot: Slot; onSelect: (slot: Slot) => void }) {
   const build = useBuildStore((s) => s.build);
   const { counts, rail } = wardrobe();
   return <nav aria-label="Cosmetic slots"
-    className="sticky top-(--stage-h) z-20 flex h-14 shrink-0 items-center gap-4 overflow-x-auto overscroll-x-contain border-y border-line bg-ink-950 px-3 [scrollbar-width:none] lg:static lg:block lg:h-auto lg:w-52 lg:overflow-y-auto lg:border-y-0 lg:border-r lg:bg-ink-900 lg:px-0 lg:pb-3">
+    className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-4 overflow-x-auto overscroll-x-contain border-y border-line bg-ink-950 px-3 [scrollbar-width:none] lg:static lg:block lg:h-auto lg:w-52 lg:overflow-y-auto lg:border-y-0 lg:border-r lg:bg-ink-900 lg:px-0 lg:pb-3">
     {rail.map(group => <div key={group.label} className="flex shrink-0 items-center gap-1.5 lg:block">
       <p aria-hidden="true" className="hud pr-0.5 text-[9px] text-fg-dim lg:px-4 lg:pb-1.5 lg:pt-4 lg:text-[10px]">{group.label}</p>
       {group.slots.map(s => {
@@ -148,21 +148,23 @@ export default function SlotPicker() {
   const selectSlot = (next: Slot) => {
     setSlot(next);
     setQuery("");
-    // Start each slot at its first item. Desktop scrolls the grid pane; on phones the page
-    // scrolls, so bring the strip back up under the sticky stage if the visitor is deep in a list.
+    // Start each slot at its first item. Desktop scrolls the grid pane; on phones the drawer
+    // scrolls, so bring the strip back to the drawer's top if the visitor is deep in a list.
     grid.current?.scrollTo({ top: 0 });
     const el = section.current;
-    if (!el || !window.matchMedia(PHONE).matches) return;
-    if (el.getBoundingClientRect().top < parseFloat(getComputedStyle(el).scrollMarginTop)) el.scrollIntoView({ block: "start" });
+    const scroller = el?.closest("[data-drawer-scroll]");
+    if (!el || !scroller || !window.matchMedia(PHONE).matches) return;
+    if (el.getBoundingClientRect().top < scroller.getBoundingClientRect().top) el.scrollIntoView({ block: "start" });
   };
 
   return (
-    <div ref={section} className="flex flex-col max-lg:scroll-mt-(--stage-h) lg:h-full lg:min-h-0 lg:flex-row">
+    <div ref={section} className="flex flex-col lg:h-full lg:min-h-0 lg:flex-row">
       <SlotRail slot={slot} onSelect={selectSlot} />
 
-      <div className="flex min-w-0 flex-1 flex-col lg:min-h-0">
+      {/* A size container: in a narrow drawer the slot title (also on the rail) gives its room to the search. */}
+      <div className="@container flex min-w-0 flex-1 flex-col lg:min-h-0">
         <div className="flex shrink-0 items-center gap-2 border-b border-line px-3 py-2.5 lg:gap-3 lg:px-4 lg:py-3">
-          <div className="mr-auto hidden min-w-0 lg:block">
+          <div className="mr-auto hidden min-w-0 @md:block">
             <h2 className="display truncate text-[30px]">{SLOT_LABELS[slot]}</h2>
             <p className="hud mt-1 text-fg-dim">{items.length} {items.length === 1 ? "item" : "items"}</p>
           </div>
@@ -180,7 +182,7 @@ export default function SlotPicker() {
           </label>
           <select aria-label="3D status" value={statusFilter}
             onChange={event => setStatusFilter(event.target.value as ReviewStatus | "all")}
-            className="select-plain h-10 w-36 shrink-0 border border-line bg-ink-900 pl-3 text-xs font-medium text-fg-muted sm:w-44">
+            className="select-plain h-10 w-36 shrink-0 border border-line bg-ink-900 pl-3 text-xs font-medium text-fg-muted @md:w-44">
             <option value="all">All 3D statuses</option>
             {(Object.keys(REVIEW_LABELS) as ReviewStatus[]).map(status =>
               <option key={status} value={status}>{REVIEW_LABELS[status]}</option>)}

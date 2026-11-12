@@ -34,7 +34,10 @@ import { getDownloadProgress, subscribeDownloadProgress } from "../lib/load-prog
 import type { Item } from "../lib/item";
 import { AUTOMATED } from "../lib/automation";
 import type { ImmersiveMode } from "../lib/immersive-mode";
-import { CollapseIcon, ExpandIcon } from "./Icons";
+import type { HideUi } from "../lib/viewer-chrome";
+import { CollapseIcon, ExpandIcon, EyeOffIcon } from "./Icons";
+import { ScreenshotPanel } from "./ScreenshotPanel";
+import { STAGE_FLOOR, type ScreenshotContext } from "../rig/ViewerScreenshot";
 import { LightingPanel } from "./LightingPanel";
 import { useLightingStore } from "../lib/lighting-store";
 import {
@@ -317,6 +320,18 @@ function PreviewBridge({ root, backdrop, active, animator }: {
   return null;
 }
 
+// Hands the screenshot panel (outside the Canvas) the live renderer, scene and camera.
+function ScreenshotBridge({ target }: { target: { current: ScreenshotContext | null } }) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
+  useEffect(() => {
+    target.current = { gl, scene, camera };
+    return () => { target.current = null; };
+  }, [gl, scene, camera, target]);
+  return null;
+}
+
 function ExportBridge({ target }: { target: { current: ExportContext | null } }) {
   const gl = useThree((s) => s.gl);
   const camera = useThree((s) => s.camera);
@@ -440,7 +455,8 @@ function FloorShadow() {
   }, []);
   const material = useMemo(() => new THREE.ShadowMaterial({ opacity: 0.4, depthWrite: false }), []);
   useEffect(() => () => { geometry.dispose(); material.dispose(); }, [geometry, material]);
-  return <mesh geometry={geometry} material={material} position={[0, -0.002, 0]} receiveShadow renderOrder={-1} />;
+  return <mesh geometry={geometry} material={material} position={[0, -0.002, 0]} receiveShadow renderOrder={-1}
+    userData={STAGE_FLOOR} />;
 }
 
 // Neutral studio preview. Shared lighting is reviewed against multiple material
@@ -457,6 +473,7 @@ function StudioLights({ lighting, root }: { lighting: LightingSettings; root: TH
       {/* neutral back-top rim for silhouette separation */}
       <directionalLight position={[-3, 4.5, -4]} intensity={STUDIO_RIG.rim} color="#ffffff" />
       <ContactShadows
+        userData={STAGE_FLOOR}
         position={[0, 0, 0]}
         opacity={0.35}
         scale={3}
@@ -484,8 +501,9 @@ function LobbyLights({ hue }: { hue: number | null }) {
   );
 }
 
-/** `immersive`: the page's full-screen mode (lib/immersive-mode), when the page supports one; adds its button. */
-export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMode } = {}) {
+/** `immersive`: the page's full-screen mode (lib/immersive-mode), when the page supports one; adds its button.
+ *  `hideUi`: the page's hidden-UI mode (H, lib/viewer-chrome); adds its button, and every overlay hides with it. */
+export default function CharacterViewer({ immersive, hideUi }: { immersive?: ImmersiveMode; hideUi?: HideUi } = {}) {
   const rig = useMemo(
     () =>
       new CharacterRig(createGltfLoader(), undefined, NAIL_MASK_URL, {
@@ -526,6 +544,8 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
   const [contextLost, setContextLost] = useState(false);
   const [canvasGeneration, setCanvasGeneration] = useState(0);
   const exportContext = useRef<ExportContext | null>(null);
+  const screenshotContext = useRef<ScreenshotContext | null>(null);
+  const uiHidden = !!hideUi?.hidden;
   const build = useBuildStore((s) => s.build);
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
   const prev = useRef<Partial<Record<Slot, string | null>>>({});
@@ -1145,6 +1165,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
         {theme === "studio" ? <StudioLights lighting={lighting} root={rig.root} /> : <LobbyLights hue={lighting.lobbyHue} />}
         <primitive object={rig.root} />
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
+        <ScreenshotBridge target={screenshotContext} />
         <PreviewBridge root={rig.root} backdrop={backdrop} active={ready && !busy} animator={animator} />
         {animator && <AnimationFrameDriver animator={animator} />}
         {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving}
@@ -1165,7 +1186,8 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
       </div>}
       {/* The overlay controls, inset by the safe area (SAFE_SIDES). The frame takes no pointer events, so the canvas
           behind every empty part still orbits; each control opts back in. */}
-      <div className="pointer-events-none absolute z-10" style={immersive?.immersive ? SAFE_ALL : SAFE_SIDES}>
+      <div className={`@container pointer-events-none absolute z-10 ${uiHidden ? "invisible" : ""}`} inert={uiHidden}
+        style={immersive?.immersive || uiHidden ? SAFE_ALL : SAFE_SIDES}>
         {/* Viewfinder corners. Decorative, and kept out of automated canvas captures. */}
         {!AUTOMATED && <div aria-hidden="true" className="brackets pointer-events-none absolute inset-3 z-[5]"
           style={{ "--b": backdrop.dark ? "rgb(242 239 233 / 0.32)" : "rgb(9 9 11 / 0.32)" } as CSSProperties} />}
@@ -1184,6 +1206,13 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
               {immersive.immersive && "Exit full screen"}
             </button>
           )}
+          {hideUi && (
+            <button type="button" onClick={hideUi.hide} aria-label="Hide UI" title="Hide UI for a clean look (H; H or Esc brings it back)"
+              className="hud flex h-8 w-8 items-center justify-center bg-ink-950/80 text-fg transition-colors hover:bg-ink-950">
+              <EyeOffIcon size={15} />
+            </button>
+          )}
+          <ScreenshotPanel context={screenshotContext} theme={theme} backdropId={lighting.backdrop[theme]} ready={ready && !busy} />
           <LightingPanel theme={theme} />
           <button
             type="button"
@@ -1250,7 +1279,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
           {animator && ready && <EmoteTimeline animator={animator} />}
         </div>
       </div>
-      {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && (
+      {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && !uiHidden && (
         <div className="absolute left-2 top-2 z-10 rounded-md bg-black/70 px-3 py-2 text-xs text-white">
           <span className="mb-1 block">Recovered shader · preview lighting</span>
           <select
@@ -1269,7 +1298,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
         </div>
       )}
       {DEV.tune && ready && <MaterialTuner rig={rig} />}
-      {!ready && !error && (
+      {!ready && !error && !uiHidden && (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
           <div className="flex flex-col items-center gap-3">
             <span className={`hud ${backdrop.dark ? "text-fg-muted" : "text-ink-700"}`}>Loading contestant</span>

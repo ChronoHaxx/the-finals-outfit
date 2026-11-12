@@ -100,7 +100,9 @@ export default function ShareBuild() {
     </button>
     {/* Always mounted, so screen readers hear each copy result even while the panel is closed. */}
     <span role="status" className="sr-only">{status}</span>
-    {open && <div className="absolute bottom-[calc(100%+8px)] right-0 z-40 w-[min(calc(100vw-1.5rem),23rem)] animate-rise border border-ink-600 bg-ink-850 p-3 shadow-[0_18px_40px_-12px_rgb(0_0_0/0.8)]">
+    {/* Opens upwards over the picker on desktop (the outfit sits at the drawer's foot); on phones the outfit heads the
+        items sheet, whose top would clip it, so it opens downwards. */}
+    {open && <div className="absolute bottom-[calc(100%+8px)] right-0 z-40 max-lg:bottom-auto max-lg:top-[calc(100%+8px)] w-[min(calc(100vw-1.5rem),23rem)] animate-rise border border-ink-600 bg-ink-850 p-3 shadow-[0_18px_40px_-12px_rgb(0_0_0/0.8)]">
       <div className="flex items-center justify-between gap-3">
         <p aria-hidden="true" className={`text-sm font-medium ${status.startsWith("Link copied") ? "text-fg" : "text-fg-muted"}`}>{status || "Share outfit"}</p>
         <button type="button" onClick={() => setOpen(false)} aria-label="Close share panel" className="-mr-1 grid size-7 place-items-center text-fg-dim hover:text-fg">

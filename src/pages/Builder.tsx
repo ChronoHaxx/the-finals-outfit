@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CharacterViewer from "../components/CharacterViewer";
 import SlotPicker from "../components/SlotPicker";
@@ -8,29 +8,30 @@ import CatalogProgress from "../components/CatalogProgress";
 import TopBar from "../components/ProjectLinks";
 import CatalogUpdateNote from "../components/CatalogUpdateNote";
 import { CloseIcon } from "../components/Icons";
+import { ItemsDrawer } from "../components/ItemsDrawer";
 import { setUrlCleaner } from "../store/useSavedOutfits";
 import { openLink } from "../store/open-link";
+import { useBuildStore } from "../store/useBuildStore";
 import { useImmersiveMode } from "../lib/immersive-mode";
+import { useChromeLayout, useDrawerOpen, useHideUi } from "../lib/viewer-chrome";
+import { SLOTS } from "../lib/slots";
 import { probeWebGL2 } from "../lib/webgl-support";
 import { ViewerUnavailable } from "../components/ViewerUnavailable";
 import { SlowScriptNotice } from "../components/SlowScriptNotice";
 
 export default function Builder() {
-  // Full screen (lib/immersive-mode): the stage becomes a fixed full-viewport layer and everything else is hidden
-  // with display:none, never unmounted, so the picker keeps its slot, search and filters, and the 3D viewer is the
-  // same element throughout (moving it in the tree would reload the character).
-  const mode = useImmersiveMode();
-  const immersive = mode.immersive;
-  // Hiding the page collapses its height, so a phone deep in the item grid would come back at the top. Remember the
-  // scroll when the button enters, put it back once the page is laid out again, however the mode was left.
-  const scrollBefore = useRef<number | null>(null);
-  const immersiveMode = { ...mode, toggle: () => { if (!immersive) scrollBefore.current = window.scrollY; mode.toggle(); } };
-  useLayoutEffect(() => {
-    if (immersive || scrollBefore.current === null) return;
-    window.scrollTo(0, scrollBefore.current);
-    scrollBefore.current = null;
-  }, [immersive]);
-  const away = immersive ? "hidden" : "";
+  // Full screen (lib/immersive-mode) and hidden UI (H, lib/viewer-chrome) both leave the stage alone on screen: it becomes
+  // a fixed full-window layer and everything else is hidden and inert, never unmounted, so the picker keeps its slot,
+  // search, filters and scroll, and the 3D viewer is the same element throughout (moving it would reload the character).
+  const immersive = useImmersiveMode();
+  const hideUi = useHideUi();
+  const stageAlone = immersive.immersive || hideUi.hidden;
+  // The stage fills the window; the picker is a drawer beside it (side) or a sheet under it (sheet). Open by default,
+  // remembered in this browser.
+  const layout = useChromeLayout();
+  const [drawerOpen, setDrawerOpen] = useDrawerOpen();
+  const pieces = useBuildStore(s => SLOTS.filter(slot => s.build[slot]).length);
+
   const [omittedItems, setOmittedItems] = useState(false);
   const [linkError, setLinkError] = useState(false);
   const routerLocation = useLocation();
@@ -54,13 +55,12 @@ export default function Builder() {
   // viewer is not mounted at all, so it downloads nothing (lib/webgl-support).
   const [webgl] = useState(probeWebGL2);
 
-  // Phone: the page scrolls; the stage is sticky at the top and the slot strip sticks under it,
-  // so the outfit stays in view while you browse. Desktop (lg): a fixed-height three-pane layout
-  // where only the grid and the slot rail scroll.
+  const sheetOpen = layout === "sheet" && drawerOpen;
+  // The page never scrolls: the stage and the drawer share the window, and the drawer scrolls inside.
   return (
-    <div className="flex min-h-dvh flex-col lg:h-dvh lg:overflow-hidden">
-      {/* display:contents keeps the header's layout exactly as it was outside immersive mode. */}
-      <div className={immersive ? "hidden" : "contents"}>
+    <div className="flex h-dvh flex-col overflow-hidden">
+      {/* display:contents keeps the header's layout; hidden with the rest while the stage is alone. */}
+      <div className={stageAlone ? "invisible contents" : "contents"} inert={stageAlone}>
         <TopBar page="builder" />
         {DEVELOPER_CATALOG && <p className="border-b border-kept/25 bg-kept/10 px-4 py-2 text-xs text-kept">
           Full extracted catalog · internal names · may include unreleased items. Unlisted, publicly accessible.
@@ -77,32 +77,47 @@ export default function Builder() {
         {webgl.ok && <SlowScriptNotice />}
       </div>
 
-      <main className="grid flex-1 lg:min-h-0 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[minmax(0,1fr)_auto] lg:gap-3 lg:p-3">
-        {/* Immersive: one fixed layer over the whole viewport (inset-0 follows the dynamic viewport; nothing else is
-            left to scroll, so the phone's bars stay put). z-30 keeps the phone emote sheet (z-40) above it. */}
+      {/* DOM order is fixed (stage, then drawer) so a rotation that switches layouts moves nothing in the tree; the
+          side layout shows the drawer on the left with row-reverse. */}
+      <main className={`relative flex min-h-0 flex-1 ${layout === "side" ? "flex-row-reverse" : "flex-col"}`}>
+        {/* Alone: one fixed layer over the whole viewport (inset-0 follows the dynamic viewport). z-30 keeps the phone
+            emote sheet (z-40) above it. Sheet open: the stage keeps the height the phone layout always gave it. Sheet
+            layout: its own compositing layer, as the sticky stage of the old phone layout had: the backdrop gradient's
+            dither follows the layer's raster tiles, so this keeps automated captures of the default view unchanged. */}
         <section aria-label="3D outfit preview"
-          className={immersive ? "fixed inset-0 z-30 overflow-hidden bg-ink-900"
-            : "sticky top-0 z-20 h-(--stage-h) overflow-hidden bg-ink-900 lg:static lg:h-auto lg:min-h-0 lg:border lg:border-line"}>
-          {webgl.ok ? <CharacterViewer immersive={immersiveMode} /> : <ViewerUnavailable support={webgl} />}
+          className={stageAlone ? "fixed inset-0 z-30 overflow-hidden bg-ink-900"
+            : `min-w-0 overflow-hidden bg-ink-900 ${layout === "sheet" ? "relative z-20 will-change-transform" : "relative"} ${sheetOpen ? "h-(--stage-h) shrink-0" : "min-h-0 flex-1"}`}>
+          {webgl.ok ? <CharacterViewer immersive={immersive} hideUi={hideUi} /> : <ViewerUnavailable support={webgl} />}
         </section>
-        <section aria-label="Your outfit" className={`min-w-0 lg:col-start-1 lg:row-start-2 ${away}`}>
-          <OutfitBar />
-        </section>
-        <section aria-label="Cosmetic browser"
-          className={`min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:min-h-0 lg:overflow-hidden lg:border lg:border-line lg:bg-ink-950 ${away}`}>
-          <SlotPicker />
-        </section>
+        <div className={stageAlone ? "invisible contents" : "contents"} inert={stageAlone}>
+          <ItemsDrawer layout={layout} open={drawerOpen} onOpenChange={setDrawerOpen} pieces={pieces}>
+            {/* Phone and sheet: outfit first, then the slot strip (sticky inside the drawer's scroll) and the grid.
+                Desktop: the picker fills the column and the outfit sits at its foot. */}
+            <section aria-label="Your outfit" className="min-w-0 shrink-0 lg:order-2">
+              <OutfitBar />
+            </section>
+            <section aria-label="Cosmetic browser" className="min-w-0 lg:order-1 lg:min-h-0 lg:flex-1 lg:overflow-hidden">
+              <SlotPicker />
+            </section>
+            <footer className="flex flex-col gap-3 border-t border-line px-3 py-4 lg:order-3 lg:shrink-0 lg:gap-1.5 lg:px-4 lg:py-2.5">
+              <div className="xl:hidden"><CatalogUpdateNote /></div>
+              <CatalogProgress compact />
+              <p className="text-[11px] leading-relaxed text-fg-dim lg:truncate"
+                title="Fan-made, not affiliated with Embark Studios. THE FINALS is a trademark of Embark Studios AB.">
+                Fan-made · THE FINALS is a trademark of Embark Studios AB ·
+                {" "}<a href="https://www.thefinals.wiki/wiki/All_Cosmetics" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-fg">Names: THE FINALS Wiki</a>
+              </p>
+            </footer>
+          </ItemsDrawer>
+        </div>
       </main>
 
-      <footer className={immersive ? "hidden" : "flex flex-col gap-3 border-t border-line px-3 py-4 lg:h-11 lg:shrink-0 lg:flex-row lg:items-center lg:gap-6 lg:px-4 lg:py-0"}>
-        <div className="xl:hidden"><CatalogUpdateNote /></div>
-        <div className="lg:shrink-0"><CatalogProgress compact /></div>
-        <p className="text-[11px] leading-relaxed text-fg-dim lg:ml-auto lg:min-w-0 lg:truncate lg:text-right"
-          title="Fan-made, not affiliated with Embark Studios. THE FINALS is a trademark of Embark Studios AB.">
-          Fan-made · THE FINALS is a trademark of Embark Studios AB ·
-          {" "}<a href="https://www.thefinals.wiki/wiki/All_Cosmetics" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-fg">Names: THE FINALS Wiki</a>
-        </p>
-      </footer>
+      {/* The way back, said once when the UI goes (and to screen readers). Not part of any capture: it is page text. */}
+      <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-[max(2rem,env(safe-area-inset-bottom))] z-50 flex justify-center">
+        {hideUi.hint && <span className="hud animate-hint bg-ink-950/85 px-3.5 py-2.5 text-fg motion-reduce:animate-none">
+          {window.matchMedia("(hover: none)").matches ? "Double-tap to show UI" : "Press H to show UI"}
+        </span>}
+      </div>
     </div>
   );
 }

@@ -9,10 +9,11 @@ import { CloseIcon, SearchIcon } from "./Icons";
 // say what is not shown (once props.json has loaded, only what is really missing).
 // Reactions, idles and the emote animations no current item plays sit under "More".
 //
-// Layout: the character stays visible while choosing. On desktop the panel docks beside the 3D viewer, over the
-// catalog column (inside the viewer it hid the character); with no room there it sits in the viewer's right-hand
-// column. On phones it is a sheet under the sticky 3D stage. Docked panels and sheets render at the body, so the
-// sticky slot rail cannot paint over them.
+// Layout: the character stays visible while choosing. On desktop the panel docks beside the 3D viewer: right of it
+// when there is room, else left of it, over the items drawer (inside the viewer it hid the character); with no room
+// either side (drawer closed) it sits in the viewer's right-hand column. On phones it is a sheet over the lower part of
+// the screen, below where the stage shows the character with the items sheet open. Docked panels and sheets render at
+// the body, so the sticky slot rail cannot paint over them.
 
 const DESKTOP = "(min-width: 64rem)"; // Tailwind lg, where the builder switches to its two-pane layout
 function useDesktop(): boolean {
@@ -31,9 +32,11 @@ function useDock(anchor: HTMLElement | null, enabled: boolean): CSSProperties | 
     if (!anchor || !enabled) { setStyle(null); return; }
     const measure = () => {
       const rect = anchor.getBoundingClientRect();
-      const room = window.innerWidth - rect.right - 2 * GAP;
-      setStyle(room < DOCK_MIN ? null
-        : { position: "fixed", left: rect.right + GAP, top: rect.top, height: rect.height, width: Math.min(DOCK_MAX, room) });
+      const right = window.innerWidth - rect.right - 2 * GAP, left = rect.left - 2 * GAP;
+      const box = { position: "fixed", top: rect.top, height: rect.height } as const;
+      setStyle(right >= DOCK_MIN ? { ...box, left: rect.right + GAP, width: Math.min(DOCK_MAX, right) }
+        : left >= DOCK_MIN ? { ...box, left: rect.left - GAP - Math.min(DOCK_MAX, left), width: Math.min(DOCK_MAX, left) }
+        : null);
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -43,6 +46,25 @@ function useDock(anchor: HTMLElement | null, enabled: boolean): CSSProperties | 
     return () => { observer.disconnect(); window.removeEventListener("resize", measure); window.removeEventListener("scroll", measure, true); };
   }, [anchor, enabled]);
   return style;
+}
+
+/** Phone sheet: its top edge, under the stage's first --stage-h (44% of the screen, at least 16rem; the stage's height
+ *  while the items sheet is open), so the character keeps the same spot whether the items sheet is open or not. */
+function useSheetTop(anchor: HTMLElement | null, enabled: boolean): number | null {
+  const [top, setTop] = useState<number | null>(null);
+  useEffect(() => {
+    if (!anchor || !enabled) { setTop(null); return; }
+    const measure = () => {
+      const rect = anchor.getBoundingClientRect();
+      setTop(Math.round(rect.top + Math.min(rect.height, Math.max(0.44 * window.innerHeight, 256))));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(anchor);
+    window.addEventListener("resize", measure);
+    return () => { observer.disconnect(); window.removeEventListener("resize", measure); };
+  }, [anchor, enabled]);
+  return top;
 }
 
 const RARITY_BAR: Record<string, string> = {
@@ -92,6 +114,7 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
 }) {
   const desktop = useDesktop();
   const dock = useDock(anchor, desktop);
+  const sheetTop = useSheetTop(anchor, !desktop);
   const [tab, setTab] = useState<Tab>("emotes");
   const [query, setQuery] = useState("");
   const [bodyOnly, setBodyOnly] = useState(false);
@@ -171,7 +194,7 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
   const body = (
     <div ref={panel} role="dialog" aria-label="Emotes" onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); onClose(); } }}
       onPointerLeave={() => setDetail(null)}
-      style={dock ?? undefined}
+      style={dock ?? (!desktop && sheetTop !== null ? { top: sheetTop } : undefined)}
       className={dock ? "z-40 flex flex-col border border-line bg-ink-950 shadow-2xl"
         : desktop ? "flex min-h-0 w-[23rem] max-w-[calc(100vw-2rem)] flex-col border border-line bg-ink-950/95 shadow-2xl"
         : "fixed inset-x-0 bottom-0 top-(--stage-h) z-40 flex flex-col border-t border-line bg-ink-950 pb-[env(safe-area-inset-bottom)]"}>
