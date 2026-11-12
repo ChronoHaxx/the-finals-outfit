@@ -186,6 +186,16 @@ their relative transforms.
 - Chinals (not live): RainCoat soil drops its root 0.35. The notify's own 0.4/0.4/0.35 gives a patch about
   53 × 59 cm; both readings are plausible. The CLittlePaint roots are 0.99999994, float noise.
 
+**Published (12 Nov, on the user's "Yes, ship it"):**
+- **Host:** `https://cf84e9b6.the-finals-outfit-assets.pages.dev/`, alias `anim-1112-root-scale`. It holds set-5
+  (unchanged) plus props-9, and its manifest points at `props-9/props.json`.
+- **Upload:** 7 new files (the 5 GLBs, props.json, manifest.json); 561 were already there.
+- **Verification:** `verify-hosted.mjs` found all 568 files byte-identical, with the right headers and a 404 for a
+  missing file. Staged at `upload/anim-20261112b/`; receipts `upload/deployment-anim-cf84e9b6.json` and
+  `upload-anim-b.log`.
+- **App:** `ANIMATIONS_BASE` now points at `cf84e9b6`.
+- **Rollback:** `fb06038b` (props-8) and `cd858839` (props-7) are untouched.
+
 ## Not settled or not reproduced
 
 - **Fencing foil and bows:** a ControlRig runs after the ModifyBone. The foil's −30° yaw on its reference pose is a best
