@@ -8,7 +8,7 @@
 //   --seqs       json mode output of those AnimSequence packages
 //   --sounds     json mode output of the sound assets the notifies name (SoundCue / MetaSoundSource / SoundWave)
 //   --wave-json  json mode output of the SoundWaves the cues reach (Volume, Pitch, bLooping, Duration, NumChannels)
-//   --waves      sound mode output of the same SoundWaves (their cooked Bink Audio, <name>.binka)
+//   --waves      sound mode output of the same SoundWaves (their cooked audio, <name>.<codec>: .binka in the global build)
 // Tools: vgmstream-cli decodes Bink Audio to WAV (FModel keeps a copy in its .data folder), ffmpeg encodes AAC-LC in
 // MP4 (.m4a). AAC because every browser's decodeAudioData takes it (Safari's Opus support is still partial); the MP4
 // edit list marks the encoder's priming samples, so decoders trim them and a cue starts on its first real sample.
@@ -22,7 +22,7 @@
 import { execFile } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { promisify } from "node:util";
 import { buildCue, packagePath, sequenceSoundNotifies, soundVariants } from "./sound-cues.mjs";
 
@@ -84,13 +84,18 @@ if (failures.length) throw new Error(`Unresolved sounds:\n  ${failures.join("\n 
 // --- Audio: Bink Audio -> WAV (vgmstream) -> AAC-LC .m4a (ffmpeg) ---------------------------------------------------
 mkdirSync(out, { recursive: true });
 const scratch = mkdtempSync(join(tmpdir(), "emote-sounds-"));
-const files = {};
+const files = {}, codecs = {}; // codecs: cooked audio format -> waves
 const queue = [...waves.entries()].sort(([a], [b]) => a.localeCompare(b));
 async function convert([name, wave]) {
-  const binka = join(resolve(args.waves), `${packagePath(wave.ref)}.binka`);
-  if (!existsSync(binka)) throw new Error(`No exported audio for ${wave.ref} (${binka})`);
+  // The sound mode names the file by its cooked codec: <package path>.binka in the global build; another engine
+  // version may cook another (.ogg, .opus...), which vgmstream decodes the same way.
+  const stem = join(resolve(args.waves), packagePath(wave.ref)), folder = dirname(stem), prefix = `${basename(stem)}.`.toLowerCase();
+  const found = existsSync(folder) ? readdirSync(folder).filter(f => f.toLowerCase().startsWith(prefix) && !f.slice(prefix.length).includes(".")) : [];
+  if (found.length !== 1) throw new Error(`${found.length ? "Several" : "No"} exported audio files for ${wave.ref} (${stem}.*)`);
+  const source = join(folder, found[0]), codec = found[0].slice(prefix.length).toLowerCase();
+  codecs[codec] = (codecs[codec] ?? 0) + 1;
   const wav = join(scratch, `${name}.wav`), m4a = join(out, `${name}.m4a`);
-  await run(args.vgmstream, ["-o", wav, binka]);
+  await run(args.vgmstream, ["-o", wav, source]);
   const kbps = wave.channels === 1 ? bitrate / 2 : bitrate;
   // bitexact + no metadata: the same input encodes to the same bytes, so an unchanged wave dedupes on upload.
   await run(ffmpeg, ["-v", "error", "-y", "-i", wav, "-map_metadata", "-1", "-fflags", "+bitexact", "-flags:a", "+bitexact",
@@ -132,7 +137,7 @@ const report = {
   cues: cueList.length, byKind: cueList.reduce((m, c) => ({ ...m, [c.kind]: (m[c.kind] ?? 0) + 1 }), {}),
   syncLoops: cueList.filter(c => c.attack).length, randomCues: cueList.filter(c => c.variants.length > 1).length,
   skippedVocalizations: Object.values(skipped).flat().length,
-  waves: waves.size, audioSeconds: +seconds.toFixed(1), bytes, megabytes: +(bytes / 1048576).toFixed(2), bitrate,
+  waves: waves.size, codecs, audioSeconds: +seconds.toFixed(1), bytes, megabytes: +(bytes / 1048576).toFixed(2), bitrate,
   windowsCuttingTheirSound: cut.map(c => `${c.source} @${c.start}: window ${c.duration}s, ${c.sound}`),
   clipEndsBeforeWindow: cueList.filter(c => c.kind === "window" && c.start + c.duration > (clipLength.get(c.source) ?? Infinity) + 1e-3).map(c => `${c.source} @${c.start}`),
   encodedDurationMinusSource: { checked: encodedDrift.length, min: Math.min(...encodedDrift), max: Math.max(...encodedDrift) },
