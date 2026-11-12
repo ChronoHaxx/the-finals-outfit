@@ -97,7 +97,11 @@ def compare(live_path, new_path):
                 problems.append(f'{name} differs')
         if not same(la(lp['indices']), na(rp['indices'])):
             problems.append(f'primitive {i} indices differ')
-        if i == 0 and set(lnames) == set(nnames):
+        lcount, ncount = la(lp['attributes']['POSITION']).shape[0], na(rp['attributes']['POSITION']).shape[0]
+        if lcount != ncount:
+            # A changed vertex count is a topology change (whole-catalogue run, 6 Nov 2026: crashed the morph diff).
+            problems.append(f'primitive {i} vertex count differs ({lcount} live vs {ncount} rebuilt)')
+        elif i == 0 and set(lnames) == set(nnames):
             for k, name in enumerate(lnames):
                 d = np.linalg.norm(la(lp['targets'][k]['POSITION']).astype(np.float64)
                                    - na(rp['targets'][nnames.index(name)]['POSITION']).astype(np.float64), axis=1)

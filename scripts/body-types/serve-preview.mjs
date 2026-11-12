@@ -32,11 +32,13 @@ if (!existsSync(path.join(publicDir, "models/reconstructed-assemblies-v1/assets.
 const previewDir = option("--preview") ? path.resolve(option("--preview")) : undefined;
 // --index <dir>: the preview index files when they live apart from the rebuilt meshes (default: --preview itself).
 const indexDir = option("--index") ? path.resolve(option("--index")) : previewDir;
+// --live-body keeps the preserved live body (a garments-only merge candidate, apply-merge-patch.py --garments-only).
+const liveBody = args.includes("--live-body");
 const previewRoutes = previewDir ? new Map([
   ["/models/reconstructed-assemblies-v1/assets.json", path.join(indexDir, "assets.json")],
   // Faces load their head mesh through skin-pairs.json (rewrite-skin-pairs.py), not assets.json.
   ["/models/reconstructed-assemblies-v1/skin-pairs.json", path.join(indexDir, "skin-pairs.json")],
-  ["/models/reconstructed-meshes-v2/SK_Body_M.glb", path.join(previewDir, "meshes/SK_Body_M.glb")],
+  ...(liveBody ? [] : [["/models/reconstructed-meshes-v2/SK_Body_M.glb", path.join(previewDir, "meshes/SK_Body_M.glb")]]),
 ]) : new Map();
 for (const file of previewRoutes.values()) if (!existsSync(file)) throw new Error(`Missing preview file ${file}`);
 
@@ -75,7 +77,8 @@ const server = await createServer({
   server: { port, strictPort: true, host: "127.0.0.1",
     // node_modules is a junction, so Vite sees package files (the UI font) at the release worktree's real path.
     fs: { allow: [root, realpathSync(path.join(root, "node_modules"))] },
-    watch: { ignored: ["**/_docs/**", "**/scripts/generated/**"] } },
+    // Vite full-reloads the page on any watched change, even a .py edit (6 Nov 2026: it killed a capture run mid-shot).
+    watch: { ignored: ["**/_docs/**", "**/scripts/generated/**", "**/scripts/body-types/**", "**/*.py"] } },
 });
 await server.listen();
 server.printUrls();
