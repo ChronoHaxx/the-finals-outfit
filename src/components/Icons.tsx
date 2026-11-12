@@ -164,3 +164,14 @@ export function CameraIcon({ className, size = 16 }: IconProps) {
     <circle cx="8" cy="8.5" r="2.3" />
   </svg>;
 }
+
+/** A speaker: with sound waves, or crossed out when `muted`. */
+export function SpeakerIcon({ className, size = 14, muted }: IconProps & { muted?: boolean }) {
+  return <svg {...base(size, className)}>
+    <path d="M2.5 6v4h2.5l3.5 3V3L5 6H2.5Z" />
+    {muted ? <path d="m11 6 3.5 3.5M14.5 6 11 9.5" /> : <>
+      <path d="M11 5.8a3 3 0 0 1 0 4.4" />
+      <path d="M12.8 3.9a5.6 5.6 0 0 1 0 8.2" />
+    </>}
+  </svg>;
+}
