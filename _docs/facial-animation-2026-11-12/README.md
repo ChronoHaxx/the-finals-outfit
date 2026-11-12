@@ -120,16 +120,27 @@ pose file, the curves of the clip that plays, and their cage skin and masks.
 - At JawOpen = 1 a pin of lip can show through a balaclava. That weight does not occur in the clips.
 - The beard re-wrap costs about 1.6 ms per frame on desktop; phones not measured.
 
-## Hosting (pending your yes)
+## Hosting
 
-- **Staged:** `scripts/generated/face-anim/upload/anim-20261112-faces1/`, 857 files. It is the live `cf84e9b6`
-  (`set-5`, `props-9`, `_headers`, byte-identical to the uploaded `anim-20261112b`) plus `faces-1/`. The manifest
-  differs from the live one by the `faces` line only.
-- **Upload:** a new immutable deployment, never an overwrite. From the worktree root, in Git Bash:
-  1. Deploy:
-     `node /c/Users/ChronoHax/AppData/Local/npm-cache/_npx/c4e09ea4da0c6ba2/node_modules/wrangler/bin/wrangler.js pages deploy scripts/generated/face-anim/upload/anim-20261112-faces1 --project-name the-finals-outfit-assets --branch anim-1112-faces --commit-dirty=true`
-  2. Verify: `node _docs/showcase-animation-2026-11-05/publish/verify-hosted.mjs <folder> <host>/`
-  3. Set `ANIMATIONS_BASE` in `.github/workflows/deploy.yml` to the new host.
+Uploaded 12 Nov with the owner's yes: **`https://e5250f94.the-finals-outfit-assets.pages.dev/`**, a new immutable
+Cloudflare Pages deployment (branch alias `anim-1112-faces`, wrangler 4.131.1). `deploy.yml` now sets
+`ANIMATIONS_BASE` to it; the previous host, `cf84e9b6`, stays untouched.
+
+- **Contents:** 857 files, from `scripts/generated/face-anim/upload/anim-20261112-faces1/`. That is the live
+  `cf84e9b6` (`set-5`, `props-9`, `_headers`, byte-identical to the uploaded `anim-20261112b`) plus `faces-1/`. The
+  manifest differs from the previous one by the `faces` line only. Cloudflare took 289 new files; the other 567 were
+  already stored.
+- **Receipts** in `publish/`:
+  - `upload-anim.log`;
+  - `deployment-anim.json`: all 856 files byte-identical (`_headers` is applied, not served), CORS `*`, immutable
+    caching, a missing file returns 404;
+  - `prod-check.json` (from `prod-check.mjs`): a production build at `/the-finals-outfit/` loads `faces-1` from the
+    host and holds Take a Bow on a balaclava and Evil Jester on a beard. Face posed, cage moved, FaceMask applied, all
+    face requests 200, no errors.
+- **To publish again:** stage a new folder, then run from the worktree root, in Git Bash:
+  1. `node /c/Users/ChronoHax/AppData/Local/npm-cache/_npx/c4e09ea4da0c6ba2/node_modules/wrangler/bin/wrangler.js pages deploy <folder> --project-name the-finals-outfit-assets --branch <alias> --commit-dirty=true`
+  2. `node _docs/showcase-animation-2026-11-05/publish/verify-hosted.mjs <folder> <host>/`
+  3. Bump `ANIMATIONS_BASE`.
 - **PR #47 (emote sounds)** also needs a new animations deployment and edits `RigAnimator.ts` and
   `AnimationControls.tsx`. Its conflicts with this branch are additive: faces beside sounds in the manifest type,
   constructor options and header comment. Whichever PR merges second must rebase, and must upload one deployment that
