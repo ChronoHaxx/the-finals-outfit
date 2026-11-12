@@ -311,6 +311,24 @@ Teaching notes:
   - While a stage is set, switch that quad from `NoBlending` to premultiplied "over". Never switch it otherwise: that
     keeps the default pixel-identical.
   - The direct path needs the same treatment. Fable proposed this route; nobody has tested it.
+- **Turntable mode** (the user chose it on 12 Nov; it is on only while a scene backdrop is set):
+  - **Camera.** It stays at the scene's camera. `OrbitControls` rotate and pan are off. Zoom narrows the field of view;
+    for a plate, the plate's CSS scale follows the same factor.
+  - **Input.** A drag (or one finger) sets `rig.root.rotation.y`, and the arrow keys do the same for keyboard users.
+  - **Lights stay fixed in the world, so fixed to the camera and backdrop.** As the character turns, its lighting
+    changes the way it does in the game's menu, and it stays consistent with the backdrop's painted light.
+  - **Nothing else moves `rig.root`.** Nothing in `src` writes its transform today (checked 12 Nov), so it stays the
+    identity on the default path.
+  - **Emote props and emote travel turn with the character.** Props attach to bones under the root (`EmoteProps.attach`
+    and `socket`), and emote travel happens inside the skeleton.
+  - **The still view keeps working.** A root rotation is a transform, so the still view reprojects it instead of
+    restarting.
+  - **Share card.** It places its cameras at world angles (front, 35°, 90°, back), so a turned character would show its
+    side as the "front". Zero the turn while rendering the card, in the same wrapper that already applies the still pose
+    (`PreviewBridge`'s `stillPose`, `RigAnimator.withStillPose`).
+  - **Leaving scene mode** sets the rotation back to exactly 0 and restores orbit, so the default view is unchanged
+    pixel for pixel.
+  - **Not decided yet:** whether the angle survives a scene switch or a reload. Default: reset it to face the camera.
 - **Camera for A.**
   - Render the plate from the viewer's default camera: (0, 1.0, 3.6) looking at (0, 0.9, 0), 35° tall.
   - three keeps the vertical field of view and shows more at the sides on wider windows. So fit the plate by height
@@ -397,8 +415,7 @@ Teaching notes:
 
 **Decisions for the user** (updated after the screenshots):
 1. Routes: D (live stage) for the menu and A (plate) for the tunnel, as recommended, or something else?
-2. Turntable mode while a scene is on (the camera stays put and a drag turns the character, as in the game), or orbit
-   limited to about ±30°?
+2. ~~Turntable mode, or orbit limited to about ±30°?~~ **Decided 12 Nov: turntable** ("Yes, turntable"). See section 4.
 3. Where is the tunnel image from? If it is an in-game frame, can you capture a wider, full-resolution one with no
    character?
 4. For P1: our own assembler from probe JSON, which needs no download (recommended), or a community Blender umap
@@ -418,9 +435,11 @@ viewer files. Its corrections, each checked against the code before adoption:
 - The share card's 30° framing.
 - The triangle count in the first short answer was wrong.
 
+Checked since:
+- rotating `rig.root` does not conflict with emote root motion or props; see "Turntable mode".
+
 Not yet verified:
-- whether rotating `rig.root` conflicts with emote root motion;
-- how the skybox floor behaves inside the contact-shadow capture;
+- how the skybox floor behaves inside the contact-shadow capture (moot unless B returns);
 - D's output-quad change, which nobody has tested.
 
 ## Evidence and how to reproduce
