@@ -10,6 +10,13 @@ This is a design only. Nothing is implemented yet.
 Scene page, 3 characters on desktop / 2 on phones, characters hold a copy of their outfit, floor-only gizmo, links
 and Save image before the Worker card. Still open: which learning parts the user builds (decision 7).
 
+**Progress (branch `claude/multi-character-design-2026-11-11`, local commits, not pushed):**
+- Phase 0 on desktop: done (measurements, CPU profile, turned-character check, Fable review).
+- 1.1 outfit pass moved to `src/rig/OutfitPass.ts` (d555077): no structural difference over 12 scripted edits.
+- 1.3 shared loader + injectable clip cache (a75a123); emote-prop templates deferred to Phase 2.
+- Next: 1.2 (animation bookkeeping out of `AnimationControls`). 1.4 (per-frame CPU) and 1.5 (head-static placement)
+  are in the user's learning area and wait for decision 7.
+
 ## TLDR
 
 - **Doable. The 3D part is not the hard bit.** The viewer already keeps every character's state in one object
