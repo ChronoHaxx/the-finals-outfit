@@ -39,9 +39,19 @@ export interface PresetData {
 let loading: Promise<PresetData> | undefined;
 /** Loads the outfit list once. A failed load is not cached, so opening the view again retries. */
 export function loadPresetOutfits(): Promise<PresetData> {
-  loading ??= import("../data/preset-outfits.json").then(module => module.default as unknown as PresetData)
-    .catch(error => { loading = undefined; throw error; });
+  loading ??= fetchPresetOutfits().catch(error => { loading = undefined; throw error; });
   return loading;
+}
+
+// Fetched as its own content-hashed JSON file (Vite's ?url emits it beside the code), never imported as a module: a
+// bundled copy would be a JavaScript chunk naming thousands of catalog items, which the catalog-split check refuses
+// (scripts/check-catalog-split.mjs), and JSON parses faster than the same data as script. Imported here, not at the top
+// of the module, so Node tests can use the functions below without Vite.
+async function fetchPresetOutfits(): Promise<PresetData> {
+  const { default: url } = await import("../data/preset-outfits.json?url");
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Outfit list ${url} returned HTTP ${response.status}`);
+  return await response.json() as PresetData;
 }
 
 /** The contestant's own head, skin and body: kept when an outfit goes on, unless the outfit has a piece there or hides it. */

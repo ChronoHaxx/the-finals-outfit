@@ -2,6 +2,7 @@
 // Reset next to hand-made work, catalogue changes under a saved outfit, deleting, and storage being off.
 import test, { beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import './helpers/load-catalog';
 import { getItemById } from '../src/lib/catalog';
 import { getBrowseItem } from '../src/lib/browse-catalog';
@@ -13,7 +14,7 @@ import {
   deleteOutfit, duplicateOutfit, flushSavedOutfits, forgetMissing, newOutfit, openFromUrl, openPreset, randomiseOutfit,
   renameOutfit, resetOutfit, saveDraft, selectOutfit, startSavedOutfits, stopSavedOutfits, useSavedOutfits,
 } from '../src/store/useSavedOutfits';
-import { loadPresetOutfits, presetSlots } from '../src/lib/preset-outfits';
+import { presetSlots, type PresetData } from '../src/lib/preset-outfits';
 import { manualScheduler, memoryStorage } from './helpers/saved-outfits';
 
 const SITE = 'https://chronohaxx.github.io/the-finals-outfit/';
@@ -254,7 +255,7 @@ test('storage off: everything still works for the visit, and the status says so'
 });
 
 // The game's own outfits (Outfits view): put on the way the view does it, over whatever is on screen.
-const presets = (await loadPresetOutfits()).outfits;
+const presets = (JSON.parse(readFileSync(new URL('../src/data/preset-outfits.json', import.meta.url), 'utf8')) as PresetData).outfits;
 const BARRY = presets.find(o => o.id === 'alfaactabot')!;
 const BARREL = presets.find(o => o.id === 'medievalbot')!;
 const wear = (outfit: typeof BARRY) => openPreset(outfit.name, presetSlots(outfit, build()));

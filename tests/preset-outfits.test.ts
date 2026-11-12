@@ -2,7 +2,7 @@
 // every piece is a real item with a share code, every outfit goes on whole, and the head and skin you chose stay.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import './helpers/load-catalog';
 import { getItemById } from '../src/lib/catalog';
 import { getBrowseItem } from '../src/lib/browse-catalog';
@@ -11,11 +11,12 @@ import { resolveSavedSlots } from '../src/lib/saved-outfit-pieces';
 import { startingOutfit } from '../src/store/useBuildStore';
 import type { Item } from '../src/lib/item';
 import {
-  KEPT_SLOTS, loadPresetOutfits, presetCoverage, presetPieces, presetSlots, type PresetOutfit,
+  KEPT_SLOTS, presetCoverage, presetPieces, presetSlots, type PresetData, type PresetOutfit,
 } from '../src/lib/preset-outfits';
 
 const SITE = 'https://chronohaxx.github.io/the-finals-outfit/';
-const data = await loadPresetOutfits();
+// Read from disk: the app fetches this file (loadPresetOutfits), which needs Vite.
+const data = JSON.parse(readFileSync(new URL('../src/data/preset-outfits.json', import.meta.url), 'utf8')) as PresetData;
 const outfits = data.outfits;
 const byId = (id: string) => outfits.find(o => o.id === id)!;
 const BARRY = 'alfaactabot', BARREL = 'medievalbot'; // DA_Outfit_AlfaActaBot, DA_Outfit_MedievalBot
