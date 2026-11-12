@@ -4,6 +4,7 @@ The real risk is a whole-catalogue merge: a mesh swapped under an item that stil
 (stage 1, short dress). These checks drive build-preview-index.py on a synthetic index of a few items and meshes, so no
 game data, GLB or server is needed. (Run: python -I scripts/body-types/test_build_preview_index.py)
 """
+import hashlib
 import importlib.util
 import json
 import shutil
@@ -28,8 +29,10 @@ def mesh_ref(name):
 
 
 class ItemRule(unittest.TestCase):
-    def build(self, items, proof, morphs, changed_only=False, census=True):
-        """items: {item: [mesh names]}; proof: {mesh: (status, morphsChanged, problems)}; morphs: {mesh: [names]}."""
+    def build(self, items, proof, morphs, changed_only=False, census=True, admit=None, admit_only=None,
+              admit_reviewed=None):
+        """items: {item: [mesh names]}; proof: {mesh: (status, morphsChanged, problems)}; morphs: {mesh: [names]};
+        admit: {mesh: (skin-proof class, admissible)} written as a skin-by-name proof (tier 1, 12 Nov 2026)."""
         tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, tmp)
         meshes = sorted({m for ms in items.values() for m in ms} | {'SK_Body_M'})
@@ -56,9 +59,24 @@ class ItemRule(unittest.TestCase):
                           'morphsChanged': changed, **({'problems': problems} if problems else {})}
             (rebuilt / f'{name}.glb').write_bytes(name.encode())
         (tmp / 'proof.json').write_text(json.dumps(rows), encoding='utf-8')
+        skin_proof = None
+        if admit is not None:
+            (tmp / 'live').mkdir()
+            skin = {}
+            for name, (cls, admissible) in admit.items():
+                live = tmp / 'live' / f'{name}.glb'
+                live.write_bytes(b'live ' + name.encode())
+                sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+                skin[name] = {'source': path(name), 'liveUrl': f'../live/{name}.glb', 'class': cls,
+                              'admissible': admissible, 'liveSha256': sha(live),
+                              's12Sha256': sha(rebuilt / f'{name}.glb'), 'morphsChanged': rows[name]['morphsChanged']}
+            skin_proof = tmp / 'skin-proof.json'
+            skin_proof.write_text(json.dumps({'meshes': skin}), encoding='utf-8')
+            self.skin_proof = skin_proof
         out = tmp / 'out' / 'assets.json'
         tool.main(str(active / 'assets.json'), str(tmp / 'proof.json'), str(rebuilt), str(out),
-                  str(tmp / 'customization.json'), str(tmp / 'census.json') if census else None, changed_only)
+                  str(tmp / 'customization.json'), str(tmp / 'census.json') if census else None, changed_only,
+                  admit_json=str(skin_proof) if skin_proof else None, admit_only=admit_only, admit_reviewed=admit_reviewed)
         return json.loads(out.read_text(encoding='utf-8'))['s12BodyTypePreview']
 
     CHANGED = {'medium_female': {'maxCm': 3.0, 'verticesChanged': 10}}
@@ -123,6 +141,63 @@ class ItemRule(unittest.TestCase):
         self.assertEqual(set(meta['swapped']), {BODY, path('Coat')})
         self.assertIn(path('Shoes'), meta['effective'])  # unchanged still counts as Season 12
         self.assertEqual(set(self.build(items, proof, morphs)['swapped']), {BODY, path('Coat'), path('Shoes')})
+
+    # Tier 1 (12 Nov 2026): refused meshes admitted from skin-by-name-proof.py.
+    REENCODED = ['WEIGHTS_0 differs', 'JOINTS_0 differs', 'skin joint names differ']
+
+    def test_an_admitted_mesh_counts_as_proven_and_releases_what_it_held(self):
+        items = {'tee': ['Tee'], 'outfit': ['Tee', 'Pants']}
+        proof = {'Tee': ('refused', self.CHANGED, self.REENCODED), 'Pants': ('morph-only', self.CHANGED, None)}
+        morphs = {'Tee': self.SHAPED, 'Pants': self.SHAPED}
+        self.assertIn(path('Pants'), self.build(items, proof, morphs)['held'])
+        meta = self.build(items, proof, morphs, changed_only=True, admit={'Tee': ('re-encoded', True)})
+        self.assertEqual(set(meta['swapped']), {path('Tee'), path('Pants')})
+        self.assertEqual(meta['swapped'][path('Tee')]['admitted'], {'class': 're-encoded', 'by': 'proof'})
+        self.assertEqual(meta['admitted'][path('Tee')]['name'], 'Tee')
+
+    def test_a_morph_set_mesh_is_repointed_only_by_review_and_never_skipped(self):
+        # A morph-set change leaves morphsChanged empty; it must not pass as "unchanged" and stay on its live GLB.
+        items = {'tee': ['StarterTee']}
+        proof = {'StarterTee': ('refused', {}, ['morph names differ: -[] +[\'shrink_under_vest\']'])}
+        morphs = {'StarterTee': self.SHAPED}
+        admit = {'StarterTee': ('morph set', False)}
+        with self.assertRaises(SystemExit):
+            self.build(items, proof, morphs, admit=admit, admit_only=['StarterTee'])
+        self.assertEqual(self.build(items, proof, morphs, admit=admit)['swapped'], {})  # not admissible by default
+        meta = self.build(items, proof, morphs, changed_only=True, admit=admit, admit_reviewed=['StarterTee'])
+        self.assertEqual(meta['swapped'][path('StarterTee')]['admitted'], {'class': 'morph set', 'by': 'review'})
+
+    def test_an_admitted_mesh_with_unchanged_morphs_is_repointed_not_kept(self):
+        # A weights-only change with no morph change is "kept" on its live GLB unless admitted.
+        items = {'coat': ['Coat']}
+        proof = {'Coat': ('refused', {}, ['WEIGHTS_0 differs'])}
+        morphs = {'Coat': self.SHAPED}
+        self.assertEqual(self.build(items, proof, morphs, changed_only=True)['keptUnchanged'], [path('Coat')])
+        meta = self.build(items, proof, morphs, changed_only=True, admit={'Coat': ('weights', False)},
+                          admit_reviewed=['Coat'])
+        self.assertEqual(meta['keptUnchanged'], [])
+        self.assertIn(path('Coat'), meta['swapped'])
+
+    def test_surface_or_loader_refusals_and_stale_files_are_never_admitted(self):
+        items = {'pants': ['Pants']}
+        morphs = {'Pants': self.SHAPED}
+        proof = {'Pants': ('refused', self.CHANGED, ['POSITION differs'])}
+        for cls in ('surface differs', 'loader refuses'):
+            with self.assertRaises(SystemExit):
+                self.build(items, proof, morphs, admit={'Pants': (cls, False)}, admit_reviewed=['Pants'])
+        # The live file the skin proof judged was replaced since: refuse rather than swap an unjudged mesh.
+        original = tool.admitted_meshes
+
+        def stale(admit_json, *args):
+            skin = json.loads(Path(admit_json).read_text(encoding='utf-8'))
+            skin['meshes']['Pants']['liveSha256'] = '0' * 64
+            Path(admit_json).write_text(json.dumps(skin), encoding='utf-8')
+            return original(admit_json, *args)
+        tool.admitted_meshes = stale
+        self.addCleanup(setattr, tool, 'admitted_meshes', original)
+        with self.assertRaises(SystemExit):
+            self.build(items, {'Pants': ('refused', self.CHANGED, self.REENCODED)}, morphs,
+                       admit={'Pants': ('re-encoded', True)})
 
     def test_a_census_from_another_index_is_refused(self):
         tmp = Path(tempfile.mkdtemp())
