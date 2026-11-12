@@ -214,9 +214,10 @@ if (itemsResult.success && sponsorsResult.success) {
         }
 
         // The manifest is only as trustworthy as the upload it claims to describe, so
-        // confirm a random handful really are served before believing the rest.
+        // confirm a random handful really are served before believing the rest. Only paths the manifest lists: an
+        // unlisted one is already reported above, and its 404 would wrongly read as the manifest lying.
         const sample = [...new Set([
-          ...paths.sort(() => Math.random() - 0.5).slice(0, 12),
+          ...paths.filter(p => hosted!.has(p.replace(/^\/+/, ""))).sort(() => Math.random() - 0.5).slice(0, 12),
           ...reconstructionRoots,
           ...reconstructionPaths.filter(p => /\.(glsl|bin)$/.test(p)).sort(() => Math.random() - 0.5).slice(0, 8),
         ])];
