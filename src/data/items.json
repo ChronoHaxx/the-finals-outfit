@@ -264566,5 +264566,1489 @@
       "absorbeglitter"
     ],
     "season": 12
+  },
+  {
+    "id": "attachments-americanfootballcashball-01",
+    "slot": "lowerBack",
+    "name": "American Football Cash Ball 01",
+    "imageUrl": "items/lowerBack/attachments-americanfootballcashball-01.webp",
+    "season": 9
+  },
+  {
+    "id": "attachment-ancientcalender-01",
+    "slot": "upperBack",
+    "name": "Ancient Calender 01",
+    "imageUrl": "items/upperBack/attachment-ancientcalender-01.webp",
+    "season": 5
+  },
+  {
+    "id": "attachments-arrowmedieval-01",
+    "slot": "upperBack",
+    "name": "Arrow Medieval 01",
+    "imageUrl": "items/upperBack/attachments-arrowmedieval-01.webp",
+    "season": 10
+  },
+  {
+    "id": "asiansword-01",
+    "slot": "upperBack",
+    "name": "Asian Sword 01",
+    "imageUrl": "items/upperBack/asiansword-01.webp",
+    "season": 9
+  },
+  {
+    "id": "attachments-askmebadge-01",
+    "slot": "upperBack",
+    "name": "Ask Me Badge 01",
+    "imageUrl": "items/upperBack/attachments-askmebadge-01.webp",
+    "season": 9
+  },
+  {
+    "id": "attachments-banana-01",
+    "slot": "upperBack",
+    "name": "Banana 01",
+    "imageUrl": "items/upperBack/attachments-banana-01.webp",
+    "season": 6
+  },
+  {
+    "id": "attachments-banana-apesquad",
+    "slot": "upperBack",
+    "name": "Banana Ape Squad",
+    "imageUrl": "items/upperBack/attachments-banana-apesquad.webp",
+    "tags": [
+      "apesquad"
+    ],
+    "season": 8
+  },
+  {
+    "id": "attachments-baseballbat-matte-orf",
+    "slot": "upperBack",
+    "name": "Baseball Bat Matte ORF",
+    "imageUrl": "items/upperBack/attachments-baseballbat-matte-orf.webp",
+    "tags": [
+      "matte-orf"
+    ],
+    "season": 10
+  },
+  {
+    "id": "attachments-cansoda-ospuze-01",
+    "slot": "upperBack",
+    "name": "Can Soda OSPUZE 01",
+    "imageUrl": "items/upperBack/attachments-cansoda-ospuze-01.webp",
+    "sponsor": "ospuze",
+    "season": 4
+  },
+  {
+    "id": "attachments-cansoda-ospuzetiger",
+    "slot": "upperBack",
+    "name": "Can Soda OSPUZETiger",
+    "imageUrl": "items/upperBack/attachments-cansoda-ospuzetiger.webp",
+    "sponsor": "ospuze",
+    "tags": [
+      "ospuzetiger"
+    ],
+    "season": 9
+  },
+  {
+    "id": "attachment-carvedfish-01",
+    "slot": "upperBack",
+    "name": "Carved Fish 01",
+    "imageUrl": "items/upperBack/attachment-carvedfish-01.webp",
+    "season": 3
+  },
+  {
+    "id": "attachments-cashball-02",
+    "slot": "lowerBack",
+    "name": "Cash Ball 02",
+    "imageUrl": "items/lowerBack/attachments-cashball-02.webp",
+    "season": 9
+  },
+  {
+    "id": "attachments-clover-01",
+    "slot": "upperBack",
+    "name": "Clover 01",
+    "imageUrl": "items/upperBack/attachments-clover-01.webp",
+    "season": 9
+  },
+  {
+    "id": "attachments-coin-01",
+    "slot": "upperBack",
+    "name": "Coin 01",
+    "imageUrl": "items/upperBack/attachments-coin-01.webp",
+    "season": 8
+  },
+  {
+    "id": "attachment-corgieplushie-cotton",
+    "slot": "lowerBack",
+    "name": "Corgie Plushie Cotton",
+    "imageUrl": "items/lowerBack/attachment-corgieplushie-cotton.webp",
+    "tags": [
+      "cotton"
+    ],
+    "season": 1
+  },
+  {
+    "id": "attachment-coweggcharm",
+    "slot": "upperBack",
+    "name": "Cow Egg Charm",
+    "imageUrl": "items/upperBack/attachment-coweggcharm.webp",
+    "season": 2
+  },
+  {
+    "id": "attachment-cowplushie-cotton",
+    "slot": "lowerBack",
+    "name": "Cow Plushie Cotton",
+    "imageUrl": "items/lowerBack/attachment-cowplushie-cotton.webp",
+    "tags": [
+      "cotton"
+    ],
+    "season": 1
+  },
+  {
+    "id": "attachments-detectivebadge-01",
+    "slot": "upperBack",
+    "name": "Detective Badge 01",
+    "imageUrl": "items/upperBack/attachments-detectivebadge-01.webp",
+    "season": 4
+  },
+  {
+    "id": "attachments-football-01",
+    "slot": "lowerBack",
+    "name": "Football 01",
+    "imageUrl": "items/lowerBack/attachments-football-01.webp",
+    "season": 10
+  },
+  {
+    "id": "attachment-geofence-01",
+    "slot": "upperBack",
+    "name": "Geo Fence 01",
+    "imageUrl": "items/upperBack/attachment-geofence-01.webp",
+    "season": 6
+  },
+  {
+    "id": "attachment-geofence-01-arctic",
+    "slot": "upperBack",
+    "name": "Geo Fence 01 Arctic",
+    "imageUrl": "items/upperBack/attachment-geofence-01-arctic.webp",
+    "tags": [
+      "arctic"
+    ],
+    "season": 9
+  },
+  {
+    "id": "attachment-geofence-01-drg-01",
+    "slot": "upperBack",
+    "name": "Geo Fence 01 DRG 01",
+    "imageUrl": "items/upperBack/attachment-geofence-01-drg-01.webp",
+    "tags": [
+      "drg"
+    ],
+    "season": 8
+  },
+  {
+    "id": "attachment-geofence-01-fivefears",
+    "slot": "upperBack",
+    "name": "Geo Fence 01 Five Fears",
+    "imageUrl": "items/upperBack/attachment-geofence-01-fivefears.webp",
+    "tags": [
+      "fivefears"
+    ],
+    "season": 8
+  },
+  {
+    "id": "attachment-geofence-01-ntmr-01",
+    "slot": "upperBack",
+    "name": "Geo Fence 01 NTMR 01",
+    "imageUrl": "items/upperBack/attachment-geofence-01-ntmr-01.webp",
+    "tags": [
+      "ntmr"
+    ],
+    "season": 8
+  },
+  {
+    "id": "attachment-geofence-01-white",
+    "slot": "upperBack",
+    "name": "Geo Fence 01 White",
+    "imageUrl": "items/upperBack/attachment-geofence-01-white.webp",
+    "tags": [
+      "white"
+    ],
+    "season": 7
+  },
+  {
+    "id": "attachments-huntingbinoculars-01",
+    "slot": "upperBack",
+    "name": "Hunting Binoculars 01",
+    "imageUrl": "items/upperBack/attachments-huntingbinoculars-01.webp",
+    "season": 6
+  },
+  {
+    "id": "attachment-koidragon-01",
+    "slot": "upperBack",
+    "name": "Koi Dragon 01",
+    "imageUrl": "items/upperBack/attachment-koidragon-01.webp",
+    "season": 9
+  },
+  {
+    "id": "attachments-lute-01-back",
+    "slot": "upperBack",
+    "name": "Lute 01 Back",
+    "imageUrl": "items/upperBack/attachments-lute-01-back.webp",
+    "season": 10
+  },
+  {
+    "id": "attachment-mask-gasmask-03-alfaacta",
+    "slot": "facewear",
+    "name": "Mask Gasmask 03 Alfa Acta",
+    "imageUrl": "items/facewear/attachment-mask-gasmask-03-alfaacta.webp",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "alfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "attachment-medalsports-01",
+    "slot": "upperBack",
+    "name": "Medal Sports 01",
+    "imageUrl": "items/upperBack/attachment-medalsports-01.webp",
+    "season": 6
+  },
+  {
+    "id": "attachment-merch-moolahbadge",
+    "slot": "upperBack",
+    "name": "Merch Moolah Badge",
+    "imageUrl": "items/upperBack/attachment-merch-moolahbadge.webp",
+    "season": 6
+  },
+  {
+    "id": "attachment-merch-namabadge",
+    "slot": "upperBack",
+    "name": "Merch Nama Badge",
+    "imageUrl": "items/upperBack/attachment-merch-namabadge.webp",
+    "season": 6
+  },
+  {
+    "id": "attachments-militaryglasses-volpe",
+    "slot": "eyewear",
+    "name": "Military Glasses Volpe",
+    "imageUrl": "items/eyewear/attachments-militaryglasses-volpe.webp",
+    "tags": [
+      "volpe"
+    ],
+    "season": 9
+  },
+  {
+    "id": "attachment-militarymedal-pink",
+    "slot": "upperBack",
+    "name": "Military Medal Pink",
+    "imageUrl": "items/upperBack/attachment-militarymedal-pink.webp",
+    "tags": [
+      "pink"
+    ],
+    "season": 3
+  },
+  {
+    "id": "attachment-militarymedal-star",
+    "slot": "upperBack",
+    "name": "Military Medal Star",
+    "imageUrl": "items/upperBack/attachment-militarymedal-star.webp",
+    "tags": [
+      "star"
+    ],
+    "season": 8
+  },
+  {
+    "id": "attachments-namebadge-01",
+    "slot": "upperBack",
+    "name": "Name Badge 01",
+    "imageUrl": "items/upperBack/attachments-namebadge-01.webp",
+    "season": 9
+  },
+  {
+    "id": "attachments-pizzaplushie-01",
+    "slot": "upperBack",
+    "name": "Pizza Plushie 01",
+    "imageUrl": "items/upperBack/attachments-pizzaplushie-01.webp",
+    "season": 8
+  },
+  {
+    "id": "attachment-pressuregauge-01",
+    "slot": "upperBack",
+    "name": "Pressure Gauge 01",
+    "imageUrl": "items/upperBack/attachment-pressuregauge-01.webp",
+    "season": 8
+  },
+  {
+    "id": "attachment-rosebrooch-01",
+    "slot": "upperBack",
+    "name": "Rose Brooch 01",
+    "imageUrl": "items/upperBack/attachment-rosebrooch-01.webp",
+    "season": 5
+  },
+  {
+    "id": "attachment-rosebrooch-beige-01",
+    "slot": "upperBack",
+    "name": "Rose Brooch Beige 01",
+    "imageUrl": "items/upperBack/attachment-rosebrooch-beige-01.webp",
+    "tags": [
+      "beige"
+    ],
+    "season": 10
+  },
+  {
+    "id": "attachment-roundsunglasses-metallic-arenase-b682",
+    "slot": "eyewear",
+    "name": "Round Sunglasses Metallic Arena Security",
+    "imageUrl": "items/eyewear/attachment-roundsunglasses-metallic-arenase-b682.webp",
+    "tags": [
+      "metallic-arenasecurity"
+    ],
+    "season": 6
+  },
+  {
+    "id": "attachments-sakuraflower-01",
+    "slot": "upperBack",
+    "name": "Sakura Flower 01",
+    "imageUrl": "items/upperBack/attachments-sakuraflower-01.webp",
+    "season": 3
+  },
+  {
+    "id": "attachments-leaguediamond-s4-01",
+    "slot": "upperBack",
+    "name": "League Diamond S 4 01",
+    "imageUrl": "items/upperBack/attachments-leaguediamond-s4-01.webp",
+    "tags": [
+      "leaguediamond-s4"
+    ],
+    "season": 5
+  },
+  {
+    "id": "attachments-leaguediamond-s5-01",
+    "slot": "upperBack",
+    "name": "League Diamond S 5 01",
+    "imageUrl": "items/upperBack/attachments-leaguediamond-s5-01.webp",
+    "tags": [
+      "leaguediamond-s5"
+    ],
+    "season": 6
+  },
+  {
+    "id": "attachments-leaguediamond-s6-01",
+    "slot": "upperBack",
+    "name": "League Diamond S 6 01",
+    "imageUrl": "items/upperBack/attachments-leaguediamond-s6-01.webp",
+    "tags": [
+      "leaguediamond-s6"
+    ],
+    "season": 7
+  },
+  {
+    "id": "attachments-leaguediamond-s7-01",
+    "slot": "upperBack",
+    "name": "League Diamond S 7 01",
+    "imageUrl": "items/upperBack/attachments-leaguediamond-s7-01.webp",
+    "tags": [
+      "leaguediamond-s7"
+    ],
+    "season": 8
+  },
+  {
+    "id": "attachments-leaguediamond-s8-01",
+    "slot": "upperBack",
+    "name": "League Diamond S 8 01",
+    "imageUrl": "items/upperBack/attachments-leaguediamond-s8-01.webp",
+    "tags": [
+      "leaguediamond-s8"
+    ],
+    "season": 9
+  },
+  {
+    "id": "attachments-leagueemerald-s3-01",
+    "slot": "upperBack",
+    "name": "League Emerald S 3 01",
+    "imageUrl": "items/upperBack/attachments-leagueemerald-s3-01.webp",
+    "tags": [
+      "leagueemerald-s3"
+    ],
+    "season": 4
+  },
+  {
+    "id": "attachments-leagueemerald-s4-01",
+    "slot": "upperBack",
+    "name": "League Emerald S 4 01",
+    "imageUrl": "items/upperBack/attachments-leagueemerald-s4-01.webp",
+    "tags": [
+      "leagueemerald-s4"
+    ],
+    "season": 5
+  },
+  {
+    "id": "attachments-leagueemerald-s5-01",
+    "slot": "upperBack",
+    "name": "League Emerald S 5 01",
+    "imageUrl": "items/upperBack/attachments-leagueemerald-s5-01.webp",
+    "tags": [
+      "leagueemerald-s5"
+    ],
+    "season": 6
+  },
+  {
+    "id": "attachments-leagueemerald-s6-01",
+    "slot": "upperBack",
+    "name": "League Emerald S 6 01",
+    "imageUrl": "items/upperBack/attachments-leagueemerald-s6-01.webp",
+    "tags": [
+      "leagueemerald-s6"
+    ],
+    "season": 7
+  },
+  {
+    "id": "attachments-leagueemerald-s7-01",
+    "slot": "upperBack",
+    "name": "League Emerald S 7 01",
+    "imageUrl": "items/upperBack/attachments-leagueemerald-s7-01.webp",
+    "tags": [
+      "leagueemerald-s7"
+    ],
+    "season": 8
+  },
+  {
+    "id": "attachments-leagueemerald-s8-01",
+    "slot": "upperBack",
+    "name": "League Emerald S 8 01",
+    "imageUrl": "items/upperBack/attachments-leagueemerald-s8-01.webp",
+    "tags": [
+      "leagueemerald-s8"
+    ],
+    "season": 9
+  },
+  {
+    "id": "attachments-leagueruby-s3-01",
+    "slot": "upperBack",
+    "name": "League Ruby S 3 01",
+    "imageUrl": "items/upperBack/attachments-leagueruby-s3-01.webp",
+    "tags": [
+      "leagueruby-s3"
+    ],
+    "season": 4
+  },
+  {
+    "id": "attachments-leagueruby-s4-01",
+    "slot": "upperBack",
+    "name": "League Ruby S 4 01",
+    "imageUrl": "items/upperBack/attachments-leagueruby-s4-01.webp",
+    "tags": [
+      "leagueruby-s4"
+    ],
+    "season": 5
+  },
+  {
+    "id": "attachments-leagueruby-s5-01",
+    "slot": "upperBack",
+    "name": "League Ruby S 5 01",
+    "imageUrl": "items/upperBack/attachments-leagueruby-s5-01.webp",
+    "tags": [
+      "leagueruby-s5"
+    ],
+    "season": 6
+  },
+  {
+    "id": "attachments-leagueruby-s6-01",
+    "slot": "upperBack",
+    "name": "League Ruby S 6 01",
+    "imageUrl": "items/upperBack/attachments-leagueruby-s6-01.webp",
+    "tags": [
+      "leagueruby-s6"
+    ],
+    "season": 7
+  },
+  {
+    "id": "attachments-leagueruby-s7-01",
+    "slot": "upperBack",
+    "name": "League Ruby S 7 01",
+    "imageUrl": "items/upperBack/attachments-leagueruby-s7-01.webp",
+    "tags": [
+      "leagueruby-s7"
+    ],
+    "season": 8
+  },
+  {
+    "id": "attachments-leagueruby-s8-01",
+    "slot": "upperBack",
+    "name": "League Ruby S 8 01",
+    "imageUrl": "items/upperBack/attachments-leagueruby-s8-01.webp",
+    "tags": [
+      "leagueruby-s8"
+    ],
+    "season": 9
+  },
+  {
+    "id": "attachments-sportmedal-01-bronze",
+    "slot": "upperBack",
+    "name": "Sport Medal 01 Bronze",
+    "imageUrl": "items/upperBack/attachments-sportmedal-01-bronze.webp",
+    "tags": [
+      "bronze"
+    ],
+    "season": 3
+  },
+  {
+    "id": "attachments-sportmedal-01-gold",
+    "slot": "upperBack",
+    "name": "Sport Medal 01 Gold",
+    "imageUrl": "items/upperBack/attachments-sportmedal-01-gold.webp",
+    "tags": [
+      "gold"
+    ],
+    "season": 3
+  },
+  {
+    "id": "attachments-sportmedal-01-silver",
+    "slot": "upperBack",
+    "name": "Sport Medal 01 Silver",
+    "imageUrl": "items/upperBack/attachments-sportmedal-01-silver.webp",
+    "tags": [
+      "silver"
+    ],
+    "season": 3
+  },
+  {
+    "id": "attachments-spraycan-01-90sskateboarder",
+    "slot": "upperBack",
+    "name": "Spray Can 01 90s Skateboarder",
+    "imageUrl": "items/upperBack/attachments-spraycan-01-90sskateboarder.webp",
+    "tags": [
+      "90sskateboarder"
+    ],
+    "season": 7
+  },
+  {
+    "id": "attachment-strawberryplushie-cotton-red",
+    "slot": "upperBack",
+    "name": "Strawberry Plushie Cotton Red",
+    "imageUrl": "items/upperBack/attachment-strawberryplushie-cotton-red.webp",
+    "tags": [
+      "cotton-red"
+    ],
+    "season": 1
+  },
+  {
+    "id": "attachment-valentinesheart",
+    "slot": "upperBack",
+    "name": "Valentines Heart",
+    "imageUrl": "items/upperBack/attachment-valentinesheart.webp",
+    "season": 5
+  },
+  {
+    "id": "attachments-weddingbouquet-01",
+    "slot": "lowerBack",
+    "name": "Wedding Bouquet 01",
+    "imageUrl": "items/lowerBack/attachments-weddingbouquet-01.webp",
+    "season": 5
+  },
+  {
+    "id": "attachments-weddingbouquet-01-valentines",
+    "slot": "lowerBack",
+    "name": "Wedding Bouquet 01 Valentines",
+    "imageUrl": "items/lowerBack/attachments-weddingbouquet-01-valentines.webp",
+    "tags": [
+      "valentines"
+    ],
+    "season": 5
+  },
+  {
+    "id": "bodycosmetics-bodypaint-wraith-02",
+    "slot": "bodyPaint",
+    "name": "Bodypaint Wraith 02",
+    "imageUrl": "items/bodyPaint/bodycosmetics-bodypaint-wraith-02.webp",
+    "season": 12
+  },
+  {
+    "id": "bodycosmetics-eyes-emissiveblue-03",
+    "slot": "eyes",
+    "name": "Eyes Emissive Blue 03",
+    "imageUrl": "items/eyes/bodycosmetics-eyes-emissiveblue-03.webp",
+    "season": 12
+  },
+  {
+    "id": "bodycosmetics-makeup-casual-01",
+    "slot": "blush",
+    "name": "Makeup Casual 01",
+    "imageUrl": "items/blush/bodycosmetics-makeup-casual-01.webp",
+    "season": 10
+  },
+  {
+    "id": "casual-mapleleaf-plastic-red",
+    "slot": "upperBack",
+    "name": "Maple Leaf Plastic Red",
+    "imageUrl": "items/upperBack/casual-mapleleaf-plastic-red.webp",
+    "set": "Casual",
+    "tags": [
+      "plastic-red"
+    ],
+    "season": 8
+  },
+  {
+    "id": "cowboy-ammopouch-metal",
+    "slot": "upperBack",
+    "name": "Ammo Pouch Metal",
+    "imageUrl": "items/upperBack/cowboy-ammopouch-metal.webp",
+    "set": "Cowboy",
+    "tags": [
+      "metal"
+    ],
+    "season": 1
+  },
+  {
+    "id": "cowboy-ammopouch-metal-blacksilver",
+    "slot": "upperBack",
+    "name": "Ammo Pouch Metal Black Silver",
+    "imageUrl": "items/upperBack/cowboy-ammopouch-metal-blacksilver.webp",
+    "set": "Cowboy",
+    "tags": [
+      "metal-blacksilver"
+    ],
+    "season": 9
+  },
+  {
+    "id": "cowboy-ammopouch-metal-geng",
+    "slot": "upperBack",
+    "name": "Ammo Pouch Metal Gen G",
+    "imageUrl": "items/upperBack/cowboy-ammopouch-metal-geng.webp",
+    "set": "Cowboy",
+    "tags": [
+      "metal-geng"
+    ],
+    "season": 8
+  },
+  {
+    "id": "cowboy-huntingknife-leather-bandit",
+    "slot": "upperBack",
+    "name": "Hunting Knife Leather Bandit",
+    "imageUrl": "items/upperBack/cowboy-huntingknife-leather-bandit.webp",
+    "set": "Cowboy",
+    "tags": [
+      "leather-bandit"
+    ],
+    "season": 5
+  },
+  {
+    "id": "cowboy-huntingknife-nylon",
+    "slot": "upperBack",
+    "name": "Hunting Knife Nylon",
+    "imageUrl": "items/upperBack/cowboy-huntingknife-nylon.webp",
+    "set": "Cowboy",
+    "tags": [
+      "nylon"
+    ],
+    "season": 4
+  },
+  {
+    "id": "cowboy-huntingknife-nylon-fnesport",
+    "slot": "upperBack",
+    "name": "Hunting Knife Nylon FNEsport",
+    "imageUrl": "items/upperBack/cowboy-huntingknife-nylon-fnesport.webp",
+    "set": "Cowboy",
+    "tags": [
+      "nylon-fnesport"
+    ],
+    "season": 8
+  },
+  {
+    "id": "cowboy-huntingknife-nylon-fnatic",
+    "slot": "upperBack",
+    "name": "Hunting Knife Nylon Fnatic",
+    "imageUrl": "items/upperBack/cowboy-huntingknife-nylon-fnatic.webp",
+    "set": "Cowboy",
+    "tags": [
+      "nylon-fnatic"
+    ],
+    "season": 8
+  },
+  {
+    "id": "cowboy-huntingknife-nylon-green",
+    "slot": "upperBack",
+    "name": "Hunting Knife Nylon Green",
+    "imageUrl": "items/upperBack/cowboy-huntingknife-nylon-green.webp",
+    "set": "Cowboy",
+    "tags": [
+      "nylon-green"
+    ],
+    "season": 5
+  },
+  {
+    "id": "cute-orfslippers-cotton",
+    "slot": "feet",
+    "name": "ORFSlippers Cotton",
+    "imageUrl": "items/feet/cute-orfslippers-cotton.webp",
+    "set": "Cute",
+    "tags": [
+      "cotton"
+    ],
+    "season": 9
+  },
+  {
+    "id": "halloween-lowheels-leather-white",
+    "slot": "feet",
+    "name": "Low Heels Leather White",
+    "imageUrl": "items/feet/halloween-lowheels-leather-white.webp",
+    "set": "Halloween",
+    "tags": [
+      "leather-white"
+    ],
+    "season": 12
+  },
+  {
+    "id": "halloween-vampiredress-cotton-white",
+    "slot": "upperBody",
+    "name": "Vampire Dress Cotton White",
+    "imageUrl": "items/upperBody/halloween-vampiredress-cotton-white.webp",
+    "set": "Halloween",
+    "tags": [
+      "cotton-white"
+    ],
+    "season": 12
+  },
+  {
+    "id": "head-face-25-base",
+    "slot": "face",
+    "name": "Face 25 Base",
+    "imageUrl": "items/face/head-face-25-base.webp",
+    "season": 10
+  },
+  {
+    "id": "historic-anubiscollar-gold",
+    "slot": "upperBody",
+    "name": "Anubis Collar Gold",
+    "imageUrl": "items/upperBody/historic-anubiscollar-gold.webp",
+    "set": "Historic",
+    "tags": [
+      "gold"
+    ],
+    "season": 8
+  },
+  {
+    "id": "historic-togaupper-cotton",
+    "slot": "upperBody",
+    "name": "Toga Upper Cotton",
+    "imageUrl": "items/upperBody/historic-togaupper-cotton.webp",
+    "set": "Historic",
+    "tags": [
+      "cotton"
+    ],
+    "season": 9
+  },
+  {
+    "id": "medieval-dragonslayershield-bone",
+    "slot": "upperBack",
+    "name": "Dragon Slayer Shield Bone",
+    "imageUrl": "items/upperBack/medieval-dragonslayershield-bone.webp",
+    "set": "Medieval",
+    "tags": [
+      "bone"
+    ],
+    "season": 10
+  },
+  {
+    "id": "medieval-elegantknightlegs-steel",
+    "slot": "lowerBody",
+    "name": "Elegant Knight Legs Steel",
+    "imageUrl": "items/lowerBody/medieval-elegantknightlegs-steel.webp",
+    "set": "Medieval",
+    "tags": [
+      "steel"
+    ],
+    "season": 10
+  },
+  {
+    "id": "medieval-jestergloves-satin-bright",
+    "slot": "hands",
+    "name": "Jester Gloves Satin Bright",
+    "imageUrl": "items/hands/medieval-jestergloves-satin-bright.webp",
+    "set": "Medieval",
+    "tags": [
+      "satin-bright"
+    ],
+    "season": 12
+  },
+  {
+    "id": "medieval-knightsword-02-steel",
+    "slot": "upperBack",
+    "name": "Knight Sword 02 Steel",
+    "imageUrl": "items/upperBack/medieval-knightsword-02-steel.webp",
+    "set": "Medieval",
+    "tags": [
+      "steel"
+    ],
+    "season": 10
+  },
+  {
+    "id": "medieval-peasantshoulderbag-leather",
+    "slot": "upperBack",
+    "name": "Peasant Shoulder Bag Leather",
+    "imageUrl": "items/upperBack/medieval-peasantshoulderbag-leather.webp",
+    "set": "Medieval",
+    "tags": [
+      "leather"
+    ],
+    "season": 10
+  },
+  {
+    "id": "medieval-scifiknightsword-metal-blackorange",
+    "slot": "upperBack",
+    "name": "Sci Fi Knight Sword Metal Black Orange",
+    "imageUrl": "items/upperBack/medieval-scifiknightsword-metal-blackorange.webp",
+    "set": "Medieval",
+    "tags": [
+      "metal-blackorange"
+    ],
+    "season": 10
+  },
+  {
+    "id": "medieval-techknightlower-plastic",
+    "slot": "lowerBody",
+    "name": "Tech Knight Lower Plastic",
+    "imageUrl": "items/lowerBody/medieval-techknightlower-plastic.webp",
+    "set": "Medieval",
+    "tags": [
+      "plastic"
+    ],
+    "season": 10
+  },
+  {
+    "id": "meta-botgloves-cotton",
+    "slot": "hands",
+    "name": "Bot Gloves Cotton",
+    "imageUrl": "items/hands/meta-botgloves-cotton.webp",
+    "set": "Meta",
+    "tags": [
+      "cotton"
+    ],
+    "season": 9
+  },
+  {
+    "id": "meta-bothead",
+    "slot": "face",
+    "name": "Bot Head",
+    "imageUrl": "items/face/meta-bothead.webp",
+    "set": "Meta",
+    "season": 6
+  },
+  {
+    "id": "meta-bothead-wood",
+    "slot": "face",
+    "name": "Bot Head Wood",
+    "imageUrl": "items/face/meta-bothead-wood.webp",
+    "set": "Meta",
+    "tags": [
+      "wood"
+    ],
+    "season": 10
+  },
+  {
+    "id": "meta-botlegs",
+    "slot": "lowerBody",
+    "name": "Bot Legs",
+    "imageUrl": "items/lowerBody/meta-botlegs.webp",
+    "set": "Meta",
+    "season": 6
+  },
+  {
+    "id": "meta-botlegs-blackivada",
+    "slot": "lowerBody",
+    "name": "Bot Legs Black IVADA",
+    "imageUrl": "items/lowerBody/meta-botlegs-blackivada.webp",
+    "set": "Meta",
+    "tags": [
+      "blackivada"
+    ],
+    "season": 7
+  },
+  {
+    "id": "meta-botlegs-whitevaiiya",
+    "slot": "lowerBody",
+    "name": "Bot Legs White VAIIYA",
+    "imageUrl": "items/lowerBody/meta-botlegs-whitevaiiya.webp",
+    "set": "Meta",
+    "sponsor": "vaiiya",
+    "tags": [
+      "whitevaiiya"
+    ],
+    "season": 7
+  },
+  {
+    "id": "meta-botlegs-wood",
+    "slot": "lowerBody",
+    "name": "Bot Legs Wood",
+    "imageUrl": "items/lowerBody/meta-botlegs-wood.webp",
+    "set": "Meta",
+    "tags": [
+      "wood"
+    ],
+    "season": 10
+  },
+  {
+    "id": "meta-botshoes",
+    "slot": "feet",
+    "name": "Bot Shoes",
+    "imageUrl": "items/feet/meta-botshoes.webp",
+    "set": "Meta",
+    "season": 6
+  },
+  {
+    "id": "meta-botshoes-wood",
+    "slot": "feet",
+    "name": "Bot Shoes Wood",
+    "imageUrl": "items/feet/meta-botshoes-wood.webp",
+    "set": "Meta",
+    "tags": [
+      "wood"
+    ],
+    "season": 10
+  },
+  {
+    "id": "meta-bottorso",
+    "slot": "upperBody",
+    "name": "Bot Torso",
+    "imageUrl": "items/upperBody/meta-bottorso.webp",
+    "set": "Meta",
+    "season": 6
+  },
+  {
+    "id": "meta-bottorso-blackivada",
+    "slot": "upperBody",
+    "name": "Bot Torso Black IVADA",
+    "imageUrl": "items/upperBody/meta-bottorso-blackivada.webp",
+    "set": "Meta",
+    "tags": [
+      "blackivada"
+    ],
+    "season": 7
+  },
+  {
+    "id": "meta-bottorso-whitevaiiya",
+    "slot": "upperBody",
+    "name": "Bot Torso White VAIIYA",
+    "imageUrl": "items/upperBody/meta-bottorso-whitevaiiya.webp",
+    "set": "Meta",
+    "sponsor": "vaiiya",
+    "tags": [
+      "whitevaiiya"
+    ],
+    "season": 7
+  },
+  {
+    "id": "meta-bottorso-wood",
+    "slot": "upperBody",
+    "name": "Bot Torso Wood",
+    "imageUrl": "items/upperBody/meta-bottorso-wood.webp",
+    "set": "Meta",
+    "tags": [
+      "wood"
+    ],
+    "season": 10
+  },
+  {
+    "id": "meta-bot",
+    "slot": "upperBody",
+    "name": "Bot",
+    "imageUrl": "items/upperBody/meta-bot.webp",
+    "set": "Meta",
+    "season": 6
+  },
+  {
+    "id": "meta-bot-alfaacta",
+    "slot": "upperBody",
+    "name": "Bot Alfa Acta",
+    "imageUrl": "items/upperBody/meta-bot-alfaacta.webp",
+    "set": "Meta",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "alfaacta"
+    ],
+    "season": 6
+  },
+  {
+    "id": "mexico-ancientrings-metal",
+    "slot": "hands",
+    "name": "Ancient Rings Metal",
+    "imageUrl": "items/hands/mexico-ancientrings-metal.webp",
+    "set": "Mexico",
+    "tags": [
+      "metal"
+    ],
+    "season": 5
+  },
+  {
+    "id": "mexico-ancientrings-metal-wizard",
+    "slot": "hands",
+    "name": "Ancient Rings Metal Wizard",
+    "imageUrl": "items/hands/mexico-ancientrings-metal-wizard.webp",
+    "set": "Mexico",
+    "tags": [
+      "metal-wizard"
+    ],
+    "season": 10
+  },
+  {
+    "id": "military-acepilotgloves-leather-sponsorospuze",
+    "slot": "hands",
+    "name": "Ace Pilot Gloves Leather Sponsor OSPUZE",
+    "imageUrl": "items/hands/military-acepilotgloves-leather-sponsorospuze.webp",
+    "set": "Military",
+    "sponsor": "ospuze",
+    "tags": [
+      "leather-sponsorospuze"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-bombsuitvest-nylon-sponsoralfaacta",
+    "slot": "upperBody",
+    "name": "Bomb Suit Vest Nylon Sponsor Alfa Acta",
+    "imageUrl": "items/upperBody/military-bombsuitvest-nylon-sponsoralfaacta.webp",
+    "set": "Military",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "nylon-sponsoralfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-claviclegun-steel-sponsoralfaacta",
+    "slot": "upperBack",
+    "name": "Clavicle Gun Steel Sponsor Alfa Acta",
+    "imageUrl": "items/upperBack/military-claviclegun-steel-sponsoralfaacta.webp",
+    "set": "Military",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "steel-sponsoralfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-flashlight-metal",
+    "slot": "upperBack",
+    "name": "Flashlight Metal",
+    "imageUrl": "items/upperBack/military-flashlight-metal.webp",
+    "set": "Military",
+    "tags": [
+      "metal"
+    ],
+    "season": 9
+  },
+  {
+    "id": "military-flashlight-metal-blackblue",
+    "slot": "upperBack",
+    "name": "Flashlight Metal Black Blue",
+    "imageUrl": "items/upperBack/military-flashlight-metal-blackblue.webp",
+    "set": "Military",
+    "tags": [
+      "metal-blackblue"
+    ],
+    "season": 9
+  },
+  {
+    "id": "military-hardcase-plastic",
+    "slot": "lowerBack",
+    "name": "Hardcase Plastic",
+    "imageUrl": "items/lowerBack/military-hardcase-plastic.webp",
+    "set": "Military",
+    "tags": [
+      "plastic"
+    ],
+    "season": 7
+  },
+  {
+    "id": "military-hardcase-plastic-darkblue",
+    "slot": "lowerBack",
+    "name": "Hardcase Plastic Dark Blue",
+    "imageUrl": "items/lowerBack/military-hardcase-plastic-darkblue.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-darkblue"
+    ],
+    "season": 9
+  },
+  {
+    "id": "military-hardcase-plastic-sponsoralfaacta",
+    "slot": "lowerBack",
+    "name": "Hardcase Plastic Sponsor Alfa Acta",
+    "imageUrl": "items/lowerBack/military-hardcase-plastic-sponsoralfaacta.webp",
+    "set": "Military",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "plastic-sponsoralfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-marinepants-canvas-sponsoralfaacta",
+    "slot": "lowerBody",
+    "name": "Marine Pants Canvas Sponsor Alfa Acta",
+    "imageUrl": "items/lowerBody/military-marinepants-canvas-sponsoralfaacta.webp",
+    "set": "Military",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "canvas-sponsoralfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-riotmedievalshield-plastic-black",
+    "slot": "upperBack",
+    "name": "Riot Medieval Shield Plastic Black",
+    "imageUrl": "items/upperBack/military-riotmedievalshield-plastic-black.webp",
+    "set": "Military",
+    "tags": [
+      "plastic-black"
+    ],
+    "season": 10
+  },
+  {
+    "id": "military-riotmedievalsword-metal-black",
+    "slot": "lowerBack",
+    "name": "Riot Medieval Sword Metal Black",
+    "imageUrl": "items/lowerBack/military-riotmedievalsword-metal-black.webp",
+    "set": "Military",
+    "tags": [
+      "metal-black"
+    ],
+    "season": 10
+  },
+  {
+    "id": "military-sniperboots-leather-sponsoralfaacta",
+    "slot": "feet",
+    "name": "Sniper Boots Leather Sponsor Alfa Acta",
+    "imageUrl": "items/feet/military-sniperboots-leather-sponsoralfaacta.webp",
+    "set": "Military",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "leather-sponsoralfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-sniperboots-leather-sponsorospuzeblack",
+    "slot": "feet",
+    "name": "Sniper Boots Leather Sponsor OSPUZEBlack",
+    "imageUrl": "items/feet/military-sniperboots-leather-sponsorospuzeblack.webp",
+    "set": "Military",
+    "sponsor": "ospuze",
+    "tags": [
+      "leather-sponsorospuzeblack"
+    ],
+    "season": 12
+  },
+  {
+    "id": "military-tacticalhelmet-base-sponsoralfaacta",
+    "slot": "headwear",
+    "name": "Tactical Helmet Base Sponsor Alfa Acta",
+    "imageUrl": "items/headwear/military-tacticalhelmet-base-sponsoralfaacta.webp",
+    "set": "Military",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "base-sponsoralfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "monsters-easterndemonbrooch-metal-brass",
+    "slot": "upperBack",
+    "name": "Eastern Demon Brooch Metal Brass",
+    "imageUrl": "items/upperBack/monsters-easterndemonbrooch-metal-brass.webp",
+    "set": "Monsters",
+    "tags": [
+      "metal-brass"
+    ],
+    "season": 9
+  },
+  {
+    "id": "ospuze-babymonitor-plastic",
+    "slot": "upperBack",
+    "name": "Baby Monitor Plastic",
+    "imageUrl": "items/upperBack/ospuze-babymonitor-plastic.webp",
+    "set": "OSPUZE",
+    "sponsor": "ospuze",
+    "tags": [
+      "plastic"
+    ],
+    "season": 12
+  },
+  {
+    "id": "ospuze-toddlerbandolier-leather",
+    "slot": "upperBack",
+    "name": "Toddler Bandolier Leather",
+    "imageUrl": "items/upperBack/ospuze-toddlerbandolier-leather.webp",
+    "set": "OSPUZE",
+    "sponsor": "ospuze",
+    "tags": [
+      "leather"
+    ],
+    "season": 12
+  },
+  {
+    "id": "prop-namaplushie-lumbar",
+    "slot": "lowerBack",
+    "name": "Prop Nama Plushie Lumbar",
+    "imageUrl": "items/lowerBack/prop-namaplushie-lumbar.webp",
+    "set": "Props",
+    "season": 1
+  },
+  {
+    "id": "prop-namaplushie-lumbar-easter",
+    "slot": "lowerBack",
+    "name": "Prop Nama Plushie Lumbar Easter",
+    "imageUrl": "items/lowerBack/prop-namaplushie-lumbar-easter.webp",
+    "set": "Props",
+    "tags": [
+      "easter"
+    ],
+    "season": 6
+  },
+  {
+    "id": "prop-skateboard-lumbar",
+    "slot": "upperBack",
+    "name": "Prop Skateboard Lumbar",
+    "imageUrl": "items/upperBack/prop-skateboard-lumbar.webp",
+    "set": "Props",
+    "season": 1
+  },
+  {
+    "id": "prop-skateboard-lumbar-90sskateboarder",
+    "slot": "upperBack",
+    "name": "Prop Skateboard Lumbar 90s Skateboarder",
+    "imageUrl": "items/upperBack/prop-skateboard-lumbar-90sskateboarder.webp",
+    "set": "Props",
+    "tags": [
+      "90sskateboarder"
+    ],
+    "season": 7
+  },
+  {
+    "id": "prop-skateboard-lumbar-iseult",
+    "slot": "upperBack",
+    "name": "Prop Skateboard Lumbar ISEULT",
+    "imageUrl": "items/upperBack/prop-skateboard-lumbar-iseult.webp",
+    "set": "Props",
+    "sponsor": "iseult",
+    "tags": [
+      "iseult"
+    ],
+    "season": 11
+  },
+  {
+    "id": "prop-skateboard-lumbar-orf",
+    "slot": "upperBack",
+    "name": "Prop Skateboard Lumbar ORF",
+    "imageUrl": "items/upperBack/prop-skateboard-lumbar-orf.webp",
+    "set": "Props",
+    "tags": [
+      "orf"
+    ],
+    "season": 2
+  },
+  {
+    "id": "prop-skateboard-lumbar-stickers-street",
+    "slot": "upperBack",
+    "name": "Prop Skateboard Lumbar Stickers Street",
+    "imageUrl": "items/upperBack/prop-skateboard-lumbar-stickers-street.webp",
+    "set": "Props",
+    "tags": [
+      "stickers-street"
+    ],
+    "season": 2
+  },
+  {
+    "id": "prop-skateboard-lumbar-vaporwave01",
+    "slot": "upperBack",
+    "name": "Prop Skateboard Lumbar Vaporwave 01",
+    "imageUrl": "items/upperBack/prop-skateboard-lumbar-vaporwave01.webp",
+    "set": "Props",
+    "tags": [
+      "vaporwave01"
+    ],
+    "season": 7
+  },
+  {
+    "id": "scifi-katanas-metal",
+    "slot": "upperBack",
+    "name": "Katanas Metal",
+    "imageUrl": "items/upperBack/scifi-katanas-metal.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal"
+    ],
+    "season": 7
+  },
+  {
+    "id": "scifi-katanas-metal-white",
+    "slot": "upperBack",
+    "name": "Katanas Metal White",
+    "imageUrl": "items/upperBack/scifi-katanas-metal-white.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal-white"
+    ],
+    "season": 9
+  },
+  {
+    "id": "scifi-scifiknightheadwear-plastic",
+    "slot": "headwear",
+    "name": "Sci Fi Knight Headwear Plastic",
+    "imageUrl": "items/headwear/scifi-scifiknightheadwear-plastic.webp",
+    "set": "SciFi",
+    "tags": [
+      "plastic"
+    ],
+    "season": 10
+  },
+  {
+    "id": "scifi-singlekatana-metal-blackgold",
+    "slot": "upperBack",
+    "name": "Single Katana Metal Black Gold",
+    "imageUrl": "items/upperBack/scifi-singlekatana-metal-blackgold.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal-blackgold"
+    ],
+    "season": 7
+  },
+  {
+    "id": "scifi-singlekatana-metal-bluesilver",
+    "slot": "upperBack",
+    "name": "Single Katana Metal Blue Silver",
+    "imageUrl": "items/upperBack/scifi-singlekatana-metal-bluesilver.webp",
+    "set": "SciFi",
+    "tags": [
+      "metal-bluesilver"
+    ],
+    "season": 7
+  },
+  {
+    "id": "space-spacepilotradio-plastic",
+    "slot": "upperBack",
+    "name": "Space Pilot Radio Plastic",
+    "imageUrl": "items/upperBack/space-spacepilotradio-plastic.webp",
+    "set": "Space",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacepilotradio-plastic-black",
+    "slot": "upperBack",
+    "name": "Space Pilot Radio Plastic Black",
+    "imageUrl": "items/upperBack/space-spacepilotradio-plastic-black.webp",
+    "set": "Space",
+    "tags": [
+      "plastic-black"
+    ],
+    "season": 11
+  },
+  {
+    "id": "space-spacesoldierradio-plastic",
+    "slot": "upperBack",
+    "name": "Space Soldier Radio Plastic",
+    "imageUrl": "items/upperBack/space-spacesoldierradio-plastic.webp",
+    "set": "Space",
+    "tags": [
+      "plastic"
+    ],
+    "season": 11
+  },
+  {
+    "id": "sport-glasses-metal-goldbrown",
+    "slot": "eyewear",
+    "name": "Glasses Metal Gold Brown",
+    "imageUrl": "items/eyewear/sport-glasses-metal-goldbrown.webp",
+    "set": "Sport",
+    "tags": [
+      "metal-goldbrown"
+    ],
+    "season": 1
+  },
+  {
+    "id": "streetwear-baseballcap-cotton-sponsorospuze-c01d",
+    "slot": "headwear",
+    "name": "Baseball Cap Cotton Sponsor OSPUZEYellow",
+    "imageUrl": "items/headwear/streetwear-baseballcap-cotton-sponsorospuze-c01d.webp",
+    "set": "Streetwear",
+    "sponsor": "ospuze",
+    "tags": [
+      "cotton-sponsorospuzeyellow"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-heistpants-polyester-sponsorospu-627b",
+    "slot": "lowerBody",
+    "name": "Heist Pants Polyester Sponsor OSPUZEBlack",
+    "imageUrl": "items/lowerBody/streetwear-heistpants-polyester-sponsorospu-627b.webp",
+    "set": "Streetwear",
+    "sponsor": "ospuze",
+    "tags": [
+      "polyester-sponsorospuzeblack"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-heisttorso-cotton-sponsorospuzeblack",
+    "slot": "upperBody",
+    "name": "Heist Torso Cotton Sponsor OSPUZEBlack",
+    "imageUrl": "items/upperBody/streetwear-heisttorso-cotton-sponsorospuzeblack.webp",
+    "set": "Streetwear",
+    "sponsor": "ospuze",
+    "tags": [
+      "cotton-sponsorospuzeblack"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-techgloves-nylon-sponsoralfaacta",
+    "slot": "hands",
+    "name": "Tech Gloves Nylon Sponsor Alfa Acta",
+    "imageUrl": "items/hands/streetwear-techgloves-nylon-sponsoralfaacta.webp",
+    "set": "Streetwear",
+    "sponsor": "alfa-acta",
+    "tags": [
+      "nylon-sponsoralfaacta"
+    ],
+    "season": 12
+  },
+  {
+    "id": "streetwear-vaporwaveglasses-plastic-cns",
+    "slot": "eyewear",
+    "name": "Vapor Wave Glasses Plastic CNS",
+    "imageUrl": "items/eyewear/streetwear-vaporwaveglasses-plastic-cns.webp",
+    "set": "Streetwear",
+    "sponsor": "cns",
+    "tags": [
+      "plastic-cns"
+    ],
+    "season": 7
+  },
+  {
+    "id": "traditional-urbanwarriorsword-leather-gold",
+    "slot": "upperBack",
+    "name": "Urban Warrior Sword Leather Gold",
+    "imageUrl": "items/upperBack/traditional-urbanwarriorsword-leather-gold.webp",
+    "set": "Traditional",
+    "tags": [
+      "leather-gold"
+    ],
+    "season": 9
+  },
+  {
+    "id": "traditional-urbanwarriorsword-leather-silver",
+    "slot": "upperBack",
+    "name": "Urban Warrior Sword Leather Silver",
+    "imageUrl": "items/upperBack/traditional-urbanwarriorsword-leather-silver.webp",
+    "set": "Traditional",
+    "tags": [
+      "leather-silver"
+    ],
+    "season": 9
   }
 ]

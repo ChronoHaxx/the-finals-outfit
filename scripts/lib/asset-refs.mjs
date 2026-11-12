@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
 // The single source of truth for "which asset files does this app need".
 //
 // This exists because it was got wrong once, expensively. The staging script and the
@@ -23,6 +26,17 @@ export const HARDCODED = [
 ];
 
 const ASSET_PATH = /^(models|items|textures)\/[\w./-]+\.(webp|png|jpg|jpeg|glb|gltf|ktx2|bin)$/i;
+
+// Other data files whose assets the app requests: the in-game outfits list (src/lib/preset-outfits.ts)
+// shows an icon per outfit. Read them through catalogAssetSources so staging and the validator agree.
+export const PRESET_OUTFITS_FILE = "src/data/preset-outfits.json";
+
+/** Everything collectAssetRefs should walk: the catalog items, then the in-game outfits. */
+export function catalogAssetSources(items, root) {
+  const presets = JSON.parse(readFileSync(resolve(root, PRESET_OUTFITS_FILE), "utf8"));
+  if (!Array.isArray(presets.outfits)) throw new Error(`${PRESET_OUTFITS_FILE} has no outfits list`);
+  return [...items, ...presets.outfits];
+}
 
 /** Every asset path the app can request, deep-walked from the catalog plus HARDCODED. */
 export function collectAssetRefs(items) {

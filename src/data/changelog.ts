@@ -14,6 +14,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-12-in-game-outfits",
+    date: "2026-11-12",
+    title: "In-game outfits",
+    notes: [
+      "Outfits, first in the wardrobe, lists the game's own 352 outfits with their in-game icons. One tap puts a whole outfit on and keeps your face and skin.",
+      "An outfit you put on is not saved until you change something or press Save, so your saved outfits stay as they were. Pieces the catalog does not have yet, and effects the preview cannot show, are listed rather than left out.",
+      "150 cosmetics join the catalog, among them the practice-range mannequin, Bull’s Eye Barry, and its wooden twin, Bull’s Eye Barrel. They show their icons for now; 3D comes later.",
+    ],
+    items: ["in-game-outfits", "catalog"],
+  },
+  {
     id: "2026-11-11-new-studio-light",
     date: "2026-11-11",
     title: "New Studio light",

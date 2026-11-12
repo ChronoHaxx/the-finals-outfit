@@ -20,8 +20,9 @@ test('public display names do not change asset identity or hide unmatched items'
   // 41 and 194 hairs since the Season 11 import (18 Oct 2026, 5 lower-back items and 9 hairs);
   // 44 and 201 since the Season 12 import (28 Oct 2026, 3 lower-back items and 7 hairs).
   // 44 + 28 lower-back items from the classifier-gap backfill (6 Nov 2026).
-  assert.equal(getBrowseItemsBySlot('lowerBack', true).length, 72);
-  assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 72);
+  // 72 + 13 from the preset-outfits additions (12 Nov 2026: held backfill items, Nama Tama plushies, an S12 hard case).
+  assert.equal(getBrowseItemsBySlot('lowerBack', true).length, 85);
+  assert.equal(getBrowseItemsBySlot('lowerBack', false).length, 85);
   assert.equal(getBrowseItemsBySlot('hair', false).length, 201);
   assert.ok(getBrowseItem('hairs-afrofade', false));
   assert.equal(getPublicCatalogCount(), getAllItems().length);
@@ -70,7 +71,7 @@ test('fresh exact names fill gaps while keeping original identities and descript
     assert.ok(!/\{\d+\}/.test(name), itemId);
     assert.equal(getBrowseItem(itemId, true)?.name, getItemById(itemId)?.name);
   }
-  assert.equal(getPublicCatalogCount(), 3332); // 3,113 + 142 Season 12 items (28 Oct 2026) + 76 classifier-gap backfill (6 Nov 2026) + the Face of Éternel (6 Nov 2026, evening)
+  assert.equal(getPublicCatalogCount(), 3482); // 3,113 + 142 Season 12 items (28 Oct 2026) + 76 classifier-gap backfill (6 Nov 2026) + the Face of Éternel (6 Nov 2026, evening) + 150 missing wearables incl. the mannequin (12 Nov 2026)
 });
 
 test('generic source names keep descriptive styles and colours without losing identity', () => {

@@ -25,8 +25,8 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 
 # Roadmap
 
-Last reviewed: 2026-11-11
-Reviewed after patch note: 2026-11-11-new-studio-light
+Last reviewed: 2026-11-12
+Reviewed after patch note: 2026-11-12-in-game-outfits
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -128,6 +128,11 @@ A guide for reproducing a reported problem and checking a fix, so others can hel
 <!-- id: catalog -->
 
 {total} cosmetics through Season {latestSeason}, under their THE FINALS Wiki names, with colour variants listed separately. Some cosmetics from earlier seasons were left out when the catalog was first built; adding them is in progress. Outfit links keep working as the catalog grows.
+
+### The game's own outfits
+<!-- id: in-game-outfits -->
+
+The game's preset outfits are listed with their in-game icons, and one tap puts a whole outfit on without changing your saved outfits. Pieces the catalog does not have yet, and effects the preview cannot show, are listed rather than left out.
 
 ### A first-pass 3D preview on Medium
 <!-- id: first-pass-3d -->

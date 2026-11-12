@@ -16,12 +16,13 @@ const companions = { face: 'head-face-09-base', hair: 'hairs-afrofade', eyes: 'b
   feet: 'casual-tallsneakers-canvas', nailPolish: 'bodycosmetics-nails-crosses-01' };
 const store = () => useBuildStore.getState();
 
-test('source table covers all 38 dual body garments; metadata and catalog IDs agree', () => {
+test('source table covers all 41 dual body garments; metadata and catalog IDs agree', () => {
   // 27 since the Season 11 import (18 Oct 2026): a short dress, the NR suit and two retro robot torsos.
   // 29 since the Season 12 import (28 Oct 2026): the two tactical dresses.
   // 38 since the classifier-gap backfill (6 Nov 2026): the bunny, frog, tanuki and bigfoot costumes, the kaiju, the two
   // Japanese robots and the two robotic skeletons (game slot tag BodyUpper; the June import had skipped them).
-  assert.equal(evidence.fullBody.length, 38);
+  // 41 since the preset-outfits additions (12 Nov 2026): the white vampire dress and the two Demo Dummy bodies.
+  assert.equal(evidence.fullBody.length, 41);
   assert.match(evidence.inputSha256, /^[a-f0-9]{64}$/);
   const slots = evidence.slotsByItem as Record<string, string[]>;
   for (const id of evidence.fullBody) {
@@ -89,7 +90,8 @@ test('ordinary layered clothes and unrelated cosmetics remain; invalid links can
 test('lower-body garments that take the Shoes slot displace shoes; ordinary trousers do not (policy v2)', () => {
   const legs = 'robots-sportyrobotlegs-metal', sneakers = companions.feet;
   // (6 Nov 2026, classifier-gap backfill) the two Japanese robot costumes carry their own feet too.
-  assert.deepEqual([...evidence.spansShoes].sort(), ['robots-japaneserobot-base', 'robots-japaneserobot-base-black',
+  // (12 Nov 2026) the two Demo Dummy bodies (DA_Meta_Bot, DA_Meta_Bot_AlfaActa) cover the feet as well.
+  assert.deepEqual([...evidence.spansShoes].sort(), ['meta-bot', 'meta-bot-alfaacta', 'robots-japaneserobot-base', 'robots-japaneserobot-base-black',
     legs, 'robots-sportyrobotlegs-metal-black']);
   for (const id of evidence.spansShoes) assert.notEqual(getItemById(id)?.slot, 'feet', id);
   assert.ok(equipmentConflicts('lowerBody', legs, 'feet', sneakers));

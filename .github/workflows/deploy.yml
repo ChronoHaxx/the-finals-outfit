@@ -25,7 +25,8 @@ jobs:
     env:
       # Pin code and artwork in the same revision. The immutable deployment also
       # leaves the older production asset URL available during review/rollback.
-      ASSETS_BASE: https://f4a8e069.the-finals-outfit-assets.pages.dev/
+      # 12 Nov 2026: icons v17 (3,834: the 3,332 before plus 150 added items and 352 in-game outfit icons).
+      ASSETS_BASE: https://2cbead71.the-finals-outfit-assets.pages.dev/
       MODELS_BASE: https://a029b249.the-finals-outfit-assets.pages.dev/
       RECONSTRUCTION_BASE: https://c062af24.the-finals-outfit-assets.pages.dev/
       # Link-preview Worker (workers/share-preview). Blank hides the "Link with preview image" option.
