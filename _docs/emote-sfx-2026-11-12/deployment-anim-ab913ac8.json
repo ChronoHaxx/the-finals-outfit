@@ -1,0 +1,14 @@
+{
+  "base": "https://ab913ac8.the-finals-outfit-assets.pages.dev/",
+  "files": 844,
+  "identical": 844,
+  "mismatched": [],
+  "glbHeaders": {
+    "file": "props-9/BP_Emote_Beachball_Prop.glb",
+    "type": "model/gltf-binary",
+    "cors": "*",
+    "cache": "public, max-age=31536000, immutable"
+  },
+  "missingStatus": 404,
+  "ok": true
+}

@@ -155,6 +155,11 @@ with the local `sounds-1`.
   software: the samples show the animation clock running at 0.96× and 0.90× of real time (frames over the 0.1 s cap).
   Steady-state cues are within ±5 ms.
 
+**Production build, Chrome 17/17** ([check-chrome-prod.json](check-chrome-prod.json)):
+- `vite build` with deploy.yml's hosts and `VITE_ANIMATIONS_BASE=https://ab913ac8.the-finals-outfit-assets.pages.dev/`,
+  served by `vite preview --base /the-finals-outfit/`. The sounds come cross-origin from the published host.
+- Cue onsets −18 to +4 ms (median 0 ms).
+
 **Not checked:**
 - Real Safari (macOS or iOS): no Apple device here. Playwright's Windows WebKit doesn't use Apple's decoder.
 - Phones by hand, and a listen by ear against in-game footage.
@@ -166,17 +171,25 @@ with the local `sounds-1`.
 - **A measurement mistake.** Playwright's `evaluate` runs with a user gesture, so the first "before any gesture" check
   tested nothing.
 
-## Hosting (needs your yes)
+## Hosting (published 12 Nov 2026, on your "Yes, upload it")
 
-Staged locally: `scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112c/`, 845 files.
+**Animations host `ab913ac8`** (alias `anim-1112-emote-sfx`), from the staged
+`scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112c/` (845 files):
 - The live `cf84e9b6` set: set-5 and props-9, byte-identical to the receipts of the 12 Nov upload.
 - `sounds-1/`.
 - `manifest.json`, which differs from the live one only by `"sounds": "sounds-1/sounds.json"`.
 
-A new deployment uploads about 276 new files (20.4 MB). Then deploy.yml's `ANIMATIONS_BASE` moves to the new host.
-**Rollback:** revert that one line (`cf84e9b6` is untouched).
+**Upload:** wrangler 4.131.1 `pages deploy` (see `_docs/showcase-animation-2026-11-05/README.md`): 277 new files,
+567 deduplicated ([upload-anim-ab913ac8.log](upload-anim-ab913ac8.log)).
 
-Without the bump, this PR changes nothing users hear: the live manifest has no `sounds`, and the player stays inert.
+**Verified** ([deployment-anim-ab913ac8.json](deployment-anim-ab913ac8.json)):
+- All 844 files are byte-identical to staging.
+- `.m4a` is served as `audio/mp4`, with CORS `*` and an immutable cache. A missing file returns 404.
+
+**deploy.yml** `ANIMATIONS_BASE` now points at `ab913ac8`, and its contract tests run `tests/rig/emote-sounds.test.ts`.
+**Rollback:** revert that line to `cf84e9b6`, which is untouched.
+
+Live users hear sounds only once this PR is merged.
 
 ## Open items and follow-ups
 
