@@ -202,9 +202,16 @@ the beard covers the mouth").
 
 ### Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks: none
-- Readiness: pending
-- Merge authorization: not given
+- Tested revision/build: the dev server on this worktree at `2633919`, serving the local `faces-1` (the same files
+  as the hosted `e5250f94`).
+- User reported at: 12 Nov 2026, verbatim: "icl i only tested 1 but i trust u, just merge to live/deploy".
+- Passed / failed / untested step numbers: 1 tested by the user (no failure reported); 2-6 not tested by the user.
+- Explicitly waived checks: 2-6, by the user in the same message.
+- Agent cover for the waived steps:
+  - 2-4: the captures in `evidence/` (played emotes, beard, balaclava, helmet);
+  - 5 and 6: re-checked headless before merging (`publish/check-stop-and-swap.json`, PASS).
+    - Step 5: a held frame and a seek move the beard and the face; stopping restores both bit for bit.
+    - Step 6: changing Face 01 to Face 20 mid-emote binds and animates the new head, with no errors.
+  - Real-device behaviour is unverified.
+- Readiness: check 1 user-tested; checks 2-6 explicitly waived.
+- Merge authorization: given by the user on 12 Nov ("just merge to live/deploy").
