@@ -118,7 +118,11 @@ export class StableFrameState {
     const visit = (object: THREE.Object3D, parentVisible: boolean) => {
       this.category = 'scene';
       this.add(object); this.add(object.visible); this.add(object.layers.mask);
-      this.transform(object.matrixWorld); this.add(object.renderOrder); this.add(object.frustumCulled);
+      // (11 Nov 2026, Sun slider) A light that moves is not a surface that moves: the shading and the shadows change in
+      // place, which motion vectors cannot follow, so its matrix is a lighting input that restarts the history.
+      if (object instanceof THREE.Light) { this.category = 'lighting'; this.value(object.matrixWorld); this.category = 'scene'; }
+      else this.transform(object.matrixWorld);
+      this.add(object.renderOrder); this.add(object.frustumCulled);
       this.add(object.castShadow); this.add(object.receiveShadow);
       const visible = parentVisible && object.visible && camera.layers.test(object.layers);
       if (object instanceof THREE.Mesh) {

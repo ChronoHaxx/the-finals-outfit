@@ -111,6 +111,24 @@
   }
 }
 
+/* The Lobby rim hue slider (LightingPanel.tsx): the timeline slider's thumb on a hue-wheel track. */
+@utility hue-range {
+  appearance: none;
+  background: transparent;
+  height: 100%;
+  &::-webkit-slider-runnable-track {
+    height: 6px;
+    background: linear-gradient(to right, #f00, #ff0 16.7%, #0f0 33.3%, #0ff 50%, #00f 66.7%, #f0f 83.3%, #f00);
+  }
+  &::-moz-range-track { height: 6px; background: linear-gradient(to right, #f00, #ff0 16.7%, #0f0 33.3%, #0ff 50%, #00f 66.7%, #f0f 83.3%, #f00); }
+  &::-webkit-slider-thumb { appearance: none; width: 10px; height: 16px; margin-top: -5px; border: 1px solid var(--color-ink-950); background: var(--color-fg); }
+  &::-moz-range-thumb { width: 10px; height: 16px; border: 1px solid var(--color-ink-950); border-radius: 0; background: var(--color-fg); }
+  @media (pointer: coarse) {
+    &::-webkit-slider-thumb { width: 16px; height: 24px; margin-top: -9px; }
+    &::-moz-range-thumb { width: 16px; height: 24px; }
+  }
+}
+
 @utility select-plain {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6' fill='none' stroke='%23a6a4ab' stroke-width='1.5'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E");

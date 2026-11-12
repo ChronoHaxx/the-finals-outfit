@@ -1,4 +1,4 @@
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import * as THREE from "three";
@@ -35,6 +35,12 @@ import type { Item } from "../lib/item";
 import { AUTOMATED } from "../lib/automation";
 import type { ImmersiveMode } from "../lib/immersive-mode";
 import { CollapseIcon, ExpandIcon } from "./Icons";
+import { LightingPanel } from "./LightingPanel";
+import { useLightingStore } from "../lib/lighting-store";
+import {
+  backdropCss, keyLightPosition, resolveBackdrop, rimLights, shadowFrustum, snapFollow, type BackdropStops, type LightingSettings,
+  type SceneTheme,
+} from "../lib/stage-lighting";
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
 const NAIL_MASK_URL = modelUrl("models/decals/_shared/nailmask.webp");
@@ -171,15 +177,8 @@ function formatDownload(loaded: number, total: number): string | null {
 const sourcePreviewKey = (id: string, item: SourceOutfit['items'][string], skinParameters: SourceMaterialParameters[] = []) =>
   `${id}|parts:${JSON.stringify(item.parts)}|parameters:${JSON.stringify([item.materialParameters, skinParameters])}`;
 
-// Two scene themes: a neutral wardrobe preview for comparing item colours, and
-// a dark lobby view with a warm key and blue rim lights.
-type SceneTheme = "studio" | "lobby";
-
-// The same backdrop as stops for the link-preview image, which paints it itself.
-const THEME_BACKDROP: Record<SceneTheme, { inner: string; middle: string; outer: string }> = {
-  studio: { inner: "#f0f3f7", middle: "#dee4eb", outer: "#c5cdd7" },
-  lobby: { inner: "#1b2740", middle: "#0a0e17", outer: "#05060a" },
-};
+// Two scene themes (SceneTheme): a neutral wardrobe preview for comparing item colours, and a dark lobby view with a
+// warm key and blue rim lights. Each has its reviewed backdrop, which the viewer can change (stage-lighting.ts).
 
 // The overlay controls sit inside the screen's safe area (index.html sets viewport-fit=cover). The sides always
 // count: on a phone the stage spans the full width, so landscape puts its edge under the notch. Top and bottom only
@@ -187,12 +186,6 @@ const THEME_BACKDROP: Record<SceneTheme, { inner: string; middle: string; outer:
 // following the bottom inset there would make the lower third jump as Safari's toolbar hides on scroll.
 const SAFE_SIDES: CSSProperties = { top: 0, bottom: 0, left: "env(safe-area-inset-left, 0px)", right: "env(safe-area-inset-right, 0px)" };
 const SAFE_ALL: CSSProperties = { ...SAFE_SIDES, top: "env(safe-area-inset-top, 0px)", bottom: "env(safe-area-inset-bottom, 0px)" };
-
-const THEME_BACKGROUND: Record<SceneTheme, string> = {
-  // Sampled from the icon corners (light grey-blue studio backdrop).
-  studio: "radial-gradient(ellipse 75% 65% at 50% 35%, #f0f3f7 0%, #dee4eb 55%, #c5cdd7 100%)",
-  lobby: "radial-gradient(ellipse 70% 60% at 50% 38%, #1b2740 0%, #0a0e17 58%, #05060a 100%)",
-};
 
 // Resolve a catalog item's decal (2D body cosmetic) into rig form (paths -> URLs).
 function toRigDecal(decal: NonNullable<Item["decal"]>): RigDecal {
@@ -308,17 +301,19 @@ function makeSoftboxScene(): THREE.Scene {
 
 // Hands the export panel (outside the Canvas) the live renderer and camera.
 // Publishes the scene for the share button's preview render while the outfit is fully loaded.
-function PreviewBridge({ root, theme, active, animator }: {
-  root: THREE.Object3D; theme: SceneTheme; active: boolean; animator: RigAnimator | null;
+// The share image paints the backdrop the viewer shows (its three stops) behind the same lit scene.
+function PreviewBridge({ root, backdrop, active, animator }: {
+  root: THREE.Object3D; backdrop: BackdropStops; active: boolean; animator: RigAnimator | null;
 }) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
+  const { inner, middle, outer } = backdrop;
   useEffect(() => {
     if (!active) return;
-    setPreviewScene({ gl, scene, root, backdrop: THEME_BACKDROP[theme],
+    setPreviewScene({ gl, scene, root, backdrop: { inner, middle, outer },
       stillPose: animator ? draw => animator.withStillPose(draw) : undefined });
     return () => setPreviewScene(null);
-  }, [gl, scene, root, theme, active, animator]);
+  }, [gl, scene, root, inner, middle, outer, active, animator]);
   return null;
 }
 
@@ -362,70 +357,101 @@ function StudioEnvironment({ intensity, softbox }: { intensity: number; softbox?
   return null;
 }
 
-// Sun direction (11 Nov 2026, the user's request): the Studio key light, the one that casts the character's shadow,
-// turns around the vertical axis through the character. 0° is the reviewed rig (w157 Studio v2); positive turns it to
-// the viewer's right and round behind. Remembered in this browser; automated browsers (audit and visual-diff captures)
-// always get the reviewed 0°.
-const SUN_KEY = "finals-outfit.sun";
-const KEY_POSITION = new THREE.Vector3(2.5, 6, 4);
-function savedSun(): number {
-  if (AUTOMATED) return 0;
-  try {
-    const value = Math.round(Number(window.localStorage.getItem(SUN_KEY)));
-    return Number.isFinite(value) && Math.abs(value) <= 180 ? value : 0;
-  } catch { return 0; }
-}
-function saveSun(degrees: number): void {
-  try {
-    if (degrees) window.localStorage.setItem(SUN_KEY, String(degrees)); else window.localStorage.removeItem(SUN_KEY);
-  } catch { /* the choice just is not remembered */ }
-}
-function keyLightPosition(degrees: number): [number, number, number] {
-  const p = KEY_POSITION.clone().applyAxisAngle(THREE.Object3D.DEFAULT_UP, THREE.MathUtils.degToRad(degrees));
-  return [p.x, p.y, p.z];
-}
+const isInside = (object: THREE.Object3D, root: THREE.Object3D) => {
+  for (let at: THREE.Object3D | null = object; at; at = at.parent) if (at === root) return true;
+  return false;
+};
 
-// White key light with a shadow frustum tightened around the character (the default
-// ±5m ortho frustum wastes most of the shadow map's resolution). The frustum is centred on the light's target (the
-// origin), so it stays on the character whichever way the sun turns.
-function KeyLight({ sun }: { sun: number }) {
+// The sun: the Studio key light, white, the one light that casts shadows. Its direction (11 Nov 2026, PR #37) and height
+// are the viewer's choice (stage-lighting.ts, remembered in this browser; automated browsers always get the reviewed
+// rig). Its shadow camera is an orthographic box along the light: the reviewed ±1.4 × ±1.6 m round the character
+// (three's default ±5 m box would waste most of the shadow map), grown for a low sun or the floor shadow (shadowFrustum
+// explains the geometry). It is centred on the light's target, so it stays on the character whichever way the sun turns.
+// With the floor shadow on, light and target also follow the body on a 0.25 m grid, so an emote that travels keeps its
+// whole shadow (a grid, not every frame: each step restarts the still view).
+function KeyLight({ azimuth, elevation, follow, root }: {
+  azimuth: number; elevation: number | null; follow: boolean; root: THREE.Object3D;
+}) {
   const ref = useRef<THREE.DirectionalLight>(null);
   const mapSize = IS_TOUCH ? 1024 : 2048;
   useEffect(() => {
     const light = ref.current;
     if (!light) return;
+    const frustum = shadowFrustum(elevation, follow);
     const cam = light.shadow.camera;
-    cam.left = -1.4;
-    cam.right = 1.4;
-    cam.top = 1.6;
-    cam.bottom = -1.6;
-    cam.near = 0.5;
-    cam.far = 20;
+    cam.left = frustum.left;
+    cam.right = frustum.right;
+    cam.top = frustum.top;
+    cam.bottom = frustum.bottom;
+    cam.near = frustum.near;
+    cam.far = frustum.far;
     cam.updateProjectionMatrix();
-  }, []);
+    // Depth in an orthographic shadow map is a fraction of far - near: the bias is rescaled to the same distance.
+    light.shadow.bias = frustum.bias;
+  }, [elevation, follow]);
+  const pelvis = useRef<THREE.Object3D | null>(null);
+  const [at, setAt] = useState<[number, number]>([0, 0]);
+  useFrame(() => {
+    if (!follow) return;
+    if (!pelvis.current || !isInside(pelvis.current, root)) pelvis.current = root.getObjectByName("pelvis") ?? null;
+    if (!pelvis.current) return;
+    const world = pelvis.current.getWorldPosition(new THREE.Vector3());
+    const [x, z] = snapFollow(world.x, world.z);
+    if (x !== at[0] || z !== at[1]) setAt([x, z]);
+  });
+  const [x, z] = follow ? at : [0, 0];
+  useEffect(() => {
+    const light = ref.current;
+    if (!light) return;
+    // The target is not in the scene graph, so its matrix is updated by hand (three reads target.matrixWorld).
+    light.target.position.set(x, 0, z);
+    light.target.updateMatrixWorld();
+  }, [x, z]);
+  const [px, py, pz] = keyLightPosition(azimuth, elevation);
   return (
     <directionalLight
       ref={ref}
-      position={keyLightPosition(sun)}
+      position={[px + x, py, pz + z]}
       intensity={STUDIO_RIG.key}
       color="#ffffff"
       castShadow
       shadow-mapSize-width={mapSize}
       shadow-mapSize-height={mapSize}
-      shadow-bias={-0.0002}
       shadow-normalBias={0.02}
     />
   );
 }
 
+// The floor shadow (opt-in): a plane that draws nothing but the sun's shadow (ShadowMaterial: black, alpha = how much
+// of the sun is blocked), over the CSS backdrop. Details that matter:
+// - 2 mm below the floor: drei's ContactShadows renders the scene from y = 0 looking up, and this plane would otherwise
+//   land in its depth picture and darken the whole contact shadow;
+// - no normals: three moves each shadow lookup normalBias (2 cm) along the surface normal to stop acne; on a floor
+//   that slides the shadow 2 cm / tan(sun height) away from the feet (11 cm at 10°). The floor casts nothing, so it
+//   cannot acne, and without a normal attribute three skips that offset for it alone;
+// - no depth write and drawn first: it must never hide a transparent or additive part that dips below the floor.
+function FloorShadow() {
+  const geometry = useMemo(() => {
+    const plane = new THREE.PlaneGeometry(40, 40);
+    plane.deleteAttribute("normal");
+    plane.deleteAttribute("uv");
+    plane.rotateX(-Math.PI / 2);
+    return plane;
+  }, []);
+  const material = useMemo(() => new THREE.ShadowMaterial({ opacity: 0.4, depthWrite: false }), []);
+  useEffect(() => () => { geometry.dispose(); material.dispose(); }, [geometry, material]);
+  return <mesh geometry={geometry} material={material} position={[0, -0.002, 0]} receiveShadow renderOrder={-1} />;
+}
+
 // Neutral studio preview. Shared lighting is reviewed against multiple material
 // families; recovered material values remain independent of the environment choice.
-function StudioLights({ sun }: { sun: number }) {
+function StudioLights({ lighting, root }: { lighting: LightingSettings; root: THREE.Object3D }) {
   return (
     <>
       <StudioEnvironment intensity={STUDIO_RIG.env} softbox />
       <hemisphereLight args={["#e8edf4", "#c4c8ce", STUDIO_RIG.hemi]} />
-      <KeyLight sun={sun} />
+      <KeyLight azimuth={lighting.sunAzimuth} elevation={lighting.sunElevation} follow={lighting.floorShadow} root={root} />
+      {lighting.floorShadow && <FloorShadow />}
       {/* unshadowed direct fill from the camera-left fill panel's direction (w157; 0 = absent, as shipped) */}
       {STUDIO_RIG.fill > 0 && <directionalLight position={[-4.5, 2.5, 2]} intensity={STUDIO_RIG.fill} color="#ffffff" />}
       {/* neutral back-top rim for silhouette separation */}
@@ -442,15 +468,17 @@ function StudioLights({ sun }: { sun: number }) {
   );
 }
 
-// THE FINALS main-menu inspect look: dark studio, warm key, signature blue rim.
-function LobbyLights() {
+// THE FINALS main-menu inspect look: dark studio, warm key, signature blue rim. The rims' hue is the viewer's choice
+// (rimLights holds their brightness); untouched, they are the shipped blues.
+function LobbyLights({ hue }: { hue: number | null }) {
+  const [backLeft, backRight] = rimLights(hue);
   return (
     <>
       <StudioEnvironment intensity={0.4} />
       <hemisphereLight args={["#bcd2ff", "#161018", 0.35]} />
       <directionalLight position={[3.5, 5, 5]} intensity={2.4} color="#fff3e2" />
-      <directionalLight position={[-5, 3.5, -4]} intensity={2.8} color="#3f6dff" />
-      <directionalLight position={[5, 2, -4]} intensity={1.3} color="#2f56ff" />
+      <directionalLight position={[-5, 3.5, -4]} intensity={backLeft.intensity} color={backLeft.color} />
+      <directionalLight position={[5, 2, -4]} intensity={backRight.intensity} color={backRight.color} />
       <directionalLight position={[-3, 2, 3]} intensity={0.35} color="#cfe0ff" />
     </>
   );
@@ -472,8 +500,12 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
   const [missingFittingData, setMissingFittingData] = useState(false);
   const [retryAttempt, setRetryAttempt] = useState(0);
   const [theme, setTheme] = useState<SceneTheme>("studio");
-  const [sun, setSun] = useState(savedSun);
-  const changeSun = (degrees: number) => { setSun(degrees); saveSun(degrees); };
+  // Lighting and backdrop (lighting-store.ts): the reviewed look unless this viewer changed it; always so when automated.
+  const lighting = useLightingStore((s) => s.settings);
+  const changeLighting = useLightingStore((s) => s.change);
+  const sun = lighting.sunAzimuth;
+  const changeSun = (degrees: number) => changeLighting({ sunAzimuth: degrees });
+  const backdrop = resolveBackdrop(theme, lighting.backdrop[theme]);
   // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden).
   const animator = useRigAnimator();
   // A timeline drag changes the pose every frame while paused: the still view treats it as motion too.
@@ -1074,7 +1106,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
     <div
       data-viewer=""
       className="relative h-full w-full"
-      style={{ background: THEME_BACKGROUND[theme] }}
+      style={{ background: backdropCss(theme, lighting.backdrop[theme]) }}
     >
       {/* key={theme} remounts the Canvas so renderer-level state (tone mapping, shadow
           type) applies cleanly — three recompiles all programs for the new renderer. */}
@@ -1110,10 +1142,10 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
           outputColorSpace: THREE.SRGBColorSpace,
         }}
       >
-        {theme === "studio" ? <StudioLights sun={sun} /> : <LobbyLights />}
+        {theme === "studio" ? <StudioLights lighting={lighting} root={rig.root} /> : <LobbyLights hue={lighting.lobbyHue} />}
         <primitive object={rig.root} />
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
-        <PreviewBridge root={rig.root} theme={theme} active={ready && !busy} animator={animator} />
+        <PreviewBridge root={rig.root} backdrop={backdrop} active={ready && !busy} animator={animator} />
         {animator && <AnimationFrameDriver animator={animator} />}
         {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving}
           aa={antiAliasing} statusRef={temporalStatus} />}
@@ -1136,7 +1168,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
       <div className="pointer-events-none absolute z-10" style={immersive?.immersive ? SAFE_ALL : SAFE_SIDES}>
         {/* Viewfinder corners. Decorative, and kept out of automated canvas captures. */}
         {!AUTOMATED && <div aria-hidden="true" className="brackets pointer-events-none absolute inset-3 z-[5]"
-          style={{ "--b": theme === "studio" ? "rgb(9 9 11 / 0.32)" : "rgb(242 239 233 / 0.32)" } as CSSProperties} />}
+          style={{ "--b": backdrop.dark ? "rgb(242 239 233 / 0.32)" : "rgb(9 9 11 / 0.32)" } as CSSProperties} />}
         {/* No backdrop-filter on anything over the canvas: the canvas repaints every frame, so a
             blur behind it would be recomputed every frame too — a real cost on phones. */}
         <div className="absolute right-3 top-3 z-20 flex gap-1.5 *:pointer-events-auto">
@@ -1152,6 +1184,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
               {immersive.immersive && "Exit full screen"}
             </button>
           )}
+          <LightingPanel theme={theme} />
           <button
             type="button"
             onClick={() => setTheme((t) => (t === "studio" ? "lobby" : "studio"))}
@@ -1239,7 +1272,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
       {!ready && !error && (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
           <div className="flex flex-col items-center gap-3">
-            <span className={`hud ${theme === "studio" ? "text-ink-700" : "text-fg-muted"}`}>Loading contestant</span>
+            <span className={`hud ${backdrop.dark ? "text-fg-muted" : "text-ink-700"}`}>Loading contestant</span>
             {/* Download progress (load-progress.ts): a sweep until the first sizes are known, then the fraction. */}
             <span className="relative block h-0.5 w-32 overflow-hidden bg-ink-950/15">
               {downloadFraction > 0
@@ -1247,7 +1280,7 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
                     style={{ width: `${Math.round(Math.min(1, downloadFraction) * 100)}%` }} />
                 : <span className="absolute inset-y-0 left-0 w-2/5 animate-sweep bg-finals" />}
             </span>
-            <span className={`hud tabular-nums ${theme === "studio" ? "text-ink-700" : "text-fg-muted"}`}>
+            <span className={`hud tabular-nums ${backdrop.dark ? "text-fg-muted" : "text-ink-700"}`}>
               {download ?? "\u00a0" /* keeps the line height */}
             </span>
           </div>
