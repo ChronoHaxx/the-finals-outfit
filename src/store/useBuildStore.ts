@@ -4,6 +4,7 @@ import type { Item } from "../lib/item";
 import { getItemById } from "../lib/catalog";
 import { migrateBuildSlots } from "../lib/outfit-slots";
 import { resolveEquipmentSlots } from "../lib/equipment";
+import { DEFAULT_BODY_TYPE, type BodyTypeId } from "../lib/body-type";
 
 // `build` is the serializable source of truth: slot -> selected item id (or null).
 // It maps 1:1 onto Outfit.slots (src/lib/outfit.ts) for the M4 share-link encoder.
@@ -62,16 +63,23 @@ export function withRenderableFace(build: Build, renderable: (id: string) => boo
 
 interface BuildState {
   build: Build;
+  /** The outfit's body type exactly as it was chosen or stored (src/lib/body-type.ts). A value this site cannot name
+   *  is kept as it is, so saving the outfit again does not lose it; it renders as Masculine. Not a slot: the
+   *  "bodyType" entry in SLOTS predates this and stays empty. */
+  bodyType: string;
   equip: (item: Item) => void;
   unequip: (slot: Slot) => void;
   toggle: (item: Item) => void;
-  // Replace the whole build (share-link hydration). Caller validates ids beforehand.
-  load: (slots: Partial<Record<Slot, string>>) => void;
+  // Replace the whole build (share-link hydration). Caller validates ids beforehand. Without a body type, the current
+  // one stays (Randomise and Reset keep it).
+  load: (slots: Partial<Record<Slot, string>>, bodyType?: string) => void;
+  setBodyType: (bodyType: BodyTypeId) => void;
   reset: () => void;
 }
 
 export const useBuildStore = create<BuildState>((set) => ({
   build: defaultBuild(),
+  bodyType: DEFAULT_BODY_TYPE,
   equip: (item) => set((s) => ({ build: { ...blankBuild(),
     ...resolveEquipmentSlots({ ...s.build, [item.slot]: item.id }, item.slot).slots } })),
   unequip: (slot) => set((s) => ({ build: { ...s.build, [slot]: null } })),
@@ -84,6 +92,10 @@ export const useBuildStore = create<BuildState>((set) => ({
   // the link stays empty (and the visual-diff harness renders items in isolation).
   // Slot maps written down before a catalog slot correction are migrated here as well as
   // in the share-link path, so loading a build directly can't disagree with loading its URL.
-  load: (slots) => set({ build: { ...blankBuild(), ...migrateBuildSlots(slots) } }),
+  load: (slots, bodyType) => set(bodyType === undefined
+    ? { build: { ...blankBuild(), ...migrateBuildSlots(slots) } }
+    : { build: { ...blankBuild(), ...migrateBuildSlots(slots) }, bodyType }),
+  setBodyType: (bodyType) => set(s => s.bodyType === bodyType ? s : { bodyType }),
+  // The starting look; the body type is the user's choice and stays.
   reset: () => set({ build: defaultBuild() }),
 }));

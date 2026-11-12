@@ -122,10 +122,10 @@ test('review verdicts win over generic support and missing status data is not fa
 
 test('sharing encodes the edited and empty selections while retaining the public or dev path', () => {
   for (const path of ['/the-finals-outfit/', '/the-finals-outfit/thesecret-dev-mode-ganyu-only/']) {
-    const url = new URL(buildShareUrl(`https://example.com${path}?outfit=old&cam=1,2,3`, { face: null, upperBody: 'casual-basictshirt-cotton-black' }));
+    const url = new URL(buildShareUrl(`https://example.com${path}?outfit=old&cam=1,2,3`, { build: { face: null, upperBody: 'casual-basictshirt-cotton-black' }, bodyType: 'masculine' }));
     assert.equal(url.pathname, path);
     assert.equal(url.searchParams.get('cam'), '1,2,3');
     assert.deepEqual(readOutfitLink(url.href)?.slots, { upperBody: 'casual-basictshirt-cotton-black' });
-    assert.deepEqual(readOutfitLink(buildShareUrl(url.href, {}))?.slots, {});
+    assert.deepEqual(readOutfitLink(buildShareUrl(url.href, { build: {}, bodyType: 'masculine' }))?.slots, {});
   }
 });

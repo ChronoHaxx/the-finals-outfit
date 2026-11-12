@@ -32,20 +32,20 @@ test('both sharing styles round-trip every catalog item without relying on array
   for (const item of [...getAllItems()].reverse()) {
     for (const style of ['short', 'names'] as const) {
       const build = { [item.slot]: item.id };
-      assert.deepEqual(readOutfitLink(buildShareUrl(base, build, style))?.slots, build, item.id);
+      assert.deepEqual(readOutfitLink(buildShareUrl(base, { build, bodyType: 'masculine' }, style))?.slots, build, item.id);
     }
   }
 });
 
 test('compact links are much shorter and changing styles removes obsolete payloads', () => {
-  const short = buildShareUrl(base + '?outfit=' + legacy, original);
+  const short = buildShareUrl(base + '?outfit=' + legacy, { build: original, bodyType: 'masculine' });
   assert.ok(short.length < (base + '?outfit=' + legacy).length / 2);
   assert.equal(new URL(short).hash, '#/?o=' + compact);
-  const named = buildShareUrl(short, original, 'names');
+  const named = buildShareUrl(short, { build: original, bodyType: 'masculine' }, 'names');
   assert.ok(named.includes('spectator-standard--'));
   assert.equal(new URL(named).hash, '');
   assert.deepEqual(readOutfitLink(named)?.slots, original);
-  const back = buildShareUrl(named, original, 'short');
+  const back = buildShareUrl(named, { build: original, bodyType: 'masculine' }, 'short');
   assert.equal(new URL(back).searchParams.has('look'), false);
   assert.deepEqual(readOutfitLink(back)?.slots, original);
 });
