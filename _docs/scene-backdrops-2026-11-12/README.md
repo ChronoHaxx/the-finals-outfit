@@ -29,6 +29,12 @@ reviewed a first draft, and its corrections are folded in (see "Review" at the e
 - **Updated after the user's screenshots (section 0):** the intro is the S12 tunnel. Both scenes are one-sided views from
   a fixed camera, so both need turntable mode. The panorama (B) no longer fits either scene. Recommended now: D for the
   menu, A for the tunnel.
+- **P1 is done (section 7).**
+  - Both S12 scenes were rebuilt in Blender from the level files, and each matches its screenshot from the game's own
+    camera.
+  - The menu sensor is 36 mm, so its view is 30° tall.
+  - The tunnel camera was solved from the screenshot: 1.97 m high in the lobby, 6.4 m before the tunnel mouth, about 40°
+    tall.
 
 ## 0. The user's screenshots (12 Nov)
 
@@ -49,9 +55,9 @@ The user sent two images, "something like this".
 | Visible | Asset |
 | --- | --- |
 | A wet, mirror-like tiled floor with gutters | `MI_Floor_IntroPodium_01` (`T_TileFloor_01`) and `MI_Drainage_IntroPodium_01` on `SM_TunnelSegment_IntroPodium_01` |
-| Ribbed blue glass panels with faint A marks | `SM_Glass_IntroPodium_01` and `MI_GlassIntroPodium_01_MPCColors` (`LogoEmissive`). Its background colour comes from the team-colour parameter collection, so blue is one team's colour. |
+| Ribbed blue panels with faint A marks | Corrected by P1 (section 7): six `SM_ScreenIntroPodium_01` screens. The A marks are reflections of the end logo. |
 | Curved ducts in the ceiling | `SM_CielingAdd_IntroPodium_01` (12.2 × 6 m) |
-| A glowing logo with a light bar on each side at the end | `SM_TunnelEnd_IntroPodium_01` with the strips `MI_IntroPodium_Emissive_01`. The stacked logo comes from the end effect or the screen; P1 confirms. |
+| A glowing logo with a light bar on each side at the end | The logo is on the end wall, `SM_Glass_IntroPodium_01` with `MI_GlassIntroPodium_01_MPCColors` (`LogoEmissive`). Its background colour comes from the team-colour parameter collection, so blue is one team's colour. The strips are `MI_IntroPodium_Emissive_01` on `SM_TunnelEnd_IntroPodium_01`. (P1 confirmed.) |
 
 So the "arena intro" is the S12 intro tunnel in `G_IntroPodium_01`, not the per-map flyover.
 
@@ -398,8 +404,8 @@ Teaching notes:
 
 | Step | Who | What | Size |
 | --- | --- | --- | --- |
-| P0 | the user | Screenshots: received 12 Nov; the intro is the tunnel. Still open: the tunnel image's source, the routes, and turntable mode or limited orbit. | — |
-| P1 | agent | The probe reads `.umap`. Get the S12 actor lists, the camera sensor and field of view, and the `_BuiltData` contents. Assemble the scenes (a local `.blend` for the podium, a placement JSON for the menu); neither is committed. | about half a day |
+| P0 | the user | Screenshots: received 12 Nov; the intro is the tunnel. Turntable decided. Still open: the tunnel image's source and the routes. | — |
+| P1 | agent | **Done 12 Nov (section 7).** The probe reads `.umap`. The S12 placements, cameras, sensor and `_BuiltData` contents are known. Both blockouts match the screenshots; the tunnel camera is solved. The `.blend` files and placements stay local. | done, about half a day |
 | P2-menu | user or agent | Option D: port the 5 emissive shaders, build the backdrop pass, ground the character in Lobby, add the share-card still and tests. | 2-4 days |
 | P2-tunnel | user or agent | Option A. Either solve the screenshot's camera and use a clean in-game frame as the plate, or match materials and lighting in Blender against it and render the plate from inside the tunnel. Optional: the floor reflection layer. | 1-2 days (relight) or about half a day (camera solve), plus about 1 day in the viewer |
 | P3 | agent | Turntable mode for scenes, hosting, the release, and the visual-diff check that the default is unchanged. | 1-2 days |
@@ -417,9 +423,139 @@ Teaching notes:
 1. Routes: D (live stage) for the menu and A (plate) for the tunnel, as recommended, or something else?
 2. ~~Turntable mode, or orbit limited to about ±30°?~~ **Decided 12 Nov: turntable** ("Yes, turntable"). See section 4.
 3. Where is the tunnel image from? If it is an in-game frame, can you capture a wider, full-resolution one with no
-   character?
-4. For P1: our own assembler from probe JSON, which needs no download (recommended), or a community Blender umap
-   importer, which would be a download that needs your OK.
+   character? Section 7 shows what using it fixes: the camera, and a character spot at the tunnel mouth.
+4. ~~Own assembler or a community umap importer?~~ **Settled by P1:** our own assembler works from the probe's JSON, so
+   nothing was downloaded.
+
+## 7. P1 results (12 Nov, evening)
+
+The user said "Yes, start P1". The probe gained a `level` mode that reads `.umap` packages, and it read the S12 levels
+from the installed paks: 6 levels, 4 blueprints and 5 `_BuiltData` packages, listed with sizes and hashes in
+`evidence/s12-levels-p1-v1.json`. Then:
+- `tools/assemble_scene.py` turns them into placements (every mesh, light, camera and character spot, in Blender's
+  frame);
+- `tools/blender_blockout.py` builds the scene in Blender with flat stand-in materials and renders it from the game's
+  camera.
+
+**Both blockouts reproduce the user's screenshots.** The comparison sheet is in the shared notes folder, not in the repo,
+because it contains game frames. Nothing in the app changed and nothing was downloaded.
+
+**How a level stores a placement** (the model the assembler follows):
+- A component's `RelativeLocation`, `RelativeRotation` and `RelativeScale3D` are relative to its `AttachParent`.
+- An instance stores only what differs from its template. A blueprint's component template, or the engine's class
+  default, supplies the rest.
+  - `FrontendCharacter_0` stores no root at all, so the assembler falls back to its capsule.
+  - Missing everywhere means the engine default.
+- Unreal is left-handed. A placement converts as F·W·F with F = diag(1, −1, 1), as section 2 expects.
+
+### Menu (`MainMenu_S12_None` with `CharacterSelection_*` and `MainMenuReforge`)
+
+**The stage wall is a cyclorama.** `SM_FrontendStage_Wall_01` at ×2 is a half-cylinder of 16 m radius, centred 1.38 m in
+front of the stage origin. It wraps the whole view.
+
+**The big A sits behind that wall.**
+- The title-LED plane is at 17.9 m, the far side of the wall.
+- In the game the wall's screen material lets it show through. The blockout needed the wall at 30% opacity to match.
+- So P2 must port that see-through, or the A disappears.
+
+**The other pieces**, by distance from the stage origin:
+
+| Piece | Where |
+| --- | --- |
+| Fog plane | 3.5 m |
+| LED floor half-circle | centred at 4.75 m, radius 7.55 m |
+| Smoke plane | 16.3 m |
+| Scaffold pillars | 17.25 m, at ±9.65 and ±10.54 m to the sides |
+| Light-flare plane | 18.1 m |
+| Grid plane | 20.2 m |
+
+**The camera is `CameraLocationPlay_0`: 38 mm at f/4, pitched 4.5° up.**
+- It sits at (0.65, 0, 0.79) m plus an offset per archetype: Light +60/+15 cm, Medium +55/+25 cm, Heavy +40/+35 cm
+  (forward/up).
+- For Medium that is about (1.20, 0, 1.04) m.
+- The character, `FrontendCharacter_0`, stands at (4.21, 0, 0), 3.0 m from the camera. Squad members stand at 5-6 m, 1-2 m
+  to each side.
+
+**The sensor is 36 mm wide ("16:9 DSLR"), so the view is 29.8° tall.**
+- The camera's saved `FieldOfView` (34.72°) is what a 23.76 mm sensor gives at 38 mm.
+- The screenshot matches 36 mm instead: the A's outline, the inner triangle, the slash band and the floor line all fit.
+- So the game sets the filmback at runtime, and the screenshot wins.
+- For scene mode, the viewer's camera should use: 3.0 m from the character, 1.04 m high, 4.5° up, 30° tall. Ours today is
+  35°.
+
+**The game lights the character itself:** 25 lights in `CharacterSelection_Lighting`.
+- A key: 45 lm at 5600 K.
+- Cool rims: 60-70 lm, `A7CBFF`.
+- Weak fills.
+- Two strong blue side spots: 300-350 lm, `007BFF`.
+- RGB projectors under the floor.
+
+That blue side light is a large part of the menu look on the character. Lobby and Studio have none of it, so P2 needs a
+scene light preset.
+
+### Tunnel (`G_IntroPodium_01`)
+
+**Layout**, along the tunnel (x forward):
+
+| Piece | Where |
+| --- | --- |
+| Lobby room | x −16.3 to 6.4 m; 16.8 m wide, 7 m tall |
+| Tunnel | from the mouth at 6.4 m to the end wall at 26.4 m; 4.2 m wide |
+| Screens, `SM_ScreenIntroPodium_01` | six panels of 4 × 2.95 m, on both sides from 8.0 to 20.25 m |
+| Light strips (the emissive section of `SM_TunnelEnd`) | 21.7-24.1 m |
+| End wall, `SM_Glass_IntroPodium_01` | a 4.2 × 4 m glass pane at 26.38 m, carrying the logo |
+| Ceiling ducts, `SM_CielingAdd` | about 16.8 m |
+
+**This corrects section 0.**
+- The ribbed blue panels are the screens. The glass is the logo wall at the end.
+- The faint A marks on the side panels are reflections of the end logo and the strips: the game's ray-traced
+  reflections.
+- A plate gets these reflections for free. A live render would need planar or screen-space reflections.
+
+**The camera was solved from the screenshot** (the fSpy idea, by hand):
+- The nearest screen's top and bottom edges land at 505 and 1325 px. The screen is a known 2.95 m tall and starts
+  0.12 m up, so the camera is 1.97 m high.
+- The screen's two ends are at known distances (8.0 and 12.0 m) and land at 285 and 460 px. From the ratio, the camera is
+  at x ≈ 0: in the lobby room, 6.4 m before the mouth, centred (y 0.07 m) and level.
+- The view is about 40° tall. That is 27.8 mm if the original frame was 16:9 on a 36 mm sensor.
+- Rendered from there, the blockout overlays the screenshot within a few pixels: the screens, strips, end wall, mouth frame
+  and ducts.
+
+**What the static level does not show:**
+- The shot's camera is a sequence camera. None of the 12 placed cameras is there; the static ones look the other way, at
+  the squad stage (x 0-4 m).
+- The sequence hides a 1 m plane, `StaticMeshActor_87`, 0.2 m in front of that camera. The blockout skips it.
+- Two more pieces are skipped:
+  - the end-transition box (`M_TunnelRun_End_Effect`, 5.65 m long);
+  - an emissive card in front of the glass.
+
+**What this means for the plate (P2-tunnel):**
+- If the in-game frame itself is the plate (decision 3), the camera is fixed at that solved point.
+- With a 40° view from 1.97 m, the character's feet show only if the character stands at least 5.4 m away, at the tunnel
+  mouth. Seen from there, the character fills about 45% of the frame height.
+- A Blender relight can instead put the camera wherever framing wants: for example 3.6 m from a spot just inside the
+  mouth, at the viewer's own height.
+
+### Baked lighting, confirmed on S12
+
+There are no lightmaps anywhere.
+- The `_BuiltData` packages are reflection captures only. Each capture is 262,144 bytes:
+
+  | Level | Captures |
+  | --- | --- |
+  | `MainMenuReforge` | 1 |
+  | `CharacterSelection_Lighting` | 2 |
+  | `MainMenu_BackstageEnvironment_Reforge` | 7 |
+
+- The podium's and the character-selection environment's `_BuiltData` are empty: 372 and 396 bytes.
+
+### Effect on the phases
+
+| Step | Status |
+| --- | --- |
+| P1 | Done. |
+| P2-menu | Placements, camera, sensor and character spot are known. What is left is the shader ports (including the wall's see-through), the backdrop pass and a scene light preset. |
+| P2-tunnel | The camera solve, the half-day route, is done. What is left depends on decision 3. |
 
 ## Review
 
@@ -456,3 +592,32 @@ Not yet verified:
   - The texture WebP sizes were measured by decoding mip 0 (or the 1024 mip) with Pillow's BCn decoder and re-encoding.
   - The S12 package lists come from `scripts/generated/shader-probe/catalog-refresh-20261028/inventory-01/packages.json`.
     It lists `.uasset` only, so no umaps.
+- **P1 (12 Nov).** Rebuild the probe from this branch first, then run these in Git Bash. `$G` is a local, ignored output
+  folder; `<paks> <usmap> <oodle>` are as above.
+  1. Read the levels. The probe's `inventory` mode now also writes `levels.json`.
+
+     `dotnet $G/probe-bin/ShaderProbe.dll level <paks> <usmap> <oodle> $G/levels-v3 <request.json>`
+
+     The request lists the 15 packages in `evidence/s12-levels-p1-v1.json`. A second run over the blueprint templates
+     goes to `$G/templates-v1`.
+  2. Assemble the placements.
+
+     `python -I -X utf8 tools/assemble_scene.py $G/menu-placement-v2.json MainMenu_S12_None
+     CharacterSelection_Environment_Reforge CharacterSelection_Lighting MainMenuReforge --dirs $G/levels-v3
+     $G/templates-v1`
+
+     The tunnel uses the same command with `G_IntroPodium_01`.
+  3. Build the meshes. The probe's `assets` mode reads the placed meshes, then
+     `scripts/shader-probe/build-meshes.py` builds the glbs (36 meshes, about 28.5k triangles).
+  4. Render the blockouts.
+
+     `blender -b --factory-startup -P tools/blender_blockout.py -- PLACEMENT MESHES GLBS TEXTURES OUT_PREFIX CONFIG`
+
+     The configs used:
+     - menu: camera `CameraLocationPlay_0` with `offset_cm` [55, 0, 25], sensors 36 and 23.76;
+     - tunnel: camera `pos` (0, 0.07, 1.97), `target` (26.38, 0.07, 1.97), 27.8 mm on a 20.25 mm sensor (a 16:9
+       36 mm frame cropped square), `skip_actors` `StaticMeshActor_87`.
+  5. Write the evidence.
+
+     `python -I -X utf8 tools/p1_evidence.py evidence/s12-levels-p1-v1.json $G/levels-v3 <menu placement> <tunnel
+     placement>`
