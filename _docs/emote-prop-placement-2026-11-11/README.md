@@ -144,12 +144,65 @@ Steps 3 to 5 were wrong or missing.
 
   It confirmed that the curves are in mesh-component space.
 
+## Fix (12 Nov): the actor's root scale
+
+**Report.** On the live site after PR #39 the user wrote: "the jetpack still too big". This escaped defect has been
+live since PR #22 (6 Nov), which shipped it as a known issue ("Jetpack too big"). PR #39 kept it, and its README
+wrongly called root scale "composed".
+
+**Cause.** In UE the actor's transform *is* its root component's transform. The spawn notify places the actor
+(socket × RelativeTransform), so the root component's template `RelativeScale3D` never takes effect. `build-props`
+baked that scale into the GLB's top node, and five actors carry one:
+
+| Actor | Raw mesh | Root scale | We showed |
+| --- | --- | --- | --- |
+| JetPack | 14 × 100 × 41 cm (1 m fins) | 100 | about 41 m tall |
+| RollerDerby skate | 31 cm long | 3 | 92 cm skates |
+| PleaseHold phone (VRAthlete) | 13 × 7 cm | 3 | 40 cm |
+| HoldSign tablet | 46 × 30 cm | 3 | 1.4 m |
+| TurretBuddy base | 40 cm | 0.9 | 10% small (the skeletal child keeps its 0.8) |
+
+**Why we can trust the rule:**
+- Every raw mesh is already real-world size.
+- Seven other actors leave the root `Mesh` empty and scale a child instead: CupidWings 0.5, SummerChair C/T, Trentila,
+  CoconutRider and Puppeteer. That is the usual workaround for a root scale that doesn't take effect.
+- "Only when the notify has a transform" is ruled out: PleaseHold has no notify transform.
+
+**Fix.** `build-props.mjs` `ensureNode` leaves the root component's template scale out and records a note on the actor.
+A root location or rotation, which no actor has, stops the build until it has been checked. Child components keep
+their relative transforms.
+
+**Checks:**
+- The rebuild (`props-9`) changes exactly those 5 GLBs. The other 169 are byte-identical, and `emotes`/`sockets` in
+  props.json are unchanged.
+- None of the 5 actors' notifies carries a scale.
+- Before/after captures (`rootscale-before/`, `rootscale-after/`) checked by eye:
+  - jetpack on his back, a thruster beside each shoulder, as in the emote icon;
+  - skates on his feet;
+  - phone in the hologram's hand;
+  - tablet held overhead;
+  - turret about 11% larger, hands still on it.
+- Fable reviewed the rule and agreed: a subagent, no API spend.
+- Chinals (not live): RainCoat soil drops its root 0.35. The notify's own 0.4/0.4/0.35 gives a patch about
+  53 × 59 cm; both readings are plausible. The CLittlePaint roots are 0.99999994, float noise.
+
+**Published (12 Nov, on the user's "Yes, ship it"):**
+- **Host:** `https://cf84e9b6.the-finals-outfit-assets.pages.dev/`, alias `anim-1112-root-scale`. It holds set-5
+  (unchanged) plus props-9, and its manifest points at `props-9/props.json`.
+- **Upload:** 7 new files (the 5 GLBs, props.json, manifest.json); 561 were already there.
+- **Verification:** `verify-hosted.mjs` found all 568 files byte-identical, with the right headers and a 404 for a
+  missing file. Staged at `upload/anim-20261112b/`; receipts `upload/deployment-anim-cf84e9b6.json` and
+  `upload-anim-b.log`.
+- **App:** `ANIMATIONS_BASE` now points at `cf84e9b6`.
+- **Rollback:** `fb06038b` (props-8) and `cd858839` (props-7) are untouched.
+
 ## Not settled or not reproduced
 
 - **Fencing foil and bows:** a ControlRig runs after the ModifyBone. The foil's −30° yaw on its reference pose is a best
   guess, and the bow's override changes nothing visible.
-- **Root-component scale is composed, not replaced (unchanged).** JetPack's root 100 shows that the template scale
-  survives a notify without a scale.
+- ~~**Root-component scale is composed, not replaced.** JetPack's root 100 shows that the template scale survives a
+  notify without a scale.~~ **Wrong; corrected 12 Nov** (see "Fix (12 Nov): the actor's root scale"). The jetpack
+  rendered about 41 m tall, which the user reported on the live site.
 - **`PropIndex`** (12 notifies) is read by game script, and its effect is unknown. **`bUseCharacterScale`** matters only
   for Light and Heavy bodies, which emotes don't use.
 - **The live clip set-5 keeps the Death wings on the spawn clock** until clips are rebuilt with the fixed
@@ -235,3 +288,19 @@ If something fails, stop at that step and report its number and what happened ("
   authorization to publish props-8 and merge. The user will check on the live site instead.
 - Readiness: merged and published on the waiver. User acceptance is still pending until the user reports results from
   the live site.
+- **12 Nov, live (revision b930467, host fb06038b):** the user reported "the jetpack still too big". This is a FAIL
+  outside checks 1-7. The cause and the repair are in "Fix (12 Nov): the actor's root scale". The user has not
+  reported on checks 1-7. Live re-test of the jetpack: pending.
+
+### Guided functional review: root-scale fix (props-9)
+
+Same preview as above, with `--set=scripts/generated/emote-prop-placement-2026-11-11/after9-set`, or on the live site
+once published.
+
+- [ ] **R1. JetPack:** play it. Expected: a backpack on his back, with a thruster beside each shoulder and the
+  character fully visible. Live today, a grey wall fills the view behind him.
+- [ ] **R2. Rollout Rumble:** expected: a roller skate on each foot, shoe-sized. Today, two skateboard-sized skates.
+- [ ] **R3. Now You Know:** expected: a tablet held overhead in both hands. Today, a frame 1.4 m across hides his
+  head.
+- [ ] **R4. Flashpoint:** expected: the hologram partner holds a phone-sized phone. Today, it is torso-sized.
+- [ ] **R5. Who's a Good Turret?:** expected: unchanged apart from about 10% larger, hands still on it.

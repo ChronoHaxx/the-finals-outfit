@@ -1,0 +1,31 @@
+{
+  "base": "http://127.0.0.1:5193",
+  "step5": {
+    "beardValues": 221868,
+    "faceBoneValues": 2023,
+    "heldMovesBeard": true,
+    "heldMovesFace": true,
+    "seekMovesBeard": true,
+    "seekMovesFace": true,
+    "stopRestoresBeardExactly": true,
+    "stopRestoresFaceExactly": true,
+    "afterStop": {
+      "posed": false,
+      "wrapped": false,
+      "wraps": 1
+    },
+    "pass": true
+  },
+  "step6": {
+    "clip": "take-a-bow",
+    "active": true,
+    "head": "SK_Head_Face_20_Base",
+    "bones": 290,
+    "posed": true,
+    "finite": true,
+    "before": "SK_Head_Face_01_Base",
+    "pass": true
+  },
+  "errors": [],
+  "pass": true
+}
