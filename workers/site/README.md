@@ -107,6 +107,12 @@ changes the hosts this stages from, and the site health check reads hosts from `
    npx --yes wrangler@4.131.1 deploy --secrets-file .secrets.production.env
    ```
 
+   - Analytics Engine must be enabled on the account once, from the dashboard's Analytics Engine page. Otherwise the
+     upload succeeds and the deploy then fails with code 10089 ("You need to enable Analytics Engine"). Seen 12 Nov 2026.
+   - Wrangler prints every new asset path, including the unlisted store folder's name. Deploy from this machine only,
+     never from CI with public logs. If the name ever leaks, delete `MESH_STORE` from the secrets file, then restage and
+     redeploy.
+
 6. Check the site, then turn detection on:
    - Create an API token with Account Analytics Read and set it with `secret put ANALYTICS_TOKEN`.
    - Set `ACCOUNT_ID`.
