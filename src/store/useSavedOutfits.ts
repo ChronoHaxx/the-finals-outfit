@@ -282,27 +282,79 @@ export function openFromUrl(href: string): LinkResult {
     useBuildStore.getState().load(resolved.build);
     return result;
   }
+  const opened = openUnsaved(lib, outfit.presetName?.trim() || "Shared outfit", resolved.slots, resolved.build, "link", "Open the link anyway?");
+  return opened.kind === "declined" ? { ...result, declined: true } : result;
+}
+
+type Opened = { kind: "same" } | { kind: "declined" } | { kind: "record"; record: OutfitRecord } | { kind: "draft"; draft: Draft };
+
+/**
+ * Show an outfit that is not saved yet: a share link, or one of the game's own outfits. It becomes a draft beside the
+ * saved outfits, so nothing saved changes until the user edits it or presses Save (which makes a NEW saved outfit).
+ * An outfit already on screen changes nothing; a saved outfit with exactly these pieces is shown instead of a draft.
+ * `slots` is what the draft keeps, `build` what it wears. A link's address stays while its draft is on screen (a reload
+ * shows it again); anything else removes a previous link from the address bar, after the draft is in place, so the
+ * router's re-run finds the draft and leaves it alone.
+ */
+function openUnsaved(lib: OutfitLibrary, name: string, slots: SlotMap, build: Partial<Record<Slot, string>>,
+  reason: "link" | "preset", ask: string): Opened {
   ensureCurrent(false);
   const current = lib.getCurrent();
-  if (current && sameBuild(useBuildStore.getState().build, resolved.build)) {
-    if (current.kind === "record") cleanUrl(); // already this saved outfit (also the Roadmap round trip)
-    return result;
+  if (current && sameBuild(useBuildStore.getState().build, build)) {
+    if (current.kind === "record" && reason === "link") cleanUrl(); // already this saved outfit (also the Roadmap round trip)
+    return { kind: "same" };
   }
   if (current?.kind === "draft" && current.draft.edited && !confirmLeave(
-    `“${current.draft.name}” is not saved (you have ${lib.cap} saved outfits). Open the link anyway?`)) return { ...result, declined: true };
-  const match = lib.live().find(record => sameBuild(resolveSavedSlots(record.slots, record.labels).build, resolved.build));
+    `“${current.draft.name}” is not saved (you have ${lib.cap} saved outfits). ${ask}`)) return { kind: "declined" };
+  const match = lib.live().find(record => sameBuild(resolveSavedSlots(record.slots, record.labels).build, build));
+  let opened: Opened;
   if (match) {
     own(() => lib.select(match.id));
     showRecord(match);
     cleanUrl();
+    opened = { kind: "record", record: match };
   } else {
-    const draft: Draft = { name: outfit.presetName?.trim() || "Shared outfit", slots: resolved.slots,
-      labels: labelsFor(resolved.slots), reason: "link" };
+    const draft: Draft = { name, slots, labels: labelsFor(slots), reason };
     own(() => lib.setDraft(draft));
     showDraft(draft);
+    if (reason !== "link") cleanUrl();
+    opened = { kind: "draft", draft };
   }
   publish();
-  return result;
+  return opened;
+}
+
+/**
+ * Put on one of the game's own outfits (src/lib/preset-outfits.ts) as an unsaved draft. `slots` is the whole outfit, built
+ * by presetSlots from the outfit on screen; it is resolved against today's catalogue once, and only what can be worn
+ * goes into the draft. Undo goes back to what was on screen, but only while the draft is still the one on screen.
+ */
+export function openPreset(name: string, slots: SlotMap): "same" | "declined" | "draft" | "record" {
+  const resolved = resolveSavedSlots(slots);
+  const lib = library;
+  if (!lib) { useBuildStore.getState().load(resolved.build); return "draft"; }
+  const previous = lib.getCurrent();
+  const wearing = { ...resolved.build } as SlotMap;
+  const opened = openUnsaved(lib, name, wearing, resolved.build, "preset", `Wear “${name}” anyway?`);
+  if (opened.kind === "record") toast(`Your saved outfit “${opened.record.name}” already has these pieces.`, "info");
+  if (opened.kind !== "draft") return opened.kind;
+  const draft = opened.draft;
+  const atCap = lib.liveCount() >= lib.cap;
+  toast(atCap ? `Wearing “${name}”, not saved: you have ${lib.cap} saved outfits.` : `Wearing “${name}”. Changing anything saves it.`, "roll", () => {
+    const now = lib.getCurrent();
+    if (now?.kind === "draft" && now.draft === draft) {
+      if (previous?.kind === "record" && lib.get(previous.id)?.deletedAt === undefined) {
+        own(() => lib.select(previous.id));
+        showRecord(lib.get(previous.id)!);
+      } else if (previous?.kind === "draft") {
+        own(() => lib.setDraft(previous.draft));
+        showDraft(previous.draft);
+      }
+    }
+    useSavedOutfits.setState({ toast: null });
+    publish();
+  });
+  return "draft";
 }
 
 // ------------------------------------------------------------------ actions

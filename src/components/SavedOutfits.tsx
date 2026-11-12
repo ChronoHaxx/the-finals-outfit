@@ -121,7 +121,7 @@ export function OutfitSwitcher() {
     <h2 className="min-w-0">
       <button type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} aria-haspopup="dialog"
         aria-label={`Saved outfits: ${name}`} title="Your saved outfits"
-        className="group flex min-w-0 items-center gap-1.5 text-left">
+        className="group flex min-w-0 max-w-full items-center gap-1.5 text-left">
         <span className="display truncate text-[24px] group-hover:text-white">{name}</span>
         <ChevronIcon size={12} className={`mb-0.5 shrink-0 text-fg-dim transition-transform group-hover:text-fg ${open ? "rotate-180" : ""}`} />
       </button>
@@ -140,9 +140,11 @@ export function OutfitSwitcher() {
         ? <p className={`${notice} ${amber} m-3 mb-0`}>Saving is off: this browser isn’t letting the site store anything (a private window, or site data is blocked). Your outfits last until you close this tab.</p>
         : <p className="px-3 pt-2.5 text-[11px] leading-snug text-fg-dim">Changes save as you go, in this browser only. Private windows forget them when closed, and Safari can clear them after a week without a visit. Share a link to keep an outfit anywhere.</p>}
       {current?.kind === "draft" && <div className={`${notice} ${amber} mx-3 mt-2.5 items-center`}>
-        <p className="flex-1">{current.draft.reason === "link"
-          ? <><b>{current.draft.name}</b> is a shared outfit you haven’t saved. Changing anything saves it.</>
-          : <><b>{current.draft.name}</b> isn’t saved: you have {library.cap} saved outfits. Delete one, then save.</>}</p>
+        <p className="flex-1">{atCap || current.draft.reason === "cap"
+          ? <><b>{current.draft.name}</b> isn’t saved: you have {library.cap} saved outfits. Delete one, then save.</>
+          : current.draft.reason === "preset"
+            ? <><b>{current.draft.name}</b> is an in-game outfit you haven’t saved. Changing anything saves it.</>
+            : <><b>{current.draft.name}</b> is a shared outfit you haven’t saved. Changing anything saves it.</>}</p>
         <button type="button" onClick={() => { if (saveDraft()) setOpen(false); }} disabled={atCap}
           className="hud h-8 shrink-0 bg-fg px-3 text-ink-950 hover:bg-white disabled:opacity-40">Save</button>
       </div>}

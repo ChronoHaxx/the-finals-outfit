@@ -7,8 +7,9 @@ import { useBuildStore } from "../store/useBuildStore";
 import { assetUrl } from "../lib/assets";
 import { useReconstructionProgress } from "../context/ReconstructionProgress";
 import { getReconstructionReview, REVIEW_LABELS, REVIEW_STYLES, type ReviewStatus } from "../lib/reconstruction-status";
-import { CheckIcon, SearchIcon } from "./Icons";
+import { CheckIcon, HangerIcon, SearchIcon } from "./Icons";
 import { hideBroken } from "../lib/hide-broken";
+import PresetOutfits from "./PresetOutfits";
 
 // Wardrobe order, head to toe. A slot missing from these lists still appears, under "More".
 const GROUPS: { label: string; slots: readonly Slot[] }[] = [
@@ -38,24 +39,37 @@ const isRenderable = (i: { id: string; model?: unknown; decal?: unknown }, sourc
 // sticks just below it. Desktop: everything lives in fixed panes with their own scrolling.
 const PHONE = "(max-width: 1023px)";
 
-function SlotRail({ slot, onSelect }: { slot: Slot; onSelect: (slot: Slot) => void }) {
+const railButton = (active: boolean) => `group relative flex h-9 shrink-0 items-center gap-2 border px-2.5 text-[13px] font-semibold transition-colors [font-stretch:87.5%]
+  lg:h-10 lg:w-full lg:border-0 lg:px-4 lg:text-sm
+  ${active
+    ? "border-fg bg-fg text-ink-950 lg:bg-ink-800 lg:text-fg"
+    : "border-line bg-ink-900 text-fg-muted hover:text-fg lg:bg-transparent lg:hover:bg-ink-850"}`;
+
+type View = { kind: "slot"; slot: Slot } | { kind: "outfits" };
+
+function SlotRail({ view, onSelect, onOutfits }: { view: View; onSelect: (slot: Slot) => void; onOutfits: () => void }) {
   const build = useBuildStore((s) => s.build);
   const { counts, rail } = wardrobe();
+  const outfits = view.kind === "outfits";
   return <nav aria-label="Cosmetic slots"
     className="sticky top-(--stage-h) z-20 flex h-14 shrink-0 items-center gap-4 overflow-x-auto overscroll-x-contain border-y border-line bg-ink-950 px-3 [scrollbar-width:none] lg:static lg:block lg:h-auto lg:w-52 lg:overflow-y-auto lg:border-y-0 lg:border-r lg:bg-ink-900 lg:px-0 lg:pb-3">
+    {/* The game's own outfits come first: one tap dresses the whole character. */}
+    <div className="flex shrink-0 items-center gap-1.5 lg:block">
+      <p aria-hidden="true" className="hud pr-0.5 text-[9px] text-fg-dim lg:px-4 lg:pb-1.5 lg:pt-4 lg:text-[10px]">In game</p>
+      <button type="button" onClick={onOutfits} aria-current={outfits ? "true" : undefined} className={railButton(outfits)}>
+        {outfits && <span aria-hidden="true" className="absolute inset-y-1 left-0 hidden w-[3px] bg-finals lg:block" />}
+        <span aria-hidden="true" className="hidden size-6 shrink-0 place-items-center lg:grid"><HangerIcon size={15} /></span>
+        <span className="whitespace-nowrap">Outfits</span>
+      </button>
+    </div>
     {rail.map(group => <div key={group.label} className="flex shrink-0 items-center gap-1.5 lg:block">
       <p aria-hidden="true" className="hud pr-0.5 text-[9px] text-fg-dim lg:px-4 lg:pb-1.5 lg:pt-4 lg:text-[10px]">{group.label}</p>
       {group.slots.map(s => {
-        const active = s === slot;
+        const active = view.kind === "slot" && s === view.slot;
         const worn = build[s] ? getBrowseItem(build[s]!) : undefined;
         // Accessible name stays "<Label> <count>": the harness scripts select slots by it.
         return <button key={s} type="button" onClick={() => onSelect(s)} aria-current={active ? "true" : undefined}
-          title={worn ? `Wearing ${worn.name}` : undefined}
-          className={`group relative flex h-9 shrink-0 items-center gap-2 border px-2.5 text-[13px] font-semibold transition-colors [font-stretch:87.5%]
-            lg:h-10 lg:w-full lg:border-0 lg:px-4 lg:text-sm
-            ${active
-              ? "border-fg bg-fg text-ink-950 lg:bg-ink-800 lg:text-fg"
-              : "border-line bg-ink-900 text-fg-muted hover:text-fg lg:bg-transparent lg:hover:bg-ink-850"}`}>
+          title={worn ? `Wearing ${worn.name}` : undefined} className={railButton(active)}>
           {active && <span aria-hidden="true" className="absolute inset-y-1 left-0 hidden w-[3px] bg-finals lg:block" />}
           <span aria-hidden="true" className={`size-6 shrink-0 overflow-hidden ${worn ? "bg-ink-700" : "hidden bg-ink-800 lg:block"}`}>
             {worn && <img src={assetUrl(worn.imageUrl)} alt="" width={48} height={48} decoding="async" onError={hideBroken} className="size-full object-contain" />}
@@ -127,6 +141,8 @@ const Tile = memo(function Tile({ item, equipped, status, note, renderable, eage
 
 export default function SlotPicker() {
   const [slot, setSlot] = useState<Slot>(() => wardrobe().rail[0]?.slots[0] ?? "upperBody");
+  // The Outfits view replaces the slot grid; the slot is kept so leaving it returns to where you were.
+  const [outfits, setOutfits] = useState(false);
   const [query, setQuery] = useState("");
   // Typing stays responsive: the input updates now, the filtered grid follows when React is free.
   const deferredQuery = useDeferredValue(query);
@@ -145,21 +161,27 @@ export default function SlotPicker() {
       && getReconstructionReview(i, workedOn, progressState).status === statusFilter));
   }, [slot, deferredQuery, workedOn, statusFilter, progressState]);
 
-  const selectSlot = (next: Slot) => {
-    setSlot(next);
-    setQuery("");
-    // Start each slot at its first item. Desktop scrolls the grid pane; on phones the page
-    // scrolls, so bring the strip back up under the sticky stage if the visitor is deep in a list.
+  // Start each view at its top. Desktop scrolls the grid pane; on phones the page scrolls, so bring
+  // the strip back up under the sticky stage if the visitor is deep in a list.
+  const toTop = () => {
     grid.current?.scrollTo({ top: 0 });
     const el = section.current;
     if (!el || !window.matchMedia(PHONE).matches) return;
     if (el.getBoundingClientRect().top < parseFloat(getComputedStyle(el).scrollMarginTop)) el.scrollIntoView({ block: "start" });
   };
+  const selectSlot = (next: Slot) => {
+    setSlot(next);
+    setOutfits(false);
+    setQuery("");
+    toTop();
+  };
+  const selectOutfits = () => { setOutfits(true); toTop(); };
 
   return (
     <div ref={section} className="flex flex-col max-lg:scroll-mt-(--stage-h) lg:h-full lg:min-h-0 lg:flex-row">
-      <SlotRail slot={slot} onSelect={selectSlot} />
+      <SlotRail view={outfits ? { kind: "outfits" } : { kind: "slot", slot }} onSelect={selectSlot} onOutfits={selectOutfits} />
 
+      {outfits ? <div className="flex min-w-0 flex-1 flex-col lg:min-h-0"><PresetOutfits /></div> :
       <div className="flex min-w-0 flex-1 flex-col lg:min-h-0">
         <div className="flex shrink-0 items-center gap-2 border-b border-line px-3 py-2.5 lg:gap-3 lg:px-4 lg:py-3">
           <div className="mr-auto hidden min-w-0 lg:block">
@@ -201,7 +223,7 @@ export default function SlotPicker() {
           })}
         </div>
         <p className="hud shrink-0 px-3 pb-4 text-fg-dim lg:hidden">{items.length} {items.length === 1 ? "item" : "items"} in {SLOT_LABELS[slot]}</p>
-      </div>
+      </div>}
     </div>
   );
 }
