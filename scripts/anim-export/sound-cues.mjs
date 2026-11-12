@@ -70,7 +70,9 @@ export function sequenceSoundNotifies(exports) {
 /**
  * A Sound asset's playable variants: one per wave the graph can reach, with its pick weight and the volume/pitch
  * (fixed, or a [min, max] range picked at random on each play) the path to it multiplies in.
- * `exports`: the sound package's exports. Returns { kind: "cue" | "wave" | "sync-loop", variants, attack? }.
+ * `exports`: the sound package's exports. Returns { kind: "cue" | "wave" | "sync-loop", variants, attack?, layers? }.
+ * `layers` (a cue whose root path is a SoundNodeMixer): the inputs that play AT ONCE, each a list of variants to pick
+ * from; `variants` then lists every layer's variants together (the waves to export). One cue per layer reproduces it.
  * Throws on a node or MetaSound graph this player does not reproduce, so a new kind is never silently wrong.
  */
 export function soundVariants(exports) {
@@ -105,28 +107,108 @@ export function soundVariants(exports) {
       case "SoundNodeModulator":
         return (np.ChildNodes ?? []).flatMap(child => walk(child, weight,
           mul(volume, [np.VolumeMin ?? 0.95, np.VolumeMax ?? 1.05]), mul(pitch, [np.PitchMin ?? 0.95, np.PitchMax ?? 1.05])));
+      case "SoundNodeMixer": // below a Random or Modulator: one pick or one random gain for all inputs, not reproduced
+        throw new Error("SoundNodeMixer below a Random or Modulator node is not reproduced");
       default:
         throw new Error(`unsupported cue node ${node.Type}`);
     }
   };
+  // A SoundNodeMixer plays every input at once, each scaled by its InputVolume (default 1): on the cue's root path
+  // (the first node, or a mixer under a mixer) each input becomes a layer of its own. The Chinals TakeAway cue mixes a
+  // foley track and an ambience (12 Nov 2026).
+  const layersFrom = (ref, volume) => {
+    const node = nodeAt(ref), np = node.Properties ?? {};
+    if (node.Type !== "SoundNodeMixer") return [walk(ref, 1, volume, [cuePitch, cuePitch])];
+    return (np.ChildNodes ?? []).flatMap((child, i) => {
+      const input = np.InputVolume?.[i] ?? 1;
+      return layersFrom(child, mul(volume, [input, input]));
+    });
+  };
   const cueVolume = p.VolumeMultiplier ?? 0.75, cuePitch = p.PitchMultiplier ?? 1;
   if (!p.FirstNode) throw new Error("cue without a first node");
-  return { kind: "cue", variants: walk(p.FirstNode, 1, [cueVolume, cueVolume], [cuePitch, cuePitch]) };
+  const layers = layersFrom(p.FirstNode, [cueVolume, cueVolume]);
+  return layers.length === 1 ? { kind: "cue", variants: layers[0] } : { kind: "cue", variants: layers.flat(), layers };
 }
 
-// The musical emote MetaSound template. Recognised by its node set, never assumed from the class alone.
-const SYNC_TEMPLATE = ["UE.Source.OnPlay", "SyncTime", "Get Wave Duration", "FloatModulo", "Wave Player", "ADSR Envelope"];
+// The musical emote MetaSound template, recognised by its WIRING (which output feeds which input), never by the class
+// or node names alone. Each graph is reduced to its edges, written "Node.output -> Node.input" (just "Node" for a graph
+// input or output, whose vertex has the node's name), and compared with the template's. Read from the exported assets
+// (12 Nov 2026): the 16 global MetaSounds (UE 5.7) and the 24 Chinals ones (UE 5.3) are all this graph.
+//   SyncTime -> FloatModulo.X, Get Wave Duration -> FloatModulo.Y, FloatModulo -> Wave Player.Start Time, Loop = true:
+//   the wave loops, positioned by the clock. Wave Player.On Play -> ADSR Envelope (attack) -> both output channels.
+const SYNC_TEMPLATE_EDGES = [
+  "ADSR Envelope.Out Envelope -> Multiply.AdditionalOperands",
+  "ADSR Envelope.Out Envelope -> Multiply.AdditionalOperands",
+  "ConversionFloatToTime.Out -> Wave Player.Start Time",
+  "ConversionTimeToFloat.Out -> FloatModulo.Y",
+  "FloatModulo.Result -> ConversionFloatToTime.In",
+  "Get Wave Duration.Duration -> ConversionTimeToFloat.In",
+  "Multiply.Out -> UE.OutputFormat.Stereo.Audio:0",
+  "Multiply.Out -> UE.OutputFormat.Stereo.Audio:1",
+  "SyncTime -> FloatModulo.X",
+  "UE.Source.OnPlay -> Wave Player.Play",
+  "Wave Player.On Play -> ADSR Envelope.Trigger Attack",
+  "Wave Player.Out Left -> Multiply.PrimaryOperand",
+  "Wave Player.Out Right -> Multiply.PrimaryOperand",
+  "WaveAsset.Value -> Get Wave Duration.Wave",
+  "WaveAsset.Value -> Wave Player.Wave Asset",
+  "WaveAsset.Variable -> WaveAsset.Variable",
+  "WaveAsset.Variable -> WaveAsset.Variable",
+];
+// 22 of the Chinals copies also implement UE.Source.OneShot (the source ends when this fires). A looping Wave Player
+// never finishes, so with Loop = true (required below) the edge is inert and the graph sounds the same as the template.
+const ONE_SHOT_EDGE = "Wave Player.On Finished -> UE.Source.OneShot.OnFinished";
+const SYNC_INTERFACES = new Set(["UE.Source", "UE.OutputFormat.Stereo", "UE.Source.OneShot"]);
+// The node classes the wiring implies (class name, any version: the Wave Player is 1.0 on UE 5.3, 1.1 on 5.7).
+const SYNC_CLASSES = { "Wave Player": "Wave Player", "ADSR Envelope": "ADSR Envelope", Multiply: "Multiply",
+  "Get Wave Duration": "Get Wave Duration", ConversionFloatToTime: "ConversionFloatToTime", ConversionTimeToFloat: "ConversionTimeToFloat" };
+// FloatModulo is a MetaSound patch asset, so its class is that asset. Only patches whose own graph was read and found
+// to compute X mod Y are accepted (_docs/chinals-sounds-2026-11-12/README.md).
+export const MODULO_PATCHES = new Set(["/EmbarkScript/Audio/MetaSound/FloatModulo"]);
+
+/** A MetaSound graph's wiring: edges (sorted lines), node classes, input literals by "Node.Input", interfaces. UE 5.3
+ *  keeps the graph at RootGraph.Graph; 5.5+ pages it (RootGraph.PagedGraphs[0], the default page). */
+export function metaSoundWiring(root) {
+  const doc = root.Properties?.RootMetaSoundDocument;
+  const graph = doc?.RootGraph?.Graph ?? doc?.RootGraph?.PagedGraphs?.[0];
+  if (!graph?.Nodes) throw new Error(`MetaSound ${root.Name}: no graph`);
+  const nodes = new Map(graph.Nodes.map(n => [n.ID, n]));
+  const vertex = (node, id, side) => node.Interface?.[side]?.find(v => v.VertexID === id)?.Name ?? `?${id}`;
+  const end = (node, name) => name === node.Name ? node.Name : `${node.Name}.${name}`;
+  const edges = (graph.Edges ?? []).map(e => {
+    const from = nodes.get(e.FromNodeID), to = nodes.get(e.ToNodeID);
+    if (!from || !to) throw new Error(`MetaSound ${root.Name}: an edge to a missing node`);
+    return `${end(from, vertex(from, e.FromVertexID, "Outputs"))} -> ${end(to, vertex(to, e.ToVertexID, "Inputs"))}`;
+  }).sort();
+  // A node's class is its dependency's class name; a patch asset's class key maps to the asset (ReferencedAssetClass*).
+  const keys = root.Properties.ReferencedAssetClassKeys ?? [], objects = root.Properties.ReferencedAssetClassObjects ?? [];
+  const classes = new Map((doc.Dependencies ?? []).map(d => {
+    const c = d.MetaData?.ClassName ?? {};
+    const at = keys.findIndex(k => k.startsWith(`External_${c.Namespace ?? "None"}.${c.Name}_`));
+    const asset = at >= 0 ? (objects[at]?.ObjectPath ?? objects[at]?.AssetPathName ?? null) : null;
+    return [d.ID, { name: c.Name ?? null, asset: asset?.replace(/\.[^./]+$/, "") ?? null }];
+  }));
+  const literals = new Map(graph.Nodes.flatMap(n => (n.InputLiterals ?? []).map(l => [`${n.Name}.${vertex(n, l.VertexID, "Inputs")}`, l.Value])));
+  return { graph, edges, literals, interfaces: (doc.Interfaces ?? []).map(i => i.Name),
+    classes: graph.Nodes.map(n => ({ node: n.Name, ...(classes.get(n.ClassID) ?? { name: null, asset: null }) })) };
+}
+
 function metaSoundVariants(root) {
-  const graph = root.Properties?.RootMetaSoundDocument?.RootGraph?.PagedGraphs?.[0];
-  const names = new Set((graph?.Nodes ?? []).map(n => n.Name));
-  const missing = SYNC_TEMPLATE.filter(n => !names.has(n));
-  if (missing.length) throw new Error(`MetaSound ${root.Name} is not the musical sync template (missing ${missing.join(", ")})`);
+  const { graph, edges, classes, literals, interfaces } = metaSoundWiring(root);
+  const fail = why => { throw new Error(`MetaSound ${root.Name} is not the musical sync template (${why})`); };
+  const expected = [...SYNC_TEMPLATE_EDGES, ...(interfaces.includes("UE.Source.OneShot") ? [ONE_SHOT_EDGE] : [])].sort();
+  if (edges.join("\n") !== expected.join("\n")) fail("its wiring differs");
+  if (!interfaces.includes("UE.Source") || interfaces.some(i => !SYNC_INTERFACES.has(i))) fail(`interfaces ${interfaces.join(", ")}`);
+  for (const c of classes) {
+    if (SYNC_CLASSES[c.node] && c.name !== SYNC_CLASSES[c.node]) fail(`${c.node} is a ${c.name}`);
+    if (c.node === "FloatModulo" && !MODULO_PATCHES.has(c.asset)) fail(`FloatModulo is ${c.asset ?? "an unknown class"}, not a patch read and found to be a modulo`);
+  }
+  if (literals.get("Wave Player.Loop")?.AsBoolean?.[0] !== true) fail("Wave Player.Loop is not true");
+  if (literals.get("ADSR Envelope.Sustain Level")?.AsFloat?.[0] !== 1) fail("ADSR sustain is not 1");
+  const attack = literals.get("ADSR Envelope.Attack Time")?.AsFloat?.[0];
+  if (!(attack > 0 && attack < 1)) fail("no ADSR attack time");
   const waves = (graph.Variables ?? []).flatMap(v => v.Literal?.AsUObject ?? []).map(o => o.ObjectPath).filter(Boolean);
   if (waves.length !== 1) throw new Error(`MetaSound ${root.Name}: expected one wave variable, found ${waves.length}`);
-  // The ADSR node's literals: Sustain Level 1 and Attack Time (the only float below 1). Default 0.05 if unreadable.
-  const adsr = graph.Nodes.find(n => n.Name === "ADSR Envelope");
-  const floats = (adsr?.InputLiterals ?? []).flatMap(l => l.Value?.AsFloat ?? []);
-  const attack = floats.find(f => f > 0 && f < 1) ?? 0.05;
   return { kind: "sync-loop", attack, variants: [{ wave: assetName(waves[0]), waveRef: waves[0], weight: 1, volume: [1, 1], pitch: [1, 1], loop: true }] };
 }
 

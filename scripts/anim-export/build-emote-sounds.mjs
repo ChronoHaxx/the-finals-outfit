@@ -75,7 +75,8 @@ for (const source of sources) {
           duration: p.Duration ?? null, channels: p.NumChannels ?? null });
       }
     }
-    cues.push(buildCue(notify, sound, name => waves.get(name)));
+    // A mixer cue plays its layers at once: one cue each, same window (sound-cues.mjs, soundVariants).
+    for (const layer of sound.layers ?? [sound.variants]) cues.push(buildCue(notify, { ...sound, variants: layer }, name => waves.get(name)));
   }
   if (cues.length) emotes[source] = cues;
 }
