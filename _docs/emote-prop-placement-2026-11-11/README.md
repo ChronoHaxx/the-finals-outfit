@@ -160,7 +160,7 @@ Steps 3 to 5 were wrong or missing.
 - **First shipped in props-8:** PR #34's notify transforms. props-7 never had them, so props-8 also moves every
   transformed prop, for example the Judge gavel's block from the floor to his hand.
 
-## Publishing props-8 (not done; needs approval)
+## Publishing props-8 (published 12 Nov on the user's "just merge to live, i'll check it there")
 
 1. Upload a new assets deployment: the live set (`manifest.json`, `set-5/` unchanged) with `props-8/` from
    `scripts/generated/emote-prop-placement-2026-11-11/props-8/` (174 GLBs + props.json, 58.7 MB). Point
@@ -169,6 +169,20 @@ Steps 3 to 5 were wrong or missing.
 3. **App order:** the root overrides and SCS fixes are baked in the GLBs and need no app change. The curve windows need
    this branch's `EmoteProps.ts`. An older app shows them as before, at the character's origin. Merge the app first or
    together.
+
+**Done (12 Nov):**
+- **Host:** `https://fb06038b.the-finals-outfit-assets.pages.dev/`, an immutable preview deployment on the
+  `the-finals-outfit-assets` project. Branch alias `anim-1112-prop-placement`, wrangler 4.131.1.
+- **Staged:** `scripts/generated/emote-prop-placement-2026-11-11/upload/anim-20261112/` holds `_headers`,
+  `manifest.json` (live pointer, only `props` changed), `set-5/` copied from the `cd858839` evidence copy, and
+  `props-8/`. That is 569 files, 103 MB.
+- **Upload:** 35 new files (the 33 changed GLBs, props.json, manifest.json). The other 533 were already on the
+  project.
+- **Verification:** `verify-hosted.mjs` found all 568 files byte-identical, GLB `model/gltf-binary` with CORS `*`
+  and immutable caching, and a 404 for a missing file. Receipts are in the gitignored `upload/` folder
+  (`deployment-anim.json`, `upload-anim.log`).
+- The old host `cd858839` is untouched (props-7), so a rollback is a one-line `ANIMATIONS_BASE` revert.
+- `deploy.yml` `ANIMATIONS_BASE` now points at `fb06038b`.
 
 ## Guided functional review: emote prop placement
 
@@ -182,7 +196,8 @@ poles stood in one spot, and the Puppeteer doll was life-size.
   `after-set` folder), the evidence folder's local copy of the live set, and its `node_modules` junction. No internet
   is needed and nothing is published.
 - **Hands-on time:** about 10 minutes.
-- **Agent checks:** PASS as above. **User checks: PENDING.**
+- **Agent checks:** PASS as above. **User checks:** waived before merge on 12 Nov (see Recorded result). The live
+  check is pending.
 
 Start the preview (PowerShell, in the worktree root). Stop it with Ctrl+C.
 
@@ -214,7 +229,9 @@ If something fails, stop at that step and report its number and what happened ("
 
 ### Recorded result
 
-- Tested revision: pending
-- User reported at: pending
-- Passed / failed / untested: pending
-- Readiness: pending. Merge and publishing authorization: not given.
+- Tested revision: none before merge.
+- User reported at: 12 Nov 2026, "just merge to live, i'll check it there".
+- Passed / failed / untested: checks 1-7 untested. That message is an explicit waiver of the pre-merge checks and the
+  authorization to publish props-8 and merge. The user will check on the live site instead.
+- Readiness: merged and published on the waiver. User acceptance is still pending until the user reports results from
+  the live site.
