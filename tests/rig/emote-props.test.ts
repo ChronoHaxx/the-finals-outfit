@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
-import { EmoteProps, type PropsManifest, type PropTemplate } from "../../src/rig/EmoteProps";
+import { EmoteProps, sampleCurve, type PropsManifest, type PropTemplate } from "../../src/rig/EmoteProps";
 import { propClock } from "../../src/rig/RigAnimator";
 import { missingSummary, missingBadge } from "../../src/components/EmotePicker";
 import type { ClipInfo } from "../../src/rig/RigAnimator";
@@ -11,6 +11,12 @@ import type { ClipInfo } from "../../src/rig/RigAnimator";
 
 const SEQ = "HM_Test_Emote_00";
 const SEQ_TRANSFORMS = "HM_Test_Emote_Transforms_00";
+const SEQ_CURVE = "HM_Test_Emote_Curve_00";
+// A CurveDrivenTransformPrefix window (Rocking Chair's mirrored gun): keys at frames 0 and 30 (1 s), x from 0.5 to 1.5 m
+// and a quarter turn about z, under a notify that offsets 1 m and mirrors x.
+const curve = { prefix: "Prop01", frameTime: 1 / 30, frames: 31,
+  translation: [[0, 30], [0.5, 0, 0, 1.5, 0, 0]] as [number[], number[]],
+  rotation: [[0, 30], [0, 0, 0, 1, 0, 0, Math.SQRT1_2, Math.SQRT1_2]] as [number[], number[]] };
 const manifest: PropsManifest = {
   formatVersion: 1,
   sockets: { item_attach: { bone: "hand_r", translation: [0.1, 0, 0], rotation: [0, 0, 0, 1], scale: [1, 1, 1] } },
@@ -33,6 +39,10 @@ const manifest: PropsManifest = {
         transform: { translation: [0.3, 0, 0], rotation: [0.7071068, 0, 0, 0.7071068], scale: [0.16, 0.16, 0.16] } },
       { actor: "Bat", socket: "prop_01", start: 0, duration: 4, shown: true },
       { actor: "Bat", socket: "ik_hand_l", start: 0, duration: 4, shown: true },
+    ],
+    [SEQ_CURVE]: [
+      { actor: "Bat", socket: null, start: 0, duration: 4, shown: true, curve,
+        transform: { translation: [-1, 0, 0], scale: [-1, 1, 1] } },
     ],
   },
 };
@@ -157,6 +167,33 @@ test("a notify transform places that spawn only: not the socket node, the templa
   assert.equal(ik.parent?.name, "ik_hand_root", "an attach bone chain under the root is added parent first");
   assert.equal(ik.parent?.parent?.name, "root");
   assert.equal(ik.children.filter(c => c.name === "emote-prop:Bat").length, 1, "its prop hangs there, not at the character origin");
+  props.detach();
+});
+
+test("a curve-driven prop is moved every frame by curve x notify, under the character's component space", async () => {
+  const props = new EmoteProps("http://test/animations/props/props.json", attachBones, componentSpace, loader);
+  const rig = body();
+  props.attach(rig.scene);
+  await props.prepare(SEQ_CURVE);
+  props.setEmote(SEQ_CURVE);
+  const expected = (time: number) => sampleCurve(curve, time).multiply(new THREE.Matrix4().compose(
+    new THREE.Vector3(-1, 0, 0), new THREE.Quaternion(), new THREE.Vector3(-1, 1, 1)));
+  const close = (a: THREE.Matrix4, b: THREE.Matrix4) => a.elements.every((v, i) => Math.abs(v - b.elements[i]) < 1e-6);
+  props.update(0);
+  const gun = rig.scene.getObjectByName("emote-prop:Bat")!;
+  assert.equal(gun.parent?.name, "emote-props:component-space", "no socket: the curve frame is the character's component space");
+  assert.ok(close(gun.matrix, expected(0)));
+  // Frame 0: curve at x 0.5, no turn; the notify's -1 m lands the mirrored gun at x -0.5, mirror kept.
+  assert.ok(Math.abs(gun.matrix.elements[12] + 0.5) < 1e-6);
+  assert.ok(gun.matrix.determinant() < 0, "the mirror (scale -1) survives");
+  props.update(0.5); // halfway: x 1.0, 45 degrees
+  assert.ok(close(gun.matrix, expected(0.5)));
+  const q = new THREE.Quaternion(); sampleCurve(curve, 0.5).decompose(new THREE.Vector3(), q, new THREE.Vector3());
+  assert.ok(Math.abs(THREE.MathUtils.radToDeg(2 * Math.acos(q.w)) - 45) < 1e-4, "slerped between the keys");
+  props.update(3); // past the last key (1 s): held
+  assert.ok(close(gun.matrix, expected(1)));
+  gun.updateMatrixWorld(true);
+  assert.ok(close(gun.matrix, expected(1)), "a scene update keeps the set matrix (no position/rotation/scale rebuild)");
   props.detach();
 });
 

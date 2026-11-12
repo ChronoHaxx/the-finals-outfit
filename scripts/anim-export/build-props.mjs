@@ -7,7 +7,9 @@
 //        research/targets-prop-textures.txt; export those with AnimExport json/texture and run again until no parents
 //        are missing.
 //   node scripts/anim-export/build-props.mjs build --catalog <emote-catalog.json> --out <dir> [--research <dir>]
-//        [--max-texture 1024]
+//        [--max-texture 1024] [--survey <prop-survey.json>] [--anims <exporter run>/anims] [--allow-missing-textures]
+//     --anims: the emote sequences' AnimExport records, for windows moved by curves (CurveDrivenTransformPrefix).
+//     A texture a material names but prop-textures/ lacks fails the build (it would bake flat grey).
 //
 // Inputs under --research (default scripts/generated/anim-export/research): prop-survey.json, prop-meshes-2/ (AnimExport
 // mesh mode), json-prop-materials/ + json-prop-material-parents/ (AnimExport json mode), prop-textures/ (texture mode),
@@ -31,11 +33,19 @@
 // the time wraps past the end, as the nodes' default looping does. The sequence is exported on the prop's own
 // skeleton (AnimExport export with "skeleton": "*", research/prop-anims) and embedded as a glTF animation. Two-person emotes spawn a hologram stand-in (SK_EmoteProxyCharacter) that copies the pose of an
 // invisible master-skeleton mesh running the AnimBlueprint (leader pose): the stand-in gets that mesh's sequence and
-// the invisible one is left out. The hologram material is a guess (unlit translucent cyan), flagged approximate.
+// the invisible one is left out (only the bones something hangs from are kept, as plain nodes: the CoconutRider cans).
+// The hologram material is a guess (unlit translucent cyan), flagged approximate.
+//
+// Root overrides (11 Nov 2026, prop-placement.mjs): 25 of the AnimBlueprints end in a ModifyBone node that replaces the
+// skeleton root with a constant in component space, discarding the sequence's keyed root (which the animation packages
+// key in character space). The GLB bakes that: the root node holds the constant and has no translation (or rotation)
+// channel. It replaces a heuristic that sent props whose root sat > 30 cm out to the character's origin (props.json
+// "space": "component", still honoured by the app for older sets).
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import sharp from "sharp";
 import { notifyTransform } from "./notify-transform.mjs";
+import { curveTransform, modifyBoneNodes, rootOverride } from "./prop-placement.mjs";
 
 const [mode = "build", ...rest] = process.argv.slice(2);
 const args = Object.fromEntries(rest.reduce((pairs, arg, i, all) => arg.startsWith("--") ? [...pairs, [arg.slice(2), all[i + 1]]] : pairs, []));
@@ -98,7 +108,7 @@ function recipeOf(material) {
 }
 
 // --- Survey + catalog -----------------------------------------------------------------------------------------------
-const survey = JSON.parse(readFileSync(join(research, "prop-survey.json"), "utf8"));
+const survey = JSON.parse(readFileSync(resolve(args.survey ?? join(research, "prop-survey.json")), "utf8"));
 const meshHeaders = new Map();
 for (const file of walk(join(research, "prop-meshes-2")).filter(f => f.endsWith(".mesh.json")))
   meshHeaders.set(rel(join(research, "prop-meshes-2"), file).replace(/\.mesh\.json$/, ""), file);
@@ -111,13 +121,16 @@ const componentMaterials = (actor, c) => {
 
 // --- Skeletal prop animation ----------------------------------------------------------------------------------------
 const animRecords = new Map(walk(join(research, args["prop-anims"] ?? "prop-anims-2", "anims")).filter(f => f.endsWith(".json")).map(f => [basename(f, ".json"), f]));
-const abpSequence = new Map(), abpClock = new Map();
+const abpSequence = new Map(), abpClock = new Map(), abpModify = new Map(), abpControlRig = new Set();
 for (const file of walk(join(research, "json-prop-abp")).filter(f => f.endsWith(".json"))) {
   const text = readFileSync(file, "utf8");
   const sequence = text.match(/"ObjectName": "AnimSequence'([^']+)'"/);
   if (sequence) abpSequence.set(basename(file, ".json"), sequence[1]);
   // A SequenceEvaluator fed PropAnimTime: the emote's PropAnimSequenceTime curve sets the time (else: from spawn).
   abpClock.set(basename(file, ".json"), /PropAnimTime/.test(text) ? "emote-curve" : "spawn");
+  // Its ModifyBone nodes: a constant root that replaces the sequence's keyed one (prop-placement.mjs).
+  abpModify.set(basename(file, ".json"), modifyBoneNodes(JSON.parse(text)));
+  if (/"AnimGraphNode_ControlRig(_\d+)?"/.test(text)) abpControlRig.add(basename(file, ".json"));
 }
 const NULL_MESH = /_3P_MasterSkeletonNullMesh$/, PROXY_MESH = /SK_EmoteProxyCharacter$/;
 function clockFor(actor, c) {
@@ -237,13 +250,17 @@ class Glb {
 // --- Textures -------------------------------------------------------------------------------------------------------
 const maxTexture = Number(args["max-texture"] ?? 1024);
 const texFile = path => join(research, "prop-textures", path + ".png");
+// sharp gets the file's bytes, not its path: libvips cannot open a Windows path of 260+ characters, which deep texture
+// packages under a worktree reach (Node can; it reported such a texture as "missing").
+const report = { built: 0, approximateMaterials: new Set(), missingTextures: new Set() };
 async function rawImage(path, size) {
   const file = texFile(path);
-  if (!existsSync(file)) return null;
-  const meta = await sharp(file).metadata();
+  if (!existsSync(file)) { report.missingTextures.add(path); return null; }
+  const bytes = readFileSync(file);
+  const meta = await sharp(bytes).metadata();
   const scale = Math.min(1, (size ?? maxTexture) / Math.max(meta.width, meta.height));
   const width = size ?? Math.max(1, Math.round(meta.width * scale)), height = size ?? Math.max(1, Math.round(meta.height * scale));
-  const { data, info } = await sharp(file).resize(width, height, { fit: "fill" }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { data, info } = await sharp(bytes).resize(width, height, { fit: "fill" }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   return { data, width: info.width, height: info.height };
 }
 const webp = (data, width, height, channels = 3, quality = 88) => sharp(data, { raw: { width, height, channels } }).webp({ quality }).toBuffer();
@@ -264,7 +281,7 @@ async function bakeMaterial(glb, recipe, material, doubleSided) {
     const packed = recipe.packedNormal ? await rawImage(recipe.packedNormal) : null;
     if (recipe.roughnessFromBaseAlpha || packed) {
       // ORM at the base colour's size: R occlusion (packed B), G roughness (base A), B metallic (packed A).
-      const p = packed ? await sharp(texFile(recipe.packedNormal)).resize(width, height, { fit: "fill" }).ensureAlpha().raw().toBuffer() : null;
+      const p = packed ? await sharp(readFileSync(texFile(recipe.packedNormal))).resize(width, height, { fit: "fill" }).ensureAlpha().raw().toBuffer() : null;
       const orm = Buffer.alloc(width * height * 3);
       for (let i = 0; i < width * height; i++) {
         orm[i * 3] = p ? p[i * 4 + 2] : 255;
@@ -335,7 +352,8 @@ const catalog = JSON.parse(readFileSync(resolve(args.catalog ?? "scripts/generat
 const out = resolve(args.out ?? "public/animations/props-1");
 mkdirSync(out, { recursive: true });
 const wanted = new Set(catalog.flatMap(e => e.notifies.filter(n => n.kind === "prop").map(n => n.asset)));
-const actors = {}, report = { built: 0, skipped: [], approximateMaterials: new Set(), flipped: 0, meshes: 0, weakWinding: [] };
+const actors = {};
+report.skipped = []; report.flipped = 0; report.meshes = 0; report.weakWinding = []; report.overrides = [];
 for (const actor of survey) {
   if (!wanted.has(actor.actor)) continue;
   const parts = actor.components.filter(c => c.visible && (c.staticMesh || c.skeletalMesh) && !NULL_MESH.test(c.skeletalMesh ?? ""));
@@ -346,7 +364,8 @@ for (const actor of survey) {
   const find = name => byName.get(name) ?? byName.get(`${name}_GEN_VARIABLE`) ?? null;
   const notes = [];
   const materialsOut = [];
-  let animated = false, unanimated = false, clock = null, space = null;
+  const rootOverrides = [];
+  let animated = false, unanimated = false, clock = null;
   const ensureNode = c => {
     if (nodeOf.has(c.name)) return nodeOf.get(c.name);
     const node = { name: c.name.replace(/_GEN_VARIABLE$/, "") };
@@ -356,11 +375,166 @@ for (const actor of survey) {
     const index = glb.json.nodes.push(node) - 1;
     nodeOf.set(c.name, index);
     const parent = c.name === "Mesh" ? null : find(c.parent ?? "Mesh");
-    if (parent && parent !== c) { const p = ensureNode(parent); (glb.json.nodes[p].children ??= []).push(index); }
+    // A child attached to a bone of a skeletal parent hangs from that bone (the CoconutRider cans on the leader
+    // skeleton's prop_01 / weapon_root, which its sequence animates).
+    const bone = parent && parent !== c && c.attachSocket && parent.skeletalMesh ? boneNode(parent, c.attachSocket) : null;
+    if (bone !== null) (glb.json.nodes[bone].children ??= []).push(index);
+    else if (parent && parent !== c) { const p = ensureNode(parent); (glb.json.nodes[p].children ??= []).push(index); }
     else glb.json.scenes[0].nodes.push(index);
-    if (c.attachSocket) notes.push(`${node.name} attaches to socket ${c.attachSocket} on its parent (ignored)`);
+    if (c.attachSocket && bone === null) notes.push(`${node.name} attaches to socket ${c.attachSocket} on its parent (not a bone of a skeletal parent: ignored)`);
+    if (bone !== null) notes.push(`${node.name} hangs from bone ${c.attachSocket} of ${parent.name.replace(/_GEN_VARIABLE$/, "")}`);
     return index;
   };
+
+  // --- Skeletons: bone nodes made on demand. A skinned mesh asks for every bone; a hidden skeleton (a two-person
+  // emote's leader mesh) only for the chain down to a bone something hangs from. Each bone gets its reference pose,
+  // the sequence's tracks, and the AnimBlueprint's root override (prop-placement.mjs).
+  const skeletons = new Map(); // component name -> state
+  function skeletonOf(c) {
+    if (skeletons.has(c.name)) return skeletons.get(c.name);
+    const meshPath = pkg(c.skeletalMesh);
+    const mesh = readMesh(meshPath);
+    if (!mesh || mesh.header.kind !== "skeletal") { skeletons.set(c.name, null); return null; }
+    const geo = convertGeometry(mesh);
+    const bones = mesh.header.bones;
+    // A uniform scale on the root (the wings: 100, left by a metres-to-centimetres import) may not be part of the
+    // skinning frame: with it, the wing bones sit ~136 m up while the vertices hang at 1.1-1.6 m. Bind pose hides
+    // that (skinning is the identity there), but any rotation then swings vertices around pivots metres away. The
+    // frame is chosen from the data: whichever reading (root scale kept or dropped) puts more bones inside the mesh's
+    // own bounds. A dropped root scale is dropped from the animation too.
+    const rootBone = bones.find(b => b.parent < 0), rootScale = rootBone?.s?.[0] ?? 1;
+    const worldsOf = dropRoot => {
+      const w = [];
+      bones.forEach((b, i) => {
+        const local = compose(toThreeArrT(b.t), toThreeQ(b.r), dropRoot && b === rootBone ? [1, 1, 1] : b.s);
+        w[i] = b.parent >= 0 ? multiply(w[b.parent], local) : local;
+      });
+      return w;
+    };
+    const bounds = [[Infinity, Infinity, Infinity], [-Infinity, -Infinity, -Infinity]];
+    for (let v = 0; v < geo.position.length; v += 3) for (let k = 0; k < 3; k++) {
+      bounds[0][k] = Math.min(bounds[0][k], geo.position[v + k]); bounds[1][k] = Math.max(bounds[1][k], geo.position[v + k]);
+    }
+    const margin = Math.max(...[0, 1, 2].map(k => bounds[1][k] - bounds[0][k])) * 0.5;
+    const insideCount = w => w.filter(m => [12, 13, 14].every((e, k) => m[e] >= bounds[0][k] - margin && m[e] <= bounds[1][k] + margin)).length;
+    const dropRootScale = Math.abs(rootScale - 1) > 0.01 && insideCount(worldsOf(true)) > insideCount(worldsOf(false));
+    if (dropRootScale) notes.push(`${basename(meshPath)}: root scale ${rootScale} left out of the skinning frame (bones then lie inside the mesh)`);
+    // The AnimBlueprint driving this pose (a follower proxy copies its leader's: leader pose takes the leader's
+    // component-space bones as they are, after the leader's ModifyBone).
+    const leader = PROXY_MESH.test(c.skeletalMesh ?? "") ? actor.components.find(o => NULL_MESH.test(o.skeletalMesh ?? "") && o.animClass) : null;
+    const abpComponent = c.animClass && !/SingleNode/.test(c.animationMode ?? "") ? c : leader;
+    const abp = abpComponent ? basename(abpComponent.animClass) : null;
+    const override = abp ? rootOverride(abpModify.get(abp) ?? [], rootBone?.name) : null;
+    for (const note of override?.notes ?? []) notes.push(`${basename(meshPath)}: ${note}`);
+    if (abp && abpControlRig.has(abp)) notes.push(`${basename(meshPath)}: ${abp} ends in a ControlRig, not reproduced${override?.rotation || override?.translation ? " (it runs after the root override, so the pose shown is a best guess)" : ""}`);
+    if (override?.translation || override?.rotation) {
+      rootOverrides.push({ component: c.name.replace(/_GEN_VARIABLE$/, ""), bone: override.bone, ...(override.translation ? { translation: override.translation } : {}),
+        ...(override.rotation ? { rotation: override.rotation } : {}), from: abp });
+      notes.push(`${basename(meshPath)}: ${abp} replaces the root ${override.bone}'s ${[override.translation && "translation", override.rotation && "rotation"].filter(Boolean).join(" and ")} with a constant (ModifyBone); the sequence's root ${override.rotation ? "track is" : "translation is"} not used`);
+    }
+    const state = { c, meshPath, mesh, geo, bones, rootBone, rootScale, dropRootScale, override, nodes: new Map(), anim: null, matched: 0, unscaled: 0 };
+    // The sequence, read once; bones get their channels as they are made.
+    const sequence = sequenceFor(actor, c), recordFile = sequence ? animRecords.get(sequence) : null;
+    state.sequence = sequence;
+    if (recordFile) {
+      const anim = JSON.parse(readFileSync(recordFile, "utf8"));
+      const frames = anim.frames, frameTime = anim.length / Math.max(1, frames - 1) / (anim.rateScale || 1);
+      const boneIndex = new Map(bones.map((b, i) => [b.name.toLowerCase(), i]));
+      const tracks = new Map();
+      // On such a skeleton the sequences are keyed in the scaled units too: every translation = root scale x the rest
+      // translation at frame 0, and the root's scale track repeats the 100. A track with exactly that ratio is divided
+      // by the root scale (frame 0 then equals the rest pose); others are left as keyed.
+      for (const track of anim.bones) {
+        const i = boneIndex.get(track.name.toLowerCase());
+        if (i === undefined) continue;
+        state.matched++;
+        if (track.t && bones[i] !== rootBone && Math.abs(rootScale - 1) > 0.01) {
+          const rest = Math.hypot(...bones[i].t), keyed = Math.hypot(...track.t.slice(0, 3));
+          if (rest > 1e-3 && Math.abs(keyed / rest - rootScale) < 0.01 * rootScale) {
+            track.t = track.t.map(v => v / rootScale);
+            state.unscaled++;
+          }
+        }
+        tracks.set(i, track);
+      }
+      state.anim = { anim, frames, frameTime, tracks, input: null, record: null };
+    }
+    skeletons.set(c.name, state);
+    return state;
+  }
+  function ensureBone(state, i) {
+    if (state.nodes.has(i)) return state.nodes.get(i);
+    const { bones, rootBone, override } = state, b = bones[i];
+    const isRoot = b === rootBone;
+    // A hidden skeleton's bones are named after their component: plain nodes called prop_01 / weapon_root inside a prop
+    // could otherwise catch the body clip's tracks of the same name (three binds a track to the first node so named).
+    const name = state.c.visible && !NULL_MESH.test(state.c.skeletalMesh ?? "") ? b.name : `${state.c.name.replace(/_GEN_VARIABLE$/, "")}_${b.name}`;
+    const node = { name, translation: toThreeArrT(b.t), rotation: toThreeQ(b.r), scale: state.dropRootScale && isRoot ? [1, 1, 1] : b.s };
+    if (isRoot && override?.translation) node.translation = override.translation;
+    if (isRoot && override?.rotation) node.rotation = override.rotation;
+    const index = glb.json.nodes.push(node) - 1;
+    state.nodes.set(i, index);
+    const parent = b.parent >= 0 ? ensureBone(state, b.parent) : ensureNode(state.c);
+    (glb.json.nodes[parent].children ??= []).push(index);
+    const a = state.anim, track = a?.tracks.get(i);
+    if (track) {
+      // The animation is made with its first channel: a root override can leave a bone (or a whole one-bone prop) with
+      // nothing keyed, and glTF forbids an animation without channels.
+      const add = (path, values, type) => {
+        if (!a.record) {
+          a.input = glb.accessor(Float32Array.from({ length: a.frames }, (_, f) => f * a.frameTime), "SCALAR", 5126, undefined, true);
+          a.record = { name: state.sequence, channels: [], samplers: [] };
+          (glb.json.animations ??= []).push(a.record);
+        }
+        a.record.samplers.push({ input: a.input, output: glb.accessor(values, type, 5126), interpolation: "LINEAR" });
+        a.record.channels.push({ sampler: a.record.samplers.length - 1, target: { node: index, path } });
+      };
+      if (track.r && !(isRoot && override?.rotation)) {
+        const q = new Float32Array(a.frames * 4);
+        let prev = null;
+        for (let f = 0; f < a.frames; f++) {
+          let v = toThreeQ(track.r.slice(f * 4, f * 4 + 4));
+          if (prev && v[0] * prev[0] + v[1] * prev[1] + v[2] * prev[2] + v[3] * prev[3] < 0) v = v.map(x => -x); // one hemisphere
+          q.set(v, f * 4); prev = v;
+        }
+        add("rotation", q, "VEC4");
+      }
+      if (track.t && !(isRoot && override?.translation)) {
+        const t = new Float32Array(a.frames * 3);
+        for (let f = 0; f < a.frames; f++) t.set(toThreeArrT(track.t.slice(f * 3, f * 3 + 3)), f * 3);
+        add("translation", t, "VEC3");
+      }
+      if (track.s) add("scale", Float32Array.from(track.s, v => state.dropRootScale && isRoot ? v / state.rootScale : v), "VEC3");
+    }
+    return index;
+  }
+  // The node of a named bone of a skeletal component (built on demand), or null when it has no such bone.
+  function boneNode(c, name) {
+    const state = skeletonOf(c);
+    const i = state?.bones.findIndex(b => b.name.toLowerCase() === name.toLowerCase()) ?? -1;
+    if (i < 0) return null;
+    const index = ensureBone(state, i);
+    describeAnimation(state);
+    return index;
+  }
+  const described = new Set();
+  function describeAnimation(state) {
+    if (described.has(state)) return;
+    described.add(state);
+    const name = basename(state.meshPath);
+    if (!state.anim) {
+      unanimated = true;
+      notes.push(`${name}: skeletal, shown in its reference pose (${state.sequence ? `sequence ${state.sequence} not exported` : state.c.animClass ? `AnimBlueprint ${basename(state.c.animClass)} has no sequence` : "no animation"})`);
+      return;
+    }
+    if (!state.anim.tracks.size) { unanimated = true; notes.push(`${name}: ${state.sequence} matched no bones; reference pose`); return; }
+    if (!state.anim.record) { notes.push(`${name}: ${state.sequence} keys only what the root override replaces; posed, not animated`); return; }
+    animated = true;
+    clock = clockFor(actor, state.c);
+    notes.push(`${name}: plays ${state.sequence} (${state.matched} bones, ${(state.anim.frameTime * (state.anim.frames - 1)).toFixed(2)} s, looping)${clock === "emote-curve" ? " at the emote's PropAnimSequenceTime" : " from the moment it spawns"}`
+      + (state.unscaled ? `; ${state.unscaled} translation tracks keyed in unscaled units divided by the root scale ${state.rootScale}` : ""));
+  }
+
   for (const c of parts) {
     const meshPath = pkg(c.staticMesh ?? c.skeletalMesh);
     const mesh = readMesh(meshPath);
@@ -392,120 +566,33 @@ for (const actor of survey) {
     const meshIndex = glb.json.meshes.push({ name: basename(meshPath), primitives }) - 1;
     const node = ensureNode(c);
     if (mesh.header.kind === "skeletal") {
-      // Skin in the reference pose, bones converted like every transform.
-      const bones = mesh.header.bones;
-      // A uniform scale on the root (the wings: 100, left by a metres-to-centimetres import) may not be part of the
-      // skinning frame: with it, the wing bones sit ~136 m up while the vertices hang at 1.1-1.6 m. Bind pose hides
-      // that (skinning is the identity there), but any rotation then swings vertices around pivots metres away. The
-      // frame is chosen from the data: whichever reading (root scale kept or dropped) puts more bones inside the mesh's
-      // own bounds. A dropped root scale is dropped from the animation too.
-      const rootBone = bones.find(b => b.parent < 0), rootScale = rootBone?.s?.[0] ?? 1;
-      const worldsOf = dropRoot => {
-        const w = [];
-        bones.forEach((b, i) => {
-          const local = compose(toThreeArrT(b.t), toThreeQ(b.r), dropRoot && b === rootBone ? [1, 1, 1] : b.s);
-          w[i] = b.parent >= 0 ? multiply(w[b.parent], local) : local;
-        });
-        return w;
-      };
-      const bounds = [[Infinity, Infinity, Infinity], [-Infinity, -Infinity, -Infinity]];
-      for (let v = 0; v < geo.position.length; v += 3) for (let k = 0; k < 3; k++) {
-        bounds[0][k] = Math.min(bounds[0][k], geo.position[v + k]); bounds[1][k] = Math.max(bounds[1][k], geo.position[v + k]);
-      }
-      const margin = Math.max(...[0, 1, 2].map(k => bounds[1][k] - bounds[0][k])) * 0.5;
-      const insideCount = w => w.filter(m => [12, 13, 14].every((e, k) => m[e] >= bounds[0][k] - margin && m[e] <= bounds[1][k] + margin)).length;
-      const dropRootScale = Math.abs(rootScale - 1) > 0.01 && insideCount(worldsOf(true)) > insideCount(worldsOf(false));
-      if (dropRootScale) notes.push(`${basename(meshPath)}: root scale ${rootScale} left out of the skinning frame (bones then lie inside the mesh)`);
-      const scaleOf = b => dropRootScale && b === rootBone ? [1, 1, 1] : b.s;
-      const boneNodes = bones.map(b => glb.json.nodes.push({ name: b.name, translation: toThreeArrT(b.t), rotation: toThreeQ(b.r), scale: scaleOf(b) }) - 1);
+      // Skin in the reference pose, bones converted like every transform. The inverse bind matrices come from the
+      // reference pose whatever the root override does: skinning needs the bind pose, the override is a pose.
+      const state = skeletonOf(c);
+      const boneNodes = state.bones.map((_, i) => ensureBone(state, i));
       const world = [];
-      bones.forEach((b, i) => {
-        const local = compose(toThreeArrT(b.t), toThreeQ(b.r), scaleOf(b));
+      state.bones.forEach((b, i) => {
+        const local = compose(toThreeArrT(b.t), toThreeQ(b.r), state.dropRootScale && b === state.rootBone ? [1, 1, 1] : b.s);
         world[i] = b.parent >= 0 ? multiply(world[b.parent], local) : local;
-        if (b.parent >= 0) (glb.json.nodes[boneNodes[b.parent]].children ??= []).push(boneNodes[i]);
-        else (glb.json.nodes[node].children ??= []).push(boneNodes[i]);
       });
-      const ibm = new Float32Array(bones.length * 16);
+      const ibm = new Float32Array(state.bones.length * 16);
       world.forEach((m, i) => ibm.set(invert(m), i * 16));
-      const skin = { joints: boneNodes, inverseBindMatrices: glb.accessor(ibm, "MAT4", 5126), skeleton: boneNodes[bones.findIndex(b => b.parent < 0)] };
+      const skin = { joints: boneNodes, inverseBindMatrices: glb.accessor(ibm, "MAT4", 5126), skeleton: boneNodes[state.bones.indexOf(state.rootBone)] };
       glb.json.skins = [...(glb.json.skins ?? []), skin];
       const joints = glb.accessor(mesh.arrays.joints, "VEC4", 5123, 34962), weights = glb.accessor(mesh.arrays.weights, "VEC4", 5126, 34962);
       for (const p of glb.json.meshes[meshIndex].primitives) Object.assign(p.attributes, { JOINTS_0: joints, WEIGHTS_0: weights });
       // A skinned mesh node sits next to (not under) its bones in glTF; its own transform is ignored by skinning.
       const skinnedNode = glb.json.nodes.push({ name: `${basename(meshPath)}_skinned`, mesh: meshIndex, skin: glb.json.skins.length - 1 }) - 1;
       (glb.json.nodes[node].children ??= []).push(skinnedNode);
-      const sequence = sequenceFor(actor, c), recordFile = sequence ? animRecords.get(sequence) : null;
-      if (recordFile) {
-        const anim = JSON.parse(readFileSync(recordFile, "utf8"));
-        const frames = anim.frames, frameTime = anim.length / Math.max(1, frames - 1) / (anim.rateScale || 1);
-        const input = glb.accessor(Float32Array.from({ length: frames }, (_, f) => f * frameTime), "SCALAR", 5126, undefined, true);
-        const boneIndex = new Map(bones.map((b, i) => [b.name.toLowerCase(), i]));
-        const channels = [], samplers = [];
-        const add = (i, path, values, type) => {
-          samplers.push({ input, output: glb.accessor(values, type, 5126), interpolation: "LINEAR" });
-          channels.push({ sampler: samplers.length - 1, target: { node: boneNodes[i], path } });
-        };
-        // On such a skeleton the sequences are keyed in the scaled units too: every translation = root scale x the rest
-        // translation at frame 0, and the root's scale track repeats the 100. A track with exactly that ratio is divided
-        // by the root scale (frame 0 then equals the rest pose); others are left as keyed.
-        let unscaled = 0, matched = 0;
-        for (const track of anim.bones) {
-          const i = boneIndex.get(track.name.toLowerCase());
-          if (i === undefined) continue;
-          matched++;
-          if (track.t && bones[i] !== rootBone && Math.abs(rootScale - 1) > 0.01) {
-            const rest = Math.hypot(...bones[i].t), keyed = Math.hypot(...track.t.slice(0, 3));
-            if (rest > 1e-3 && Math.abs(keyed / rest - rootScale) < 0.01 * rootScale) {
-              track.t = track.t.map(v => v / rootScale);
-              unscaled++;
-            }
-          }
-          if (track.r) {
-            const q = new Float32Array(frames * 4);
-            let prev = null;
-            for (let f = 0; f < frames; f++) {
-              let v = toThreeQ(track.r.slice(f * 4, f * 4 + 4));
-              if (prev && v[0] * prev[0] + v[1] * prev[1] + v[2] * prev[2] + v[3] * prev[3] < 0) v = v.map(x => -x); // one hemisphere
-              q.set(v, f * 4); prev = v;
-            }
-            add(i, "rotation", q, "VEC4");
-          }
-          if (track.t) {
-            const t = new Float32Array(frames * 3);
-            for (let f = 0; f < frames; f++) t.set(toThreeArrT(track.t.slice(f * 3, f * 3 + 3)), f * 3);
-            add(i, "translation", t, "VEC3");
-          }
-          if (track.s) add(i, "scale", Float32Array.from(track.s, v => dropRootScale && bones[i] === rootBone ? v / rootScale : v), "VEC3");
-        }
-        if (channels.length) {
-          (glb.json.animations ??= []).push({ name: sequence, channels, samplers });
-          animated = true;
-          clock = clockFor(actor, c);
-          // Where the root track lives. Most prop sequences keep the root at 0: the prop sits on its socket. Six
-          // (map, notepad, judge's paper, spyglass, statue, turret) key it 80-174 cm out: placed in CHARACTER space,
-          // as baked from the animation package (the notepad's root at 3.3 s lands within 2 cm of prop_01, the hand
-          // it is held in). Those attach to the character's component space instead of the socket.
-          const rootTrack = anim.bones.find(b => b.name.toLowerCase() === bones.find(x => x.parent < 0)?.name.toLowerCase());
-          if (rootTrack?.t) {
-            const m = [];
-            for (let f = 0; f < rootTrack.t.length; f += 3) m.push(Math.hypot(rootTrack.t[f], rootTrack.t[f + 1], rootTrack.t[f + 2]));
-            m.sort((x, y) => x - y);
-            if (m[m.length >> 1] > 30) { space = "component"; notes.push(`${basename(meshPath)}: root keyed in character space (median ${m[m.length >> 1].toFixed(0)} cm); attached to the character, not the socket`); }
-          }
-          notes.push(`${basename(meshPath)}: plays ${sequence} (${matched} bones, ${(frameTime * (frames - 1)).toFixed(2)} s, looping)${clockFor(actor, c) === "emote-curve" ? " at the emote's PropAnimSequenceTime" : " from the moment it spawns"}`
-            + (unscaled ? `; ${unscaled} translation tracks keyed in unscaled units divided by the root scale ${rootScale}` : ""));
-        } else { unanimated = true; notes.push(`${basename(meshPath)}: ${sequence} matched no bones; reference pose`); }
-      } else {
-        unanimated = true;
-        notes.push(`${basename(meshPath)}: skeletal, shown in its reference pose (${sequence ? `sequence ${sequence} not exported` : c.animClass ? `AnimBlueprint ${basename(c.animClass)} has no sequence` : "no animation"})`);
-      }
+      describeAnimation(state);
     } else glb.json.nodes[node].mesh = meshIndex;
   }
   if (!glb.json.meshes.length) { report.skipped.push({ actor: actor.actor, reason: notes.join("; ") }); continue; }
   const file = `${actor.actor}.glb`;
   const bytes = glb.write(join(out, file));
-  actors[actor.actor] = { file, bytes, kind: actor.kind, ...(animated ? { animated, clock } : {}), ...(space ? { space } : {}), ...(unanimated ? { unanimated } : {}),
-    materials: materialsOut, ...(notes.length ? { notes } : {}) };
+  if (rootOverrides.length) report.overrides.push(`${actor.actor} (${rootOverrides.map(o => o.from).join(", ")})`);
+  actors[actor.actor] = { file, bytes, kind: actor.kind, ...(animated ? { animated, clock } : {}), ...(unanimated ? { unanimated } : {}),
+    ...(rootOverrides.length ? { rootOverrides } : {}), materials: materialsOut, ...(notes.length ? { notes } : {}) };
   report.built++;
 }
 
@@ -518,24 +605,54 @@ for (const e of skeletonFile ? JSON.parse(readFileSync(skeletonFile, "utf8")).fi
   const p = e.Properties ?? {};
   sockets[p.SocketName.toLowerCase()] = { bone: p.BoneName, translation: toThreeT(p.RelativeLocation), rotation: toThreeQ(rotatorQuat(p.RelativeRotation)), scale: toThreeS(p.RelativeScale) };
 }
+// A texture a material names but the research folder lacks would bake as flat grey: refuse instead.
+if (report.missingTextures.size && !("allow-missing-textures" in args))
+  throw new Error(`Textures missing from ${join(research, "prop-textures")} (export them, or pass --allow-missing-textures):\n  ${[...report.missingTextures].sort().join("\n  ")}`);
+
 // Each window carries its notify's RelativeTransform (notify-transform.mjs: it places the actor relative to its socket;
 // dropped until 10 Nov 2026, so the football showed 6x too big and chairs lay on their side). It composes with the
 // actor's own components baked into the GLB, the RainCoat soil's root scale 0.35 included (x notify 0.4).
-const emotes = {};
+// A window whose notify names a CurveDrivenTransformPrefix also carries `curve`: the emote's own float curves move it
+// every frame, under the notify transform (prop-placement.mjs). They come from the emote sequences' AnimExport records
+// (--anims, the run convert-clips.mjs converted).
+const animsDir = args.anims ? resolve(args.anims) : null;
+const animCache = new Map();
+function curveFor(sequence, prefix) {
+  if (!animCache.has(sequence)) {
+    const file = animsDir && join(animsDir, `${sequence}.json`);
+    animCache.set(sequence, file && existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null);
+  }
+  const anim = animCache.get(sequence);
+  if (!anim) return null;
+  const frameTime = anim.length / Math.max(1, anim.frames - 1) / (anim.rateScale || 1); // as convert-clips.mjs
+  const curve = curveTransform(anim.curveValues, prefix, frameTime);
+  return curve ? { prefix, ...curve } : null;
+}
+const emotes = {}, curves = { carried: 0, missing: [] };
 for (const e of catalog) {
   const props = e.notifies.filter(n => n.kind === "prop").map(n => {
     const transform = notifyTransform(n.relativeTransform);
+    const shown = !!actors[n.asset];
+    let curve = null;
+    if (n.curvePrefix && shown) {
+      if (!animsDir) throw new Error(`${e.sequence}: ${n.asset} is moved by the curves ${n.curvePrefix}_*; pass --anims <exporter run>/anims`);
+      curve = curveFor(e.sequence, n.curvePrefix);
+      if (curve) curves.carried++; else curves.missing.push(`${e.sequence} ${n.curvePrefix}`);
+    }
     return {
       actor: n.asset, socket: n.socket ? n.socket.toLowerCase() : null, start: n.start, duration: n.duration,
-      shown: !!actors[n.asset], ...(transform ? { transform } : {}),
+      shown, ...(transform ? { transform } : {}), ...(curve ? { curve } : {}),
     };
   });
   if (props.length) emotes[e.sequence] = props;
 }
+if (curves.missing.length) throw new Error(`Curve-driven windows with no curves in --anims: ${curves.missing.join(", ")}`);
 const manifest = { formatVersion: 1, generatedAt: new Date().toISOString(), tool: "scripts/anim-export/build-props.mjs", maxTexture,
   sockets, actors, emotes, skipped: report.skipped, approximateMaterials: [...report.approximateMaterials].sort() };
 writeFileSync(join(out, "props.json"), JSON.stringify(manifest, null, 1));
 const total = Object.values(actors).reduce((s, a) => s + a.bytes, 0);
 console.log(`built ${report.built} prop GLBs (${(total / 1048576).toFixed(1)} MB) from ${report.meshes} meshes; winding flipped on ${report.flipped}; weak winding: ${report.weakWinding.length ? report.weakWinding.join(", ") : "none"}`);
+console.log(`root overrides (ModifyBone) on ${report.overrides.length}: ${report.overrides.join("; ") || "none"}`);
+console.log(`curve-driven windows: ${curves.carried}; missing textures: ${report.missingTextures.size}`);
 console.log(`skipped ${report.skipped.length}: ${Object.entries(report.skipped.reduce((m, s) => (m[s.reason] = (m[s.reason] ?? 0) + 1, m), {})).map(([k, v]) => `${v} ${k}`).join(", ")}`);
 console.log(`approximate materials: ${report.approximateMaterials.size}`);

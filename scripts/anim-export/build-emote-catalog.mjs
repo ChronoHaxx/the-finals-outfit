@@ -64,6 +64,10 @@ function sequenceNotifies(sequence) {
       socket: p.AttachedSocket ?? p.AttachToSocket ?? p.SocketName ?? null,
       ...(p.CustomizationItem ? { item: assetName(p.CustomizationItem.AssetPathName) } : {}),
       ...(p.RelativeTransform ? { relativeTransform: p.RelativeTransform } : {}),
+      // The emote's own float curves <prefix>_TranslateX/Y/Z, _RotateX/Y/Z, _ScaleX/Y/Z move this prop every frame
+      // (build-props.mjs reads them; dropped until 11 Nov 2026, so the MonsterMan poles and the BlackSmith anvil stood
+      // at the character's feet).
+      ...(p.CurveDrivenTransformPrefix && p.CurveDrivenTransformPrefix !== "None" ? { curvePrefix: p.CurveDrivenTransformPrefix } : {}),
       ...(p.LocationOffset ? { locationOffset: p.LocationOffset } : {}),
       ...(p.RotationOffset ? { rotationOffset: p.RotationOffset } : {}),
     });
@@ -88,9 +92,10 @@ for (const e of [...inventory].sort((a, b) => a.id.localeCompare(b.id))) {
     if (!png) throw new Error(`No decoded icon ${iconName} for ${e.id}`);
     thumb = `${iconName}.webp`;
     // The game's icon is a tilted card on a pale backdrop; keep the card, drop most of the backdrop.
-    const meta = await sharp(png).metadata();
+    const bytes = readFileSync(png); // bytes, not the path: libvips cannot open a Windows path of 260+ characters
+    const meta = await sharp(bytes).metadata();
     const crop = { left: Math.round(meta.width * 0.11), top: Math.round(meta.height * 0.09), width: Math.round(meta.width * 0.78), height: Math.round(meta.height * 0.8) };
-    await sharp(png).extract(crop).resize(160, 160, { fit: "cover", position: "centre" }).webp({ quality: 80 }).toFile(join(out, "icons", thumb));
+    await sharp(bytes).extract(crop).resize(160, 160, { fit: "cover", position: "centre" }).webp({ quality: 80 }).toFile(join(out, "icons", thumb));
     thumbs.set(iconName, thumb);
   }
   const of = kind => [...new Set(seq.notifies.filter(n => n.kind === kind).map(n => n.asset).filter(Boolean))];

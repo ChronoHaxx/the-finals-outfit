@@ -204,7 +204,9 @@ for (const clip of config.clips) {
   }
   // The emote's prop clock: PropAnimSequenceTime is the explicit time its props' AnimBlueprints evaluate their own
   // sequence at (a SequenceEvaluator reading PropAnimTime). Kept as [frame keys, seconds], linear, 1 ms tolerance.
-  const clock = anim.curveValues?.PropAnimSequenceTime;
+  // Matched case-insensitively, as UE FNames are: Death_00 names it "propanimsequencetime" (until 11 Nov 2026 its wings
+  // fell back to the spawn clock).
+  const clock = Object.entries(anim.curveValues ?? {}).find(([name]) => name.toLowerCase() === "propanimsequencetime")?.[1];
   let propTime;
   if (clock?.length === frames && clock.some(v => Math.abs(v - clock[0]) > 1e-4)) {
     const keys = reduce(frames, (a, b, k) => Math.abs(clock[a] + (clock[b] - clock[a]) * (k - a) / (b - a) - clock[k]) <= 1e-3);
