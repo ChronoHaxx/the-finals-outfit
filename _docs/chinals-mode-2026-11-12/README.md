@@ -116,6 +116,9 @@ right; a rebuild with those fixes would be a new `props-N`, on a new deployment.
   new deployment and a new hash, never an overwrite.
 - **Withdrawing:** blank the variable and redeploy the site (old Chinals links then show the notice, and their outfits
   still open); deleting the Pages project removes the files too.
+- **Props update (12 Nov):** `deploy.yml` now points at `https://e7796a7c.the-finals-outfit-chinals-assets.pages.dev/`,
+  the same `set-3` with the props rebuilt by main's builder (`props-3`). `dcb131a5` (props-2) stays as the rollback.
+  See [props-3.md](props-3.md).
 
 # Guided functional review: Chinals mode
 
