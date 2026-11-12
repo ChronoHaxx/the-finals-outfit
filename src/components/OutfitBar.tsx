@@ -60,7 +60,7 @@ export default function OutfitBar() {
   }, [build, workedOn, state]); // equipped and statusOf are derived from exactly these
 
   return (
-    <div className="relative flex flex-col gap-3 border-b border-line bg-ink-950 px-3 py-3 lg:h-full lg:border lg:bg-ink-900 lg:px-4">
+    <div className="relative flex flex-col gap-3 border-b border-line bg-ink-950 px-3 py-3 lg:border-b-0 lg:border-t lg:bg-ink-900 lg:px-4">
       <OutfitToast />
       <div className="relative flex items-center gap-2">
         <OutfitSwitcher />

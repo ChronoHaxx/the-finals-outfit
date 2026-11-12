@@ -103,6 +103,15 @@ export class StableFrameAccumulator {
    * canvas needs no multisampled back buffer of its own. Off by default: the GPU checks drive the bare pass.
    */
   alwaysOn = false;
+  /**
+   * Straight (not premultiplied) alpha in the output, for a caller's own render target only (12 Nov 2026: the viewer's
+   * transparent screenshot, rig/ViewerScreenshot.ts). The target then holds the display colour and the coverage apart,
+   * so an 8-bit PNG keeps full colour precision at soft edges. Additive light where nothing is covered (a hologram's
+   * glow) has no straight form: it is written as its colour divided by its brightest channel, at that channel's alpha,
+   * which reproduces the glow exactly over black and slightly darkens a lighter background behind it. Ignored when
+   * drawing to the canvas.
+   */
+  straightAlpha = false;
   private state = new StableFrameState();
   private camera = new StableCamera();
   private sample: THREE.WebGLRenderTarget | null = null;
@@ -259,7 +268,11 @@ export class StableFrameAccumulator {
         #else
         gl_FragColor.rgb = gl_FragColor.a > 0.000001 ? gl_FragColor.rgb / gl_FragColor.a : vec3(0.0);
         #endif`)
-      .replace(/}\s*$/, '#ifdef PREMULTIPLIED_OUTPUT\n #ifdef ADDITIVE_PASS_THROUGH\n if (!additivePassThrough)\n #endif\n gl_FragColor.rgb *= gl_FragColor.a;\n #endif\n }');
+      .replace(/}\s*$/, '#ifdef PREMULTIPLIED_OUTPUT\n #ifdef ADDITIVE_PASS_THROUGH\n if (!additivePassThrough)\n #endif\n gl_FragColor.rgb *= gl_FragColor.a;\n #endif\n'
+        // STRAIGHT_OUTPUT (straightAlpha): an uncovered additive pixel becomes its colour over its brightest channel.
+        + '#ifdef STRAIGHT_OUTPUT\n #ifdef ADDITIVE_PASS_THROUGH\n if (additivePassThrough) {\n'
+        + '  float peak = clamp(max(max(gl_FragColor.r, gl_FragColor.g), gl_FragColor.b), 0.0, 1.0);\n'
+        + '  gl_FragColor = peak > 0.0 ? vec4(gl_FragColor.rgb / peak, peak) : vec4(0.0);\n }\n #endif\n#endif\n }');
     this.output = new THREE.RawShaderMaterial({
       uniforms: { ...THREE.UniformsUtils.clone(OutputShader.uniforms), historyScale: { value: 1 } },
       vertexShader: OutputShader.vertexShader, fragmentShader,
@@ -500,10 +513,11 @@ export class StableFrameAccumulator {
         if (!this.status.motion && !this.fading && this.status.samples >= this.status.maxSamples) this.velocity.releaseTargets();
         this.velocity.remember(scene, this.viewProjection, view);
       }
-      const premultiplied = !!destination || renderer.getContext().getContextAttributes()?.premultipliedAlpha !== false;
-      const passThrough = input.additive && premultiplied;
+      const straight = !!destination && this.straightAlpha;
+      const premultiplied = !straight && (!!destination || renderer.getContext().getContextAttributes()?.premultipliedAlpha !== false);
+      const passThrough = input.additive && (premultiplied || straight);
       this.status.additive = passThrough;
-      const outputKey = `${renderer.outputColorSpace}/${renderer.toneMapping}/${premultiplied}/${passThrough}`;
+      const outputKey = `${renderer.outputColorSpace}/${renderer.toneMapping}/${premultiplied}/${passThrough}/${straight}`;
       if (outputKey !== this.outputKey) {
         this.outputKey = outputKey;
         this.output.defines = {};
@@ -511,14 +525,18 @@ export class StableFrameAccumulator {
         const tone = toneMappingDefines[renderer.toneMapping];
         if (tone) this.output.defines[tone] = '';
         if (premultiplied) this.output.defines.PREMULTIPLIED_OUTPUT = '';
+        if (straight) this.output.defines.STRAIGHT_OUTPUT = '';
         if (passThrough) this.output.defines.ADDITIVE_PASS_THROUGH = '';
         this.output.needsUpdate = true;
       }
       this.output.uniforms.tDiffuse.value = (motionPresented ?? this.history!).texture;
       this.output.uniforms.historyScale.value = motionPresented ? 1 : this.status.maxSamples / this.status.samples;
       this.output.uniforms.toneMappingExposure.value = renderer.toneMappingExposure;
+      // setViewport/setScissor always write the canvas rectangle (times the pixel ratio) to GL: restore them for the
+      // canvas only. A caller's target keeps the full-target viewport setRenderTarget just set (12 Nov 2026).
       renderer.setRenderTarget(destination, face, mip);
-      renderer.setViewport(viewport); renderer.setScissor(scissor); renderer.setScissorTest(scissorTest);
+      if (!destination) { renderer.setViewport(viewport); renderer.setScissor(scissor); }
+      renderer.setScissorTest(scissorTest);
       this.quad.material = this.output; this.quad.render(renderer);
     } catch (error) {
       this.invalidate('interrupted render');
@@ -529,7 +547,8 @@ export class StableFrameAccumulator {
       camera.matrixWorld.copy(world); camera.matrixWorldInverse.copy(worldInverse);
       camera.matrixWorldAutoUpdate = worldAutoUpdate; camera.matrixWorldNeedsUpdate = worldNeedsUpdate;
       renderer.setRenderTarget(destination, face, mip); renderer.setClearColor(clearColor, clearAlpha);
-      renderer.setViewport(viewport); renderer.setScissor(scissor); renderer.setScissorTest(scissorTest);
+      if (!destination) { renderer.setViewport(viewport); renderer.setScissor(scissor); }
+      renderer.setScissorTest(scissorTest);
       renderer.autoClear = autoClear;
     }
   }

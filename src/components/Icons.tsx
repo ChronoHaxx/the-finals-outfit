@@ -148,3 +148,19 @@ export function FrameStepIcon({ className, size = 14, forward }: IconProps & { f
     <g transform={forward ? "matrix(-1 0 0 1 16 0)" : undefined}><path d="M3 3h2v10H3zM13 3v10L6 8l7-5Z" /></g>
   </svg>;
 }
+
+// Viewer chrome (12 Nov 2026): hide the UI (an eye, struck through), and save a screenshot (a camera).
+export function EyeOffIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <path d="M1.8 8s2.3-4.2 6.2-4.2S14.2 8 14.2 8s-2.3 4.2-6.2 4.2S1.8 8 1.8 8Z" />
+    <circle cx="8" cy="8" r="1.8" />
+    <path d="m2.5 13.5 11-11" />
+  </svg>;
+}
+
+export function CameraIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <path d="M2 5.5c0-.6.4-1 1-1h2l1-1.5h4l1 1.5h2c.6 0 1 .4 1 1V12c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1V5.5Z" />
+    <circle cx="8" cy="8.5" r="2.3" />
+  </svg>;
+}

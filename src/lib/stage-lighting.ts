@@ -227,6 +227,25 @@ export function backdropCss(theme: SceneTheme, id: string): string {
   return `radial-gradient(${THEME_ELLIPSE[theme]}, ${b.inner} 0%, ${b.middle} ${middle}%, ${b.outer} 100%)`;
 }
 
+/** Each theme's backdrop ellipse in numbers (fractions of the box), as in THEME_ELLIPSE, and its middle stop. */
+export const THEME_GRADIENT: Record<SceneTheme, { cx: number; cy: number; rx: number; ry: number; middle: number }> = {
+  studio: { cx: 0.5, cy: 0.35, rx: 0.75, ry: 0.65, middle: 0.55 },
+  lobby: { cx: 0.5, cy: 0.38, rx: 0.7, ry: 0.6, middle: 0.58 },
+};
+
+/** A backdrop as the screenshot paints it (12 Nov 2026): the CSS of backdropCss in numbers. The ellipse is the theme's
+ *  (a chosen gradient takes the theme's shape), in fractions of the image; a solid backdrop has three equal colours. */
+export interface BackdropPaint {
+  colors: [string, string, string];
+  stops: [number, number, number];
+  cx: number; cy: number; rx: number; ry: number;
+}
+
+export function backdropPaint(theme: SceneTheme, id: string): BackdropPaint {
+  const b = resolveBackdrop(theme, id), g = THEME_GRADIENT[theme];
+  return { colors: [b.inner, b.middle, b.outer], stops: [0, g.middle, 1], cx: g.cx, cy: g.cy, rx: g.rx, ry: g.ry };
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Settings from storage, and looks.
 

@@ -280,13 +280,15 @@ const OUTPUT_BEFORE = OutputShader.fragmentShader
         gl_FragColor.rgb = gl_FragColor.a > 0.000001 ? gl_FragColor.rgb / gl_FragColor.a : vec3(0.0);`)
   .replace(/}\s*$/, "#ifdef PREMULTIPLIED_OUTPUT\n gl_FragColor.rgb *= gl_FragColor.a;\n #endif\n }");
 
-// Resolve only the ADDITIVE_PASS_THROUGH conditionals, leaving every other directive in place.
-function resolvePassThrough(source: string, defined: boolean) {
+// Resolve only the ADDITIVE_PASS_THROUGH and STRAIGHT_OUTPUT (12 Nov 2026, the screenshot's straight alpha)
+// conditionals, leaving every other directive in place.
+function resolvePassThrough(source: string, defined: boolean, straight = false) {
   const out: string[] = [], stack: boolean[] = [];
-  let depth = 0; // nesting of other #if blocks inside a pass-through block
+  let depth = 0; // nesting of other #if blocks inside a resolved block
   for (const line of source.split("\n")) {
     const directive = line.trim();
     if (directive === "#ifdef ADDITIVE_PASS_THROUGH") { stack.push(defined); continue; }
+    if (directive === "#ifdef STRAIGHT_OUTPUT") { stack.push(straight); continue; }
     if (stack.length && depth === 0 && directive === "#else") { stack[stack.length - 1] = !stack[stack.length - 1]; continue; }
     if (stack.length && depth === 0 && directive === "#endif") { stack.pop(); continue; }
     if (stack.length && /^#if/.test(directive)) depth++;
@@ -306,6 +308,13 @@ test("without the pass-through define the accumulator output program is token-id
   assert.ok(pass.includes("bool additivePassThrough = gl_FragColor.a <= 0.000001;"));
   assert.ok(pass.includes("gl_FragColor.rgb = additivePassThrough ? gl_FragColor.rgb : gl_FragColor.rgb / gl_FragColor.a;"));
   assert.match(pass, /if \(!additivePassThrough\)\s+gl_FragColor\.rgb \*= gl_FragColor\.a;/);
+  assert.ok(!pass.includes("peak"), "the straight-alpha branch exists only with STRAIGHT_OUTPUT");
+  // Straight alpha (the transparent screenshot): an uncovered additive pixel becomes colour / peak at alpha = peak.
+  const straight = resolvePassThrough(now, true, true);
+  assert.ok(straight.includes("float peak = clamp(max(max(gl_FragColor.r, gl_FragColor.g), gl_FragColor.b), 0.0, 1.0);"));
+  assert.ok(straight.includes("gl_FragColor = peak > 0.0 ? vec4(gl_FragColor.rgb / peak, peak) : vec4(0.0);"));
+  // Without pass-through, straight output is the old program (it only leaves PREMULTIPLIED_OUTPUT undefined).
+  assert.deepEqual(tokens(resolvePassThrough(now, false, true)), tokens(OUTPUT_BEFORE));
   assert.equal(accumulator.status.additive, false);
   accumulator.dispose();
 });
