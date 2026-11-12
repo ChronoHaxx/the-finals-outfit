@@ -36,7 +36,7 @@ jobs:
       # Chinals mode (src/lib/site-mode.ts): the Chinals emote set (set-3 + props-2, 12 Nov 2026), on its own Cloudflare
       # Pages project the-finals-outfit-chinals-assets so it can be withdrawn in one step. Blank turns the mode off: no
       # toggle, and a Chinals link says the mode isn't available while its outfit still opens.
-      CHINALS_ANIMATIONS_BASE: https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/
+      CHINALS_ANIMATIONS_BASE: https://e7796a7c.the-finals-outfit-chinals-assets.pages.dev/
       # UI preview: another branch built into a sub-path of this same site, e.g.
       # https://chronohaxx.github.io/the-finals-outfit/new-ui-test/. Blank turns it off.
       # Off since the redesign it previewed became the root app; old preview links fall
