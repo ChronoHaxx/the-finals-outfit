@@ -1,0 +1,9 @@
+
+ ⛅️ wrangler 4.131.1 (update available 4.161.0)
+───────────────────────────────────────────────
+✨ Success! Uploaded 277 files (567 already uploaded) (6.45 sec)
+
+✨ Uploading _headers
+🌎 Deploying...
+✨ Deployment complete! Take a peek over at https://ab913ac8.the-finals-outfit-assets.pages.dev
+✨ Deployment alias URL: https://anim-1112-emote-sfx.the-finals-outfit-assets.pages.dev

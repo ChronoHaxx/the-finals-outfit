@@ -141,3 +141,14 @@ export function FrameStepIcon({ className, size = 14, forward }: IconProps & { f
     <g transform={forward ? "matrix(-1 0 0 1 16 0)" : undefined}><path d="M3 3h2v10H3zM13 3v10L6 8l7-5Z" /></g>
   </svg>;
 }
+
+/** A speaker: with sound waves, or crossed out when `muted`. */
+export function SpeakerIcon({ className, size = 14, muted }: IconProps & { muted?: boolean }) {
+  return <svg {...base(size, className)}>
+    <path d="M2.5 6v4h2.5l3.5 3V3L5 6H2.5Z" />
+    {muted ? <path d="m11 6 3.5 3.5M14.5 6 11 9.5" /> : <>
+      <path d="M11 5.8a3 3 0 0 1 0 4.4" />
+      <path d="M12.8 3.9a5.6 5.6 0 0 1 0 8.2" />
+    </>}
+  </svg>;
+}

@@ -33,7 +33,8 @@ jobs:
       # Showcase animation: emote clips, icons and prop GLBs (scripts/anim-export, 6 Nov 2026). Without it the
       # animation controls stay hidden. 12 Nov: set-5 clips + props-9 (emote prop placement fixes, root scale)
       # + faces-1 (facial animation: poses, curves, wrap cages, masks).
-      ANIMATIONS_BASE: https://e5250f94.the-finals-outfit-assets.pages.dev/
+      # 13 Nov: + sounds-1 (emote sound effects, scripts/anim-export/build-emote-sounds.mjs). Rollback: e5250f94.
+      ANIMATIONS_BASE: https://e4608dac.the-finals-outfit-assets.pages.dev/
       # UI preview: another branch built into a sub-path of this same site, e.g.
       # https://chronohaxx.github.io/the-finals-outfit/new-ui-test/. Blank turns it off.
       # Off since the redesign it previewed became the root app; old preview links fall
@@ -56,7 +57,7 @@ jobs:
       - name: Check sharing and changed application contracts
         run: |
           npm run validate:share-links
-          node --import tsx --test tests/verified-bytes.test.ts tests/rig/reconstructed-material-cache.test.ts tests/asset-routing.test.mjs scripts/lib/stage-selection.test.mjs tests/rig/hidden-head.test.ts tests/rig/neutral-head-frame.test.ts tests/rig/source-material-recipients.test.ts tests/rig/source-outfit-metadata.test.ts tests/share-preview-worker.test.ts tests/share-pose.test.ts tests/rig/rig-animator.test.ts tests/rig/rig-animator-transport.test.ts tests/rig/share-preview-framing.test.ts
+          node --import tsx --test tests/verified-bytes.test.ts tests/rig/reconstructed-material-cache.test.ts tests/asset-routing.test.mjs scripts/lib/stage-selection.test.mjs tests/rig/hidden-head.test.ts tests/rig/neutral-head-frame.test.ts tests/rig/source-material-recipients.test.ts tests/rig/source-outfit-metadata.test.ts tests/share-preview-worker.test.ts tests/share-pose.test.ts tests/rig/rig-animator.test.ts tests/rig/rig-animator-transport.test.ts tests/rig/emote-sounds.test.ts tests/rig/share-preview-framing.test.ts
           node --import tsx --test tests/reconstruction-progress.test.ts tests/roadmap.test.ts tests/public-catalog.test.ts tests/wiki-catalog-import.test.mjs tests/reconstructed-samplers.test.mjs tests/catalog-host-groups.test.mjs tests/rig/source-identity-offset.test.mjs
           node --import tsx --test tests/coverage-projection.test.mjs tests/family-active-reuse.test.mjs tests/multipart-family.test.mjs tests/multipart-review-contract.test.mjs tests/outfit-scenario-contract.test.mjs scripts/shader-probe/capture-family.test.mjs scripts/shader-probe/family-fitting-evidence.test.mjs scripts/shader-probe/generate-family-review.test.mjs scripts/shader-probe/source-fitting.test.mjs
 

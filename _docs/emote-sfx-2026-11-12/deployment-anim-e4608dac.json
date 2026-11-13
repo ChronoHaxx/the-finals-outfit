@@ -1,0 +1,14 @@
+{
+  "base": "https://e4608dac.the-finals-outfit-assets.pages.dev/",
+  "files": 1132,
+  "identical": 1132,
+  "mismatched": [],
+  "glbHeaders": {
+    "file": "props-9/BP_Emote_AdventurerMap_Prop.glb",
+    "type": "model/gltf-binary",
+    "cors": "*",
+    "cache": "public, max-age=31536000, immutable"
+  },
+  "missingStatus": 404,
+  "ok": true
+}
