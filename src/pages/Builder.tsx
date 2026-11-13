@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CharacterViewer from "../components/CharacterViewer";
 import SlotPicker from "../components/SlotPicker";
@@ -14,6 +14,9 @@ import { useImmersiveMode } from "../lib/immersive-mode";
 import { probeWebGL2 } from "../lib/webgl-support";
 import { ViewerUnavailable } from "../components/ViewerUnavailable";
 import { SlowScriptNotice } from "../components/SlowScriptNotice";
+import { ChinalsBanner } from "../components/ChinalsBanner";
+import { pendingPose, subscribePendingPose, takePendingPose } from "../lib/share-pose";
+import { builderPath, chinalsAvailable, CHINALS_PATH, hashSearch, isChinalsClip, modeOfPath, type SiteMode } from "../lib/site-mode";
 
 export default function Builder() {
   // Full screen (lib/immersive-mode): the stage becomes a fixed full-viewport layer and everything else is hidden
@@ -35,11 +38,32 @@ export default function Builder() {
   const [linkError, setLinkError] = useState(false);
   const routerLocation = useLocation();
   const navigate = useNavigate();
-  // Once a share link has done its job it leaves the address bar, through the router so it notices.
+  // Global or Chinals (lib/site-mode.ts): the route says which. A Chinals address on a deployment without the mode keeps
+  // its address and shows the global builder with a notice.
+  const routeMode = modeOfPath(routerLocation.pathname);
+  const available = chinalsAvailable();
+  const siteMode: SiteMode = routeMode === "chinals" && available ? "chinals" : "global";
+  const routeModeNow = useRef(routeMode);
+  routeModeNow.current = routeMode;
+  // Once a share link has done its job it leaves the address bar, through the router so it notices. It stays in the
+  // mode it was opened in.
   useEffect(() => {
-    setUrlCleaner(() => navigate({ pathname: "/", search: "" }, { replace: true }));
+    setUrlCleaner(() => navigate({ pathname: builderPath(routeModeNow.current), search: "" }, { replace: true }));
     return () => setUrlCleaner(undefined);
   }, [navigate]);
+  // A link whose pose names a Chinals emote (cn-…) opens Chinals mode: share links, and the share Worker's page, always
+  // use the global route. The pose waits in share-pose.ts until the Chinals emotes have loaded (AnimationControls
+  // leaves it there meanwhile). The query is read live: a tidy-up may have rewritten the address already. Without the
+  // mode on this deployment the pose is dropped and the notice says why; the outfit itself still opens.
+  const waitingPose = useSyncExternalStore(subscribePendingPose, pendingPose);
+  const [chinalsPoseRefused, setChinalsPoseRefused] = useState(false);
+  const [chinalsNoticeDismissed, setChinalsNoticeDismissed] = useState(false);
+  useEffect(() => {
+    if (!waitingPose || !isChinalsClip(waitingPose.clip) || routeMode === "chinals" && available) return;
+    if (!available) { takePendingPose(); setChinalsPoseRefused(true); setChinalsNoticeDismissed(false); return; }
+    navigate({ pathname: CHINALS_PATH, search: hashSearch(window.location.hash) }, { replace: true });
+  }, [waitingPose, routeMode, available, navigate]);
+  const chinalsUnavailable = !available && !chinalsNoticeDismissed && (routeMode === "chinals" || chinalsPoseRefused);
   // Support legacy query links and compact hash navigation without a page reload. A link opens as an
   // unsaved draft beside the saved outfits (src/store/useSavedOutfits.ts); no link shows the saved outfit
   // you were last on. Report omissions or malformed codes instead of a different outfit without explanation.
@@ -49,7 +73,7 @@ export default function Builder() {
     setLinkError(result.error);
     setOmittedItems(result.omitted);
   }, [routerLocation.search]);
-  const dismissNotice = () => { setOmittedItems(false); setLinkError(false); };
+  const dismissNotice = () => { setOmittedItems(false); setLinkError(false); setChinalsPoseRefused(false); setChinalsNoticeDismissed(true); };
   // No WebGL 2 (LibreWolf's default, some privacy setups): say so in place of the 3D view instead of a blank box; the
   // viewer is not mounted at all, so it downloads nothing (lib/webgl-support).
   const [webgl] = useState(probeWebGL2);
@@ -65,11 +89,14 @@ export default function Builder() {
         {DEVELOPER_CATALOG && <p className="border-b border-kept/25 bg-kept/10 px-4 py-2 text-xs text-kept">
           Full extracted catalog · internal names · may include unreleased items. Unlisted, publicly accessible.
         </p>}
-        {(omittedItems || linkError) && <div role={linkError ? "alert" : "status"}
+        {siteMode === "chinals" && <ChinalsBanner />}
+        {(omittedItems || linkError || chinalsUnavailable) && <div role={linkError ? "alert" : "status"}
           className="flex items-center gap-3 border-b border-kept/25 bg-kept/10 px-4 py-2 text-xs text-kept">
-          <p className="flex-1">{linkError
-            ? "This outfit link could not be read. Your current selection has been kept."
-            : "Some items in this link aren’t available in this catalog and were left out."}</p>
+          <p className="flex-1">{[
+            linkError ? "This outfit link could not be read. Your current selection has been kept."
+              : omittedItems ? "Some items in this link aren’t available in this catalog and were left out." : null,
+            chinalsUnavailable ? "Chinals mode isn’t available on this site right now, so its emotes can’t be shown. The outfit opens as usual." : null,
+          ].filter(Boolean).join(" ")}</p>
           <button type="button" onClick={dismissNotice} aria-label="Dismiss" className="grid size-6 place-items-center hover:text-fg">
             <CloseIcon size={12} />
           </button>
@@ -83,7 +110,7 @@ export default function Builder() {
         <section aria-label="3D outfit preview"
           className={immersive ? "fixed inset-0 z-30 overflow-hidden bg-ink-900"
             : "sticky top-0 z-20 h-(--stage-h) overflow-hidden bg-ink-900 lg:static lg:h-auto lg:min-h-0 lg:border lg:border-line"}>
-          {webgl.ok ? <CharacterViewer immersive={immersiveMode} /> : <ViewerUnavailable support={webgl} />}
+          {webgl.ok ? <CharacterViewer immersive={immersiveMode} mode={siteMode} /> : <ViewerUnavailable support={webgl} />}
         </section>
         <section aria-label="Your outfit" className={`min-w-0 lg:col-start-1 lg:row-start-2 ${away}`}>
           <OutfitBar />

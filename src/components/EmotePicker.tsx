@@ -85,6 +85,10 @@ export function missingBadge(info: ClipInfo, props?: PropsView): string | null {
 
 type Tab = "emotes" | "more";
 
+// Chinese text is marked as such, so the browser picks Simplified Chinese glyph forms (Han characters shared with
+// Japanese render differently by language).
+const zhHans = (text: string) => /\p{Script=Han}/u.test(text) ? "zh-Hans" : undefined;
+
 export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
   animator: RigAnimator; state: AnimatorState; onPlay: (id: string) => void; onClose: () => void;
   /** The 3D viewer, to dock beside on desktop. */
@@ -107,11 +111,15 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
   const propsLoaded = animator.props.loaded;
 
   const { clips, rarityOrder = [] } = { clips: animator.manifest.clips, rarityOrder: animator.manifest.rarityOrder };
+  // The Chinals set (lib/site-mode.ts): no seasons, Chinese names, and translations marked as this site's own.
+  const chinals = animator.manifest.edition === "chinals";
   const emotes = useMemo(() => clips.filter(c => c.kind === "emote" && c.emote && !c.emote.unlisted), [clips]);
   const groups = useMemo(() => {
     const needle = deferredQuery.trim().toLowerCase();
     const rank = (r?: string | null) => { const i = rarityOrder.indexOf(r ?? ""); return i < 0 ? rarityOrder.length : i; };
-    const shown = emotes.filter(c => (!needle || c.label.toLowerCase().includes(needle) || c.emote?.description?.toLowerCase().includes(needle))
+    const matches = (c: ClipInfo) => [c.label, c.emote?.description, c.emote?.nameZh, c.emote?.translation]
+      .some(text => text?.toLowerCase().includes(needle));
+    const shown = emotes.filter(c => (!needle || matches(c))
       && (!bodyOnly || !missingBadge(c, animator.props)));
     const bySeason = new Map<number, ClipInfo[]>();
     for (const c of shown) {
@@ -140,7 +148,7 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
     const active = playing === clip.id, loading = state.loading === clip.id;
     return (
       <button key={clip.id} type="button" aria-pressed={active}
-        title={[clip.label, missingSummary(clip, animator.props)].filter(Boolean).join(" · ")}
+        title={[clip.label, clip.emote?.translation && `${clip.emote.translation} (unofficial translation)`, missingSummary(clip, animator.props)].filter(Boolean).join(" · ")}
         onClick={() => onPlay(clip.id)} onPointerEnter={() => setDetail(clip.id)} onFocus={() => setDetail(clip.id)}
         className={`group relative flex flex-col bg-ink-900 text-left outline-none transition-colors [contain-intrinsic-size:auto_118px] [content-visibility:auto] hover:bg-ink-800 focus-visible:ring-2 focus-visible:ring-fg ${active ? "bg-ink-800" : ""}`}>
         <span className="relative block aspect-square overflow-hidden bg-ink-850">
@@ -152,7 +160,7 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
         <span aria-hidden="true" className={`h-[3px] ${RARITY_BAR[clip.emote?.rarity ?? ""] ?? "bg-ink-700"}`} />
         {/* Padding outside the clamp: overflow clips at the padding edge, so a third line would peek into it. */}
         <span className="block px-1.5 pb-1.5 pt-1">
-          <span className={`line-clamp-2 min-h-[2.4em] text-[10px] font-semibold uppercase leading-[1.2] tracking-[0.02em] [font-stretch:87.5%] [overflow-wrap:anywhere] ${active ? "text-fg" : "text-fg-muted group-hover:text-fg"}`}>
+          <span lang={zhHans(clip.label)} className={`line-clamp-2 min-h-[2.4em] text-[10px] font-semibold uppercase leading-[1.2] tracking-[0.02em] [font-stretch:87.5%] [overflow-wrap:anywhere] ${active ? "text-fg" : "text-fg-muted group-hover:text-fg"}`}>
             {clip.label}
           </span>
         </span>
@@ -199,9 +207,9 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
           {shownCount === 0 && <p className="py-6 text-center text-sm text-fg-muted">No emotes match.</p>}
           {groups.map(group => (
-            <section key={group.season} aria-label={group.season ? `Season ${group.season}` : "No season"}>
+            <section key={group.season} aria-label={group.season ? `Season ${group.season}` : chinals ? "Chinals emotes" : "No season"}>
               <h3 className="hud sticky top-0 z-10 bg-ink-950 py-1.5 text-fg-dim">
-                {group.season ? `Season ${group.season}` : "Other"} <span className="text-ink-600">·</span> {group.clips.length}
+                {group.season ? `Season ${group.season}` : chinals ? "Chinals emotes" : "Other"} <span className="text-ink-600">·</span> {group.clips.length}
               </h3>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-1">{group.clips.map(tile)}</div>
             </section>
@@ -228,15 +236,20 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
       <div aria-live="polite" className="min-h-[3.25rem] shrink-0 border-t border-line px-2.5 py-1.5">
         {detailEmote ? <>
           <p className="truncate text-[12px] font-semibold text-fg">
-            {detailEmote.label}
-            <span className="hud ml-2 text-fg-dim">{[detailEmote.emote?.rarity, detailEmote.emote?.season ? `Season ${detailEmote.emote.season}` : null].filter(Boolean).join(" · ")}</span>
+            <span lang={zhHans(detailEmote.label)}>{detailEmote.label}</span>
+            {detailEmote.emote?.nameZh && <span lang="zh-Hans" className="ml-1.5 font-normal text-fg-muted">{detailEmote.emote.nameZh}</span>}
+            <span className="hud ml-2 text-fg-dim">{[chinals ? "Chinals exclusive" : null, detailEmote.emote?.rarity, detailEmote.emote?.season ? `Season ${detailEmote.emote.season}` : null].filter(Boolean).join(" · ")}</span>
           </p>
+          {detailEmote.emote?.translation && <p className="truncate text-[11px] leading-snug text-fg-muted">
+            “{detailEmote.emote.translation}” <span className="text-fg-dim">(unofficial translation by this site)</span>
+          </p>}
           <p className={`text-[11px] leading-snug ${missing ? "text-fg-muted" : "text-fg-dim"}`}>
             {missing ?? "No prop or effects in the game."}
             {detailEmote.emote?.itemProps?.length ? " Extra prop with a matching cosmetic." : ""}
           </p>
-        </> : <p className="text-[11px] leading-snug text-fg-dim">
-          The game's emote animations on your outfit. Props, effects, sound and facial expressions are not shown yet.
+        </> : <p className="text-[11px] leading-snug text-fg-dim">{chinals
+          ? "Chinals emotes on your outfit (global cosmetics). Props are shown; effects, sound and facial expressions are not."
+          : "The game's emote animations on your outfit. Props, effects, sound and facial expressions are not shown yet."}
         </p>}
       </div>
     </div>

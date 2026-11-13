@@ -7,6 +7,7 @@ import TopBar, { REPOSITORY_URL } from "../components/ProjectLinks";
 import { useReconstructionProgress } from "../context/ReconstructionProgress";
 import { formatPatchDate } from "../data/changelog";
 import { fillRoadmapText, roadmapTokenValues, type RoadmapItem, type RoadmapSection } from "../lib/roadmap";
+import { builderPath, modeOfPath } from "../lib/site-mode";
 
 // Everything this page says about plans comes from ROADMAP.md (see vite.config.ts); only the
 // layout and the live figures filled into its placeholders live here.
@@ -56,7 +57,7 @@ export default function Roadmap() {
     <TopBar page="roadmap" />
     <main className="mx-auto max-w-5xl space-y-12 px-4 py-8 sm:px-6 sm:py-12">
       <header className="space-y-4">
-        <Link to={{ pathname: "/", search: location.search }} className="hud inline-block text-fg-muted transition-colors hover:text-fg">&larr; Back to your outfit</Link>
+        <Link to={{ pathname: builderPath(modeOfPath(location.pathname)), search: location.search }} className="hud inline-block text-fg-muted transition-colors hover:text-fg">&larr; Back to your outfit</Link>
         <p className="hud flex items-center gap-2 text-fg-muted"><span aria-hidden="true" className="h-3 w-1 bg-finals" />Behind the scenes</p>
         <h1 ref={heading} tabIndex={-1} className="display text-[clamp(52px,9vw,96px)] outline-none">
           Progress <span className="text-finals">&amp;</span> roadmap

@@ -246,3 +246,31 @@ test("prop attach bones are added before the mixer binds, so emote clips drive t
   animator.reset();
   assert.equal(pelvis.getObjectByName("prop_01"), undefined, "reset removes the added bone");
 });
+
+// Chinals mode (12 Nov 2026) swaps the whole clip set by disposing the animator. A switch mid-emote must hand the next
+// animator a body in its still pose, and a clip still downloading must never bind to the body afterwards.
+test("dispose puts the body back to its still pose, and a play still downloading never binds", async () => {
+  stubFetch({ "bow.json": 30 });
+  const { body, pelvis } = rig();
+  const still = pelvis.quaternion.clone();
+  const first = new RigAnimator(manifest, "clips/");
+  await first.play(body, "wave");
+  step(first, 0.5);
+  assert.ok(angleTo(pelvis.quaternion, 90) < 0.05, "mid-emote");
+  const late = first.play(body, "bow"); // still downloading when the mode switches
+  first.dispose();
+  assert.ok(pelvis.quaternion.angleTo(still) < 1e-6, "back to the still pose at once");
+  assert.equal(first.state.active, false);
+  await late;
+  step(first, 0.5);
+  assert.ok(pelvis.quaternion.angleTo(still) < 1e-6, "the late clip did not bind");
+  assert.equal(first.state.current, null);
+  await first.play(body, "wave"); // a disposed animator stays inert
+  assert.equal(first.state.active, false);
+  const next = new RigAnimator(manifest, "clips/");
+  await next.play(body, "wave");
+  step(next, 0.5);
+  next.stop();
+  step(next, 0.5);
+  assert.ok(pelvis.quaternion.angleTo(still) < 1e-4, "the next animator's still pose is the real one");
+});

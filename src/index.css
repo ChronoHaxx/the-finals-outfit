@@ -140,6 +140,11 @@
     font-family: var(--font-sans);
     text-rendering: optimizeLegibility;
   }
+  /* Chinals mode's Chinese names (lib/site-mode.ts): Saira has no Han glyphs, so name the system Simplified Chinese
+     fonts rather than leave the fallback to chance (a Chinese webfont is several MB, not worth a few dozen names). */
+  :lang(zh-Hans) {
+    font-family: "Saira Variable", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", sans-serif;
+  }
   * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-ink-600) transparent;

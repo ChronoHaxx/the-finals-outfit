@@ -3,6 +3,7 @@ import { getBrowseItem } from "./browse-catalog";
 import { derivedFromCatalog, getCatalogData } from "./catalog";
 import type { Slot } from "./slots";
 import { POSE_KEYS, poseParams, type SharePose } from "./share-pose";
+import { builderHashParams } from "./site-mode";
 import { BODY_TYPE_PARAM, bodyTypeFromShareCode, bodyTypeShareCode, DEFAULT_BODY_TYPE } from "./body-type";
 
 export type ShareStyle = "short" | "names";
@@ -76,7 +77,9 @@ function withBodyType(outfit: Outfit, params: URLSearchParams): Outfit {
 
 export function readOutfitLink(currentUrl: string): Outfit | null {
   const url = new URL(currentUrl);
-  const fragment = url.hash.startsWith("#/?") ? new URLSearchParams(url.hash.slice(3)) : new URLSearchParams();
+  // The builder's route, global (#/?o=) or Chinals (#/chinals?o=: the mode toggle keeps an unsaved link draft's
+  // address, so a reload there must still open it). Never another page's query (lib/site-mode.ts).
+  const fragment = builderHashParams(url.hash) ?? new URLSearchParams();
   const fromFragment = fragment.get("o");
   if (fromFragment !== null) return withBodyType(decodeCodes(fromFragment, false), fragment);
   const short = url.searchParams.get("o");

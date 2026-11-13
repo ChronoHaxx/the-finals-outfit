@@ -11,6 +11,11 @@
 // A link without emote opens exactly as before (the default idle). The names differ from the ?anim= / ?animTime=
 // capture switches on purpose: those stay developer tools that a link tidy-up never touches. The share Worker
 // (workers/share-preview/src/share.ts) validates the same grammar; keep the two in step.
+//
+// Chinals mode (lib/site-mode.ts) uses the same grammar. Its clip ids start with cn-, and such a pose is what switches
+// the builder to that mode, so links stay in the one form above.
+
+import { builderHashParams } from "./site-mode";
 
 export interface SharePose {
   /** Clip id from the animation manifest, e.g. "ace-pilot" or "outfit-idle". */
@@ -60,8 +65,18 @@ export function readPose(params: URLSearchParams): SharePose | null {
 export function readPoseLink(href: string): SharePose | null {
   let url: URL;
   try { url = new URL(href); } catch { return null; }
-  const fragment = url.hash.startsWith("#/?") ? readPose(new URLSearchParams(url.hash.slice(3))) : null;
+  const route = builderHashParams(url.hash); // #/?… or #/chinals?… (lib/site-mode.ts)
+  const fragment = route ? readPose(route) : null;
   return fragment ?? readPose(url.searchParams);
+}
+
+/** A route query ("?o=…&emote=…") without its pose, as the Global | Chinals switch keeps it: an unsaved link draft's
+ *  outfit stays in the address, the pose names the other mode's emotes. */
+export function withoutPose(search: string): string {
+  const params = new URLSearchParams(search);
+  for (const key of POSE_KEYS) params.delete(key);
+  const rest = params.toString();
+  return rest ? `?${rest}` : "";
 }
 
 /** Identity of a pose for "has it changed since it was copied". A playing pose moves every frame, so only its clip
