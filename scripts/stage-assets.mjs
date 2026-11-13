@@ -19,7 +19,7 @@
 import { readFileSync, existsSync, mkdirSync, copyFileSync, writeFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join } from "node:path";
-import { collectAssetRefs } from "./lib/asset-refs.mjs";
+import { catalogAssetSources, collectAssetRefs } from "./lib/asset-refs.mjs";
 import { collectReconstructionAssetRefs, collectAssetCompanions } from "./lib/reconstruction-assets.mjs";
 import { preflightPackage, selectStagePaths, stageMode } from "./lib/stage-selection.mjs";
 import { readAssetGraph, planAssetShards, digest } from './lib/asset-shards.mjs';
@@ -37,7 +37,7 @@ if (existsSync(outDir)) throw new Error(`Version already exists: ${version}. Cho
 
 const items = JSON.parse(readFileSync(resolve(ROOT, "src/data/items.json"), "utf8"));
 
-const catalog = collectAssetRefs(items);
+const catalog = collectAssetRefs(catalogAssetSources(items, ROOT));
 const reconstruction = collectReconstructionAssetRefs(publicDir);
 const companions = collectAssetCompanions(publicDir, catalog);
 // Icons can stay on a previous immutable release when only 3D content changes.

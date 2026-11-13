@@ -2,6 +2,7 @@
 // Reset next to hand-made work, catalogue changes under a saved outfit, deleting, and storage being off.
 import test, { beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import './helpers/load-catalog';
 import { getItemById } from '../src/lib/catalog';
 import { getBrowseItem } from '../src/lib/browse-catalog';
@@ -10,9 +11,10 @@ import { MemoryBackend, storageJournal } from '../src/lib/outfit-storage';
 import type { OutfitBackend } from '../src/lib/outfit-library';
 import { FALLBACK_FACE, startingOutfit, useBuildStore, withRenderableFace } from '../src/store/useBuildStore';
 import {
-  deleteOutfit, duplicateOutfit, flushSavedOutfits, forgetMissing, newOutfit, openFromUrl, randomiseOutfit,
+  deleteOutfit, duplicateOutfit, flushSavedOutfits, forgetMissing, newOutfit, openFromUrl, openPreset, randomiseOutfit,
   renameOutfit, resetOutfit, saveDraft, selectOutfit, startSavedOutfits, stopSavedOutfits, useSavedOutfits,
 } from '../src/store/useSavedOutfits';
+import { presetSlots, type PresetData } from '../src/lib/preset-outfits';
 import { manualScheduler, memoryStorage } from './helpers/saved-outfits';
 
 const SITE = 'https://chronohaxx.github.io/the-finals-outfit/';
@@ -250,6 +252,106 @@ test('storage off: everything still works for the visit, and the status says so'
   assert.equal(currentRecord()?.slots.headwear, HAT);
   assert.equal(newOutfit(), true);
   assert.equal(outfits().length, 2);
+});
+
+// The game's own outfits (Outfits view): put on the way the view does it, over whatever is on screen.
+const presets = (JSON.parse(readFileSync(new URL('../src/data/preset-outfits.json', import.meta.url), 'utf8')) as PresetData).outfits;
+const BARRY = presets.find(o => o.id === 'alfaactabot')!;
+const BARREL = presets.find(o => o.id === 'medievalbot')!;
+const wear = (outfit: typeof BARRY) => openPreset(outfit.name, presetSlots(outfit, build()));
+const draftOf = () => (current() as { kind: 'draft'; draft: { name: string; reason: string; edited?: boolean } }).draft;
+
+test('an in-game outfit opens unsaved; the saved outfit is untouched, Undo goes back, and an edit saves it as its own', async () => {
+  await visit();
+  openFromUrl(SITE);
+  equip(HAT);
+  const mine = currentRecord()!;
+  const before = structuredClone(mine.slots);
+  assert.equal(wear(BARRY), 'draft');
+  assert.equal(current()?.kind, 'draft');
+  assert.deepEqual([draftOf().name, draftOf().reason], [BARRY.name, 'preset']);
+  assert.equal(build().face, 'meta-bothead');
+  assert.equal(build().headwear, null, 'the outfit replaces the hat');
+  assert.equal(outfits().length, 1, 'putting an outfit on saves nothing');
+  assert.deepEqual(outfits()[0].slots, before, 'the saved outfit is byte for byte what it was');
+  assert.match(state().toast?.message ?? '', /Changing anything saves it/);
+
+  state().toast!.undo!();
+  assert.equal(currentRecord()?.id, mine.id, 'Undo goes back to the saved outfit');
+  assert.equal(build().headwear, HAT);
+  assert.equal(state().toast, null);
+
+  wear(BARRY);
+  equip(GLASSES); // the first change saves the outfit as a new one
+  assert.equal(currentRecord()?.name, BARRY.name);
+  assert.equal(currentRecord()?.slots.eyewear, GLASSES);
+  assert.equal(outfits().length, 2);
+  assert.equal(state().toast, null, 'the edit retired the undo, which would also undo the edit');
+  await flushSavedOutfits();
+  const stored = (await backend.readAll()) as { id: string; slots: Record<string, string> }[];
+  assert.deepEqual(stored.find(r => r.id === mine.id)?.slots, before);
+});
+
+test('wearing the outfit already on screen changes nothing; one matching a saved outfit selects it', async () => {
+  await visit();
+  openFromUrl(SITE);
+  wear(BARRY);
+  assert.equal(wear(BARRY), 'same');
+  assert.equal(outfits().length, 1);
+  assert.equal(saveDraft(), true);
+  const saved = currentRecord()!;
+  assert.equal(saved.name, BARRY.name);
+  newOutfit();
+  const count = outfits().length;
+  assert.equal(wear(BARRY), 'record');
+  assert.equal(currentRecord()?.id, saved.id, 'the saved copy is selected, not duplicated');
+  assert.equal(outfits().length, count);
+  assert.match(state().toast?.message ?? '', /already has these pieces/);
+});
+
+test('at the cap an in-game outfit stays unsaved, and an edited unsaved outfit asks before another replaces it', async () => {
+  await visit({ cap: 1, confirm: false });
+  openFromUrl(SITE);
+  equip(HAT);
+  assert.equal(wear(BARRY), 'draft');
+  assert.match(state().toast?.message ?? '', /not saved: you have 1 saved outfits/);
+  equip(GLASSES); // cannot be saved at the cap
+  assert.equal(current()?.kind, 'draft');
+  assert.equal(draftOf().edited, true);
+  assert.equal(wear(BARREL), 'declined', 'refused by the confirm stub');
+  assert.equal(confirms.length, 1);
+  assert.equal(build().eyewear, GLASSES, 'the unsaved edit is still on screen');
+  assert.equal(outfits()[0].slots.headwear, HAT);
+});
+
+test('an in-game outfit keeps the body type on screen, and a saved copy on another body is not "the same outfit"', async () => {
+  await visit();
+  openFromUrl(SITE);
+  wear(BARRY);
+  assert.equal(saveDraft(), true);
+  const masculine = currentRecord()!;
+  newOutfit();
+  useBuildStore.getState().setBodyType('androgynous');
+  assert.equal(wear(BARRY), 'draft', 'the Masculine copy is not selected for an Androgynous contestant');
+  assert.equal(useBuildStore.getState().bodyType, 'androgynous', 'putting an outfit on does not change the body');
+  assert.equal((current() as { kind: 'draft'; draft: { bodyType?: string } }).draft.bodyType, 'androgynous');
+  equip(GLASSES); // the edit saves the outfit with its body type
+  assert.equal(currentRecord()?.bodyType, 'androgynous');
+  assert.equal(outfits().find(r => r.id === masculine.id)?.bodyType ?? 'masculine', 'masculine', 'the first copy is untouched');
+});
+
+test('an in-game outfit over an unedited shared link replaces it, and Undo brings the link back', async () => {
+  await visit();
+  openFromUrl(SITE);
+  const link = linkTo({ face: FALLBACK_FACE, feet: BOOTS });
+  openFromUrl(link);
+  assert.equal(draftOf().reason, 'link');
+  wear(BARREL);
+  assert.equal(draftOf().reason, 'preset');
+  state().toast!.undo!();
+  assert.equal(draftOf().reason, 'link');
+  assert.equal(build().feet, BOOTS);
+  assert.equal(outfits().length, 1);
 });
 
 test('an unreadable link keeps the current outfit', async () => {
