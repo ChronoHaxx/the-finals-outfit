@@ -1,0 +1,11 @@
+
+ ⛅️ wrangler 4.131.1 (update available 4.161.0)
+───────────────────────────────────────────────
+Uploading... (1131/1132)
+Uploading... (1132/1132)
+✨ Success! Uploaded 1 files (1131 already uploaded) (1.51 sec)
+
+✨ Uploading _headers
+🌎 Deploying...
+✨ Deployment complete! Take a peek over at https://e4608dac.the-finals-outfit-assets.pages.dev
+✨ Deployment alias URL: https://anim-1113-faces-sfx.the-finals-outfit-assets.pages.dev
