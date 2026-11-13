@@ -42,7 +42,7 @@ const inMemory = [
   ['/', publicDir, '', false, false],
 ];
 const types = {
-  '.json': 'application/json', '.glb': 'model/gltf-binary', '.bin': 'application/octet-stream', '.webp': 'image/webp',
+  '.json': 'application/json', '.m4a': 'audio/mp4', '.glb': 'model/gltf-binary', '.bin': 'application/octet-stream', '.webp': 'image/webp',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.gz': 'application/gzip',
   '.glsl': 'text/plain; charset=utf-8', '.asm': 'text/plain; charset=utf-8', '.txt': 'text/plain; charset=utf-8',
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',

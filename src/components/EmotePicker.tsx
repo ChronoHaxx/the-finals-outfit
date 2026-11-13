@@ -247,9 +247,9 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
             {missing ?? "No prop or effects in the game."}
             {detailEmote.emote?.itemProps?.length ? " Extra prop with a matching cosmetic." : ""}
           </p>
-        </> : <p className="text-[11px] leading-snug text-fg-dim">{chinals
-          ? "Chinals emotes on your outfit (global cosmetics). Props are shown; effects, sound and facial expressions are not."
-          : "The game's emote animations on your outfit. Props, effects, sound and facial expressions are not shown yet."}
+        </> : <p className="text-[11px] leading-snug text-fg-dim">
+          {chinals ? "Chinals emotes on your outfit (global cosmetics)" : "The game's emote animations on your outfit"}, with
+          their props{animator.sounds.available ? " and sound" : ""}. Effects and facial expressions are not shown yet.
         </p>}
       </div>
     </div>

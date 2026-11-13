@@ -10,6 +10,7 @@ import { pendingPose, subscribePendingPose, takePendingPose } from "../lib/share
 import { setPoseSource } from "../lib/viewer-handle";
 import { isChinalsClip } from "../lib/site-mode";
 import { EmotePicker, missingSummary } from "./EmotePicker";
+import { EmoteSoundControl } from "./EmoteSoundControl";
 
 // Showcase animation UI (5 Nov 2026): Animate / Static toggle, pause, and the emote picker (EmotePicker.tsx: every
 // emote with its icon, plus outfit-screen reactions and idles). Hidden unless the deployment publishes a clip manifest
@@ -69,12 +70,15 @@ export function useRigAnimator(base: string): RigAnimator | null {
     loadAnimationManifest(base).then(loaded => {
       const params = new URLSearchParams(window.location.search);
       if (cancelled || !loaded) return;
+      // Automated browsers get no sounds at all (no audio device, no downloads): captures stay silent and deterministic.
+      // Each clip set names its own sounds (the Chinals set's sounds.json lives on the Chinals host).
       created = new RigAnimator(loaded.manifest, loaded.clipBase,
         { sway: params.get("sway") !== "0", deform: params.get("deform") !== "0", loopEmote: savedLoop(), propsUrl: loaded.propsUrl,
-          facesUrl: loaded.facesUrl, face: params.get("face") !== "0" });
+          soundsUrl: AUTOMATED ? null : loaded.soundsUrl, facesUrl: loaded.facesUrl, face: params.get("face") !== "0" });
       setLoaded({ base, animator: created });
     }).catch(error => console.warn("[animation] manifest unavailable", error));
-    // dispose(), not reset(): a clip still downloading must not bind the body to a discarded animator when it lands.
+    // dispose(), not reset(): a clip still downloading must not bind the body to a discarded animator when it lands,
+    // and the discarded animator's sounds must close their audio device and stop listening for gestures.
     return () => { cancelled = true; created?.dispose(); };
   }, [base]);
   return loaded?.base === base ? loaded.animator : null;
@@ -248,6 +252,7 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
   return (
     <div ref={controls} className="flex min-h-0 flex-col items-end gap-1.5">
       <div className="flex gap-1.5">
+        {emote && animator.sounds.hasSound(emote.source) && <EmoteSoundControl sounds={animator.sounds} />}
         {state.active && (
           <button type="button" className={button} disabled={disabled}
             aria-pressed={state.paused} title={state.paused ? "Resume the animation" : "Freeze this frame"}

@@ -14,7 +14,7 @@ using System.Security.Cryptography;
 // containers exactly like scripts/shader-probe (same mapping and key handling), never writes near them,
 // and never touches the running game.
 if (args.Length > 0 && args[0] == "api") return Api.Run(args[1..]);
-if (args.Length is < 6 or > 7 || args[0] is not ("export" or "list" or "json" or "texture" or "mesh"))
+if (args.Length is < 6 or > 7 || args[0] is not ("export" or "list" or "json" or "texture" or "mesh" or "sound"))
 {
     Console.Error.WriteLine("Usage: AnimExport export <paks> <usmap> <oodle.dll> <empty-output-directory> <requests.json> [FModel-AppSettings.json]");
     Console.Error.WriteLine("       AnimExport list <paks> <usmap> <oodle.dll> <regex> <FModel-AppSettings.json>  (prints matching package paths)");
@@ -24,10 +24,13 @@ if (args.Length is < 6 or > 7 || args[0] is not ("export" or "list" or "json" or
     Console.Error.WriteLine("            (highest LOD of each static/skeletal mesh as raw UE data: .mesh.json + .mesh.bin)");
     Console.Error.WriteLine("       AnimExport texture <paks> <usmap> <oodle.dll> <empty-output-directory> <@paths.txt|regex> <FModel-AppSettings.json>");
     Console.Error.WriteLine("            (each package's first Texture2D decoded to PNG, at most 2000 packages)");
+    Console.Error.WriteLine("       AnimExport sound <paks> <usmap> <oodle.dll> <empty-output-directory> <@paths.txt|regex> <FModel-AppSettings.json>");
+    Console.Error.WriteLine("            (each package's first SoundWave as its cooked audio bytes, <name>.<format>, e.g. .binka/.ogg/.opus)");
     Console.Error.WriteLine("       AnimExport api <Type|find:Method>...");
     return 2;
 }
-bool listOnly = args[0] == "list", jsonOnly = args[0] == "json", textureOnly = args[0] == "texture", meshOnly = args[0] == "mesh";
+bool listOnly = args[0] == "list", jsonOnly = args[0] == "json", textureOnly = args[0] == "texture", meshOnly = args[0] == "mesh",
+    soundOnly = args[0] == "sound";
 args = args[1..];
 if (listOnly) args = [args[0], args[1], args[2], Path.Combine(Path.GetTempPath(), "anim-export-list-" + Guid.NewGuid().ToString("N")), args[3], args[4]];
 var input = Path.GetFullPath(args[0]).TrimEnd(Path.DirectorySeparatorChar);
@@ -71,7 +74,7 @@ if (listOnly)
     Directory.Delete(output); // the empty placeholder directory created above; nothing was written into it
     return 0;
 }
-if (jsonOnly || textureOnly || meshOnly)
+if (jsonOnly || textureOnly || meshOnly || soundOnly)
 {
     var selector = args[4];
     IEnumerable<string> paths = selector.StartsWith('@')
@@ -81,12 +84,23 @@ if (jsonOnly || textureOnly || meshOnly)
     int written = 0, failed = 0;
     foreach (var path in paths.Take(2000))
     {
-        var target = Path.Combine(output, Path.ChangeExtension(path, textureOnly ? ".png" : meshOnly ? null : ".json").Replace('/', Path.DirectorySeparatorChar));
+        var target = Path.Combine(output, Path.ChangeExtension(path, textureOnly ? ".png" : meshOnly || soundOnly ? null : ".json").Replace('/', Path.DirectorySeparatorChar));
         try
         {
             var package = provider.LoadPackage(path);
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             if (meshOnly) MeshDump.Write(provider, path, target);
+            else if (soundOnly)
+            {
+                // Emote sound effects: the SoundWave's cooked bulk data exactly as shipped (no decode here). The format
+                // names the codec (BINKA, OGG, OPUS, ADPCM, PCM...); conversion to a web format happens outside.
+                var wave = package.GetExports().OfType<CUE4Parse.UE4.Assets.Exports.Sound.USoundWave>().First();
+                string format;
+                byte[]? data;
+                CUE4Parse_Conversion.Sounds.SoundDecoder.Decode(wave, false, out format, out data);
+                if (data is null || format.Length == 0) throw new InvalidDataException("sound wave has no audio data");
+                File.WriteAllBytes(target + "." + format.ToLowerInvariant(), data);
+            }
             else if (textureOnly)
             {
                 // UI icons: the full-size top mip, decoded on the CPU (BC7/BC3 -> RGBA) and written losslessly. Resizing
@@ -106,7 +120,7 @@ if (jsonOnly || textureOnly || meshOnly)
             Console.Error.WriteLine($"{path}: {e.GetType().Name}: {e.Message.Split('\n')[0]}");
         }
     }
-    Console.WriteLine($"Wrote {written} {(textureOnly ? "PNG" : meshOnly ? "mesh" : "package JSON")} files ({failed} failed) to {output}");
+    Console.WriteLine($"Wrote {written} {(textureOnly ? "PNG" : meshOnly ? "mesh" : soundOnly ? "sound" : "package JSON")} files ({failed} failed) to {output}");
     return 0;
 }
 File.WriteAllText(Path.Combine(output, "source-run.json"), JsonConvert.SerializeObject(new
