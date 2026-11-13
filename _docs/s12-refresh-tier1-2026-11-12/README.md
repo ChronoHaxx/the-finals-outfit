@@ -3,6 +3,10 @@
 The plan is in `PLAN.md`. On 12 Nov the user answered the hands-on gate with "You do all 8", so the agent ran the
 pilot. This file records how the pilot was built, how to rebuild it, and the review.
 
+**Pilot change from the plan:** the long coat (`SK_Casual_LongCoat_M`) is held by the item rule. Its items also show
+`SK_Casual_BandagedTankTop_M`, which is itself held further down the chain. So the weights-class example became
+`SK_Streetwear_SingleSleeveTop_M` (3,632 vertices with changed weights, 2 items, nothing else holding them).
+
 ## Files
 
 | File | What |
@@ -84,8 +88,34 @@ Captured with `anim=0&sway=0`: 8 outfits x 3 cameras, on live (5231) and pilot (
 - **c1, the single-sleeve top (weights):** a few wrinkle highlights move along the sleeve, and it is clean.
 - d1, the starter tee under the long coat: no visible change (the coat covers it).
 
-### Still to do (cut off by the usage limit, 13 Nov)
+### Idle, emote and Feminine (13 Nov)
 
-- Idle, flex emote and Feminine-info sets: `run-captures.sh` was still running. Diff each with `diff-captures.py`
-  and look at Masculine at full size.
-- `functional-review.md`, then push the branch and open the PR (stacked on PR #38) with the checklist.
+`run-captures.sh`. Every shot had 0 console errors.
+
+| Set | Query | Shots |
+|---|---|---:|
+| Idle, Masculine and Androgynous, 6 cameras (full, front, back, both sides, waist) | `anim=outfit-idle&animTime=6&sway=0` | 192 |
+| Flex emote, Masculine and Androgynous, 3 cameras, on c1, c2, a3 and d1 | `anim=flex&animTime=3&sway=0` | 48 |
+| Feminine, for information only, 2 cameras | idle | 32 |
+
+Diffs and pair images: `idle-diff/`, `emote-flex-diff/`, `feminine-info-diff/`.
+
+- **Androgynous idle:** a1, a2, a3, a4 and d1 match live within noise. c1 and c2 differ only on the swapped
+  single-sleeve top and hip bag, and d2 on the biker vest's tee.
+- **Masculine idle changes where expected:** the sniper pants (1.43 cm `medium_male`) in a2, a4, c2 and d1, and the
+  varsity jacket (1.36 cm) in a3. Looked at full size:
+  - a2: the pre-S12 basic tee is pixel-identical above its hem (0 pixels differ in rows 500-900), and only the S12
+    pants below it change. The waistband stays under the hem, front and back (`idle-diff/zoom-a2-masc-hemband.png`).
+  - a3: the S12 varsity jacket is slightly slimmer at the hem and sleeves. Nothing clips against the pre-S12 jeans or
+    the gloves (`idle-diff/zoom-a3-masc-front.png`).
+  - d1: the long coat's pre-S12 belts still sit over the S12 pants' waistband (`idle-diff/zoom-d1-masc-front.png`).
+- **Flex emote (class C under motion):**
+  - c1: the single-sleeve top deforms cleanly along the sleeve, shoulder and armhole, front and back, with no spikes
+    or tears (`emote-flex-diff/zoom-c1-*.png`).
+  - a3: the varsity jacket's cuffs and hem are clean in the flex (`emote-flex-diff/zoom-a3-*.png`).
+- **Feminine (information; the body is still pre-S12):** the S12 tee and sweater show their fuller S12 chest, and
+  nothing pokes through on the front (`feminine-info-diff/zoom-*.png`). Feminine stays off until stage 3.
+
+**Agent verdict:** no new defect in the pilot. One live defect is fixed (the USA biker vest). The visible changes are
+the intended S12 shapes on Masculine and the S12 shading of the hip bag and single-sleeve top. Still needed: the
+user's checks (`functional-review.md`).

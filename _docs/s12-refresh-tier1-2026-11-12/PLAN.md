@@ -4,7 +4,8 @@ Goal: every body-type mesh in an outfit comes from the same season, so that Femi
 ships (user's order, 11-12 Nov: picker → refresh in tiers → S12 body → Feminine). Tier 1 = the refused meshes whose
 **surface is unchanged** in Season 12 (same positions, indices, UVs, vertex colours and material slots).
 
-Status: **plan for the user's approval.** Nothing here touches the live index, the 5174 server or the live worktree.
+Status: **piloted.** On 12 Nov the user answered the gate (section 7) with "You do all 8", so the agent ran the pilot;
+see `README.md`. Nothing here touches the live index, the 5174 server or the live worktree.
 Data (ignored, root checkout): `public/models/s12-refresh-tier1-v1/`.
 
 ## 1. Re-census on the current active index
