@@ -327,7 +327,10 @@ export class EmoteSounds {
       if (this.voices.size || this.lastTime !== null) this.cut();
       return;
     }
-    if (!this.context || this.context.state !== "running") { this.lastTime = null; return; }
+    // A context made a moment ago can report "running" before its device has rendered anything: its clock still reads 0.
+    // A voice started then would sound late by the device's start-up (0.7 s once in Chrome on Windows, 13 Nov 2026) and
+    // be restarted by the drift rule, an audible skip. Wait for the clock; the cue then joins at its offset.
+    if (!this.context || this.context.state !== "running" || this.context.currentTime === 0) { this.lastTime = null; return; }
     const t = clock.time, now = this.context.currentTime;
     if (this.lastTime !== null && t < this.lastTime - 1e-6) this.wrapped(clock.duration); // seeks pause first: a loop
     this.lastTime = t;

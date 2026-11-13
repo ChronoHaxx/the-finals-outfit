@@ -174,6 +174,7 @@ test("an instrument window with a gap before the clip ends restarts its track ea
 
 test("a musical loop joins at the clock's position, wrapped by its wave length", async () => {
   const { ctx, sounds } = await setup(LOOPSEQ);
+  ctx.currentTime = 0.5; // a device that has been running a moment
   sounds.update({ time: 5, duration: 6, looping: true }, true); // e.g. a link opened at 5 s, sound unlocked now
   const [music] = ctx.started.filter(s => s.wave === "Music");
   assert.ok(Math.abs(music.offset - 1) < 1e-6, `5 s into a 4 s loop is 1 s into the wave (offset ${music.offset})`);
@@ -234,6 +235,7 @@ test("muted: nothing is downloaded and nothing plays; unmuting joins the emote m
       fetch: ((url: string) => { fetched.push(url); return fakeFetch(url as never); }) as typeof fetch, random: () => 0, unlocked: true });
     await sounds.prepare(SEQ);
     sounds.setEmote(SEQ);
+    ctx.currentTime = 0.5; // a device that has been running a moment
     sounds.update({ time: 2.5, duration: 6, looping: false }, true);
     assert.deepEqual(fetched.map(u => u.split("/").at(-1)), ["sounds.json"], "no wave downloaded while muted");
     assert.equal(ctx.started.length, 0);
@@ -258,8 +260,23 @@ test("no audio before a gesture; afterwards the emote joins mid-sound", async ()
   sounds.update({ time: 2.5, duration: 6, looping: false }, true);
   assert.equal(ctx.started.length, 0, "locked: silent");
   ctx.state = "running";
+  ctx.currentTime = 0.5; // resumed by the gesture, its device rendering
   sounds.update({ time: 2.6, duration: 6, looping: false }, true);
   assert.ok(Math.abs(ctx.started[0].offset - 0.6) < 1e-6, "joins 0.6 s into the voice line");
+});
+
+test("a context whose clock has not started yet starts nothing; once it ticks, the cue joins at its offset", async () => {
+  // Chrome reports a context made in a gesture as "running" before its device renders: currentTime still 0. Started
+  // then, the voice sounded 0.7 s late and the drift rule skipped it forward (seen 13 Nov 2026, first emote after a
+  // Chinals mode switch).
+  const { ctx, sounds } = await setup(SEQ);
+  sounds.update({ time: 2.5, duration: 6, looping: false }, true);
+  assert.equal(ctx.started.length, 0, "clock at 0: nothing started");
+  ctx.currentTime = 0.02;
+  sounds.update({ time: 2.52, duration: 6, looping: false }, true);
+  assert.equal(ctx.started.length, 1);
+  assert.ok(Math.abs(ctx.started[0].offset - 0.52) < 1e-6, `joins 0.52 s into the voice line (offset ${ctx.started[0].offset})`);
+  assert.equal(ctx.started[0].when, 0.02, "starts now, on the running clock");
 });
 
 test("mute and volume are remembered and survive broken storage", () => {
