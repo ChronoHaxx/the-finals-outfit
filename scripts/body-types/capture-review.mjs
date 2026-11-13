@@ -11,15 +11,21 @@ import path from "node:path";
 import { chromium } from "playwright-core";
 
 const [OUT, ...rest] = process.argv.slice(2);
-if (!OUT || fs.existsSync(OUT)) throw new Error(`Provide a new output folder (preserve ${OUT})`);
+// --resume continues an interrupted run in the same folder: a shot whose .png and .json both exist is kept as it is
+// and never retaken; the summary is rebuilt from every shot's .json.
+const resume = rest.includes("--resume");
+if (!OUT || (fs.existsSync(OUT) && !resume)) throw new Error(`Provide a new output folder (preserve ${OUT})`);
 const option = (name) => { const i = rest.indexOf(name); return i >= 0 ? rest[i + 1] : undefined; };
 const only = option("--only");
 
-const ALL_SERVERS = { live: "http://127.0.0.1:5191", s12: "http://127.0.0.1:5192" };
+// --ports live=5193,s12=5194: other servers than stage 1's (whole-catalogue refresh, 6 Nov 2026).
+const PORTS = Object.fromEntries((option("--ports") ?? "live=5191,s12=5192").split(",").map(p => p.split("=")));
+const ALL_SERVERS = { live: `http://127.0.0.1:${PORTS.live}`, s12: `http://127.0.0.1:${PORTS.s12}` };
 const SERVERS = Object.fromEntries(Object.entries(ALL_SERVERS)
   .filter(([name]) => (option("--servers") ?? "live,s12").split(",").includes(name)));
 const BASE = { face: "head-face-01-base", lowerBody: "casual-loosejeans-denim-darkblue", feet: "casual-tallsneakers-canvas" };
-export const OUTFITS = {
+// --outfits FILE: {name: slots} replaces the stage 1 set below.
+const STAGE1_OUTFITS = {
   "default-tee": { ...BASE, upperBody: "casual-basictshirt-cotton-black" },
   "zip-hoodie": { ...BASE, upperBody: "casual-hoodiezipup-cotton-black" },
   "bomber": { ...BASE, upperBody: "streetwear-oversizedbomberjacket-nylon-vanguard" },
@@ -28,11 +34,24 @@ export const OUTFITS = {
   "short-dress": { ...BASE, upperBody: "casual-shortdress-cotton" },
   "tech-crop-top": { ...BASE, upperBody: "streetwear-techcroptop-nylon-ivada" },
 };
-const BODY_TYPES = ["masculine", "feminine", "androgynous"];
-const CAMERAS = { front: "0,1.25,1.9,0,1.25,0", side: "1.9,1.25,0,0,1.25,0", full: "0,0.95,4.3,0,0.95,0" };
+export const OUTFITS = option("--outfits") ? JSON.parse(fs.readFileSync(option("--outfits"), "utf8")) : STAGE1_OUTFITS;
+// --body-types masculine,feminine picks a subset (default: all three).
+const BODY_TYPES = ["masculine", "feminine", "androgynous"]
+  .filter(type => (option("--body-types") ?? "masculine,feminine,androgynous").split(",").includes(type));
+// Waist cameras (front and back at hip height) look at waistbands and hems up close; --cameras picks a subset.
+// back and sideleft (S12 item refresh tier 1, 12 Nov 2026): both sides and both hands.
+const ALL_CAMERAS = { front: "0,1.25,1.9,0,1.25,0", side: "1.9,1.25,0,0,1.25,0", full: "0,0.95,4.3,0,0.95,0",
+  waist: "0,1.0,1.5,0,1.0,0", waistback: "0,1.0,-1.5,0,1.0,0", back: "0,1.25,-1.9,0,1.25,0",
+  sideleft: "-1.9,1.25,0,0,1.25,0" };
+const CAMERAS = Object.fromEntries(Object.entries(ALL_CAMERAS)
+  .filter(([name]) => (option("--cameras") ?? "front,side,full").split(",").includes(name)));
+// --query "anim=outfit-idle&animTime=6&sway=0": extra viewer switches for every shot. Main plays the outfit idle by
+// default but holds still in automated browsers; ?anim=<clip>&animTime=<s> holds a clip paused at that time, so two
+// servers capture the same frame (AnimationControls.tsx).
+const QUERY = option("--query") ? `&${option("--query")}` : "";
 
 const outfitUrl = (base, slots, bodyType, cam) => `${base}/?outfit=1.${Buffer.from(JSON.stringify({ slots }))
-  .toString("base64url")}&reconstructed=1&bodyType=${bodyType}&cam=${cam}&fov=28`;
+  .toString("base64url")}&reconstructed=1&bodyType=${bodyType}&cam=${cam}&fov=28${QUERY}`;
 
 const browser = await chromium.launch({ channel: "msedge", headless: true });
 const context = await browser.newContext({ viewport: { width: 1500, height: 1100 }, deviceScaleFactor: 1 });
@@ -51,9 +70,30 @@ for (const [server, base] of Object.entries(SERVERS))
   for (const [outfit, slots] of Object.entries(OUTFITS)) {
     if (only && outfit !== only) continue;
     for (const bodyType of BODY_TYPES) for (const [camera, cam] of Object.entries(CAMERAS)) {
-      errors = []; meshRequests = [];
       const file = path.join(OUT, server, outfit, `${bodyType}-${camera}.png`);
+      const recordFile = file.replace(/\.png$/, ".json");
+      if (resume && fs.existsSync(file) && fs.existsSync(recordFile)) {
+        summary.push(JSON.parse(fs.readFileSync(recordFile, "utf8")));
+        continue;
+      }
       fs.mkdirSync(path.dirname(file), { recursive: true });
+      // One retry: a page reload under the shot (a dev-server full reload) loses the page context mid-screenshot.
+      for (let attempt = 1; ; attempt++) {
+        try {
+          summary.push(await shoot(server, base, outfit, slots, bodyType, camera, cam, file));
+          break;
+        } catch (e) {
+          if (attempt >= 2) throw e;
+          console.log(server, outfit, bodyType, camera, "retry after", String(e).split("\n")[0]);
+        }
+      }
+    }
+  }
+fs.writeFileSync(path.join(OUT, "summary.json"), JSON.stringify({ at: new Date().toISOString(), shots: summary }, null, 1) + "\n");
+await browser.close();
+
+async function shoot(server, base, outfit, slots, bodyType, camera, cam, file) {
+      errors = []; meshRequests = [];
       await page.goto(outfitUrl(base, slots, bodyType, cam), { waitUntil: "domcontentloaded", timeout: 180000 });
       await page.waitForFunction(() => window.__rigIdle === true, undefined, { timeout: 180000 });
       // The viewer's own container goes full window, so the capture is the render surface only and large.
@@ -83,9 +123,6 @@ for (const [server, base] of Object.entries(SERVERS))
       const row = { server, outfit, bodyType, camera, file: path.relative(OUT, file).replaceAll("\\", "/"),
         ...record, meshRequests: [...new Set(meshRequests)], errors: [...new Set(errors)] };
       fs.writeFileSync(file.replace(/\.png$/, ".json"), JSON.stringify(row, null, 1) + "\n");
-      summary.push(row);
       console.log(server, outfit, bodyType, camera, "meshes", record.meshes.length, "errors", row.errors.length);
-    }
-  }
-fs.writeFileSync(path.join(OUT, "summary.json"), JSON.stringify({ at: new Date().toISOString(), shots: summary }, null, 1) + "\n");
-await browser.close();
+      return row;
+}

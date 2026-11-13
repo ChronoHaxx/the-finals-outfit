@@ -1,0 +1,9 @@
+public/models/s12-bodytype-refresh-v1/meshes/SK_Casual_Sweater_M.glb
+public/models/s12-bodytype-refresh-v1/meshes/SK_Casual_Tshirt_M.glb
+public/models/s12-bodytype-refresh-v1/meshes/SK_Hologram_KneeHologram01_M.glb
+public/models/s12-bodytype-refresh-v1/meshes/SK_Military_SniperPants_M.glb
+public/models/s12-bodytype-refresh-v1/meshes/SK_StarterSet_TShirt_M.glb
+public/models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_HipBag_M.glb
+public/models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_SingleSleeveTop_M.glb
+public/models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TechGloves_M.glb
+public/models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_VarsityJacket_M.glb
