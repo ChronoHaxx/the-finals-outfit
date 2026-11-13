@@ -1,0 +1,4454 @@
+{
+ "driver": "public/models/body/SK_Body_M.glb",
+ "driverBones": 92,
+ "tolerances": {
+  "weightSteps": 2.5,
+  "sumSteps": 0.5,
+  "normalDeg": 1.0,
+  "ibm": 1e-05
+ },
+ "meshes": {
+  "SK_ActionHero_SentinelTop_M": {
+   "source": "/Game/Discovery/Characters/ActionHero/Assets/SentinelTop/SK_ActionHero_SentinelTop_M.SK_ActionHero_SentinelTop_M",
+   "liveUrl": "../reconstructed-family-batch21-action-hero-sentinel-top-v1/meshes/SK_ActionHero_SentinelTop_M.glb",
+   "liveSha256": "f15a4e0f778719b39cf81bb12bb352f346b046f8d54c2d35929acb5d227d2eb3",
+   "s12Sha256": "63417570cbefd9a0611e495a788453d1f59154d502b98031dec23983490d688a",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_BeardAnchorHalf_M": {
+   "source": "/Game/Discovery/Characters/FacialHairs/BeardAnchorHalf/SK_BeardAnchorHalf_M.SK_BeardAnchorHalf_M",
+   "liveUrl": "../reconstructed-facial-hair-v4/meshes/SK_BeardAnchorHalf_M.glb",
+   "liveSha256": "d79dac767aa4cdf064ca187f5219530fca774290fb4a567cac7fa8a4f7a90d3b",
+   "s12Sha256": "1af13d0b678c9e5c52f4c98293585ea24ca1db1d4f258d4cd6ef3e67a954ab27",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0'] vs ['JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0']"
+   ],
+   "admissible": false
+  },
+  "SK_BeardFull_M": {
+   "source": "/Game/Discovery/Characters/FacialHairs/BeardFull/SK_BeardFull_M.SK_BeardFull_M",
+   "liveUrl": "../reconstructed-facial-hair-v4/meshes/SK_BeardFull_M.glb",
+   "liveSha256": "a026d6da32c4af62cf1b7bf30106f0489b9510a4a878b1a635856417020df5d1",
+   "s12Sha256": "5f6618031f84fdc1a5a7aa948acfce0723b59a35d0cc68edd59eb540027027ec",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']"
+   ],
+   "admissible": false
+  },
+  "SK_Casual_Bangles_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/Bangles/SK_Casual_Bangles_M.SK_Casual_Bangles_M",
+   "liveUrl": "../reconstructed-family-batch24-casual-bangles-r2-v1/meshes/SK_Casual_Bangles_M.glb",
+   "liveSha256": "ef44d966a78fda35d59208f03f1b2266a44e4b96df2aa6017b55b2a89c6f226b",
+   "s12Sha256": "420f3e487b39c3d33af39f255b1d184b054d5553d4b12e44b7b93f3218d47fcd",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Casual_BasicTshirt_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/BasicTshirt/SK_Casual_BasicTshirt_M.SK_Casual_BasicTshirt_M",
+   "liveUrl": "../reconstructed-meshes-v2/SK_Casual_BasicTshirt_M.glb",
+   "liveSha256": "018762ec821b7a0acadaa88fa911058ca83887510c6518844bbcc15974963d64",
+   "s12Sha256": "47ccc03465f8e340800b7e8ab3c41f63f9ed14a23cd03dc00f09b658cd2184a2",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Casual_BikerVestDetailsPunk_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/BikerVestDetailsPunk/SK_Casual_BikerVestDetailsPunk_M.SK_Casual_BikerVestDetailsPunk_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Casual_BikerVestDetailsPunk_M.glb",
+   "liveSha256": "0ceac0ca6032f5792fe7190e4b62e093dcfbbe1a6c94bd0f4c54720463bd823f",
+   "s12Sha256": "e3214882cacc52146f6b9795d6046bc8fe3d9b45ed8610799af19d2448ebd9fa",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.487,
+     "verticesChanged": 4594
+    }
+   },
+   "jointsLive": 22,
+   "jointsS12": 22,
+   "weightMaxSteps": 68.0,
+   "verticesWeightMoved": 130,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Casual_CropTopCorset_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/CropTopCorset/SK_Casual_CropTopCorset_M.SK_Casual_CropTopCorset_M",
+   "liveUrl": "../reconstructed-family-batch21-casual-crop-top-corset-v1/meshes/SK_Casual_CropTopCorset_M.glb",
+   "liveSha256": "32e7b91f6da9b3ab192caf82e2c3bdf9cb78b2661682d542dc6ee16071dca72d",
+   "s12Sha256": "80b888dc73ee53c50b87af9392b31cd2b8cba1baa6b12149e05907f343198374",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Casual_FrontTieCropTopSleeves_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/FrontTieCropTopSleeves/SK_Casual_FrontTieCropTopSleeves_M.SK_Casual_FrontTieCropTopSleeves_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_Casual_FrontTieCropTopSleeves_M.glb",
+   "liveSha256": "0501d2d21e2af212b9c038eed07ef832b0e96f20fe156bdca761397aff392364",
+   "s12Sha256": "8357dd374a138ad3d9a0159e1882b8258d22ab8b5fdd9826044b8bf4a81a7799",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 51,
+   "jointsS12": 51,
+   "weightMaxSteps": 208.9,
+   "verticesWeightMoved": 767,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Casual_Hoodie_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/Hoodie/SK_Casual_Hoodie_M.SK_Casual_Hoodie_M",
+   "liveUrl": "../reconstructed-family-batch16-casual-hoodie-v1/meshes/SK_Casual_Hoodie_M.glb",
+   "liveSha256": "28172d1c6711ca615f0689c4f25ee83f20076046339882074dd08c1527047126",
+   "s12Sha256": "d5a355555ee01eefed1d1e36d9623345894610a2b95552ed2e7d9838a3c2feb7",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Casual_LongCoat_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/LongCoat/SK_Casual_LongCoat_M.SK_Casual_LongCoat_M",
+   "liveUrl": "../reconstructed-meshes-v2/SK_Casual_LongCoat_M.glb",
+   "liveSha256": "7019619b8b63c661685ca1888af683ee55991dbc1a732ec286c4b4b27ed604cf",
+   "s12Sha256": "a5d65bcf2647a18b6e35f590addb53940e56e37cf60fd84757041936d844983c",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 2.063,
+     "verticesChanged": 3837
+    }
+   },
+   "jointsLive": 56,
+   "jointsS12": 56,
+   "weightMaxSteps": 258.0,
+   "verticesWeightMoved": 275,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Casual_LongHoodie_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/LongHoodie/SK_Casual_LongHoodie_M.SK_Casual_LongHoodie_M",
+   "liveUrl": "../reconstructed-family-batch05-long-hoodies-v1/meshes/SK_Casual_LongHoodie_M.glb",
+   "liveSha256": "dae31d4f5157403a3341e8e782b0f9145c7c4c529e43ae72056134cb02657e5c",
+   "s12Sha256": "bc05985e216a04df5d44e157718407db53b2aae376a1813f00868933d99d5dba",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']"
+   ],
+   "admissible": false
+  },
+  "SK_Casual_ShortDress_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/ShortDress/SK_Casual_ShortDress_M.SK_Casual_ShortDress_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Casual_ShortDress_M.glb",
+   "liveSha256": "7299d45dcfdfbeb7987abf602ad12f251295bb1e68622990421570023f6365d7",
+   "s12Sha256": "5989f91de07c734ef9a1ef051545b15b83198446a7b1ede50886acd393f1d9e1",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.19,
+     "verticesChanged": 1289
+    },
+    "medium_male": {
+     "maxCm": 0.0,
+     "verticesChanged": 1
+    }
+   },
+   "jointsLive": 37,
+   "jointsS12": 28,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [
+    "skirt_jj_01_bl",
+    "skirt_jj_01_r"
+   ],
+   "admissible": true
+  },
+  "SK_Casual_SleeveDetailsPunk_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/SleeveDetailsPunk/SK_Casual_SleeveDetailsPunk_M.SK_Casual_SleeveDetailsPunk_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Casual_SleeveDetailsPunk_M.glb",
+   "liveSha256": "a4ed45df42b0da05d763e3045019d161e74a7d2f3b1994c1e44595df9e75c100",
+   "s12Sha256": "0cb23e8c2644b0ee9127ae8be6ec7183fbdd654d8d90439f2bdb069ae60e55e2",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.721,
+     "verticesChanged": 3324
+    },
+    "medium_male": {
+     "maxCm": 0.0,
+     "verticesChanged": 1
+    }
+   },
+   "jointsLive": 27,
+   "jointsS12": 27,
+   "weightMaxSteps": 270.0,
+   "verticesWeightMoved": 476,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Casual_Sweater_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/Sweater/SK_Casual_Sweater_M.SK_Casual_Sweater_M",
+   "liveUrl": "../reconstructed-family-batch21-casual-sweater-v1/meshes/SK_Casual_Sweater_M.glb",
+   "liveSha256": "9faf5479dbf47d88321ac77767e69dac965285035470f33fae43b7b253776528",
+   "s12Sha256": "04d7e49a4087de6d15566bc8ca7ad3261b6a86694f5f48328f83a33d28122d69",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.073,
+     "verticesChanged": 1939
+    }
+   },
+   "jointsLive": 46,
+   "jointsS12": 49,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Casual_Tshirt_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/Tshirt/SK_Casual_Tshirt_M.SK_Casual_Tshirt_M",
+   "liveUrl": "../reconstructed-casual-tshirts-v1/meshes/SK_Casual_Tshirt_M.glb",
+   "liveSha256": "5df22466d730d22c189c5763005427584cc0ec88140f4525a3f7f2fcc5247e29",
+   "s12Sha256": "b6f0788d0e98d8bcfe4d55d27f1a9a2dfe4f39b46752925d6e3393f26602c5af",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 2.746,
+     "verticesChanged": 2043
+    },
+    "medium_male": {
+     "maxCm": 0.001,
+     "verticesChanged": 4
+    }
+   },
+   "jointsLive": 32,
+   "jointsS12": 34,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Casual_WaterproofBoots_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/WaterproofBoots/SK_Casual_WaterproofBoots_M.SK_Casual_WaterproofBoots_M",
+   "liveUrl": "../reconstructed-family-batch21-casual-waterproof-boots-v1/meshes/SK_Casual_WaterproofBoots_M.glb",
+   "liveSha256": "b053782baa3421bd9235822831fba0b1ae729f64e381ac028c5fc53abbd9df69",
+   "s12Sha256": "a7e186eb9e536b0acda824548fff68023c70eb77f83ad7394c6f49a7f26cb81e",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Casual_WaterproofGloves_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/WaterproofGloves/SK_Casual_WaterproofGloves_M.SK_Casual_WaterproofGloves_M",
+   "liveUrl": "../reconstructed-family-batch21-casual-waterproof-gloves-v1/meshes/SK_Casual_WaterproofGloves_M.glb",
+   "liveSha256": "81eac5175a328fb29e6a77a88b24bd51ce54a8560a09da688aee9827d7d33450",
+   "s12Sha256": "f88b74bfe3accd905b4db6d988b090048874a5ce1bb4893bfb79c811e54ca808",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Casual_WinterScarf_M": {
+   "source": "/Game/Discovery/Characters/Casual/Assets/WinterScarf/SK_Casual_WinterScarf_M.SK_Casual_WinterScarf_M",
+   "liveUrl": "../reconstructed-w125-resweep-t3/meshes/SK_Casual_WinterScarf_M.glb",
+   "liveSha256": "12403280389f5b1bdf137f039def22e9112ec6bad5f545cc249a79f9b9ec25dc",
+   "s12Sha256": "e10c0ab440bc19e827df81a3bdedb2ee73ec066e855922453e2bf9d7420a3afa",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 19,
+   "jointsS12": 19,
+   "weightMaxSteps": 99.11,
+   "verticesWeightMoved": 821,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Christmas_ElfBoots_M": {
+   "source": "/Game/Discovery/Characters/Christmas/Assets/ElfBoots/SK_Christmas_ElfBoots_M.SK_Christmas_ElfBoots_M",
+   "liveUrl": "../reconstructed-family-batch21-christmas-elf-boots-v1/meshes/SK_Christmas_ElfBoots_M.glb",
+   "liveSha256": "6052798198bbd3e8d050fbb580b64a1ae71f783a629422a2db28e700fa76d1ab",
+   "s12Sha256": "d410b9cf7b75fecb91461d5e55bb8618db17063b4620aca009b6678ac6f5db7f",
+   "class": "normals+weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 3.515,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.453,
+     "verticesChanged": 5944
+    },
+    "medium_male": {
+     "maxCm": 0.183,
+     "verticesChanged": 5854
+    }
+   },
+   "jointsLive": 12,
+   "jointsS12": 12,
+   "weightMaxSteps": 4.0,
+   "verticesWeightMoved": 82,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Cowboy_CasualPants_M": {
+   "source": "/Game/Discovery/Characters/Cowboy/Assets/CasualPants/SK_Cowboy_CasualPants_M.SK_Cowboy_CasualPants_M",
+   "liveUrl": "../reconstructed-family-batch21-cowboy-casual-pants-v1/meshes/SK_Cowboy_CasualPants_M.glb",
+   "liveSha256": "3cc6f97674a59a2045eed19a56127501d235fddb520d5de01ebcc022580b74d9",
+   "s12Sha256": "2c4b3e2b7ff20b8d5f9c71915ee0f49f809b1db2b1894fcb9ea9c79fbf3b3bbc",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Cowboy_Coat_M": {
+   "source": "/Game/Discovery/Characters/Cowboy/Assets/Coat/SK_Cowboy_Coat_M.SK_Cowboy_Coat_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_Cowboy_Coat_M.glb",
+   "liveSha256": "0a866eb822b36c0c3554fecff41f2097e935a35d58ba1d7f798040b33acec489",
+   "s12Sha256": "1707862feb7971392087d408245bacbf124f142f6d1992f6edee560457be2cd0",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 53,
+   "jointsS12": 53,
+   "weightMaxSteps": 312.39,
+   "verticesWeightMoved": 9359,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Cowboy_DusterCoat_M": {
+   "source": "/Game/Discovery/Characters/Cowboy/Assets/DusterCoat/SK_Cowboy_DusterCoat_M.SK_Cowboy_DusterCoat_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_Cowboy_DusterCoat_M.glb",
+   "liveSha256": "7bb5e0decd03f7337e10b05a21e9e75a4ecaf2d3a6f978a6d1438e8c42b3f981",
+   "s12Sha256": "d69743a649e49154c9bf2e3455c50459770a302bcc8d9c9544f77b9608e3fc6a",
+   "class": "loader refuses",
+   "loader": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0']",
+    "influence layout differs between primitives or files"
+   ],
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 51,
+   "jointsS12": 51,
+   "admissible": false
+  },
+  "SK_Cowboy_HandCloth_M": {
+   "source": "/Game/Discovery/Characters/Cowboy/Assets/HandCloth/SK_Cowboy_HandCloth_M.SK_Cowboy_HandCloth_M",
+   "liveUrl": "../reconstructed-family-batch21-cowboy-hand-cloth-r2-v1/meshes/SK_Cowboy_HandCloth_M.glb",
+   "liveSha256": "0903cd0ff56bbf2ba78f7b18e817b6f3fcec3f9ed4e79b148f7975865ae8715a",
+   "s12Sha256": "cc868d3f0a413cb8d5cc3e9d74db6123ad2d72dcb6ca69a21658e637a5794c31",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.453,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.217,
+     "verticesChanged": 74
+    },
+    "medium_male": {
+     "maxCm": 0.158,
+     "verticesChanged": 52
+    }
+   },
+   "jointsLive": 20,
+   "jointsS12": 20,
+   "weightMaxSteps": 96.0,
+   "verticesWeightMoved": 19,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Cowboy_JeansJacket_M": {
+   "source": "/Game/Discovery/Characters/Cowboy/Assets/JeansJacket/SK_Cowboy_JeansJacket_M.SK_Cowboy_JeansJacket_M",
+   "liveUrl": "../reconstructed-family-batch16-jeans-jacket-v1/meshes/SK_Cowboy_JeansJacket_M.glb",
+   "liveSha256": "b67369b2829c49e6ef58e5bd3d6f025b1bdd5323b1c65a88b30c7e2f604a43d0",
+   "s12Sha256": "a19e8dff4bb9ef5dd03fa1b63f29797b4879f3ffea6ba00ca1fdb2e933932238",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Cowboy_LowBoots_M": {
+   "source": "/Game/Discovery/Characters/Cowboy/Assets/LowBoots/SK_Cowboy_LowBoots_M.SK_Cowboy_LowBoots_M",
+   "liveUrl": "../reconstructed-family-batch13-cowboy-low-boots-v1/meshes/SK_Cowboy_LowBoots_M.glb",
+   "liveSha256": "50ba2b9a1d49cf57b84a55c0b47a3ac47d7722669bf249d7069eafcfd4f587ad",
+   "s12Sha256": "9a81bd02e89d63fe2e00ba18c68473c9f5da2fbe3bbaf61846f114467c40ed12",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Cowboy_Poncho_M": {
+   "source": "/Game/Discovery/Characters/Cowboy/Assets/Poncho/SK_Cowboy_Poncho_M.SK_Cowboy_Poncho_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_Cowboy_Poncho_M.glb",
+   "liveSha256": "0609f0901db8687fd8bdf974c5edd234b4eb71d6d6bab80177524e29d0770ea1",
+   "s12Sha256": "60a0b6151e17a716040508a40dc7d2c4809e8ddd263f3212321c13e6e45c9e96",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 19,
+   "jointsS12": 19,
+   "weightMaxSteps": 229.83,
+   "verticesWeightMoved": 3374,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Cowboy_WranglerBandolier_M": {
+   "source": "/Game/Discovery/Characters/Cowboy/Assets/WranglerBandolier/SK_Cowboy_WranglerBandolier_M.SK_Cowboy_WranglerBandolier_M",
+   "liveUrl": "../reconstructed-family-batch21-cowboy-wrangler-bandolier-v1/meshes/SK_Cowboy_WranglerBandolier_M.glb",
+   "liveSha256": "1c52cdf2e579eabb527bc5dbc7e54ddf2219e89781067f3a9fe626aefae3a99b",
+   "s12Sha256": "9aac638ec69c995bec6b7a10e9e8777eb1d53ebd34de1cd17044f747d55dd06d",
+   "class": "normals",
+   "normalMaxDeg": 0.45,
+   "tangentMaxDeg": 1.357,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.688,
+     "verticesChanged": 8219
+    },
+    "medium_male": {
+     "maxCm": 0.32,
+     "verticesChanged": 8219
+    }
+   },
+   "jointsLive": 11,
+   "jointsS12": 13,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Cowboy_WranglerBracelet_M": {
+   "source": "/Game/Discovery/Characters/Cowboy/Assets/WranglerBracelet/SK_Cowboy_WranglerBracelet_M.SK_Cowboy_WranglerBracelet_M",
+   "liveUrl": "../reconstructed-family-batch24-cowboy-wrangler-bracelet-r2-v1/meshes/SK_Cowboy_WranglerBracelet_M.glb",
+   "liveSha256": "4c7c2837f5a77fffd6f8ca462857bde2038fdcd96a45aad8ae3836fd9d028784",
+   "s12Sha256": "4e6560aa7c99d6bc0e3971e2729ff6cab8638d14f17f562a17930cf3fd053dbc",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.401,
+   "tangentMaxDeg": 0.329,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.001,
+     "verticesChanged": 37
+    },
+    "medium_male": {
+     "maxCm": 0.001,
+     "verticesChanged": 46
+    }
+   },
+   "jointsLive": 16,
+   "jointsS12": 16,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_CrossPromo_NRHarness_M": {
+   "source": "/Game/Discovery/Characters/CrossPromo/Assets/NRHarness/SK_CrossPromo_NRHarness_M.SK_CrossPromo_NRHarness_M",
+   "liveUrl": "../reconstructed-g100-fresh-b5-cross-promo-nrsuit-v1-v1/meshes/SK_CrossPromo_NRHarness_M.glb",
+   "liveSha256": "0cb4ec312e02f72a957918c3687064f367e914ca4bc633457b4daa3dc1a5095f",
+   "s12Sha256": "c6e114fa484d4a8d56cad81376c0e799bf218c0a4b81b55a3f5aff378e9403bb",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Cute_FrogShoes_M": {
+   "source": "/Game/Discovery/Characters/Cute/Assets/FrogShoes/SK_Cute_FrogShoes_M.SK_Cute_FrogShoes_M",
+   "liveUrl": "../reconstructed-family-batch21-cute-frog-shoes-v1/meshes/SK_Cute_FrogShoes_M.glb",
+   "liveSha256": "63530bdb22899f50581a9cc67a76a4ad2231399e9caa04aaff4b3f47a7204f4e",
+   "s12Sha256": "069a97d2e92ac68a2816181f1e411844a8ac9f4cf7e325a85403da246868c278",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_DivingHelmet_01_A_M": {
+   "source": "/Game/Discovery/Characters/Attachments/DivingHelmet_01/SK_DivingHelmet_01_A_M.SK_DivingHelmet_01_A_M",
+   "liveUrl": "../reconstructed-w45-mergedhelmets-attached-b2-v1/meshes/SK_DivingHelmet_01_A_M.glb",
+   "liveSha256": "717d40f3eb8143fb3fbe5e071a6425f32fb627031adbef2e2c0ec53f9a42e1fe",
+   "s12Sha256": "152c2863ca7e7f0d82ff8fd1487b51e3d8c0f830e19a9cdeabc6dbff5a0636ff",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0'] vs ['JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0']",
+    "primitive 1 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0'] vs ['JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0']"
+   ],
+   "admissible": false
+  },
+  "SK_FancyDress_DressShoes_M": {
+   "source": "/Game/Discovery/Characters/FancyDress/Assets/DressShoes/SK_FancyDress_DressShoes_M.SK_FancyDress_DressShoes_M",
+   "liveUrl": "../reconstructed-multipart-dress-shoes-v1/meshes/SK_FancyDress_DressShoes_M.glb",
+   "liveSha256": "0f6d23c1f806a98228b2dc0038935110143403e791abf2441842a4caf9bc6484",
+   "s12Sha256": "347f62c2b002aa766c7c62014902bfc62039cfa7b4ec64f710abd83341372eb8",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_FancyDress_Harness_M": {
+   "source": "/Game/Discovery/Characters/FancyDress/Assets/Harness/SK_FancyDress_Harness_M.SK_FancyDress_Harness_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_FancyDress_Harness_M.glb",
+   "liveSha256": "aedcb191e55a4313167c634d8e426c3ce90dd1e8ebbf4210113fbd538a47c7e6",
+   "s12Sha256": "4ef287011ca03a9337c98c0b70e1243a7ac4b76a81f1ca6c9320d1331cd84067",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 28,
+   "jointsS12": 28,
+   "weightMaxSteps": 510.0,
+   "verticesWeightMoved": 8248,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_FancyDress_SuitJacket_M": {
+   "source": "/Game/Discovery/Characters/FancyDress/Assets/SuitJacket/SK_FancyDress_SuitJacket_M.SK_FancyDress_SuitJacket_M",
+   "liveUrl": "../reconstructed-family-batch07-suit-jackets-v1/meshes/SK_FancyDress_SuitJacket_M.glb",
+   "liveSha256": "970158dfa5480d1d1c050be1f93ec18c444271aba80c924637475d6df8ec5d84",
+   "s12Sha256": "7c3d601ab9d8031fbc78e046178a009fd9d9575e7a61ae27d4287cb1ac6988f0",
+   "class": "morph set+weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsAdded": [
+    "shrink_under_vest"
+   ],
+   "morphsRemoved": [],
+   "morphsRemovedMaxCm": {},
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.139,
+     "verticesChanged": 4205
+    },
+    "medium_male": {
+     "maxCm": 0.163,
+     "verticesChanged": 620
+    }
+   },
+   "jointsLive": 54,
+   "jointsS12": 54,
+   "weightMaxSteps": 118.0,
+   "verticesWeightMoved": 15,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_FromTencent_AsianSpiritBoots_M": {
+   "source": "/Game/Discovery/Characters/FromTencent/Assets/AsianSpiritBoots/SK_FromTencent_AsianSpiritBoots_M.SK_FromTencent_AsianSpiritBoots_M",
+   "liveUrl": "../reconstructed-family-batch21-from-tencent-asian-spirit-boots-v1/meshes/SK_FromTencent_AsianSpiritBoots_M.glb",
+   "liveSha256": "61263187f3bbdcd850a1523b13d6ea0fde601731c63bf48390cff54f5d1d407c",
+   "s12Sha256": "c7b1395bc3b62c634f9789fa7f334426113c8d3cb1e71a198bfa6ca56ee2b9fd",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.496,
+     "verticesChanged": 13624
+    },
+    "medium_male": {
+     "maxCm": 0.375,
+     "verticesChanged": 13196
+    }
+   },
+   "jointsLive": 14,
+   "jointsS12": 14,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_FromTencent_AsianSpiritGloves_M": {
+   "source": "/Game/Discovery/Characters/FromTencent/Assets/AsianSpiritGloves/SK_FromTencent_AsianSpiritGloves_M.SK_FromTencent_AsianSpiritGloves_M",
+   "liveUrl": "../reconstructed-family-batch21-from-tencent-asian-spirit-gloves-v1/meshes/SK_FromTencent_AsianSpiritGloves_M.glb",
+   "liveSha256": "0ffbe19b38a6939753f3cdc03902e4c41c46a974e8b64b260553ad9a4c3e33a2",
+   "s12Sha256": "ea2b34582b251009b1aac1b3349b3ec369d6213870102e46aade2280ab576440",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.257,
+     "verticesChanged": 9899
+    },
+    "medium_male": {
+     "maxCm": 0.298,
+     "verticesChanged": 11323
+    }
+   },
+   "jointsLive": 47,
+   "jointsS12": 47,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_FromTencent_AsianSpiritJacket_M": {
+   "source": "/Game/Discovery/Characters/FromTencent/Assets/AsianSpiritJacket/SK_FromTencent_AsianSpiritJacket_M.SK_FromTencent_AsianSpiritJacket_M",
+   "liveUrl": "../reconstructed-multipart-batch23-from-tencent-asian-spirit-jacket-v1/meshes/SK_FromTencent_AsianSpiritJacket_M.glb",
+   "liveSha256": "e28176363f5cf4e1012376a7876d29e5fda87eb96b33f226df6a45de1431b357",
+   "s12Sha256": "08552107453a36c937250805273618f88176400d2c4f7d67597ab142f6d127bb",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.189,
+     "verticesChanged": 8944
+    }
+   },
+   "jointsLive": 43,
+   "jointsS12": 43,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_FromTencent_AsianSpiritWraps01_M": {
+   "source": "/Game/Discovery/Characters/FromTencent/Assets/AsianSpiritWraps01/SK_FromTencent_AsianSpiritWraps01_M.SK_FromTencent_AsianSpiritWraps01_M",
+   "liveUrl": "../reconstructed-multipart-batch23-from-tencent-asian-spirit-jacket-v1/meshes/SK_FromTencent_AsianSpiritWraps01_M.glb",
+   "liveSha256": "02103f1a238617120c1a0d6de59e73270ed25f8e320d86392f9dd74620a02d4c",
+   "s12Sha256": "b2c7f9f67924af4701d21775afbe15db8a6e0839f8e0e4c2da5a9392aa4d2ce5",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs",
+    "TEXCOORD_1 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_FromTencent_MilitaryMonkVest_M": {
+   "source": "/Game/Discovery/Characters/FromTencent/Assets/MilitaryMonkVest/SK_FromTencent_MilitaryMonkVest_M.SK_FromTencent_MilitaryMonkVest_M",
+   "liveUrl": "../reconstructed-multipart-batch23-from-tencent-military-monk-vest-v1/meshes/SK_FromTencent_MilitaryMonkVest_M.glb",
+   "liveSha256": "e0ba441201394ea45d85e712f71a286bc942c6749c7f8d7af25f8ef8da8fc549",
+   "s12Sha256": "64e22994d114cff541c27fd5683fa10335583bfe72033451034b7df08b7cdbd2",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs",
+    "TEXCOORD_1 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_FromTencent_OperaClothingJacket_M": {
+   "source": "/Game/Discovery/Characters/FromTencent/Assets/OperaClothingJacket/SK_FromTencent_OperaClothingJacket_M.SK_FromTencent_OperaClothingJacket_M",
+   "liveUrl": "../reconstructed-family-batch21-from-tencent-opera-clothing-jacket-v1/meshes/SK_FromTencent_OperaClothingJacket_M.glb",
+   "liveSha256": "1e87c4f806d9308802fbb089f99a0b0de95d05cbcd7219b0b48551b5835de625",
+   "s12Sha256": "4c325cf335f4f17d9cacbf1c1a7aa91bdfd7aa4334528c1b5e334c6b76c04fc5",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs",
+    "TEXCOORD_1 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Halloween_VampireBoots_M": {
+   "source": "/Game/Discovery/Characters/Halloween/Assets/VampireBoots/SK_Halloween_VampireBoots_M.SK_Halloween_VampireBoots_M",
+   "liveUrl": "../reconstructed-family-batch21-halloween-vampire-boots-r2-v1/meshes/SK_Halloween_VampireBoots_M.glb",
+   "liveSha256": "6712b055527dc2848b6f9adb8b10e021ccc123e4ed6c0954e100d43ca0a2a00d",
+   "s12Sha256": "f27df3dbfbb12f6bd3976c1167fabf4672e84358d1113e16ca9889e71e0752e0",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Head_Face_14_Base": {
+   "source": "/Game/Discovery/Characters/Heads/Face_14/Base/SK_Head_Face_14_Base.SK_Head_Face_14_Base",
+   "liveUrl": "../reconstructed-w91-face14-v2/meshes/SK_Head_Face_14_Base.glb",
+   "liveSha256": "6d6c73e961bbc1849c1e82bc6ec8439b16a9444818c8c98274f5d0e028f95af0",
+   "s12Sha256": "36df60f3c0995ae3914111b4d9c259eead77e3f2f707b91dadd97e5b92619b4a",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 1 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 2 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 3 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 4 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 5 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 6 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 7 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']"
+   ],
+   "admissible": false
+  },
+  "SK_Head_Face_15_Base": {
+   "source": "/Game/Discovery/Characters/Heads/Face_15/Base/SK_Head_Face_15_Base.SK_Head_Face_15_Base",
+   "liveUrl": "../reconstructed-w91-eyebrows-v2/meshes/SK_Head_Face_15_Base.glb",
+   "liveSha256": "6ba5d2a7de31326d000f1cb078534724f8f77f5422a92a89f5cf489bbb9ee930",
+   "s12Sha256": "c149cb975202751d754c74fbaf9bbb1de336fb1c51482a8076da8d80c2dad828",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 1 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 2 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 3 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 4 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 5 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 6 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 7 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']"
+   ],
+   "admissible": false
+  },
+  "SK_Head_Face_18_Base": {
+   "source": "/Game/Discovery/Characters/Heads/Face_18/Base/SK_Head_Face_18_Base.SK_Head_Face_18_Base",
+   "liveUrl": "../reconstructed-w91-eyebrows-v2/meshes/SK_Head_Face_18_Base.glb",
+   "liveSha256": "c4fe93f7b8369c19f4f8120d1d51dedad251e447adbefd6e24fe0d241a74dc8d",
+   "s12Sha256": "3f825b13550f325727c527ef90648e2f70c47af5cb96dc821c5660f1d1fb0541",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 1 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 2 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 3 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 4 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 5 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 6 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 7 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']"
+   ],
+   "admissible": false
+  },
+  "SK_Head_Face_30_Base": {
+   "source": "/Game/Discovery/Characters/Heads/Face_30/Base/SK_Head_Face_30_Base.SK_Head_Face_30_Base",
+   "liveUrl": "../reconstructed-w91-eyebrows-v2/meshes/SK_Head_Face_30_Base.glb",
+   "liveSha256": "4954fe9deb7dde10db20ac924921ee54ac537e035ba558b913dd79eb6f425256",
+   "s12Sha256": "44cbcf4e25840a92eaf458902161618d62cdea625c19db02a39d8ebef8bcff29",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 1 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 2 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 3 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 4 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 5 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 6 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']"
+   ],
+   "admissible": false
+  },
+  "SK_Historic_AnubisJewelry_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/AnubisJewelry/SK_Historic_AnubisJewelry_M.SK_Historic_AnubisJewelry_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Historic_AnubisJewelry_M.glb",
+   "liveSha256": "a5f04b5ea0d0f5d7d69389594eaca19aa6c0d1342700142b01d22be4cf37208f",
+   "s12Sha256": "17021df98f5a926dda0ed00a6200b40c2e36d30e78c6d592ba1ee96ca44fc8b2",
+   "class": "surface differs",
+   "surface": [
+    "COLOR_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Historic_AnubisMaskRegular_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/AnubisMaskRegular/SK_Historic_AnubisMaskRegular_M.SK_Historic_AnubisMaskRegular_M",
+   "liveUrl": "../reconstructed-family-batch24-historic-anubis-mask-regular-v1/meshes/SK_Historic_AnubisMaskRegular_M.glb",
+   "liveSha256": "f072f59d0c100eff481e00df883df8ff5ea2dd7dd1394d38553c51cf03e69265",
+   "s12Sha256": "1b5442db700ea2ccd61efd6560c4e03bbcc9f306be008e3accd914a5ec7902a9",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Historic_AnubisMask_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/AnubisMask/SK_Historic_AnubisMask_M.SK_Historic_AnubisMask_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Historic_AnubisMask_M.glb",
+   "liveSha256": "a6cf4dfbda4228e3333e9a0444c7de5cdb3993137490aed5aafe5f03c60b447c",
+   "s12Sha256": "d084500474520b876f9bbc9acc5c42387010112a40dc973625ae8d59da10012d",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Historic_EasternEmperorCape_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/EasternEmperorCape/SK_Historic_EasternEmperorCape_M.SK_Historic_EasternEmperorCape_M",
+   "liveUrl": "../reconstructed-w125-resweep-t3/meshes/SK_Historic_EasternEmperorCape_M.glb",
+   "liveSha256": "7db024cf5ea864310961297258396cab32333f26bb3bd01ae142ea434c5c107d",
+   "s12Sha256": "836c4773329eb85d254749d7cb4be6c30956fb689227669cdfc26dcb282e0798",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 20,
+   "jointsS12": 20,
+   "weightMaxSteps": 356.01,
+   "verticesWeightMoved": 424,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Historic_EasternEmperorPants_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/EasternEmperorPants/SK_Historic_EasternEmperorPants_M.SK_Historic_EasternEmperorPants_M",
+   "liveUrl": "../reconstructed-family-batch21-historic-eastern-emperor-pants-v1/meshes/SK_Historic_EasternEmperorPants_M.glb",
+   "liveSha256": "d7c7b0859f461c89879aa59508bf397b95c376df90e46192b9dba99258240353",
+   "s12Sha256": "ccdf4d17e312098cf06f51cd1d9f607d2aaeac3cb4e7300c21d0bc889067f068",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Historic_EasternEmperorShoes_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/EasternEmperorShoes/SK_Historic_EasternEmperorShoes_M.SK_Historic_EasternEmperorShoes_M",
+   "liveUrl": "../reconstructed-family-batch21-historic-eastern-emperor-shoes-v1/meshes/SK_Historic_EasternEmperorShoes_M.glb",
+   "liveSha256": "c34b37eebca471478fc790bbe13d6078991cfe12d278d6d58efae6911c6405bc",
+   "s12Sha256": "1f50357670a077a1360226294e66b278bfc0fabd0000037d5212befc9b794bf0",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.2,
+     "verticesChanged": 273
+    }
+   },
+   "jointsLive": 22,
+   "jointsS12": 12,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Historic_EasternEmperorUpperBodyUltimate_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/EasternEmperorUpperBodyUltimate/SK_Historic_EasternEmperorUpperBodyUltimate_M.SK_Historic_EasternEmperorUpperBodyUltimate_M",
+   "liveUrl": "../reconstructed-w125-resweep-t3/meshes/SK_Historic_EasternEmperorUpperBodyUltimate_M.glb",
+   "liveSha256": "0e2d0390626a1bd96ef20899259b6f09a9c48a21cd539a88dd9e7899f50a24cc",
+   "s12Sha256": "3b6227c480bc14af782282406455b26ddbd42a09091ddc7deaee878015fa945b",
+   "class": "loader refuses",
+   "loader": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 1 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 2 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "influence layout differs between primitives or files"
+   ],
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 19,
+   "jointsS12": 19,
+   "admissible": false
+  },
+  "SK_Historic_EmpressFaceMask_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/EmpressFaceMask/SK_Historic_EmpressFaceMask_M.SK_Historic_EmpressFaceMask_M",
+   "liveUrl": "../reconstructed-family-batch24-historic-empress-face-mask-r2-v1/meshes/SK_Historic_EmpressFaceMask_M.glb",
+   "liveSha256": "e8fbf18987a2e4c8670f8fb8f9656540a30c6382e09d8f8593539759882beaa3",
+   "s12Sha256": "e8b6a08d69ba32f59b913fcbd182daa301a4c5d5d98e44145d969957de88d571",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.274,
+     "verticesChanged": 1119
+    },
+    "medium_male": {
+     "maxCm": 0.274,
+     "verticesChanged": 687
+    }
+   },
+   "jointsLive": 8,
+   "jointsS12": 8,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Historic_EmpressShoes_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/EmpressShoes/SK_Historic_EmpressShoes_M.SK_Historic_EmpressShoes_M",
+   "liveUrl": "../reconstructed-family-batch21-historic-empress-shoes-r2-v1/meshes/SK_Historic_EmpressShoes_M.glb",
+   "liveSha256": "bd0d711502c39bdf1364a3a23f1f8c358e8eed5c506935459192dea7e11ffd48",
+   "s12Sha256": "626ce6430bb605c6b96b284e7152d8346d276c00a7b497e4502c7d25de0b79c0",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Historic_NeckCape_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/NeckCape/SK_Historic_NeckCape_M.SK_Historic_NeckCape_M",
+   "liveUrl": "../reconstructed-g100-wrap2-historic-monk-top-v1-v1/meshes/SK_Historic_NeckCape_M.glb",
+   "liveSha256": "590f5ec3b74d1ed0e10d2324d9dc45d505f10a61478a44f41ca6826f1dc5a38d",
+   "s12Sha256": "d0838828aa2be8567be21ee59bb4ac560dd826b31ccec8a37253c727a93ff199",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.367,
+     "verticesChanged": 1092
+    },
+    "medium_male": {
+     "maxCm": 1.234,
+     "verticesChanged": 1092
+    }
+   },
+   "jointsLive": 18,
+   "jointsS12": 18,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Historic_SimpleBracelet_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/SimpleBracelet/SK_Historic_SimpleBracelet_M.SK_Historic_SimpleBracelet_M",
+   "liveUrl": "../reconstructed-family-batch24-historic-simple-bracelet-r2-v1/meshes/SK_Historic_SimpleBracelet_M.glb",
+   "liveSha256": "dadd34d2cb0ba15a3188c72467486402d8983c83116507797bded5e0f0626a31",
+   "s12Sha256": "03f1413bfa4ce0c287132e318123325997b223917d43180a8ee291e7c222a30a",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Historic_VikingBoots_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/VikingBoots/SK_Historic_VikingBoots_M.SK_Historic_VikingBoots_M",
+   "liveUrl": "../reconstructed-family-batch13-viking-boots-v1/meshes/SK_Historic_VikingBoots_M.glb",
+   "liveSha256": "4de40b9fc8dcdca2c4fd93bf5df1338078fb5d254bcca45c2d0b7025478f3e25",
+   "s12Sha256": "c596cbe96812e6ad2260e846af2468a8103f11245a6ccf9142bd1110a768eda0",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Historic_VikingCloak_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/VikingCloak/SK_Historic_VikingCloak_M.SK_Historic_VikingCloak_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_Historic_VikingCloak_M.glb",
+   "liveSha256": "666e2f6d075d3161900590e2a20471b09de14c021e90d0d75e28bf38d9c5bfce",
+   "s12Sha256": "24404a352401e018b8b90f22853153b60bb8a300855065087e9b43ef8dbc2982",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 41,
+   "jointsS12": 41,
+   "weightMaxSteps": 510.0,
+   "verticesWeightMoved": 470,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Historic_VikingPants_M": {
+   "source": "/Game/Discovery/Characters/Historic/Assets/VikingPants/SK_Historic_VikingPants_M.SK_Historic_VikingPants_M",
+   "liveUrl": "../reconstructed-family-batch21-historic-viking-pants-v1/meshes/SK_Historic_VikingPants_M.glb",
+   "liveSha256": "65a706107f314798be6f2dab08b6784163af8e351f519a806d69ef67a83338d3",
+   "s12Sha256": "50c6f6d5b27e561ac7212043d516b3b1c979ba068e1b8d557526036502721491",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Hologram_BackHologram01_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/BackHologram01/SK_Hologram_BackHologram01_M.SK_Hologram_BackHologram01_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Hologram_BackHologram01_M.glb",
+   "liveSha256": "b9cd76b31626c252f04ada2b200fb41151a0bb0de1cee93ef8672885a7bc8191",
+   "s12Sha256": "fa1607b4f63a409796aa9f01ae650841eeed19bf29290d98180a41a2d41ae773",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.974,
+     "verticesChanged": 20
+    }
+   },
+   "jointsLive": 11,
+   "jointsS12": 13,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Hologram_CombatVestSamuraiHologram_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/EngimoSeason6TorsoHologram/SK_Hologram_CombatVestSamuraiHologram_M.SK_Hologram_CombatVestSamuraiHologram_M",
+   "liveUrl": "../reconstructed-g100-reuse-b14-military-combat-vest-samurai-v1-v1/meshes/SK_Hologram_CombatVestSamuraiHologram_M.glb",
+   "liveSha256": "b0581aba57e7243fb0544025c789e6ea018699f7502c04225017b66e6e806e8a",
+   "s12Sha256": "72116618911302e3ee500f72eb136761424218e1c26f678c6d0c205c9dbe91b5",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.823,
+     "verticesChanged": 56
+    }
+   },
+   "jointsLive": 9,
+   "jointsS12": 11,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Hologram_DissunJacketHologram_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/DissunJacketHologram/SK_Hologram_DissunJacketHologram_M.SK_Hologram_DissunJacketHologram_M",
+   "liveUrl": "../reconstructed-g100-reuse-b15-sport-fencer-jacket-v1-v2/meshes/SK_Hologram_DissunJacketHologram_M.glb",
+   "liveSha256": "1cfb72160e8b3cf318d237e919a7707c7564045787666cbf55b2c4d5a2fc2ee8",
+   "s12Sha256": "777c167970fb2851d70f3526be0dbd33704159c4d0e20f615df6b5a709077fcc",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "hat_grows_hood": {
+     "maxCm": 0.467,
+     "verticesChanged": 16
+    },
+    "medium_female": {
+     "maxCm": 0.434,
+     "verticesChanged": 154
+    },
+    "medium_male": {
+     "maxCm": 0.421,
+     "verticesChanged": 154
+    }
+   },
+   "jointsLive": 26,
+   "jointsS12": 27,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Hologram_EngimoJacketHologram02_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/EngimoJacketHologram02/SK_Hologram_EngimoJacketHologram02_M.SK_Hologram_EngimoJacketHologram02_M",
+   "liveUrl": "../reconstructed-g100-reuse-b14-ninja-shinobi-jacket-v1-v1/meshes/SK_Hologram_EngimoJacketHologram02_M.glb",
+   "liveSha256": "0e462c7a41d718a93955d86ab39786038dbaf080b5645196d3c7e353fde10665",
+   "s12Sha256": "b377262e3924ebc3436685cee8f84700392021a257cb1b8f95518408462d6bb0",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.799,
+     "verticesChanged": 80
+    }
+   },
+   "jointsLive": 12,
+   "jointsS12": 15,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Hologram_EngimoJacketHologram_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/EngimoJacketHologram/SK_Hologram_EngimoJacketHologram_M.SK_Hologram_EngimoJacketHologram_M",
+   "liveUrl": "../reconstructed-g100-reuse-b15-casual-shirt-rolled-up-sleeves-v1-v1/meshes/SK_Hologram_EngimoJacketHologram_M.glb",
+   "liveSha256": "daecfb1ae09b5f5a6251b5ea1a67a0014d99278230599850e3cb9c89387a740d",
+   "s12Sha256": "d93ff2243b61963ff3181b1a83ed56250c35a5f4619cbdc1d20ddd3732322a67",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Hologram_EngimoPantsHologram02_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/EngimoPantsHologram02/SK_Hologram_EngimoPantsHologram02_M.SK_Hologram_EngimoPantsHologram02_M",
+   "liveUrl": "../reconstructed-g100-reuse-b14-streetwear-tech-trousers-v1-v1/meshes/SK_Hologram_EngimoPantsHologram02_M.glb",
+   "liveSha256": "1240352bdca4c6fa4bba594e92c679f497603f7605cd70f4c0c078c8c6c22cd1",
+   "s12Sha256": "cc2fc5da7af8fc8371cdbe2baf3382063985810d8c61a6d463ac4099eb81a57b",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.221,
+     "verticesChanged": 28
+    }
+   },
+   "jointsLive": 8,
+   "jointsS12": 9,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Hologram_EngimoPantsHologram_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/EngimoPantsHologram/SK_Hologram_EngimoPantsHologram_M.SK_Hologram_EngimoPantsHologram_M",
+   "liveUrl": "../reconstructed-g100-reuse-b15-streetwear-tech-joggers-pouch-v1-v1/meshes/SK_Hologram_EngimoPantsHologram_M.glb",
+   "liveSha256": "d467fc44d51c6e93bca5bc55d5d64d88533309b8e856f5b77f29ad286ecb7050",
+   "s12Sha256": "1404a06903cf253196683b0e3d39e74c6b1f11c29526be62b890029d61a49520",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.799,
+     "verticesChanged": 35
+    },
+    "medium_male": {
+     "maxCm": 0.291,
+     "verticesChanged": 35
+    }
+   },
+   "jointsLive": 11,
+   "jointsS12": 12,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Hologram_HoltowJacketHologram_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/HoltowJacketHologram/SK_Hologram_HoltowJacketHologram_M.SK_Hologram_HoltowJacketHologram_M",
+   "liveUrl": "../reconstructed-g100-fresh-b6-streetwear-aviator-jacket-shell-material-v1-v1/meshes/SK_Hologram_HoltowJacketHologram_M.glb",
+   "liveSha256": "fe7faebb4e8ab8f67ed332d1428aa194f595f837b2aced04feb34012abe6debd",
+   "s12Sha256": "fa1c920bda50709c2f6682f70d877af011fc67364cac9ee6f5ba5bf4f4ff20ba",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Hologram_HoltowPantsHologram_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/HoltowPantsHologram/SK_Hologram_HoltowPantsHologram_M.SK_Hologram_HoltowPantsHologram_M",
+   "liveUrl": "../reconstructed-g100-reuse-b14-cowboy-casual-pants-v1-v1/meshes/SK_Hologram_HoltowPantsHologram_M.glb",
+   "liveSha256": "1cb18ced2db4f8edd233a3da7f31f2cc88a72e6ddceb5dc6cbc137cc5732e528",
+   "s12Sha256": "a6f775e3ea1acea6cd5e6fd6049599a5e6a7920b83980421c6a580c408eecc96",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.761,
+     "verticesChanged": 20
+    },
+    "medium_male": {
+     "maxCm": 0.119,
+     "verticesChanged": 20
+    }
+   },
+   "jointsLive": 11,
+   "jointsS12": 12,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Hologram_IseultPantsHologram_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/IseultPantsHologram/SK_Hologram_IseultPantsHologram_M.SK_Hologram_IseultPantsHologram_M",
+   "liveUrl": "../reconstructed-g100-reuse-b14-streetwear-tight-tech-pants-v1-v1/meshes/SK_Hologram_IseultPantsHologram_M.glb",
+   "liveSha256": "4af7416ef8232bc988b89c1021c58832467771083f603aff44986abd7d4baaab",
+   "s12Sha256": "a9f01f59c226102d61a9f6a7481d291975bf6d772ce93604443f035a42258213",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Hologram_IseultPufferJacketHologram_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/IseultPufferJacketHologram/SK_Hologram_IseultPufferJacketHologram_M.SK_Hologram_IseultPufferJacketHologram_M",
+   "liveUrl": "../reconstructed-g100-reuse-b15-winter-cropped-puffer-jacket-v1-v1/meshes/SK_Hologram_IseultPufferJacketHologram_M.glb",
+   "liveSha256": "74f96aa9366d01792e51a4882e66487cc62348ad8dc953878c581ccad0ab1907",
+   "s12Sha256": "2baefd491544e2b3a761b488fda0c7d81ef0a168232401c26a075c4153cbd438",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.053,
+     "verticesChanged": 60
+    }
+   },
+   "jointsLive": 16,
+   "jointsS12": 18,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Hologram_TrentilaShoesHologram_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/TrentilaShoesHologram/SK_Hologram_TrentilaShoesHologram_M.SK_Hologram_TrentilaShoesHologram_M",
+   "liveUrl": "../reconstructed-g100-reuse-b14-military-tactical-boots-v1-v1/meshes/SK_Hologram_TrentilaShoesHologram_M.glb",
+   "liveSha256": "8c95a08987dd87b227b92fe1b56f070ed7f39db9e490e6850def40654dd3c658",
+   "s12Sha256": "2dabc92d6813a27a727cdafb5cc3efeb68eadb6e61bae5570fd52f69e162349d",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.186,
+     "verticesChanged": 112
+    },
+    "medium_male": {
+     "maxCm": 0.05,
+     "verticesChanged": 77
+    }
+   },
+   "jointsLive": 10,
+   "jointsS12": 10,
+   "weightMaxSteps": 294.0,
+   "verticesWeightMoved": 37,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Hologram_VaiiyaVestHologram_M": {
+   "source": "/Game/Discovery/Characters/Hologram/Assets/VaiiyaVestHologram/SK_Hologram_VaiiyaVestHologram_M.SK_Hologram_VaiiyaVestHologram_M",
+   "liveUrl": "../reconstructed-g100-reuse-b14-municipal-torso-v1-v1/meshes/SK_Hologram_VaiiyaVestHologram_M.glb",
+   "liveSha256": "f27394b48e9e8112b6ed22056e709310728b5e8a7b484bcac87d9447c381fc51",
+   "s12Sha256": "601d29f9e6e24f6e2f8b737261f4008b31ab1aeae318ee18af905f0cdae7d4e1",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_LongCurly_M": {
+   "source": "/Game/Discovery/Characters/Hairs/LongCurly/SK_LongCurly_M.SK_LongCurly_M",
+   "liveUrl": "../reconstructed-hair-neutral-batch-v1/meshes/SK_LongCurly_M.glb",
+   "liveSha256": "bb2b4fb5cc42e8f836aa13713114dea4567bfa3f6f6eefc190e6c88c8682aa4d",
+   "s12Sha256": "35e0b40bf3bf9ccb9f06b4c5ef7e552ffb70a0003e1deec34209554b8821f452",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Medieval_DemonPants_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/DemonPants/SK_Medieval_DemonPants_M.SK_Medieval_DemonPants_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Medieval_DemonPants_M.glb",
+   "liveSha256": "4386015c1e558be016e42cde2c30a9cc8440e49a5777ed3ee6b3898c735ab7ff",
+   "s12Sha256": "b0c4734abc60bf53b449067fa28664cfa913a78566a1495e41d777eec21f5bfc",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.258,
+     "verticesChanged": 4145
+    }
+   },
+   "jointsLive": 23,
+   "jointsS12": 23,
+   "weightMaxSteps": 16.0,
+   "verticesWeightMoved": 30,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Medieval_DragonSlayerSkirt_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/DragonSlayerSkirt/SK_Medieval_DragonSlayerSkirt_M.SK_Medieval_DragonSlayerSkirt_M",
+   "liveUrl": "../reconstructed-g100-wrap-b3-medieval-dragon-slayer-skirt-v1-v1/meshes/SK_Medieval_DragonSlayerSkirt_M.glb",
+   "liveSha256": "8f12e5a5a1b0c87453cff48acf46def6a305dea6847f7f8b3729f43da695f460",
+   "s12Sha256": "09cad510a589a7d36a80339bed0d61d628c40b6c72b40b3678d3157a0679c3a2",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Medieval_DragonSlayerTorso_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/DragonSlayerTorso/SK_Medieval_DragonSlayerTorso_M.SK_Medieval_DragonSlayerTorso_M",
+   "liveUrl": "../reconstructed-family-batch21-medieval-dragon-slayer-torso-v1/meshes/SK_Medieval_DragonSlayerTorso_M.glb",
+   "liveSha256": "0342b4160e5658ac7d2e024d51a46fd7c274c223b3f4315417e70ed3d2b72f19",
+   "s12Sha256": "1492dc57a0ac25579341224c6c2f935a067e994e3f801bbf8550c3df32dd6e7b",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Medieval_ElfPrincessMask_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessMask/SK_Medieval_ElfPrincessMask_M.SK_Medieval_ElfPrincessMask_M",
+   "liveUrl": "../reconstructed-masked-b1-attached-v2/meshes/SK_Medieval_ElfPrincessMask_M.glb",
+   "liveSha256": "3d0f9f412616756f7babe8ed687c85e74a7211f28e9735518eb56681e15059bb",
+   "s12Sha256": "69dad6447de9e1f77ab880fbe6cf2bb8f511ecde2e462dd7a699429e6f6395ad",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs",
+    "TEXCOORD_1 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Medieval_ElfPrincessTorsoUltimate_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessTorsoUltimate/SK_Medieval_ElfPrincessTorsoUltimate_M.SK_Medieval_ElfPrincessTorsoUltimate_M",
+   "liveUrl": "../reconstructed-w61-elfprincess-attached-b1-v1/meshes/SK_Medieval_ElfPrincessTorsoUltimate_M.glb",
+   "liveSha256": "ff2d4c3ebc93c5cd0ae8ffc6d8a40844dc96d691adaef53f1fa69eabff574811",
+   "s12Sha256": "e7749c3f2a2ea958b0eba858ee6707807e44c4545b4c7275a513e57784fea207",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.349,
+     "verticesChanged": 4421
+    }
+   },
+   "jointsLive": 54,
+   "jointsS12": 54,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Medieval_JesterHat_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/JesterHat/SK_Medieval_JesterHat_M.SK_Medieval_JesterHat_M",
+   "liveUrl": "../reconstructed-w42c-jesterhats-attached-b1-v1/meshes/SK_Medieval_JesterHat_M.glb",
+   "liveSha256": "694aa6ad947562197faa64af32d002ad732fcc4b43a308d057dd49f6c17192c4",
+   "s12Sha256": "3b5730c9e5a18445b8dc9dcad3e9399a7df62f8fa66b2d259afee364c5f62f90",
+   "class": "surface differs",
+   "surface": [
+    "primitive count differs"
+   ],
+   "admissible": false
+  },
+  "SK_Medieval_JesterJacket_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/JesterJacket/SK_Medieval_JesterJacket_M.SK_Medieval_JesterJacket_M",
+   "liveUrl": "../reconstructed-g100-wrap2-medieval-jester-jacket-g2-v1-v2-mk1/meshes/SK_Medieval_JesterJacket_M.glb",
+   "liveSha256": "3f54149daf8cecd72d466b2c6da733f2704423073305f5b48e4b52c67d18e6ae",
+   "s12Sha256": "e248ce0a1f81eba3d98d0771dcde0656954b7a02f2d21eac152da18743b5491b",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 2.795,
+     "verticesChanged": 4628
+    },
+    "medium_male": {
+     "maxCm": 1.279,
+     "verticesChanged": 4613
+    }
+   },
+   "jointsLive": 53,
+   "jointsS12": 53,
+   "weightMaxSteps": 10.0,
+   "verticesWeightMoved": 3,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Medieval_JesterPants_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/JesterPants/SK_Medieval_JesterPants_M.SK_Medieval_JesterPants_M",
+   "liveUrl": "../reconstructed-family-batch21-medieval-jester-pants-v1/meshes/SK_Medieval_JesterPants_M.glb",
+   "liveSha256": "99f4d506593f620fcf4d892731d20f873e981b4bea417178d6df0dc0e881f9ed",
+   "s12Sha256": "824563769668af3fbeaa7e9ef2747069419552c0131b1946acca3470a5fde860",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 2.507,
+     "verticesChanged": 3946
+    },
+    "medium_male": {
+     "maxCm": 1.019,
+     "verticesChanged": 2386
+    }
+   },
+   "jointsLive": 23,
+   "jointsS12": 23,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Medieval_JesterShoes_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/JesterShoes/SK_Medieval_JesterShoes_M.SK_Medieval_JesterShoes_M",
+   "liveUrl": "../reconstructed-family-batch21-medieval-jester-shoes-r2-v1/meshes/SK_Medieval_JesterShoes_M.glb",
+   "liveSha256": "d648efcb5770d79ac3f05e1fda53562a11fb0679bc132ed05954786dd82488c6",
+   "s12Sha256": "b9d38948e595704d518faa2fba5710b8f2b401228f3efc816bbb61b949503e91",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.325,
+     "verticesChanged": 1661
+    },
+    "medium_male": {
+     "maxCm": 0.594,
+     "verticesChanged": 1623
+    }
+   },
+   "jointsLive": 12,
+   "jointsS12": 12,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Medieval_JesterTornNeckCape_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/JesterTornNeckCape/SK_Medieval_JesterTornNeckCape_M.SK_Medieval_JesterTornNeckCape_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_Medieval_JesterTornNeckCape_M.glb",
+   "liveSha256": "6346fbacd762750469d3b905e1219121d1e9c6b07acf72b0fcf9562720b9f1b6",
+   "s12Sha256": "f4da0e3cfc73d829f1e208c38908fdbc3a2b34623285a15f393546370e8d5885",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 18,
+   "jointsS12": 18,
+   "weightMaxSteps": 291.4,
+   "verticesWeightMoved": 636,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Medieval_KnightArmCloths_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/KnightArmCloths/SK_Medieval_KnightArmCloths_M.SK_Medieval_KnightArmCloths_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_Medieval_KnightArmCloths_M.glb",
+   "liveSha256": "1a240f53c4a9f1a81801eb160d7c8453ada3e1586f5ebc2e7b0844cd7f14eafa",
+   "s12Sha256": "29fa11fea2cb20cc9a156d6cd97d3829d40c14c9307f5d1c538ffc0420006d0b",
+   "class": "loader refuses",
+   "loader": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0']",
+    "influence layout differs between primitives or files"
+   ],
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 18,
+   "jointsS12": 18,
+   "admissible": false
+  },
+  "SK_Medieval_KnightGlovesSpikesL_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/KnightGlovesSpikesL/SK_Medieval_KnightGlovesSpikesL_M.SK_Medieval_KnightGlovesSpikesL_M",
+   "liveUrl": "../reconstructed-item-mask-medieval-knight-gloves-v5/meshes/SK_Medieval_KnightGlovesSpikesL_M.glb",
+   "liveSha256": "e5017c78c0b0cf544c3124247e68becbbf87df6f0d72cc0c42856430c8318cb4",
+   "s12Sha256": "b9a19661faf2066b4a6d882bdc18f072c3fb298e2158ce96fa4845144a5b5093",
+   "class": "morph set",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsAdded": [],
+   "morphsRemoved": [
+    "medium_female",
+    "medium_male"
+   ],
+   "morphsRemovedMaxCm": {
+    "medium_female": 0.219,
+    "medium_male": 0.24
+   },
+   "morphsChanged": {},
+   "jointsLive": 18,
+   "jointsS12": 18,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Medieval_KnightTopPlain_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/KnightTopPlain/SK_Medieval_KnightTopPlain_M.SK_Medieval_KnightTopPlain_M",
+   "liveUrl": "../reconstructed-family-batch21-medieval-knight-top-plain-v1/meshes/SK_Medieval_KnightTopPlain_M.glb",
+   "liveSha256": "9e904f0ca3146538ebfee40e858a36909c66e3a133cbfa29926ee9638a8e2468",
+   "s12Sha256": "1adcc755933560e05e3f14b71a31aa933659d20d65c7d6374c01ece8c22a145c",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Medieval_RoyalGloves_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/RoyalGloves/SK_Medieval_RoyalGloves_M.SK_Medieval_RoyalGloves_M",
+   "liveUrl": "../reconstructed-family-batch21-medieval-royal-gloves-v1-g1/meshes/SK_Medieval_RoyalGloves_M.glb",
+   "liveSha256": "77f985c838dd5e2b9f901b74acb78f531a216ad79d49bc80311dcc6f9dff0ee3",
+   "s12Sha256": "9bdf920c96925034051fa366518a9edab2e7f45ff019037270407d9df4902a48",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Medieval_TacticalKnightBelt_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/TacticalKnightBelt/SK_Medieval_TacticalKnightBelt_M.SK_Medieval_TacticalKnightBelt_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Medieval_TacticalKnightBelt_M.glb",
+   "liveSha256": "3d7f3202f4966a0bba1e0e3aab52eb156eb3b835405a68866755eccd9ce84367",
+   "s12Sha256": "663ce2199e670b416f178e4f499f6369aafe8d90cc5a468ebe02629e0c08f9f3",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Medieval_TacticalKnightBracers_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/TacticalKnightBracers/SK_Medieval_TacticalKnightBracers_M.SK_Medieval_TacticalKnightBracers_M",
+   "liveUrl": "../reconstructed-meshes-v2/SK_Medieval_TacticalKnightBracers_M.glb",
+   "liveSha256": "f3ac48c71864b5108bd98725d596f1d5d7a6ed67a294b771a4eded6cb5cdc7b9",
+   "s12Sha256": "d0e3c4e4adaed38b552e9e7aefe075aa6898da7881567291baa7ff6c4a8b9aec",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.556,
+     "verticesChanged": 1166
+    },
+    "medium_male": {
+     "maxCm": 0.0,
+     "verticesChanged": 3
+    }
+   },
+   "jointsLive": 37,
+   "jointsS12": 39,
+   "weightMaxSteps": 140.0,
+   "verticesWeightMoved": 1551,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Medieval_TacticalKnightTop_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/TacticalKnightTop/SK_Medieval_TacticalKnightTop_M.SK_Medieval_TacticalKnightTop_M",
+   "liveUrl": "../reconstructed-meshes-v2/SK_Medieval_TacticalKnightTop_M.glb",
+   "liveSha256": "04aa67627e0e14ec1dedcca7d140b691d0c4042c469cdab8b3e2c414d613bd66",
+   "s12Sha256": "ed9eec5603bd51788edae212c157558e36a518215b2b20566de84dfbf96c0230",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Medieval_WizardBoots_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/WizardBoots/SK_Medieval_WizardBoots_M.SK_Medieval_WizardBoots_M",
+   "liveUrl": "../reconstructed-family-batch13-wizard-boots-v1/meshes/SK_Medieval_WizardBoots_M.glb",
+   "liveSha256": "1cd5331c5bba27dfc70b00a1bd4eb2273f08209927dfa23a55e06d190360d43e",
+   "s12Sha256": "974f45a22a9004111f09c6c1f0082c393e74bf5cdaed0e428227b51183c9f646",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.497,
+     "verticesChanged": 1435
+    },
+    "medium_male": {
+     "maxCm": 0.272,
+     "verticesChanged": 1360
+    }
+   },
+   "jointsLive": 12,
+   "jointsS12": 12,
+   "weightMaxSteps": 6.0,
+   "verticesWeightMoved": 4,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Medieval_WizardParts_M": {
+   "source": "/Game/Discovery/Characters/Medieval/Assets/WizardParts/SK_Medieval_WizardParts_M.SK_Medieval_WizardParts_M",
+   "liveUrl": "../reconstructed-g100-fresh-b1-medieval-wizard-tunic-v1-v1-mk1/meshes/SK_Medieval_WizardParts_M.glb",
+   "liveSha256": "1ecb913ad1936aa0a354a105844873c37aa97f2c552c41eebcefda6d33c06d93",
+   "s12Sha256": "8fbec24fb7d10ccb5a38782d4c4726b8489aee7416bb1bcfe55fdbc8a67628e8",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs",
+    "TEXCOORD_1 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Mexico_AncientArmDetails_M": {
+   "source": "/Game/Discovery/Characters/Mexico/Assets/AncientArmDetails/SK_Mexico_AncientArmDetails_M.SK_Mexico_AncientArmDetails_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Mexico_AncientArmDetails_M.glb",
+   "liveSha256": "a484e212b6414344ff18dd4b7d914c4ce10d8c432fb35dbe6573ae63cda58d0a",
+   "s12Sha256": "4348f03d2373946f9f7729983b859dc6e0fef14e488f618dfca2cb639d75cd73",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Mexico_RancheroHolster_M": {
+   "source": "/Game/Discovery/Characters/Mexico/Assets/RancheroHolster/SK_Mexico_RancheroHolster_M.SK_Mexico_RancheroHolster_M",
+   "liveUrl": "../reconstructed-g100-mp-ready-b1-cowboy-basic-chaps-r1/meshes/SK_Mexico_RancheroHolster_M.glb",
+   "liveSha256": "155b8b4a2a692e74ecddc0e3bf7b34c7beb32b8392c3269010e16c80d2a3b037",
+   "s12Sha256": "28a13f0312ab20767b2b0bd920ad533b521e7c350a19e8d8dc5abe3bb9b3005f",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_AcePilotTop_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/AcePilotTop/SK_Military_AcePilotTop_M.SK_Military_AcePilotTop_M",
+   "liveUrl": "../reconstructed-family-batch21-military-ace-pilot-top-v1/meshes/SK_Military_AcePilotTop_M.glb",
+   "liveSha256": "89998179495f6f7226e85aa2d43b4e63e4da2328fbf6295d11e8cde6de43dbd0",
+   "s12Sha256": "20b7bbd59a0e6453281de18d7d79ae9ca4e5551666b158c45c18dba4ba2b0e1a",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.81,
+     "verticesChanged": 15718
+    },
+    "medium_male": {
+     "maxCm": 1.503,
+     "verticesChanged": 15716
+    }
+   },
+   "jointsLive": 47,
+   "jointsS12": 50,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Military_AssaultPantsNoKneepad_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/AssaultPantsNoKneepad/SK_Military_AssaultPantsNoKneepad_M.SK_Military_AssaultPantsNoKneepad_M",
+   "liveUrl": "../reconstructed-g100-hides-military-cardboard-pants-v1-v3/meshes/SK_Military_AssaultPantsNoKneepad_M.glb",
+   "liveSha256": "b5390030f48fb96259c57cff561e9f51f68e25553f3c82cd5a1ac35019792966",
+   "s12Sha256": "a84508b2156b1b45c5d851e340b41966818d7b328a623eb973f93cba09f25607",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_AssaultPants_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/AssaultPants/SK_Military_AssaultPants_M.SK_Military_AssaultPants_M",
+   "liveUrl": "../reconstructed-assault-pants-v1/meshes/SK_Military_AssaultPants_M.glb",
+   "liveSha256": "99a2c56a4cbbf9628a43083a4c60595a1fddfb4c06cf11c5f01eb9b15e3dd9b6",
+   "s12Sha256": "4989bc36159a332033adb6198fbaf53e1df395df5d2158b4d1a7538fe41d98c5",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_BulletBandolier_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/BulletBandolier/SK_Military_BulletBandolier_M.SK_Military_BulletBandolier_M",
+   "liveUrl": "../reconstructed-family-batch21-military-bullet-bandolier-v1/meshes/SK_Military_BulletBandolier_M.glb",
+   "liveSha256": "7e9edbc750debca68424c8ae12a8b1ec9db2988c9d5c7d6d919582d7bf66f0cb",
+   "s12Sha256": "6fbc3a0df933f4d223f75903c6537646cb01e6612f213a77ca74f11bd3b5f747",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.215,
+     "verticesChanged": 20638
+    },
+    "medium_male": {
+     "maxCm": 1.549,
+     "verticesChanged": 20638
+    }
+   },
+   "jointsLive": 13,
+   "jointsS12": 13,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Military_CardboardCombatVest_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/CardboardCombatVest/SK_Military_CardboardCombatVest_M.SK_Military_CardboardCombatVest_M",
+   "liveUrl": "../reconstructed-g100-reuse-b2-military-cardboard-combat-vest-v1-g2/meshes/SK_Military_CardboardCombatVest_M.glb",
+   "liveSha256": "167757c4a69540ad92321845a3aaac7635fbe0227052674210cd50436e369d72",
+   "s12Sha256": "b699c8eca9e7cf58e0ee04869e7754dc369f413c5e93b05c8b30f6b253440479",
+   "class": "surface differs",
+   "surface": [
+    "POSITION differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_CardboardPants_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/CardboardPants/SK_Military_CardboardPants_M.SK_Military_CardboardPants_M",
+   "liveUrl": "../reconstructed-g100-hides-military-cardboard-pants-v1-v3/meshes/SK_Military_CardboardPants_M.glb",
+   "liveSha256": "0574c4b374847811f5dcb9f9273fa6e4128abd8da8361681c54edeaed0ea06c4",
+   "s12Sha256": "108c39b9ac94c9beaecf577d9b081e1838e14274afc9aeb60b4eec0440a6d913",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs",
+    "TEXCOORD_1 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_CombatPants_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/CombatPants/SK_Military_CombatPants_M.SK_Military_CombatPants_M",
+   "liveUrl": "../reconstructed-family-batch05-combat-pants-v1/meshes/SK_Military_CombatPants_M.glb",
+   "liveSha256": "e090fbd9832a765267e4e246ad9d857d2ab8f4d14d272d5c50fe075c5dd6f8ae",
+   "s12Sha256": "7ad81ce42ace693f7da3b5110cb0c04e180a2a52d691abd09a0afc71c38766ec",
+   "class": "surface differs",
+   "surface": [
+    "primitive count differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_CombatVest_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/CombatVest/SK_Military_CombatVest_M.SK_Military_CombatVest_M",
+   "liveUrl": "../reconstructed-family-batch21-military-combat-vest-v1/meshes/SK_Military_CombatVest_M.glb",
+   "liveSha256": "57617be4686d542ffd7567ece8e937e553932cb95e3dd418515fa665a09121cd",
+   "s12Sha256": "d19b640f49d83df4b0bd7979d5ad5dc917360940cc44a00457c4edfd9b99b6fc",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.605,
+     "verticesChanged": 7784
+    },
+    "medium_male": {
+     "maxCm": 1.409,
+     "verticesChanged": 7784
+    }
+   },
+   "jointsLive": 45,
+   "jointsS12": 48,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Military_DoubleBeltParts_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/DoubleBeltParts/SK_Military_DoubleBeltParts_M.SK_Military_DoubleBeltParts_M",
+   "liveUrl": "../reconstructed-g100-hides-military-dede-tights-v1-v3/meshes/SK_Military_DoubleBeltParts_M.glb",
+   "liveSha256": "f9c42a13eaf4e50fc66bd509242e190ea69c8e43fb6eb5fb7f7d5bb521fced5e",
+   "s12Sha256": "70e8c590fc2f4cef2f4e6fa570d16ee83b9b01bce01c536fa59abf73974fe9a2",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 2.003,
+     "verticesChanged": 1467
+    },
+    "medium_male": {
+     "maxCm": 1.714,
+     "verticesChanged": 1467
+    }
+   },
+   "jointsLive": 15,
+   "jointsS12": 17,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Military_DoubleHolsterPants_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/DoubleHolsterPants/SK_Military_DoubleHolsterPants_M.SK_Military_DoubleHolsterPants_M",
+   "liveUrl": "../reconstructed-family-batch10-double-holster-pants-v1/meshes/SK_Military_DoubleHolsterPants_M.glb",
+   "liveSha256": "c1521bdd2a938102849540961836e74a0b6a7990c7402bbcb9c58940ff6dc6ce",
+   "s12Sha256": "a94c3e23a92d3a3bf9a3afd068bce157a26c8a57f63fccd188e81f79faee6943",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_MarineBoots_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/MarineBoots/SK_Military_MarineBoots_M.SK_Military_MarineBoots_M",
+   "liveUrl": "../reconstructed-family-batch06-marine-boots-v1/meshes/SK_Military_MarineBoots_M.glb",
+   "liveSha256": "da99da9466d88db520c3083a853e716d8eb9e1bd7e0d1a083cec220c847ffdca",
+   "s12Sha256": "252b36cfd6b6599c897eebfb9293f2a32e2a2109dbbe242e1908490f93bfba56",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_MarinePants_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/MarinePants/SK_Military_MarinePants_M.SK_Military_MarinePants_M",
+   "liveUrl": "../reconstructed-family-batch11-marine-pants-v1/meshes/SK_Military_MarinePants_M.glb",
+   "liveSha256": "536e226efb88f93211c08e828bea18f63a810222118fdf47edc071503568f3d0",
+   "s12Sha256": "4e5e3e0cb22317a2aa5d7bbbd408cc4f82700b44d1d7c9ec41a89daeafd4127d",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_MarineVest_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/MarineVest/SK_Military_MarineVest_M.SK_Military_MarineVest_M",
+   "liveUrl": "../reconstructed-family-batch21-military-marine-vest-v1/meshes/SK_Military_MarineVest_M.glb",
+   "liveSha256": "d686f71bf3159ad41244e11a00f4a19b2e8e8b9662efac09a97b3a256f3585b6",
+   "s12Sha256": "1c7e810ae8865957755c47966df0afdfa21a8d691c7809c8914dcc4abc86feb9",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_OpenShirtWithDogTag_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/OpenShirtWithDogTag/SK_Military_OpenShirtWithDogTag_M.SK_Military_OpenShirtWithDogTag_M",
+   "liveUrl": "../reconstructed-multipart-batch23-military-open-shirt-with-dog-tag-v1/meshes/SK_Military_OpenShirtWithDogTag_M.glb",
+   "liveSha256": "2640aa243df88fc84d0dc0103c55e97b842f4b3785f785d27f69c9334a41e05e",
+   "s12Sha256": "6e4fa9b36fa33abd3442355bf65f9947f5d6a9f967cf1a2142f75d15af54afa1",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_RiotMedievalPants_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/RiotMedievalPants/SK_Military_RiotMedievalPants_M.SK_Military_RiotMedievalPants_M",
+   "liveUrl": "../reconstructed-family-batch21-military-riot-medieval-pants-v1/meshes/SK_Military_RiotMedievalPants_M.glb",
+   "liveSha256": "c3fccc624ff9c0ab211fb8c2f0c2d67bac3ac59f9440c1eb23e62c551d1be095",
+   "s12Sha256": "d35f45db2be8d2d124f0e1b690d9fe86ddfd520fa8bb7ec3d021a8b77ab76c7c",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_SWATVest_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/SWATVest/SK_Military_SWATVest_M.SK_Military_SWATVest_M",
+   "liveUrl": "../reconstructed-multipart-batch23-military-swatvest-v1/meshes/SK_Military_SWATVest_M.glb",
+   "liveSha256": "8dabee9ffd5e119246d91e7c6a34945fc802758a236bc41f0a8285568e52ac15",
+   "s12Sha256": "abf6936b66db1c12afc3a42e6071bb7b4fafa5866d7479e702ecfd5906134f0e",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_SniperBoots_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/SniperBoots/SK_Military_SniperBoots_M.SK_Military_SniperBoots_M",
+   "liveUrl": "../reconstructed-sniper-boots-v1/meshes/SK_Military_SniperBoots_M.glb",
+   "liveSha256": "69f401a4311275046e5ddd3ed25e187ad0a912fc983f4a2fb2a3c40f3ada47b3",
+   "s12Sha256": "a8c2e56dc9fe84fae341dd0c110fe5d33c94563a1e62bb32558c685655e60c8b",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_SniperPants_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/SniperPants/SK_Military_SniperPants_M.SK_Military_SniperPants_M",
+   "liveUrl": "../reconstructed-family-batch05-sniper-pants-v1/meshes/SK_Military_SniperPants_M.glb",
+   "liveSha256": "df9ee511ecc2f9b2f2f310b59eef6f766432df420011e9a0fe8aa459f458fa75",
+   "s12Sha256": "37c585df43ffb083432685ec6f6f435f489db8c4212b43a3fe0a08a34840d938",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.435,
+   "tangentMaxDeg": 0.452,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.309,
+     "verticesChanged": 5374
+    },
+    "medium_male": {
+     "maxCm": 1.434,
+     "verticesChanged": 5374
+    }
+   },
+   "jointsLive": 23,
+   "jointsS12": 23,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Military_TacticalHarness_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/TacticalHarness/SK_Military_TacticalHarness_M.SK_Military_TacticalHarness_M",
+   "liveUrl": "../reconstructed-multipart-batch23-streetwear-closed-rain-jacket-v1/meshes/SK_Military_TacticalHarness_M.glb",
+   "liveSha256": "8846db579118f40570e73c973ca3cf42ad1fdb849ce8a461bdfb015ae2c9d77e",
+   "s12Sha256": "8a42410a628e9ca13c2e09832a3c4b897ddab78a0d9ca22ea4f7b7a212e7b477",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Military_TigerWarriorArmour_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/TigerWarriorArmour/SK_Military_TigerWarriorArmour_M.SK_Military_TigerWarriorArmour_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_Military_TigerWarriorArmour_M.glb",
+   "liveSha256": "68574abffd62d4b96e36cc72ee8193a7085df4f990b1cac324e2ea8f35cbfb78",
+   "s12Sha256": "c2ed8d907f49a1f673be160d559764430d976da7acf27b76677a31e5f9415366",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 33,
+   "jointsS12": 33,
+   "weightMaxSteps": 510.0,
+   "verticesWeightMoved": 3933,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Military_WaistPouches_M": {
+   "source": "/Game/Discovery/Characters/Military/Assets/WaistPouches/SK_Military_WaistPouches_M.SK_Military_WaistPouches_M",
+   "liveUrl": "../reconstructed-g100-fresh-b5-military-pants-with-holster-pouch-v1-r1/meshes/SK_Military_WaistPouches_M.glb",
+   "liveSha256": "1e0da4ca3b8d9baff36b9e3a526172883076d6cab9a4b6ae18c3a5ace45c2e4b",
+   "s12Sha256": "616eba9cfb35bce0d677bf0597062709910e3a7af7b64556e68cf84d8ec130ce",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.353,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.687,
+     "verticesChanged": 491
+    }
+   },
+   "jointsLive": 15,
+   "jointsS12": 16,
+   "weightMaxSteps": 58.0,
+   "verticesWeightMoved": 484,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Monsters_EasternDemonGauntlet_M": {
+   "source": "/Game/Discovery/Characters/Monsters/Assets/EasternDemonGauntlet/SK_Monsters_EasternDemonGauntlet_M.SK_Monsters_EasternDemonGauntlet_M",
+   "liveUrl": "../reconstructed-family-batch21-monsters-eastern-demon-gauntlet-v1-g1/meshes/SK_Monsters_EasternDemonGauntlet_M.glb",
+   "liveSha256": "8a265645ec26e98484878d48f6cc7341d2100a408cb1a399a0f6566326782e20",
+   "s12Sha256": "ada37e92aaa2f379751243a72cb452d1ce01d179c1a68243be950aa26664dd07",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.016,
+     "verticesChanged": 996
+    },
+    "medium_male": {
+     "maxCm": 0.017,
+     "verticesChanged": 830
+    }
+   },
+   "jointsLive": 35,
+   "jointsS12": 33,
+   "weightMaxSteps": 46.0,
+   "verticesWeightMoved": 63,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_MulletShort_M": {
+   "source": "/Game/Discovery/Characters/Hairs/MulletShort/SK_MulletShort_M.SK_MulletShort_M",
+   "liveUrl": "../reconstructed-hair-mullet-v1/meshes/SK_MulletShort_M.glb",
+   "liveSha256": "641c8a798494827216e072120b3c5557cfd2321312b4551bee354c78951bf139",
+   "s12Sha256": "39ba4bdf4df966d5b8c9413bc9df09b96ff2372be2932451cc75915c09b72480",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']"
+   ],
+   "admissible": false
+  },
+  "SK_MulletWavy_M": {
+   "source": "/Game/Discovery/Characters/Hairs/MulletWavy/SK_MulletWavy_M.SK_MulletWavy_M",
+   "liveUrl": "../reconstructed-hair-mullet-v1/meshes/SK_MulletWavy_M.glb",
+   "liveSha256": "84af94679cb404975f07b9001ca55aae2eb39485c18fd958d15186f62d823e09",
+   "s12Sha256": "45a22b6dd4ce07ce808fd123260ab6874688f1f68b7d0da2c6def449c1aec388",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1']"
+   ],
+   "admissible": false
+  },
+  "SK_Municipal_RescueHarness_M": {
+   "source": "/Game/Discovery/Characters/Municipal/Assets/RescueHarness/SK_Municipal_RescueHarness_M.SK_Municipal_RescueHarness_M",
+   "liveUrl": "../reconstructed-item-mask-municipal-torso-g2-v4/meshes/SK_Municipal_RescueHarness_M.glb",
+   "liveSha256": "2c536ec66413062de1d175b447bb3a86713e8dc9c9e36d021e01f0878f39f138",
+   "s12Sha256": "9bd4c37c09c0d0f9759c4088a8393585d0db070e486ce6d3d6171280d9cd23a4",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Ninja_ShinobiJacket_M": {
+   "source": "/Game/Discovery/Characters/Ninja/Assets/ShinobiJacket/SK_Ninja_ShinobiJacket_M.SK_Ninja_ShinobiJacket_M",
+   "liveUrl": "../reconstructed-family-batch21-ninja-shinobi-jacket-v1/meshes/SK_Ninja_ShinobiJacket_M.glb",
+   "liveSha256": "3e7c98e3eadda260a8bd7053b744fa9c5883575a9f59ebfc7360ff6a48e79f39",
+   "s12Sha256": "4698e0bc4fd5880ce531bb22ee6167000d83d8a45c1c7ba22b0b25bd8ed2a589",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Ninja_ShinobiPants_M": {
+   "source": "/Game/Discovery/Characters/Ninja/Assets/ShinobiPants/SK_Ninja_ShinobiPants_M.SK_Ninja_ShinobiPants_M",
+   "liveUrl": "../reconstructed-family-batch21-ninja-shinobi-pants-v1/meshes/SK_Ninja_ShinobiPants_M.glb",
+   "liveSha256": "67ed22c2520482d64af14f24ea0ef23ec313f1f335f0d87b19a12892ca29c219",
+   "s12Sha256": "2cb371cc5cd0cab8cd8ea54d5851769c989e61c9f05c232f48da44dc3329f5d1",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Ninja_ShinobiRope_M": {
+   "source": "/Game/Discovery/Characters/Ninja/Assets/ShinobiRope/SK_Ninja_ShinobiRope_M.SK_Ninja_ShinobiRope_M",
+   "liveUrl": "../reconstructed-family-batch21-ninja-shinobi-rope-v1/meshes/SK_Ninja_ShinobiRope_M.glb",
+   "liveSha256": "417b1ea8486fcc03874153fe8c9c530823a255c3301963453d3460871e24eaa1",
+   "s12Sha256": "0417124fa6631744cf14f416dcb99cb453926587f7923a20e84de6504a036fbb",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Pants_M": {
+   "source": "/Game/Discovery/Characters/StarterSet/Assets/Pants/SK_Pants_M.SK_Pants_M",
+   "liveUrl": "../reconstructed-family-starter-pants-v1/meshes/SK_Pants_M.glb",
+   "liveSha256": "d3c2a6e838c9c9d4e8f34f621e09a907a1376f706552e08365b0b3a89fdbb521",
+   "s12Sha256": "74669f0c466e5146641e4ddcad22a152ddcad84d6a138329490165d86421c69f",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Pirate_CaptainBoots_M": {
+   "source": "/Game/Discovery/Characters/Pirate/Assets/CaptainBoots/SK_Pirate_CaptainBoots_M.SK_Pirate_CaptainBoots_M",
+   "liveUrl": "../reconstructed-family-batch12-captain-boots-v1/meshes/SK_Pirate_CaptainBoots_M.glb",
+   "liveSha256": "16bbc10c6a2822af5e56f2f28357324e81c1546b3acd4706acc175ba4fbff077",
+   "s12Sha256": "3b02d53c20322e35640eb24787275979432628a9b4723450cc75dd6b10de8e57",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Pirate_CaptainCape_M": {
+   "source": "/Game/Discovery/Characters/Pirate/Assets/CaptainCape/SK_Pirate_CaptainCape_M.SK_Pirate_CaptainCape_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_Pirate_CaptainCape_M.glb",
+   "liveSha256": "903d9d68ee8514d32daa5dbd5a41fe80e35e2b93b9a532766245b446a0d1e232",
+   "s12Sha256": "42e4de75127d15a2149b67c08e1520f5cba822ffea38676491984b008cb4d4da",
+   "class": "loader refuses",
+   "loader": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0']",
+    "influence layout differs between primitives or files"
+   ],
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 17,
+   "jointsS12": 17,
+   "admissible": false
+  },
+  "SK_Pirate_CaptainHat_M": {
+   "source": "/Game/Discovery/Characters/Pirate/Assets/CaptainHat/SK_Pirate_CaptainHat_M.SK_Pirate_CaptainHat_M",
+   "liveUrl": "../reconstructed-family-batch24-pirate-captain-hat-v1/meshes/SK_Pirate_CaptainHat_M.glb",
+   "liveSha256": "f417ac477c802d5aed983fb77c798d8a50ebd709adc657d7b441943a165d16f9",
+   "s12Sha256": "db82caee447dc07007481617d230db04a0ba6d21f4f62630e59dc41f6c551e1b",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Pirate_CaptainJacket_M": {
+   "source": "/Game/Discovery/Characters/Pirate/Assets/CaptainJacket/SK_Pirate_CaptainJacket_M.SK_Pirate_CaptainJacket_M",
+   "liveUrl": "../reconstructed-family-batch21-pirate-captain-jacket-v1/meshes/SK_Pirate_CaptainJacket_M.glb",
+   "liveSha256": "c0eb3a755e0d638b55023956a5dba7929c02860f44bd3b8d68667f5c331f804f",
+   "s12Sha256": "d503db687d6b0b8d2139c38391727e2156d2732d251c89c682dc8ef73ebed1e5",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Pirate_CaptainPants_M": {
+   "source": "/Game/Discovery/Characters/Pirate/Assets/CaptainPants/SK_Pirate_CaptainPants_M.SK_Pirate_CaptainPants_M",
+   "liveUrl": "../reconstructed-family-batch11-captain-pants-v1/meshes/SK_Pirate_CaptainPants_M.glb",
+   "liveSha256": "461d452263ec3804f1e3c3d0fae2118cff47f83fe499974ffbd99b16095ce433",
+   "s12Sha256": "a8ca535faf8c8ae06ee31a3474fc89b319e5326c00c05ba57dcb10b2f4115f12",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Pirate_PirateBandolier_M": {
+   "source": "/Game/Discovery/Characters/Pirate/Assets/PirateBandolier/SK_Pirate_PirateBandolier_M.SK_Pirate_PirateBandolier_M",
+   "liveUrl": "../reconstructed-family-batch21-pirate-pirate-bandolier-v1/meshes/SK_Pirate_PirateBandolier_M.glb",
+   "liveSha256": "4956fae56727bd22b7d1cf254c23c49c428309651e13c2cd5b45ec2577c8f1d0",
+   "s12Sha256": "4f434b0ac8d7029889d54b79ac44e607fa8b918dff689b569d9f93ed44fbbfe0",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Pirate_PoetShirtWithVest_M": {
+   "source": "/Game/Discovery/Characters/Pirate/Assets/PoetShirtWithVest/SK_Pirate_PoetShirtWithVest_M.SK_Pirate_PoetShirtWithVest_M",
+   "liveUrl": "../reconstructed-g100-fsingle2-pirate-poet-shirt-with-vest-v1-v1/meshes/SK_Pirate_PoetShirtWithVest_M.glb",
+   "liveSha256": "cb65065ea6f66a728e778e14159caa940dedbb692400776cb5c848c646c9f07b",
+   "s12Sha256": "301440e6ec3929325eea1cf355699bd234f38593ce12fbdda4247e4ec398d497",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Pirate_ScallywagPants_M": {
+   "source": "/Game/Discovery/Characters/Pirate/Assets/ScallyWagPants/SK_Pirate_ScallywagPants_M.SK_Pirate_ScallywagPants_M",
+   "liveUrl": "../reconstructed-family-batch21-pirate-scallywag-pants-v1/meshes/SK_Pirate_ScallywagPants_M.glb",
+   "liveSha256": "b1cefc5e34b6fbe5c9c5d2b24bcca8533f6a41418fe8cf7c0ebe6386345f390c",
+   "s12Sha256": "a4ca9969f1141a590871a37eff53fcc3529294b5890c816d56ee3144e93d965d",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Racing_Helmet_M": {
+   "source": "/Game/Discovery/Characters/Racing/Assets/Helmet/SK_Racing_Helmet_M.SK_Racing_Helmet_M",
+   "liveUrl": "../reconstructed-attached-b14-v3/meshes/SK_Racing_Helmet_M.glb",
+   "liveSha256": "49110670b702f47562bc7d5414d5d35773d7c6718c5a61a623eaf0203088aac3",
+   "s12Sha256": "b5239147efcb1a8be75fbdabde1b02bfee796852f16e18adc6d24749282c0d88",
+   "class": "morph set",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsAdded": [],
+   "morphsRemoved": [
+    "medium_female",
+    "medium_male"
+   ],
+   "morphsRemovedMaxCm": {
+    "medium_female": 0.806,
+    "medium_male": 0.618
+   },
+   "morphsChanged": {},
+   "jointsLive": 8,
+   "jointsS12": 8,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Robots_ConicalHatSciFi_M": {
+   "source": "/Game/Discovery/Characters/Robots/Assets/ConicalHatSciFi/SK_Robots_ConicalHatSciFi_M.SK_Robots_ConicalHatSciFi_M",
+   "liveUrl": "../reconstructed-attached-b3-v1/meshes/SK_Robots_ConicalHatSciFi_M.glb",
+   "liveSha256": "092dbc85822c82085b9f6864f5c798aaa844c26117706f5f09b8902828e86520",
+   "s12Sha256": "9bf2cff65ea8b19aba04800294aa39899e304b9699393258bff90dc335fc9dac",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Robots_CordBelt_M": {
+   "source": "/Game/Discovery/Characters/Robots/Assets/CordBelt/SK_Robots_CordBelt_M.SK_Robots_CordBelt_M",
+   "liveUrl": "../reconstructed-multipart-batch23-streetwear-dad-jeans-v1/meshes/SK_Robots_CordBelt_M.glb",
+   "liveSha256": "8bbc85539c52e9424cc67a00ff7b28b495efce0ce62862332afc34c5cb4ce610",
+   "s12Sha256": "acd30128a97d9739ff623a2f8e45114fac807e2b480775c4c8949fdbd014ad1a",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.067,
+     "verticesChanged": 1957
+    }
+   },
+   "jointsLive": 13,
+   "jointsS12": 23,
+   "weightMaxSteps": 356.0,
+   "verticesWeightMoved": 1943,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Robots_DiscoBotGloves_M": {
+   "source": "/Game/Discovery/Characters/Robots/Assets/DiscoBotGloves/SK_Robots_DiscoBotGloves_M.SK_Robots_DiscoBotGloves_M",
+   "liveUrl": "../reconstructed-g100-fsingle2-robots-disco-bot-gloves-v1-v1/meshes/SK_Robots_DiscoBotGloves_M.glb",
+   "liveSha256": "802759b82619f8d8983ba09e9a3e13623dc1808b981f0671eaa92cc0936b6a78",
+   "s12Sha256": "5b02f5be989e6e362f62097db019c12788ca5e9a7c06ea263b2e0bdaa6f30c7c",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Robots_DiscoKeychain_M": {
+   "source": "/Game/Discovery/Characters/Robots/Assets/DiscoKeychain/SK_Robots_DiscoKeychain_M.SK_Robots_DiscoKeychain_M",
+   "liveUrl": "../reconstructed-g100-fresh-b5-robots-disco-pants-v1-v1/meshes/SK_Robots_DiscoKeychain_M.glb",
+   "liveSha256": "73500273eb5d23c80f4d025d1174f417668a05511d873a9e1892de8e06e72a1a",
+   "s12Sha256": "d60e23a79f68d005f877847eaaef4afa2f7e040e55fd4bf7188423abc80b005d",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Robots_DiscoNecklace_M": {
+   "source": "/Game/Discovery/Characters/Robots/Assets/DiscoNecklace/SK_Robots_DiscoNecklace_M.SK_Robots_DiscoNecklace_M",
+   "liveUrl": "../reconstructed-g100-fresh-b5-robots-disco-jacket-v1-v1/meshes/SK_Robots_DiscoNecklace_M.glb",
+   "liveSha256": "a3444b4b0d49c8e751277b8977443f0a1d19469f5996aa016b4e2b58cd3cae28",
+   "s12Sha256": "2aba6440580649e9eca9f9723cea9018417c607b3dbd5fbba7a0ab10d29f731a",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Robots_RobotWarriorTop_M": {
+   "source": "/Game/Discovery/Characters/Robots/Assets/RobotWarriorTop/SK_Robots_RobotWarriorTop_M.SK_Robots_RobotWarriorTop_M",
+   "liveUrl": "../reconstructed-multipart-batch23-robots-robot-warrior-top-v1-g2/meshes/SK_Robots_RobotWarriorTop_M.glb",
+   "liveSha256": "8be6895a0f53b2bf019740ef2e3f43232bd58c623bbdac285359556e504ddaca",
+   "s12Sha256": "c7b7b5737e89d343223d3928116f382b0d321234c4f86e9e399ec6020b1443f0",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Robots_RobotWristCovers_M": {
+   "source": "/Game/Discovery/Characters/Robots/Assets/RobotWristCovers/SK_Robots_RobotWristCovers_M.SK_Robots_RobotWristCovers_M",
+   "liveUrl": "../reconstructed-multipart-batch23-robots-robot-warrior-top-v1-g2/meshes/SK_Robots_RobotWristCovers_M.glb",
+   "liveSha256": "a4b822ef5b499e2de805fd25711e75427967a33e7ade3f2d1b7c5368f8e96ee8",
+   "s12Sha256": "8f28f9fa57e941d29fc60f57d70b367edaa240f0ed12b182e79e876b3e8a2482",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.018,
+     "verticesChanged": 534
+    }
+   },
+   "jointsLive": 26,
+   "jointsS12": 26,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Robots_SynthHelmet_M": {
+   "source": "/Game/Discovery/Characters/Robots/Assets/SynthHelmet/SK_Robots_SynthHelmet_M.SK_Robots_SynthHelmet_M",
+   "liveUrl": "../reconstructed-attached-b2-v5/meshes/SK_Robots_SynthHelmet_M.glb",
+   "liveSha256": "ee9d63a40d7a1dc1a07f6603f6976eb465036fda417d58c689de19fefd8f36db",
+   "s12Sha256": "a3b0d7caff88ee1b310ede5848ee1c27e71da6c711e3875d80fc349ee3847d5c",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Samurai_ClothTop_M": {
+   "source": "/Game/Discovery/Characters/Samurai/Assets/ClothTop/SK_Samurai_ClothTop_M.SK_Samurai_ClothTop_M",
+   "liveUrl": "../reconstructed-family-batch21-samurai-cloth-top-v1/meshes/SK_Samurai_ClothTop_M.glb",
+   "liveSha256": "4ccd70fff2f5ef164a655eece8d444d899f62a17ec9488f101053e06fc8ba0d3",
+   "s12Sha256": "abb630d78723f51da49ab57195e8b928daff4c93d99cfb391444c1b0dbe2c508",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Samurai_GetaShoes_M": {
+   "source": "/Game/Discovery/Characters/Samurai/Assets/GetaShoes/SK_Samurai_GetaShoes_M.SK_Samurai_GetaShoes_M",
+   "liveUrl": "../reconstructed-family-batch21-samurai-geta-shoes-r2-v1/meshes/SK_Samurai_GetaShoes_M.glb",
+   "liveSha256": "c8b5190d5b99566c36694a1bafabca49545efb2ddae73d88140eb099c9b19fec",
+   "s12Sha256": "4ee3a943da58617d63c88d35eb2061ba53f175bb67a196b94fec7dfa44f4b803",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Samurai_LoosePants_M": {
+   "source": "/Game/Discovery/Characters/Samurai/Assets/LoosePants/SK_Samurai_LoosePants_M.SK_Samurai_LoosePants_M",
+   "liveUrl": "../reconstructed-g100-fsingle1-samurai-loose-pants-v1-r1-mk1/meshes/SK_Samurai_LoosePants_M.glb",
+   "liveSha256": "c201ed58a6d0affa1f6d897bea25f8543d32fe5c72c144aca3ff623d016b4b59",
+   "s12Sha256": "ffb2b48707bc54233c9c3995b079fcfdff26cf64ee6d3d6987d1aa1f745b18fd",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.446,
+   "tangentMaxDeg": 0.45,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.424,
+     "verticesChanged": 1808
+    },
+    "medium_male": {
+     "maxCm": 1.651,
+     "verticesChanged": 1743
+    }
+   },
+   "jointsLive": 23,
+   "jointsS12": 23,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_SciFi_CyberBoots_M": {
+   "source": "/Game/Discovery/Characters/SciFi/Assets/CyberBoots/SK_SciFi_CyberBoots_M.SK_SciFi_CyberBoots_M",
+   "liveUrl": "../reconstructed-family-batch21-sci-fi-cyber-boots-v1/meshes/SK_SciFi_CyberBoots_M.glb",
+   "liveSha256": "523441fd3063297bb3943cbd6b1619a178121bdcb5c1ba41ec6706d3de12a0d6",
+   "s12Sha256": "9b98869a833778a026204d5d2f78171d33bc76f824bc9c99048730f329eb78fe",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.354,
+     "verticesChanged": 2299
+    }
+   },
+   "jointsLive": 12,
+   "jointsS12": 97,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_SciFi_Gloves_M": {
+   "source": "/Game/Discovery/Characters/SciFi/Assets/Gloves/SK_SciFi_Gloves_M.SK_SciFi_Gloves_M",
+   "liveUrl": "../reconstructed-family-batch21-sci-fi-gloves-v1/meshes/SK_SciFi_Gloves_M.glb",
+   "liveSha256": "c5de28f53f88bdb6fb98d1db6fe91fbdde45e9763bdd88508f8c11caafe1130b",
+   "s12Sha256": "6ffb9835daffec6ac1b23ad66c090a308f5d4b37413a134c53daa59df6b562f8",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.016,
+     "verticesChanged": 312
+    },
+    "medium_male": {
+     "maxCm": 0.019,
+     "verticesChanged": 174
+    }
+   },
+   "jointsLive": 53,
+   "jointsS12": 53,
+   "weightMaxSteps": 106.0,
+   "verticesWeightMoved": 1472,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_SciFi_HackerGloves_M": {
+   "source": "/Game/Discovery/Characters/SciFi/Assets/HackerGloves/SK_SciFi_HackerGloves_M.SK_SciFi_HackerGloves_M",
+   "liveUrl": "../reconstructed-family-batch21-sci-fi-hacker-gloves-v1/meshes/SK_SciFi_HackerGloves_M.glb",
+   "liveSha256": "b75c4af1069464f24dc1096e2f027e18aacd45077eb667b149637fa07c592310",
+   "s12Sha256": "223a157ca933a47de266cb8856a7601b28e3f53826c039b4409a65aa5119f519",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_SciFi_PantsToolBag_M": {
+   "source": "/Game/Discovery/Characters/SciFi/Assets/PantsToolBag/SK_SciFi_PantsToolBag_M.SK_SciFi_PantsToolBag_M",
+   "liveUrl": "../reconstructed-g100-reuse-b16-sci-fi-pants-v1-v1/meshes/SK_SciFi_PantsToolBag_M.glb",
+   "liveSha256": "b98ce688cfd5537d58484295bea1603d200157cebde0f9ad14b304c40b71e65e",
+   "s12Sha256": "5979d2b4b297ee65bbe6b42bb46b4fa4abc1001c179613a7f4b243d53b80ff79",
+   "class": "surface differs",
+   "surface": [
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_SciFi_PhantomMaskTranslucent_M": {
+   "source": "/Game/Discovery/Characters/SciFi/Assets/PhantomMaskTranslucent/SK_SciFi_PhantomMaskTranslucent_M.SK_SciFi_PhantomMaskTranslucent_M",
+   "liveUrl": "../reconstructed-held-rerun-v1/meshes/SK_SciFi_PhantomMaskTranslucent_M.glb",
+   "liveSha256": "4d048f1b93a060158b5fdaf4c9780247faa691b8d8dc7c3791cec0adfe7f630a",
+   "s12Sha256": "56a0b54bed1d79c0ac892698ba786d1c01278d3dc2bfc1306676f9e77c8777e2",
+   "class": "morph set",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsAdded": [],
+   "morphsRemoved": [
+    "medium_male"
+   ],
+   "morphsRemovedMaxCm": {
+    "medium_male": 0.022
+   },
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.036,
+     "verticesChanged": 1876
+    }
+   },
+   "jointsLive": 8,
+   "jointsS12": 8,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_SciFi_TechBomberJacket_M": {
+   "source": "/Game/Discovery/Characters/SciFi/Assets/TechBomberJacket/SK_SciFi_TechBomberJacket_M.SK_SciFi_TechBomberJacket_M",
+   "liveUrl": "../reconstructed-multipart-batch23-sci-fi-tech-bomber-jacket-g4-v1/meshes/SK_SciFi_TechBomberJacket_M.glb",
+   "liveSha256": "0f715397f705a5102a12f21ac296f83b2895470982a6c4862c4782a0c5ab5543",
+   "s12Sha256": "4d07da751f96a2abd4105f3793e63369c917c9be21fd88655cd753f551b7f84e",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_SciFi_TigerRobotBomberJacketStraps_M": {
+   "source": "/Game/Discovery/Characters/SciFi/Assets/TigerRobotBomberJacketStraps/SK_SciFi_TigerRobotBomberJacketStraps_M.SK_SciFi_TigerRobotBomberJacketStraps_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_SciFi_TigerRobotBomberJacketStraps_M.glb",
+   "liveSha256": "61bd5d3bec2c60f7756bdc7c72da7473e3e4cc9cf4d27dd3b8101c0d0b83d191",
+   "s12Sha256": "6b21e86d0dba45512db339196294d9eda7bf6cd0890206e8254550348d275345",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 24,
+   "jointsS12": 24,
+   "weightMaxSteps": 91.64,
+   "verticesWeightMoved": 205,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_SciFi_UrbanTechVest_M": {
+   "source": "/Game/Discovery/Characters/SciFi/Assets/UrbanTechVest/SK_SciFi_UrbanTechVest_M.SK_SciFi_UrbanTechVest_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_SciFi_UrbanTechVest_M.glb",
+   "liveSha256": "1cbd703237023508496738eba1ab38c41d92e15668061546aac329a3864680d7",
+   "s12Sha256": "79c70af35973f13ee3d5aa34b1b0fbbac64574a631097b3b4f079bfd77d428d6",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 29,
+   "jointsS12": 29,
+   "weightMaxSteps": 510.0,
+   "verticesWeightMoved": 5123,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Shirt_M": {
+   "source": "/Game/Discovery/Characters/StarterSet/Assets/Shirt/SK_Shirt_M.SK_Shirt_M",
+   "liveUrl": "../reconstructed-flag-shirts-v1/meshes/SK_Shirt_M.glb",
+   "liveSha256": "6426ba25c772723ddffd312e1bd41dcc262db3d3175146e4bb8353c6ac2d2f66",
+   "s12Sha256": "5cb365e9a6e6f0eb2145aace8a4e700bb48e9bf3ca59f86afa6bf696d73e968d",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs",
+    "TEXCOORD_1 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Socks_Crew_M": {
+   "source": "/Game/Discovery/Characters/Generic/Socks/Assets/Crew/SK_Socks_Crew_M.SK_Socks_Crew_M",
+   "liveUrl": "../reconstructed-item-mask-streetwear-sneakers-untied-g2-v4/meshes/SK_Socks_Crew_M.glb",
+   "liveSha256": "42e0cf1c1856ae2fb1354c76d66d36aeb5994086fd058c49eeee8f5a98cd4836",
+   "s12Sha256": "f606b40f9a81e06feca2a8a149e4bdfc060f14f736fc707986902701e18d60a7",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0']",
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Socks_KneeHigh_M": {
+   "source": "/Game/Discovery/Characters/Generic/Socks/Assets/KneeHigh/SK_Socks_KneeHigh_M.SK_Socks_KneeHigh_M",
+   "liveUrl": "../reconstructed-item-mask-sport-cleats-v3/meshes/SK_Socks_KneeHigh_M.glb",
+   "liveSha256": "3b15c902733225340dd5ae4e906266e412981b297edcf453d70545f07c06adf7",
+   "s12Sha256": "703cf5a1d8ddade2914a8d53a9122d851383c0aec150527f6c6d4caf9f99c671",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0']",
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Socks_Quarter_M": {
+   "source": "/Game/Discovery/Characters/Generic/Socks/Assets/Quarter/SK_Socks_Quarter_M.SK_Socks_Quarter_M",
+   "liveUrl": "../reconstructed-multipart-dress-shoes-v1/meshes/SK_Socks_Quarter_M.glb",
+   "liveSha256": "de9e37c8e9d1b7947254a3e72afe0044cd797b6bc5783238baac2f86c94ef4e2",
+   "s12Sha256": "9995327cafb1aeb60739f9f6774e8e85b0e4b7e74912297b35df00b38adca5fe",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0']",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Socks_ThighHigh_M": {
+   "source": "/Game/Discovery/Characters/Generic/Socks/Assets/ThighHigh/SK_Socks_ThighHigh_M.SK_Socks_ThighHigh_M",
+   "liveUrl": "../reconstructed-multipart-batch02-sport-cleats-v1/meshes/SK_Socks_ThighHigh_M.glb",
+   "liveSha256": "5321e8ae1ec4136b5c3f9b25ed8db0e8b1b641d1d90d7a8f0b5a669e2fd34fb3",
+   "s12Sha256": "9d72d6b0a8a8cf1692e6f4c765930e36e33e5ed7a2741d2ef5c861ea583c356b",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_AstroPilotGloves_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/AstroPilotGloves/SK_Space_AstroPilotGloves_M.SK_Space_AstroPilotGloves_M",
+   "liveUrl": "../reconstructed-g100-fsingle2-space-astro-pilot-gloves-v1-v1/meshes/SK_Space_AstroPilotGloves_M.glb",
+   "liveSha256": "8f79b9e424eeae011cad2d789c49150d6b271577be4b104fd7299d20790c3cf2",
+   "s12Sha256": "2fbca04459d93e980a8ebaad8f3c8ca8d7f6dc07313e894c492b450552f23d77",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_AstroPilotGun_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/AstroPilotGun/SK_Space_AstroPilotGun_M.SK_Space_AstroPilotGun_M",
+   "liveUrl": "../reconstructed-g100-fresh-b5-space-astro-pilot-pants-v1-r1/meshes/SK_Space_AstroPilotGun_M.glb",
+   "liveSha256": "deaa21a6c234c6f5b0bb9c1e88690f3a5fd9427fbc944f7feb589ab11e558996",
+   "s12Sha256": "fc2a9984c28d759bd034a6f1da0755abafe11145a32c1d654193b0e0384f19db",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_AstroPilotPants_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/AstroPilotPants/SK_Space_AstroPilotPants_M.SK_Space_AstroPilotPants_M",
+   "liveUrl": "../reconstructed-g100-fresh-b5-space-astro-pilot-pants-v1-r1/meshes/SK_Space_AstroPilotPants_M.glb",
+   "liveSha256": "af6d2b932c5a4a0ea0a06ea75e21de55d0ae306d53431b8155eae6cd5b72bdf0",
+   "s12Sha256": "5d65a1dc0d0bbd466804f1b451a17052021f4e3f080244b1aaa0e5114dfc649e",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_AstronautSuit_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/AstronautSuit/SK_Space_AstronautSuit_M.SK_Space_AstronautSuit_M",
+   "liveUrl": "../reconstructed-w38c-attached-b1-v1/meshes/SK_Space_AstronautSuit_M.glb",
+   "liveSha256": "8e3a9b5e81ce46f9838142e2edd6e64bed8c316fe81307c3ada6ee67b5b194d9",
+   "s12Sha256": "12fa98bf4da243120504c01ec6d5dee710312d6cbe3dfd1757b80fdd004ba4ba",
+   "class": "surface differs",
+   "surface": [
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs",
+    "primitive 1 indices differ"
+   ],
+   "admissible": false
+  },
+  "SK_Space_BountyHunterPants_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/BountyHunterPants/SK_Space_BountyHunterPants_M.SK_Space_BountyHunterPants_M",
+   "liveUrl": "../reconstructed-g100-fsingle2-space-bounty-hunter-pants-v1-v1/meshes/SK_Space_BountyHunterPants_M.glb",
+   "liveSha256": "c93535a40607d12822c260e736870823af7ce10e2568557c9dfc8a9c05428a90",
+   "s12Sha256": "2286ff5e624a01e6d9b2739b24a51b9147e44badae037c60158914a21c877aa3",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_PioneerShoes_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/PioneerShoes/SK_Space_PioneerShoes_M.SK_Space_PioneerShoes_M",
+   "liveUrl": "../reconstructed-g100-fsingle2-space-pioneer-shoes-g2-v1-v1/meshes/SK_Space_PioneerShoes_M.glb",
+   "liveSha256": "e5461621ab8669254923631a889ab4c0a21bc08efd72f53059aaf964dd56596f",
+   "s12Sha256": "44cd4f43a56ec7cef48ec4475d396c41f6e9590f9722795f8919d5a1f8f7a2b5",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs",
+    "TEXCOORD_1 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_PioneerTechConsole_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/PioneerTechConsole/SK_Space_PioneerTechConsole_M.SK_Space_PioneerTechConsole_M",
+   "liveUrl": "../reconstructed-g100-fresh-b5-space-pioneer-upper-v1-r1/meshes/SK_Space_PioneerTechConsole_M.glb",
+   "liveSha256": "c799024d2249f4297cc14776317b74b8313eb2a3eacc35c19595800f777c16e9",
+   "s12Sha256": "fef8bf5883751344cfee7fb04c1e92fa66eea3e2f94a8daac8d8dff70c51c565",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_SpaceBrain_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/SpaceBrain/SK_Space_SpaceBrain_M.SK_Space_SpaceBrain_M",
+   "liveUrl": "../reconstructed-w61-spacebrain-attached-b1-v1/meshes/SK_Space_SpaceBrain_M.glb",
+   "liveSha256": "a62e5200c5f1b670ebf4875ec4086dfa0736fd2b0851cfb58de4a5b793d30318",
+   "s12Sha256": "9242bd0a004dc4308d9885844dbb7ca0c2a6b1a21332365e7861a12fe69d5f6e",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_SpaceCape_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/SpaceCape/SK_Space_SpaceCape_M.SK_Space_SpaceCape_M",
+   "liveUrl": "../reconstructed-w125-resweep-t2/meshes/SK_Space_SpaceCape_M.glb",
+   "liveSha256": "2a98acc0eb7a9347c7c8859844e3ad7f8243291e06d2133b9fc64dcde69803ae",
+   "s12Sha256": "951367f628391507784b3250ba7c56f90c9ea76d8dadafe7997b9d4163d8ce34",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 32,
+   "jointsS12": 32,
+   "weightMaxSteps": 137.77,
+   "verticesWeightMoved": 198,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Space_SpaceCombatPouches_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/SpaceCombatPants/SK_Space_SpaceCombatPouches_M.SK_Space_SpaceCombatPouches_M",
+   "liveUrl": "../reconstructed-g100-fresh-b5-space-space-combat-pants-v1-r1/meshes/SK_Space_SpaceCombatPouches_M.glb",
+   "liveSha256": "796d5e852c20f0e7cac572f1623188c891a327808f43cfddef86ccd0eb450971",
+   "s12Sha256": "66fae102db97c5d6b6fff1b86346494c06154356540532214d3a6e3e90ad6252",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_SpaceCombatTorso_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/SpaceCombatTorso/SK_Space_SpaceCombatTorso_M.SK_Space_SpaceCombatTorso_M",
+   "liveUrl": "../reconstructed-g100-fsingle2-space-space-combat-torso-v1-v1/meshes/SK_Space_SpaceCombatTorso_M.glb",
+   "liveSha256": "e33bc5ba08cf9514ceb75e72ef6e6f658d68a6a10bf3ec7eac8b2a89b1ead930",
+   "s12Sha256": "0a51c0b4d0a71fe4c142e05cac695964df95d6774a3fbb2518cad17bc6e466da",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_SpacePilotGloves_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/SpacePilotGloves/SK_Space_SpacePilotGloves_M.SK_Space_SpacePilotGloves_M",
+   "liveUrl": "../reconstructed-g100-fsingle2-space-space-pilot-gloves-v1-v1/meshes/SK_Space_SpacePilotGloves_M.glb",
+   "liveSha256": "9ee3775774453f9eda53064dd4c707baa87f9005de4e508b9ef91cf2e4758228",
+   "s12Sha256": "d33de76582f03cc64ed381d2bed3a22a45e9021e23ed0526a9497525334064e3",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_SpaceSuitPantsUltimate_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/SpaceSuitPantsUltimate/SK_Space_SpaceSuitPantsUltimate_M.SK_Space_SpaceSuitPantsUltimate_M",
+   "liveUrl": "../reconstructed-g100-fsingle2-space-space-suit-pants-ultimate-v1-v1/meshes/SK_Space_SpaceSuitPantsUltimate_M.glb",
+   "liveSha256": "c25aaee96e198ebfdd10aec5bcde52ed76176a64c2d609cd37fcf83420beb688",
+   "s12Sha256": "f3da241afd85111d1010a4bfbd532c24bdd97cb059e1e60ba728e111edc395d4",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_SpaceSuitPants_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/SpaceSuitPants/SK_Space_SpaceSuitPants_M.SK_Space_SpaceSuitPants_M",
+   "liveUrl": "../reconstructed-g100-fsingle2-space-space-suit-pants-v1-v1/meshes/SK_Space_SpaceSuitPants_M.glb",
+   "liveSha256": "d5654a053450f1b0871947d3c9665df6a3cf95df7922540c70af48efe2a3e2e5",
+   "s12Sha256": "bdb71933d68bbca02d838faa3200a66d7d2deb2262b83c48116ec63e3624aaca",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Space_SpaceTopVest_M": {
+   "source": "/Game/Discovery/Characters/Space/Assets/SpaceTopVest/SK_Space_SpaceTopVest_M.SK_Space_SpaceTopVest_M",
+   "liveUrl": "../reconstructed-g100-w41c-topvest-multipart-b2-space-space-top-vest-v1-v1/meshes/SK_Space_SpaceTopVest_M.glb",
+   "liveSha256": "f835cd5e14b394c4b758714fef642f7475d3db9eaa7d0eb049619889e075ce65",
+   "s12Sha256": "2cad28c906491629da8c86f961456ccea38c40acada3d994b8f098d5f2d78eaa",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Sport_Cleats_M": {
+   "source": "/Game/Discovery/Characters/Sport/Assets/Cleats/SK_Sport_Cleats_M.SK_Sport_Cleats_M",
+   "liveUrl": "../reconstructed-multipart-batch02-sport-cleats-v1/meshes/SK_Sport_Cleats_M.glb",
+   "liveSha256": "b36743b07901470c3fc1577cefb1b55e94bb1be72d69c84cac48783f94d39406",
+   "s12Sha256": "f4c413ef3e1e6fb3c5eefa931f0fab6bf9fba2deedcee5cc0a3e94183f3fc9c3",
+   "class": "morph set",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsAdded": [],
+   "morphsRemoved": [
+    "medium_female",
+    "medium_male"
+   ],
+   "morphsRemovedMaxCm": {
+    "medium_female": 0.307,
+    "medium_male": 0.294
+   },
+   "morphsChanged": {},
+   "jointsLive": 12,
+   "jointsS12": 12,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Sport_FencerGlove_M": {
+   "source": "/Game/Discovery/Characters/Sport/Assets/FencerGlove/SK_Sport_FencerGlove_M.SK_Sport_FencerGlove_M",
+   "liveUrl": "../reconstructed-family-batch21-sport-fencer-glove-r2-v1/meshes/SK_Sport_FencerGlove_M.glb",
+   "liveSha256": "b337b58062b54b67f240d68bcf83b29401eb72d2fa30e23a8da4ca43c753016b",
+   "s12Sha256": "ec795069f9e22a64b09bc3f63ef2095f3ac4bac3b0b8285288ffc79863353791",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Sport_FencerShoes_M": {
+   "source": "/Game/Discovery/Characters/Sport/Assets/FencerShoes/SK_Sport_FencerShoes_M.SK_Sport_FencerShoes_M",
+   "liveUrl": "../reconstructed-family-batch21-sport-fencer-shoes-r2-v1/meshes/SK_Sport_FencerShoes_M.glb",
+   "liveSha256": "13937d9f4bc384d0df2b229b64761215e79cba98181e022f0514f36a64a4c842",
+   "s12Sha256": "ff6cb4ebabddc65e33d14533e9ce0567dbdb28d64a0cbdb9d9de3a77cfa1c45e",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Sport_PaddedPants_M": {
+   "source": "/Game/Discovery/Characters/Sport/Assets/PaddedPants/SK_Sport_PaddedPants_M.SK_Sport_PaddedPants_M",
+   "liveUrl": "../reconstructed-family-batch21-sport-padded-pants-v1/meshes/SK_Sport_PaddedPants_M.glb",
+   "liveSha256": "7ed05f14a4ef0aa7ca62b6ec672992f83d705b462e68f4c79f2963eda3f5b1e8",
+   "s12Sha256": "48164e4220b45d25c56ed2d4e3f00415871f8f15271cd64cf6005fe58678cd04",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Sport_UmpireMask_M": {
+   "source": "/Game/Discovery/Characters/Sport/Assets/UmpireMask/SK_Sport_UmpireMask_M.SK_Sport_UmpireMask_M",
+   "liveUrl": "../reconstructed-family-batch24-sport-umpire-mask-v1/meshes/SK_Sport_UmpireMask_M.glb",
+   "liveSha256": "34b4e8a9b5d7be963c960ecb086c09397beb492a911e1a79166fb929d54ad7b1",
+   "s12Sha256": "beb2ff30733e2a1a70e0ed58a66b51c9ebbee3201a0445e3828101a44b7f2661",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_StarterSet_TShirt_M": {
+   "source": "/Game/Discovery/Characters/StarterSet/Assets/TShirt/SK_StarterSet_TShirt_M.SK_StarterSet_TShirt_M",
+   "liveUrl": "../reconstructed-starter-tshirts-v1/meshes/SK_StarterSet_TShirt_M.glb",
+   "liveSha256": "6aa7672320be90b1692a0e61cb4e75d82c68b5c18139a38ec0f81c7cd4ee5d96",
+   "s12Sha256": "8dbda7bfdb1c985abbf4ee59cbd04207148595e61e686dcba8bbb42f89dcc5e3",
+   "class": "morph set",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsAdded": [
+    "shrink_under_vest"
+   ],
+   "morphsRemoved": [],
+   "morphsRemovedMaxCm": {},
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.558,
+     "verticesChanged": 1560
+    }
+   },
+   "jointsLive": 27,
+   "jointsS12": 27,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Steampunk_VestWithHood_M": {
+   "source": "/Game/Discovery/Characters/Steampunk/Assets/VestWithHood/SK_Steampunk_VestWithHood_M.SK_Steampunk_VestWithHood_M",
+   "liveUrl": "../reconstructed-g100-fresh-b4-steampunk-vest-with-hood-v1-v1/meshes/SK_Steampunk_VestWithHood_M.glb",
+   "liveSha256": "b03f44b792ef6b28d51335d6c2aab6820966262edf167b6681ce299e4b9c3a39",
+   "s12Sha256": "1aafb975f689ecc5ef9ef21e53bbdead5e09b9249dd161bd8a1ba0277cbf6531",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_BandanaCap_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/BandanaCap/SK_Streetwear_BandanaCap_M.SK_Streetwear_BandanaCap_M",
+   "liveUrl": "../reconstructed-family-batch24-streetwear-bandana-cap-v1/meshes/SK_Streetwear_BandanaCap_M.glb",
+   "liveSha256": "589bb53450c4d369db2e956820d76a43904056535da25fb23c2cab7fa29aa49b",
+   "s12Sha256": "6e2f925416f2ac777637591dd2373a8671dd35177ab3f9b691f003b73dfbe9db",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0']",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_BikerJacketHoodie_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/BikerJacketHoodie/SK_Streetwear_BikerJacketHoodie_M.SK_Streetwear_BikerJacketHoodie_M",
+   "liveUrl": "../reconstructed-family-batch03-biker-jacket-hoodies-v1/meshes/SK_Streetwear_BikerJacketHoodie_M.glb",
+   "liveSha256": "e552b1e41c18d7deee3871304755a736c131da020497f5476a6cf100923a59e1",
+   "s12Sha256": "6a4865c327b57c02f9d9508399c47a1c04be9d77494fb441bddcc7601f710602",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_BikerJacket_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/BikerJacket/SK_Streetwear_BikerJacket_M.SK_Streetwear_BikerJacket_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-biker-jacket-v1/meshes/SK_Streetwear_BikerJacket_M.glb",
+   "liveSha256": "4a47f1c15fad9ddb6cb37d96c4075a7be4d807cd67996e85b723d63506b55740",
+   "s12Sha256": "2708cc3f9f8d7cc684abf7b39501c0e536cd329b69fcb5f561ebd293f8f16372",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_BoilerSuitPants_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/BoilerSuitPants/SK_Streetwear_BoilerSuitPants_M.SK_Streetwear_BoilerSuitPants_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-boiler-suit-pants-v1/meshes/SK_Streetwear_BoilerSuitPants_M.glb",
+   "liveSha256": "253bc4f7905f51dec7a0ccf90b06c99b33aed40f7b48215cd0cf04e3b5239e89",
+   "s12Sha256": "552ccbd51a848b297ef9286f2a2b0c8eb918afd160e5698608e7d47d02eba991",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.385,
+     "verticesChanged": 4232
+    },
+    "medium_male": {
+     "maxCm": 0.468,
+     "verticesChanged": 1173
+    }
+   },
+   "jointsLive": 23,
+   "jointsS12": 23,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Streetwear_BoilerSuitTorso_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/BoilerSuitTorso/SK_Streetwear_BoilerSuitTorso_M.SK_Streetwear_BoilerSuitTorso_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-boiler-suit-torso-v1/meshes/SK_Streetwear_BoilerSuitTorso_M.glb",
+   "liveSha256": "b4116842af58acf94f1e11221151e4e24cbe9059352fb858dee7bcb1ab6bb6da",
+   "s12Sha256": "12cc42b41df78feee3b8ecc55b71a563154e7b6949870c4fcef97b2d9b0e37b3",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.259,
+     "verticesChanged": 2584
+    },
+    "medium_male": {
+     "maxCm": 0.0,
+     "verticesChanged": 1
+    }
+   },
+   "jointsLive": 40,
+   "jointsS12": 44,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Streetwear_BraidedBraceletSet_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/BraidedBraceletSet/SK_Streetwear_BraidedBraceletSet_M.SK_Streetwear_BraidedBraceletSet_M",
+   "liveUrl": "../reconstructed-family-batch24-streetwear-braided-bracelet-set-r2-v1/meshes/SK_Streetwear_BraidedBraceletSet_M.glb",
+   "liveSha256": "ae4148a8f0c53e69fe72111a9e1d0fb4213daa921757ffe89d1a23a6e9e4763e",
+   "s12Sha256": "a5ea2ceb329dd8336097de658aced9fd4578f503ce48ef81bfa89f3970329e1d",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_ChainNecklace_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/ChainNecklace/SK_Streetwear_ChainNecklace_M.SK_Streetwear_ChainNecklace_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Streetwear_ChainNecklace_M.glb",
+   "liveSha256": "d9289a29c13d034646aedb1c137d0ff7d5c91e37b5f51406526b98deb447a3b0",
+   "s12Sha256": "e7e03171f36f93016802565c306914921067d54cded6bdeb99aaadb9d5b38c4a",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.457,
+     "verticesChanged": 845
+    },
+    "medium_male": {
+     "maxCm": 0.635,
+     "verticesChanged": 845
+    }
+   },
+   "jointsLive": 12,
+   "jointsS12": 12,
+   "weightMaxSteps": 162.0,
+   "verticesWeightMoved": 245,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Streetwear_ChromeJacket_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/ChromeJacket/SK_Streetwear_ChromeJacket_M.SK_Streetwear_ChromeJacket_M",
+   "liveUrl": "../reconstructed-g100-fresh-b2-streetwear-chrome-jacket-v1-r1/meshes/SK_Streetwear_ChromeJacket_M.glb",
+   "liveSha256": "7046ff84b5dde905e25963dcb18ebef4cbee651fda5fae97c5dc9a78a9cbcd45",
+   "s12Sha256": "23111764a29fc09c440628bf37cbc32ee095178707334b6b8f4146341d68a9f6",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 0 indices differ",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_ClosedRainJacket_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/ClosedRainJacket/SK_Streetwear_ClosedRainJacket_M.SK_Streetwear_ClosedRainJacket_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-closed-rain-jacket-v1/meshes/SK_Streetwear_ClosedRainJacket_M.glb",
+   "liveSha256": "47c781294d7c8dacc5b67cc2f39bacce61d4cdf8c7f66688ab5c66533f734db7",
+   "s12Sha256": "bccda3b2e6d123361823f75cf907cba4cdfd7ad333409c9850700de474b90008",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.397,
+   "tangentMaxDeg": 0.453,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.269,
+     "verticesChanged": 5832
+    },
+    "medium_male": {
+     "maxCm": 1.417,
+     "verticesChanged": 5826
+    }
+   },
+   "jointsLive": 45,
+   "jointsS12": 48,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Streetwear_CropTopHoodie_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/CropTopHoodie/SK_Streetwear_CropTopHoodie_M.SK_Streetwear_CropTopHoodie_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-crop-top-hoodie-v1/meshes/SK_Streetwear_CropTopHoodie_M.glb",
+   "liveSha256": "e2ef53ae4983d010e79631855a32ddabc96dbf1bbb1fd0960c94dd1012c2466f",
+   "s12Sha256": "9abcef7ee9f776e52d3fcb00da1c04dba33a5410d84dc5c304d48e1e1c4fe81e",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.184,
+     "verticesChanged": 3694
+    },
+    "medium_male": {
+     "maxCm": 1.384,
+     "verticesChanged": 3694
+    }
+   },
+   "jointsLive": 48,
+   "jointsS12": 48,
+   "weightMaxSteps": 272.0,
+   "verticesWeightMoved": 3581,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Streetwear_CroppedTshirtOversize_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/CroppedTshirtOversize/SK_Streetwear_CroppedTshirtOversize_M.SK_Streetwear_CroppedTshirtOversize_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Streetwear_CroppedTshirtOversize_M.glb",
+   "liveSha256": "46d3d6ad6de483033f46dfd3880785bd3e54e71da58de041553b9173315dfa2a",
+   "s12Sha256": "3aa8bf8ec1a19243a4ab9bbe77c6e6f14e925d447c9c30d8e8a7c0af1b2b23de",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.124,
+     "verticesChanged": 1875
+    },
+    "medium_male": {
+     "maxCm": 1.283,
+     "verticesChanged": 1875
+    }
+   },
+   "jointsLive": 29,
+   "jointsS12": 30,
+   "weightMaxSteps": 428.0,
+   "verticesWeightMoved": 1831,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Streetwear_Crown_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/Crown/SK_Streetwear_Crown_M.SK_Streetwear_Crown_M",
+   "liveUrl": "../reconstructed-family-batch24-streetwear-crown-v1/meshes/SK_Streetwear_Crown_M.glb",
+   "liveSha256": "19cc7c0e3c1ea98c295fa6d5976cb8678096b98402c37decd12ec130d6584da6",
+   "s12Sha256": "61887f0e3dc9a9e0977306fa42263fd0a87514fb6174b042dfb3a963f9b4e9dc",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_CrystalHeadband_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/CrystalHeadband/SK_Streetwear_CrystalHeadband_M.SK_Streetwear_CrystalHeadband_M",
+   "liveUrl": "../reconstructed-family-batch24-streetwear-crystal-headband-v1/meshes/SK_Streetwear_CrystalHeadband_M.glb",
+   "liveSha256": "d4a5e6c210de1bbded1dece9242110c099e2dc4541193842d5c8a08e1bbc921b",
+   "s12Sha256": "8e706ebdfba304db77471bcc00bcab228de304dcd4e556c767474821794b1723",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_CuteJacket_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/CuteJacket/SK_Streetwear_CuteJacket_M.SK_Streetwear_CuteJacket_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-cute-jacket-v1/meshes/SK_Streetwear_CuteJacket_M.glb",
+   "liveSha256": "17dc9efc46f2ff1d30ce45fd0322f8e5e3d44a6aa3f9b9b2a64204bdc49750b0",
+   "s12Sha256": "4acc6b3f08803ec363e6af0ea83105f1a6227ec0e7cc6e740d4259ec6c75ec94",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.404,
+     "verticesChanged": 5036
+    },
+    "medium_male": {
+     "maxCm": 1.314,
+     "verticesChanged": 5036
+    }
+   },
+   "jointsLive": 35,
+   "jointsS12": 40,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [
+    "left_jacket_ear_00_JJRoot",
+    "right_jacket_ear_00_JJRoot"
+   ],
+   "admissible": true
+  },
+  "SK_Streetwear_DadJeans_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/DadJeans/SK_Streetwear_DadJeans_M.SK_Streetwear_DadJeans_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-dad-jeans-v1/meshes/SK_Streetwear_DadJeans_M.glb",
+   "liveSha256": "8153a63bf3421914bfba5b99a771812f1495028a0bba9cebc62166cacdb54df9",
+   "s12Sha256": "3229e7443d81e93447ae464518de9df655639f8d4104e8021ddf1606699753da",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.79,
+     "verticesChanged": 4261
+    },
+    "medium_male": {
+     "maxCm": 1.59,
+     "verticesChanged": 4261
+    }
+   },
+   "jointsLive": 21,
+   "jointsS12": 21,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Streetwear_HeistBag_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/HeistBag/SK_Streetwear_HeistBag_M.SK_Streetwear_HeistBag_M",
+   "liveUrl": "../reconstructed-family-batch02-heist-bags-v1/meshes/SK_Streetwear_HeistBag_M.glb",
+   "liveSha256": "23a547ddd3e625d81ada7e06ec301e85f3b566b6f3bca425ee1742e3a6ee8339",
+   "s12Sha256": "cbe74fdbbb53f4993fbb7134deb655b15fc7ef02299f87755864a312ac55bc29",
+   "class": "loader refuses",
+   "loader": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "influence layout differs between primitives or files"
+   ],
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 2.533,
+     "verticesChanged": 3709
+    },
+    "medium_male": {
+     "maxCm": 1.229,
+     "verticesChanged": 3709
+    }
+   },
+   "jointsLive": 11,
+   "jointsS12": 24,
+   "admissible": false
+  },
+  "SK_Streetwear_HeistTorso_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/HeistTorso/SK_Streetwear_HeistTorso_M.SK_Streetwear_HeistTorso_M",
+   "liveUrl": "../reconstructed-family-batch02-heist-torsos-v1/meshes/SK_Streetwear_HeistTorso_M.glb",
+   "liveSha256": "75d5901bf8e1dacb9339dcca6c0141b72a27f5270a539200ba597c379f653a40",
+   "s12Sha256": "532ebf8ef71f504a139ff8578f4703823d92ef5db29c1216c085b18dceffc759",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.234,
+     "verticesChanged": 3685
+    },
+    "medium_male": {
+     "maxCm": 1.189,
+     "verticesChanged": 3679
+    }
+   },
+   "jointsLive": 45,
+   "jointsS12": 48,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Streetwear_HeistVest_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/HeistVest/SK_Streetwear_HeistVest_M.SK_Streetwear_HeistVest_M",
+   "liveUrl": "../reconstructed-item-mask-streetwear-heist-torso-v4/meshes/SK_Streetwear_HeistVest_M.glb",
+   "liveSha256": "14963f7d768c3996d0f8e7559f0b55f5f92df2816a30372e235d4a26a38d2090",
+   "s12Sha256": "6bd29cbce521706c8d9a7b915d2abb6ed50a1e82b9a41cec1188a039fe276aae",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.608,
+     "verticesChanged": 12798
+    },
+    "medium_male": {
+     "maxCm": 1.683,
+     "verticesChanged": 12798
+    }
+   },
+   "jointsLive": 14,
+   "jointsS12": 20,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Streetwear_HipBag_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/HipBag/SK_Streetwear_HipBag_M.SK_Streetwear_HipBag_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-hip-bag-v1/meshes/SK_Streetwear_HipBag_M.glb",
+   "liveSha256": "796bdd35324e2e2e733b36fcd97d2243dd6beacbc3062954b580576c41af34b1",
+   "s12Sha256": "c66867a4f5ff3b22a82c8ccb3dbbf8659f3afcf62b8ca560b50578707c87ce31",
+   "class": "normals+weights",
+   "normalMaxDeg": 121.877,
+   "tangentMaxDeg": 122.217,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.434,
+     "verticesChanged": 1827
+    }
+   },
+   "jointsLive": 23,
+   "jointsS12": 23,
+   "weightMaxSteps": 4.0,
+   "verticesWeightMoved": 23,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [
+    "right_bag_00_JJRoot"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_Hoodie_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_M.SK_Streetwear_Hoodie_M",
+   "liveUrl": "../reconstructed-hoodies-v1/meshes/SK_Streetwear_Hoodie_M.glb",
+   "liveSha256": "09141b54e218238d168cf390f4531c9b031bb62f13fa2d06f4c5f614d733c556",
+   "s12Sha256": "4e081083d567e4c0a4db95d3ddd193c9e9e3cbe757dc6b96802d24267bc6407d",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'WEIGHTS_0', 'WEIGHTS_1'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_KandiBracelet_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/KandiBracelet/SK_Streetwear_KandiBracelet_M.SK_Streetwear_KandiBracelet_M",
+   "liveUrl": "../reconstructed-family-batch24-streetwear-kandi-bracelet-r2-v1/meshes/SK_Streetwear_KandiBracelet_M.glb",
+   "liveSha256": "6f7a0e8dae55d5ad66708be920e046c7b018e938e183e86a04ff978f95ca60c4",
+   "s12Sha256": "a32cae5f6e018074e894edab8a9227b94097c53f30f2706aadf0bc4977dc26fa",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_MessengerBag_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/MessengerBag/SK_Streetwear_MessengerBag_M.SK_Streetwear_MessengerBag_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-messenger-bag-v1/meshes/SK_Streetwear_MessengerBag_M.glb",
+   "liveSha256": "1a2e3290336bbef5bbd5e0ee2b0b248ae0441aba8fc9f20a7a451e71115dffeb",
+   "s12Sha256": "76e4ecbdc12111b0d54057329ae7efd1fed911a180d2e1a1a6c35cfee09a8af2",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_OpenJacket_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/OpenJacket/SK_Streetwear_OpenJacket_M.SK_Streetwear_OpenJacket_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-open-jacket-v1/meshes/SK_Streetwear_OpenJacket_M.glb",
+   "liveSha256": "4c256fbb683746facb630aa7680f8e15de65d5a176c124c66a67d93c010f8923",
+   "s12Sha256": "2d710d6aed0c5c01e3dec64dfbcc2180825bf9d2fb21ab55728f8851b20cf8f2",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_PopBraceletSet_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/PopBraceletSet/SK_Streetwear_PopBraceletSet_M.SK_Streetwear_PopBraceletSet_M",
+   "liveUrl": "../reconstructed-family-batch24-streetwear-pop-bracelet-set-r2-v1/meshes/SK_Streetwear_PopBraceletSet_M.glb",
+   "liveSha256": "b735de19657abf0a08708c9180c7002ee32cd0ef33f41e9b5d31e6cf64924eb3",
+   "s12Sha256": "4be41866bc622eb3ca0a1e479581a28f788a440cebf2ff9858cc01d6b8228e82",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_PopGothShoes_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/PopGothShoes/SK_Streetwear_PopGothShoes_M.SK_Streetwear_PopGothShoes_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-pop-goth-shoes-v1/meshes/SK_Streetwear_PopGothShoes_M.glb",
+   "liveSha256": "b03bc9f39908216b3b24ca95d606c0bd834d89042f1e5f0004e016d96dfd3c88",
+   "s12Sha256": "a41fcf2f5385f5271c82b7077e233723878d3ae32e50977e0a52869b591a3d7d",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_PopLanyardArmbandLeft_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/PopLanyardArmbandLeft/SK_Streetwear_PopLanyardArmbandLeft_M.SK_Streetwear_PopLanyardArmbandLeft_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Streetwear_PopLanyardArmbandLeft_M.glb",
+   "liveSha256": "c11bda2f863ea639a0dc36333c95f447159edbe4d7581874add68ce8703487b4",
+   "s12Sha256": "64299d79d08fc436e0f21dea463ffb05d911e8f98fac10564d40869ef5691d33",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.25,
+     "verticesChanged": 234
+    },
+    "medium_male": {
+     "maxCm": 0.226,
+     "verticesChanged": 234
+    }
+   },
+   "jointsLive": 11,
+   "jointsS12": 11,
+   "weightMaxSteps": 138.0,
+   "verticesWeightMoved": 220,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Streetwear_PopLanyardArmbandRight_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/PopLanyardArmbandRight/SK_Streetwear_PopLanyardArmbandRight_M.SK_Streetwear_PopLanyardArmbandRight_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Streetwear_PopLanyardArmbandRight_M.glb",
+   "liveSha256": "73e2fe66a32a9ad5ca57806e4bcfc89384e7360a53763baadae212a759782010",
+   "s12Sha256": "390641e64df887fa5b38ae1f144f492808cf9f2115b9bfb8b35f54e921fafa64",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.241,
+     "verticesChanged": 810
+    },
+    "medium_male": {
+     "maxCm": 0.245,
+     "verticesChanged": 810
+    }
+   },
+   "jointsLive": 12,
+   "jointsS12": 12,
+   "weightMaxSteps": 242.0,
+   "verticesWeightMoved": 713,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Streetwear_PufferVest_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/PufferVest/SK_Streetwear_PufferVest_M.SK_Streetwear_PufferVest_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Streetwear_PufferVest_M.glb",
+   "liveSha256": "4107bfb7ac2e0ec7842ffb1768a635912d6b17e8beca5ec3e0f595cfef8e43a2",
+   "s12Sha256": "25690e978d56980993beb0a9313997ce523de108f6784682b739916abf32183e",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_RingWrapBracelet_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/RingWrapBracelet/SK_Streetwear_RingWrapBracelet_M.SK_Streetwear_RingWrapBracelet_M",
+   "liveUrl": "../reconstructed-family-batch24-streetwear-ring-wrap-bracelet-r2-v1/meshes/SK_Streetwear_RingWrapBracelet_M.glb",
+   "liveSha256": "f0ad6a043cf7d569652fbdfeb2f0a615c03d41c4b1717988412d2b7aa58ba6dd",
+   "s12Sha256": "89c778e7d7856f83712e8e0480e72c4d2bd10b93b86d432b18d64cd8355ce315",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_ShortDressSleeves_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/ShortDressSleeves/SK_Streetwear_ShortDressSleeves_M.SK_Streetwear_ShortDressSleeves_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Streetwear_ShortDressSleeves_M.glb",
+   "liveSha256": "130353dff205ba9b12543a230a2fd06d942d2298e5911785970e6c35c6bdfbea",
+   "s12Sha256": "c0530715e399fbb5783087ca3594429f9ca351abb359390783b59569960e2a02",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.867,
+     "verticesChanged": 1178
+    },
+    "medium_male": {
+     "maxCm": 1.166,
+     "verticesChanged": 1178
+    }
+   },
+   "jointsLive": 37,
+   "jointsS12": 37,
+   "weightMaxSteps": 208.0,
+   "verticesWeightMoved": 1123,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Streetwear_ShoulderBag_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/ShoulderBag/SK_Streetwear_ShoulderBag_M.SK_Streetwear_ShoulderBag_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-shoulder-bag-v1/meshes/SK_Streetwear_ShoulderBag_M.glb",
+   "liveSha256": "0f2756af4ef13721f2b6ed557fec4f5cdd0802fb518fec3d7c574ae53930558d",
+   "s12Sha256": "d4002e3949dd15b721adc24c54f0cdc1d2a97219215e6ba428174d0aeb889468",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_SingleSleeveTop_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/SingleSleeveTop/SK_Streetwear_SingleSleeveTop_M.SK_Streetwear_SingleSleeveTop_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-single-sleeve-top-v1/meshes/SK_Streetwear_SingleSleeveTop_M.glb",
+   "liveSha256": "0d353c4f9e50c8b41d7f7ccde051651d4771774a48ff4ee2c928bbe28f7376e6",
+   "s12Sha256": "95cff0046653cf17366b96a0dbe0eead7309408f13ab4818412fc6ccb0e7e070",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.371,
+     "verticesChanged": 5796
+    },
+    "medium_male": {
+     "maxCm": 0.339,
+     "verticesChanged": 1060
+    }
+   },
+   "jointsLive": 39,
+   "jointsS12": 41,
+   "weightMaxSteps": 80.0,
+   "verticesWeightMoved": 3632,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Streetwear_SkiMask_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/SkiMask/SK_Streetwear_SkiMask_M.SK_Streetwear_SkiMask_M",
+   "liveUrl": "../reconstructed-attached-b1p1-v1/meshes/SK_Streetwear_SkiMask_M.glb",
+   "liveSha256": "b4a63cc00a7e18810a02c9078a8365228c08b5d52fee7b724faf202742ecb642",
+   "s12Sha256": "cd12adfbbf10681fc06bca5afa1d23493615c9908821e5da2dfa7c302c082e46",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs",
+    "TEXCOORD_1 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_SmartWatch_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/SmartWatch/SK_Streetwear_SmartWatch_M.SK_Streetwear_SmartWatch_M",
+   "liveUrl": "../reconstructed-family-batch24-streetwear-smart-watch-r2-v1/meshes/SK_Streetwear_SmartWatch_M.glb",
+   "liveSha256": "249b002e30da1771e9277202e80fe39603ac56b9b5e6c7d9c06b365e0258a32f",
+   "s12Sha256": "7076623447785dc8e2575e2f5028a56618b52746d08aa3b92f6c558ee54d20ed",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_TacticalBandolier_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/TacticalBandolier/SK_Streetwear_TacticalBandolier_M.SK_Streetwear_TacticalBandolier_M",
+   "liveUrl": "../reconstructed-family-batch11-tactical-bandolier-v1/meshes/SK_Streetwear_TacticalBandolier_M.glb",
+   "liveSha256": "ae8c79ac94169ca84bb97601caaecd31c92a813c8709e745a03490e6e1dbaf9e",
+   "s12Sha256": "1f3cf092e579ab7cfc3f317bcb7459e705ac68077e1b80118cbce0b106958031",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_TechBoots_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/TechBoots/SK_Streetwear_TechBoots_M.SK_Streetwear_TechBoots_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-tech-boots-v1/meshes/SK_Streetwear_TechBoots_M.glb",
+   "liveSha256": "a070e4c318649eb1c596f1915703fef257916d905bbb9b7386f85324499b0473",
+   "s12Sha256": "4d8cd7888e4ef613d4ae5c9e35b22184b8774ded0a7d8b9bc69a4294cf781ea8",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.378,
+     "verticesChanged": 2732
+    },
+    "medium_male": {
+     "maxCm": 0.0,
+     "verticesChanged": 2
+    }
+   },
+   "jointsLive": 16,
+   "jointsS12": 96,
+   "weightMaxSteps": 254.0,
+   "verticesWeightMoved": 1524,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Streetwear_TechCropTopArmPouch_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/TechCropTopArmPouch/SK_Streetwear_TechCropTopArmPouch_M.SK_Streetwear_TechCropTopArmPouch_M",
+   "liveUrl": "../reconstructed-g100-fresh-b5-streetwear-tech-crop-top-no-bags-v1-r1/meshes/SK_Streetwear_TechCropTopArmPouch_M.glb",
+   "liveSha256": "98343156de7d11c835a3615c3ffa02f4d638b185e4e2d71986a5215b54af4187",
+   "s12Sha256": "19ee074ea5f2acc0838e214a3190cf7ab7cb1672405071d970b2daf560005731",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.035,
+     "verticesChanged": 1271
+    },
+    "medium_male": {
+     "maxCm": 1.109,
+     "verticesChanged": 1271
+    }
+   },
+   "jointsLive": 11,
+   "jointsS12": 96,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Streetwear_TechCropTopNoBags_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/TechCropTopNoBags/SK_Streetwear_TechCropTopNoBags_M.SK_Streetwear_TechCropTopNoBags_M",
+   "liveUrl": "../reconstructed-g100-fresh-b5-streetwear-tech-crop-top-no-bags-v1-r1/meshes/SK_Streetwear_TechCropTopNoBags_M.glb",
+   "liveSha256": "a7231b9ba872993273a998fc11cfe10f04c3dfefe7e9cc69baff0b538b865aa4",
+   "s12Sha256": "ddf978f2096ac76db6b3188d2059f01121278a5ee39c133cec1877b3e0262c32",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_TechCropTop_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/TechCropTop/SK_Streetwear_TechCropTop_M.SK_Streetwear_TechCropTop_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-tech-crop-top-v1/meshes/SK_Streetwear_TechCropTop_M.glb",
+   "liveSha256": "5d97a055b3c24a584102888bf27d18fcda86307fd9a2990f0411d9890e3d74e6",
+   "s12Sha256": "087acafdd3f8a963770374b66b2360f0ed04e00d2d4801e628df5ef3c555a43b",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_TechGloves_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/TechGloves/SK_Streetwear_TechGloves_M.SK_Streetwear_TechGloves_M",
+   "liveUrl": "../reconstructed-family-tech-gloves-v1/meshes/SK_Streetwear_TechGloves_M.glb",
+   "liveSha256": "30546911a3f3712657a82c59ebd72caa6ae1d3896dbfee3d64e9b110e58b32b7",
+   "s12Sha256": "27c058b4a42eadc309a9b5ab067231b671f554b134020fb234c192627c45a06e",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.029,
+     "verticesChanged": 660
+    },
+    "medium_male": {
+     "maxCm": 0.028,
+     "verticesChanged": 416
+    }
+   },
+   "jointsLive": 53,
+   "jointsS12": 96,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Streetwear_TechPants_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/TechPants/SK_Streetwear_TechPants_M.SK_Streetwear_TechPants_M",
+   "liveUrl": "../reconstructed-family-batch21-streetwear-tech-pants-v1/meshes/SK_Streetwear_TechPants_M.glb",
+   "liveSha256": "4f872a8339ec4b99eca212b34d704933aa2301a356b16af20c11a04e126d0f0d",
+   "s12Sha256": "8459cae51a664b35b4f4593a488bee7c205983eddaba5d2f475137b5c829795a",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.563,
+     "verticesChanged": 3414
+    },
+    "medium_male": {
+     "maxCm": 0.321,
+     "verticesChanged": 225
+    }
+   },
+   "jointsLive": 27,
+   "jointsS12": 96,
+   "weightMaxSteps": 136.0,
+   "verticesWeightMoved": 2379,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [
+    "strap_01_l_jjr",
+    "strap_01_r_jjr",
+    "strap_02_l_jjr",
+    "strap_02_r_jjr"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_TightTechPants_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/TightTechPants/SK_Streetwear_TightTechPants_M.SK_Streetwear_TightTechPants_M",
+   "liveUrl": "../reconstructed-family-batch04-tight-tech-pants-v1/meshes/SK_Streetwear_TightTechPants_M.glb",
+   "liveSha256": "23c473ec90ad9243f6fd1c99b535546787d6c0ccaa27453537c7c81bcfad7114",
+   "s12Sha256": "3bb0b464df683ad60ff023bc37d59796dcd09e71f3c5b4f73b2162a9512282c6",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_TrackSuitPants_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitPants/SK_Streetwear_TrackSuitPants_M.SK_Streetwear_TrackSuitPants_M",
+   "liveUrl": "../reconstructed-family-batch05-tracksuit-pants-v1/meshes/SK_Streetwear_TrackSuitPants_M.glb",
+   "liveSha256": "3f796b39164d266ccac9c75a066537a1bcdd007863cb5f078552cf3c2cbd827a",
+   "s12Sha256": "8da66ab15c680d512178c5c52e0f5aecfedbf99a54b9699178119d4784e8159b",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.385,
+     "verticesChanged": 2825
+    },
+    "medium_male": {
+     "maxCm": 0.001,
+     "verticesChanged": 1
+    }
+   },
+   "jointsLive": 23,
+   "jointsS12": 23,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Streetwear_TwistedBraceletSet_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/TwistedBraceletSet/SK_Streetwear_TwistedBraceletSet_M.SK_Streetwear_TwistedBraceletSet_M",
+   "liveUrl": "../reconstructed-family-batch24-streetwear-twisted-bracelet-set-r2-v1/meshes/SK_Streetwear_TwistedBraceletSet_M.glb",
+   "liveSha256": "fa699823f3d895a2629e3ce88e645191d8c0fe663918c7acbda7c906f3d7aa05",
+   "s12Sha256": "d9c699870946b25a747f1c14fd42b74c6cf74303f8d40b07abc5903664ea2954",
+   "class": "normals",
+   "normalMaxDeg": 53.791,
+   "tangentMaxDeg": 50.229,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.275,
+     "verticesChanged": 548
+    },
+    "medium_male": {
+     "maxCm": 0.253,
+     "verticesChanged": 548
+    }
+   },
+   "jointsLive": 11,
+   "jointsS12": 11,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Streetwear_UncappedPleatedSkirt_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/UncappedPleatedSkirt/SK_Streetwear_UncappedPleatedSkirt_M.SK_Streetwear_UncappedPleatedSkirt_M",
+   "liveUrl": "../reconstructed-w63-plasticsheet-nohide-b1-v1/meshes/SK_Streetwear_UncappedPleatedSkirt_M.glb",
+   "liveSha256": "0b2d5703ffc6ec91efac5818ef2e2c94fed856d82f15e4403b516001c4c7d53f",
+   "s12Sha256": "a3803c9c885959d5f4f4582426b754f980c2b7427a44fd0f7f8ab72f393ba3b0",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.899,
+     "verticesChanged": 1121
+    },
+    "medium_male": {
+     "maxCm": 1.257,
+     "verticesChanged": 1121
+    }
+   },
+   "jointsLive": 17,
+   "jointsS12": 19,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Streetwear_UtilityBelt_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/UtilityBelt/SK_Streetwear_UtilityBelt_M.SK_Streetwear_UtilityBelt_M",
+   "liveUrl": "../reconstructed-g100-reuse-b3-casual-basic-shorts-v1-v1/meshes/SK_Streetwear_UtilityBelt_M.glb",
+   "liveSha256": "588edffb5218fedb0461437bc2cb67f11b84962394511978d18fe04e0b36a426",
+   "s12Sha256": "cc308c6981b80152ac66f6fc04afdb853817e6b258cb9e03cf99c6ce7de4cdaf",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Streetwear_VarsityJacket_M": {
+   "source": "/Game/Discovery/Characters/Streetwear/Assets/VarsityJacket/SK_Streetwear_VarsityJacket_M.SK_Streetwear_VarsityJacket_M",
+   "liveUrl": "../reconstructed-family-varsity-jackets-v1/meshes/SK_Streetwear_VarsityJacket_M.glb",
+   "liveSha256": "f6fdd17eda916e9b17341cfd68a9f2ad78a5b95123df0dbe5e882bc402a2e308",
+   "s12Sha256": "415d6d8e7ad82199581344be0e88acec39d0cf627abe9f6d1848350cf087a661",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.678,
+     "verticesChanged": 4803
+    },
+    "medium_male": {
+     "maxCm": 1.363,
+     "verticesChanged": 4804
+    }
+   },
+   "jointsLive": 37,
+   "jointsS12": 37,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Traditional_CloudBagMirrored_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/CloudBagMirrored/SK_Traditional_CloudBagMirrored_M.SK_Traditional_CloudBagMirrored_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Traditional_CloudBagMirrored_M.glb",
+   "liveSha256": "949ab254ae7bf047135af9d519252172cbe142bcce99cee5554e754abff4c3a3",
+   "s12Sha256": "15d87693b941ba9b0607feb1dd5accd55c235bb17bd47bc75cc09090b1d3e74b",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Traditional_CloudBag_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/CloudBag/SK_Traditional_CloudBag_M.SK_Traditional_CloudBag_M",
+   "liveUrl": "../reconstructed-family-batch21-traditional-cloud-bag-v1/meshes/SK_Traditional_CloudBag_M.glb",
+   "liveSha256": "3dce4b523f350e6ee86ee26bbd16ef80c4b499d12ade074db8da4aa188610b23",
+   "s12Sha256": "2f72e63f7b95c301618826cb5798d0b1b73f3a9bfad240ead1f4a50c26cc83fb",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Traditional_LunarBoleroShortSleeve_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/LunarBoleroShortSleeve/SK_Traditional_LunarBoleroShortSleeve_M.SK_Traditional_LunarBoleroShortSleeve_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Traditional_LunarBoleroShortSleeve_M.glb",
+   "liveSha256": "0ce7d083e25d07f7ccb53b230f38e9bf38260598795baec88f640581b8a82776",
+   "s12Sha256": "097efc39f63687630774fe876c6db3fd93594f9262e477ec0888ed022b95de8a",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 2.108,
+     "verticesChanged": 3533
+    },
+    "medium_male": {
+     "maxCm": 0.815,
+     "verticesChanged": 3533
+    }
+   },
+   "jointsLive": 22,
+   "jointsS12": 22,
+   "weightMaxSteps": 58.0,
+   "verticesWeightMoved": 2,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Traditional_LunarBoots_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/LunarBoots/SK_Traditional_LunarBoots_M.SK_Traditional_LunarBoots_M",
+   "liveUrl": "../reconstructed-family-batch18-lunar-boots-v1/meshes/SK_Traditional_LunarBoots_M.glb",
+   "liveSha256": "b1459cb1fb713a90fe9a0be77c25af52803eeccfb79d3f305c0c4eb252f83307",
+   "s12Sha256": "79d4e533e8c3d6caa927d3eb2eba843d320ca0a2f6a7c07a3fa0a1080b52fc40",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.581,
+     "verticesChanged": 4465
+    },
+    "medium_male": {
+     "maxCm": 0.293,
+     "verticesChanged": 4318
+    }
+   },
+   "jointsLive": 12,
+   "jointsS12": 12,
+   "weightMaxSteps": 8.0,
+   "verticesWeightMoved": 10,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Traditional_LunarBracelet_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/LunarBracelet/SK_Traditional_LunarBracelet_M.SK_Traditional_LunarBracelet_M",
+   "liveUrl": "../reconstructed-family-batch24-traditional-lunar-bracelet-r2-v1/meshes/SK_Traditional_LunarBracelet_M.glb",
+   "liveSha256": "172bfdf21021b953ac8dbed3272e875e8d898f4d61ec00c458553a0d03f1e14a",
+   "s12Sha256": "dee8e56e392e3992abe730b1f235d4eab9e287343e1c9d6faf8807f880eeb885",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 shape differs",
+    "NORMAL shape differs",
+    "POSITION shape differs",
+    "TANGENT shape differs",
+    "TEXCOORD_0 shape differs",
+    "TEXCOORD_1 shape differs"
+   ],
+   "admissible": false
+  },
+  "SK_Traditional_LunarCape_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/LunarCape/SK_Traditional_LunarCape_M.SK_Traditional_LunarCape_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Traditional_LunarCape_M.glb",
+   "liveSha256": "dd0c1717a9d2af285a3806e8262e1c9fe591ea565382cefc9c763689e0501319",
+   "s12Sha256": "fd9735dbb819a3ea7b7819fe1db09eb875ed7ee96cfa9f5d8f09afd6f71c2d27",
+   "class": "weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.349,
+     "verticesChanged": 1745
+    },
+    "medium_male": {
+     "maxCm": 0.857,
+     "verticesChanged": 1745
+    }
+   },
+   "jointsLive": 19,
+   "jointsS12": 17,
+   "weightMaxSteps": 46.0,
+   "verticesWeightMoved": 50,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Traditional_LunarDressTop_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/LunarDressTop/SK_Traditional_LunarDressTop_M.SK_Traditional_LunarDressTop_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Traditional_LunarDressTop_M.glb",
+   "liveSha256": "75e0759dbc3ab4811b1e603c5f858b9df95e720dab27b2aabd7d9c214ab143e4",
+   "s12Sha256": "e9e28b71a79d09bdb7ced574ad872fe48f7242e5503413d7e9d65b9f51724aa2",
+   "class": "morph set+weights",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsAdded": [
+    "cloth_weights"
+   ],
+   "morphsRemoved": [],
+   "morphsRemovedMaxCm": {},
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.224,
+     "verticesChanged": 2592
+    },
+    "medium_male": {
+     "maxCm": 1.29,
+     "verticesChanged": 2589
+    }
+   },
+   "jointsLive": 33,
+   "jointsS12": 33,
+   "weightMaxSteps": 134.0,
+   "verticesWeightMoved": 68,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  },
+  "SK_Traditional_LunarDress_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/LunarDress/SK_Traditional_LunarDress_M.SK_Traditional_LunarDress_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Traditional_LunarDress_M.glb",
+   "liveSha256": "687ee5dad4d767444f6482c473f6bbe87c1b30baf9c11ee7b3482f0cb37c1ade",
+   "s12Sha256": "fcc6cab692fd6d5ccc737d728214041b77004bf986a4ee6805d8af95d2a99ce5",
+   "class": "surface differs",
+   "surface": [
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs",
+    "primitive 1 indices differ"
+   ],
+   "admissible": false
+  },
+  "SK_Traditional_LunarLegCover_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/LunarLegCover/SK_Traditional_LunarLegCover_M.SK_Traditional_LunarLegCover_M",
+   "liveUrl": "../reconstructed-meshes-batch-01/SK_Traditional_LunarLegCover_M.glb",
+   "liveSha256": "ee7cf6ae42a9afc1ea72122736c18c460156879b09d1705a79b38a213319400c",
+   "s12Sha256": "01d90cfc611d4385bf4199944525bf54311aaf511b34e1730bc65e5f18116a60",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Traditional_RabbitMask_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/RabbitMask/SK_Traditional_RabbitMask_M.SK_Traditional_RabbitMask_M",
+   "liveUrl": "../reconstructed-family-batch24-traditional-rabbit-mask-r2-v1/meshes/SK_Traditional_RabbitMask_M.glb",
+   "liveSha256": "18ed117c39f396dc914d1dfd979af3ed359d8dbfb7db9c103d1ad4b3681da238",
+   "s12Sha256": "6d22714b7b2940aad19abb52277f336c751dbe113255becd1283eacf2ae86aaf",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.303,
+     "verticesChanged": 430
+    },
+    "medium_male": {
+     "maxCm": 0.25,
+     "verticesChanged": 647
+    }
+   },
+   "jointsLive": 10,
+   "jointsS12": 8,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_Traditional_UrbanWarriorPants_M": {
+   "source": "/Game/Discovery/Characters/Traditional/Assets/UrbanWarriorPants/SK_Traditional_UrbanWarriorPants_M.SK_Traditional_UrbanWarriorPants_M",
+   "liveUrl": "../reconstructed-g100-hides-traditional-urban-warrior-pants-v1-v3/meshes/SK_Traditional_UrbanWarriorPants_M.glb",
+   "liveSha256": "efece9bca56f58c1bd4ce3ec0a672ba49f4f9c34d7b26ea16399c7635ce6b3fc",
+   "s12Sha256": "050890cb976b4756e210dcca8fee1f737b1021eb3b37f7aa278b9ea24765d07b",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Winter_HoodWrap_M": {
+   "source": "/Game/Discovery/Characters/Winter/Assets/HoodWrap/SK_Winter_HoodWrap_M.SK_Winter_HoodWrap_M",
+   "liveUrl": "../reconstructed-attached-b8-v1/meshes/SK_Winter_HoodWrap_M.glb",
+   "liveSha256": "66cd605aa05324d3581be53c2de3e4307ce5716e173019b1e96264503dbc4e5a",
+   "s12Sha256": "e49b56014138f948958f48a1fd9f8580940d4b3112de872cc59ed0ffccda3a87",
+   "class": "surface differs",
+   "surface": [
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_Winter_SkiPants_M": {
+   "source": "/Game/Discovery/Characters/Winter/Assets/SkiPants/SK_Winter_SkiPants_M.SK_Winter_SkiPants_M",
+   "liveUrl": "../reconstructed-family-batch04-ski-pants-v1/meshes/SK_Winter_SkiPants_M.glb",
+   "liveSha256": "d8a892d43ece0c45fe0542e0e7c4b8e332aa2056e2d5d535a7dbd88bf4d51816",
+   "s12Sha256": "e0b51f54090c1e9081098989a77f46fa8ba86bb82cbbe478c1e1699e16e1f3bd",
+   "class": "re-encoded",
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.334,
+     "verticesChanged": 2098
+    },
+    "medium_male": {
+     "maxCm": 0.0,
+     "verticesChanged": 3
+    }
+   },
+   "jointsLive": 23,
+   "jointsS12": 23,
+   "weightMaxSteps": 2.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": true
+  },
+  "SK_WorkUniforms_Apron_M": {
+   "source": "/Game/Discovery/Characters/WorkUniforms/Assets/Apron/SK_WorkUniforms_Apron_M.SK_WorkUniforms_Apron_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_WorkUniforms_Apron_M.glb",
+   "liveSha256": "a4342f75c6368137c609710aa623cd909d436814ddb70e54f773c8d126762802",
+   "s12Sha256": "ee4536b6d371c56ebe28a62060330755f94c4cef0a9033cd8217d74df182664b",
+   "class": "loader refuses",
+   "loader": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 1 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "influence layout differs between primitives or files"
+   ],
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 22,
+   "jointsS12": 22,
+   "admissible": false
+  },
+  "SK_WorkUniforms_CuteDressTop_M": {
+   "source": "/Game/Discovery/Characters/WorkUniforms/Assets/CuteDressTop/SK_WorkUniforms_CuteDressTop_M.SK_WorkUniforms_CuteDressTop_M",
+   "liveUrl": "../reconstructed-w121-transfer-t1/meshes/SK_WorkUniforms_CuteDressTop_M.glb",
+   "liveSha256": "1909ecca4a33e562eea777e8362378dd1b2acbf86556f3aa1fa9327d2746550f",
+   "s12Sha256": "dd26b769e4872c33a15ee9a7512f17b32a3340f580d49eddd944aa978e142471",
+   "class": "loader refuses",
+   "loader": [
+    "primitive 0 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "primitive 1 attribute sets differ: ['COLOR_0', 'JOINTS_0', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0'] vs ['COLOR_0', 'JOINTS_0', 'JOINTS_1', 'NORMAL', 'POSITION', 'TANGENT', 'TEXCOORD_0', 'TEXCOORD_1', 'WEIGHTS_0', 'WEIGHTS_1']",
+    "influence layout differs between primitives or files"
+   ],
+   "normalMaxDeg": 0.0,
+   "tangentMaxDeg": 0.0,
+   "tangentSignFlips": 0,
+   "morphsChanged": {},
+   "jointsLive": 27,
+   "jointsS12": 27,
+   "admissible": false
+  },
+  "SK_WorkUniforms_ShirtRolledUpSleeves_M": {
+   "source": "/Game/Discovery/Characters/WorkUniforms/Assets/ShirtRolledUpSleeves/SK_WorkUniforms_ShirtRolledUpSleeves_M.SK_WorkUniforms_ShirtRolledUpSleeves_M",
+   "liveUrl": "../reconstructed-g100-wrap-work-uniforms-shirt-rolled-up-sleeves-v1-v3/meshes/SK_WorkUniforms_ShirtRolledUpSleeves_M.glb",
+   "liveSha256": "05dad86299254617c07856bc1ef4c98fe310e4e4baf1e09c40ec065339e1c3b7",
+   "s12Sha256": "772252267ba10664f1ae807bbbc77dfd08b0e1a61bea48152dcb0a6310be9b11",
+   "class": "surface differs",
+   "surface": [
+    "primitive 0 indices differ",
+    "COLOR_0 differs",
+    "POSITION differs",
+    "TEXCOORD_0 differs",
+    "TEXCOORD_1 differs"
+   ],
+   "admissible": false
+  },
+  "SK_WorkUniforms_Tie_M": {
+   "source": "/Game/Discovery/Characters/WorkUniforms/Assets/Tie/SK_WorkUniforms_Tie_M.SK_WorkUniforms_Tie_M",
+   "liveUrl": "../reconstructed-g100-wrap-work-uniforms-shirt-rolled-up-sleeves-v1-v3/meshes/SK_WorkUniforms_Tie_M.glb",
+   "liveSha256": "78cd61755c1def1bda5c033ef7c06905e74fda8d7fbb7b9d09ef6f533ce86acb",
+   "s12Sha256": "81f557ab5f2b5f33e5992b3e2ab38907a27a61bfaaf32bec0c53037ca5ba4e72",
+   "class": "normals",
+   "normalMaxDeg": 18.507,
+   "tangentMaxDeg": 16.086,
+   "tangentSignFlips": 0,
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.143,
+     "verticesChanged": 237
+    },
+    "medium_male": {
+     "maxCm": 0.141,
+     "verticesChanged": 237
+    }
+   },
+   "jointsLive": 8,
+   "jointsS12": 8,
+   "weightMaxSteps": 0.0,
+   "verticesWeightMoved": 0,
+   "weightSumMaxSteps": 0.0,
+   "weightedExtensionBones": [],
+   "admissible": false
+  }
+ }
+}
