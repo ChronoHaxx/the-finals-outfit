@@ -127,11 +127,17 @@ try {
   await page.getByRole("checkbox", { name: "Isolate recovered items" }).check();
   await page.waitForURL((u) => u.searchParams.get("isolate") === "1");
   await ready("satin");
-  await page.getByTitle("Toggle scene lighting").click();
-  await page.getByRole("button", { name: "Lobby", exact: true }).waitFor();
+  // The Studio/Lobby switch became two looks in the Lighting panel (PR #40). The Lobby look adds lights and drops the
+  // sun's shadow, so every program recompiles (the Canvas no longer remounts).
+  const lighting = page.getByTitle("Lighting and backdrop");
+  const looks = page.getByRole("group", { name: "Lighting and backdrop" });
+  await lighting.click();
+  await looks.getByRole("button", { name: "Lobby", exact: true }).click();
+  await lighting.filter({ hasText: "Lobby" }).waitFor();
   await ready("satin");
-  await page.getByTitle("Toggle scene lighting").click();
-  await page.getByRole("button", { name: "Studio", exact: true }).waitFor();
+  await looks.getByRole("button", { name: "Studio", exact: true }).click();
+  await lighting.filter({ hasText: "Studio" }).waitFor();
+  await lighting.click();
   await ready("satin");
   pass("Shader survives both lighting changes");
 
