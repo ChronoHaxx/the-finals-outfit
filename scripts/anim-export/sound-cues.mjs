@@ -163,8 +163,10 @@ const SYNC_INTERFACES = new Set(["UE.Source", "UE.OutputFormat.Stereo", "UE.Sour
 const SYNC_CLASSES = { "Wave Player": "Wave Player", "ADSR Envelope": "ADSR Envelope", Multiply: "Multiply",
   "Get Wave Duration": "Get Wave Duration", ConversionFloatToTime: "ConversionFloatToTime", ConversionTimeToFloat: "ConversionTimeToFloat" };
 // FloatModulo is a MetaSound patch asset, so its class is that asset. Only patches whose own graph was read and found
-// to compute X mod Y are accepted (_docs/chinals-sounds-2026-11-12/README.md).
-export const MODULO_PATCHES = new Set(["/EmbarkScript/Audio/MetaSound/FloatModulo"]);
+// to compute X mod Y are accepted. Both below were read from the Chinals client (12 Nov 2026) and are the same graph,
+// Result = X - float(int32(X / Y)) * Y: a truncating modulo, equal to X mod Y for the X >= 0 a clock gives. The global
+// build's /EmbarkScript patch has the same class ID (62D49B56...); its own copy was not read.
+export const MODULO_PATCHES = new Set(["/EmbarkScript/Audio/MetaSound/FloatModulo", "/Game/Audio/MetaSound/FloatModulo"]);
 
 /** A MetaSound graph's wiring: edges (sorted lines), node classes, input literals by "Node.Input", interfaces. UE 5.3
  *  keeps the graph at RootGraph.Graph; 5.5+ pages it (RootGraph.PagedGraphs[0], the default page). */
@@ -204,18 +206,28 @@ function metaSoundVariants(root) {
     if (c.node === "FloatModulo" && !MODULO_PATCHES.has(c.asset)) fail(`FloatModulo is ${c.asset ?? "an unknown class"}, not a patch read and found to be a modulo`);
   }
   if (literals.get("Wave Player.Loop")?.AsBoolean?.[0] !== true) fail("Wave Player.Loop is not true");
+  // Loop is the Wave Player's only literal in every template read: a Pitch Shift or loop region would change the sound.
+  const playerInputs = [...literals.keys()].filter(k => k.startsWith("Wave Player.") && k !== "Wave Player.Loop");
+  if (playerInputs.length) fail(`Wave Player literals ${playerInputs.join(", ")}`);
+  // The source's own Pitch would resample the output against SyncTime: not reproduced. None of the 40 read stores one.
+  if ((root.Properties.Pitch ?? 1) !== 1) fail(`its Pitch is ${root.Properties.Pitch}`);
   if (literals.get("ADSR Envelope.Sustain Level")?.AsFloat?.[0] !== 1) fail("ADSR sustain is not 1");
   const attack = literals.get("ADSR Envelope.Attack Time")?.AsFloat?.[0];
   if (!(attack > 0 && attack < 1)) fail("no ADSR attack time");
   const waves = (graph.Variables ?? []).flatMap(v => v.Literal?.AsUObject ?? []).map(o => o.ObjectPath).filter(Boolean);
   if (waves.length !== 1) throw new Error(`MetaSound ${root.Name}: expected one wave variable, found ${waves.length}`);
-  return { kind: "sync-loop", attack, variants: [{ wave: assetName(waves[0]), waveRef: waves[0], weight: 1, volume: [1, 1], pitch: [1, 1], loop: true }] };
+  // Loudness: UMetaSoundSource is a USoundWave, and its own Volume (class default 1; no MetaSound read stores exactly 1)
+  // scales the rendered output. The Wave Player inside only decodes its wave: that SoundWave's Volume and Pitch are not
+  // applied (by design, Epic on UE 5.3; same in 5.7), so buildCue leaves them out for "sync-loop" sounds.
+  const volume = root.Properties.Volume ?? 1;
+  return { kind: "sync-loop", attack, variants: [{ wave: assetName(waves[0]), waveRef: waves[0], weight: 1, volume: [volume, volume], pitch: [1, 1], loop: true }] };
 }
 
-/** Fold one notify and its sound's variants into a sounds.json cue (waveInfo: wave name -> { volume, pitch, loop }). */
+/** Fold one notify and its sound's variants into a sounds.json cue (waveInfo: wave name -> { volume, pitch, loop }). A
+ *  MetaSound's Wave Player ignores its wave's own Volume, Pitch and looping, so waveInfo is not applied to "sync-loop". */
 export function buildCue(notify, sound, waveInfo = () => ({})) {
   const variants = sound.variants.map(v => {
-    const w = waveInfo(v.wave) ?? {};
+    const w = sound.kind === "sync-loop" ? {} : waveInfo(v.wave) ?? {};
     const gain = [v.volume[0] * (w.volume ?? 1) * notify.volume, v.volume[1] * (w.volume ?? 1) * notify.volume].map(x => round(x));
     const rate = [v.pitch[0] * (w.pitch ?? 1) * notify.pitch, v.pitch[1] * (w.pitch ?? 1) * notify.pitch].map(x => round(x));
     return { wave: v.wave, weight: round(v.weight), gain: gain[0] === gain[1] ? gain[0] : gain, rate: rate[0] === rate[1] ? rate[0] : rate,

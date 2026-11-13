@@ -89,7 +89,8 @@ const EDGES = [
 const ONE_SHOT = ["Wave Player", "On Finished", "UE.Source.OneShot.OnFinished", "UE.Source.OneShot.OnFinished"];
 const CLASS = { "Wave Player": "Wave Player", "ADSR Envelope": "ADSR Envelope", Multiply: "Multiply", "Get Wave Duration": "Get Wave Duration",
   ConversionFloatToTime: "ConversionFloatToTime", ConversionTimeToFloat: "ConversionTimeToFloat", FloatModulo: "62D49B564A35D02B88AA3DB138E959FD" };
-function metaSound({ paged = true, oneShot = false, edges = EDGES, loop = true, patch = "/EmbarkScript/Audio/MetaSound/FloatModulo.0" } = {}) {
+function metaSound({ paged = true, oneShot = false, edges = EDGES, loop = true, patch = "/EmbarkScript/Audio/MetaSound/FloatModulo.0",
+  volume, pitch, pitchShift } = {}) {
   const all = oneShot ? [...edges, ONE_SHOT] : edges;
   const nodes = new Map(); // "Name#tag" -> node with the vertices its edges use
   const node = key => {
@@ -110,10 +111,12 @@ function metaSound({ paged = true, oneShot = false, edges = EDGES, loop = true, 
   literal("ADSR Envelope", "Attack Time", { AsFloat: [0.05] });
   literal("ADSR Envelope", "Sustain Level", { AsFloat: [1] });
   literal("Wave Player", "Loop", { AsBoolean: [loop] });
+  if (pitchShift !== undefined) literal("Wave Player", "Pitch Shift", { AsFloat: [pitchShift] });
   const graph = { Nodes: [...nodes.values()], Edges,
     Variables: [{ Name: "Wave", Literal: { AsUObject: [{ ObjectName: "SoundWave'Emotes_FrontEnd_CPop_Mix1'", ObjectPath: "/Game/X/Emotes_FrontEnd_CPop_Mix1.0" }] } }] };
   const Dependencies = Object.entries(CLASS).map(([name, cls]) => ({ ID: `C-${name}`, MetaData: { ClassName: { Namespace: name === "FloatModulo" ? "None" : "UE", Name: cls } } }));
   return [{ Type: "MetaSoundSource", Name: "M", Properties: {
+    ...(volume === undefined ? {} : { Volume: volume }), ...(pitch === undefined ? {} : { Pitch: pitch }),
     ReferencedAssetClassKeys: [`External_None.${CLASS.FloatModulo}_1.0`], ReferencedAssetClassObjects: [{ ObjectName: "MetaSoundPatch'FloatModulo'", ObjectPath: patch }],
     RootMetaSoundDocument: { Interfaces: [{ Name: "UE.Source" }, { Name: "UE.OutputFormat.Stereo" }, ...(oneShot ? [{ Name: "UE.Source.OneShot" }] : [])],
       Dependencies, RootGraph: paged ? { PagedGraphs: [graph] } : { Graph: graph } } } }];
@@ -134,6 +137,17 @@ test("a MetaSound that is not wired as the template, or calls an unread modulo p
   assert.throws(() => soundVariants(metaSound({ edges: EDGES.filter(e => e[1] !== "On Play") })), /wiring differs/, "no ADSR trigger");
   assert.throws(() => soundVariants(metaSound({ oneShot: true, loop: false })), /Loop is not true/, "a one-shot that can finish");
   assert.throws(() => soundVariants(metaSound({ patch: "/Game/Elsewhere/FloatModulo.0" })), /not a patch read and found to be a modulo/);
+  assert.throws(() => soundVariants(metaSound({ pitchShift: 2 })), /Wave Player literals Wave Player.Pitch Shift/);
+  assert.throws(() => soundVariants(metaSound({ pitch: 1.1 })), /its Pitch is 1.1/);
+});
+
+test("a MetaSound plays at its own Volume; its Wave Player ignores the wave asset's Volume, Pitch and looping", () => {
+  const sound = soundVariants(metaSound({ volume: 0.75 }));
+  assert.deepEqual(sound.variants[0].volume, [0.75, 0.75], "the source's Volume (Disco mixes: 0.75)");
+  assert.deepEqual(soundVariants(metaSound()).variants[0].volume, [1, 1], "absent: the class default 1");
+  const notify = { kind: "window", start: 0, duration: 7, volume: 1, pitch: 1, fadeOut: null, sound: "/Game/X/M.0" };
+  const cue = buildCue(notify, sound, () => ({ volume: 1.5, pitch: 0.9, loop: false })); // the inner wave's properties
+  assert.deepEqual([cue.variants[0].gain, cue.variants[0].rate, cue.variants[0].loop], [0.75, 1, true]);
 });
 
 test("a mixer cue's inputs play at once: one layer each, scaled by its input volume", () => {
