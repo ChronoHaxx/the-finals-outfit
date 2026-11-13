@@ -4,6 +4,8 @@ import * as THREE from "three";
 import type { CharacterRig } from "../rig/CharacterRig";
 import { initialClip, loadAnimationManifest, RigAnimator, type AnimatorState } from "../rig/RigAnimator";
 import { AUTOMATED } from "../lib/automation";
+import { modelUrl } from "../lib/assets";
+import { loadSourceFaceMask } from "../rig/SourceAssembly";
 import { pendingPose, subscribePendingPose, takePendingPose } from "../lib/share-pose";
 import { setPoseSource } from "../lib/viewer-handle";
 import { isChinalsClip } from "../lib/site-mode";
@@ -21,7 +23,7 @@ import { EmoteSoundControl } from "./EmoteSoundControl";
 // URL switches for captures and reviews: ?anim=<clip id> starts that clip once the outfit has loaded, and
 // &animTime=<seconds> then holds it at that time, paused (a deterministic mid-motion frame); ?anim=0 opens still;
 // ?sway=0 starts with the approximate secondary motion off; ?deform=0 leaves the twist/volume joints at rest (the
-// game's deformation rig off, for comparisons).
+// game's deformation rig off, for comparisons); ?face=0 leaves the face at rest (no facial animation, FaceAnimator.ts).
 //
 // Share links can carry a pose (10 Nov 2026, lib/share-pose.ts: &emote=<clip>&t=<s>[&paused=1]). The builder hands it
 // over before the link is tidied away; it is applied here once the outfit has loaded, instead of the default idle,
@@ -72,7 +74,7 @@ export function useRigAnimator(base: string): RigAnimator | null {
       // Each clip set names its own sounds (the Chinals set's sounds.json lives on the Chinals host).
       created = new RigAnimator(loaded.manifest, loaded.clipBase,
         { sway: params.get("sway") !== "0", deform: params.get("deform") !== "0", loopEmote: savedLoop(), propsUrl: loaded.propsUrl,
-          soundsUrl: AUTOMATED ? null : loaded.soundsUrl });
+          soundsUrl: AUTOMATED ? null : loaded.soundsUrl, facesUrl: loaded.facesUrl, face: params.get("face") !== "0" });
       setLoaded({ base, animator: created });
     }).catch(error => console.warn("[animation] manifest unavailable", error));
     // dispose(), not reset(): a clip still downloading must not bind the body to a discarded animator when it lands,
@@ -137,6 +139,8 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
     rig.setAnimationPins(state.active);
     const root = rig.animationRoot();
     if (state.active && root) animator.rememberStillPose(root); // bones a mid-playback outfit change added
+    // The worn head, for the facial animation: bound while its bones are still at rest (just recorded above).
+    if (state.active) void animator.bindFace();
     if (state.active && state.sway) {
       animator.springs.rebuild(root);
       // Paused: the rebuilt chains hang at rest. Hold the same frame again, with the preroll, so they carry the
@@ -148,6 +152,14 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
     }
   }, [animator, rig, ready, busy, state.active, state.sway]);
   useEffect(() => () => { animator.springs.reset(); rig.setAnimationPins(false); }, [animator, rig]);
+  useEffect(() => {
+    // The face masks come from the worn items' definitions (the same files the outfit is assembled from).
+    const assembly = modelUrl("models/reconstructed-assembly-v2");
+    animator.setFaceSource(() => ({ meshes: rig.faceMeshes(), wraps: rig.faceWraps(),
+      masks: Promise.all(rig.equippedItemIds().map(id => loadSourceFaceMask(id, assembly).catch(() => null)))
+        .then(list => list.filter((m): m is string => !!m)) }));
+    return () => animator.setFaceSource(null);
+  }, [animator, rig]);
   const prepare = (root: THREE.Object3D) => {
     rig.setAnimationPins(true);
     if (animator.state.sway) animator.springs.rebuild(root);
@@ -208,6 +220,7 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
       stop: () => animator.stop(),
       sway: (on: boolean) => animator.setSway(on),
       deform: (on: boolean) => animator.setDeform(on),
+      face: (on: boolean) => animator.setFace(on),
       state: () => animator.state,
       clock: frameClock,
     };

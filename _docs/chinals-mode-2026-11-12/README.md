@@ -84,6 +84,10 @@ right; a rebuild with those fixes would be a new `props-N`, on a new deployment.
   - phone width (375 px): the switch row and the banner.
 - **Browser, mode off:** no switch; a Chinals link and a bare `#/chinals` both show the notice, keep the address and
   still open the outfit.
+- **After merging main through PR #48 (facial animation), `c6ee3c6`:** `npm test` 821 pass with the same 8 asset
+  failures; type check pass. `dispose()` now also unbinds the face. In the browser, switching to Chinals during a
+  global emote with the face posed (7 head meshes bound) left the old face unbound and at rest, and the Chinals idle
+  played. Back on Global, the face bound again and animated.
 - **Not checked:** a real phone, Safari or Firefox, and the share Worker's preview card for a Chinals pose.
 - **Security review (automatic, after the first push):** the preview server's `--proxy` would fetch any host for a
   request like `/animations//other-host/x`. Fixed: it fetches only plain relative paths under the proxy's own folder.

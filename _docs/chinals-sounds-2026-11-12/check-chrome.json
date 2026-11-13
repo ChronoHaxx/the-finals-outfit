@@ -15,11 +15,11 @@
      "key": "0:0",
      "wave": "Emotes_Frontend_A_Applaud_00",
      "cue": 0.0321,
-     "at": 0.3413,
-     "offset": 0.0134,
-     "scheduled": false,
+     "at": 0.2529,
+     "offset": 0,
+     "scheduled": true,
      "first": true,
-     "errorMs": 26.3
+     "errorMs": 0.5
     }
    ]
   },
@@ -31,21 +31,21 @@
      "key": "0:0",
      "wave": "FX_HM_Frontend_Emotes_A_TakeAway_Foley",
      "cue": 0,
-     "at": 3.1813,
-     "offset": 0.0276,
+     "at": 2.5813,
+     "offset": 0.0184,
      "scheduled": false,
      "first": true,
-     "errorMs": 3.8
+     "errorMs": -2
     },
     {
      "key": "1:0",
      "wave": "FX_HM_Frontend_Emotes_A_TakeAway_AMB_02",
      "cue": 0,
-     "at": 3.1813,
-     "offset": 0.0276,
+     "at": 2.5813,
+     "offset": 0.0184,
      "scheduled": false,
      "first": true,
-     "errorMs": 3.8
+     "errorMs": -2
     }
    ]
   },
@@ -57,11 +57,11 @@
      "key": "0:0",
      "wave": "Emote_Frontend_A_BumpTheBall_00",
      "cue": 0.0891,
-     "at": 5.7512,
+     "at": 5.9871,
      "offset": 0,
      "scheduled": true,
      "first": true,
-     "errorMs": -1.5
+     "errorMs": -2.7
     }
    ]
   },
@@ -73,11 +73,11 @@
      "key": "0:0",
      "wave": "Emotes_FrontEnd_Dissun",
      "cue": 0,
-     "at": 7.3813,
-     "offset": 0.0246,
+     "at": 11.2507,
+     "offset": 0.0203,
      "scheduled": false,
      "first": true,
-     "errorMs": 5.6
+     "errorMs": -3.4
     }
    ]
   },
@@ -93,11 +93,11 @@
       "key": "0:0",
       "wave": "Emotes_FrontEnd_MidAutumn",
       "cue": 0.1445,
-      "at": 9.4282,
+      "at": 13.2393,
       "offset": 0,
       "scheduled": true,
       "first": true,
-      "errorMs": -1
+      "errorMs": 1.3
      }
     ],
     "events": {
@@ -107,11 +107,11 @@
     "stops": [
      {
       "key": "0:0",
-      "clipTime": 10.223
+      "clipTime": 10.218
      }
     ],
-    "animationRate": 1,
-    "longestFrameMs": 32
+    "animationRate": 1.001,
+    "longestFrameMs": 29
    }
   },
   {
@@ -119,8 +119,8 @@
    "pass": true,
    "detail": {
     "restarts": 0,
-    "animationRate": 1,
-    "longestFrameMs": 32
+    "animationRate": 1.001,
+    "longestFrameMs": 29
    }
   },
   {
@@ -218,19 +218,19 @@
      "key": "0:0",
      "wave": "Emotes_Frontend_A_Applaud_00",
      "cue": 0.0321,
-     "at": 0.3413,
-     "offset": 0.0134,
-     "scheduled": false,
+     "at": 0.2529,
+     "offset": 0,
+     "scheduled": true,
      "first": true,
-     "errorMs": 26.3
+     "errorMs": 0.5
     }
    ],
    "events": {
-    "start": 1
+    "schedule": 1
    },
    "stops": [],
-   "animationRate": 0.96,
-   "longestFrameMs": 179
+   "animationRate": 1.002,
+   "longestFrameMs": 21
   },
   "cn-emote-takeaway": {
    "source": "HM_Frontend_Emotes_A_TakeAway_00",
@@ -241,28 +241,28 @@
      "key": "0:0",
      "wave": "FX_HM_Frontend_Emotes_A_TakeAway_Foley",
      "cue": 0,
-     "at": 3.1813,
-     "offset": 0.0276,
+     "at": 2.5813,
+     "offset": 0.0184,
      "scheduled": false,
      "first": true,
-     "errorMs": 3.8
+     "errorMs": -2
     },
     {
      "key": "1:0",
      "wave": "FX_HM_Frontend_Emotes_A_TakeAway_AMB_02",
      "cue": 0,
-     "at": 3.1813,
-     "offset": 0.0276,
+     "at": 2.5813,
+     "offset": 0.0184,
      "scheduled": false,
      "first": true,
-     "errorMs": 3.8
+     "errorMs": -2
     }
    ],
    "events": {
     "start": 2
    },
    "stops": [],
-   "animationRate": 0.995,
+   "animationRate": 0.99,
    "longestFrameMs": 120
   },
   "cn-emote-worldcup-juggle": {
@@ -274,19 +274,19 @@
      "key": "0:0",
      "wave": "Emote_Frontend_A_BumpTheBall_00",
      "cue": 0.0891,
-     "at": 5.7512,
+     "at": 5.9871,
      "offset": 0,
      "scheduled": true,
      "first": true,
-     "errorMs": -1.5
+     "errorMs": -2.7
     }
    ],
    "events": {
     "schedule": 1
    },
    "stops": [],
-   "animationRate": 0.893,
-   "longestFrameMs": 229
+   "animationRate": 0.973,
+   "longestFrameMs": 131
   },
   "cn-emote-checkered-dissun": {
    "source": "HM_Frontend_Emotes_A_CheckeredDissun_00",
@@ -297,19 +297,19 @@
      "key": "0:0",
      "wave": "Emotes_FrontEnd_Dissun",
      "cue": 0,
-     "at": 7.3813,
-     "offset": 0.0246,
+     "at": 11.2507,
+     "offset": 0.0203,
      "scheduled": false,
      "first": true,
-     "errorMs": 5.6
+     "errorMs": -3.4
     }
    ],
    "events": {
     "start": 1
    },
    "stops": [],
-   "animationRate": 1,
-   "longestFrameMs": 29
+   "animationRate": 0.998,
+   "longestFrameMs": 21
   },
   "cn-emote-midautumnfestival-01": {
    "source": "HM_Frontend_Emotes_A_MidAutumn_00",
@@ -320,11 +320,11 @@
      "key": "0:0",
      "wave": "Emotes_FrontEnd_MidAutumn",
      "cue": 0.1445,
-     "at": 9.4282,
+     "at": 13.2393,
      "offset": 0,
      "scheduled": true,
      "first": true,
-     "errorMs": -1
+     "errorMs": 1.3
     }
    ],
    "events": {
@@ -334,11 +334,11 @@
    "stops": [
     {
      "key": "0:0",
-     "clipTime": 10.223
+     "clipTime": 10.218
     }
    ],
-   "animationRate": 1,
-   "longestFrameMs": 32
+   "animationRate": 1.001,
+   "longestFrameMs": 29
   }
  },
  "decode": [
