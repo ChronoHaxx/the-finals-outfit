@@ -160,6 +160,18 @@ with the local `sounds-1`.
   served by `vite preview --base /the-finals-outfit/`. The sounds come cross-origin from the published host.
 - Cue onsets −18 to +4 ms (median 0 ms).
 
+**After the rebase onto the facial animation (12 Nov 2026)**, the dev preview serving the staged faces + sounds set:
+- **Chrome 17/17** ([check-chrome-superset-local.json](check-chrome-superset-local.json)): onsets −12.6 to +3.5 ms.
+- **Faces 2/2** ([check-faces-superset-local.json](check-faces-superset-local.json), [check-faces.mjs](check-faces.mjs)):
+  the facial session's two production cases, a balaclava and a beard. Both posed and wrapped, every `faces-1` file 200,
+  and no sound file fetched (automated browser).
+- **Check fixes:**
+  - An emote now also waits for the head's face data before it starts, so the cold-link step waits for the pose asset
+    too.
+  - A dev build takes the source head route only with `?reconstructed=1`, so the face check passes it.
+- **A self-inflicted failure:** Vite reloads the page whenever a file in the worktree changes, including these docs.
+  Editing them during a run broke one run. Don't edit the worktree while a check runs.
+
 **Not checked:**
 - Real Safari (macOS or iOS): no Apple device here. Playwright's Windows WebKit doesn't use Apple's decoder.
 - Phones by hand, and a listen by ear against in-game footage.
@@ -171,13 +183,15 @@ with the local `sounds-1`.
 - **A measurement mistake.** Playwright's `evaluate` runs with a user gesture, so the first "before any gesture" check
   tested nothing.
 
-## Hosting (published 12 Nov 2026, on your "Yes, upload it")
+## Hosting
+
+### First upload: `ab913ac8` (12 Nov 2026, on your "Yes, upload it"), superseded and never to ship
 
 **Animations host `ab913ac8`** (alias `anim-1112-emote-sfx`), from the staged
 `scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112c/` (845 files):
-- The live `cf84e9b6` set: set-5 and props-9, byte-identical to the receipts of the 12 Nov upload.
+- The then-live `cf84e9b6` set: set-5 and props-9, byte-identical to the receipts of the 12 Nov upload.
 - `sounds-1/`.
-- `manifest.json`, which differs from the live one only by `"sounds": "sounds-1/sounds.json"`.
+- `manifest.json`, which differs from `cf84e9b6`'s only by `"sounds": "sounds-1/sounds.json"`.
 
 **Upload:** wrangler 4.131.1 `pages deploy` (see `_docs/showcase-animation-2026-11-05/README.md`): 277 new files,
 567 deduplicated ([upload-anim-ab913ac8.txt](upload-anim-ab913ac8.txt)).
@@ -186,10 +200,35 @@ with the local `sounds-1`.
 - All 844 files are byte-identical to staging.
 - `.m4a` is served as `audio/mp4`, with CORS `*` and an immutable cache. A missing file returns 404.
 
-**deploy.yml** `ANIMATIONS_BASE` now points at `ab913ac8`, and its contract tests run `tests/rig/emote-sounds.test.ts`.
-**Rollback:** revert that line to `cf84e9b6`, which is untouched.
+**Why it must not ship:**
+- Facial animation (PR #48) went live on main while this PR waited. Its host `e5250f94` is `cf84e9b6` plus `faces-1/`,
+  and main's `ANIMATIONS_BASE` points at it.
+- `ab913ac8` has no `faces-1/`: pointing the site at it would switch the faces off.
+- It stays published, untouched, as a record.
 
-Live users hear sounds only once this PR is merged.
+### Faces + sounds superset (staged; uploads only on your yes)
+
+**Rebased** onto main `64f68d3`: both features sit side by side in `RigAnimator.ts` and `AnimationControls.tsx`.
+
+**Staged** `scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112d/` (1,133 files, 140 MB):
+- `e5250f94`'s set: set-5 392, props-9 175, faces-1 288, plus `_headers`.
+  - Copied from the facial session's staging.
+  - Checked first against the live host: 856 of 856 files byte-identical
+    ([verify-faces-staged-e5250f94.json](verify-faces-staged-e5250f94.json)).
+- `sounds-1/` (276): the bytes already verified on `ab913ac8`.
+- `manifest.json`: `e5250f94`'s, unchanged except for `"sounds": "sounds-1/sounds.json"` added after `faces`.
+
+**deploy.yml** stays on `e5250f94` until the superset is published. Its contract tests now run
+`tests/rig/emote-sounds.test.ts`.
+- Until then the site plays no sounds and shows no speaker, because that manifest names no sounds.
+- Faces are unaffected.
+
+**After upload:** a new deployment (never an overwrite), verified with `upload/verify-hosted.mjs`.
+- Bump `ANIMATIONS_BASE` to it.
+- Check the production build for sounds (`check-sounds.mjs --base=…`) and faces (`check-faces.mjs`).
+- **Rollback:** `e5250f94`.
+
+Live users hear sounds only once the bump is merged.
 
 ## Open items and follow-ups
 

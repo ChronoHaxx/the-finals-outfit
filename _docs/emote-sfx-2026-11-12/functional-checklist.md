@@ -7,20 +7,23 @@ muting must behave like a video player: nothing doubled, nothing out of step, an
 
 - **PR / originating issue:** the PR on branch `claude/emote-sfx-2026-11-12` (your "sounds fx and everything for
   emotes" request).
-- **Test this revision:** the head of `claude/emote-sfx-2026-11-12` (code `eac6bb0`, host bump on top). The sounds are
-  published on the animations host `ab913ac8`.
-- **Open:** http://127.0.0.1:5197/the-finals-outfit/, the production build of this branch, which loads its sounds from
-  the published host. If that is not running, use the dev preview at http://127.0.0.1:5192/ below: same sound files,
-  byte for byte, served locally.
+- **Test this revision:** the head of `claude/emote-sfx-2026-11-12`, rebased onto main `64f68d3` (facial animation,
+  PR #48). The sound code is `43470ec`.
+- **Open:** http://127.0.0.1:5192/, the dev preview of this branch. It serves the staged faces + sounds set
+  (`upload/anim-20261112d`), the exact files the next upload would publish.
+  - Once that set is published and the host bumped, the production build will serve at
+    http://127.0.0.1:5197/the-finals-outfit/.
+  - The earlier `ab913ac8` host lacks the faces and is retired: don't test against it.
 - **Prerequisites:** headphones or speakers, and a desktop browser (Chrome, Edge or Firefox).
 - **Approximate hands-on time:** 10 minutes.
-- **Agent checks:**
-  - The production build against the published host passes 17/17 in Chrome.
-  - Unit tests 20/20 for the new code.
-  - `npm test` 827 pass, 8 fail. The 8 are pre-existing and need game GLBs this worktree lacks.
-  - `npm run build` passes.
-  - Chrome 17/17 and Firefox 16/17 in the scripted browser check. Firefox's one failure is timing in headless software
-    rendering; details in [README.md](README.md#verification).
+- **Agent checks after the rebase (12 Nov 2026, staged superset on 5192):**
+  - Chrome 17/17 ([check-chrome-superset-local.json](check-chrome-superset-local.json)).
+  - Faces 2/2 posed and wrapped ([check-faces-superset-local.json](check-faces-superset-local.json)).
+  - The type check passes.
+  - 47/47 focused tests pass: sounds, cues, animator, transport and faces.
+  - `npm test` 835 pass, 8 fail. The 8 are pre-existing and need game GLBs this worktree lacks.
+- **Before the rebase:** production build against `ab913ac8` Chrome 17/17; Firefox 16/17 (timing in headless software
+  rendering). Details are in [README.md](README.md#verification).
 - **User checks: PENDING.** Agent results do not check the boxes below.
 
 ## Get it running
@@ -29,17 +32,18 @@ muting must behave like a video player: nothing doubled, nothing out of step, an
 may already have it running: if http://127.0.0.1:5192/ opens, skip this.
 
 ```bash
-node _docs/emote-sfx-2026-11-12/serve-5192.mjs --set=scripts/generated/emote-sfx-2026-11-12/anim-local --proxy=https://cf84e9b6.the-finals-outfit-assets.pages.dev/
+node _docs/emote-sfx-2026-11-12/serve-5192.mjs --set=scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112d
 ```
 
 The first load after a start can take over 30 seconds (Vite builds its cache). Stop it with Ctrl+C in that terminal.
 
 ## Try it yourself
 
-- [ ] **1. Start.** Open http://127.0.0.1:5197/the-finals-outfit/. Expected: the character loads and the idle plays, with no sound.
+- [ ] **1. Start.** Open http://127.0.0.1:5192/. Expected: the character loads and the idle plays, with no sound.
 - [ ] **2. An emote with sound.** Click **Emotes**, search "Valkyria", and click **Valkyria's Embrace**. Expected:
   - the emote's sound starts with the motion and is in time with it;
-  - a speaker button and a small volume slider appear left of **Pause** and **Animated**.
+  - a speaker button and a small volume slider appear left of **Pause** and **Animated**;
+  - the face still moves with the emote (facial animation from PR #48).
 - [ ] **3. Pause, scrub, resume.** While it plays:
   1. click the timeline's ❚❚ (bottom bar);
   2. drag the timeline thumb;
@@ -51,7 +55,7 @@ The first load after a start can take over 30 seconds (Vite builds its cache). S
   - the music keeps going across each loop, with no restart, stutter or doubled copy;
   - then **Jester Lute** with Loop on: its tune restarts from the top each pass, in step with the strumming (that
     emote is 19 s long).
-- [ ] **5. A link opened cold.** In a new tab, open http://127.0.0.1:5197/the-finals-outfit/?emote=finger-crack and don't click anything
+- [ ] **5. A link opened cold.** In a new tab, open http://127.0.0.1:5192/?emote=finger-crack and don't click anything
   for a few seconds. Expected:
   - the emote plays silently (browsers keep sound locked until you click);
   - click anywhere in the page: if the emote is still playing, its current sound joins from that point.
@@ -77,5 +81,7 @@ switch mutes it, which is expected.
 - **Passed / failed / untested step numbers:** pending
 - **Explicitly waived checks, if any:** none
 - **Readiness:** pending
-- **Merge authorization:** not yet given. Publishing the sounds was authorized ("Yes, upload it", 12 Nov 2026) and is
-  done (host `ab913ac8`).
+- **Merge authorization:** not yet given.
+- **Publishing:**
+  - "Yes, upload it" (12 Nov 2026) covered `ab913ac8`, which is now retired because it lacks the faces.
+  - The faces + sounds superset needs its own yes.
