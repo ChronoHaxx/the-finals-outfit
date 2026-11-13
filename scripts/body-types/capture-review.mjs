@@ -39,13 +39,19 @@ export const OUTFITS = option("--outfits") ? JSON.parse(fs.readFileSync(option("
 const BODY_TYPES = ["masculine", "feminine", "androgynous"]
   .filter(type => (option("--body-types") ?? "masculine,feminine,androgynous").split(",").includes(type));
 // Waist cameras (front and back at hip height) look at waistbands and hems up close; --cameras picks a subset.
+// back and sideleft (S12 item refresh tier 1, 12 Nov 2026): both sides and both hands.
 const ALL_CAMERAS = { front: "0,1.25,1.9,0,1.25,0", side: "1.9,1.25,0,0,1.25,0", full: "0,0.95,4.3,0,0.95,0",
-  waist: "0,1.0,1.5,0,1.0,0", waistback: "0,1.0,-1.5,0,1.0,0" };
+  waist: "0,1.0,1.5,0,1.0,0", waistback: "0,1.0,-1.5,0,1.0,0", back: "0,1.25,-1.9,0,1.25,0",
+  sideleft: "-1.9,1.25,0,0,1.25,0" };
 const CAMERAS = Object.fromEntries(Object.entries(ALL_CAMERAS)
   .filter(([name]) => (option("--cameras") ?? "front,side,full").split(",").includes(name)));
+// --query "anim=outfit-idle&animTime=6&sway=0": extra viewer switches for every shot. Main plays the outfit idle by
+// default but holds still in automated browsers; ?anim=<clip>&animTime=<s> holds a clip paused at that time, so two
+// servers capture the same frame (AnimationControls.tsx).
+const QUERY = option("--query") ? `&${option("--query")}` : "";
 
 const outfitUrl = (base, slots, bodyType, cam) => `${base}/?outfit=1.${Buffer.from(JSON.stringify({ slots }))
-  .toString("base64url")}&reconstructed=1&bodyType=${bodyType}&cam=${cam}&fov=28`;
+  .toString("base64url")}&reconstructed=1&bodyType=${bodyType}&cam=${cam}&fov=28${QUERY}`;
 
 const browser = await chromium.launch({ channel: "msedge", headless: true });
 const context = await browser.newContext({ viewport: { width: 1500, height: 1100 }, deviceScaleFactor: 1 });
