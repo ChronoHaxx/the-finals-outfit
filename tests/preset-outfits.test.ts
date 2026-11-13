@@ -62,7 +62,7 @@ test('every outfit goes on whole: nothing worn is dropped, and the result is sha
     const resolved = resolveSavedSlots(slots);
     assert.deepEqual(resolved.missing, [], `${outfit.id}: the saved-outfit resolver keeps every piece`);
     assert.deepEqual(resolved.build, slots, `${outfit.id}: what is worn is exactly the outfit`);
-    assert.doesNotThrow(() => buildShareUrl(SITE, resolved.build), `${outfit.id}: every piece has a share code`);
+    assert.doesNotThrow(() => buildShareUrl(SITE, { build: resolved.build, bodyType: 'masculine' }), `${outfit.id}: every piece has a share code`);
   }
 });
 

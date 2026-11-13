@@ -40,11 +40,21 @@ export interface OutfitRecord {
   /** Made by Randomise, Reset or New and not edited by hand since: not work worth protecting. */
   generated?: boolean;
   deletedAt?: number;
+  /** The outfit's body type id (src/lib/body-type.ts), kept exactly as written, including a value from a newer site.
+   *  Absent (every outfit saved before 12 Nov 2026) means Masculine. Added without a schema bump: older tabs keep
+   *  it as an unknown field. */
+  bodyType?: string;
   [field: string]: unknown;
 }
 
 const KNOWN_FIELDS = ["v", "id", "rev", "writer", "name", "createdAt", "updatedAt", "slots", "labels",
-  "generated", "deletedAt"] as const;
+  "generated", "deletedAt", "bodyType"] as const;
+
+/** What an outfit shows, as opposed to its bookkeeping. */
+export interface OutfitContent { name: string; slots: SlotMap; labels?: SlotMap; generated?: boolean; bodyType?: string }
+
+// Absent and "masculine" are the same body type; compare by meaning so the field's arrival is not an edit.
+const bodyTypeKey = (value: unknown) => typeof value === "string" && value ? value : "masculine";
 
 export interface JournalEntry { record: OutfitRecord; base?: number }
 
@@ -78,6 +88,7 @@ export interface Draft {
   slots: SlotMap;
   labels?: SlotMap;
   generated?: boolean;
+  bodyType?: string;
   /** "link": an opened share link; "preset": one of the game's own outfits; "cap": made at the cap, so it could not be saved. */
   reason: "link" | "preset" | "cap";
   /** Edited by hand while it could not be saved. Leaving it then needs a confirmation. */
@@ -146,6 +157,7 @@ export function readRecord(raw: unknown): OutfitRecord | undefined {
   if (raw.labels === undefined) delete record.labels; else record.labels = stringMap(raw.labels);
   if (raw.generated !== true) delete record.generated;
   if (typeof raw.deletedAt !== "number") delete record.deletedAt;
+  if (typeof raw.bodyType !== "string" || !raw.bodyType) delete record.bodyType;
   return record;
 }
 
@@ -172,8 +184,12 @@ const sameMap = (a: SlotMap | undefined, b: SlotMap | undefined) => {
 
 export function sameContent(a: OutfitRecord, b: OutfitRecord): boolean {
   return a.name === b.name && sameMap(a.slots, b.slots) && sameMap(a.labels, b.labels)
-    && !!a.generated === !!b.generated && a.deletedAt === b.deletedAt;
+    && !!a.generated === !!b.generated && a.deletedAt === b.deletedAt && bodyTypeKey(a.bodyType) === bodyTypeKey(b.bodyType);
 }
+
+/** The content fields of a record or draft, for a copy (a duplicate, a fork, a promoted draft). */
+const contentOf = (source: OutfitContent): OutfitContent => ({ name: source.name, slots: source.slots,
+  labels: source.labels, generated: source.generated, bodyType: source.bodyType });
 
 /** "Outfit" -> "Outfit 1", "Outfit 2"...; "Name (2)" style when `paren` is set. */
 export function uniqueName(stem: string, taken: Iterable<string>, opts: { numberFirst?: boolean; paren?: boolean } = {}): string {
@@ -292,8 +308,7 @@ export class OutfitLibrary {
       } else {
         // Someone else changed it after this journal entry was made: keep both.
         if (entry.deletedAt === undefined) {
-          this.addRecord({ name: uniqueName(entry.name, this.liveNames(), { paren: true }),
-            slots: entry.slots, labels: entry.labels, generated: entry.generated });
+          this.addRecord({ ...contentOf(entry), name: uniqueName(entry.name, this.liveNames(), { paren: true }) });
           this.notice = `Recovered unsaved changes to “${entry.name}” as a separate outfit.`;
         }
         this.journal?.settle(entry.id, entry.rev);
@@ -380,18 +395,19 @@ export class OutfitLibrary {
   }
 
   /** A new outfit, or null at the cap (nothing is evicted to make room). */
-  create(content: { name: string; slots: SlotMap; labels?: SlotMap; generated?: boolean }): OutfitRecord | null {
+  create(content: OutfitContent): OutfitRecord | null {
     if (this.liveCount() >= this.cap) return null;
     return this.addRecord(content);
   }
 
   // Uncapped: recovered work (a conflict fork, a journal replay) is kept even past the cap.
-  private addRecord(content: { name: string; slots: SlotMap; labels?: SlotMap; generated?: boolean }) {
+  private addRecord(content: OutfitContent) {
     const time = this.now();
     const record: OutfitRecord = { v: SCHEMA_VERSION, id: this.newId(), rev: 1, writer: this.writer,
       name: cleanName(content.name) || "Outfit", createdAt: time, updatedAt: time, slots: { ...content.slots } };
     if (content.labels) record.labels = { ...content.labels };
     if (content.generated) record.generated = true;
+    if (content.bodyType) record.bodyType = content.bodyType;
     this.records.set(record.id, record);
     this.dirty.add(record.id);
     this.journal?.write(record.id, { record });
@@ -404,8 +420,8 @@ export class OutfitLibrary {
   duplicate(id: string): OutfitRecord | null {
     const source = this.records.get(id);
     if (!source || source.deletedAt !== undefined) return null;
-    return this.create({ name: uniqueName(`${source.name} copy`, this.liveNames()), slots: source.slots,
-      labels: source.labels });
+    return this.create({ ...contentOf(source), name: uniqueName(`${source.name} copy`, this.liveNames()),
+      generated: undefined });
   }
 
   rename(id: string, name: string) {
@@ -415,14 +431,18 @@ export class OutfitLibrary {
     this.touch(id, r => ({ ...r, name: clean }));
   }
 
-  setContent(id: string, slots: SlotMap, labels: SlotMap | undefined, generated: boolean) {
+  /** Replace what the outfit shows. `bodyType` undefined keeps the outfit's own. */
+  setContent(id: string, slots: SlotMap, labels: SlotMap | undefined, generated: boolean, bodyType?: string) {
     const record = this.records.get(id);
     if (!record) return;
-    if (sameMap(record.slots, slots) && sameMap(record.labels, labels) && !!record.generated === generated) return;
+    const sameBodyType = bodyType === undefined || bodyTypeKey(record.bodyType) === bodyTypeKey(bodyType);
+    if (sameMap(record.slots, slots) && sameMap(record.labels, labels) && !!record.generated === generated
+      && sameBodyType) return;
     this.touch(id, r => {
       const next: OutfitRecord = { ...r, slots: { ...slots } };
       if (labels) next.labels = { ...labels }; else delete next.labels;
       if (generated) next.generated = true; else delete next.generated;
+      if (!sameBodyType) next.bodyType = bodyType;
       return next;
     });
   }
@@ -518,8 +538,7 @@ export class OutfitLibrary {
       this.notice = `“${stored.name}” was changed in another tab, so it was not deleted.`;
       return;
     }
-    const copy = this.addRecord({ name: uniqueName(mine.name, this.liveNames(), { paren: true }), slots: mine.slots,
-      labels: mine.labels, generated: mine.generated });
+    const copy = this.addRecord({ ...contentOf(mine), name: uniqueName(mine.name, this.liveNames(), { paren: true }) });
     if (this.current?.kind === "record" && this.current.id === id) this.select(copy.id);
     this.notice = isReadOnly(stored)
       ? `“${stored.name}” was saved by a newer version of the site, so your changes were saved as “${copy.name}”.`

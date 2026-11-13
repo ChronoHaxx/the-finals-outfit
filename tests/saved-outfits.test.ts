@@ -44,7 +44,7 @@ const current = () => state().library!.current;
 const currentRecord = () => { const c = current(); return c?.kind === 'record' ? outfits().find(r => r.id === c.id) : undefined; };
 const build = () => useBuildStore.getState().build;
 const equip = (id: string) => useBuildStore.getState().equip(getItemById(id)!);
-const linkTo = (slots: Record<string, string>) => buildShareUrl(SITE, slots);
+const linkTo = (slots: Record<string, string>, bodyType = 'masculine') => buildShareUrl(SITE, { build: slots, bodyType });
 
 beforeEach(() => {
   backend = new MemoryBackend(true);
@@ -322,6 +322,22 @@ test('at the cap an in-game outfit stays unsaved, and an edited unsaved outfit a
   assert.equal(confirms.length, 1);
   assert.equal(build().eyewear, GLASSES, 'the unsaved edit is still on screen');
   assert.equal(outfits()[0].slots.headwear, HAT);
+});
+
+test('an in-game outfit keeps the body type on screen, and a saved copy on another body is not "the same outfit"', async () => {
+  await visit();
+  openFromUrl(SITE);
+  wear(BARRY);
+  assert.equal(saveDraft(), true);
+  const masculine = currentRecord()!;
+  newOutfit();
+  useBuildStore.getState().setBodyType('androgynous');
+  assert.equal(wear(BARRY), 'draft', 'the Masculine copy is not selected for an Androgynous contestant');
+  assert.equal(useBuildStore.getState().bodyType, 'androgynous', 'putting an outfit on does not change the body');
+  assert.equal((current() as { kind: 'draft'; draft: { bodyType?: string } }).draft.bodyType, 'androgynous');
+  equip(GLASSES); // the edit saves the outfit with its body type
+  assert.equal(currentRecord()?.bodyType, 'androgynous');
+  assert.equal(outfits().find(r => r.id === masculine.id)?.bodyType ?? 'masculine', 'masculine', 'the first copy is untouched');
 });
 
 test('an in-game outfit over an unedited shared link replaces it, and Undo brings the link back', async () => {

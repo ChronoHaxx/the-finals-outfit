@@ -30,6 +30,9 @@ const publicDir = path.resolve(root, "../../../public");
 if (!existsSync(path.join(publicDir, "models/reconstructed-assemblies-v1/assets.json")))
   throw new Error(`Not the root checkout's public/: ${publicDir}`);
 const previewDir = option("--preview") ? path.resolve(option("--preview")) : undefined;
+// --animations-base <url>: where the idle and emote clips come from (the deploy's ANIMATIONS_BASE; no local copy exists).
+// Vite passes VITE_* variables already in the environment to the app (12 Nov 2026, body-type picker review).
+if (option("--animations-base")) process.env.VITE_ANIMATIONS_BASE = option("--animations-base");
 // --index <dir>: the preview index files when they live apart from the rebuilt meshes (default: --preview itself).
 const indexDir = option("--index") ? path.resolve(option("--index")) : previewDir;
 const previewRoutes = previewDir ? new Map([

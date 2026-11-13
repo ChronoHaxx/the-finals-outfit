@@ -402,10 +402,9 @@ checks covered the live site; the user has not re-checked it.
 
 ## Known gaps
 
-* **Facial animation**: every clip carries 37 `Face_*` expression curves (blink, jaw, brows…). The heads have 305
-  `FACIAL_*` bones and no expression morphs; each head has a pose asset (`Head_Face_NN_Base_PoseAsset`,
-  `Head_HeadMaster_Base_PoseAsset`) that maps curve weights to facial bone poses. Playing them needs those pose
-  assets exported and blended. Faces stay neutral.
+* **Facial animation**: done on 12 Nov 2026, see `_docs/facial-animation-2026-11-12/`. The clips' `Face_*` curves
+  drive each head's pose asset on its `FACIAL_*` bones (the heads have no expression morphs); head-wrapped beards and
+  balaclavas follow the face, and masking items damp it as in game.
 * **Cloth simulation** (coats, capes, robes, dresses without jiggle bones) is not reproduced; those parts follow
   their skin weights only and can clip legs in deep poses.
 * **Volume-preservation joints**: ported (above); the thigh front/back aim is approximate and two rig branches are

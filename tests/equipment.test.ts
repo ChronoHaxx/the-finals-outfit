@@ -65,13 +65,13 @@ test('legacy overalls links migrate, evict pants and displaced dyes deterministi
   const old = { slots: { ...companions, upperBody: shirt, lowerBody: pants, upperBack: overalls },
     dyes: { upperBody: '#123456', upperBack: '#abcdef', lowerBody: '#654321', feet: '#112233' }, presetName: 'Legacy' };
   const base = 'https://example.test/the-finals-outfit/';
-  for (const link of [base + '?outfit=' + encodeOutfit(old), buildShareUrl(base, old.slots), buildShareUrl(base, old.slots, 'names')]) {
+  for (const link of [base + '?outfit=' + encodeOutfit(old), buildShareUrl(base, { build: old.slots, bodyType: 'masculine' }), buildShareUrl(base, { build: old.slots, bodyType: 'masculine' }, 'names')]) {
     const decoded = readOutfitLink(link)!;
     const normalized = migrateOutfit(decoded);
     assert.deepEqual(normalized.slots, { ...companions, upperBody: overalls });
     assert.deepEqual(migrateOutfit(normalized), normalized);
     for (const style of ['short', 'names'] as const)
-      assert.deepEqual(migrateOutfit(readOutfitLink(buildShareUrl(base, normalized.slots, style))!).slots, normalized.slots);
+      assert.deepEqual(migrateOutfit(readOutfitLink(buildShareUrl(base, { build: normalized.slots, bodyType: 'masculine' }, style))!).slots, normalized.slots);
   }
   assert.deepEqual(migrateOutfit(old).dyes, { upperBody: '#abcdef', feet: '#112233' });
   const reversed = { slots: Object.fromEntries(Object.entries(old.slots).reverse()) };
