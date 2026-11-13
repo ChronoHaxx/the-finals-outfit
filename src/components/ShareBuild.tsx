@@ -4,6 +4,7 @@ import { buildShareUrl, type ShareStyle } from "../lib/share-url";
 import { previewLink, SHARE_PREVIEW_BASE, sharePreviewAvailable, shortCode, uploadQuery } from "../lib/share-preview";
 import { formatPoseTime, poseKey, type PoseCapture } from "../lib/share-pose";
 import { getPoseCapture, subscribePose } from "../lib/viewer-handle";
+import { bodyTypeShareCode } from "../lib/body-type";
 import { CloseIcon, ShareIcon } from "./Icons";
 
 type LinkStyle = ShareStyle | "preview";
@@ -22,8 +23,9 @@ async function copyText(text: Promise<string>): Promise<string> {
   return value;
 }
 
-// The cache identity of a preview: the outfit code and the exact frame its card shows.
-const previewKey = (code: string | null, pose: PoseCapture | null) => code === null ? "" : uploadQuery(code, pose);
+// The cache identity of a preview: the outfit code, the body type and the exact frame its card shows.
+const previewKey = (code: string | null, pose: PoseCapture | null, bodyType: string | undefined) =>
+  code === null ? "" : uploadQuery(code, pose, bodyType);
 
 // One click copies the link. The panel that opens shows what was copied and lets you switch style.
 //
@@ -32,6 +34,9 @@ const previewKey = (code: string | null, pose: PoseCapture | null) => code === n
 // two always agree even while the emote plays on. "Include this frame" leaves it out.
 export default function ShareBuild() {
   const build = useBuildStore(s => s.build);
+  const bodyType = useBuildStore(s => s.bodyType);
+  const look = { build, bodyType };
+  const bt = bodyTypeShareCode(bodyType);
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState("");
@@ -45,10 +50,10 @@ export default function ShareBuild() {
   const root = useRef<HTMLDivElement>(null);
   const pose = withPose ? copiedPose : null;
   // Derive from the current selection so an already-open copy box never goes stale.
-  const short = buildShareUrl(window.location.href, build, "short", pose);
+  const short = buildShareUrl(window.location.href, look, "short", pose);
   const code = shortCode(short);
-  const link = style === "preview" ? (preview && preview.key === previewKey(code, pose) ? preview.url : short)
-    : buildShareUrl(window.location.href, build, style, pose);
+  const link = style === "preview" ? (preview && preview.key === previewKey(code, pose, bt) ? preview.url : short)
+    : buildShareUrl(window.location.href, look, style, pose);
   const poseMoved = withPose && livePose !== poseKey(copiedPose);
   const status = message.startsWith("Link copied") && (copiedLink !== link || poseMoved) ? "Link changed · copy again" : message;
 
@@ -59,17 +64,17 @@ export default function ShareBuild() {
     const now = withPose ? capture : null;
     setCopiedPose(capture);
     setOpen(true);
-    const shortNow = buildShareUrl(window.location.href, build, "short", now);
+    const shortNow = buildShareUrl(window.location.href, look, "short", now);
     const codeNow = shortCode(shortNow);
     let result: Promise<{ url: string; note: string }>;
     if (style !== "preview" || !codeNow)
-      result = Promise.resolve({ url: buildShareUrl(window.location.href, build, style === "preview" ? "short" : style, now),
+      result = Promise.resolve({ url: buildShareUrl(window.location.href, look, style === "preview" ? "short" : style, now),
         note: now ? `Link copied · opens on frame ${now.frame}` : "Link copied" });
     else if (!sharePreviewAvailable()) result = Promise.resolve({ url: shortNow, note: "Outfit still loading · plain link copied" });
     else {
       setMessage("Making preview…");
-      result = previewLink(codeNow, now).then(url => {
-        setPreview({ key: previewKey(codeNow, now), url });
+      result = previewLink(codeNow, now, bt).then(url => {
+        setPreview({ key: previewKey(codeNow, now, bt), url });
         return { url, note: now ? `Link copied · preview shows frame ${now.frame}` : "Link copied · with preview image" };
       }, error => { console.warn("[share preview]", error); return { url: shortNow, note: "Preview unavailable · plain link copied" }; });
     }
