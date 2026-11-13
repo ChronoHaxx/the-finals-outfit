@@ -1,0 +1,98 @@
+{
+ "a1-tank-top": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "streetwear-tanktop-synthetic-blackwhite",
+  "lowerBody": "casual-tightjeans-denim-blue"
+ },
+ "a2-crop-hoodie": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "streetwear-crophoodie-cotton-whitepink",
+  "lowerBody": "streetwear-skirtshorts-nylon-blackdissun"
+ },
+ "a3-bare-shoulder": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "cute-bareshouldersweater-cotton-blackdissun",
+  "lowerBody": "gothic-skirt-cotton"
+ },
+ "a4-layered-vest": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "military-dedevest-nylon",
+  "lowerBody": "steampunk-pantswithskirt-leather"
+ },
+ "a5-front-tie": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "casual-fronttiecroptop-cotton-hippie",
+  "lowerBody": "streetwear-jeansshorts-denim"
+ },
+ "a6-zip-hoodie": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "casual-hoodiezipup-cotton-black",
+  "lowerBody": "casual-tightjeans-denim-blue"
+ },
+ "a7-corset": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "medieval-demoncorset-leather",
+  "lowerBody": "cute-animearcherskirt"
+ },
+ "b1-default-tee": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "casual-basictshirt-cotton-black",
+  "lowerBody": "casual-tightjeans-denim-blue"
+ },
+ "b2-short-dress": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "casual-shortdress-cotton",
+  "lowerBody": "casual-tightjeans-denim-blue"
+ },
+ "b3-tech-crop-top": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "streetwear-techcroptop-nylon-ivada",
+  "lowerBody": "casual-tightjeans-denim-blue"
+ },
+ "b4-hoodie": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "streetwear-hoodie-zebra",
+  "lowerBody": "casual-tightjeans-denim-blue"
+ },
+ "b5-tube-top-skirt": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "casual-tubetop-cotton-black",
+  "lowerBody": "casual-shortskirt-cotton"
+ },
+ "a8-masculine-change": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "upperBody": "sport-footballhoodie-jersey",
+  "lowerBody": "municipal-pants-nylon"
+ },
+ "c1-hoodie-over-municipal": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "lowerBody": "municipal-pants-nylon",
+  "upperBody": "streetwear-hoodie-zebra"
+ },
+ "c2-crop-top-over-municipal": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "lowerBody": "municipal-pants-nylon",
+  "upperBody": "streetwear-techcroptop-nylon-ivada"
+ },
+ "c3-tee-over-municipal": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "lowerBody": "municipal-pants-nylon",
+  "upperBody": "casual-basictshirt-cotton-black"
+ }
+}
