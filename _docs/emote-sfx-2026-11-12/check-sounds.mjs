@@ -4,8 +4,8 @@
 // Also: no AudioContext before a gesture, pause/scrub silence, resume mid-sound, loop wraps without double starts,
 // mute remembered across a reload, console errors.
 //
-//   node _docs/emote-sfx-2026-11-12/check-sounds.mjs [--base=http://127.0.0.1:5192] [--browser=chrome|firefox] [--headed]
-// (Git Bash or PowerShell, worktree root; serve-5192.mjs running). Writes check-<browser>.json beside this file.
+//   node _docs/emote-sfx-2026-11-12/check-sounds.mjs [--base=http://127.0.0.1:5192] [--browser=chrome|firefox] [--headed] [--out=<file>]
+// (Git Bash or PowerShell, worktree root; serve-5192.mjs running). Writes check-<browser>.json (or --out) beside this file.
 import { chromium, firefox } from "playwright-core";
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -39,10 +39,14 @@ const check = (name, pass, detail) => { report.checks.push({ name, pass, ...(det
 // emote's clip and sounds.json have arrived.
 const clipLoaded = page.waitForResponse(r => r.url().includes("HM_FrontEnd_Emotes_A_AcePilot_00.json"), { timeout: 240000 }).catch(() => null);
 const soundsLoaded = page.waitForResponse(r => r.url().endsWith("sounds-1/sounds.json"), { timeout: 240000 }).catch(() => null);
+// Since facial animation (PR #48) an emote also waits for the worn head's face data before it starts: its pose asset is
+// the largest piece. A host without faces just costs this wait's timeout.
+const faceLoaded = page.waitForResponse(r => /faces-1\/poses\//.test(r.url()), { timeout: 90000 }).catch(() => null);
 await page.goto(`${BASE}/?reconstructed=1&outfit=${outfit}&emote=ace-pilot&t=1`, { waitUntil: "load", timeout: 240000 });
 const sounds = "window.__rigAnim.animator.sounds";
 const linked = !!(await clipLoaded) && !!(await soundsLoaded);
 if (linked) {
+  report.faceDataBeforeLink = !!(await faceLoaded);
   await page.waitForTimeout(3000);
   const before = await page.evaluate(`({ current: window.__rigAnim?.state().current, context: ${sounds}.context?.state ?? null,
     starts: ${sounds}.log.filter(e => e.event === "start" || e.event === "schedule").length })`);
@@ -237,6 +241,6 @@ await timelineSound.click(); // leave the visitor's setting muted? no: restore t
 await page.evaluate(() => localStorage.removeItem("finals-outfit.emote-sound"));
 
 check("no console errors or audio warnings", errors.length === 0, errors);
-writeFileSync(join(dirname(fileURLToPath(import.meta.url)), `check-${which}.json`), JSON.stringify(report, null, 1));
+writeFileSync(join(dirname(fileURLToPath(import.meta.url)), arg("out") ?? `check-${which}.json`), JSON.stringify(report, null, 1));
 await browser.close();
 process.exitCode = report.checks.every(c => c.pass) ? 0 : 1;
