@@ -1,28 +1,31 @@
 import { create } from "zustand";
 import { AUTOMATED } from "./automation";
-import { DEFAULT_LIGHTING, sameLighting, sanitizeLighting, type LightingSettings, type SceneTheme } from "./stage-lighting";
+import { DEFAULT_LOOK, sameLook, sanitizeLook, studioLook, rotated, KEY_POSITION, type Look } from "./stage-lighting";
 
 /**
- * The viewer's lighting and backdrop choices (stage-lighting.ts), remembered in this browser.
+ * The viewer's look (stage-lighting.ts), remembered in this browser.
  *
  * Storage rules (the user's "never lose the user's work"):
- * - every change is written at once; nothing waits for a Save;
- * - one key holds the current settings, the look a Reset or a look replaced (`previous`, so Undo survives a reload)
- *   and the saved looks; every write reads the stored object again, changes only its own fields and writes it back,
- *   so fields another version or another tab wrote survive, and two tabs saving looks do not drop each other's;
+ * - every change is kept: at once for a click, and within WRITE_DELAY_MS for a slider or colour-picker drag (which fires
+ *   on every move), flushed when the page is hidden or closed;
+ * - one key holds the current look, the look a Reset or an applied look replaced (`previous`, so Undo survives a
+ *   reload) and the saved looks; every write reads the stored object again and changes only its own fields, lights
+ *   are merged by id, so fields another version or another tab wrote survive, and two tabs saving looks do not drop
+ *   each other's;
  * - saved looks are separate items with their own id and time; saving never replaces one, and past MAX_LOOKS saving is
  *   refused rather than evicting the oldest; deleting is a deliberate two-step action in the panel;
- * - a stored field that no longer makes sense (a backdrop later removed) falls back on its own; the rest of the look
- *   still applies.
+ * - a stored field that no longer makes sense falls back on its own; the rest of the look still applies. PR #40's
+ *   first settings and PR #37's Sun angle are converted.
  * Storage can be missing or blocked: every access is guarded and the choice simply is not remembered.
- * Automated browsers (audits, visual diffs) never read it: they always render DEFAULT_LIGHTING.
+ * Automated browsers (audits, visual diffs) never read it: they always render DEFAULT_LOOK.
  */
 export const LIGHTING_KEY = "finals-outfit.lighting";
-/** PR #37's Sun slider kept its angle here; read when the new key has no azimuth yet. */
+/** PR #37's Sun slider kept its angle here (degrees round from the reviewed key); read when nothing newer is stored. */
 export const LEGACY_SUN_KEY = "finals-outfit.sun";
 export const MAX_LOOKS = 12;
+export const WRITE_DELAY_MS = 300;
 
-export interface SavedLook { id: string; name: string; savedAt: number; settings: LightingSettings }
+export interface SavedLook { id: string; name: string; savedAt: number; look: Look }
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
 type Stored = Record<string, unknown>;
@@ -47,34 +50,48 @@ export function writeStored(store: StorageLike | null, change: (stored: Stored) 
   return stored;
 }
 
-/** Settings written over what is stored, keeping any field this version does not know. */
-function merged(stored: unknown, settings: LightingSettings): Record<string, unknown> {
+/** A look written over what is stored: fields this version does not know are kept, at the top level, in the hemisphere,
+ *  environment and backdrop, and in each light (matched by id). A light the viewer removed is removed. */
+export function mergedLook(stored: unknown, look: Look): Record<string, unknown> {
   const base = isObject(stored) ? stored : {};
-  return { ...base, ...settings, backdrop: { ...(isObject(base.backdrop) ? base.backdrop : {}), ...settings.backdrop } };
+  const part = (key: string, value: object) => ({ ...(isObject(base[key]) ? base[key] as object : {}), ...value });
+  const storedLights = Array.isArray(base.lights) ? base.lights.filter(isObject) : [];
+  // A first-version setting stored here: its fields do not belong to a look; start from a clean object.
+  const top = Array.isArray(base.lights) ? base : {};
+  return {
+    ...top, ...look,
+    hemisphere: part("hemisphere", look.hemisphere),
+    environment: part("environment", look.environment),
+    backdrop: part("backdrop", look.backdrop),
+    lights: look.lights.map(l => ({ ...(storedLights.find(s => s.id === l.id) ?? {}), ...l })),
+  };
 }
 
-export function currentFrom(stored: Stored, store: StorageLike | null): LightingSettings {
-  const current = isObject(stored.current) ? { ...stored.current } : {};
-  if (current.sunAzimuth === undefined) {
-    try {
-      const legacy = store?.getItem(LEGACY_SUN_KEY);
-      if (legacy !== null && legacy !== undefined) current.sunAzimuth = Number(legacy);
-    } catch { /* none */ }
-  }
-  return sanitizeLighting(current);
+export function currentFrom(stored: Stored, store: StorageLike | null): Look {
+  if (isObject(stored.current)) return sanitizeLook(stored.current);
+  try {
+    const legacy = Number(store?.getItem(LEGACY_SUN_KEY) ?? NaN);
+    if (Number.isFinite(legacy) && legacy !== 0 && Math.abs(legacy) <= 180) {
+      const look = studioLook();
+      look.lights[0] = { ...look.lights[0], position: rotated(KEY_POSITION, Math.round(legacy)) };
+      return look;
+    }
+  } catch { /* none */ }
+  return sanitizeLook(undefined);
 }
 
 export function looksFrom(stored: Stored): SavedLook[] {
   if (!Array.isArray(stored.looks)) return [];
-  return stored.looks.flatMap((look): SavedLook[] => isObject(look) && typeof look.id === "string" ? [{
-    id: look.id,
-    name: typeof look.name === "string" && look.name.trim() ? look.name : "Saved look",
-    savedAt: typeof look.savedAt === "number" ? look.savedAt : 0,
-    settings: sanitizeLighting(look.settings),
+  return stored.looks.flatMap((entry): SavedLook[] => isObject(entry) && typeof entry.id === "string" ? [{
+    id: entry.id,
+    name: typeof entry.name === "string" && entry.name.trim() ? entry.name : "Saved look",
+    savedAt: typeof entry.savedAt === "number" ? entry.savedAt : 0,
+    // `look` since 12 Nov; PR #40's first version kept `settings`.
+    look: sanitizeLook(entry.look ?? entry.settings),
   }] : []);
 }
 
-const previousFrom = (stored: Stored) => isObject(stored.previous) ? sanitizeLighting(stored.previous) : null;
+const previousFrom = (stored: Stored) => isObject(stored.previous) ? sanitizeLook(stored.previous) : null;
 
 /** The next free "Look N" name. */
 export function nextLookName(looks: readonly SavedLook[]): string {
@@ -83,63 +100,71 @@ export function nextLookName(looks: readonly SavedLook[]): string {
 }
 
 interface LightingStore {
-  settings: LightingSettings;
+  look: Look;
   /** What Reset or the last applied look replaced, for Undo; null when there is nothing to undo. */
-  previous: LightingSettings | null;
+  previous: Look | null;
   looks: SavedLook[];
-  /** Change some settings (a slider, a toggle). */
-  change(patch: Partial<LightingSettings>): void;
-  setBackdrop(theme: SceneTheme, id: string): void;
-  /** Replace the settings with a look (or the defaults), keeping the old ones for Undo. */
-  apply(next: LightingSettings): void;
+  /** Change the look (a slider, a picker, a toggle): kept within WRITE_DELAY_MS. */
+  edit(change: (look: Look) => Look): void;
+  /** Replace the look (a ready-made or saved look, a sun look), keeping the old one for Undo. */
+  apply(next: Look): void;
   reset(): void;
   undo(): void;
-  /** Save the current settings as a new look. False when MAX_LOOKS are already saved (nothing is replaced). */
+  /** Save the current look as a new one. False when MAX_LOOKS are already saved (nothing is replaced). */
   saveLook(): boolean;
   deleteLook(id: string): void;
+  /** Write a pending change now (page hidden or closing). */
+  flush(): void;
   /** Re-read storage (another tab changed it). */
   refresh(): void;
 }
 
-function initial(): Pick<LightingStore, "settings" | "previous" | "looks"> {
-  if (AUTOMATED) return { settings: DEFAULT_LIGHTING, previous: null, looks: [] };
+function initial(): Pick<LightingStore, "look" | "previous" | "looks"> {
+  if (AUTOMATED) return { look: sanitizeLook(DEFAULT_LOOK), previous: null, looks: [] };
   const store = storage(), stored = readStored(store);
-  return { settings: currentFrom(stored, store), previous: previousFrom(stored), looks: looksFrom(stored) };
+  return { look: currentFrom(stored, store), previous: previousFrom(stored), looks: looksFrom(stored) };
 }
 
 export const useLightingStore = create<LightingStore>((set, get) => {
-  const commit = (settings: LightingSettings, previous: LightingSettings | null | undefined) => {
+  let pending: ReturnType<typeof setTimeout> | null = null;
+  const writeCurrent = (previous?: Look | null) => {
+    if (pending) { clearTimeout(pending); pending = null; }
     const written = writeStored(storage(), stored => {
-      stored.current = merged(stored.current, settings);
+      stored.version = 2;
+      stored.current = mergedLook(stored.current, get().look);
       if (previous === null) delete stored.previous;
-      else if (previous) stored.previous = merged(stored.previous, previous);
+      else if (previous) stored.previous = mergedLook(stored.previous, previous);
     });
-    set({ settings, ...(previous !== undefined ? { previous } : {}), looks: looksFrom(written) });
+    set({ looks: looksFrom(written) });
   };
   return {
     ...initial(),
-    change: patch => commit({ ...get().settings, ...patch }, undefined),
-    setBackdrop: (theme, id) => {
-      const settings = get().settings;
-      commit({ ...settings, backdrop: { ...settings.backdrop, [theme]: id } }, undefined);
+    edit: change => {
+      set({ look: change(structuredClone(get().look)) });
+      if (pending) clearTimeout(pending);
+      pending = setTimeout(() => writeCurrent(), WRITE_DELAY_MS);
     },
     apply: next => {
-      const current = get().settings;
-      if (sameLighting(current, next)) return;
-      commit(next, current);
+      const current = get().look;
+      if (sameLook(current, next)) return;
+      set({ look: sanitizeLook(next), previous: current });
+      writeCurrent(current);
     },
-    reset: () => get().apply(DEFAULT_LIGHTING),
+    reset: () => get().apply(sanitizeLook(DEFAULT_LOOK)),
     undo: () => {
       const previous = get().previous;
-      if (previous) commit(previous, null);
+      if (!previous) return;
+      set({ look: previous, previous: null });
+      writeCurrent(null);
     },
     saveLook: () => {
+      get().flush();
       let saved = false;
       const written = writeStored(storage(), stored => {
         const looks = Array.isArray(stored.looks) ? stored.looks : [];
         if (looksFrom({ looks }).length >= MAX_LOOKS) return;
         looks.push({ id: `look-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
-          name: nextLookName(looksFrom({ looks })), savedAt: Date.now(), settings: { ...get().settings } });
+          name: nextLookName(looksFrom({ looks })), savedAt: Date.now(), look: structuredClone(get().look) });
         stored.looks = looks;
         saved = true;
       });
@@ -148,16 +173,21 @@ export const useLightingStore = create<LightingStore>((set, get) => {
     },
     deleteLook: id => {
       const written = writeStored(storage(), stored => {
-        if (Array.isArray(stored.looks)) stored.looks = stored.looks.filter(look => !(isObject(look) && look.id === id));
+        if (Array.isArray(stored.looks)) stored.looks = stored.looks.filter(entry => !(isObject(entry) && entry.id === id));
       });
       set({ looks: looksFrom(written) });
     },
-    refresh: () => { if (!AUTOMATED) set(initial()); },
+    flush: () => { if (pending) writeCurrent(); },
+    refresh: () => { if (!AUTOMATED) { get().flush(); set(initial()); } },
   };
 });
 
 if (typeof window !== "undefined" && !AUTOMATED) {
   window.addEventListener("storage", event => {
     if (event.key === LIGHTING_KEY || event.key === null) useLightingStore.getState().refresh();
+  });
+  window.addEventListener("pagehide", () => useLightingStore.getState().flush());
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") useLightingStore.getState().flush();
   });
 }

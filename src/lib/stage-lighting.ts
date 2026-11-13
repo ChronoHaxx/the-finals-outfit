@@ -1,61 +1,214 @@
 import * as THREE from "three";
+import { STUDIO_LIGHTING_V2, STUDIO_RIG_V1, STUDIO_RIG_V2 } from "../rig/StudioLighting";
 
 /**
- * Viewer-chosen lighting and backdrop (11 Nov 2026, the user's and the community's request): the Studio sun's direction
- * and height, an optional floor that catches the sun's shadow, the Lobby rim lights' hue and a backdrop per theme.
+ * The viewer's scene: lights, reflections, exposure and backdrop, all the viewer's to change (11-12 Nov 2026, the user's
+ * and the community's request: "a colour picker for everything", "as much freedom as possible", no separate
+ * Studio/Lobby modes). One "look" holds the whole scene. Studio and Lobby are two ready-made looks; Studio, the reviewed
+ * w157 v2 rig, is the default, and automated browsers (audits, visual diffs) always render it (lighting-store.ts).
  *
- * Every default is the reviewed look (w157 Studio v2 and the Lobby as shipped): `null` means "the reviewed value,
- * exactly", not a number that happens to be close to it, so a viewer who never touches a control renders the very
- * pixels the visual-diff and audit harnesses compare against. Automated browsers always get DEFAULT_LIGHTING
- * (lighting-store.ts). Pure functions only, so the node tests can check them.
+ * Exactness: a preset holds the very numbers the viewer has always rendered (light positions as vectors, the backdrop
+ * as its exact CSS stops), and a light keeps its stored position until the viewer moves it, so an untouched look draws
+ * the same pixels as before. Lights are a list with an id and a type so a later editor (Blender-like light placement,
+ * the multi-character scene) can add kinds without another migration. Pure functions only, for the node tests.
  */
-export type SceneTheme = "studio" | "lobby";
-
-export interface LightingSettings {
-  /** Degrees round the vertical axis, -180..180; 0 = the reviewed key light. Positive turns it to the viewer's right. */
-  sunAzimuth: number;
-  /** Degrees above the floor, SUN_ELEVATION_MIN..MAX; null = the reviewed key light's own height (about 51.8°). */
-  sunElevation: number | null;
-  /** A floor that catches the sun's shadow (Studio). Off = the reviewed look (contact shadow only). */
-  floorShadow: boolean;
-  /** Lobby rim lights' hue in degrees, 0..360; null = the reviewed blues. */
-  lobbyHue: number | null;
-  /** Backdrop id per theme (BACKDROPS); "default" = the theme's own reviewed gradient. */
-  backdrop: Record<SceneTheme, string>;
-}
-
-export const DEFAULT_LIGHTING: LightingSettings = Object.freeze({
-  sunAzimuth: 0,
-  sunElevation: null,
-  floorShadow: false,
-  lobbyHue: null,
-  backdrop: Object.freeze({ studio: "default", lobby: "default" }) as Record<SceneTheme, string>,
-});
-
-export const SUN_ELEVATION_MIN = 10;
-export const SUN_ELEVATION_MAX = 85;
 
 // ---------------------------------------------------------------------------------------------------------------------
-// The sun (the Studio key light, the one that casts shadows).
+// The Studio rig's numbers (w157 lighting calibration): v1 as it shipped through PR #28, v2 the recalibrated rig.
+// Dev builds only: ?light=key:value,... overrides single values for a capture (e.g. ?light=room:0.1,env:1,key:2.5);
+// production ignores it. The window check comes first: the node tests have no import.meta.env.
+export type StudioRig = typeof STUDIO_RIG_V2;
+function readStudioRig(): StudioRig {
+  const rig = { ...(STUDIO_LIGHTING_V2 ? STUDIO_RIG_V2 : STUDIO_RIG_V1) };
+  if (typeof window === "undefined" || !import.meta.env?.DEV) return rig;
+  for (const pair of new URLSearchParams(window.location.search).get("light")?.split(",") ?? []) {
+    const [key, raw] = pair.split(":"), value = Number(raw);
+    if (key in rig && Number.isFinite(value) && value >= 0) rig[key as keyof StudioRig] = value;
+  }
+  return rig;
+}
+export const STUDIO_RIG: StudioRig = readStudioRig();
 
-/** The reviewed key light (w157 Studio v2). */
-export const KEY_POSITION: Readonly<THREE.Vector3> = new THREE.Vector3(2.5, 6, 4);
-const KEY_DISTANCE = KEY_POSITION.length(); // 7.63 m: kept whatever the height, so the light only turns
-/** The reviewed key light's height above the floor, in degrees (about 51.8°). */
-export const DEFAULT_SUN_ELEVATION = THREE.MathUtils.radToDeg(Math.asin(KEY_POSITION.y / KEY_DISTANCE));
+// ---------------------------------------------------------------------------------------------------------------------
+// Types.
 
-/**
- * Where the key light stands, relative to the point it looks at. With the reviewed height (null) this is exactly what
- * PR #37's Sun slider did (KEY_POSITION turned by the azimuth: at 0° it is KEY_POSITION to the last bit). With a
- * chosen height the light keeps its distance and its compass direction and is raised or lowered on that circle.
- */
-export function keyLightPosition(azimuth: number, elevation: number | null): [number, number, number] {
-  const turned = KEY_POSITION.clone().applyAxisAngle(THREE.Object3D.DEFAULT_UP, THREE.MathUtils.degToRad(azimuth));
-  if (elevation === null) return [turned.x, turned.y, turned.z];
-  const e = THREE.MathUtils.degToRad(elevation);
-  const ground = Math.hypot(turned.x, turned.z);
-  const across = KEY_DISTANCE * Math.cos(e) / ground;
-  return [turned.x * across, KEY_DISTANCE * Math.sin(e), turned.z * across];
+/** The sun is the one light that may cast shadows (each shadow-casting light renders the scene once more per frame). */
+export type LightRole = "sun" | "light";
+export interface StageLight {
+  id: string;
+  name: string;
+  role: LightRole;
+  /** Only directional lights today; the field is there so other kinds can be added without a migration. */
+  type: "directional";
+  /** sRGB #rrggbb, as a colour picker gives it. */
+  color: string;
+  intensity: number;
+  /** Where the light stands; it shines at the character (the origin, or the followed body). */
+  position: [number, number, number];
+  /** Off keeps the light in the scene at intensity 0: no shader recompile (see CharacterViewer's StageLights). */
+  enabled: boolean;
+  /** Sun only. */
+  castShadow: boolean;
+}
+export type EnvironmentKind = "softbox" | "room" | "none";
+export type ToneMappingChoice = "neutral" | "aces" | "agx";
+export interface Backdrop {
+  /** Centre, middle and edge colours of a radial gradient; all three equal = a solid colour. */
+  inner: string;
+  middle: string;
+  outer: string;
+  /** CSS radial-gradient shape and the middle stop's position, kept so the presets reproduce their exact CSS. */
+  ellipse: string;
+  middleStop: number;
+}
+export interface Look {
+  version: 2;
+  lights: StageLight[];
+  hemisphere: { sky: string; ground: string; intensity: number };
+  environment: { kind: EnvironmentKind; intensity: number; /** degrees round the vertical axis */ rotation: number };
+  toneMapping: ToneMappingChoice;
+  exposure: number;
+  contactShadow: boolean;
+  floorShadow: boolean;
+  floorShadowOpacity: number;
+  backdrop: Backdrop;
+}
+
+export const MAX_LIGHTS = 6;
+export const SUN_HEIGHT_MIN = 10, SUN_HEIGHT_MAX = 85;
+export const LIGHT_HEIGHT_MIN = -45, LIGHT_HEIGHT_MAX = 85;
+export const INTENSITY_MAX = 10;
+export const EXPOSURE_MIN = 0.2, EXPOSURE_MAX = 3;
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Backdrops (CSS behind the transparent canvas: nothing in the 3D scene changes, and the share card paints the stops).
+
+const STUDIO_ELLIPSE = "ellipse 75% 65% at 50% 35%"; // sampled from the icon corners
+const LOBBY_ELLIPSE = "ellipse 70% 60% at 50% 38%";
+export const STUDIO_BACKDROP: Readonly<Backdrop> = Object.freeze({
+  inner: "#f0f3f7", middle: "#dee4eb", outer: "#c5cdd7", ellipse: STUDIO_ELLIPSE, middleStop: 55 });
+export const LOBBY_BACKDROP: Readonly<Backdrop> = Object.freeze({
+  inner: "#1b2740", middle: "#0a0e17", outer: "#05060a", ellipse: LOBBY_ELLIPSE, middleStop: 58 });
+
+const solid = (color: string): Backdrop => ({ inner: color, middle: color, outer: color, ellipse: STUDIO_ELLIPSE, middleStop: 55 });
+export interface BackdropPreset { id: string; label: string; backdrop: Backdrop }
+export const BACKDROP_PRESETS: readonly BackdropPreset[] = Object.freeze([
+  { id: "studio", label: "Studio grey", backdrop: { ...STUDIO_BACKDROP } },
+  { id: "lobby", label: "Lobby navy", backdrop: { ...LOBBY_BACKDROP } },
+  { id: "dusk", label: "Dusk", backdrop: { inner: "#3a2b52", middle: "#1b1530", outer: "#0b0a14", ellipse: STUDIO_ELLIPSE, middleStop: 55 } },
+  { id: "sand", label: "Sand", backdrop: { inner: "#f6eee3", middle: "#e6dccd", outer: "#cfc2ae", ellipse: STUDIO_ELLIPSE, middleStop: 55 } },
+  { id: "white", label: "White", backdrop: solid("#ffffff") },
+  { id: "grey", label: "Grey", backdrop: solid("#8c9199") },
+  { id: "charcoal", label: "Charcoal", backdrop: solid("#2b2e33") },
+  { id: "black", label: "Black", backdrop: solid("#000000") },
+  { id: "green", label: "Green screen", backdrop: solid("#00b140") },
+]);
+
+export const isSolid = (b: Backdrop) => b.inner === b.middle && b.middle === b.outer;
+
+/** The CSS background: a solid colour, or the radial gradient (the presets' strings exactly as the viewer always had). */
+export function backdropCss(b: Backdrop): string {
+  if (isSolid(b)) return b.inner;
+  return `radial-gradient(${b.ellipse}, ${b.inner} 0%, ${b.middle} ${b.middleStop}%, ${b.outer} 100%)`;
+}
+
+/** Whether light chrome (text, corner marks) reads on this backdrop: by the luminance of its middle colour. */
+export function backdropIsDark(b: Backdrop): boolean {
+  return luminance(new THREE.Color(b.middle)) < 0.3;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Presets.
+
+/** The reviewed key light (w157 Studio v2): the Studio sun. */
+export const KEY_POSITION: readonly [number, number, number] = Object.freeze([2.5, 6, 4]) as unknown as [number, number, number];
+const KEY_DISTANCE = Math.hypot(...KEY_POSITION); // 7.63 m
+/** The reviewed sun's height above the floor, in degrees (about 51.8°). */
+export const DEFAULT_SUN_ELEVATION = THREE.MathUtils.radToDeg(Math.asin(KEY_POSITION[1] / KEY_DISTANCE));
+
+const light = (id: string, name: string, role: LightRole, color: string, intensity: number,
+  position: [number, number, number], castShadow = false): StageLight =>
+  ({ id, name, role, type: "directional", color, intensity, position, enabled: true, castShadow });
+
+/** The reviewed Studio rig: softbox reflections, the shadowed key (the sun) and a neutral back rim. */
+export function studioLook(rig: StudioRig = STUDIO_RIG): Look {
+  return {
+    version: 2,
+    lights: [
+      light("sun", "Sun", "sun", "#ffffff", rig.key, [...KEY_POSITION], true),
+      // unshadowed direct fill from the camera-left fill panel's direction (w157; 0 = absent, as shipped)
+      ...(rig.fill > 0 ? [light("fill", "Fill", "light", "#ffffff", rig.fill, [-4.5, 2.5, 2])] : []),
+      light("rim", "Rim", "light", "#ffffff", rig.rim, [-3, 4.5, -4]),
+    ],
+    hemisphere: { sky: "#e8edf4", ground: "#c4c8ce", intensity: rig.hemi },
+    environment: { kind: "softbox", intensity: rig.env, rotation: 0 },
+    toneMapping: "neutral",
+    exposure: rig.exposure,
+    contactShadow: true,
+    floorShadow: false,
+    floorShadowOpacity: 0.4,
+    backdrop: { ...STUDIO_BACKDROP },
+  };
+}
+
+/** THE FINALS main-menu inspect look: dark, a warm key, the signature blue rims. */
+export function lobbyLook(): Look {
+  return {
+    version: 2,
+    lights: [
+      light("sun", "Key", "sun", "#fff3e2", 2.4, [3.5, 5, 5], false),
+      light("rim-left", "Rim left", "light", "#3f6dff", 2.8, [-5, 3.5, -4]),
+      light("rim-right", "Rim right", "light", "#2f56ff", 1.3, [5, 2, -4]),
+      light("front", "Front fill", "light", "#cfe0ff", 0.35, [-3, 2, 3]),
+    ],
+    hemisphere: { sky: "#bcd2ff", ground: "#161018", intensity: 0.35 },
+    environment: { kind: "room", intensity: 0.4, rotation: 0 },
+    toneMapping: "aces",
+    exposure: 1.05,
+    contactShadow: false,
+    floorShadow: false,
+    floorShadowOpacity: 0.4,
+    backdrop: { ...LOBBY_BACKDROP },
+  };
+}
+
+export const DEFAULT_LOOK: Readonly<Look> = Object.freeze(studioLook());
+
+/** Full looks replace everything. */
+export const FULL_LOOKS: readonly { id: string; label: string; look: () => Look }[] = [
+  { id: "studio", label: "Studio", look: () => studioLook() },
+  { id: "lobby", label: "Lobby", look: lobbyLook },
+];
+/** Sun looks move the sun (and turn its shadow and the floor shadow on) over whatever look is in use. */
+export const SUN_LOOKS: readonly { id: string; label: string; bearing: number; height: number }[] = [
+  { id: "overhead", label: "Overhead", bearing: 32, height: 80 },
+  { id: "side", label: "Side light", bearing: 90, height: 25 },
+  { id: "backlit", label: "Backlit", bearing: 160, height: 30 },
+  { id: "low-sun", label: "Low sun", bearing: -45, height: 12 },
+];
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Light geometry. Bearing: degrees round the character seen from above, 0 = in front (towards the starting camera),
+// 90 = to the viewer's right, ±180 = behind. Height: degrees above the floor.
+
+export function lightAngles(position: readonly number[]): { bearing: number; height: number; distance: number } {
+  const [x, y, z] = position, distance = Math.hypot(x, y, z);
+  return {
+    bearing: THREE.MathUtils.radToDeg(Math.atan2(x, z)),
+    height: distance ? THREE.MathUtils.radToDeg(Math.asin(THREE.MathUtils.clamp(y / distance, -1, 1))) : 0,
+    distance,
+  };
+}
+
+export function positionFrom(bearing: number, height: number, distance: number): [number, number, number] {
+  const b = THREE.MathUtils.degToRad(bearing), e = THREE.MathUtils.degToRad(height);
+  return [distance * Math.cos(e) * Math.sin(b), distance * Math.sin(e), distance * Math.cos(e) * Math.cos(b)];
+}
+
+/** A light moved to a bearing and/or height, keeping what is not given and its distance. */
+export function movedLight(l: StageLight, change: { bearing?: number; height?: number }): StageLight {
+  const now = lightAngles(l.position);
+  return { ...l, position: positionFrom(change.bearing ?? now.bearing, change.height ?? now.height, now.distance || KEY_DISTANCE) };
 }
 
 export interface ShadowFrustum { left: number; right: number; top: number; bottom: number; near: number; far: number; bias: number }
@@ -71,32 +224,31 @@ const CASTER_HEIGHT = 2.5, CASTER_REACH = 1.0, MARGIN = 0.1;
 export const FOLLOW_SNAP = 0.25;
 
 /**
- * The shadow camera for a chosen sun, or the reviewed one when nothing changed (no height chosen, no floor).
+ * The sun's shadow camera: the reviewed one while the sun stands where the reviewed key does (any bearing; same
+ * height and distance) and nothing follows the body; otherwise fitted.
  *
  * A directional light's shadow map is a picture taken along the light: one texel per position ACROSS the beam. So the
  * top of a head and the tip of that head's shadow on the floor share one texel; the frustum only has to hold the
  * character, seen from the light, and the floor shadow comes free. Seen from a light at height e, a point h high and
- * d towards the light lands h·cos e - d·sin e up the picture. That is the asymmetric top and bottom below; at a low sun
- * the head lands high, so the frustum grows upward only.
+ * d towards the light lands h·cos e - d·sin e up the picture: the asymmetric top and bottom below. At a low sun the head
+ * lands high, so the frustum grows upward only.
  *
- * Depth: the shadow tip on the floor lies H·cos²e / sin e beyond the point the light looks at, measured along the
- * beam. At 10° that is about 14 m, past the reviewed far plane of 20 m from a light 7.6 m away, and three treats
- * anything past `far` as lit: the tip would be cut off. So `far` grows too. Depth in an orthographic shadow map is
- * stored as a 0..1 fraction of far - near, so the same bias would be a longer distance in a deeper frustum; it is
- * rescaled to keep the reviewed 3.9 mm.
+ * Depth: the shadow tip on the floor lies H·cos²e / sin e beyond the point the light looks at, along the beam; past
+ * `far` three treats it as lit, so `far` grows (at 10° the tip is about 14 m past the target). Depth in an orthographic
+ * shadow map is stored as a 0..1 fraction of far - near, so the bias is rescaled to keep the reviewed 3.9 mm.
  *
- * `follow`: the light follows the body on a FOLLOW_SNAP grid (travelling emotes), so the frustum gets half a grid step
- * of slack all round.
+ * `follow`: the light follows the body on a FOLLOW_SNAP grid (travelling emotes): half a grid step of slack all round.
  */
-export function shadowFrustum(elevation: number | null, follow: boolean): ShadowFrustum {
-  if (elevation === null && !follow) return { ...REVIEWED_SHADOW_FRUSTUM };
-  const e = THREE.MathUtils.degToRad(elevation ?? DEFAULT_SUN_ELEVATION);
+export function shadowFrustum(elevation: number, distance: number, follow: boolean): ShadowFrustum {
+  if (!follow && Math.abs(elevation - DEFAULT_SUN_ELEVATION) < 1e-6 && Math.abs(distance - KEY_DISTANCE) < 1e-6)
+    return { ...REVIEWED_SHADOW_FRUSTUM };
+  const e = THREE.MathUtils.degToRad(THREE.MathUtils.clamp(elevation, SUN_HEIGHT_MIN, 89));
   const slack = follow ? FOLLOW_SNAP * Math.SQRT1_2 : 0;
   const reach = CASTER_REACH + slack, margin = MARGIN + slack * Math.sin(e);
   const width = REVIEWED_SHADOW_FRUSTUM.right + slack;
   const near = REVIEWED_SHADOW_FRUSTUM.near;
   const far = Math.max(REVIEWED_SHADOW_FRUSTUM.far,
-    KEY_DISTANCE + CASTER_HEIGHT * Math.cos(e) ** 2 / Math.sin(e) + reach * Math.cos(e) + 1);
+    distance + CASTER_HEIGHT * Math.cos(e) ** 2 / Math.sin(e) + reach * Math.cos(e) + 1);
   const reviewedDepth = REVIEWED_SHADOW_FRUSTUM.far - REVIEWED_SHADOW_FRUSTUM.near;
   return {
     left: -width, right: width,
@@ -113,174 +265,153 @@ export function snapFollow(x: number, z: number): [number, number] {
   return [snap(x) + 0, snap(z) + 0]; // + 0 turns -0 into 0
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
-// Lobby rim lights.
+/** The sun of a look (the first light with the sun role), if any. */
+export const sunOf = (look: Look) => look.lights.find(l => l.role === "sun");
+/** Whether the sun casts shadows now (on, and its shadow switched on). */
+export const sunCasts = (look: Look) => { const sun = sunOf(look); return !!sun && sun.enabled && sun.castShadow; };
 
-export interface RimLight { color: string; intensity: number }
-/** The Lobby's two rim lights as shipped: the strong back-left blue and the weaker back-right one. */
-export const REVIEWED_RIMS: readonly RimLight[] = Object.freeze([
-  { color: "#3f6dff", intensity: 2.8 },
-  { color: "#2f56ff", intensity: 1.3 },
-]);
-/** The hue the rim slider shows for the reviewed blues (the strong rim's own hue). */
-export const DEFAULT_LOBBY_HUE = hsvOf(REVIEWED_RIMS[0].color).h;
-/** A rim can get brighter than shipped by at most this much, however dim its new colour reads (see rimLights). */
-export const RIM_MAX_GAIN = 1.25;
-
-/**
- * The Lobby rims for a hue. A light's colour multiplies its intensity, channel by channel, and the eye does not weigh
- * the channels alike: relative luminance is 0.2126 R + 0.7152 G + 0.0722 B in linear light. So the same intensity in
- * yellow reads about five times as bright as the shipped blue. Each rim keeps its own saturation and its small hue
- * offset from the other, takes the new hue, and has its intensity scaled so its luminance (colour × intensity) stays
- * the shipped one. The scale is capped at RIM_MAX_GAIN: the shipped blue is already near the darkest hue there is, and
- * the full match would push violet's blue channel well past anything the Lobby had. null = the shipped rims exactly.
- */
-export function rimLights(hue: number | null): RimLight[] {
-  if (hue === null) return REVIEWED_RIMS.map(rim => ({ ...rim }));
-  return REVIEWED_RIMS.map(rim => {
-    const { h, s } = hsvOf(rim.color);
-    const offset = h - DEFAULT_LOBBY_HUE;
-    const [r, g, b] = hsvToRgb(((hue + offset) % 360 + 360) % 360, s, 1);
-    const color = new THREE.Color().setRGB(r, g, b, THREE.SRGBColorSpace); // stored in linear light
-    const gain = Math.min(RIM_MAX_GAIN, luminance(new THREE.Color(rim.color)) / luminance(color));
-    return { color: `#${color.getHexString(THREE.SRGBColorSpace)}`, intensity: rim.intensity * gain };
-  });
+/** A new light for "Add light": white, in front and a little to the side, 30° up. */
+export function newLight(existing: readonly StageLight[]): StageLight {
+  const taken = new Set(existing.map(l => l.id));
+  let n = existing.length + 1;
+  while (taken.has(`light-${n}`)) n++;
+  return light(`light-${n}`, `Light ${n}`, "light", "#ffffff", 1, positionFrom(-60, 30, 7));
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Colour.
 
 /** Relative luminance of a colour in linear light (three keeps Color in linear sRGB). */
 export function luminance(color: THREE.Color): number {
   return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
 }
-
-/** HSV of a #rrggbb colour's sRGB-encoded values (what a colour picker shows), not of linear light. */
-function hsvOf(hex: string): { h: number; s: number; v: number } {
-  const n = parseInt(hex.slice(1), 16);
-  const r = ((n >> 16) & 255) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
-  let h = 0;
-  if (d > 0) {
-    if (max === r) h = 60 * (((g - b) / d) % 6);
-    else if (max === g) h = 60 * ((b - r) / d + 2);
-    else h = 60 * ((r - g) / d + 4);
-  }
-  return { h: (h + 360) % 360, s: max ? d / max : 0, v: max };
-}
-
-function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
-  const f = (n: number) => { const k = (n + h / 60) % 6; return v - v * s * Math.max(0, Math.min(k, 4 - k, 1)); };
-  return [f(5), f(3), f(1)];
-}
+const HEX = /^#[0-9a-f]{6}$/i;
+export const isHex = (value: unknown): value is string => typeof value === "string" && HEX.test(value);
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Backdrops. The canvas is transparent: the backdrop is the page behind it, a CSS gradient, so it changes nothing in
-// the 3D scene (no shader, no restart of the still view). The share card paints the same three stops itself.
-
-export interface BackdropStops { inner: string; middle: string; outer: string }
-export interface Backdrop extends BackdropStops { id: string; label: string; /** light chrome reads on it */ dark: boolean }
-
-/** Each theme's reviewed backdrop: the stops the share card paints, and the exact CSS the viewer has always used. */
-export const THEME_BACKDROP: Record<SceneTheme, BackdropStops> = {
-  studio: { inner: "#f0f3f7", middle: "#dee4eb", outer: "#c5cdd7" },
-  lobby: { inner: "#1b2740", middle: "#0a0e17", outer: "#05060a" },
-};
-const THEME_ELLIPSE: Record<SceneTheme, string> = {
-  studio: "ellipse 75% 65% at 50% 35%", // sampled from the icon corners (light grey-blue studio backdrop)
-  lobby: "ellipse 70% 60% at 50% 38%",
-};
-export const THEME_BACKGROUND: Record<SceneTheme, string> = {
-  studio: `radial-gradient(${THEME_ELLIPSE.studio}, #f0f3f7 0%, #dee4eb 55%, #c5cdd7 100%)`,
-  lobby: `radial-gradient(${THEME_ELLIPSE.lobby}, #1b2740 0%, #0a0e17 58%, #05060a 100%)`,
-};
-
-const solid = (id: string, label: string, color: string, dark: boolean): Backdrop =>
-  ({ id, label, inner: color, middle: color, outer: color, dark });
-/** The choices besides "default". "studio" and "lobby" are the two themes' own gradients, offered in the other theme. */
-export const BACKDROPS: readonly Backdrop[] = Object.freeze([
-  { id: "studio", label: "Studio grey", ...THEME_BACKDROP.studio, dark: false },
-  { id: "lobby", label: "Lobby navy", ...THEME_BACKDROP.lobby, dark: true },
-  { id: "dusk", label: "Dusk", inner: "#3a2b52", middle: "#1b1530", outer: "#0b0a14", dark: true },
-  { id: "sand", label: "Sand", inner: "#f6eee3", middle: "#e6dccd", outer: "#cfc2ae", dark: false },
-  solid("white", "White", "#ffffff", false),
-  solid("grey", "Grey", "#8c9199", false),
-  solid("charcoal", "Charcoal", "#2b2e33", true),
-  solid("black", "Black", "#000000", true),
-  solid("green", "Green screen", "#00b140", false),
-]);
-
-/** The backdrop choices to offer in a theme: its default first, then the others (its own gradient is the default). */
-export function backdropChoices(theme: SceneTheme): Backdrop[] {
-  return [{ id: "default", label: "Default", ...THEME_BACKDROP[theme], dark: theme === "lobby" },
-    ...BACKDROPS.filter(b => b.id !== theme)];
-}
-
-/** The backdrop in effect; an unknown id (a choice later removed) falls back to the theme's default. */
-export function resolveBackdrop(theme: SceneTheme, id: string): Backdrop {
-  return backdropChoices(theme).find(b => b.id === id) ?? backdropChoices(theme)[0];
-}
-
-/** The CSS background for a theme's chosen backdrop: the reviewed string itself for "default". */
-export function backdropCss(theme: SceneTheme, id: string): string {
-  const b = resolveBackdrop(theme, id);
-  if (b.id === "default") return THEME_BACKGROUND[theme];
-  if (b.inner === b.middle && b.middle === b.outer) return b.inner;
-  const middle = theme === "studio" ? 55 : 58;
-  return `radial-gradient(${THEME_ELLIPSE[theme]}, ${b.inner} 0%, ${b.middle} ${middle}%, ${b.outer} 100%)`;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Settings from storage, and looks.
+// Stored looks: checked field by field. A field that is missing or out of range takes the default's value without
+// discarding the rest, so a look saved by an older or newer version still applies what it can.
 
 const finite = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
+const clamp = (value: unknown, min: number, max: number, fallback: number) =>
+  finite(value) ? THREE.MathUtils.clamp(value, min, max) : fallback;
+const obj = (value: unknown): Record<string, unknown> => (value && typeof value === "object" && !Array.isArray(value) ? value : {}) as Record<string, unknown>;
 
-/**
- * Settings from anything stored: each field is checked on its own, and a field that is missing or out of range takes
- * its default without discarding the others (a look saved by an older or newer version still applies what it can).
- */
-export function sanitizeLighting(value: unknown): LightingSettings {
-  const v = (value && typeof value === "object" ? value : {}) as Record<string, unknown>;
-  const backdrop = (v.backdrop && typeof v.backdrop === "object" ? v.backdrop : {}) as Record<string, unknown>;
-  const backdropId = (theme: SceneTheme) => {
-    const id = backdrop[theme];
-    return typeof id === "string" && backdropChoices(theme).some(b => b.id === id) ? id : "default";
-  };
+function sanitizeLight(value: unknown, index: number, fallback: StageLight | undefined): StageLight | null {
+  const v = obj(value);
+  const position = Array.isArray(v.position) && v.position.length === 3 && v.position.every(finite)
+    && Math.hypot(...(v.position as number[])) > 1e-6 ? [...v.position] as [number, number, number] : fallback?.position;
+  if (!position) return null;
+  const role: LightRole = v.role === "sun" ? "sun" : v.role === "light" ? "light" : fallback?.role ?? "light";
   return {
-    sunAzimuth: finite(v.sunAzimuth) && Math.abs(v.sunAzimuth) <= 180 ? Math.round(v.sunAzimuth) : 0,
-    sunElevation: finite(v.sunElevation) && v.sunElevation >= SUN_ELEVATION_MIN && v.sunElevation <= SUN_ELEVATION_MAX
-      ? Math.round(v.sunElevation) : null,
-    floorShadow: v.floorShadow === true,
-    lobbyHue: finite(v.lobbyHue) && v.lobbyHue >= 0 && v.lobbyHue <= 360 ? Math.round(v.lobbyHue) % 360 : null,
-    backdrop: { studio: backdropId("studio"), lobby: backdropId("lobby") },
+    id: typeof v.id === "string" && v.id ? v.id : fallback?.id ?? `light-${index + 1}`,
+    name: typeof v.name === "string" && v.name.trim() ? v.name.slice(0, 32) : fallback?.name ?? `Light ${index + 1}`,
+    role,
+    type: "directional",
+    color: isHex(v.color) ? v.color.toLowerCase() : fallback?.color ?? "#ffffff",
+    intensity: clamp(v.intensity, 0, INTENSITY_MAX, fallback?.intensity ?? 1),
+    position,
+    enabled: typeof v.enabled === "boolean" ? v.enabled : fallback?.enabled ?? true,
+    castShadow: role === "sun" && (typeof v.castShadow === "boolean" ? v.castShadow : fallback?.castShadow ?? false),
   };
 }
 
-export function sameLighting(a: LightingSettings, b: LightingSettings): boolean {
-  return a.sunAzimuth === b.sunAzimuth && a.sunElevation === b.sunElevation && a.floorShadow === b.floorShadow
-    && a.lobbyHue === b.lobbyHue && a.backdrop.studio === b.backdrop.studio && a.backdrop.lobby === b.backdrop.lobby;
+function sanitizeBackdrop(value: unknown, fallback: Backdrop): Backdrop {
+  const v = obj(value);
+  return {
+    inner: isHex(v.inner) ? v.inner.toLowerCase() : fallback.inner,
+    middle: isHex(v.middle) ? v.middle.toLowerCase() : fallback.middle,
+    outer: isHex(v.outer) ? v.outer.toLowerCase() : fallback.outer,
+    ellipse: typeof v.ellipse === "string" && /^ellipse [\d.% ]+at [\d.% ]+$/.test(v.ellipse) ? v.ellipse : fallback.ellipse,
+    middleStop: clamp(v.middleStop, 1, 99, fallback.middleStop),
+  };
 }
 
-export const isDefaultLighting = (settings: LightingSettings) => sameLighting(settings, DEFAULT_LIGHTING);
+/** A Look from anything stored (a version-2 look, or a PR #40 first-version setting, converted). */
+export function sanitizeLook(value: unknown): Look {
+  const v = obj(value);
+  if (!Array.isArray(v.lights) && ("sunAzimuth" in v || "sunElevation" in v || "floorShadow" in v || "backdrop" in v)) return fromFirstVersion(v);
+  const base = studioLook();
+  const lights = Array.isArray(v.lights)
+    ? v.lights.slice(0, MAX_LIGHTS).map((l, i) => sanitizeLight(l, i, base.lights.find(b => b.id === obj(l).id)))
+      .filter((l): l is StageLight => !!l)
+    : base.lights;
+  // One sun at most; ids unique.
+  let sunSeen = false;
+  const ids = new Set<string>();
+  for (const l of lights) {
+    if (l.role === "sun") { if (sunSeen) { l.role = "light"; l.castShadow = false; } sunSeen = true; }
+    while (ids.has(l.id)) l.id += "-2";
+    ids.add(l.id);
+  }
+  const hemisphere = obj(v.hemisphere), environment = obj(v.environment);
+  return {
+    version: 2,
+    lights,
+    hemisphere: {
+      sky: isHex(hemisphere.sky) ? hemisphere.sky.toLowerCase() : base.hemisphere.sky,
+      ground: isHex(hemisphere.ground) ? hemisphere.ground.toLowerCase() : base.hemisphere.ground,
+      intensity: clamp(hemisphere.intensity, 0, INTENSITY_MAX, base.hemisphere.intensity),
+    },
+    environment: {
+      kind: environment.kind === "room" || environment.kind === "none" || environment.kind === "softbox" ? environment.kind : base.environment.kind,
+      intensity: clamp(environment.intensity, 0, INTENSITY_MAX, base.environment.intensity),
+      rotation: clamp(environment.rotation, -180, 180, 0),
+    },
+    toneMapping: v.toneMapping === "aces" || v.toneMapping === "agx" || v.toneMapping === "neutral" ? v.toneMapping : base.toneMapping,
+    exposure: clamp(v.exposure, EXPOSURE_MIN, EXPOSURE_MAX, base.exposure),
+    contactShadow: typeof v.contactShadow === "boolean" ? v.contactShadow : base.contactShadow,
+    floorShadow: v.floorShadow === true,
+    floorShadowOpacity: clamp(v.floorShadowOpacity, 0.05, 1, base.floorShadowOpacity),
+    backdrop: sanitizeBackdrop(v.backdrop, base.backdrop),
+  };
+}
 
-/** Ready-made looks: each changes only the fields it names. */
-export interface BuiltInLook { id: string; label: string; theme: SceneTheme; patch: Partial<LightingSettings> }
-export const BUILT_IN_LOOKS: readonly BuiltInLook[] = Object.freeze([
-  { id: "overhead", label: "Overhead", theme: "studio", patch: { sunAzimuth: 0, sunElevation: 80, floorShadow: true } },
-  { id: "side", label: "Side light", theme: "studio", patch: { sunAzimuth: 90, sunElevation: 25, floorShadow: true } },
-  { id: "backlit", label: "Backlit", theme: "studio", patch: { sunAzimuth: 160, sunElevation: 30, floorShadow: true } },
-  { id: "low-sun", label: "Low sun", theme: "studio", patch: { sunAzimuth: -45, sunElevation: 12, floorShadow: true } },
-  { id: "blue", label: "Blue", theme: "lobby", patch: { lobbyHue: null } },
-  { id: "red", label: "Red", theme: "lobby", patch: { lobbyHue: 0 } },
-  { id: "gold", label: "Gold", theme: "lobby", patch: { lobbyHue: 42 } },
-  { id: "green", label: "Green", theme: "lobby", patch: { lobbyHue: 135 } },
-  { id: "violet", label: "Violet", theme: "lobby", patch: { lobbyHue: 275 } },
-] as BuiltInLook[]);
+/** PR #40's first settings (sun azimuth relative to the reviewed key, sun height, floor shadow, Studio backdrop id). */
+function fromFirstVersion(v: Record<string, unknown>): Look {
+  const look = studioLook();
+  const sun = look.lights[0];
+  const azimuth = finite(v.sunAzimuth) && Math.abs(v.sunAzimuth) <= 180 ? v.sunAzimuth : 0;
+  const elevation = finite(v.sunElevation) && v.sunElevation >= SUN_HEIGHT_MIN && v.sunElevation <= SUN_HEIGHT_MAX ? v.sunElevation : null;
+  if (azimuth || elevation !== null) {
+    const keyBearing = lightAngles(KEY_POSITION).bearing;
+    look.lights[0] = elevation === null
+      ? { ...sun, position: rotated(KEY_POSITION, azimuth) }
+      : movedLight(sun, { bearing: keyBearing + azimuth, height: elevation });
+  }
+  look.floorShadow = v.floorShadow === true;
+  const id = obj(v.backdrop).studio;
+  const preset = BACKDROP_PRESETS.find(p => p.id === id);
+  if (preset) look.backdrop = { ...preset.backdrop };
+  return look;
+}
 
-/** A short description of a look, for the saved-looks list. */
-export function describeLighting(s: LightingSettings): string {
+/** KEY-style rotation about the vertical axis (PR #37's Sun slider), exact at 0°. */
+export function rotated(position: readonly number[], degrees: number): [number, number, number] {
+  const p = new THREE.Vector3(...position).applyAxisAngle(THREE.Object3D.DEFAULT_UP, THREE.MathUtils.degToRad(degrees));
+  return [p.x, p.y, p.z];
+}
+
+/** Two looks the same (after checking): compared as data. */
+export function sameLook(a: Look, b: Look): boolean {
+  return JSON.stringify(sanitizeLook(a)) === JSON.stringify(sanitizeLook(b));
+}
+export const isDefaultLook = (look: Look) => sameLook(look, DEFAULT_LOOK);
+
+/** Which full look this is, if it is one exactly ("Studio", "Lobby"); otherwise null. */
+export function fullLookName(look: Look): string | null {
+  return FULL_LOOKS.find(f => sameLook(look, f.look()))?.label ?? null;
+}
+
+/** A short description for the saved-looks list. */
+export function describeLook(look: Look): string {
+  const sun = sunOf(look), on = look.lights.filter(l => l.enabled && l.intensity > 0).length;
   const parts = [
-    `Sun ${s.sunAzimuth}°${s.sunElevation === null ? "" : ` / ${s.sunElevation}° high`}`,
-    ...(s.floorShadow ? ["floor shadow"] : []),
-    ...(s.lobbyHue === null ? [] : [`rim ${s.lobbyHue}°`]),
-    ...(["studio", "lobby"] as const).filter(t => s.backdrop[t] !== "default").map(t => resolveBackdrop(t, s.backdrop[t]).label),
+    `${on} light${on === 1 ? "" : "s"}`,
+    ...(sun ? [`sun ${Math.round(lightAngles(sun.position).bearing)}° / ${Math.round(lightAngles(sun.position).height)}°`] : []),
+    ...(look.floorShadow && sunCasts(look) ? ["floor shadow"] : []),
+    BACKDROP_PRESETS.find(p => JSON.stringify(p.backdrop) === JSON.stringify(look.backdrop))?.label
+      ?? (isSolid(look.backdrop) ? look.backdrop.inner : "custom backdrop"),
   ];
   return parts.join(" · ");
 }
