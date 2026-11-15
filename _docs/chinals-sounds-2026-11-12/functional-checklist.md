@@ -7,9 +7,9 @@ never leaves a sound playing or doubles one.
 
 - **PR / originating issue:** the PR on branch `claude/chinals-emote-sounds-2026-11-12` (Chinals sounds, built on
   PR #44 Chinals mode and PR #47 emote sounds).
-- **Test this revision:** code commit `d8f6f57432a433b45debb0edc3c6b8be4803d573` on `claude/chinals-emote-sounds-2026-11-12`, with the local staged set
-  `scripts/generated/chinals-sounds-2026-11-12/upload/chinals-20261113-sounds` (not uploaded yet).
-- **Open:** http://127.0.0.1:5190/#/chinals from the local preview below. The global set is PR #47's local staging, so
+- **Test this revision:** `4b585a91e8037381a628146fd92d9d1d56fa18ee` on `claude/chinals-emote-sounds-2026-11-12`, with the Chinals set from its published
+  host `https://59209741.the-finals-outfit-chinals-assets.pages.dev/` (props-3 + sounds).
+- **Open:** http://127.0.0.1:5191/#/chinals from the local preview below. The global set is PR #47's local staging, so
   global emotes have sound here too.
 - **Prerequisites:** headphones or speakers; desktop Chrome, Edge or Firefox.
 - **Approximate hands-on time:** 10 minutes.
@@ -17,7 +17,8 @@ never leaves a sound playing or doubles one.
   - Unit tests 25/25 for the sound code (10 resolver, 15 player).
   - `npm test` 838 pass, 8 fail. The 8 are pre-existing and need game GLBs this worktree lacks.
   - `npm run build` passes.
-  - Chrome 12/12 in the scripted browser check ([check-chrome.json](check-chrome.json)): onsets within 26 ms, both
+  - Chrome 12/12 in the scripted browser check, both on the local set ([check-chrome.json](check-chrome.json)) and with
+    the app reading the published host ([check-chrome-hosted.json](check-chrome-hosted.json)): onsets within 26 ms, both
     TakeAway layers together, Floating Greeting stops at its window end, silent Gacha_01, one audio device after three
     mode round trips, no console errors. Details in [README.md](README.md#verification).
   - Not run: Firefox, Safari, phones, a listen against in-game footage.
@@ -25,18 +26,18 @@ never leaves a sound playing or doubles one.
 
 ## Get it running
 
-The agent may have it running already: if http://127.0.0.1:5190/ opens, skip this. Otherwise, **Git Bash**, in the
+The agent may have it running already: if http://127.0.0.1:5191/ opens, skip this. Otherwise, **Git Bash**, in the
 worktree root `E:\Coding\the-finals-outfit\.claude\worktrees\quirky-boyd-472a78`:
 
 ```bash
-MSYS_NO_PATHCONV=1 VITE_CHINALS_ANIMATIONS_BASE=/chinals-animations/ node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=../reverent-cannon-ce6e39/scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112c --chinals=scripts/generated/chinals-sounds-2026-11-12/upload/chinals-20261113-sounds --port=5190
+VITE_CHINALS_ANIMATIONS_BASE=https://59209741.the-finals-outfit-chinals-assets.pages.dev/ node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=../reverent-cannon-ce6e39/scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112c --port=5191
 ```
 
 The first load can take over 30 seconds. Stop it with Ctrl+C in that terminal.
 
 ## Try it yourself
 
-- [ ] **1. Start.** Open http://127.0.0.1:5190/#/chinals and click through the intro. Expected: the Chinals banner
+- [ ] **1. Start.** Open http://127.0.0.1:5191/#/chinals and click through the intro. Expected: the Chinals banner
   shows, the character idles, and nothing is heard.
 - [ ] **2. A Chinals emote with sound.** Click **Emotes**, search "Ovation", click it. Expected: applause starts with
   the clapping and stays in time; a speaker button appears left of **Pause**.
