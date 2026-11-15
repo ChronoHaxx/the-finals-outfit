@@ -50,6 +50,8 @@ Of 54 prop GLBs, 31 are byte-identical and 7 have only a new buffer layout (the 
   and names first: none.
 - **Wiring:** `deploy.yml` `CHINALS_ANIMATIONS_BASE` now points at `e7796a7c`.
 - **Rollback:** `dcb131a5` (props-2) is untouched; reverting the one `deploy.yml` line restores it.
+- **Sounds (PR #51):** a later Chinals host with sounds must point its manifest at `props-3/props.json` (already on the
+  project), or it puts props-2 back. As of 15 Nov its staged manifest still names props-2.
 - Rebuild recipe, diff tool and captures: gitignored, in the worktree that built them
   (`scripts/generated/chinals-props-3-2026-11-12/`, README there).
 
@@ -60,7 +62,7 @@ Of 54 prop GLBs, 31 are byte-identical and 7 have only a new buffer layout (the 
 That Chinals mode loads its props from the new host, and that the five fixed emotes show their props in place: the
 checks catch a prop that is still floor-bound, mis-sized or in pieces, or a file still coming from the old set.
 
-- PR: the PR that adds this file, stacked on PR #44 (`claude/chinals-mode-2026-11-12`).
+- PR: #49, against main (first stacked on PR #44, which merged as `864b276` on 15 Nov).
 - Test this revision: branch `claude/chinals-props-3-2026-11-12` (the head commit in the PR).
 - Open: the preview below, http://127.0.0.1:5200/#/chinals.
 - Prerequisites: this branch checked out with a `node_modules` junction (as in PR #44's checklist), the main checkout's
@@ -74,7 +76,7 @@ checks catch a prop that is still floor-bound, mis-sized or in pieces, or a file
 PowerShell, in the worktree root of this branch:
 
 ```powershell
-New-Item -ItemType Directory -Force scripts\generated\empty-global | Out-Null; $env:VITE_CHINALS_ANIMATIONS_BASE = 'https://e7796a7c.the-finals-outfit-chinals-assets.pages.dev/'; node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=scripts/generated/empty-global --proxy=https://cf84e9b6.the-finals-outfit-assets.pages.dev/ --port=5200
+New-Item -ItemType Directory -Force scripts\generated\empty-global | Out-Null; $env:VITE_CHINALS_ANIMATIONS_BASE = 'https://e7796a7c.the-finals-outfit-chinals-assets.pages.dev/'; node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=scripts/generated/empty-global --proxy=https://e5250f94.the-finals-outfit-assets.pages.dev/ --port=5200
 ```
 
 The first load takes about 30 seconds. Stop it with Ctrl+C. The preview has its own saved outfits, separate from the
