@@ -10,6 +10,9 @@ export const OutfitSchema = z.object({
   slots: z.record(z.enum(SLOTS), ItemIdSchema),
   dyes: z.record(z.enum(SLOTS), HexColorSchema).optional(),
   presetName: z.string().max(32).optional(),
+  // A body type id (src/lib/body-type.ts). Any short string is accepted, so a value from a newer site never fails the
+  // whole link; callers read it through body-type.ts, where an unknown value is Masculine. Absent = Masculine.
+  bodyType: z.string().max(32).optional(),
 });
 export type Outfit = z.infer<typeof OutfitSchema>;
 
@@ -30,6 +33,7 @@ export function encodeOutfit(outfit: Outfit): string {
   const compact: Outfit = { slots: outfit.slots };
   if (outfit.dyes && Object.keys(outfit.dyes).length) compact.dyes = outfit.dyes;
   if (outfit.presetName) compact.presetName = outfit.presetName;
+  if (outfit.bodyType) compact.bodyType = outfit.bodyType;
   const b64 = btoa(JSON.stringify(compact));
   return "1." + b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }

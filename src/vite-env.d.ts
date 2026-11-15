@@ -10,6 +10,14 @@ interface ImportMetaEnv {
   readonly VITE_RECONSTRUCTION_ROUTES?: string;
   // Optional origin of the link-preview Worker (workers/share-preview). Unset turns preview links off.
   readonly VITE_SHARE_PREVIEW_BASE?: string;
+  // Gated meshes (workers/site): every .glb is fetched from here, normally "/m/" on the site's own origin, after a
+  // Turnstile check with this site key. Unset leaves meshes on the public hosts above.
+  readonly VITE_MESH_BASE?: string;
+  readonly VITE_TURNSTILE_SITEKEY?: string;
+  // Showcase animation clip set (scripts/anim-export). Unset falls back to animations/ next to the app.
+  readonly VITE_ANIMATIONS_BASE?: string;
+  // The Chinals emote set (src/lib/site-mode.ts). Unset or blank keeps Chinals mode off.
+  readonly VITE_CHINALS_ANIMATIONS_BASE?: string;
 }
 
 // Emitted by the catalog-assets plugin in vite.config.ts: one URL per catalog JSON file.

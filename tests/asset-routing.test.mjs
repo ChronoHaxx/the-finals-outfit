@@ -40,3 +40,14 @@ test('blank model override falls back after whitespace normalization', () => {
   assert.equal(modelUrlFor('/models/body/body.glb', { assetsBase: ' /app/ ', modelsBase: ' https://m.example/v2/ ' }),
     'https://m.example/v2/models/body/body.glb');
 });
+
+test('a public mesh URL maps to its host label and path, and nothing else maps', async () => {
+  const { gatedMeshPath, isMeshPath } = await import('../src/lib/asset-routing.mjs');
+  assert.equal(gatedMeshPath('https://29ae13de.the-finals-outfit-assets.pages.dev/models/reconstructed-meshes-v2/SK_Body_M.glb'),
+    '29ae13de/models/reconstructed-meshes-v2/SK_Body_M.glb');
+  assert.equal(gatedMeshPath('https://a029b249.the-finals-outfit-assets.pages.dev/models/body/SK_Body_M.GLB'), 'a029b249/models/body/SK_Body_M.GLB');
+  for (const url of ['https://h.example/models/a.bin', 'http://h.example/models/a.glb', 'https://h.example/models/a.glb?v=1',
+    '/models/a.glb', 'https://Bad_Label.example/a.glb', 'not a url'])
+    assert.equal(gatedMeshPath(url), null, url);
+  assert.ok(isMeshPath('a/b.glb?v=1') && !isMeshPath('a/b.glb.json'));
+});

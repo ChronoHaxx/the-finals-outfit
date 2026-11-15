@@ -2,36 +2,59 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
 import {
-  DEFAULT_LIGHTING, DEFAULT_LOBBY_HUE, DEFAULT_SUN_ELEVATION, KEY_POSITION, REVIEWED_RIMS, REVIEWED_SHADOW_FRUSTUM,
-  RIM_MAX_GAIN, SUN_ELEVATION_MAX, SUN_ELEVATION_MIN, THEME_BACKGROUND, backdropCss, describeLighting, keyLightPosition,
-  luminance, resolveBackdrop, rimLights, sanitizeLighting, shadowFrustum, snapFollow,
+  BACKDROP_PRESETS, DEFAULT_LOOK, DEFAULT_SUN_ELEVATION, KEY_POSITION, LOBBY_BACKDROP, MAX_LIGHTS, REVIEWED_SHADOW_FRUSTUM,
+  STUDIO_BACKDROP, STUDIO_RIG, SUN_HEIGHT_MAX, SUN_HEIGHT_MIN, backdropCss, backdropIsDark, describeLook, fullLookName,
+  lightAngles, lobbyLook, movedLight, newLight, positionFrom, rotated, sanitizeLook, shadowFrustum, snapFollow, studioLook,
 } from "../src/lib/stage-lighting";
 
-// Viewer lighting options (11 Nov 2026). The defaults must reproduce the reviewed rig exactly; the chosen values must
-// keep the character and its whole floor shadow inside the shadow map.
+// The viewer's scene settings (11-12 Nov 2026). The default must be the reviewed rig exactly; a chosen sun must keep the
+// character and its whole floor shadow inside the shadow map; stored looks are checked field by field.
 
-test("the defaults are the reviewed rig to the last bit", () => {
-  assert.deepEqual(keyLightPosition(0, null), [2.5, 6, 4], "key light");
-  assert.deepEqual(shadowFrustum(null, false), { ...REVIEWED_SHADOW_FRUSTUM }, "shadow camera");
-  assert.deepEqual(rimLights(null), REVIEWED_RIMS.map(r => ({ ...r })), "Lobby rims");
-  assert.equal(backdropCss("studio", "default"), THEME_BACKGROUND.studio);
-  assert.equal(backdropCss("lobby", "default"), THEME_BACKGROUND.lobby);
-  assert.equal(THEME_BACKGROUND.studio, "radial-gradient(ellipse 75% 65% at 50% 35%, #f0f3f7 0%, #dee4eb 55%, #c5cdd7 100%)");
-  assert.equal(THEME_BACKGROUND.lobby, "radial-gradient(ellipse 70% 60% at 50% 38%, #1b2740 0%, #0a0e17 58%, #05060a 100%)");
-  assert.deepEqual(sanitizeLighting(undefined), DEFAULT_LIGHTING);
+const KEY_DISTANCE = Math.hypot(...KEY_POSITION);
+
+test("the default look is the reviewed Studio rig, number for number", () => {
+  const look = studioLook();
+  assert.deepEqual(look.lights.map(l => [l.id, l.color, l.intensity, l.position, l.enabled, l.castShadow]), [
+    ["sun", "#ffffff", STUDIO_RIG.key, [2.5, 6, 4], true, true],
+    ["rim", "#ffffff", STUDIO_RIG.rim, [-3, 4.5, -4], true, false],
+  ], "key and rim, in the order they were mounted (no fill: the rig's fill is 0)");
+  assert.deepEqual(look.hemisphere, { sky: "#e8edf4", ground: "#c4c8ce", intensity: STUDIO_RIG.hemi });
+  assert.deepEqual(look.environment, { kind: "softbox", intensity: STUDIO_RIG.env, rotation: 0 });
+  assert.deepEqual([look.toneMapping, look.exposure, look.contactShadow, look.floorShadow], ["neutral", STUDIO_RIG.exposure, true, false]);
+  assert.equal(backdropCss(look.backdrop), "radial-gradient(ellipse 75% 65% at 50% 35%, #f0f3f7 0%, #dee4eb 55%, #c5cdd7 100%)");
+  assert.equal(backdropCss(LOBBY_BACKDROP), "radial-gradient(ellipse 70% 60% at 50% 38%, #1b2740 0%, #0a0e17 58%, #05060a 100%)");
+  assert.equal(backdropIsDark(STUDIO_BACKDROP), false, "dark chrome on the Studio backdrop, as before");
+  assert.equal(backdropIsDark(LOBBY_BACKDROP), true);
+  assert.deepEqual(shadowFrustum(DEFAULT_SUN_ELEVATION, KEY_DISTANCE, false), { ...REVIEWED_SHADOW_FRUSTUM });
+  assert.deepEqual(sanitizeLook(undefined), look);
+  assert.deepEqual(sanitizeLook(JSON.parse(JSON.stringify(DEFAULT_LOOK))), look, "survives storage unchanged");
+  assert.equal(fullLookName(look), "Studio");
 });
 
-test("azimuth alone turns the reviewed light as PR #37 did; a chosen height keeps its distance and bearing", () => {
-  const pr37 = KEY_POSITION.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(90));
-  assert.deepEqual(keyLightPosition(90, null), [pr37.x, pr37.y, pr37.z]);
-  const atDefault = new THREE.Vector3(...keyLightPosition(0, DEFAULT_SUN_ELEVATION));
-  assert.ok(atDefault.distanceTo(KEY_POSITION) < 1e-9, "the reviewed height, given as a number, is the same place");
-  for (const [azimuth, elevation] of [[0, 10], [135, 45], [-60, 85]]) {
-    const p = new THREE.Vector3(...keyLightPosition(azimuth, elevation));
-    assert.ok(Math.abs(p.length() - KEY_POSITION.length()) < 1e-9, "same distance");
-    assert.ok(Math.abs(THREE.MathUtils.radToDeg(Math.asin(p.y / p.length())) - elevation) < 1e-9, "the height asked for");
-    const bearing = new THREE.Vector3(...keyLightPosition(azimuth, null));
-    assert.ok(Math.abs(Math.atan2(p.x, p.z) - Math.atan2(bearing.x, bearing.z)) < 1e-9, "same compass bearing");
+test("the Lobby look is the Lobby as shipped", () => {
+  const look = lobbyLook();
+  assert.deepEqual(look.lights.map(l => [l.color, l.intensity, l.position, l.castShadow]), [
+    ["#fff3e2", 2.4, [3.5, 5, 5], false], ["#3f6dff", 2.8, [-5, 3.5, -4], false],
+    ["#2f56ff", 1.3, [5, 2, -4], false], ["#cfe0ff", 0.35, [-3, 2, 3], false],
+  ]);
+  assert.deepEqual([look.toneMapping, look.exposure, look.environment.kind, look.environment.intensity, look.contactShadow],
+    ["aces", 1.05, "room", 0.4, false]);
+  assert.equal(fullLookName(look), "Lobby");
+});
+
+test("turning the reviewed sun keeps the reviewed shadow camera; moving a light keeps its distance", () => {
+  for (const degrees of [-170, -90, 45, 180]) {
+    const { height, distance } = lightAngles(rotated(KEY_POSITION, degrees));
+    assert.deepEqual(shadowFrustum(height, distance, false), { ...REVIEWED_SHADOW_FRUSTUM }, `turned ${degrees}°`);
+  }
+  assert.ok(Math.abs(lightAngles(KEY_POSITION).bearing - 32.005) < 0.001, "the reviewed sun stands 32° to the right");
+  const moved = movedLight(studioLook().lights[0], { height: 20 });
+  assert.ok(Math.abs(lightAngles(moved.position).distance - KEY_DISTANCE) < 1e-9);
+  assert.ok(Math.abs(lightAngles(moved.position).height - 20) < 1e-9);
+  assert.ok(Math.abs(lightAngles(moved.position).bearing - lightAngles(KEY_POSITION).bearing) < 1e-9, "same bearing");
+  for (const [b, h] of [[0, 30], [135, -20], [-90, 85]]) {
+    const back = lightAngles(positionFrom(b, h, 5));
+    assert.ok(Math.abs(back.bearing - b) < 1e-9 && Math.abs(back.height - h) < 1e-9 && Math.abs(back.distance - 5) < 1e-9);
   }
 });
 
@@ -46,35 +69,33 @@ function inShadowMap(light: THREE.Vector3, target: THREE.Vector3, f: ReturnType<
 }
 
 test("every chosen sun keeps a 2.5 m caster within 1 m, and the tip of its floor shadow, inside the shadow map", () => {
-  for (let elevation = SUN_ELEVATION_MIN; elevation <= SUN_ELEVATION_MAX; elevation += 5) {
-    for (const azimuth of [-150, -45, 0, 90, 180]) {
-      for (const follow of [false, true]) {
-        const f = shadowFrustum(elevation, follow);
-        const light = new THREE.Vector3(...keyLightPosition(azimuth, elevation));
-        const toLight = new THREE.Vector3(light.x, 0, light.z).normalize();
-        const side = new THREE.Vector3(-toLight.z, 0, toLight.x);
-        const e = THREE.MathUtils.degToRad(elevation);
-        const points: THREE.Vector3[] = [];
-        // Following, the body is up to half a grid step off the point the light looks at, in x and z.
-        const offsets = follow ? [[1, 1], [1, -1], [-1, 1], [-1, -1]].map(([x, z]) => [x * 0.125, z * 0.125]) : [[0, 0]];
-        for (const [dx, dz] of offsets)
-        for (const along of [-1, 0, 1]) for (const height of [0, 1, 2.5]) for (const across of [-1.2, 0, 1.2]) {
-          const caster = toLight.clone().multiplyScalar(along).addScaledVector(side, across).setY(height).add(new THREE.Vector3(dx, 0, dz));
-          points.push(caster);
-          // Where that point's shadow falls on the floor: straight down the beam.
-          points.push(caster.clone().addScaledVector(toLight, -height / Math.tan(e)).setY(0));
+  for (const distance of [KEY_DISTANCE, Math.hypot(3.5, 5, 5), 7]) {
+    for (let elevation = SUN_HEIGHT_MIN; elevation <= SUN_HEIGHT_MAX; elevation += 5) {
+      for (const bearing of [-150, -45, 0, 90, 180]) {
+        for (const follow of [false, true]) {
+          const f = shadowFrustum(elevation, distance, follow);
+          const offset = new THREE.Vector3(follow ? 0.125 : 0, 0, follow ? -0.125 : 0); // the body off the snap point
+          const light = new THREE.Vector3(...positionFrom(bearing, elevation, distance));
+          const toLight = new THREE.Vector3(light.x, 0, light.z).normalize();
+          const side = new THREE.Vector3(-toLight.z, 0, toLight.x);
+          const e = THREE.MathUtils.degToRad(elevation);
+          const points: THREE.Vector3[] = [];
+          for (const along of [-1, 0, 1]) for (const height of [0, 1, 2.5]) for (const across of [-1.2, 0, 1.2]) {
+            const caster = toLight.clone().multiplyScalar(along).addScaledVector(side, across).setY(height).add(offset);
+            points.push(caster, caster.clone().addScaledVector(toLight, -height / Math.tan(e)).setY(0));
+          }
+          assert.ok(inShadowMap(light, new THREE.Vector3(), f, points).every(Boolean),
+            `sun ${bearing}°/${elevation}° at ${distance.toFixed(2)} m${follow ? " following" : ""}`);
+          const reviewed = REVIEWED_SHADOW_FRUSTUM.bias * (REVIEWED_SHADOW_FRUSTUM.far - REVIEWED_SHADOW_FRUSTUM.near);
+          assert.ok(Math.abs(f.bias * (f.far - f.near) - reviewed) < 1e-12, "bias stays 3.9 mm of depth");
         }
-        assert.ok(inShadowMap(light, new THREE.Vector3(), f, points).every(Boolean), `sun ${azimuth}°/${elevation}°${follow ? " following" : ""}`);
-        // The bias stays the reviewed 3.9 mm of depth however deep the frustum grows.
-        const reviewed = REVIEWED_SHADOW_FRUSTUM.bias * (REVIEWED_SHADOW_FRUSTUM.far - REVIEWED_SHADOW_FRUSTUM.near);
-        assert.ok(Math.abs(f.bias * (f.far - f.near) - reviewed) < 1e-12);
       }
     }
   }
 });
 
 test("the reviewed frustum would cut a low sun's shadow short (why it grows)", () => {
-  const light = new THREE.Vector3(...keyLightPosition(0, 10));
+  const light = new THREE.Vector3(...positionFrom(32, 10, KEY_DISTANCE));
   const tip = new THREE.Vector3(-light.x, 0, -light.z).normalize().multiplyScalar(2.5 / Math.tan(THREE.MathUtils.degToRad(10)));
   assert.deepEqual(inShadowMap(light, new THREE.Vector3(), { ...REVIEWED_SHADOW_FRUSTUM }, [new THREE.Vector3(0, 2.5, 0), tip]),
     [false, false]);
@@ -87,36 +108,49 @@ test("following snaps the body to a 0.25 m grid within ±3 m", () => {
   assert.ok(!Object.is(snapFollow(-0.01, 0)[0], -0), "no negative zero");
 });
 
-test("rim hues hold the shipped brightness, capped where a hue reads darker than the blue", () => {
-  const near = rimLights(DEFAULT_LOBBY_HUE);
-  for (const [i, rim] of near.entries()) {
-    const a = new THREE.Color(rim.color), b = new THREE.Color(REVIEWED_RIMS[i].color);
-    assert.ok(Math.abs(a.r - b.r) + Math.abs(a.g - b.g) + Math.abs(a.b - b.b) < 0.02, "the default hue is the shipped colour");
-    assert.ok(Math.abs(rim.intensity - REVIEWED_RIMS[i].intensity) < 0.05);
-  }
-  const shipped = REVIEWED_RIMS.map(r => luminance(new THREE.Color(r.color)) * r.intensity);
-  for (let hue = 0; hue < 360; hue += 15) {
-    rimLights(hue).forEach((rim, i) => {
-      const lit = luminance(new THREE.Color(rim.color)) * rim.intensity;
-      assert.ok(rim.intensity <= REVIEWED_RIMS[i].intensity * RIM_MAX_GAIN + 1e-9, `hue ${hue}: gain capped`);
-      assert.ok(lit <= shipped[i] * 1.02, `hue ${hue}: never brighter than shipped`);
-      // Below the cap the match is exact (up to the hex rounding of the colour).
-      if (rim.intensity < REVIEWED_RIMS[i].intensity * RIM_MAX_GAIN - 1e-9) assert.ok(Math.abs(lit / shipped[i] - 1) < 0.02, `hue ${hue}`);
-    });
-  }
-  const yellow = rimLights(60)[0];
-  assert.ok(yellow.intensity < 1, "yellow is turned well down: it reads ~5x brighter at the same intensity");
+test("stored looks are checked field by field; nothing bad gets through, the rest still applies", () => {
+  const look = sanitizeLook({
+    version: 2, future: 1,
+    lights: [
+      { id: "sun", role: "sun", color: "#FF8800", intensity: 99, position: [0, 5, 5], enabled: true, castShadow: true },
+      { id: "x", role: "sun", color: "red", intensity: -1, position: [0, 0, 0] }, // no usable position: dropped
+      { id: "y", role: "sun", color: "#00ff00", intensity: 2, position: [1, 1, 1], castShadow: true }, // a second sun
+      { id: "y", color: "#0000ff", intensity: 1, position: [1, 2, 3] }, // a repeated id
+    ],
+    hemisphere: { sky: "nope", intensity: 1 },
+    environment: { kind: "space", rotation: 400 },
+    toneMapping: "filmic", exposure: 9, floorShadow: true,
+    backdrop: { inner: "#123456", ellipse: "url(evil)" },
+  });
+  assert.deepEqual(look.lights.map(l => [l.id, l.role, l.color, l.intensity, l.castShadow]), [
+    ["sun", "sun", "#ff8800", 10, true], ["y", "light", "#00ff00", 2, false], ["y-2", "light", "#0000ff", 1, false],
+  ]);
+  assert.equal(look.hemisphere.sky, "#e8edf4");
+  assert.deepEqual(look.environment, { kind: "softbox", intensity: STUDIO_RIG.env, rotation: 180 });
+  assert.deepEqual([look.toneMapping, look.exposure, look.floorShadow], ["neutral", 3, true]);
+  assert.deepEqual(look.backdrop, { ...STUDIO_BACKDROP, inner: "#123456" });
+  assert.equal("future" in look, false);
 });
 
-test("stored settings are checked field by field; a stale backdrop falls back without losing the rest", () => {
-  assert.deepEqual(sanitizeLighting({ sunAzimuth: 400, sunElevation: 3, floorShadow: "yes", lobbyHue: -1, backdrop: 5 }), DEFAULT_LIGHTING);
-  const look = sanitizeLighting({ sunAzimuth: 44.6, sunElevation: 20, floorShadow: true, lobbyHue: 360,
-    backdrop: { studio: "removed-later", lobby: "black" }, future: 1 });
-  assert.deepEqual(look, { sunAzimuth: 45, sunElevation: 20, floorShadow: true, lobbyHue: 0,
-    backdrop: { studio: "default", lobby: "black" } });
-  assert.equal(resolveBackdrop("studio", "removed-later").id, "default");
-  assert.equal(resolveBackdrop("studio", "studio").id, "default", "a theme's own gradient is its default");
-  assert.equal(backdropCss("studio", "black"), "#000000");
-  assert.match(backdropCss("lobby", "studio"), /^radial-gradient\(ellipse 70% 60% at 50% 38%, #f0f3f7 0%, #dee4eb 58%, #c5cdd7 100%\)$/);
-  assert.equal(describeLighting(look), "Sun 45° / 20° high · floor shadow · rim 0° · Black");
+test("PR #40's first settings become a look: sun, floor and Studio backdrop carried over", () => {
+  const look = sanitizeLook({ sunAzimuth: 30, sunElevation: 20, floorShadow: true, lobbyHue: 0, backdrop: { studio: "black", lobby: "white" } });
+  const sun = lightAngles(look.lights[0].position);
+  assert.ok(Math.abs(sun.height - 20) < 1e-9 && Math.abs(sun.bearing - (lightAngles(KEY_POSITION).bearing + 30)) < 1e-9);
+  assert.equal(look.floorShadow, true);
+  assert.equal(backdropCss(look.backdrop), "#000000");
+  assert.deepEqual(sanitizeLook({ sunAzimuth: 45 }).lights[0].position, rotated(KEY_POSITION, 45), "height untouched: exact turn");
+});
+
+test("added lights get free ids up to the cap; presets and descriptions read sensibly", () => {
+  const lights = studioLook().lights;
+  const added = newLight(lights);
+  assert.equal(added.id, "light-3");
+  assert.equal(newLight([...lights, added]).id, "light-4");
+  assert.ok(MAX_LIGHTS >= lobbyLook().lights.length + 1);
+  assert.equal(BACKDROP_PRESETS.filter(p => backdropCss(p.backdrop) === backdropCss(STUDIO_BACKDROP)).length, 1);
+  assert.equal(describeLook(studioLook()), "2 lights · sun 32° / 52° · Studio grey");
+  const custom = studioLook(); custom.floorShadow = true; custom.lights[1].enabled = false; custom.backdrop = { ...custom.backdrop, inner: "#111111", middle: "#111111", outer: "#111111" };
+  assert.equal(describeLook(custom), "1 light · sun 32° / 52° · floor shadow · #111111");
+  assert.equal(fullLookName(custom), null);
+  assert.ok(Math.abs(lightAngles(KEY_POSITION).height - DEFAULT_SUN_ELEVATION) < 1e-12);
 });

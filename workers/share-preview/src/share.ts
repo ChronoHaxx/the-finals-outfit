@@ -46,6 +46,28 @@ export function storedPose(metadata: Record<string, unknown> | null | undefined)
   return readPose(params) ?? undefined;
 }
 
+// The outfit's body type (12 Nov 2026), in the app's grammar (src/lib/body-type.ts): bt=<a short lowercase code>,
+// absent for Masculine. The Worker only stores and carries it; the app decides what a code means.
+const BODY_TYPE = /^[a-z]{1,2}$/;
+
+/** The body type code in these parameters: undefined when there is none, null when it is malformed. */
+export function readBodyType(params: URLSearchParams): string | null | undefined {
+  const bodyType = params.get("bt");
+  return bodyType === null ? undefined : BODY_TYPE.test(bodyType) ? bodyType : null;
+}
+
+/** The body type's parameter, to follow `o=<code>` in a link ("" for Masculine). Validated values need no escaping. */
+export const bodyTypeQuery = (bodyType: string | undefined) => bodyType ? `&bt=${bodyType}` : "";
+
+/** KV metadata beside the outfit code (absent for Masculine, as for every entry made before body types). */
+export const bodyTypeMetadata = (bodyType: string | undefined): Record<string, string> => bodyType ? { bt: bodyType } : {};
+
+/** The body type stored with an entry (entries made before body types have none: Masculine). */
+export function storedBodyType(metadata: Record<string, unknown> | null | undefined): string | undefined {
+  const bodyType = metadata?.bt;
+  return typeof bodyType === "string" && BODY_TYPE.test(bodyType) ? bodyType : undefined;
+}
+
 /** Width and height of a JPEG from its first SOF marker, or null when the bytes are not a well-formed JPEG. */
 export function jpegSize(bytes: Uint8Array): { width: number; height: number } | null {
   if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8 || bytes[2] !== 0xff) return null;
@@ -78,11 +100,13 @@ export function newId(): string {
 }
 
 const escape = (text: string) => text.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
-const appLink = (env: Env, code: string | null, pose?: Pose) => `${env.APP_URL}${code ? `#/?o=${code}${poseQuery(pose)}` : ""}`;
+const appLink = (env: Env, code: string | null, pose?: Pose, bodyType?: string) =>
+  `${env.APP_URL}${code ? `#/?o=${code}${bodyTypeQuery(bodyType)}${poseQuery(pose)}` : ""}`;
 
-export function previewPage(env: Env, self: string, image: string | null, code: string | null, pose?: Pose): string {
-  if (!code) pose = undefined; // a pose belongs to an outfit
-  const app = appLink(env, code, pose);
+export function previewPage(env: Env, self: string, image: string | null, code: string | null, pose?: Pose,
+  bodyType?: string): string {
+  if (!code) { pose = undefined; bodyType = undefined; } // a pose and a body type belong to an outfit
+  const app = appLink(env, code, pose, bodyType);
   const title = code ? "THE FINALS outfit" : "the-finals-outfit";
   const posed = pose ? `, ${pose.paused ? "frozen" : "caught"} ${pose.t} s into an emote` : "";
   const meta = [

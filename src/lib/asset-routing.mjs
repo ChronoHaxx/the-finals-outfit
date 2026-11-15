@@ -71,3 +71,18 @@ export function modelBase(path, { assetsBase, modelsBase, reconstructionBase, re
 export function modelUrlFor(path, bases) {
   return joinBase(modelBase(path, bases), path);
 }
+
+// Meshes (.glb) are the part of a cosmetic that rebuilds it in 3D, so a release can serve them only through the gated
+// site Worker (workers/site). It keeps each public host's meshes under m/<host label>/<path>: a mesh URL, however the
+// app built it (modelUrl, or relative to a reconstruction assembly), maps to exactly the bytes its own host served,
+// and every URL the rig uses as an identity stays unchanged. Only the download is redirected (asset-fetch.ts).
+export const isMeshPath = path => /\.glb$/i.test(String(path).replace(/[?#].*$/, ''));
+
+export function gatedMeshPath(url) {
+  let parsed;
+  try { parsed = new URL(url); } catch { return null; }
+  if (parsed.protocol !== 'https:' || parsed.search || parsed.hash || !isMeshPath(parsed.pathname)) return null;
+  const label = parsed.hostname.split('.')[0];
+  if (!/^[a-z0-9-]+$/.test(label) || parsed.pathname.split('/').some(s => s === '..' || s === '.')) return null;
+  return `${label}${parsed.pathname}`;
+}

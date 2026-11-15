@@ -85,6 +85,23 @@ static class MeshDump
             header["verticesOverFourInfluences"] = over;
             Add("joints", "u16", 4, joints);
             Add("weights", "f32", 4, weights);
+            // Every influence too (CPU skinning has no four-influence limit: build-face.mjs skins the head wrap cages,
+            // where most vertices have more), strongest first, renormalised, zero-padded to the widest vertex.
+            int width = skinned.Max(s => (s.Influences ?? []).Count(i => i.Weight > 0));
+            if (width > 4)
+            {
+                var allJoints = new ushort[skinned.Length * width];
+                var allWeights = new float[skinned.Length * width];
+                for (int v = 0; v < skinned.Length; v++)
+                {
+                    var all = (skinned[v].Influences ?? []).Where(i => i.Weight > 0).OrderByDescending(i => i.Weight).ToArray();
+                    float sum = all.Sum(i => i.Weight);
+                    for (int k = 0; k < all.Length; k++) { allJoints[v * width + k] = all[k].Bone; allWeights[v * width + k] = sum > 0 ? all[k].Weight / sum : 0; }
+                }
+                header["influencesPerVertex"] = width;
+                Add("jointsAll", "u16", width, allJoints);
+                Add("weightsAll", "f32", width, allWeights);
+            }
         }
         else throw new InvalidDataException("no StaticMesh or SkeletalMesh export");
 

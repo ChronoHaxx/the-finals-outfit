@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState, type RefObject } from "react";
 import { captureView, compositeOver, isBlank, paintBackdrop, screenshotSizes, type ScreenshotContext } from "../rig/ViewerScreenshot";
 import { encodePngAsync } from "../lib/png-encode";
-import { backdropCss, backdropPaint, type SceneTheme } from "../lib/stage-lighting";
+import { backdropCss, backdropPaint, type Backdrop } from "../lib/stage-lighting";
 import { CameraIcon } from "./Icons";
 
 // GPU memory while capturing is about 24 bytes per pixel (the accumulator's half-float targets and depth, and the
@@ -38,10 +38,9 @@ const stamp = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
  * shadow unless kept). Lighting is the screen's (rig/ViewerScreenshot.ts). Built like the Lighting panel: a button in
  * the viewer's top row and a panel anchored to that row.
  */
-export function ScreenshotPanel({ context, theme, backdropId, ready }: {
-  context: RefObject<ScreenshotContext | null>; theme: SceneTheme; backdropId: string; ready: boolean;
+export function ScreenshotPanel({ context, backdrop, ready }: {
+  context: RefObject<ScreenshotContext | null>; backdrop: Backdrop; ready: boolean;
 }) {
-  const backdrop = backdropCss(theme, backdropId);
   const [open, setOpen] = useState(false);
   const [choices, setChoices] = useState(readChoices);
   const [running, setRunning] = useState(false);
@@ -85,7 +84,7 @@ export function ScreenshotPanel({ context, theme, backdropId, ready }: {
       if (isBlank(capture.pixels)) throw new Error("Nothing was drawn");
       setStatus("Encoding…");
       const rgba = capture.straight ? capture.pixels
-        : compositeOver(capture.pixels, paintBackdrop(capture.width, capture.height, backdropPaint(theme, backdropId)));
+        : compositeOver(capture.pixels, paintBackdrop(capture.width, capture.height, backdropPaint(backdrop)));
       const png = await encodePngAsync(capture.width, capture.height, rgba);
       const name = `finals-outfit-${stamp()}${capture.straight ? "-transparent" : ""}.png`;
       const url = URL.createObjectURL(new Blob([png as BlobPart], { type: "image/png" }));
@@ -122,7 +121,7 @@ export function ScreenshotPanel({ context, theme, backdropId, ready }: {
                   onClick={() => change({ transparent })}
                   className="flex h-8 items-center justify-center gap-2 border border-line text-xs transition-colors hover:bg-ink-900 aria-checked:border-fg/60 aria-checked:bg-ink-900">
                   <span aria-hidden="true" className={`size-3 border border-fg/40 ${transparent ? "checker" : ""}`}
-                    style={transparent ? undefined : { background: backdrop }} />
+                    style={transparent ? undefined : { background: backdropCss(backdrop) }} />
                   {label}
                 </button>
               ))}

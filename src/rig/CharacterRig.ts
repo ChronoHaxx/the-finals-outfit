@@ -15,6 +15,7 @@ import { bodyTypeOffsetMatrix, type BodyTypePreview } from "./BodyTypePreview";
 import { multiplySourceMatrices, type SourceMatrix } from "./SourceTransform";
 import { LEGACY_EQUIVALENT_HEAD_BASELINE, type SourceRigPart, type SourceSkinPair, type SourceSkinPart } from "./SourceAssembly";
 import { applyHeadWrap, bindHeadWrap, headWrapInputs, type HeadWrapBinding, type HeadWrapData } from "./HeadWrap";
+import type { CageDisplace, FaceWrapPart } from "./FaceWrap";
 
 export type { RigDecal } from "./BodyDecals";
 
@@ -281,11 +282,34 @@ export class CharacterRig {
     return this.equipped.get(slot)?.id;
   }
 
+  /** Every equipped item's id (the facial animation reads which of them mask the face). */
+  equippedItemIds(): string[] {
+    return [...this.equipped.values()].map(h => h.id);
+  }
+
   /** Everything an equipped item added to the rig: its scene, under-layer, bone-parented statics and bone branches. */
   equippedObjects(id: string): THREE.Object3D[] {
     for (const h of this.equipped.values())
       if (h.id === id) return [h.scene, ...(h.underLayerScene ? [h.underLayerScene] : []), ...h.statics, ...(h.sourceBoneRoots ?? [])];
     return [];
+  }
+
+  /** (12 Nov 2026) The worn head's skinned sections, whose FACIAL_* bones the facial animation drives
+   *  (FaceAnimator.ts). Empty with no face, or when this outfit omits the face's head. */
+  faceMeshes(): THREE.SkinnedMesh[] {
+    return this.equipped.get("face")?.meshes ?? [];
+  }
+
+  /** The worn head-wrapped parts (beards, balaclavas, mouth scarves), for the facial animation: each names the cage the
+   *  worn head drives it with and re-wraps on that cage as the face moves it (FaceWrap.ts). */
+  faceWraps(): FaceWrapPart[] {
+    const parts: FaceWrapPart[] = [];
+    this.root.traverse(o => {
+      const mesh = o as THREE.Mesh, state = mesh.isMesh ? headWrapStates.get(mesh) : undefined;
+      const cage = state?.head ? state.data.heads[state.head] : undefined;
+      if (cage) parts.push({ cage, rewrap: (displace, token) => rewrapOnMovedCage(mesh, displace, token) });
+    });
+    return parts;
   }
 
   /** Identity of the source head component whose own bones head-attached items may use. It changes
@@ -2549,6 +2573,8 @@ export function headDecalRole(m: THREE.Material): "head" | "eyes" | null {
 interface HeadWrapState {
   data: HeadWrapData; source: string; head: string | undefined; binding: HeadWrapBinding;
   attributes: THREE.BufferAttribute[]; rest: Float32Array[]; morphs: string;
+  /** The face pose the part is wrapped for (FaceWrap token), undefined on the still cage. */
+  face?: number;
 }
 // The unwrapped rest attributes and binding of each head-wrapped mesh, so a fitting change can re-wrap it.
 const headWrapStates = new WeakMap<THREE.Mesh, HeadWrapState>();
@@ -2618,8 +2644,31 @@ function rewrapToSourceHead(mesh: THREE.Mesh, morphs: ReadonlySet<string>, force
     directions.map(a => a.array as Float32Array), directions.map(a => a.itemSize));
   state.attributes.forEach(a => { a.needsUpdate = true; });
   state.morphs = key;
+  state.face = undefined;
   mesh.userData.headWrapMorphs = active;
   mesh.geometry.computeBoundingBox();
   mesh.geometry.computeBoundingSphere();
   return true;
+}
+
+/** (Facial animation) Re-wraps a head-wrapped mesh on its cage as the face has moved it (`displace`, FaceWrap.ts), with
+ *  the fitting morphs of its last still wrap; null puts it back on the still cage. A token it is already wrapped for
+ *  changes nothing. The bounds stay those of the still wrap: the face moves the part by millimetres. */
+function rewrapOnMovedCage(mesh: THREE.Mesh, displace: CageDisplace | null, token: number): void {
+  const state = headWrapStates.get(mesh);
+  if (!state) return;
+  const morphs = new Set<string>(mesh.userData.headWrapMorphs ?? []);
+  if (!displace) {
+    if (state.face !== undefined) rewrapToSourceHead(mesh, morphs, true);
+    return;
+  }
+  if (state.face === token) return;
+  const { reference, target, triangles } = headWrapInputs(state.data, state.source, state.head, morphs);
+  const moved = displace(target);
+  const [position, ...directions] = state.attributes;
+  state.attributes.forEach((a, i) => (a.array as Float32Array).set(state.rest[i]));
+  applyHeadWrap(state.binding, moved, reference, triangles, position.array as Float32Array,
+    directions.map(a => a.array as Float32Array), directions.map(a => a.itemSize));
+  state.attributes.forEach(a => { a.needsUpdate = true; });
+  state.face = token;
 }

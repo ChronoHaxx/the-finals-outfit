@@ -6,14 +6,22 @@ import { createGltfLoader } from "./loaders";
 // a guitar), shown on the socket and in the time window the emote's own notifies give.
 //
 // The game: an AnimNotifyState_DiscoverySpawnProp on the emote's AnimSequence spawns a prop actor at its start, attaches
-// it to a socket of the character mesh, and destroys it at its end. (Six skeletal props' animations key their root in
-// character space instead, props.json space "component": those hang from the character's origin.) Most sockets are the bones prop_01 / weapon_root,
+// it to a socket of the character mesh, and destroys it at its end. Most sockets are the bones prop_01 / weapon_root,
 // which hang under spine_03 (through weapon_buffer) and are animated by every emote clip: the clip moves the prop.
 // The rest are skeleton sockets (an offset from a hand), plain bones, or none (the character's own origin).
 //
 // The notify can also carry a RelativeTransform (rotation, offset, scale) that places the actor relative to its socket;
 // props.json carries it per window as `transform` (added 10 Nov 2026: it had been dropped, so footballs showed 6x too
 // big and chairs lay on their side).
+//
+// A notify with a CurveDrivenTransformPrefix is moved every frame by the emote's own float curves (11 Nov 2026: the
+// MonsterMan poles swing down, the BlackSmith anvil and log stand beside him, the PilotCheckList pen goes from his hand
+// to behind his ear). props.json carries them per window as `curve`, already in the app's frame: they act as a moving
+// socket in the character's component space, and the notify transform goes on top (world = curve x notify).
+//
+// The props.json of 6 Nov (props-7) keyed six skeletal props' roots in character space and marked them `space:
+// "component"`; newer sets bake their AnimBlueprint's ModifyBone instead (the root held at the socket), so the prop rides
+// its socket and `space` no longer appears. Both are handled.
 //
 // Here: scripts/anim-export/build-props.mjs rebuilt each prop actor as a GLB and wrote props.json (actors, sockets,
 // per-emote windows). convert-clips.mjs keeps the attach bones' tracks and lists their rest pose (`attachBones`), so
@@ -36,16 +44,56 @@ export interface ComponentSpace { under: string; quaternion: number[] }
 interface SocketInfo { bone: string; translation: number[]; rotation: number[]; scale: number[] }
 /** The spawn notify's RelativeTransform, converted to the app's frame by build-props.mjs (absent: identity). */
 export interface PropTransform { translation?: number[]; rotation?: number[]; scale?: number[] }
+/** Key frames and flat values ([frames], [x, y, z, ...]): linear between keys, held past both ends. */
+export type CurveKeys = [number[], number[]];
+/** A CurveDrivenTransformPrefix window's per-frame transform (build-props.mjs), in the app's frame. Frame = clip time /
+ *  frameTime. */
+export interface PropCurve { prefix: string; frameTime: number; frames: number; translation: CurveKeys; rotation: CurveKeys;
+  scale?: CurveKeys }
 export interface PropWindow { actor: string; socket: string | null; start: number; duration: number; shown: boolean;
-  transform?: PropTransform }
+  transform?: PropTransform; curve?: PropCurve }
 export interface PropsManifest {
   formatVersion: 1;
   sockets: Record<string, SocketInfo>;
   actors: Record<string, { file: string; bytes: number; kind: string; animated?: boolean; clock?: "emote-curve" | "spawn";
-    /** "component": its animation places it in character space (attach to the character, not the socket). */
-    space?: "component"; unanimated?: boolean; notes?: string[] }>;
+    /** "component": its animation places it in character space (attach to the character, not the socket). Older sets
+     *  only (props-7); newer ones bake the AnimBlueprint's root override instead (`rootOverrides`, informational). */
+    space?: "component"; unanimated?: boolean; notes?: string[];
+    rootOverrides?: { component: string; bone: string; translation?: number[]; rotation?: number[]; from: string }[] }>;
   emotes: Record<string, PropWindow[]>;
 }
+
+// The keyed segment holding `frame`: the key index before it and how far along (held at both ends).
+function segment(keys: number[], frame: number): [number, number] {
+  if (frame <= keys[0] || keys.length === 1) return [0, 0];
+  const last = keys.length - 1;
+  if (frame >= keys[last]) return [last, 0];
+  let lo = 0, hi = last;
+  while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (keys[mid] <= frame) lo = mid; else hi = mid; }
+  return [lo, (frame - keys[lo]) / (keys[lo + 1] - keys[lo])];
+}
+const tmpA = new THREE.Vector3(), tmpB = new THREE.Vector3(), tmpQa = new THREE.Quaternion(), tmpQb = new THREE.Quaternion();
+const tmpP = new THREE.Vector3(), tmpS = new THREE.Vector3(), tmpQ = new THREE.Quaternion();
+function sampleVector([keys, values]: CurveKeys, frame: number, out: THREE.Vector3): THREE.Vector3 {
+  const [i, u] = segment(keys, frame);
+  tmpA.fromArray(values, i * 3);
+  return u ? out.copy(tmpA).lerp(tmpB.fromArray(values, (i + 1) * 3), u) : out.copy(tmpA);
+}
+/** The curve transform at `time` seconds into the emote clip, as a matrix. */
+export function sampleCurve(curve: PropCurve, time: number, out = new THREE.Matrix4()): THREE.Matrix4 {
+  const frame = time / curve.frameTime;
+  sampleVector(curve.translation, frame, tmpP);
+  const [i, u] = segment(curve.rotation[0], frame);
+  tmpQa.fromArray(curve.rotation[1], i * 4);
+  if (u) tmpQa.slerp(tmpQb.fromArray(curve.rotation[1], (i + 1) * 4), u);
+  tmpQ.copy(tmpQa).normalize();
+  if (curve.scale) sampleVector(curve.scale, frame, tmpS); else tmpS.set(1, 1, 1);
+  return out.compose(tmpP, tmpQ, tmpS);
+}
+const curveMatrix = new THREE.Matrix4();
+const transformMatrix = (t: PropTransform | undefined) => new THREE.Matrix4().compose(
+  new THREE.Vector3().fromArray(t?.translation ?? [0, 0, 0]), new THREE.Quaternion().fromArray(t?.rotation ?? [0, 0, 0, 1]),
+  new THREE.Vector3().fromArray(t?.scale ?? [1, 1, 1]));
 
 /** A loaded prop: its scene (cloned per use) and the animation its AnimBlueprint plays, if any. */
 export interface PropTemplate { scene: THREE.Object3D; clips: THREE.AnimationClip[] }
@@ -231,9 +279,16 @@ export class EmoteProps {
           // office chair is turned 90 degrees). It goes on this clone, never on the socket node or the template: those
           // are shared with every other prop on the same socket and every later spawn.
           const t = w.transform;
-          if (t?.translation) instance.position.fromArray(t.translation);
-          if (t?.rotation) instance.quaternion.fromArray(t.rotation);
-          if (t?.scale) instance.scale.fromArray(t.scale);
+          if (w.curve) {
+            // Moved every frame: its matrix is set directly (curve x notify), since a mirrored or non-uniformly scaled
+            // notify under a rotating curve is not a plain position/rotation/scale.
+            instance.matrixAutoUpdate = false;
+            instance.userData.notifyMatrix = transformMatrix(t);
+          } else {
+            if (t?.translation) instance.position.fromArray(t.translation);
+            if (t?.rotation) instance.quaternion.fromArray(t.rotation);
+            if (t?.scale) instance.scale.fromArray(t.scale);
+          }
           parent.add(instance);
           this.instances[i] = instance;
           if (template.clips.length) {
@@ -249,6 +304,10 @@ export class EmoteProps {
         if (inWindow && time !== null) {
           const curve = this.resolved?.actors[w.actor]?.clock === "emote-curve" ? this.clock : null;
           this.mixers[i]?.setTime(curve ? curve(time) : time - w.start);
+          if (w.curve) {
+            instance.matrix.multiplyMatrices(sampleCurve(w.curve, time, curveMatrix), instance.userData.notifyMatrix as THREE.Matrix4);
+            instance.matrixWorldNeedsUpdate = true;
+          }
         }
       }
     });

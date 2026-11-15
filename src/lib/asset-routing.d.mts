@@ -12,3 +12,6 @@ export declare function parseReconstructionRoutes(value?: unknown): Record<strin
 export declare function compactReconstructionRoutes(value?: unknown): { formatVersion: number; hosts: { baseUrl: string; prefixes: string[] }[] };
 export declare function modelBase(path: string, bases: AssetBases): string;
 export declare function modelUrlFor(path: string, bases: AssetBases): string;
+export declare function isMeshPath(path: string): boolean;
+/** "<host label>/<path>" for an https mesh URL on a public host, else null. */
+export declare function gatedMeshPath(url: string): string | null;

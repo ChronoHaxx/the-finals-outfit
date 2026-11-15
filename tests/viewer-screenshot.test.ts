@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { inflateSync } from "node:zlib";
 import { compositeOver, flipRows, isBlank, screenshotSizes } from "../src/rig/ViewerScreenshot";
 import { encodePngAsync, paethRows } from "../src/lib/png-encode";
-import { backdropChoices, backdropCss, backdropPaint, type SceneTheme } from "../src/lib/stage-lighting";
+import { BACKDROP_PRESETS, FULL_LOOKS, backdropCss, backdropPaint, type Backdrop } from "../src/lib/stage-lighting";
 
 test("sizes: the stage times 1-4 within the pixel and side budget; never empty", () => {
   assert.deepEqual(screenshotSizes(800, 600, 6_300_000, 4096).map(s => s.scale), [1, 2, 3]);
@@ -72,15 +72,20 @@ function parseCss(css: string) {
   return { rx: +m[1] / 100, ry: +m[2] / 100, cx: +m[3] / 100, cy: +m[4] / 100, colors: [m[5], m[6], m[8]], middle: +m[7] / 100 };
 }
 
-test("the screenshot's backdrop paint is the CSS gradient in numbers, for every choice in both themes", () => {
-  for (const theme of ["studio", "lobby"] as SceneTheme[]) for (const choice of backdropChoices(theme)) {
-    const css = parseCss(backdropCss(theme, choice.id)), paint = backdropPaint(theme, choice.id);
+test("the screenshot's backdrop paint is the CSS gradient in numbers, for every preset, look and an edited one", () => {
+  const backdrops: [string, Backdrop][] = [
+    ...BACKDROP_PRESETS.map(p => [p.id, p.backdrop] as [string, Backdrop]),
+    ...FULL_LOOKS.map(l => [`look ${l.id}`, l.look().backdrop] as [string, Backdrop]),
+    ["edited", { inner: "#123456", middle: "#234567", outer: "#345678", ellipse: "ellipse 62.5% 40% at 45% 30%", middleStop: 42 }],
+  ];
+  for (const [id, backdrop] of backdrops) {
+    const css = parseCss(backdropCss(backdrop)), paint = backdropPaint(backdrop);
     if ("solid" in css) {
-      assert.deepEqual(paint.colors, [css.solid, css.solid, css.solid], `${theme}/${choice.id}`);
+      assert.deepEqual(paint.colors, [css.solid, css.solid, css.solid], id);
       continue;
     }
     assert.deepEqual({ rx: paint.rx, ry: paint.ry, cx: paint.cx, cy: paint.cy, colors: paint.colors, middle: paint.stops[1] },
-      { rx: css.rx, ry: css.ry, cx: css.cx, cy: css.cy, colors: css.colors, middle: css.middle }, `${theme}/${choice.id}`);
+      { rx: css.rx, ry: css.ry, cx: css.cx, cy: css.cy, colors: css.colors, middle: css.middle }, id);
     assert.deepEqual([paint.stops[0], paint.stops[2]], [0, 1]);
   }
 });
