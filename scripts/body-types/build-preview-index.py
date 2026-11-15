@@ -5,10 +5,25 @@ morph-only-proof.py proved identical except for their morphs at the Season 12 re
 stays exactly as it is in the active index. The active index itself is only read.
 
   python -I scripts/body-types/build-preview-index.py ACTIVE_ASSETS_JSON PROOF_JSON REBUILT_DIR OUT_ASSETS_JSON \
-      [CUSTOMIZATION_JSON]
+      [CUSTOMIZATION_JSON] [--census MORPH_CENSUS_JSON] [--changed-only] \
+      [--admit SKIN_PROOF_JSON [--admit-only NAME,...] [--admit-reviewed NAME,...]]
+
+--changed-only repoints only the meshes whose morphs changed (and the body); a proven mesh with identical morphs keeps
+its live URL, since the two GLBs are equal in everything the proof compares. That is the merge candidate.
+
+--admit (S12 item refresh tier 1, 12 Nov 2026) adds refused meshes that skin-by-name-proof.py judged: the "re-encoded"
+ones (the rig renders them like a morph-only swap), or only those in --admit-only, plus any other tier-1 class named in
+--admit-reviewed after a review. An admitted mesh counts as proven, so the item rule and its fixpoint run unchanged and
+the morph-only meshes it was holding cascade in. It is always repointed (never skipped by --changed-only), and the
+index records its class and hashes.
 
 With CUSTOMIZATION_JSON (reconstructed-assembly-v2/customization.json) a mesh is swapped only when every supported
 item that can show it is proven whole (see item consistency below); without it, every proven mesh is swapped.
+
+With --census (morph-census.mjs over the same active index; whole-catalogue refresh, 6 Nov 2026) the item rule looks
+only at body-type meshes: the meshes that carry medium_male or medium_female. A mesh without either morph (statics,
+most hairs) has the same shape in every Medium body type, and a mesh the active index does not hold is never shown, so
+neither can make an item mixed. Without --census every mesh an item can show must be proven (stage 1 behaviour).
 
 URLs are written relative to the directory the app requests the index from (models/reconstructed-assemblies-v1), since
 the preview server answers that path with OUT_ASSETS_JSON. Refuses an existing output.
@@ -20,6 +35,7 @@ Season 12 body instead (serve-preview.mjs).
 import hashlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -45,7 +61,66 @@ def item_meshes(definitions, catalog, supported):
     return result
 
 
-def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None):
+BODY_TYPE_MORPHS = {'medium_male', 'medium_female'}
+# Proof problems that break vertex correspondence between the live GLB and the S12 rebuild.
+GEOMETRY_PROBLEM = re.compile(r'^(POSITION differs|primitive \d+ (indices differ|vertex count differs)'
+                              r'|primitive count differs|morph names differ|not a single-mesh GLB)')
+
+
+def body_type_meshes(census_json, index_meshes):
+    """Object paths of the indexed meshes that carry a Medium body-type morph, from morph-census.mjs output. The census
+    must describe exactly this index: the same meshes at the same URLs (a mesh merged or rebuilt since would otherwise
+    be judged by another file's morphs)."""
+    census = json.loads(Path(census_json).read_text(encoding='utf-8'))
+    if any(row.get('missing') for row in census.values()):
+        raise SystemExit('The census lists meshes whose files were missing; rerun it on a complete index')
+    stale = sorted(k for k in set(census) | set(index_meshes)
+                   if k not in census or k not in index_meshes or census[k]['url'] != index_meshes[k]['url'])
+    if stale:
+        raise SystemExit(f'The census does not describe this index ({len(stale)} meshes differ, e.g. {stale[:3]}); '
+                         'rerun morph-census.mjs on it')
+    return {source for source, row in census.items() if BODY_TYPE_MORPHS & set(row.get('morphs', []))}
+
+
+def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir):
+    """{source: admission} from skin-by-name-proof.py output (S12 item refresh tier 1, 12 Nov 2026).
+
+    Every admissible ("re-encoded") mesh is admitted, or only those named in admit_only. A mesh of any other tier-1
+    class (weights, normals, morph set, extension bones) is admitted only when named in admit_reviewed, after a review;
+    a surface or loader refusal never is. The live GLB and the rebuild must still be the files the skin proof judged."""
+    if not admit_json:
+        if admit_only or admit_reviewed:
+            raise SystemExit('--admit-only/--admit-reviewed need --admit SKIN_PROOF_JSON')
+        return {}
+    skin = json.loads(Path(admit_json).read_text(encoding='utf-8'))['meshes']
+    reviewed = set(admit_reviewed or [])
+    names = (set(admit_only) if admit_only is not None
+             else {n for n, r in skin.items() if r.get('admissible')}) | reviewed
+    admitted = {}
+    for name in sorted(names):
+        r = skin.get(name)
+        if r is None:
+            raise SystemExit(f'{name}: not in the skin proof')
+        if r['class'] in ('surface differs', 'loader refuses'):
+            raise SystemExit(f'{name}: {r["class"]}; it is not a tier-1 swap')
+        if not r.get('admissible') and name not in reviewed:
+            raise SystemExit(f'{name} is "{r["class"]}": admit it only by name after review (--admit-reviewed)')
+        if proof.get(name, {}).get('status') != 'refused' or proof[name]['source'] != r['source']:
+            raise SystemExit(f'{name}: the morph-only proof does not list it as refused')
+        entry = assets['meshes'][r['source']]
+        if entry['url'] != r['liveUrl'] or hashlib.sha256((served_from / entry['url']).read_bytes()).hexdigest() != r['liveSha256']:
+            raise SystemExit(f'{name}: the live mesh changed since the skin proof')
+        if hashlib.sha256((Path(rebuilt_dir) / f'{name}.glb').read_bytes()).hexdigest() != r['s12Sha256']:
+            raise SystemExit(f'{name}: the rebuild changed since the skin proof')
+        admitted[r['source']] = {'name': name, 'class': r['class'], 'by': 'proof' if r.get('admissible') else 'review',
+                                 'liveSha256': r['liveSha256'], 's12Sha256': r['s12Sha256'],
+                                 'morphsChanged': r.get('morphsChanged', {}),
+                                 **{k: r[k] for k in ('morphsAdded', 'morphsRemoved') if k in r}}
+    return admitted
+
+
+def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None, census_json=None, changed_only=False,
+         admit_json=None, admit_only=None, admit_reviewed=None):
     out = Path(out_json)
     if out.exists():
         raise SystemExit(f'Preserve existing {out}')
@@ -54,38 +129,61 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     proof = json.loads(Path(proof_json).read_text(encoding='utf-8'))
     served_from = active.parent
     swapped, held = {}, {}
-    proven = {row['source'] for row in proof.values() if row.get('status') == 'morph-only'}
+    admitted = admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir)
+    proven = {row['source'] for row in proof.values() if row.get('status') == 'morph-only'} | set(admitted)
     body = assets.get('attachmentBody', {}).get('source')
     # Item consistency (review-v1 short dress, 6 Nov 2026): a Season 12 undershirt under the dress's pre-S12 shell grew
     # its fuller S12 chest straight through the dress. So a garment mesh is swapped only when every supported item that
     # can show it has all its other meshes proven too. The body is exempt: every outfit stands on it, the preview server
     # always answers it with the Season 12 body, and the body under a garment is hidden by that garment's body mask.
     users = {}
+    shaped = body_type_meshes(census_json, assets['meshes']) if census_json else None
     if customization_json:
         custom = json.loads(Path(customization_json).read_text(encoding='utf-8'))
         supported = json.loads((active.parent / 'supported-items.json').read_text(encoding='utf-8'))['items']
         for item, meshes in item_meshes(custom['definitions'], custom['catalog'], supported).items():
+            if shaped is not None:
+                meshes = meshes & shaped
             for mesh in meshes:
                 users.setdefault(mesh, []).append((item, meshes))
     # What the preview shows as Season 12: the swapped meshes, plus proven meshes whose S12 morphs equal the live ones
     # (holding those changes nothing). A held mesh with changed morphs stays pre-S12, so holding it can make another
     # item mixed; iterate to the fixpoint.
     unchanged = {row['source'] for row in proof.values() if row.get('status') == 'morph-only' and not row['morphsChanged']}
-    effective = set(proven)
+    # A refused mesh always keeps its live GLB. When it keeps the same vertices (same positions, indices and morph names)
+    # and none of its morph deltas changed in Season 12, the live GLB already carries the S12 body-type shape, so it
+    # cannot make an item mixed. Season 12 changed something else about it (weights, UVs, bones), which the item refresh
+    # route handles; that is not a body-type inconsistency. (Every multi-primitive mesh, live and rebuilt, shares one
+    # vertex buffer and one set of morph targets, so the proof's primitive-0 morph comparison covers all primitives.)
+    kept = {row['source'] for row in proof.values() if row.get('status') == 'refused' and not row['morphsChanged']
+            and not any(GEOMETRY_PROBLEM.match(p) for p in row['problems'])}
+    # An admitted mesh is always repointed when the item rule allows: it is never "kept" on its live GLB, and never
+    # "unchanged" (a morph-set change leaves morphsChanged empty, so the morph proof cannot speak for it).
+    kept -= set(admitted)
+    assert not set(admitted) & unchanged
+    effective = set(proven) | kept
     while True:
         held = {}
         for source in sorted(proven - {body}):
+            # Only OTHER meshes count: once held, a mesh is itself pre-S12, and counting it would make every item that
+            # shows it "mixed" and name those as the reason (6 Nov 2026, loose jeans). The swap set is the same either
+            # way, since the effective set only shrinks; the recorded reasons are the root ones.
             mixed = sorted({item for item, meshes in users.get(source, [])
-                            if any(m not in effective and m != body for m in meshes)})
+                            if any(m not in effective and m != body and m != source for m in meshes)})
             if mixed:
                 held[source] = {'reason': 'an item that shows it also shows a mesh the preview keeps pre-S12',
                                 'items': mixed[:20], 'itemCount': len(mixed)}
-        settled = proven - {s for s in held if s not in unchanged}
+        settled = (proven - {s for s in held if s not in unchanged}) | kept
         if settled == effective:
             break
         effective = settled
     for name, row in sorted(proof.items()):
-        if row.get('status') != 'morph-only' or row['source'] in held:
+        admission = admitted.get(row.get('source'))
+        if (row.get('status') != 'morph-only' and not admission) or row['source'] in held:
+            continue
+        if changed_only and not admission and not row['morphsChanged'] and row['source'] != body:
+            # Identical to the live GLB in everything the proof compares, morphs included: repointing it changes
+            # nothing on screen and only adds files to publish. (It still counts as Season 12 above.)
             continue
         entry = assets['meshes'][row['source']]
         if entry['url'] != row['liveUrl']:
@@ -99,12 +197,23 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
             entry['sha256'] = assets['attachmentBody']['sha256'] = sha
             continue
         url = Path(os.path.relpath(glb, served_from)).as_posix()
-        swapped[row['source']] = {'from': entry['url'], 'to': url, 'morphsChanged': row['morphsChanged']}
+        swapped[row['source']] = {'from': entry['url'], 'to': url,
+                                  **({'morphsChanged': admission['morphsChanged'],
+                                      'admitted': {k: admission[k] for k in ('class', 'by')}} if admission
+                                     else {'morphsChanged': row['morphsChanged']})}
         entry['url'], entry['sha256'] = url, sha
     assets['s12BodyTypePreview'] = {
         'note': 'Preview only: meshes proven morph-only against the active index, rebuilt from the Season 12 paks.',
         'activeIndexSha256': hashlib.sha256(active.read_bytes()).hexdigest(),
-        'itemConsistency': bool(customization_json), 'swapped': swapped, 'held': held}
+        'itemConsistency': bool(customization_json),
+        **({'bodyTypeMeshesOnly': True, 'censusSha256': hashlib.sha256(Path(census_json).read_bytes()).hexdigest()}
+           if census_json else {}),
+        'changedOnly': changed_only,
+        **({'admitted': admitted, 'skinProofSha256': hashlib.sha256(Path(admit_json).read_bytes()).hexdigest()}
+           if admit_json else {}),
+        'swapped': swapped, 'held': held,
+        'keptUnchanged': sorted(kept),
+        'effective': sorted(effective)}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(assets, indent=1) + '\n', encoding='utf-8')
     print(json.dumps({'swapped': len(swapped), 'held': {k.rsplit('.', 1)[-1]: v['itemCount'] for k, v in held.items()},
@@ -112,4 +221,20 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
 
 
 if __name__ == '__main__':
-    main(*sys.argv[1:6])
+    argv = sys.argv[1:]
+    census = None
+    if '--census' in argv:
+        i = argv.index('--census')
+        census = argv[i + 1]
+        del argv[i:i + 2]
+    changed = '--changed-only' in argv
+    if changed:
+        argv.remove('--changed-only')
+    options = {}
+    for flag, key, split in (('--admit', 'admit_json', False), ('--admit-only', 'admit_only', True),
+                             ('--admit-reviewed', 'admit_reviewed', True)):
+        if flag in argv:
+            i = argv.index(flag)
+            options[key] = argv[i + 1].split(',') if split else argv[i + 1]
+            del argv[i:i + 2]
+    main(*argv[:5], census_json=census, changed_only=changed, **options)

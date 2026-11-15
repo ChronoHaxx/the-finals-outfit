@@ -1,0 +1,20 @@
+{
+ "c1-hoodie-over-municipal": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "lowerBody": "municipal-pants-nylon",
+  "upperBody": "streetwear-hoodie-zebra"
+ },
+ "c2-crop-top-over-municipal": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "lowerBody": "municipal-pants-nylon",
+  "upperBody": "streetwear-techcroptop-nylon-ivada"
+ },
+ "c3-tee-over-municipal": {
+  "face": "head-face-01-base",
+  "feet": "casual-tallsneakers-canvas",
+  "lowerBody": "municipal-pants-nylon",
+  "upperBody": "casual-basictshirt-cotton-black"
+ }
+}

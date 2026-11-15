@@ -27,7 +27,7 @@ try {
       return count;
     });
     assert.equal(count,expected); assert.deepEqual(errors,[]);
-    await page.addStyleTag({content:'button[title="Toggle scene lighting"], div:has(> select[aria-label="Recovered material view"]) { visibility:hidden !important; }'});
+    await page.addStyleTag({content:'button[title="Lighting and backdrop"], div:has(> select[aria-label="Recovered material view"]) { visibility:hidden !important; }'});
     for(const [view,angle] of [['front',0],['oblique',.38]]) {
       await page.evaluate(angle=>{window.__rigRoot.rotation.y=angle;},angle);
       await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));

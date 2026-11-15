@@ -30,6 +30,13 @@ export function ResetIcon({ className, size = 16 }: IconProps) {
   </svg>;
 }
 
+export function SunIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <circle cx="8" cy="8" r="2.6" />
+    <path d="M8 1.6v1.6M8 12.8v1.6M1.6 8h1.6M12.8 8h1.6M3.5 3.5l1.1 1.1M11.4 11.4l1.1 1.1M3.5 12.5l1.1-1.1M11.4 4.6l1.1-1.1" />
+  </svg>;
+}
+
 export function ShareIcon({ className, size = 16 }: IconProps) {
   return <svg {...base(size, className)}>
     <path d="M6.5 9.5 9.5 6.5" />
