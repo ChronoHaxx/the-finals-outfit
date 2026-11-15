@@ -121,7 +121,13 @@ async function measure(label, id, seconds, { loop = false } = {}) {
   });
   const perKey = {};
   for (const e of starts) perKey[e.key] = (perKey[e.key] ?? 0) + 1;
-  report.emotes[id] = { source, duration, cues: cues.length, timing, events: log.reduce((m, e) => ({ ...m, [e.event]: (m[e.event] ?? 0) + 1 }), {}),
+  // Frame gaps on the audio clock: the animation steps at most 0.1 s per frame, so every gap over that loses animation
+  // time while the audio runs on. A timing failure with lost time here is the page stalling, not the scheduler.
+  const ctx = rows.filter(r => r[4] === id).map(r => r[1]), gaps = ctx.slice(1).map((t, i) => t - ctx[i]);
+  const frames = { count: ctx.length, maxMs: +(Math.max(0, ...gaps) * 1000).toFixed(1), over100ms: gaps.filter(g => g > 0.1).length,
+    lostMs: +(gaps.reduce((s, g) => s + Math.max(0, g - 0.1), 0) * 1000).toFixed(1),
+    stalls: gaps.map((g, i) => [i, g]).filter(([, g]) => g > 0.1).slice(0, 8).map(([i, g]) => [+(ctx[i] - ctx[0]).toFixed(2), +(g * 1000).toFixed(0)]) };
+  report.emotes[id] = { source, duration, cues: cues.length, timing, frames, events: log.reduce((m, e) => ({ ...m, [e.event]: (m[e.event] ?? 0) + 1 }), {}),
     restarts: log.filter(e => e.event === "restart").length, adopts: log.filter(e => e.event === "adopt").length };
   return { timing, perKey, log, duration, cues };
 }

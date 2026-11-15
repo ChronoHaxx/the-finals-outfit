@@ -206,7 +206,20 @@ with the local `sounds-1`.
 - `ab913ac8` has no `faces-1/`: pointing the site at it would switch the faces off.
 - It stays published, untouched, as a record.
 
-### Faces + sounds superset (staged; uploads only on your yes)
+### Faces + sounds: `e4608dac` (13 Nov 2026, on your "Yes, upload it"), the host this PR ships
+
+**Animations host `e4608dac`** (alias `anim-1113-faces-sfx`), from the staged set below:
+- **Upload:** 1 new file (the manifest), 1,131 deduplicated ([upload-anim-e4608dac.txt](upload-anim-e4608dac.txt)).
+- **Verified:** all 1,132 files are byte-identical to staging
+  ([deployment-anim-e4608dac.json](deployment-anim-e4608dac.json)). `.m4a` is `audio/mp4` with CORS `*` and an
+  immutable cache.
+- **deploy.yml:** `ANIMATIONS_BASE` points at it. **Rollback:** `e5250f94`.
+- **Production build against it** (15 Nov, with the prop prewarm below):
+  - Chrome 17/17 ([check-chrome-prod-e4608dac-prewarm.json](check-chrome-prod-e4608dac-prewarm.json)): every cue
+    within ±5.5 ms, and no frame over 40 ms.
+  - Faces 2/2 ([check-faces-prod-e4608dac-prewarm.json](check-faces-prod-e4608dac-prewarm.json)).
+
+#### Staging (as built 12 Nov)
 
 **Rebased** onto main `64f68d3`: both features sit side by side in `RigAnimator.ts` and `AnimationControls.tsx`.
 
@@ -218,21 +231,73 @@ with the local `sounds-1`.
 - `sounds-1/` (276): the bytes already verified on `ab913ac8`.
 - `manifest.json`: `e5250f94`'s, unchanged except for `"sounds": "sounds-1/sounds.json"` added after `faces`.
 
-**deploy.yml** stays on `e5250f94` until the superset is published. Its contract tests now run
-`tests/rig/emote-sounds.test.ts`.
-- Until then the site plays no sounds and shows no speaker, because that manifest names no sounds.
-- Faces are unaffected.
+Live users hear sounds only once this PR is merged.
 
-**After upload:** a new deployment (never an overwrite), verified with `upload/verify-hosted.mjs`.
-- Bump `ANIMATIONS_BASE` to it.
-- Check the production build for sounds (`check-sounds.mjs --base=…`) and faces (`check-faces.mjs`).
-- **Rollback:** `e5250f94`.
+## Prop prewarm: the first-play stall (15 Nov 2026)
 
-Live users hear sounds only once the bump is merged.
+**The failures.** The first production run against `e4608dac` failed 2 of 17 checks. BlackSmith's first cue played
+37 ms early, and CPop's music restarted 5 times.
+- **CPop** did not reproduce. In that run the animation clock ran at 0.22× real time, so the page was stalling
+  (probably other load on the machine), and drift restarts are the player's designed response. The check now records
+  frame gaps (`frames` in each emote's report), so a timing failure says whether the page stalled.
+- **BlackSmith** reproduced every time. It stalls twice in its first 0.4 s (110-190 ms frames), when its anvil and log
+  props first draw. A replay in the same page never stalls.
+
+**Mechanism.**
+- WebGL compiles a material's shader program the first time something using it is drawn, and uploads each texture on
+  its first draw, both on the main thread.
+- The animator steps at most 0.1 s per frame, so a 180 ms frame loses 80 ms of animation time.
+- The audio clock does not stop: a cue scheduled before the stall plays early (−54 ms measured). Later cues are
+  scheduled from the delayed animation clock, so they stay in step.
+- Without sound this is still a visible hitch whenever a prop first appears.
+
+**Fix** (`EmoteProps.warmForDraw`; `play()` already waits for an emote's props, so it now also waits for this):
+- Each prop's textures are uploaded and its programs compiled (`compileAsync`) before the emote starts, once per prop.
+- A failure leaves that prop to compile on its first frame, as before. A 3 s cap means a warm can never hang a start.
+- The viewer's renderer and scene come through the existing preview handle (`getPreviewScene`), so
+  `CharacterViewer.tsx` is unchanged.
+
+**Matching the variants.** A shader log ([stall-diag.mjs](stall-diag.mjs); [stall-replay.mjs](stall-replay.mjs) plays an emote twice) showed what the
+first draw actually compiled. A program's variant depends on the scene and the render target as well as the material,
+so warming has to match all three:
+- **Render target.** The viewer draws into `StableFrameAccumulator`'s target (linear output, no tone mapping) or, when
+  that is off, to the canvas. Both variants are compiled.
+- **Shadow pass.** Its depth programs are compiled through stand-ins that carry the depth material three's shadow map
+  would choose. Programs are cached by their parameters, so the real pass finds them built.
+- **Shadow filter type.** R3F's `shadows="soft"` sets `PCFSoftShadowMap` on every Canvas render, and three r184
+  (which deprecated it) rewrites it to `PCFShadowMap` in its next shadow pass. PCFSoft has no shader define, so a
+  program compiled in between gets `SHADOWMAP_TYPE_BASIC`: the anvil's rifle was warmed with the wrong variant. The
+  warm compiles as the next pass will draw.
+
+**Left as is:**
+- drei's `<ContactShadows>` draws the scene with its own private `MeshDepthMaterial` override every frame. The first
+  non-skinned mesh in the scene needs one new variant of it, once per session.
+- Warming that would mean copying drei's private material and its `onBeforeCompile` (part of the cache key): fragile,
+  for one small program that no longer stalls measurably.
+
+**Result** (production build against `e4608dac`):
+- BlackSmith's first cue went from −37 and −54 ms to −3.7 ms.
+- No frame was over 40 ms in any measured emote.
+- Four first plays of BlackSmith had no stall frames, where every run before had two.
+
+**Tests:** `tests/rig/emote-props.test.ts` covers four cases:
+- prepare waits for the warm;
+- each prop warms once;
+- a failure is retried;
+- a warm that never settles holds the start for no more than the cap.
+
+**Side note, not changed here:** `shadows="percentage"` in `CharacterViewer.tsx` would ask for PCF directly. That
+would end the per-render rewrite and three's deprecation warning.
 
 ## Open items and follow-ups
 
-- **Chinals emote sounds:** 42 Chinals-only assets. Needs the chinals-probe sound mode and the Chinals host (PR #44).
+- **Chinals emote sounds:** in PR #51, which carries this PR's code. That session reports three fixes to code from
+  this PR, on its branch and not verified here:
+  - **MetaSound volume:** a MetaSound plays at its own Volume. If right, 14 global musical emotes in `e4608dac`'s
+    `sounds.json` have the wrong gain, and the global sounds need a rebuild and a new host.
+  - **Leak:** `EmoteSounds.dispose()` should remove its gesture listeners; mode switches leaked AudioContexts.
+  - **Late first sound:** a context whose clock still reads 0 is not running yet; the first sound came late, then
+    was skipped.
 - **Voice lines:** the 3 BlackSmith vocalization notifies resolve through the character's voice at run time.
 - **Raising the frame cap while sounds play:** a 0.35 s cap would stop the audio leading after hitches. It changes
   existing animation behaviour, so it's your call.
