@@ -98,6 +98,108 @@ const transformMatrix = (t: PropTransform | undefined) => new THREE.Matrix4().co
 /** A loaded prop: its scene (cloned per use) and the animation its AnimBlueprint plays, if any. */
 export interface PropTemplate { scene: THREE.Object3D; clips: THREE.AnimationClip[] }
 
+/** Makes a loaded prop ready to draw (shaders compiled, textures on the GPU) before its first frame. */
+export type PropWarmer = (object: THREE.Object3D) => Promise<void>;
+/** A warm step never holds an emote's start longer than this (a lost context would leave it pending forever). */
+export const WARM_TIMEOUT_MS = 3000;
+
+/**
+ * Prewarm (15 Nov 2026). WebGL compiles a material's shader program the first time something using it is drawn, and
+ * uploads each texture on its first draw, both on the main thread: a new prop's first frame took 110-190 ms. That
+ * frame is more than the animator's 0.1 s step cap, so the motion lost time while the emote's sounds, already handed
+ * to the audio clock, ran on (BlackSmith's first cue played 54 ms early). Doing both while the emote loads removes the
+ * stall. The programs are compiled against the live scene: a program's variant depends on the scene's lights, fog
+ * and shadows as well as on the material, and the first draw must find exactly that variant already built.
+ *
+ * Three variants per prop, found by logging the shaders a first draw compiled (three r184):
+ * - Into a render target (StableFrameAccumulator's sample target): linear output, no tone mapping. `compile` reads the
+ *   bound target, so a 1x1 stand-in target gives this variant.
+ * - To the canvas (the accumulator's direct path): tone mapped, the display colour space.
+ * - The shadow pass's depth programs, which `compile` never builds: see shadowStandIns.
+ */
+export async function warmForDraw(gl: THREE.WebGLRenderer, scene: THREE.Scene, object: THREE.Object3D): Promise<void> {
+  object.traverse(o => {
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material])
+      for (const value of Object.values(material)) if ((value as THREE.Texture | null)?.isTexture) gl.initTexture(value as THREE.Texture);
+  });
+  const camera = new THREE.PerspectiveCamera();
+  const target = new THREE.WebGLRenderTarget(1, 1);
+  const previous = gl.getRenderTarget();
+  // The shadow filter is a program input too. R3F's shadows="soft" sets PCFSoftShadowMap on every Canvas render, and
+  // three r184 (which deprecated it) rewrites it to PCFShadowMap in its next shadow pass, so every real draw uses PCF.
+  // PCFSoft has no shader define of its own: compiled in between, a program would get SHADOWMAP_TYPE_BASIC and the
+  // first draw would build the PCF one anyway (measured: the anvil's rifle). Compile as the next pass will draw.
+  const shadowType = gl.shadowMap.type;
+  const compiling: Promise<unknown>[] = [];
+  try {
+    if (shadowType === THREE.PCFSoftShadowMap) gl.shadowMap.type = THREE.PCFShadowMap;
+    const shadows = shadowStandIns(gl, scene, object);
+    // compileAsync compiles synchronously and only waits afterwards: the target bound at the call picks the variant.
+    gl.setRenderTarget(target);
+    compiling.push(gl.compileAsync(object, camera, scene));
+    if (shadows) compiling.push(gl.compileAsync(shadows, camera, scene)); // the shadow map is a render target too
+    gl.setRenderTarget(previous);
+    compiling.push(gl.compileAsync(object, camera, scene));
+  } finally {
+    gl.setRenderTarget(previous);
+    gl.shadowMap.type = shadowType;
+    target.dispose();
+  }
+  await Promise.all(compiling);
+}
+
+const SHADOW_SIDE: Record<number, THREE.Side> = { [THREE.FrontSide]: THREE.BackSide, [THREE.BackSide]: THREE.FrontSide,
+  [THREE.DoubleSide]: THREE.DoubleSide };
+type DepthSource = THREE.Material & { map?: THREE.Texture | null; alphaMap?: THREE.Texture | null;
+  displacementMap?: THREE.Texture | null; displacementScale?: number; displacementBias?: number };
+
+/**
+ * Stand-ins carrying the depth material the shadow pass will choose for each shadow-casting mesh, set the way three
+ * r184's WebGLShadowMap.getDepthMaterial sets its own. Programs are cached by their parameters, not by material, so
+ * compiling these builds the very programs the first shadow pass would otherwise compile mid-emote. They are never
+ * disposed: disposing them would release those programs. Null when nothing casts shadows.
+ */
+function shadowStandIns(gl: THREE.WebGLRenderer, scene: THREE.Scene, object: THREE.Object3D): THREE.Object3D | null {
+  if (!gl.shadowMap.enabled) return null;
+  let point = false, other = false;
+  scene.traverseVisible(o => {
+    const light = o as THREE.Light;
+    if (light.isLight && light.castShadow) { if ((light as THREE.PointLight).isPointLight) point = true; else other = true; }
+  });
+  if (!point && !other) return null;
+  const group = new THREE.Group();
+  object.traverse(o => {
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh || !mesh.castShadow) return;
+    const materials = (Array.isArray(mesh.material) ? mesh.material : [mesh.material]) as DepthSource[];
+    for (const distance of [false, true]) {
+      if (distance ? !point : !other) continue;
+      const custom = distance ? mesh.customDistanceMaterial : mesh.customDepthMaterial;
+      const depth = custom ? [custom] : materials.map(material => {
+        const result = distance ? new THREE.MeshDistanceMaterial() : new THREE.MeshDepthMaterial();
+        result.visible = material.visible; // (getDepthMaterial also copies wireframe: a draw mode, not a program input)
+        result.side = material.shadowSide ?? (gl.shadowMap.type === THREE.VSMShadowMap ? material.side : SHADOW_SIDE[material.side]);
+        result.alphaMap = material.alphaMap ?? null;
+        result.alphaTest = material.alphaToCoverage ? 0.5 : material.alphaTest;
+        result.map = material.map ?? null;
+        result.clipShadows = material.clipShadows;
+        result.clippingPlanes = material.clippingPlanes;
+        result.clipIntersection = material.clipIntersection;
+        result.displacementMap = material.displacementMap ?? null;
+        result.displacementScale = material.displacementScale ?? 1;
+        result.displacementBias = material.displacementBias ?? 0;
+        return result;
+      });
+      const standIn = mesh.clone(false); // the same geometry (and skeleton): the same skinning and morph variant
+      standIn.material = depth.length === 1 ? depth[0] : depth;
+      group.add(standIn);
+    }
+  });
+  return group.children.length ? group : null;
+}
+
 /** The app's loader: the prop GLB through the rig's GLTFLoader (created on first use). */
 let sharedLoader: ReturnType<typeof createGltfLoader> | null = null;
 async function loadPropGlb(href: string): Promise<PropTemplate> {
@@ -119,6 +221,8 @@ export class EmoteProps {
   private mixers: (THREE.AnimationMixer | null)[] = [];
   private clock: ((time: number) => number) | null = null; // the emote's PropAnimSequenceTime
   private hidden = false;
+  private warmer: PropWarmer | null = null;
+  private warmed = new Map<string, Promise<void>>(); // by actor: each template is warmed once
 
   constructor(private readonly url: string | null, private readonly attachBones: AttachBone[] = [],
     private readonly componentSpace: ComponentSpace | null = null,
@@ -205,11 +309,34 @@ export class EmoteProps {
     return pending;
   }
 
-  /** Download the props an emote animation spawns (resolves when they are ready, or failed). */
+  /** How props are made ready to draw before an emote starts (the viewer's renderer; null: on their first frame). */
+  setWarmer(warmer: PropWarmer | null): void {
+    this.warmer = warmer;
+  }
+
+  private warm(actor: string, template: PropTemplate): Promise<void> {
+    const warmer = this.warmer;
+    if (!warmer) return Promise.resolve();
+    let pending = this.warmed.get(actor);
+    if (!pending) {
+      // A failure only leaves that prop to compile on its first frame, as before; the next prepare tries again.
+      const warming = warmer(template.scene).catch(error => {
+        console.warn(`[animation] prop ${actor} could not be prewarmed`, error);
+        this.warmed.delete(actor);
+      });
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      pending = Promise.race([warming, new Promise<void>(resolve => { timer = setTimeout(resolve, WARM_TIMEOUT_MS); })])
+        .finally(() => clearTimeout(timer));
+      this.warmed.set(actor, pending);
+    }
+    return pending;
+  }
+
+  /** Download the props an emote animation spawns and prewarm them (resolves when they are ready, or failed). */
   async prepare(source: string | undefined): Promise<void> {
     await this.load();
     const windows = this.windowsFor(source) ?? [];
-    await Promise.allSettled(windows.filter(w => w.shown).map(w => this.template(w.actor)));
+    await Promise.allSettled(windows.filter(w => w.shown).map(w => this.template(w.actor)?.then(t => this.warm(w.actor, t))));
   }
 
   /** The emote in front changed (null: none, or the idle): its props replace the previous emote's. */

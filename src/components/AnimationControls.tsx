@@ -6,8 +6,9 @@ import { initialClip, loadAnimationManifest, RigAnimator, type AnimatorState } f
 import { AUTOMATED } from "../lib/automation";
 import { modelUrl } from "../lib/assets";
 import { loadSourceFaceMask } from "../rig/SourceAssembly";
+import { warmForDraw } from "../rig/EmoteProps";
 import { pendingPose, subscribePendingPose, takePendingPose } from "../lib/share-pose";
-import { setPoseSource } from "../lib/viewer-handle";
+import { getPreviewScene, setPoseSource } from "../lib/viewer-handle";
 import { isChinalsClip } from "../lib/site-mode";
 import { EmotePicker, missingSummary } from "./EmotePicker";
 import { EmoteSoundControl } from "./EmoteSoundControl";
@@ -151,6 +152,16 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
     }
   }, [animator, rig, ready, busy, state.active, state.sway]);
   useEffect(() => () => { animator.springs.reset(); rig.setAnimationPins(false); }, [animator, rig]);
+  useEffect(() => {
+    // Props are compiled and uploaded while their emote loads, not on their first frame (EmoteProps.warmForDraw): a
+    // 100-200 ms first draw stalls the motion, and the sounds already scheduled ahead of it come out early. The viewer
+    // publishes its renderer and scene once the outfit has loaded; before that a prop just warms on first draw.
+    animator.props.setWarmer(object => {
+      const view = getPreviewScene();
+      return view ? warmForDraw(view.gl, view.scene, object) : Promise.resolve();
+    });
+    return () => animator.props.setWarmer(null);
+  }, [animator]);
   useEffect(() => {
     // The face masks come from the worn items' definitions (the same files the outfit is assembled from).
     const assembly = modelUrl("models/reconstructed-assembly-v2");
