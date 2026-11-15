@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { DEFAULT_CAMERA, SCENES, SCENE_ID, plateScale, sceneById, sceneUrl, wrapAngle } from "../src/lib/scenes";
-import { DEFAULT_LOOK, describeLook, isDefaultLook, sanitizeLook, studioLook } from "../src/lib/stage-lighting";
+import { DEFAULT_LOOK, describeLook, isDefaultLook, menuS12Look, sanitizeLook, studioLook } from "../src/lib/stage-lighting";
 import { mergedLook } from "../src/lib/lighting-store";
 
 // In-game scene backdrops (15 Nov 2026). A scene id lives in the look's backdrop; it must survive storage, survive an
@@ -67,4 +67,11 @@ test("the turntable angle wraps into (-pi, pi] and never returns -0", () => {
 test("scene files resolve against the scenes base", () => {
   assert.equal(sceneUrl("s12-tunnel/plate-v1.webp", "https://host/scenes/"), "https://host/scenes/s12-tunnel/plate-v1.webp");
   assert.equal(sceneUrl("/a.webp", "https://host/x/"), "https://host/x/a.webp");
+});
+
+test("the Season 12 menu look carries its scene and survives storage unchanged", () => {
+  const look = menuS12Look();
+  assert.equal(look.backdrop.scene, "s12-menu");
+  assert.deepEqual(sanitizeLook(JSON.parse(JSON.stringify(look))), look);
+  assert.equal(isDefaultLook(look), false);
 });

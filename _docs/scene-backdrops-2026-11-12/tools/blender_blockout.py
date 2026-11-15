@@ -15,6 +15,7 @@ A hand-matched camera replaces "actor"/"level" with {"pos": [x, y, z], "target":
 import json
 import math
 import pathlib
+import re
 import sys
 
 import bpy
@@ -38,10 +39,26 @@ for r in assets:
     if r.get("meshFile"):
         key = "/" + r["path"].removesuffix(".uasset").replace("Discovery/Content/", "Game/", 1).replace("Engine/Content/", "Engine/", 1)
         stem_by_package[key] = r["meshFile"].removesuffix(".mesh.json")
-default_materials = {}
+source_slots = {}  # stem -> [(slot name, material package path)] in the source mesh's order
 for stem in set(stem_by_package.values()):
     d = json.loads((pathlib.Path(meshes_dir) / f"{stem}.mesh.json").read_text(encoding="utf-8"))
-    default_materials[stem] = [(m["path"] or "").split(".")[0] for m in d["materials"]]
+    source_slots[stem] = [(m["name"], (m["path"] or "").split(".")[0]) for m in d["materials"]]
+
+def slot_materials(stem, data, overrides):
+    """The material name for each of an imported mesh's slots. The glTF importer orders slots by first use in the
+    sections and merges repeated materials, so slot j is matched to the source slot by the name the mesh builder gave
+    the glTF material (the source slot name), not by position; the level's overrides are indexed by source slot."""
+    names, slots = [], source_slots[stem]
+    for j, mat in enumerate(data.materials):
+        imported = re.sub(r"\.\d{3}$", "", mat.name) if mat else ""
+        index = next((i for i, s in enumerate(slots) if s[0] == imported), j if j < len(slots) else None)
+        if index is None:
+            names.append("")
+            continue
+        override = overrides[index] if index < len(overrides) else None
+        names.append((override or slots[index][1]).split("/")[-1].split(".")[0])
+    return names
+
 
 mesh_data = {}
 
@@ -115,11 +132,7 @@ for i, p in enumerate(placement["meshes"]):
     stem = stem_by_package.get(p.get("mesh") or "")
     if not stem or p["actor"] in skip_actors:
         continue
-    names = default_materials[stem][:]
-    for slot, override in enumerate(p.get("overrideMaterials") or []):
-        if override and slot < len(names):
-            names[slot] = override
-    names = [n.split("/")[-1] for n in names]
+    names = slot_materials(stem, load_mesh(stem), p.get("overrideMaterials") or [])
     if any(w in n.lower() for n in names for w in skip_words):
         skipped += 1
         continue

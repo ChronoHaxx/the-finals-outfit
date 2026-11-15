@@ -557,6 +557,132 @@ There are no lightmaps anywhere.
 | P2-menu | Placements, camera, sensor and character spot are known. What is left is the shader ports (including the wall's see-through), the backdrop pass and a scene light preset. |
 | P2-tunnel | The camera solve, the half-day route, is done. What is left depends on decision 3. |
 
+## 8. P2 (15 Nov): the scenes in the viewer
+
+The user handed P2 over ("Hand it over"). It is built on branch `claude/scene-backdrops-p2-2026-11-15`, stacked on PR #40.
+Routes as recommended: D for the menu (a live stage) and A for the tunnel (a plate, relit in Blender).
+
+**Scene mode** (`src/lib/scenes.ts`, `src/components/SceneMode.tsx`):
+- **Storage.** A look's backdrop keeps a scene id in `backdrop.scene`; its colour stops stay as the fallback.
+  - The fallback shows while the scene loads, if it fails, on the share card, and in an older build.
+  - An unknown but well-formed id is kept, not dropped. An older build's write merges it back (`mergedLook`), so a
+    newer season's choice survives.
+  - That replaces the data-loss gap section 5 found in PR #40's first version.
+- **Turntable.** While a scene is shown, the camera stays at the scene's camera (the viewer's default camera, for both
+  scenes).
+  - A drag or the arrow keys turn `rig.root`; scroll or pinch zooms by field of view.
+  - The sway springs feel the turn, as they feel an orbit.
+  - Leaving the scene puts the turn back to 0, the camera back where it was, and orbit back on (checked in the browser).
+  - The share card and the 3D export run with the character facing forward (`withUpright`, `holdUpright`).
+- **The menu look.** "Season 12 menu" is a third ready-made look: the Lobby lights in front of the stage.
+- **Default unchanged.**
+  - No scene code is loaded unless a scene is picked: both the stage and the menu are lazy chunks.
+  - Automated browsers never read stored looks.
+  - The new tests (`tests/scenes.test.ts`) check that the default look gains no `scene` key.
+
+**The menu stage** (`src/scenes/s12-menu.tsx`, option D):
+- **Its own canvas, behind the viewer's transparent one.** This replaces section 4's plan to change the still view's
+  output quad.
+  - The browser composites the character over the stage exactly as it does over the CSS gradient.
+  - So the still-view accumulator and the default path are untouched.
+  - An animated stage never restarts the still view.
+  - The cost is a second WebGL context while the stage shows.
+- **The pieces are the level's**, placed from P1's numbers, and drawn as code: no game meshes ship.
+  - The cyclorama wall, the 24 m "A" plane, the light grid, the smoke, the LED floor half-circle, the haze and the floor.
+  - The only game artwork is the A's stroke mask: 14.7 KB as a greyscale WebP.
+- **Patterns are written from the materials' parameter values, not decompiled.**
+  - The A: `LEDTiling` 360, colour (0, 0.865, 1), 150 scan bands, a glitch with a colour split.
+  - The lights: 18.7 across 22 m, colour (0.646, 0.767, 1).
+  - The floor LED's rim at the vignette's 0.76, and so on.
+- **They were tuned by measuring colours against the user's screenshot:**
+
+  | Region | Stage | Screenshot |
+  | --- | --- | --- |
+  | A fill | (52, 172, 193) | (26, 169, 187) |
+  | Outside the A | (17, 92, 135) | (0, 81, 126) |
+  | Haze in the inner triangle | (85, 135, 174) | (89, 137, 173) |
+  | Floor | (3, 31, 36) | (4, 41, 54) |
+
+  - The screenshot's dot pitches (7.0 px LEDs, 122 px lights) are both 1.2× the material sizes seen from P1's camera.
+  - So that screenshot was taken zoomed in to about 25° tall, not the 30° section 7 assumed.
+- **Teaching point: light adds linearly, sRGB doesn't.**
+  - three converts each material's output to sRGB inside its shader when drawing straight to the screen.
+  - So overlapping glowing layers were summed in sRGB and clipped. The A, the wall and the haze, each right alone, summed
+    to (84, 255, 255).
+  - The stage now draws into a linear half-float target and converts once (`EffectComposer` → `OutputPass`).
+- **The floor's reflection is each glowing layer drawn again, mirrored below the floor line.** That is exactly what a
+  mirror shows.
+  - The copy is softened: dots averaged, lights widened.
+  - It is weighted like a glossy floor (Fresnel): faint looking down, strong at grazing angles.
+  - It needs no extra render pass. drei's `MeshReflectorMaterial` was tried first: it is a lit material, and it went
+    white here.
+
+**The tunnel plate** (`tools/blender_relight_tunnel.py`, `tools/tonemap_plate.py`, option A):
+- **Materials** come from the material instances' values.
+  - The `M_Props_01` tiles, concrete and metal: colour multiply, desaturation, roughness × the texture's alpha, tiling.
+  - The LED screens and the end glass are lit in the team colour (0.008, 0, 0.391): blue team, which reads indigo on
+    screen.
+  - The light strips: (0.598, 0.642, 1) × 10.
+  - The level's 16 tunnel lights.
+  - The end glass's own logo texture was not exported. A stacked logo was composed from `T_THEFINALS_01_Icon_A` and
+    the lettering of `T_THEFINALS_01_Logo_A`.
+- **Units: 1 lumen = 1 Blender watt; an Unreal emissive value = a Blender emission strength.**
+  - A screen's emission integrated over its area comes to about the 150 lm of the rect light the level adds for it,
+    which says the mapping is consistent.
+  - One exposure, −1.66 EV, was fitted against the user's screenshot, rendered from the camera P1 solved.
+- **Tone curve.** Blender's AgX turned the team-blue screens pale cyan.
+  - Unreal's ACES curve keeps saturated blue and shifts it violet, which is the game's indigo.
+  - So the render leaves Blender as linear light and gets exposure, a bloom and the ACES fit outside Blender.
+- **Two bugs found and fixed on the way:**
+  - **Slot order.** Blender's glTF importer orders material slots by first use and merges repeated materials. Assigning
+    materials by slot number put the drainage material on the walkway. Both Blender tools now match slots by the
+    material name the mesh builder writes.
+    - P1's blockout colours were partly misassigned by this.
+    - Its camera solve used geometry only, so it stands.
+  - **Normal convention.** Unreal stores normal maps DirectX style, with green flipped. Read as such, the floor tiles
+    each tilt a little and reflect their own offset copy of the logo, as in the game.
+- **The plate's camera is the viewer's.**
+  - The character stands in the walkway between the first screens (tunnel x 9.5 m).
+  - The camera is 3.6 m back, 1.0 m up, aimed at 0.9 m, 35° tall.
+  - The plate is 3840 × 1620, wide enough for 21:9.
+  - So the plate's floor is the viewer's floor, and the turntable keeps the feet on it.
+- **Why not the screenshot itself as the plate:**
+  - its camera stands 1.97 m high and 6.4 m before the mouth;
+  - a character would have to stand at the mouth to keep its feet in frame;
+  - it is square, and it has no room at the sides.
+- **Plate v1:**
+  - 256 Cycles samples on the GPU (OptiX);
+  - tone-mapped at −1.66 EV with bloom 0.25;
+  - shipped as `s12-tunnel/plate-v1.webp`, 3840 × 1620 at WebP quality 85 (744 KiB).
+  - Full resolution is kept because zoom enlarges the plate up to 2.9× (35° → 12°). 2560 wide would be 390 KiB.
+
+**Checked in the browser (agent checks, dev server, 15 Nov):**
+- **Tunnel, desktop and full screen.**
+  - The feet stand on the walkway at the expected 89% of the viewer's height. That is where the floor 3.6 m ahead of a
+    1 m camera falls in a 35° view.
+  - Zooming to 27.5° set the plate to 128.7%, which matches tan 17.5° / tan 13.77°. The feet moved by the same factor.
+  - A 157 px drag turned the character about 90° with the plate fixed. Zooming out stopped at 35°.
+- **Phone size (375 × 812).**
+  - Both scenes render.
+  - The plate fits by height, with the feet on the walkway.
+  - The chosen scene survived a reload.
+  - Touch drag and pinch were not exercised with real touch input.
+- **Menu stage, desktop.**
+  - Colours as in the table above.
+  - Leaving the scene restores the camera, the orbit and a turn of 0.
+
+**Not done yet:**
+- **Hosting.** The scene files are game artwork and live in the ignored `public/scenes/` for development. Production
+  needs a scenes deployment pinned like `ANIMATIONS_BASE`, and the upload needs the user's yes.
+- **The share card** paints the scene's fallback colours, not the scene. Painting a card still is a follow-up.
+- **The tunnel has no ready-made look.** The character keeps the user's lights, so with Studio it reads warmer than the
+  indigo tunnel. A tunnel look (blue rims) would be like "Season 12 menu".
+- **Not yet checked:**
+  - the second WebGL context's memory on a real phone;
+  - holograms over each scene (additive items clip over bright backdrops);
+  - the default look measured pixel for pixel. The argument is static: with no scene, nothing new mounts.
+  - a human check of the feel.
+
 ## Review
 
 Fable (claude-fable-5-2, high effort, thread `b6206dfe`, about $2.27) reviewed the first draft against copies of the
@@ -621,3 +747,21 @@ Not yet verified:
 
      `python -I -X utf8 tools/p1_evidence.py evidence/s12-levels-p1-v1.json $G/levels-v3 <menu placement> <tunnel
      placement>`
+- **P2 tunnel plate (15 Nov).** The inputs are P1's tunnel placement, meshes, glbs and decoded textures. The textures
+  also need `stacked-logo.png`, composed from `T_THEFINALS_01_Icon_A` and the lettering of `T_THEFINALS_01_Logo_A`.
+  1. Render linear light.
+
+     `blender -b --factory-startup -P tools/blender_relight_tunnel.py -- PLACEMENT MESHES_DIR GLB_DIR TEX_DIR
+     $G/relight/plate-v1 CONFIG.json`
+
+     The config: camera `pos` (5.9, 0.085, 1.0), `target` (9.5, 0.085, 0.9), `vfov` 35; `resolution` [3840, 1620];
+     `samples` 256; `linear` true; `logo_strength` 8; `logo_scale` 1.4; `floor_normal` 0.4.
+  2. Tone-map.
+
+     `python -I tools/tonemap_plate.py $G/relight/plate-v1.npy $G/relight/plate-v1.png --exposure -1.66 --bloom 0.25`
+
+     `--fit REF.png` instead of `--exposure` finds the exposure that matches a reference's mean. That was how −1.66
+     was found, from the screenshot's camera.
+  3. Encode as WebP quality 85, method 6, into `public/scenes/s12-tunnel/plate-v1.webp` (ignored by git).
+- **P2 menu stage.** The only file is the A's stroke mask, `public/scenes/s12-menu/icon-stroke-a.webp`. It is the
+  decoded `T_THEFINALS_01_IconStroke_A` converted to greyscale (Pillow `convert("L")`), WebP quality 92, method 6.

@@ -198,10 +198,18 @@ export function lobbyLook(): Look {
 
 export const DEFAULT_LOOK: Readonly<Look> = Object.freeze(studioLook());
 
+/** The Lobby lights in front of the Season 12 menu stage (scenes.ts): the game's menu lights its character with blue
+ *  side light, which the Lobby look's rims already give. */
+export function menuS12Look(): Look {
+  const scene = sceneById("s12-menu");
+  return { ...lobbyLook(), backdrop: scene ? { ...scene.fallback, scene: scene.id } : { ...LOBBY_BACKDROP } };
+}
+
 /** Full looks replace everything. */
 export const FULL_LOOKS: readonly { id: string; label: string; look: () => Look }[] = [
   { id: "studio", label: "Studio", look: () => studioLook() },
   { id: "lobby", label: "Lobby", look: lobbyLook },
+  { id: "menu-s12", label: "Season 12 menu", look: menuS12Look },
 ];
 /** Sun looks move the sun (and turn its shadow and the floor shadow on) over whatever look is in use. */
 export const SUN_LOOKS: readonly { id: string; label: string; bearing: number; height: number }[] = [
