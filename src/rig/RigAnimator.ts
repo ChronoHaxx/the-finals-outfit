@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import { DeformationRig } from "./DeformationRig";
 import { EmoteProps, type AttachBone, type ComponentSpace } from "./EmoteProps";
-import { EmoteSounds } from "./EmoteSounds";
 import { FaceAnimator, type FaceSample } from "./FaceAnimator";
 import type { FaceWrapPart } from "./FaceWrap";
+import { EmoteSounds } from "./EmoteSounds";
 import { SpringBones } from "./SpringBones";
 import { frameAt, type PoseCapture, type SharePose } from "../lib/share-pose";
 
@@ -34,9 +34,9 @@ import { frameAt, type PoseCapture, type SharePose } from "../lib/share-pose";
 // head's FACIAL_* bones through the head's own pose asset, as the game's head AnimBlueprint does.
 //
 // What this does NOT animate (known gaps, see _docs/showcase-animation-2026-11-05/README.md): cloth simulation
-// (coat tails, capes, loose straps stay rigid on their bones), effects (Niagara), skeletal props' own animation, props
-// tied to a worn cosmetic, and voice lines (vocalization notifies name a gameplay tag the character's voice resolves,
-// not a sound asset).
+// (coat tails, capes, loose straps stay rigid on their bones), effects (Niagara), skeletal props' own animation,
+// props tied to a worn cosmetic, and voice lines (vocalization notifies name a gameplay tag the character's voice
+// resolves, not a sound asset).
 
 export type ClipKind = "idle" | "react" | "emote";
 
@@ -97,10 +97,10 @@ export interface AnimationManifest {
   clips: ClipInfo[];
   /** Emote props manifest (build-props.mjs), relative to the manifest. */
   props?: string;
-  /** Emote sounds manifest (build-emote-sounds.mjs), relative to the manifest. */
-  sounds?: string;
   /** Facial animation index (build-face.mjs), relative to the manifest. */
   faces?: string;
+  /** Emote sounds manifest (build-emote-sounds.mjs), relative to the manifest. */
+  sounds?: string;
   /** Bones the props attach to that the body mesh lacks (animated by the clips), and UE component space. */
   attachBones?: AttachBone[];
   componentSpace?: ComponentSpace;
@@ -168,7 +168,7 @@ export function animationsBaseUrl(): string {
 
 /** The published clip manifest, or null when this deployment ships no clips (the controls then stay hidden). */
 export async function loadAnimationManifest(base = animationsBaseUrl()): Promise<{ manifest: AnimationManifest; clipBase: string;
-  propsUrl: string | null; soundsUrl: string | null; facesUrl: string | null } | null> {
+  propsUrl: string | null; facesUrl: string | null; soundsUrl: string | null } | null> {
   let response: Response;
   try { response = await fetch(`${base}manifest.json`); } catch { return null; }
   if (!response.ok) return null;
@@ -176,7 +176,7 @@ export async function loadAnimationManifest(base = animationsBaseUrl()): Promise
   try { manifest = await response.json(); } catch { return null; } // an SPA fallback page: no clips published
   if (manifest?.formatVersion !== 1 || !Array.isArray(manifest.clips) || !manifest.clips.length) return null;
   return { manifest, clipBase: base + (manifest.base ?? ""), propsUrl: manifest.props ? base + manifest.props : null,
-    soundsUrl: manifest.sounds ? base + manifest.sounds : null, facesUrl: manifest.faces ? base + manifest.faces : null };
+    facesUrl: manifest.faces ? base + manifest.faces : null, soundsUrl: manifest.sounds ? base + manifest.sounds : null };
 }
 
 type PoseRecord = (readonly [THREE.Object3D, THREE.Vector3, THREE.Quaternion, THREE.Vector3])[];
@@ -253,24 +253,24 @@ export class RigAnimator {
   deformEnabled: boolean;
   /** The props emotes spawn (none when the manifest names no props file). */
   readonly props: EmoteProps;
-  /** The sounds emotes play (silent when the manifest names no sounds file, or none is passed: automated browsers). */
-  readonly sounds: EmoteSounds;
   /** The worn head's facial animation (inert when the manifest names no faces index, or with ?face=0). */
   readonly face: FaceAnimator;
   /** The worn head's skinned sections, head-wrapped parts and the worn items' face masks, set by the viewer. */
   private faceSource: (() => FaceSource) | null = null;
+  /** The sounds emotes play (silent when the manifest names no sounds file, or none is passed: automated browsers). */
+  readonly sounds: EmoteSounds;
 
   constructor(readonly manifest: AnimationManifest, private readonly clipBase: string,
-    options: { sway?: boolean; deform?: boolean; loopEmote?: boolean; propsUrl?: string | null; soundsUrl?: string | null;
-      facesUrl?: string | null; face?: boolean } = {}) {
+    options: { sway?: boolean; deform?: boolean; loopEmote?: boolean; propsUrl?: string | null; facesUrl?: string | null;
+      face?: boolean; soundsUrl?: string | null } = {}) {
     this.snapshot.sway = options.sway ?? true;
     this.snapshot.loopEmote = options.loopEmote ?? false;
     this.deformEnabled = options.deform ?? true;
     this.props = new EmoteProps(options.propsUrl ?? null, manifest.attachBones ?? [], manifest.componentSpace ?? null);
-    this.sounds = new EmoteSounds(options.soundsUrl ?? null);
     this.face = new FaceAnimator(options.face === false ? null : options.facesUrl ?? null);
     // A head's poses arriving while a frame is held: the next update poses it; the still view must draw that frame again.
     this.face.onReady = () => { if (this.snapshot.paused) this.poseListeners.forEach(listener => listener()); };
+    this.sounds = new EmoteSounds(options.soundsUrl ?? null);
   }
 
   /** Where the worn head comes from (the viewer's rig). */
@@ -741,19 +741,10 @@ export class RigAnimator {
     }
   }
 
-  /** The emote's clock for its sounds, advancing only while it plays (paused, held by a seek or scrubbed: silent). */
-  private updateSounds(): void {
-    const emote = this.emoteAction;
-    const clock = emote && !this.stopping
-      ? { time: emote.time, duration: emote.getClip().duration, looping: emote.loop === THREE.LoopRepeat } : null;
-    this.sounds.update(clock, !!clock && this.snapshot.moving && this.mixer!.timeScale > 0 && !this.scrubbing);
-  }
-
   /** The viewer is done with this animator: it unmounts, or Chinals mode swapped the clip set (site-mode.ts). Like
    *  reset(), and a play() or openPose() still downloading its clip returns without binding when the download lands
    *  (else it would build a mixer on the shared body that nothing updates, leave its prop showing, and the next
-   *  animator would take that frame for the still pose). Its sounds close their audio device for good: each clip set
-   *  has its own EmoteSounds, so a mode switch must not leave the old one's context or gesture listeners behind. */
+   *  animator would take that frame for the still pose). */
   dispose(): void {
     this.disposed = true;
     ++this.request;
@@ -762,6 +753,14 @@ export class RigAnimator {
     // The head is shared with the next animator (Chinals mode, site-mode.ts): its bones back to rest, and a bind still
     // waiting for the head's files is dropped, so this face never touches it again.
     this.face.unbind();
+  }
+
+  /** The emote's clock for its sounds, advancing only while it plays (paused, held by a seek or scrubbed: silent). */
+  private updateSounds(): void {
+    const emote = this.emoteAction;
+    const clock = emote && !this.stopping
+      ? { time: emote.time, duration: emote.getClip().duration, looping: emote.loop === THREE.LoopRepeat } : null;
+    this.sounds.update(clock, !!clock && this.snapshot.moving && this.mixer!.timeScale > 0 && !this.scrubbing);
   }
 
   /** Drop every action now (no fade): the body is being replaced or the viewer unmounts. */

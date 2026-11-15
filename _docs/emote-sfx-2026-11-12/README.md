@@ -155,6 +155,23 @@ with the local `sounds-1`.
   software: the samples show the animation clock running at 0.96× and 0.90× of real time (frames over the 0.1 s cap).
   Steady-state cues are within ±5 ms.
 
+**Production build, Chrome 17/17** ([check-chrome-prod.json](check-chrome-prod.json)):
+- `vite build` with deploy.yml's hosts and `VITE_ANIMATIONS_BASE=https://ab913ac8.the-finals-outfit-assets.pages.dev/`,
+  served by `vite preview --base /the-finals-outfit/`. The sounds come cross-origin from the published host.
+- Cue onsets −18 to +4 ms (median 0 ms).
+
+**After the rebase onto the facial animation (12 Nov 2026)**, the dev preview serving the staged faces + sounds set:
+- **Chrome 17/17** ([check-chrome-superset-local.json](check-chrome-superset-local.json)): onsets −12.6 to +3.5 ms.
+- **Faces 2/2** ([check-faces-superset-local.json](check-faces-superset-local.json), [check-faces.mjs](check-faces.mjs)):
+  the facial session's two production cases, a balaclava and a beard. Both posed and wrapped, every `faces-1` file 200,
+  and no sound file fetched (automated browser).
+- **Check fixes:**
+  - An emote now also waits for the head's face data before it starts, so the cold-link step waits for the pose asset
+    too.
+  - A dev build takes the source head route only with `?reconstructed=1`, so the face check passes it.
+- **A self-inflicted failure:** Vite reloads the page whenever a file in the worktree changes, including these docs.
+  Editing them during a run broke one run. Don't edit the worktree while a check runs.
+
 **Not checked:**
 - Real Safari (macOS or iOS): no Apple device here. Playwright's Windows WebKit doesn't use Apple's decoder.
 - Phones by hand, and a listen by ear against in-game footage.
@@ -166,21 +183,169 @@ with the local `sounds-1`.
 - **A measurement mistake.** Playwright's `evaluate` runs with a user gesture, so the first "before any gesture" check
   tested nothing.
 
-## Hosting (needs your yes)
+## Hosting
 
-Staged locally: `scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112c/`, 845 files.
-- The live `cf84e9b6` set: set-5 and props-9, byte-identical to the receipts of the 12 Nov upload.
+### First upload: `ab913ac8` (12 Nov 2026, on your "Yes, upload it"), superseded and never to ship
+
+**Animations host `ab913ac8`** (alias `anim-1112-emote-sfx`), from the staged
+`scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112c/` (845 files):
+- The then-live `cf84e9b6` set: set-5 and props-9, byte-identical to the receipts of the 12 Nov upload.
 - `sounds-1/`.
-- `manifest.json`, which differs from the live one only by `"sounds": "sounds-1/sounds.json"`.
+- `manifest.json`, which differs from `cf84e9b6`'s only by `"sounds": "sounds-1/sounds.json"`.
 
-A new deployment uploads about 276 new files (20.4 MB). Then deploy.yml's `ANIMATIONS_BASE` moves to the new host.
-**Rollback:** revert that one line (`cf84e9b6` is untouched).
+**Upload:** wrangler 4.131.1 `pages deploy` (see `_docs/showcase-animation-2026-11-05/README.md`): 277 new files,
+567 deduplicated ([upload-anim-ab913ac8.txt](upload-anim-ab913ac8.txt)).
 
-Without the bump, this PR changes nothing users hear: the live manifest has no `sounds`, and the player stays inert.
+**Verified** ([deployment-anim-ab913ac8.json](deployment-anim-ab913ac8.json)):
+- All 844 files are byte-identical to staging.
+- `.m4a` is served as `audio/mp4`, with CORS `*` and an immutable cache. A missing file returns 404.
+
+**Why it must not ship:**
+- Facial animation (PR #48) went live on main while this PR waited. Its host `e5250f94` is `cf84e9b6` plus `faces-1/`,
+  and main's `ANIMATIONS_BASE` points at it.
+- `ab913ac8` has no `faces-1/`: pointing the site at it would switch the faces off.
+- It stays published, untouched, as a record.
+
+### Rebuilt sounds: `17ec92c3` (15 Nov 2026, on your "Yes, upload it"), the host this PR ships
+
+**Animations host `17ec92c3`** (alias `anim-1115-faces-sfx`):
+- **Upload:** 1 new file (`sounds.json`), 1,131 deduplicated ([upload-anim-17ec92c3.txt](upload-anim-17ec92c3.txt)).
+- **Verified:** all 1,132 files are byte-identical to staging
+  ([deployment-anim-17ec92c3.json](deployment-anim-17ec92c3.json)). `.m4a` is `audio/mp4` with CORS `*` and an
+  immutable cache.
+- **deploy.yml:** `ANIMATIONS_BASE` points at it. **Rollback:** `e5250f94` (faces, no sounds), or `e4608dac` (the old
+  gains).
+- **Production build against it** (main `76d4e9e` + this PR):
+  - Chrome 17/17 ([check-chrome-prod-17ec92c3.json](check-chrome-prod-17ec92c3.json)): cues within ±5.4 ms.
+  - Faces 2/2 ([check-faces-prod-17ec92c3.json](check-faces-prod-17ec92c3.json)).
+  - The mode-switch check: 1 open audio context after 3 round trips.
+  - One 171 ms frame in Valkyria's Embrace, at 1.0 s, as its wings appear. The same code against `e4608dac` had none,
+    so it's intermittent and not explained. It can't move that emote's sound, whose only cue starts at 0.25 s.
+
+**Why it replaced `e4608dac`.** PR #51's three fixes to this PR's sound code are now in this PR (see "Global sound
+fixes" below). One of them, the MetaSound volume rule, changes `sounds.json`:
+- **Rebuilt offline** with the fixed resolver (`scripts/generated/emote-sfx-2026-11-12/rebuild-1115/`):
+  - all 275 waves are byte-identical to `e4608dac`'s, and so are the file table and the skipped list;
+  - exactly 14 window cues change gain, all musical MetaSounds. Disco 1-4, Hippie, Jester Lute and Yazz Flute go
+    1 → 0.75, Electro Synth → 0.55, Jester Flute → 0.7. Mariachi guitar and trumpet → 1.1, maracas → 1.2, Jester
+    Drum → 2.1, and Puppeteer 1.5 → 1.3.
+- **Staged** `upload/anim-20261115e/`: `e4608dac`'s 1,133 files with only `sounds-1/sounds.json` replaced (checked by
+  `diff -r`). Its manifest is byte-identical to `e4608dac`'s.
+### Faces + sounds: `e4608dac` (13 Nov 2026, on your "Yes, upload it"), superseded by `17ec92c3`
+
+**Animations host `e4608dac`** (alias `anim-1113-faces-sfx`), from the staged set below:
+- **Upload:** 1 new file (the manifest), 1,131 deduplicated ([upload-anim-e4608dac.txt](upload-anim-e4608dac.txt)).
+- **Verified:** all 1,132 files are byte-identical to staging
+  ([deployment-anim-e4608dac.json](deployment-anim-e4608dac.json)). `.m4a` is `audio/mp4` with CORS `*` and an
+  immutable cache.
+- **deploy.yml:** `ANIMATIONS_BASE` points at it. **Rollback:** `e5250f94`.
+- **Production build against it** (15 Nov, with the prop prewarm below):
+  - Chrome 17/17 ([check-chrome-prod-e4608dac-prewarm.json](check-chrome-prod-e4608dac-prewarm.json)): every cue
+    within ±5.5 ms, and no frame over 40 ms.
+  - Faces 2/2 ([check-faces-prod-e4608dac-prewarm.json](check-faces-prod-e4608dac-prewarm.json)).
+
+#### Staging (as built 12 Nov)
+
+**Rebased** onto main `64f68d3`: both features sit side by side in `RigAnimator.ts` and `AnimationControls.tsx`.
+
+**Staged** `scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112d/` (1,133 files, 140 MB):
+- `e5250f94`'s set: set-5 392, props-9 175, faces-1 288, plus `_headers`.
+  - Copied from the facial session's staging.
+  - Checked first against the live host: 856 of 856 files byte-identical
+    ([verify-faces-staged-e5250f94.json](verify-faces-staged-e5250f94.json)).
+- `sounds-1/` (276): the bytes already verified on `ab913ac8`.
+- `manifest.json`: `e5250f94`'s, unchanged except for `"sounds": "sounds-1/sounds.json"` added after `faces`.
+
+Live users hear sounds only once this PR is merged.
+
+## Prop prewarm: the first-play stall (15 Nov 2026)
+
+**The failures.** The first production run against `e4608dac` failed 2 of 17 checks. BlackSmith's first cue played
+37 ms early, and CPop's music restarted 5 times.
+- **CPop** did not reproduce. In that run the animation clock ran at 0.22× real time, so the page was stalling
+  (probably other load on the machine), and drift restarts are the player's designed response. The check now records
+  frame gaps (`frames` in each emote's report), so a timing failure says whether the page stalled.
+- **BlackSmith** reproduced every time. It stalls twice in its first 0.4 s (110-190 ms frames), when its anvil and log
+  props first draw. A replay in the same page never stalls.
+
+**Mechanism.**
+- WebGL compiles a material's shader program the first time something using it is drawn, and uploads each texture on
+  its first draw, both on the main thread.
+- The animator steps at most 0.1 s per frame, so a 180 ms frame loses 80 ms of animation time.
+- The audio clock does not stop: a cue scheduled before the stall plays early (−54 ms measured). Later cues are
+  scheduled from the delayed animation clock, so they stay in step.
+- Without sound this is still a visible hitch whenever a prop first appears.
+
+**Fix** (`EmoteProps.warmForDraw`; `play()` already waits for an emote's props, so it now also waits for this):
+- Each prop's textures are uploaded and its programs compiled (`compileAsync`) before the emote starts, once per prop.
+- A failure leaves that prop to compile on its first frame, as before. A 3 s cap means a warm can never hang a start.
+- The viewer's renderer and scene come through the existing preview handle (`getPreviewScene`), so
+  `CharacterViewer.tsx` is unchanged.
+
+**Matching the variants.** A shader log ([stall-diag.mjs](stall-diag.mjs); [stall-replay.mjs](stall-replay.mjs) plays an emote twice) showed what the
+first draw actually compiled. A program's variant depends on the scene and the render target as well as the material,
+so warming has to match all three:
+- **Render target.** The viewer draws into `StableFrameAccumulator`'s target (linear output, no tone mapping) or, when
+  that is off, to the canvas. Both variants are compiled.
+- **Shadow pass.** Its depth programs are compiled through stand-ins that carry the depth material three's shadow map
+  would choose. Programs are cached by their parameters, so the real pass finds them built.
+- **Shadow filter type.** R3F's `shadows="soft"` sets `PCFSoftShadowMap` on every Canvas render, and three r184
+  (which deprecated it) rewrites it to `PCFShadowMap` in its next shadow pass. PCFSoft has no shader define, so a
+  program compiled in between gets `SHADOWMAP_TYPE_BASIC`: the anvil's rifle was warmed with the wrong variant. The
+  warm compiles as the next pass will draw.
+
+**Left as is:**
+- drei's `<ContactShadows>` draws the scene with its own private `MeshDepthMaterial` override every frame. The first
+  non-skinned mesh in the scene needs one new variant of it, once per session.
+- Warming that would mean copying drei's private material and its `onBeforeCompile` (part of the cache key): fragile,
+  for one small program that no longer stalls measurably.
+
+**Result** (production build against `e4608dac`):
+- BlackSmith's first cue went from −37 and −54 ms to −3.7 ms.
+- No frame was over 40 ms in any measured emote.
+- Four first plays of BlackSmith had no stall frames, where every run before had two.
+
+**Tests:** `tests/rig/emote-props.test.ts` covers four cases:
+- prepare waits for the warm;
+- each prop warms once;
+- a failure is retried;
+- a warm that never settles holds the start for no more than the cap.
+
+**Side note, not changed here:** `shadows="percentage"` in `CharacterViewer.tsx` would ask for PCF directly. That
+would end the per-render rewrite and three's deprecation warning.
+
+## Global sound fixes from PR #51 (taken 15 Nov 2026)
+
+Merge plan from the coordinating session: #47 first, then #51 rebuilt on main with only its Chinals commits. The
+Chinals session found three defects in this PR's code; its five files were taken from its branch (`1b5a50e`) and
+reviewed here:
+- **MetaSound volume.** A MetaSound source is itself a SoundWave: its own `Volume` scales its output. The Wave Player
+  inside only decodes its wave, so that wave's `Volume` and `Pitch` are never applied (reviewed by Fable in that
+  session).
+  - The musical template is now recognised by its full wiring, not by node names.
+  - Mixer cues play their inputs as layers, and exported audio is found whatever its codec.
+- **Leak.** `dispose()` now removes the gesture and visibility listeners (an `AbortController`), and a disposed
+  player can no longer make a context.
+  - Chinals mode (now on main) disposes the global player on every switch.
+  - Checked in the production build ([check-mode-switch.mjs](check-mode-switch.mjs),
+    [check-mode-switch.json](check-mode-switch.json)): three Global → Chinals → Global round trips leave 1 open
+    AudioContext of 4 made, and the emote sounds after each.
+- **Late first sound.** A new context can report "running" while its clock still reads 0: no voice starts until it
+  moves (one start was 0.7 s late, then skipped).
+
+**Merge candidate** (main `76d4e9e` + this PR, production build against `e4608dac`, so old gains):
+- Chrome 17/17 ([check-chrome-prod-merge-candidate.json](check-chrome-prod-merge-candidate.json)): cues within
+  ±5.4 ms, no frame over 40 ms.
+- Faces 2/2 ([check-faces-prod-merge-candidate.json](check-faces-prod-merge-candidate.json)).
+- `npm test` 896 pass, plus the 8 failures that need game GLBs.
 
 ## Open items and follow-ups
 
-- **Chinals emote sounds:** 42 Chinals-only assets. Needs the chinals-probe sound mode and the Chinals host (PR #44).
+- **A limiter (your call).** Some game gains push loud peaks past full scale at the default volume 0.7: Jester Drum
+  (gain 2.1, peak 0.80 → 1.18). Chinals TakeAway (gain 4.8) does too, in PR #51. The game's own mixer comes after
+  these gains; a browser clips. A limiter on the player's output would stop it, but would touch every sound near
+  full scale.
+- **Chinals emote sounds:** PR #51, rebuilt on main after this PR merges.
 - **Voice lines:** the 3 BlackSmith vocalization notifies resolve through the character's voice at run time.
 - **Raising the frame cap while sounds play:** a 0.35 s cap would stop the audio leading after hitches. It changes
   existing animation behaviour, so it's your call.

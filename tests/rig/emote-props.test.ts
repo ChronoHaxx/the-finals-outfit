@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "three";
-import { EmoteProps, sampleCurve, type PropsManifest, type PropTemplate } from "../../src/rig/EmoteProps";
+import { EmoteProps, sampleCurve, WARM_TIMEOUT_MS, type PropsManifest, type PropTemplate } from "../../src/rig/EmoteProps";
 import { propClock } from "../../src/rig/RigAnimator";
 import { missingSummary, missingBadge } from "../../src/components/EmotePicker";
 import type { ClipInfo } from "../../src/rig/RigAnimator";
@@ -232,4 +232,62 @@ test("the picker says only what is still missing once props.json says which prop
   const complete = { ...info, emote: { props: ["Bat"], fx: [] } } as ClipInfo;
   assert.equal(missingSummary(complete, props), null);
   assert.equal(missingBadge(complete, props), null);
+});
+
+// Prewarm (15 Nov 2026): an emote's props are compiled and uploaded before it starts, so their first frame does not stall
+// the motion (and put the sounds scheduled ahead of it out of step). The warmer here stands in for the renderer.
+const settle = () => new Promise(resolve => setImmediate(resolve));
+const PROPS_URL = "http://test/animations/props/props.json";
+
+test("prepare waits for each shown prop to be prewarmed, once per prop; effect-only actors are not warmed", async () => {
+  const props = new EmoteProps(PROPS_URL, attachBones, componentSpace, loader);
+  const warmed: string[] = [];
+  let release!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  props.setWarmer(async object => { warmed.push(object.name); await gate; });
+  let done = false;
+  const preparing = props.prepare(SEQ).then(() => { done = true; });
+  for (let i = 0; i < 5; i++) await settle();
+  assert.equal(done, false, "the emote must not start while its props are still compiling");
+  release();
+  await preparing;
+  assert.deepEqual(warmed.sort(), ["emote-prop:Bat", "emote-prop:Teddy", "emote-prop:Wings"]);
+  await props.prepare(SEQ);
+  assert.equal(warmed.length, 3, "a prop already warmed is not warmed again");
+});
+
+test("a failed prewarm does not fail the emote (the prop compiles on its first frame) and is tried again next time", async t => {
+  t.mock.method(console, "warn", () => {});
+  const props = new EmoteProps(PROPS_URL, attachBones, componentSpace, loader);
+  let calls = 0;
+  props.setWarmer(async () => { calls++; throw new Error("context lost"); });
+  await props.prepare(SEQ);
+  assert.equal(calls, 3);
+  await props.prepare(SEQ);
+  assert.equal(calls, 6);
+});
+
+test("a prewarm that never settles holds an emote's start no longer than the timeout", async t => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const props = new EmoteProps(PROPS_URL, attachBones, componentSpace, loader);
+  props.setWarmer(() => new Promise<void>(() => {}));
+  let done = false;
+  const preparing = props.prepare(SEQ).then(() => { done = true; });
+  for (let i = 0; i < 5; i++) await settle();
+  t.mock.timers.tick(WARM_TIMEOUT_MS - 1);
+  await settle();
+  assert.equal(done, false);
+  t.mock.timers.tick(1);
+  await preparing;
+  assert.equal(done, true);
+});
+
+test("without a warmer (no renderer yet) prepare only downloads, as before", async () => {
+  const props = new EmoteProps(PROPS_URL, attachBones, componentSpace, loader);
+  await props.prepare(SEQ);
+  const rig = body();
+  props.attach(rig.scene);
+  props.setEmote(SEQ);
+  props.update(1.5);
+  assert.ok(shown(propNamed(rig.scene, "Bat")));
 });
