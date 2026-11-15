@@ -927,7 +927,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
           // No ordinary model to fall back on, and no preserved socket on this head: leave it off rather than place it
           // on another head's socket.
           rig.unequip(slot);
-          setError("This earring can’t be placed on the current face yet.");
+          setError("This item can’t be placed on the current face yet.");
           prev.current[slot] = key ?? null;
           continue;
         }
