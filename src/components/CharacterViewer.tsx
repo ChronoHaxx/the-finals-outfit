@@ -8,7 +8,7 @@ import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
 import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
 import { bodyTypePreview, isBodyTypeId, type BodyTypeId, type BodyTypePreview } from "../rig/BodyTypePreview";
 import { shownBodyType } from "../lib/body-type";
-import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
+import { loadSourceAssemblyAssets, loadSourceAssemblyItems, sourceHeadComponentCarries, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
@@ -35,8 +35,11 @@ import { getDownloadProgress, subscribeDownloadProgress } from "../lib/load-prog
 import type { Item } from "../lib/item";
 import { AUTOMATED } from "../lib/automation";
 import type { ImmersiveMode } from "../lib/immersive-mode";
-import { CollapseIcon, ExpandIcon } from "./Icons";
+import type { HideUi } from "../lib/viewer-chrome";
+import { CollapseIcon, ExpandIcon, EyeOffIcon } from "./Icons";
 import { MeshGateError } from "../lib/mesh-gate";
+import { ScreenshotPanel } from "./ScreenshotPanel";
+import { STAGE_FLOOR, type ScreenshotContext } from "../rig/ViewerScreenshot";
 import { LightingPanel, SunShortcut } from "./LightingPanel";
 import { useLightingStore } from "../lib/lighting-store";
 import {
@@ -305,6 +308,18 @@ function PreviewBridge({ root, backdrop, active, animator }: {
   return null;
 }
 
+// Hands the screenshot panel (outside the Canvas) the live renderer, scene and camera.
+function ScreenshotBridge({ target }: { target: { current: ScreenshotContext | null } }) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
+  useEffect(() => {
+    target.current = { gl, scene, camera };
+    return () => { target.current = null; };
+  }, [gl, scene, camera, target]);
+  return null;
+}
+
 function ExportBridge({ target }: { target: { current: ExportContext | null } }) {
   const gl = useThree((s) => s.gl);
   const camera = useThree((s) => s.camera);
@@ -439,7 +454,8 @@ function FloorShadow({ opacity }: { opacity: number }) {
   const material = useMemo(() => new THREE.ShadowMaterial({ depthWrite: false }), []);
   useEffect(() => { material.opacity = opacity; }, [material, opacity]);
   useEffect(() => () => { geometry.dispose(); material.dispose(); }, [geometry, material]);
-  return <mesh geometry={geometry} material={material} position={[0, -0.002, 0]} receiveShadow renderOrder={-1} />;
+  return <mesh geometry={geometry} material={material} position={[0, -0.002, 0]} receiveShadow renderOrder={-1}
+    userData={STAGE_FLOOR} />;
 }
 
 // The whole lit scene for a look (stage-lighting.ts). The Studio look mounts exactly what the reviewed rig always did, in
@@ -462,6 +478,7 @@ function StageLights({ look, root }: { look: Look; root: THREE.Object3D }) {
         : <directionalLight key={light.id} position={light.position} color={light.color}
             intensity={light.enabled ? light.intensity : 0} />)}
       {look.contactShadow && <ContactShadows
+        userData={STAGE_FLOOR}
         position={[0, 0, 0]}
         opacity={0.35}
         scale={3}
@@ -482,8 +499,9 @@ const TONE_MAPPING: Record<ToneMappingChoice, THREE.ToneMapping> = {
 // the same shaders as a canvas without shadows (three enables shadow code only when a light casts).
 const SHADOWS = { type: THREE.PCFShadowMap };
 
-/** `immersive`: the page's full-screen mode (lib/immersive-mode), when the page supports one; adds its button. */
-export default function CharacterViewer({ immersive, mode = "global" }: { immersive?: ImmersiveMode; mode?: SiteMode } = {}) {
+/** `immersive`: the page's full-screen mode (lib/immersive-mode), when the page supports one; adds its button.
+ *  `hideUi`: the page's hidden-UI mode (H, lib/viewer-chrome); adds its button, and every overlay hides with it. */
+export default function CharacterViewer({ immersive, hideUi, mode = "global" }: { immersive?: ImmersiveMode; hideUi?: HideUi; mode?: SiteMode } = {}) {
   const rig = useMemo(
     () =>
       new CharacterRig(createGltfLoader(), undefined, NAIL_MASK_URL, {
@@ -524,6 +542,8 @@ export default function CharacterViewer({ immersive, mode = "global" }: { immers
   const [contextLost, setContextLost] = useState(false);
   const [canvasGeneration, setCanvasGeneration] = useState(0);
   const exportContext = useRef<ExportContext | null>(null);
+  const screenshotContext = useRef<ScreenshotContext | null>(null);
+  const uiHidden = !!hideUi?.hidden;
   const build = useBuildStore((s) => s.build);
   // The outfit's body type (src/lib/body-type.ts): Masculine, or another the picker offers.
   const outfitBodyType = useBuildStore((s) => s.bodyType);
@@ -859,10 +879,20 @@ export default function CharacterViewer({ immersive, mode = "global" }: { immers
           continue;
         }
         const headComponent = headSocketed ? rig.sourceHeadComponentKey() : undefined;
+        // (15 Nov 2026) The index preserves head-component sockets for some heads only (Face 01's): on another worn
+        // head the rig cannot place the part, so the item keeps its ordinary path as without a source head, instead
+        // of failing the whole preview. An item with no ordinary model is left off with a notice (below).
+        const headSockets = headSocketed ? sourceCandidate!.parts
+          .filter(part => !part.hidden && part.definition.bAttachToHeadMesh)
+          .map(part => part.definition.AttachmentSocket ?? "") : [];
+        const headCarries = !headComponent || await sourceHeadComponentCarries(
+          modelUrl("models/reconstructed-assemblies-v1"), rig.sourceHeadMesh(), headSockets).catch(() => false);
+        if (cancelled) return;
+        const headUncarried = !!headComponent && !headCarries;
         // A part wrapped by the head component is shaped by the worn head's wrap cage, so it is re-staged per head.
         const headWrapped = !!sourceCandidate?.parts.some(part => !part.hidden && part.definition.WrapDeformation?.bIsWrapDeformed
           && part.definition.WrapDeformation?.bIsWrapDeformedByHeadComponent);
-        const sourceItem = headSocketed && !headComponent ? undefined : sourceCandidate;
+        const sourceItem = headSocketed && (!headComponent || headUncarried) ? undefined : sourceCandidate;
         const skinCandidate = id && slot === "face" && DEV.sourceMeshes && DEV.sourceFitting ? assembly?.items[id] : undefined;
         let skinParameters: SourceMaterialParameters[] = [];
         if (skinCandidate && assembly) {
@@ -893,6 +923,14 @@ export default function CharacterViewer({ immersive, mode = "global" }: { immers
             : id;
         if (prev.current[slot] === key) continue;
         const item = id ? getItemById(id) : undefined;
+        if (headUncarried && !item?.model?.gltfPath) {
+          // No ordinary model to fall back on, and no preserved socket on this head: leave it off rather than place it
+          // on another head's socket.
+          rig.unequip(slot);
+          setError("This item can’t be placed on the current face yet.");
+          prev.current[slot] = key ?? null;
+          continue;
+        }
         // A face without a legacy model renders only through its legacy-free source skin pair (w91-head-skin); with no
         // pair in the index it stays the empty slot it was.
         let legacyFreePair: Awaited<ReturnType<typeof loadSourceSkinPair>>;
@@ -1147,6 +1185,7 @@ export default function CharacterViewer({ immersive, mode = "global" }: { immers
         <StageLights look={look} root={rig.root} />
         <primitive object={rig.root} />
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
+        <ScreenshotBridge target={screenshotContext} />
         <PreviewBridge root={rig.root} backdrop={backdrop} active={ready && !busy} animator={animator} />
         {animator && <AnimationFrameDriver animator={animator} />}
         {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving}
@@ -1167,7 +1206,8 @@ export default function CharacterViewer({ immersive, mode = "global" }: { immers
       </div>}
       {/* The overlay controls, inset by the safe area (SAFE_SIDES). The frame takes no pointer events, so the canvas
           behind every empty part still orbits; each control opts back in. */}
-      <div className="pointer-events-none absolute z-10" style={immersive?.immersive ? SAFE_ALL : SAFE_SIDES}>
+      <div className={`@container pointer-events-none absolute z-10 ${uiHidden ? "invisible" : ""}`} inert={uiHidden}
+        style={immersive?.immersive || uiHidden ? SAFE_ALL : SAFE_SIDES}>
         {/* Viewfinder corners. Decorative, and kept out of automated canvas captures. */}
         {!AUTOMATED && <div aria-hidden="true" className="brackets pointer-events-none absolute inset-3 z-[5]"
           style={{ "--b": darkBackdrop ? "rgb(242 239 233 / 0.32)" : "rgb(9 9 11 / 0.32)" } as CSSProperties} />}
@@ -1186,6 +1226,13 @@ export default function CharacterViewer({ immersive, mode = "global" }: { immers
               {immersive.immersive && "Exit full screen"}
             </button>
           )}
+          {hideUi && (
+            <button type="button" onClick={hideUi.hide} aria-label="Hide UI" title="Hide UI for a clean look (H; H or Esc brings it back)"
+              className="hud flex h-8 w-8 items-center justify-center bg-ink-950/80 text-fg transition-colors hover:bg-ink-950">
+              <EyeOffIcon size={15} />
+            </button>
+          )}
+          <ScreenshotPanel context={screenshotContext} backdrop={backdrop} ready={ready && !busy} />
           {/* Lighting and backdrop: one panel for the whole scene (the Studio/Lobby switch became two of its looks). */}
           <LightingPanel />
         </div>
@@ -1233,7 +1280,7 @@ export default function CharacterViewer({ immersive, mode = "global" }: { immers
           {animator && ready && <EmoteTimeline animator={animator} />}
         </div>
       </div>
-      {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && (
+      {import.meta.env.DEV && DEV.reconstructed && hasRecoveredPreview && !uiHidden && (
         <div className="absolute left-2 top-2 z-10 rounded-md bg-black/70 px-3 py-2 text-xs text-white">
           <span className="mb-1 block">Recovered shader · preview lighting</span>
           <select
@@ -1252,7 +1299,7 @@ export default function CharacterViewer({ immersive, mode = "global" }: { immers
         </div>
       )}
       {DEV.tune && ready && <MaterialTuner rig={rig} />}
-      {!ready && !error && (
+      {!ready && !error && !uiHidden && (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
           <div className="flex flex-col items-center gap-3">
             <span className={`hud ${darkBackdrop ? "text-fg-muted" : "text-ink-700"}`}>Loading contestant</span>

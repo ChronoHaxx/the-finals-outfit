@@ -1,0 +1,437 @@
+{
+ "browser": "chrome",
+ "base": "http://127.0.0.1:5197/the-finals-outfit",
+ "checks": [
+  {
+   "name": "link before any gesture: emote playing, audio locked, nothing started",
+   "pass": true,
+   "detail": {
+    "current": "ace-pilot",
+    "context": null,
+    "starts": 0
+   }
+  },
+  {
+   "name": "first click: the playing emote's line joins mid-sound",
+   "pass": true,
+   "detail": {
+    "event": "start",
+    "key": "0:0",
+    "wave": "Emotes_FrontEnd_AcePilot",
+    "clipTime": 4.02260002272131,
+    "ctxTime": 0,
+    "at": 0,
+    "offset": 3.7742000227213097
+   }
+  },
+  {
+   "name": "ace-pilot: one voice, scheduled, within 10 ms of its cue",
+   "pass": true,
+   "detail": [
+    {
+     "key": "0:0",
+     "wave": "Emotes_FrontEnd_AcePilot",
+     "cue": 0.2484,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": 4.4,
+     "clockRate": 1.0005
+    }
+   ]
+  },
+  {
+   "name": "black-smith: each cue once (3 voice-tag notifies have no sound), all within one clip frame",
+   "pass": true,
+   "detail": {
+    "started": 5,
+    "cues": 5,
+    "errorsMs": [
+     -17.7,
+     -4.4,
+     -0.4,
+     -2.9,
+     3.5
+    ]
+   }
+  },
+  {
+   "name": "finger-crack looped: 8 starts over 2+ passes, each once, within 10 ms, no restarts",
+   "pass": true,
+   "detail": {
+    "keys": [
+     "0:0",
+     "1:0",
+     "2:0",
+     "0:1",
+     "1:1",
+     "2:1",
+     "0:2",
+     "1:2"
+    ],
+    "errorsMs": [
+     3.3,
+     1.9,
+     3.2,
+     -2.8,
+     -0.9,
+     -4.2,
+     0.4,
+     -0.1
+    ]
+   }
+  },
+  {
+   "name": "finger-crack: once cues are never stopped by the wraps",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "pause: voice stopped at once, none live",
+   "pass": true,
+   "detail": {
+    "voices": 0,
+    "log": [
+     "stop",
+     "end"
+    ]
+   }
+  },
+  {
+   "name": "scrub: silent (no voice starts while dragging or held)",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "resume: the line restarts mid-sound at the held time's offset (within 50 ms), once",
+   "pass": true,
+   "detail": {
+    "held": 4.533333436363637,
+    "start": {
+     "event": "start",
+     "key": "0:0",
+     "wave": "Emotes_FrontEnd_AcePilot",
+     "clipTime": 4.540733436354696,
+     "ctxTime": 38.62133333333333,
+     "at": 38.62133333333333,
+     "offset": 4.292333436354696
+    }
+   }
+  },
+  {
+   "name": "c-pop-04 looped: one music voice carried across two wraps",
+   "pass": true,
+   "detail": {
+    "source": "HM_Frontend_Emotes_A_CPop_00",
+    "duration": 7,
+    "cues": 1,
+    "timing": [
+     {
+      "key": "0:0",
+      "wave": "Emotes_FrontEnd_CPop_Mix1",
+      "cue": 0,
+      "offset": 0.0109,
+      "scheduled": false,
+      "errorMs": 0.9,
+      "clockRate": 0.9997
+     }
+    ],
+    "events": {
+     "stop": 1,
+     "start": 1,
+     "end": 1,
+     "adopt": 2
+    },
+    "restarts": 0,
+    "adopts": 2
+   }
+  },
+  {
+   "name": "jester-lute: the next pass's track is scheduled at 0.333 s of the new pass, from the top",
+   "pass": true,
+   "detail": {
+    "lute": [
+     {
+      "event": "schedule",
+      "key": "0:1",
+      "wave": "Emote_FrontEnd_Jester_Lute",
+      "clipTime": 0.21423320616784436,
+      "ctxTime": 56.64,
+      "at": 56.759066793832154,
+      "offset": 0
+     }
+    ],
+    "at": {
+     "time": 19.199446464528382,
+     "slope": 1.0007995476064337,
+     "frames": 104
+    }
+   }
+  },
+  {
+   "name": "close: nothing left playing",
+   "pass": true
+  },
+  {
+   "name": "decoded AAC length matches the source within 2 ms (priming trimmed)",
+   "pass": true,
+   "detail": [
+    {
+     "wave": "Emotes_FrontEnd_AcePilot",
+     "source": 7.2175,
+     "decoded": 7.217,
+     "extraMs": -0.5
+    },
+    {
+     "wave": "Emotes_FrontEnd_CPop_Mix1",
+     "source": 8,
+     "decoded": 8,
+     "extraMs": 0
+    },
+    {
+     "wave": "Emote_FrontEnd_Jester_Lute",
+     "source": 16,
+     "decoded": 16,
+     "extraMs": 0
+    }
+   ]
+  },
+  {
+   "name": "mute click saves {muted:true}",
+   "pass": true,
+   "detail": "{\"volume\":0.7,\"muted\":true}"
+  },
+  {
+   "name": "after reload: still muted, no audio downloaded, no voices",
+   "pass": true,
+   "detail": {
+    "fetchedWaves": 0
+   }
+  },
+  {
+   "name": "unmute mid-emote: audio joins (a voice starts)",
+   "pass": true
+  },
+  {
+   "name": "no console errors or audio warnings",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "emotes": {
+  "ace-pilot": {
+   "source": "HM_FrontEnd_Emotes_A_AcePilot_00",
+   "duration": 7.333333492279053,
+   "cues": 1,
+   "timing": [
+    {
+     "key": "0:0",
+     "wave": "Emotes_FrontEnd_AcePilot",
+     "cue": 0.2484,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": 4.4,
+     "clockRate": 1.0005
+    }
+   ],
+   "events": {
+    "schedule": 1
+   },
+   "restarts": 0,
+   "adopts": 0
+  },
+  "black-smith": {
+   "source": "HM_Frontend_Emotes_A_BlackSmith_00",
+   "duration": 10,
+   "cues": 5,
+   "timing": [
+    {
+     "key": "0:0",
+     "wave": "Emote_Frontend_Blacksmith_01",
+     "cue": 0.1394,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": -17.7,
+     "clockRate": 0.9565
+    },
+    {
+     "key": "1:0",
+     "wave": "Emote_Frontend_Blacksmith_02",
+     "cue": 1.2741,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": -4.4,
+     "clockRate": 1.0006
+    },
+    {
+     "key": "2:0",
+     "wave": "Emote_Frontend_Blacksmith_03",
+     "cue": 2.5669,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": -0.4,
+     "clockRate": 1.0015
+    },
+    {
+     "key": "3:0",
+     "wave": "Emote_Frontend_Blacksmith_04",
+     "cue": 4.0176,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": -2.9,
+     "clockRate": 0.9995
+    },
+    {
+     "key": "4:0",
+     "wave": "UI_Dissolve_Item_Spawn_01",
+     "cue": 7.429,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": 3.5,
+     "clockRate": 1.0004
+    }
+   ],
+   "events": {
+    "stop": 5,
+    "schedule": 5,
+    "end": 6
+   },
+   "restarts": 0,
+   "adopts": 0
+  },
+  "finger-crack": {
+   "source": "HM_Frontend_Emotes_A_FingerCrack_00",
+   "duration": 7.333333492279053,
+   "cues": 3,
+   "timing": [
+    {
+     "key": "0:0",
+     "wave": "Emotes_SquadIntro_FingerCrack_HandsTogether_01",
+     "cue": 0.4831,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": 3.3,
+     "clockRate": 1.0002
+    },
+    {
+     "key": "1:0",
+     "wave": "Emotes_SquadIntro_FingerCrack_Arthritis_01",
+     "cue": 1.536,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": 1.9,
+     "clockRate": 1.0005
+    },
+    {
+     "key": "2:0",
+     "wave": "Emotes_SquadIntro_FingerCrack_HandsTogether_01",
+     "cue": 6.8677,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": 3.2,
+     "clockRate": 1.0006
+    },
+    {
+     "key": "0:1",
+     "wave": "Emotes_SquadIntro_FingerCrack_HandsTogether_01",
+     "cue": 0.4831,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": -2.8,
+     "clockRate": 1.0009
+    },
+    {
+     "key": "1:1",
+     "wave": "Emotes_SquadIntro_FingerCrack_Arthritis_01",
+     "cue": 1.536,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": -0.9,
+     "clockRate": 0.9998
+    },
+    {
+     "key": "2:1",
+     "wave": "Emotes_SquadIntro_FingerCrack_HandsTogether_01",
+     "cue": 6.8677,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": -4.2,
+     "clockRate": 0.9984
+    },
+    {
+     "key": "0:2",
+     "wave": "Emotes_SquadIntro_FingerCrack_HandsTogether_01",
+     "cue": 0.4831,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": 0.4,
+     "clockRate": 1.0013
+    },
+    {
+     "key": "1:2",
+     "wave": "Emotes_SquadIntro_FingerCrack_Arthritis_01",
+     "cue": 1.536,
+     "offset": 0,
+     "scheduled": true,
+     "errorMs": -0.1,
+     "clockRate": 0.9991
+    }
+   ],
+   "events": {
+    "schedule": 8,
+    "end": 7
+   },
+   "restarts": 0,
+   "adopts": 0
+  },
+  "c-pop-04": {
+   "source": "HM_Frontend_Emotes_A_CPop_00",
+   "duration": 7,
+   "cues": 1,
+   "timing": [
+    {
+     "key": "0:0",
+     "wave": "Emotes_FrontEnd_CPop_Mix1",
+     "cue": 0,
+     "offset": 0.0109,
+     "scheduled": false,
+     "errorMs": 0.9,
+     "clockRate": 0.9997
+    }
+   ],
+   "events": {
+    "stop": 1,
+    "start": 1,
+    "end": 1,
+    "adopt": 2
+   },
+   "restarts": 0,
+   "adopts": 2
+  }
+ },
+ "audio": {
+  "state": "running",
+  "sampleRate": 48000,
+  "base": 0.01,
+  "output": 0.048
+ },
+ "decode": [
+  {
+   "wave": "Emotes_FrontEnd_AcePilot",
+   "source": 7.2175,
+   "decoded": 7.217,
+   "extraMs": -0.5
+  },
+  {
+   "wave": "Emotes_FrontEnd_CPop_Mix1",
+   "source": 8,
+   "decoded": 8,
+   "extraMs": 0
+  },
+  {
+   "wave": "Emote_FrontEnd_Jester_Lute",
+   "source": 16,
+   "decoded": 16,
+   "extraMs": 0
+  }
+ ]
+}
