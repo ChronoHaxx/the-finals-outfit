@@ -102,3 +102,18 @@ Checks on the merged branch:
   the localhost origin (CORS), expected for a local build. Full-size screenshots looked at: desktop open, hidden UI with
   hint, phone share panel, Lobby transparent over a checkerboard, 2x transparent over a checkerboard.
 - User checks 1-7 waived on 15 Nov ("i trust u, just merge to live"); see functional-checklist.md.
+
+## Copy to the clipboard (15 Nov 2026, user request)
+
+"for screenshot, is it possible to have options to copy to clipboard too instead of save to pc". The screenshot panel
+has a Copy button beside Save PNG (same background, ground-shadow and size choices).
+- Browsers write to the clipboard only during a click, and the render and encode take longer than a click. So the click
+  calls `navigator.clipboard.write` at once with a `ClipboardItem` whose PNG is a promise the render fills in (the
+  share link's copy works the same way; Safari accepts only this form). Offered only on a secure page with
+  `ClipboardItem` that accepts `image/png`; a refusal says to use Save PNG.
+- Check (`viewer-ux-test.mjs`, section `copy`, headless Chrome with clipboard permission): the PNG read back from the
+  clipboard has the saved file's size; transparent: alpha identical and opaque pixels identical, soft-edge colour within
+  8 levels (Chrome keeps clipboard images premultiplied, which costs precision at low alpha); backdrop: identical.
+  11/11, and the other sections 52/52 on the same build. Panel looked at, desktop and phone.
+- Not covered: pasting into another app. Headless Chrome keeps its own clipboard (the system clipboard was unchanged
+  after the run), so what Windows apps receive (and whether they keep the transparency) is the user's check.
