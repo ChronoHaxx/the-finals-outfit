@@ -15,7 +15,7 @@ never leaves a sound playing or doubles one.
 - **Approximate hands-on time:** 10 minutes.
 - **Agent checks:**
   - Unit tests 25/25 for the sound code (10 resolver, 15 player).
-  - `npm test` 838 pass, 8 fail. The 8 are pre-existing and need game GLBs this worktree lacks.
+  - `npm test` 863 pass, 8 fail, 5 skipped at 1a9d102. The 8 are pre-existing and need game GLBs this worktree lacks.
   - `npm run build` passes.
   - Chrome 12/12 in the scripted browser check, both on the local set ([check-chrome.json](check-chrome.json)) and with
     the app reading the published host ([check-chrome-hosted.json](check-chrome-hosted.json)): onsets within 26 ms, both
