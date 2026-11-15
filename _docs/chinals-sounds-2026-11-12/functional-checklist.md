@@ -7,7 +7,7 @@ never leaves a sound playing or doubles one.
 
 - **PR / originating issue:** the PR on branch `claude/chinals-emote-sounds-2026-11-12` (Chinals sounds, built on
   PR #44 Chinals mode and PR #47 emote sounds).
-- **Test this revision:** `4b585a91e8037381a628146fd92d9d1d56fa18ee` on `claude/chinals-emote-sounds-2026-11-12`, with the Chinals set from its published
+- **Test this revision:** `af303f1fbb811e5ea594a7688c82aa0ed90aaef4` on `claude/chinals-emote-sounds-2026-11-12`, with the Chinals set from its published
   host `https://59209741.the-finals-outfit-chinals-assets.pages.dev/` (props-3 + sounds).
 - **Open:** http://127.0.0.1:5191/#/chinals from the local preview below. The global set is PR #47's local staging, so
   global emotes have sound here too.
@@ -15,7 +15,7 @@ never leaves a sound playing or doubles one.
 - **Approximate hands-on time:** 10 minutes.
 - **Agent checks:**
   - Unit tests 25/25 for the sound code (10 resolver, 15 player).
-  - `npm test` 863 pass, 8 fail, 5 skipped at 1a9d102. The 8 are pre-existing and need game GLBs this worktree lacks.
+  - `npm test` 892 pass, 8 fail, 5 skipped at af303f1. The 8 are pre-existing and need game GLBs this worktree lacks.
   - `npm run build` passes.
   - Chrome 12/12 in the scripted browser check, both on the local set ([check-chrome.json](check-chrome.json)) and with
     the app reading the published host ([check-chrome-hosted.json](check-chrome-hosted.json)): onsets within 26 ms, both

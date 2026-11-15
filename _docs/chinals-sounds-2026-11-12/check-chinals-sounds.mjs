@@ -9,7 +9,7 @@
 // this file, and a screenshot to --shot=<png> when given.
 import { chromium } from "playwright-core";
 import { writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const arg = name => process.argv.find(a => a.startsWith(`--${name}=`))?.slice(name.length + 3);
@@ -210,6 +210,6 @@ check("mode switches: each mode plays its own sounds", switches.every(s => s.glo
 check("mode switches: at most one audio device open (made - closed <= 1)", last.made - last.closed <= 1, switches.map(s => s.contexts));
 
 check("no console errors or audio warnings", errors.length === 0, errors);
-writeFileSync(join(dirname(fileURLToPath(import.meta.url)), arg("out") ?? "check-chrome.json"), JSON.stringify({ chinals: CHINALS, ...report }, null, 1));
+writeFileSync(resolve(dirname(fileURLToPath(import.meta.url)), arg("out") ?? "check-chrome.json"), JSON.stringify({ chinals: CHINALS, ...report }, null, 1));
 await browser.close();
 process.exitCode = report.checks.every(c => c.pass) ? 0 : 1;

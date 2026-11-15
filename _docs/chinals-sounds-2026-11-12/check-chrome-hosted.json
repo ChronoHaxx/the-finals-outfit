@@ -16,11 +16,11 @@
      "key": "0:0",
      "wave": "Emotes_Frontend_A_Applaud_00",
      "cue": 0.0321,
-     "at": 1.76,
-     "offset": 0.002,
+     "at": 0.4507,
+     "offset": 0.0047,
      "scheduled": false,
      "first": true,
-     "errorMs": -1.8
+     "errorMs": 4.8
     }
    ]
   },
@@ -32,21 +32,21 @@
      "key": "0:0",
      "wave": "FX_HM_Frontend_Emotes_A_TakeAway_Foley",
      "cue": 0,
-     "at": 4.5013,
-     "offset": 0.0246,
+     "at": 3.232,
+     "offset": 0.034,
      "scheduled": false,
      "first": true,
-     "errorMs": -2.2
+     "errorMs": 2.7
     },
     {
      "key": "1:0",
      "wave": "FX_HM_Frontend_Emotes_A_TakeAway_AMB_02",
      "cue": 0,
-     "at": 4.5013,
-     "offset": 0.0246,
+     "at": 3.232,
+     "offset": 0.034,
      "scheduled": false,
      "first": true,
-     "errorMs": -2.2
+     "errorMs": 2.7
     }
    ]
   },
@@ -58,11 +58,11 @@
      "key": "0:0",
      "wave": "Emote_Frontend_A_BumpTheBall_00",
      "cue": 0.0891,
-     "at": 7.1876,
+     "at": 6.1016,
      "offset": 0,
      "scheduled": true,
      "first": true,
-     "errorMs": -1.1
+     "errorMs": 2.7
     }
    ]
   },
@@ -74,11 +74,11 @@
      "key": "0:0",
      "wave": "Emotes_FrontEnd_Dissun",
      "cue": 0,
-     "at": 8.9413,
-     "offset": 0.02,
+     "at": 7.84,
+     "offset": 0.0244,
      "scheduled": false,
      "first": true,
-     "errorMs": -7.5
+     "errorMs": -0.1
     }
    ]
   },
@@ -94,11 +94,11 @@
       "key": "0:0",
       "wave": "Emotes_FrontEnd_MidAutumn",
       "cue": 0.1445,
-      "at": 11.047,
+      "at": 9.8526,
       "offset": 0,
       "scheduled": true,
       "first": true,
-      "errorMs": 3.2
+      "errorMs": 0.3
      }
     ],
     "events": {
@@ -108,7 +108,7 @@
     "stops": [
      {
       "key": "0:0",
-      "clipTime": 10.218
+      "clipTime": 10.228
      }
     ],
     "animationRate": 1,
@@ -219,18 +219,18 @@
      "key": "0:0",
      "wave": "Emotes_Frontend_A_Applaud_00",
      "cue": 0.0321,
-     "at": 1.76,
-     "offset": 0.002,
+     "at": 0.4507,
+     "offset": 0.0047,
      "scheduled": false,
      "first": true,
-     "errorMs": -1.8
+     "errorMs": 4.8
     }
    ],
    "events": {
     "start": 1
    },
    "stops": [],
-   "animationRate": 0.998,
+   "animationRate": 1.002,
    "longestFrameMs": 21
   },
   "cn-emote-takeaway": {
@@ -242,29 +242,29 @@
      "key": "0:0",
      "wave": "FX_HM_Frontend_Emotes_A_TakeAway_Foley",
      "cue": 0,
-     "at": 4.5013,
-     "offset": 0.0246,
+     "at": 3.232,
+     "offset": 0.034,
      "scheduled": false,
      "first": true,
-     "errorMs": -2.2
+     "errorMs": 2.7
     },
     {
      "key": "1:0",
      "wave": "FX_HM_Frontend_Emotes_A_TakeAway_AMB_02",
      "cue": 0,
-     "at": 4.5013,
-     "offset": 0.0246,
+     "at": 3.232,
+     "offset": 0.034,
      "scheduled": false,
      "first": true,
-     "errorMs": -2.2
+     "errorMs": 2.7
     }
    ],
    "events": {
     "start": 2
    },
    "stops": [],
-   "animationRate": 0.98,
-   "longestFrameMs": 139
+   "animationRate": 0.938,
+   "longestFrameMs": 240
   },
   "cn-emote-worldcup-juggle": {
    "source": "HM_Frontend_Emotes_A_Juggle_00",
@@ -275,19 +275,19 @@
      "key": "0:0",
      "wave": "Emote_Frontend_A_BumpTheBall_00",
      "cue": 0.0891,
-     "at": 7.1876,
+     "at": 6.1016,
      "offset": 0,
      "scheduled": true,
      "first": true,
-     "errorMs": -1.1
+     "errorMs": 2.7
     }
    ],
    "events": {
     "schedule": 1
    },
    "stops": [],
-   "animationRate": 0.954,
-   "longestFrameMs": 160
+   "animationRate": 0.938,
+   "longestFrameMs": 179
   },
   "cn-emote-checkered-dissun": {
    "source": "HM_Frontend_Emotes_A_CheckeredDissun_00",
@@ -298,18 +298,18 @@
      "key": "0:0",
      "wave": "Emotes_FrontEnd_Dissun",
      "cue": 0,
-     "at": 8.9413,
-     "offset": 0.02,
+     "at": 7.84,
+     "offset": 0.0244,
      "scheduled": false,
      "first": true,
-     "errorMs": -7.5
+     "errorMs": -0.1
     }
    ],
    "events": {
     "start": 1
    },
    "stops": [],
-   "animationRate": 0.995,
+   "animationRate": 1.004,
    "longestFrameMs": 21
   },
   "cn-emote-midautumnfestival-01": {
@@ -321,11 +321,11 @@
      "key": "0:0",
      "wave": "Emotes_FrontEnd_MidAutumn",
      "cue": 0.1445,
-     "at": 11.047,
+     "at": 9.8526,
      "offset": 0,
      "scheduled": true,
      "first": true,
-     "errorMs": 3.2
+     "errorMs": 0.3
     }
    ],
    "events": {
@@ -335,7 +335,7 @@
    "stops": [
     {
      "key": "0:0",
-     "clipTime": 10.218
+     "clipTime": 10.228
     }
    ],
    "animationRate": 1,

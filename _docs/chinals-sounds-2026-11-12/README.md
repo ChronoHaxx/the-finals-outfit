@@ -100,7 +100,7 @@ PR #47: the template by wiring on both engine layouts, unread patches and pitch 
 mixer layers, dispose removing its listeners, and a context whose clock has not started. The dispose and clock tests
 fail on PR #47's code, so they cover the bugs they were written for.
 
-**Suite:** `npm test` 863 pass, 8 fail, 5 skipped (838 before main was merged in). The 8 are the same as PR #47's: they need extracted game GLBs this
+**Suite:** `npm test` 892 pass, 8 fail, 5 skipped after merging main on 15 Nov (838 before the first merge). The 8 are the same as PR #47's: they need extracted game GLBs this
 worktree lacks. `npm run build` passes.
 
 **Real browser** ([check-chinals-sounds.mjs](check-chinals-sounds.mjs), Chrome, real clicks, the animation clock
