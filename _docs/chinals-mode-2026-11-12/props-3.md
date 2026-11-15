@@ -78,7 +78,7 @@ checks catch a prop that is still floor-bound, mis-sized or in pieces, or a file
 PowerShell, in the worktree root of this branch:
 
 ```powershell
-New-Item -ItemType Directory -Force scripts\generated\empty-global | Out-Null; $env:VITE_CHINALS_ANIMATIONS_BASE = 'https://e7796a7c.the-finals-outfit-chinals-assets.pages.dev/'; node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=scripts/generated/empty-global --proxy=https://e5250f94.the-finals-outfit-assets.pages.dev/ --port=5200
+New-Item -ItemType Directory -Force scripts\generated\empty-global | Out-Null; $env:VITE_CHINALS_ANIMATIONS_BASE = 'https://e7796a7c.the-finals-outfit-chinals-assets.pages.dev/'; node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=scripts/generated/empty-global --proxy=https://17ec92c3.the-finals-outfit-assets.pages.dev/ --port=5200
 ```
 
 The first load takes about 30 seconds. Stop it with Ctrl+C. The preview has its own saved outfits, separate from the

@@ -318,6 +318,11 @@ export class CharacterRig {
     return this.sourceHead ? `${this.sourceHead.id}|${this.sourceHead.sourceMesh}` : undefined;
   }
 
+  /** The worn source head's mesh (its source object path), whose own sockets head-attached items use. */
+  sourceHeadMesh(): string | undefined {
+    return this.sourceHead?.sourceMesh;
+  }
+
   /** (w132) The head whose wrap cage shapes a head-wrapped part: the worn source head; else the head of the committed
    *  headless face; else that of a headless face staged and waiting for its coverings. None refuses the part. */
   private sourceWrapHead(): string | undefined {

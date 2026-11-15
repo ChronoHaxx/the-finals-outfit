@@ -19,10 +19,10 @@ export default function CatalogProgress({ compact = false }: { compact?: boolean
   </p>;
 
   if (compact) return (
-    <section aria-label="Catalog progress" data-progress-state={state} className="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-center lg:gap-3">
+    <section aria-label="Catalog progress" data-progress-state={state} className="flex min-w-0 flex-col gap-2 lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-3 lg:gap-y-1.5">
       <h2 className="hud shrink-0 text-fg-muted">3D progress <span className="text-fg-dim">· {total.toLocaleString()}</span></h2>
       {bar}
-      <ul aria-label="Status percentages" className="flex flex-wrap gap-x-3 gap-y-1 lg:flex-nowrap">
+      <ul aria-label="Status percentages" className="flex flex-wrap gap-x-3 gap-y-1">
         {statuses.map(status => <li key={status} data-progress-status={status} data-count={counts[status]}
           title={`${REVIEW_LABELS[status]} · ${itemCount(counts[status])}`}
           className="hud flex items-center gap-1.5 whitespace-nowrap text-fg-dim">

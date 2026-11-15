@@ -46,6 +46,26 @@ test("camera, object, bone and parent turns are reprojectable changes", () => {
   assert.deepEqual([result.changed, result.reprojectable], ["scene", true], "parent turn");
 });
 
+test("a light that moves restarts the history: shading and shadows change in place (11 Nov, Sun slider)", () => {
+  const f = fixture();
+  const light = new THREE.DirectionalLight(0xffffff, 4);
+  light.position.set(2.5, 6, 4); light.castShadow = true;
+  f.scene.add(light);
+  const capture = () => f.state.capture(f.scene, f.camera, renderer, f.camera);
+  capture(); capture();
+  light.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.3);
+  let result = capture();
+  assert.deepEqual([result.changed, result.reprojectable, f.state.firstOther.startsWith("lighting")], ["lighting", false, true], "sun turned");
+  // The light's target (the floor-shadow follow moves it) and its shadow camera were already lighting inputs.
+  light.target.position.x = 0.25; light.target.updateMatrixWorld();
+  assert.equal(capture().reprojectable, false, "target moved");
+  light.shadow.camera.top = 2.4; light.shadow.camera.updateProjectionMatrix();
+  assert.equal(capture().reprojectable, false, "shadow frustum grown");
+  // A camera drag next to a still light is still reprojectable.
+  f.camera.position.x += 0.1;
+  assert.equal(capture().reprojectable, true, "camera move");
+});
+
 test("material, visibility and structure changes are not reprojectable, even alongside a transform", () => {
   const f = fixture();
   const capture = () => f.state.capture(f.scene, f.camera, renderer, f.camera);

@@ -41,14 +41,49 @@ export function encodePng(width: number, height: number, rgba: Uint8Array | Uint
       raw[row + 2 + i * 2] = v & 0xff;
     }
   }
+  return assemble(width, height, depth, zlibSync(raw, { level: 6 }));
+}
+
+function assemble(width: number, height: number, depth: number, idat: Uint8Array): Uint8Array {
   const header = new Uint8Array(13), view = new DataView(header.buffer);
   view.setUint32(0, width);
   view.setUint32(4, height);
   header.set([depth, 6, 0, 0, 0], 8); // bit depth, colour type RGBA, deflate, adaptive filtering, no interlace
   const parts = [new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", header),
-    chunk("IDAT", zlibSync(raw, { level: 6 })), chunk("IEND", new Uint8Array(0))];
+    chunk("IDAT", idat), chunk("IEND", new Uint8Array(0))];
   const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
   let offset = 0;
   for (const part of parts) { out.set(part, offset); offset += part.length; }
   return out;
+}
+
+/** 8-bit RGBA rows, each behind filter byte 4 (Paeth): lossless, and a render's smooth shading and empty background
+ *  compress several times smaller than unfiltered rows. */
+export function paethRows(width: number, height: number, rgba: Uint8Array): Uint8Array {
+  if (rgba.length !== width * height * 4) throw new Error("PNG pixel data does not match its size");
+  const stride = width * 4, raw = new Uint8Array((stride + 1) * height);
+  for (let y = 0; y < height; y++) {
+    const row = y * (stride + 1), cur = y * stride, prev = cur - stride;
+    raw[row] = 4;
+    for (let i = 0; i < stride; i++) {
+      const a = i >= 4 ? rgba[cur + i - 4] : 0, b = y > 0 ? rgba[prev + i] : 0, c = i >= 4 && y > 0 ? rgba[prev + i - 4] : 0;
+      const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c);
+      raw[row + 1 + i] = (rgba[cur + i] - (pa <= pb && pa <= pc ? a : pb <= pc ? b : c)) & 0xff;
+    }
+  }
+  return raw;
+}
+
+/** zlib-wrapped deflate: the browser's own CompressionStream ("deflate" is the zlib format PNG wants), off the main
+ *  thread; fflate where it is missing. */
+async function deflate(raw: Uint8Array): Promise<Uint8Array> {
+  if (typeof CompressionStream === "undefined") return zlibSync(raw, { level: 6 });
+  const stream = new Blob([raw as BlobPart]).stream().pipeThrough(new CompressionStream("deflate"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+/** A large 8-bit RGBA image (the viewer's screenshot, 12 Nov 2026): Paeth rows, compressed asynchronously. Rows top to
+ *  bottom, straight (not premultiplied) alpha, written exactly. */
+export async function encodePngAsync(width: number, height: number, rgba: Uint8Array): Promise<Uint8Array> {
+  return assemble(width, height, 8, await deflate(paethRows(width, height, rgba)));
 }

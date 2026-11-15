@@ -30,6 +30,13 @@ export function ResetIcon({ className, size = 16 }: IconProps) {
   </svg>;
 }
 
+export function SunIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <circle cx="8" cy="8" r="2.6" />
+    <path d="M8 1.6v1.6M8 12.8v1.6M1.6 8h1.6M12.8 8h1.6M3.5 3.5l1.1 1.1M11.4 11.4l1.1 1.1M3.5 12.5l1.1-1.1M11.4 4.6l1.1-1.1" />
+  </svg>;
+}
+
 export function ShareIcon({ className, size = 16 }: IconProps) {
   return <svg {...base(size, className)}>
     <path d="M6.5 9.5 9.5 6.5" />
@@ -139,5 +146,32 @@ export function LoopIcon({ className, size = 14 }: IconProps) {
 export function FrameStepIcon({ className, size = 14, forward }: IconProps & { forward?: boolean }) {
   return <svg {...base(size, className)} fill="currentColor" stroke="none">
     <g transform={forward ? "matrix(-1 0 0 1 16 0)" : undefined}><path d="M3 3h2v10H3zM13 3v10L6 8l7-5Z" /></g>
+  </svg>;
+}
+
+// Viewer chrome (12 Nov 2026): hide the UI (an eye, struck through), and save a screenshot (a camera).
+export function EyeOffIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <path d="M1.8 8s2.3-4.2 6.2-4.2S14.2 8 14.2 8s-2.3 4.2-6.2 4.2S1.8 8 1.8 8Z" />
+    <circle cx="8" cy="8" r="1.8" />
+    <path d="m2.5 13.5 11-11" />
+  </svg>;
+}
+
+export function CameraIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <path d="M2 5.5c0-.6.4-1 1-1h2l1-1.5h4l1 1.5h2c.6 0 1 .4 1 1V12c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1V5.5Z" />
+    <circle cx="8" cy="8.5" r="2.3" />
+  </svg>;
+}
+
+/** A speaker: with sound waves, or crossed out when `muted`. */
+export function SpeakerIcon({ className, size = 14, muted }: IconProps & { muted?: boolean }) {
+  return <svg {...base(size, className)}>
+    <path d="M2.5 6v4h2.5l3.5 3V3L5 6H2.5Z" />
+    {muted ? <path d="m11 6 3.5 3.5M14.5 6 11 9.5" /> : <>
+      <path d="M11 5.8a3 3 0 0 1 0 4.4" />
+      <path d="M12.8 3.9a5.6 5.6 0 0 1 0 8.2" />
+    </>}
   </svg>;
 }

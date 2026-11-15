@@ -1,0 +1,420 @@
+{
+ "note": "S12 vs pre-S12 source rebuilds of the reworked meshes whose positions or topology differ. \"reordered\": same vertex count and the same (position, UV0) multiset, so S12 re-exported the same surface in another vertex order. Positions/UVs only; normals, weights and bones are not compared here.",
+ "meshes": {
+  "SK_ActionHero_SentinelTop_M": {
+   "result": "reordered",
+   "vertices": 4176
+  },
+  "SK_Casual_Bangles_M": {
+   "result": "reordered",
+   "vertices": 750
+  },
+  "SK_Casual_BasicTshirt_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 1662
+  },
+  "SK_Casual_CropTopCorset_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 532
+  },
+  "SK_Casual_Hoodie_M": {
+   "result": "reordered",
+   "vertices": 2996
+  },
+  "SK_Casual_WaterproofBoots_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 1546
+  },
+  "SK_Cowboy_JeansJacket_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 8349
+  },
+  "SK_Cowboy_LowBoots_M": {
+   "result": "reordered",
+   "vertices": 1990
+  },
+  "SK_CrossPromo_NRHarness_M": {
+   "result": "reordered",
+   "vertices": 7685
+  },
+  "SK_FancyDress_DressShoes_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 3942
+  },
+  "SK_FromTencent_AsianSpiritWraps01_M": {
+   "result": "vertex count differs",
+   "prepatch": 50710,
+   "s12": 50452
+  },
+  "SK_FromTencent_MilitaryMonkVest_M": {
+   "result": "vertex count differs",
+   "prepatch": 27856,
+   "s12": 52891
+  },
+  "SK_FromTencent_OperaClothingJacket_M": {
+   "result": "vertex count differs",
+   "prepatch": 46839,
+   "s12": 46833
+  },
+  "SK_Halloween_VampireBoots_M": {
+   "result": "reordered",
+   "vertices": 4039
+  },
+  "SK_Historic_AnubisMaskRegular_M": {
+   "result": "reordered",
+   "vertices": 4480
+  },
+  "SK_Historic_EasternEmperorPants_M": {
+   "result": "reordered",
+   "vertices": 2447
+  },
+  "SK_Historic_EmpressShoes_M": {
+   "result": "reordered",
+   "vertices": 2501
+  },
+  "SK_Historic_SimpleBracelet_M": {
+   "result": "reordered",
+   "vertices": 390
+  },
+  "SK_Historic_VikingBoots_M": {
+   "result": "reordered",
+   "vertices": 2717
+  },
+  "SK_Historic_VikingPants_M": {
+   "result": "reordered",
+   "vertices": 2660
+  },
+  "SK_Hologram_EngimoJacketHologram_M": {
+   "result": "reordered",
+   "vertices": 60
+  },
+  "SK_Hologram_HoltowJacketHologram_M": {
+   "result": "vertex count differs",
+   "prepatch": 319,
+   "s12": 375
+  },
+  "SK_Hologram_IseultPantsHologram_M": {
+   "result": "reordered",
+   "vertices": 50
+  },
+  "SK_Hologram_VaiiyaVestHologram_M": {
+   "result": "vertex count differs",
+   "prepatch": 96,
+   "s12": 35
+  },
+  "SK_LongCurly_M": {
+   "result": "vertex count differs",
+   "prepatch": 20401,
+   "s12": 75254
+  },
+  "SK_Medieval_DragonSlayerSkirt_M": {
+   "result": "reordered",
+   "vertices": 919
+  },
+  "SK_Medieval_DragonSlayerTorso_M": {
+   "result": "reordered",
+   "vertices": 13613
+  },
+  "SK_Medieval_ElfPrincessMask_M": {
+   "result": "vertex count differs",
+   "prepatch": 4603,
+   "s12": 4531
+  },
+  "SK_Medieval_KnightTopPlain_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 6472
+  },
+  "SK_Medieval_RoyalGloves_M": {
+   "result": "reordered",
+   "vertices": 5866
+  },
+  "SK_Medieval_WizardParts_M": {
+   "result": "vertex count differs",
+   "prepatch": 6918,
+   "s12": 7209
+  },
+  "SK_Mexico_AncientArmDetails_M": {
+   "result": "reordered",
+   "vertices": 3959
+  },
+  "SK_Mexico_RancheroHolster_M": {
+   "result": "reordered",
+   "vertices": 6906
+  },
+  "SK_Military_AssaultPantsNoKneepad_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 5834
+  },
+  "SK_Military_AssaultPants_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 7523
+  },
+  "SK_Military_CardboardCombatVest_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 5034
+  },
+  "SK_Military_CardboardPants_M": {
+   "result": "vertex count differs",
+   "prepatch": 214,
+   "s12": 458
+  },
+  "SK_Military_DoubleHolsterPants_M": {
+   "result": "reordered",
+   "vertices": 18256
+  },
+  "SK_Military_MarineBoots_M": {
+   "result": "reordered",
+   "vertices": 4149
+  },
+  "SK_Military_MarineVest_M": {
+   "result": "reordered",
+   "vertices": 12974
+  },
+  "SK_Military_OpenShirtWithDogTag_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 4018
+  },
+  "SK_Military_RiotMedievalPants_M": {
+   "result": "reordered",
+   "vertices": 6876
+  },
+  "SK_Military_SWATVest_M": {
+   "result": "reordered",
+   "vertices": 12306
+  },
+  "SK_Military_SniperBoots_M": {
+   "result": "reordered",
+   "vertices": 3080
+  },
+  "SK_Military_TacticalHarness_M": {
+   "result": "reordered",
+   "vertices": 12379
+  },
+  "SK_Municipal_RescueHarness_M": {
+   "result": "reordered",
+   "vertices": 13163
+  },
+  "SK_Ninja_ShinobiJacket_M": {
+   "result": "reordered",
+   "vertices": 7881
+  },
+  "SK_Ninja_ShinobiPants_M": {
+   "result": "reordered",
+   "vertices": 3970
+  },
+  "SK_Pants_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 2357
+  },
+  "SK_Pirate_CaptainCape_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 449
+  },
+  "SK_Pirate_CaptainJacket_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 9872
+  },
+  "SK_Pirate_PoetShirtWithVest_M": {
+   "result": "reordered",
+   "vertices": 7568
+  },
+  "SK_Pirate_ScallywagPants_M": {
+   "result": "reordered",
+   "vertices": 4621
+  },
+  "SK_Robots_ConicalHatSciFi_M": {
+   "result": "reordered",
+   "vertices": 1048
+  },
+  "SK_Robots_DiscoBotGloves_M": {
+   "result": "reordered",
+   "vertices": 4768
+  },
+  "SK_Robots_DiscoKeychain_M": {
+   "result": "reordered",
+   "vertices": 1343
+  },
+  "SK_Robots_DiscoNecklace_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 819
+  },
+  "SK_Robots_RobotWarriorTop_M": {
+   "result": "reordered",
+   "vertices": 10638
+  },
+  "SK_Robots_SynthHelmet_M": {
+   "result": "reordered",
+   "vertices": 7092
+  },
+  "SK_Samurai_ClothTop_M": {
+   "result": "reordered",
+   "vertices": 3360
+  },
+  "SK_Samurai_GetaShoes_M": {
+   "result": "reordered",
+   "vertices": 1938
+  },
+  "SK_SciFi_HackerGloves_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 5046
+  },
+  "SK_SciFi_PantsToolBag_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 3197
+  },
+  "SK_SciFi_TechBomberJacket_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 4360
+  },
+  "SK_Shirt_M": {
+   "result": "vertex count differs",
+   "prepatch": 2984,
+   "s12": 2977
+  },
+  "SK_Socks_Crew_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 552
+  },
+  "SK_Socks_KneeHigh_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 885
+  },
+  "SK_Space_AstroPilotGloves_M": {
+   "result": "reordered",
+   "vertices": 3120
+  },
+  "SK_Space_AstroPilotGun_M": {
+   "result": "reordered",
+   "vertices": 713
+  },
+  "SK_Space_AstroPilotPants_M": {
+   "result": "reordered",
+   "vertices": 2964
+  },
+  "SK_Space_AstronautSuit_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 21650
+  },
+  "SK_Space_BountyHunterPants_M": {
+   "result": "reordered",
+   "vertices": 5714
+  },
+  "SK_Space_PioneerShoes_M": {
+   "result": "vertex count differs",
+   "prepatch": 2017,
+   "s12": 2016
+  },
+  "SK_Space_SpaceCombatTorso_M": {
+   "result": "reordered",
+   "vertices": 7493
+  },
+  "SK_Space_SpaceSuitPants_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 1958
+  },
+  "SK_Space_SpaceTopVest_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 4536
+  },
+  "SK_Sport_FencerGlove_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 2474
+  },
+  "SK_Sport_FencerShoes_M": {
+   "result": "reordered",
+   "vertices": 2713
+  },
+  "SK_Sport_PaddedPants_M": {
+   "result": "reordered",
+   "vertices": 5258
+  },
+  "SK_Sport_UmpireMask_M": {
+   "result": "reordered",
+   "vertices": 6202
+  },
+  "SK_Steampunk_VestWithHood_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 2554
+  },
+  "SK_Streetwear_ChromeJacket_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 2786
+  },
+  "SK_Streetwear_Crown_M": {
+   "result": "reordered",
+   "vertices": 1037
+  },
+  "SK_Streetwear_KandiBracelet_M": {
+   "result": "reordered",
+   "vertices": 8533
+  },
+  "SK_Streetwear_MessengerBag_M": {
+   "result": "vertex count differs",
+   "prepatch": 7147,
+   "s12": 6607
+  },
+  "SK_Streetwear_OpenJacket_M": {
+   "result": "reordered",
+   "vertices": 5354
+  },
+  "SK_Streetwear_PopGothShoes_M": {
+   "result": "reordered",
+   "vertices": 6488
+  },
+  "SK_Streetwear_ShoulderBag_M": {
+   "result": "reordered",
+   "vertices": 1529
+  },
+  "SK_Streetwear_SkiMask_M": {
+   "result": "vertex count differs",
+   "prepatch": 2230,
+   "s12": 2053
+  },
+  "SK_Streetwear_SmartWatch_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 339
+  },
+  "SK_Streetwear_TacticalBandolier_M": {
+   "result": "reordered",
+   "vertices": 11341
+  },
+  "SK_Streetwear_TechCropTopNoBags_M": {
+   "result": "reordered",
+   "vertices": 8072
+  },
+  "SK_Streetwear_TechCropTop_M": {
+   "result": "reordered",
+   "vertices": 9996
+  },
+  "SK_Streetwear_TightTechPants_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 3853
+  },
+  "SK_Streetwear_UtilityBelt_M": {
+   "result": "reordered",
+   "vertices": 2026
+  },
+  "SK_Traditional_CloudBag_M": {
+   "result": "reordered",
+   "vertices": 2554
+  },
+  "SK_Traditional_LunarBracelet_M": {
+   "result": "vertex count differs",
+   "prepatch": 716,
+   "s12": 717
+  },
+  "SK_Traditional_UrbanWarriorPants_M": {
+   "result": "reordered",
+   "vertices": 3747
+  },
+  "SK_WorkUniforms_ShirtRolledUpSleeves_M": {
+   "result": "geometry or UVs changed",
+   "vertices": 3856
+  }
+ },
+ "counts": {
+  "reordered": 57,
+  "geometry or UVs changed": 28,
+  "vertex count differs": 14
+ }
+}

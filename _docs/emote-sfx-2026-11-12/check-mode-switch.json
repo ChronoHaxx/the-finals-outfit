@@ -1,0 +1,50 @@
+{
+ "base": "http://127.0.0.1:5197/the-finals-outfit",
+ "steps": [
+  {
+   "step": "global, first emote",
+   "sounded": true,
+   "made": 1,
+   "open": 1
+  },
+  {
+   "step": "chinals 1",
+   "made": 1,
+   "open": 0
+  },
+  {
+   "step": "global 1, emote",
+   "sounded": true,
+   "made": 2,
+   "open": 1
+  },
+  {
+   "step": "chinals 2",
+   "made": 2,
+   "open": 0
+  },
+  {
+   "step": "global 2, emote",
+   "sounded": true,
+   "made": 3,
+   "open": 1
+  },
+  {
+   "step": "chinals 3",
+   "made": 3,
+   "open": 0
+  },
+  {
+   "step": "global 3, emote",
+   "sounded": true,
+   "made": 4,
+   "open": 1
+  }
+ ],
+ "end": {
+  "made": 4,
+  "open": 1
+ },
+ "errors": [],
+ "ok": true
+}
