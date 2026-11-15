@@ -139,6 +139,8 @@ export class EmoteSounds {
   private lastTime: number | null = null;
   private listeners = new Set<() => void>();
   private unlockInstalled = false;
+  private listening: AbortController | null = null; // the gesture and visibility listeners, removed by dispose()
+  private disposed = false;
   private suspendTimer: ReturnType<typeof setTimeout> | null = null;
   private settingsValue: SoundSettings;
   readonly log: SoundLogEntry[] = [];
@@ -203,14 +205,17 @@ export class EmoteSounds {
 
   // --- The AudioContext: created on a gesture (autoplay policy), resumed after interruptions ------------------------
   private installUnlock(): void {
+    if (this.disposed) return; // sounds.json arrived after dispose()
     if (this.options.unlocked) { if (!this.silent) this.unlock(); return; }
     if (this.unlockInstalled || typeof window === "undefined") return;
     this.unlockInstalled = true;
     this.unlock(); // a click before sounds.json arrived (the one that picked the emote) already allows audio
-    // Kept for good (a check per press): after an iOS call or Siri the context is "interrupted" and needs a gesture.
+    // Kept until dispose() (a check per press): after an iOS call or Siri the context is "interrupted" and needs a gesture.
+    this.listening = new AbortController();
+    const signal = this.listening.signal;
     const handler = () => { if (!this.silent && this.context?.state !== "running") this.unlock(); };
     for (const e of ["pointerdown", "pointerup", "touchend", "keydown", "click"] as const)
-      window.addEventListener(e, handler, { capture: true, passive: true });
+      window.addEventListener(e, handler, { capture: true, passive: true, signal });
     // A hidden tab stops the animation (no frames) but not the audio clock: fade out, then suspend the device.
     document.addEventListener("visibilitychange", () => {
       if (!this.context) return;
@@ -220,11 +225,11 @@ export class EmoteSounds {
         // After the fade has run (suspending at once would freeze it, to finish as a blip on return).
         this.suspendTimer = setTimeout(() => { this.suspendTimer = null; void this.context?.suspend().catch(() => {}); }, 100);
       } else if (!this.silent) void this.context.resume().catch(() => {});
-    });
+    }, { signal });
   }
 
   private unlock(): void {
-    if (typeof document !== "undefined" && document.hidden) return;
+    if (this.disposed || (typeof document !== "undefined" && document.hidden)) return;
     // Chrome logs a warning when a context is made before any activation (a touch's pointerdown is not one yet).
     const activation = typeof navigator !== "undefined" ? (navigator as Navigator & { userActivation?: UserActivation }).userActivation : undefined;
     if (!this.options.unlocked && activation && !activation.isActive && !activation.hasBeenActive) return;
@@ -296,7 +301,7 @@ export class EmoteSounds {
   /** Fetch (and, once audio is unlocked, decode) an emote animation's waves. Nothing while muted. */
   async prepare(source: string | null | undefined): Promise<void> {
     await this.load();
-    if (this.silent) return;
+    if (this.silent || this.disposed) return;
     const cues = (source && this.resolved?.emotes[source]) || [];
     const waves = [...new Set(cues.flatMap(c => c.variants.map(v => v.wave)))];
     await Promise.allSettled(waves.map(w => this.context ? this.decode(w) : this.fetchWave(w)));
@@ -322,7 +327,10 @@ export class EmoteSounds {
       if (this.voices.size || this.lastTime !== null) this.cut();
       return;
     }
-    if (!this.context || this.context.state !== "running") { this.lastTime = null; return; }
+    // A context made a moment ago can report "running" before its device has rendered anything: its clock still reads 0.
+    // A voice started then would sound late by the device's start-up (0.7 s once in Chrome on Windows, 13 Nov 2026) and
+    // be restarted by the drift rule, an audible skip. Wait for the clock; the cue then joins at its offset.
+    if (!this.context || this.context.state !== "running" || this.context.currentTime === 0) { this.lastTime = null; return; }
     const t = clock.time, now = this.context.currentTime;
     if (this.lastTime !== null && t < this.lastTime - 1e-6) this.wrapped(clock.duration); // seeks pause first: a loop
     this.lastTime = t;
@@ -512,12 +520,22 @@ export class EmoteSounds {
     if (this.log.length > 400) this.log.splice(0, this.log.length - 400);
   }
 
-  /** Stop everything and release the audio device (the viewer unmounts). */
+  /** Stop everything and release the audio device for good (the viewer unmounts, or Chinals mode replaced the clip set
+   *  and with it this object). The gesture and visibility listeners go too: left installed, the next click would make a
+   *  new AudioContext for this discarded object, one more on every mode switch. */
   dispose(): void {
+    if (this.disposed) return;
+    this.disposed = true;
     this.cut();
+    this.listening?.abort();
+    this.listening = null;
     if (this.suspendTimer) clearTimeout(this.suspendTimer);
-    void this.context?.close().catch(() => {});
+    this.suspendTimer = null;
+    // Closed after the cut's fade has run (closing at once would end the voices on a click).
+    const context = this.context;
+    if (context) setTimeout(() => void context.close().catch(() => {}), (CUT_FADE + 0.05) * 1000);
     this.context = null;
     this.master = null;
+    this.emit();
   }
 }
