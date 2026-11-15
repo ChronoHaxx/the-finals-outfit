@@ -206,10 +206,24 @@ with the local `sounds-1`.
 - `ab913ac8` has no `faces-1/`: pointing the site at it would switch the faces off.
 - It stays published, untouched, as a record.
 
-### Rebuilt sounds (15 Nov 2026): staged, uploads only on your yes
+### Rebuilt sounds: `17ec92c3` (15 Nov 2026, on your "Yes, upload it"), the host this PR ships
 
-PR #51's three fixes to this PR's sound code are now in this PR (see "Global sound fixes" below). One of them, the
-MetaSound volume rule, changes `sounds.json`, so the host must be replaced:
+**Animations host `17ec92c3`** (alias `anim-1115-faces-sfx`):
+- **Upload:** 1 new file (`sounds.json`), 1,131 deduplicated ([upload-anim-17ec92c3.txt](upload-anim-17ec92c3.txt)).
+- **Verified:** all 1,132 files are byte-identical to staging
+  ([deployment-anim-17ec92c3.json](deployment-anim-17ec92c3.json)). `.m4a` is `audio/mp4` with CORS `*` and an
+  immutable cache.
+- **deploy.yml:** `ANIMATIONS_BASE` points at it. **Rollback:** `e5250f94` (faces, no sounds), or `e4608dac` (the old
+  gains).
+- **Production build against it** (main `76d4e9e` + this PR):
+  - Chrome 17/17 ([check-chrome-prod-17ec92c3.json](check-chrome-prod-17ec92c3.json)): cues within ±5.4 ms.
+  - Faces 2/2 ([check-faces-prod-17ec92c3.json](check-faces-prod-17ec92c3.json)).
+  - The mode-switch check: 1 open audio context after 3 round trips.
+  - One 171 ms frame in Valkyria's Embrace, at 1.0 s, as its wings appear. The same code against `e4608dac` had none,
+    so it's intermittent and not explained. It can't move that emote's sound, whose only cue starts at 0.25 s.
+
+**Why it replaced `e4608dac`.** PR #51's three fixes to this PR's sound code are now in this PR (see "Global sound
+fixes" below). One of them, the MetaSound volume rule, changes `sounds.json`:
 - **Rebuilt offline** with the fixed resolver (`scripts/generated/emote-sfx-2026-11-12/rebuild-1115/`):
   - all 275 waves are byte-identical to `e4608dac`'s, and so are the file table and the skipped list;
   - exactly 14 window cues change gain, all musical MetaSounds. Disco 1-4, Hippie, Jester Lute and Yazz Flute go
@@ -217,10 +231,7 @@ MetaSound volume rule, changes `sounds.json`, so the host must be replaced:
     Drum → 2.1, and Puppeteer 1.5 → 1.3.
 - **Staged** `upload/anim-20261115e/`: `e4608dac`'s 1,133 files with only `sounds-1/sounds.json` replaced (checked by
   `diff -r`). Its manifest is byte-identical to `e4608dac`'s.
-- **After upload:** verify, bump `ANIMATIONS_BASE`, rerun the production checks. Rollback: `e4608dac` (old gains)
-  or `e5250f94` (no sounds).
-
-### Faces + sounds: `e4608dac` (13 Nov 2026, on your "Yes, upload it")
+### Faces + sounds: `e4608dac` (13 Nov 2026, on your "Yes, upload it"), superseded by `17ec92c3`
 
 **Animations host `e4608dac`** (alias `anim-1113-faces-sfx`), from the staged set below:
 - **Upload:** 1 new file (the manifest), 1,131 deduplicated ([upload-anim-e4608dac.txt](upload-anim-e4608dac.txt)).

@@ -8,16 +8,15 @@ muting must behave like a video player: nothing doubled, nothing out of step, an
 - **PR / originating issue:** the PR on branch `claude/emote-sfx-2026-11-12` (your "sounds fx and everything for
   emotes" request).
 - **Test this revision:** the head of `claude/emote-sfx-2026-11-12`, rebased onto main `76d4e9e`. It includes the
-  prop prewarm and PR #51's global sound fixes (15 Nov). Until the rebuilt host is uploaded it plays the old gains
-  from `e4608dac`; only 14 musical emotes change volume after that.
+  prop prewarm and PR #51's global sound fixes (15 Nov), with the host `17ec92c3`.
 - **Open:** http://127.0.0.1:5197/the-finals-outfit/, the production build of this branch. It loads clips, props,
-  faces and sounds from the published host `e4608dac`, as the live site will after merge.
+  faces and sounds from the published host `17ec92c3`, as the live site will after merge.
   - The earlier `ab913ac8` host lacks the faces and is retired: don't test against it.
 - **Prerequisites:** headphones or speakers, and a desktop browser (Chrome, Edge or Firefox).
 - **Approximate hands-on time:** 10 minutes.
-- **Agent checks (15 Nov 2026, the merge candidate: production build against `e4608dac`):**
-  - Chrome 17/17 ([check-chrome-prod-merge-candidate.json](check-chrome-prod-merge-candidate.json)).
-  - Faces 2/2 posed and wrapped ([check-faces-prod-merge-candidate.json](check-faces-prod-merge-candidate.json)).
+- **Agent checks (15 Nov 2026, the merge candidate: production build against `17ec92c3`):**
+  - Chrome 17/17 ([check-chrome-prod-17ec92c3.json](check-chrome-prod-17ec92c3.json)).
+  - Faces 2/2 posed and wrapped ([check-faces-prod-17ec92c3.json](check-faces-prod-17ec92c3.json)).
   - Global ↔ Chinals switches: 1 open audio context after 3 round trips
     ([check-mode-switch.json](check-mode-switch.json)).
   - The type check and the production build (with its public-text checks) pass.
@@ -99,4 +98,5 @@ switch mutes it, which is expected.
 - **Merge authorization:** not yet given.
 - **Publishing:**
   - "Yes, upload it" (12 Nov 2026) covered `ab913ac8`, which is now retired because it lacks the faces.
-  - "Yes, upload it" (13 Nov 2026) covered the faces + sounds host `e4608dac`, which this PR ships.
+  - "Yes, upload it" (13 Nov 2026) covered the faces + sounds host `e4608dac`, since superseded.
+  - "Yes, upload it" (15 Nov 2026) covered `17ec92c3` (the corrected gains), which this PR ships.
