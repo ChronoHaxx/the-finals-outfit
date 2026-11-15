@@ -50,8 +50,10 @@ Of 54 prop GLBs, 31 are byte-identical and 7 have only a new buffer layout (the 
   and names first: none.
 - **Wiring:** `deploy.yml` `CHINALS_ANIMATIONS_BASE` now points at `e7796a7c`.
 - **Rollback:** `dcb131a5` (props-2) is untouched; reverting the one `deploy.yml` line restores it.
-- **Sounds (PR #51):** a later Chinals host with sounds must point its manifest at `props-3/props.json` (already on the
-  project), or it puts props-2 back. As of 15 Nov its staged manifest still names props-2.
+- **Sounds (PR #51):** its host `59209741` is this set plus `sounds-1`: its manifest names `props-3/props.json`, and
+  its 142 `set-3`/`props-3` files are byte-identical to `e7796a7c` (checked 15 Nov). If #51 merges first, this PR's
+  host line would drop the sounds: close this PR or point it at `59209741`. If this PR merges first, #51 replaces the
+  line with `59209741`.
 - Rebuild recipe, diff tool and captures: gitignored, in the worktree that built them
   (`scripts/generated/chinals-props-3-2026-11-12/`, README there).
 
