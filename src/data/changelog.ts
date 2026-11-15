@@ -14,6 +14,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-15-emote-sounds",
+    date: "2026-11-15",
+    title: "Emote sounds",
+    notes: [
+      "Emotes now play the game's own sound effects and music, in time with the animation. 235 of the 237 emotes in the picker have sound; the other two are silent in the game too.",
+      "Sound starts with your first click or tap, as browsers require, and follows the emote through pause, scrubbing and loops. A speaker button beside Pause mutes it, and on a computer a slider sets the volume. Both are remembered in this browser.",
+      "Props now appear without a hitch the first time an emote shows them.",
+    ],
+    items: ["emote-effects", "idle-emotes"],
+  },
+  {
     id: "2026-11-15-full-window-screenshots",
     date: "2026-11-15",
     title: "Full-window view and transparent screenshots",

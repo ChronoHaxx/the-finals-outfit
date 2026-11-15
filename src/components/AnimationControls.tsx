@@ -6,10 +6,12 @@ import { initialClip, loadAnimationManifest, RigAnimator, type AnimatorState } f
 import { AUTOMATED } from "../lib/automation";
 import { modelUrl } from "../lib/assets";
 import { loadSourceFaceMask } from "../rig/SourceAssembly";
+import { warmForDraw } from "../rig/EmoteProps";
 import { pendingPose, subscribePendingPose, takePendingPose } from "../lib/share-pose";
-import { setPoseSource } from "../lib/viewer-handle";
+import { getPreviewScene, setPoseSource } from "../lib/viewer-handle";
 import { isChinalsClip } from "../lib/site-mode";
 import { EmotePicker, missingSummary } from "./EmotePicker";
+import { EmoteSoundControl } from "./EmoteSoundControl";
 
 // Showcase animation UI (5 Nov 2026): Animate / Static toggle, pause, and the emote picker (EmotePicker.tsx: every
 // emote with its icon, plus outfit-screen reactions and idles). Hidden unless the deployment publishes a clip manifest
@@ -71,7 +73,9 @@ export function useRigAnimator(base: string): RigAnimator | null {
       if (cancelled || !loaded) return;
       created = new RigAnimator(loaded.manifest, loaded.clipBase,
         { sway: params.get("sway") !== "0", deform: params.get("deform") !== "0", loopEmote: savedLoop(), propsUrl: loaded.propsUrl,
-          facesUrl: loaded.facesUrl, face: params.get("face") !== "0" });
+          facesUrl: loaded.facesUrl, face: params.get("face") !== "0",
+          // Automated browsers get no sounds at all (no audio device, no downloads): captures stay silent and deterministic.
+          soundsUrl: AUTOMATED ? null : loaded.soundsUrl });
       setLoaded({ base, animator: created });
     }).catch(error => console.warn("[animation] manifest unavailable", error));
     // dispose(), not reset(): a clip still downloading must not bind the body to a discarded animator when it lands.
@@ -148,6 +152,16 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
     }
   }, [animator, rig, ready, busy, state.active, state.sway]);
   useEffect(() => () => { animator.springs.reset(); rig.setAnimationPins(false); }, [animator, rig]);
+  useEffect(() => {
+    // Props are compiled and uploaded while their emote loads, not on their first frame (EmoteProps.warmForDraw): a
+    // 100-200 ms first draw stalls the motion, and the sounds already scheduled ahead of it come out early. The viewer
+    // publishes its renderer and scene once the outfit has loaded; before that a prop just warms on first draw.
+    animator.props.setWarmer(object => {
+      const view = getPreviewScene();
+      return view ? warmForDraw(view.gl, view.scene, object) : Promise.resolve();
+    });
+    return () => animator.props.setWarmer(null);
+  }, [animator]);
   useEffect(() => {
     // The face masks come from the worn items' definitions (the same files the outfit is assembled from).
     const assembly = modelUrl("models/reconstructed-assembly-v2");
@@ -248,6 +262,7 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
   return (
     <div ref={controls} className="flex min-h-0 flex-col items-end gap-1.5">
       <div className="flex gap-1.5">
+        {emote && animator.sounds.hasSound(emote.source) && <EmoteSoundControl sounds={animator.sounds} />}
         {state.active && (
           <button type="button" className={button} disabled={disabled}
             aria-pressed={state.paused} title={state.paused ? "Resume the animation" : "Freeze this frame"}
