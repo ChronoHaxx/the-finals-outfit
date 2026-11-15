@@ -7,19 +7,22 @@ muting must behave like a video player: nothing doubled, nothing out of step, an
 
 - **PR / originating issue:** the PR on branch `claude/emote-sfx-2026-11-12` (your "sounds fx and everything for
   emotes" request).
-- **Test this revision:** the head of `claude/emote-sfx-2026-11-12`, rebased onto main `83af8e6`. It includes the
-  prop prewarm of 15 Nov.
+- **Test this revision:** the head of `claude/emote-sfx-2026-11-12`, rebased onto main `76d4e9e`. It includes the
+  prop prewarm and PR #51's global sound fixes (15 Nov). Until the rebuilt host is uploaded it plays the old gains
+  from `e4608dac`; only 14 musical emotes change volume after that.
 - **Open:** http://127.0.0.1:5197/the-finals-outfit/, the production build of this branch. It loads clips, props,
   faces and sounds from the published host `e4608dac`, as the live site will after merge.
   - The earlier `ab913ac8` host lacks the faces and is retired: don't test against it.
 - **Prerequisites:** headphones or speakers, and a desktop browser (Chrome, Edge or Firefox).
 - **Approximate hands-on time:** 10 minutes.
-- **Agent checks (15 Nov 2026, production build against `e4608dac`):**
-  - Chrome 17/17 ([check-chrome-prod-e4608dac-prewarm.json](check-chrome-prod-e4608dac-prewarm.json)).
-  - Faces 2/2 posed and wrapped ([check-faces-prod-e4608dac-prewarm.json](check-faces-prod-e4608dac-prewarm.json)).
-  - The type check passes.
-  - 59/59 focused tests pass: props (with the prewarm), sounds, cues, animator, transport and faces.
-  - `npm test` 855 pass, 8 fail. The 8 are pre-existing and need game GLBs this worktree lacks.
+- **Agent checks (15 Nov 2026, the merge candidate: production build against `e4608dac`):**
+  - Chrome 17/17 ([check-chrome-prod-merge-candidate.json](check-chrome-prod-merge-candidate.json)).
+  - Faces 2/2 posed and wrapped ([check-faces-prod-merge-candidate.json](check-faces-prod-merge-candidate.json)).
+  - Global ↔ Chinals switches: 1 open audio context after 3 round trips
+    ([check-mode-switch.json](check-mode-switch.json)).
+  - The type check and the production build (with its public-text checks) pass.
+  - 65/65 focused tests pass: props, sounds, cues, animator, transport and faces.
+  - `npm test` 896 pass, 8 fail. The 8 are pre-existing and need game GLBs this worktree lacks.
 - **12 Nov, dev preview of the staged set:** Chrome 17/17 and faces 2/2.
 - **Before the rebase:** production build against `ab913ac8` Chrome 17/17; Firefox 16/17 (timing in headless software
   rendering). Details are in [README.md](README.md#verification).
@@ -69,10 +72,12 @@ The first load after a start can take over 30 seconds (Vite builds its cache). S
   shows a cross. Reload the page and play an emote again: still silent. Click the speaker: sound comes back mid-emote.
   Dragging the volume slider also unmutes.
 - [ ] **7. Ordinary use around it.** Play a few emotes back to back (pick a new one while another plays), close one with
-  ✕, then click **Animated** to go back to the still pose. Expected:
-  - the previous emote's sound stops quickly whenever you pick, close or stop;
+  ✕, then click **Animated** to go back to the still pose. Then, while an emote with sound plays, switch to
+  **Chinals** (the Global | Chinals switch) and back to **Global**, and play an emote again. Expected:
+  - the previous emote's sound stops quickly whenever you pick, close, stop or switch;
   - nothing keeps playing in the still pose;
-  - CoconutRider and Tap dance are silent, as in the game.
+  - CoconutRider and Tap dance are silent, as in the game;
+  - after switching back, emotes have sound again.
 - [ ] **8. Props appear smoothly (the 15 Nov prewarm).** Open http://127.0.0.1:5197/the-finals-outfit/ in a new tab and
   click anywhere once. As the first emote of that tab, play **BlackSmith**. Expected:
   - the anvil and the log appear without a hitch or freeze in the motion;

@@ -206,7 +206,21 @@ with the local `sounds-1`.
 - `ab913ac8` has no `faces-1/`: pointing the site at it would switch the faces off.
 - It stays published, untouched, as a record.
 
-### Faces + sounds: `e4608dac` (13 Nov 2026, on your "Yes, upload it"), the host this PR ships
+### Rebuilt sounds (15 Nov 2026): staged, uploads only on your yes
+
+PR #51's three fixes to this PR's sound code are now in this PR (see "Global sound fixes" below). One of them, the
+MetaSound volume rule, changes `sounds.json`, so the host must be replaced:
+- **Rebuilt offline** with the fixed resolver (`scripts/generated/emote-sfx-2026-11-12/rebuild-1115/`):
+  - all 275 waves are byte-identical to `e4608dac`'s, and so are the file table and the skipped list;
+  - exactly 14 window cues change gain, all musical MetaSounds. Disco 1-4, Hippie, Jester Lute and Yazz Flute go
+    1 → 0.75, Electro Synth → 0.55, Jester Flute → 0.7. Mariachi guitar and trumpet → 1.1, maracas → 1.2, Jester
+    Drum → 2.1, and Puppeteer 1.5 → 1.3.
+- **Staged** `upload/anim-20261115e/`: `e4608dac`'s 1,133 files with only `sounds-1/sounds.json` replaced (checked by
+  `diff -r`). Its manifest is byte-identical to `e4608dac`'s.
+- **After upload:** verify, bump `ANIMATIONS_BASE`, rerun the production checks. Rollback: `e4608dac` (old gains)
+  or `e5250f94` (no sounds).
+
+### Faces + sounds: `e4608dac` (13 Nov 2026, on your "Yes, upload it")
 
 **Animations host `e4608dac`** (alias `anim-1113-faces-sfx`), from the staged set below:
 - **Upload:** 1 new file (the manifest), 1,131 deduplicated ([upload-anim-e4608dac.txt](upload-anim-e4608dac.txt)).
@@ -289,15 +303,38 @@ so warming has to match all three:
 **Side note, not changed here:** `shadows="percentage"` in `CharacterViewer.tsx` would ask for PCF directly. That
 would end the per-render rewrite and three's deprecation warning.
 
+## Global sound fixes from PR #51 (taken 15 Nov 2026)
+
+Merge plan from the coordinating session: #47 first, then #51 rebuilt on main with only its Chinals commits. The
+Chinals session found three defects in this PR's code; its five files were taken from its branch (`1b5a50e`) and
+reviewed here:
+- **MetaSound volume.** A MetaSound source is itself a SoundWave: its own `Volume` scales its output. The Wave Player
+  inside only decodes its wave, so that wave's `Volume` and `Pitch` are never applied (reviewed by Fable in that
+  session).
+  - The musical template is now recognised by its full wiring, not by node names.
+  - Mixer cues play their inputs as layers, and exported audio is found whatever its codec.
+- **Leak.** `dispose()` now removes the gesture and visibility listeners (an `AbortController`), and a disposed
+  player can no longer make a context.
+  - Chinals mode (now on main) disposes the global player on every switch.
+  - Checked in the production build ([check-mode-switch.mjs](check-mode-switch.mjs),
+    [check-mode-switch.json](check-mode-switch.json)): three Global → Chinals → Global round trips leave 1 open
+    AudioContext of 4 made, and the emote sounds after each.
+- **Late first sound.** A new context can report "running" while its clock still reads 0: no voice starts until it
+  moves (one start was 0.7 s late, then skipped).
+
+**Merge candidate** (main `76d4e9e` + this PR, production build against `e4608dac`, so old gains):
+- Chrome 17/17 ([check-chrome-prod-merge-candidate.json](check-chrome-prod-merge-candidate.json)): cues within
+  ±5.4 ms, no frame over 40 ms.
+- Faces 2/2 ([check-faces-prod-merge-candidate.json](check-faces-prod-merge-candidate.json)).
+- `npm test` 896 pass, plus the 8 failures that need game GLBs.
+
 ## Open items and follow-ups
 
-- **Chinals emote sounds:** in PR #51, which carries this PR's code. That session reports three fixes to code from
-  this PR, on its branch and not verified here:
-  - **MetaSound volume:** a MetaSound plays at its own Volume. If right, 14 global musical emotes in `e4608dac`'s
-    `sounds.json` have the wrong gain, and the global sounds need a rebuild and a new host.
-  - **Leak:** `EmoteSounds.dispose()` should remove its gesture listeners; mode switches leaked AudioContexts.
-  - **Late first sound:** a context whose clock still reads 0 is not running yet; the first sound came late, then
-    was skipped.
+- **A limiter (your call).** Some game gains push loud peaks past full scale at the default volume 0.7: Jester Drum
+  (gain 2.1, peak 0.80 → 1.18). Chinals TakeAway (gain 4.8) does too, in PR #51. The game's own mixer comes after
+  these gains; a browser clips. A limiter on the player's output would stop it, but would touch every sound near
+  full scale.
+- **Chinals emote sounds:** PR #51, rebuilt on main after this PR merges.
 - **Voice lines:** the 3 BlackSmith vocalization notifies resolve through the character's voice at run time.
 - **Raising the frame cap while sounds play:** a 0.35 s cap would stop the audio leading after hitches. It changes
   existing animation behaviour, so it's your call.
