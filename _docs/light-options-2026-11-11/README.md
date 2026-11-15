@@ -104,12 +104,16 @@ Fable 5.2 reviews (thread 164a2365):
     after Reset, and Undo restores the custom look and backdrop; the Lobby look, then red rims (Custom); the four sun
     looks; a travelling emote (big-foot, 0.94 m) with the floor following; the phone layout (390 px: no sideways
     scroll, the panel scrolls inside the viewer). All screenshots looked at.
-- **Merged with main a0a7ae3 (15 Nov)** before merging the PR. Main had gained body types, the mesh gate and facial
-  animation. One import conflict was resolved (both kept). Checks after the merge:
-  - `tsc` PASS;
-  - `npm test`: 862 tests, 849 pass, the same 8 fixture failures, 5 skipped;
-  - a production build with main's hosts (animations `e5250f94`), in headless Edge: Studio default, the Lobby look,
-    then Low sun with the floor shadow; the body-type picker present; no page errors. Screenshots looked at.
+- **Merged with main before merging the PR (15 Nov).**
+  - First main `a0a7ae3`: body types, the mesh gate and facial animation. One import conflict (both kept).
+  - Then main `864b276`, which landed meanwhile: Chinals mode. One conflict, the viewer's state. This branch's look
+    replaces the theme and sun state; main's Chinals-aware animator was kept.
+  - Checks after the second merge:
+    - `tsc` PASS;
+    - `npm test`: 869 tests, 856 pass, the same 8 fixture failures, 5 skipped;
+    - a production build with main's hosts (animations `e5250f94`, Chinals `dcb131a5`) in headless Edge: Studio
+      default, the Lobby look, then Low sun with the floor shadow; the body-type picker present; `#/chinals` with the
+      look carried over, then Lobby there. No page errors; screenshots looked at.
 - **User checks waived.** On 15 Nov the user replied "waive, jsut merge" to the 7-step checklist for `3d1aa11`. None
   of the 7 steps were run by the user. Earlier, on `f98e97e`, steps 1-3 had been ticked.
 - **Three more scripts used the old button.** `render-hair-reference.mjs` and `render-head-details.mjs` hid it from
