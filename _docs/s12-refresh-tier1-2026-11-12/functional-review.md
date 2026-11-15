@@ -74,9 +74,18 @@ If something fails, stop at that step and report its number and what happened. R
 
 ## Recorded result
 
-- Tested revision/build: pending.
-- User reported at: pending.
-- Passed / failed / untested step numbers: pending.
-- Explicitly waived checks, if any: none.
-- Readiness: pending.
-- Merge authorization: not given. A merge is the main session's `HANDOFF.md` recipe, run while the index is idle.
+- Tested revision/build: not tested by the user. Revision under review: `7b63a67` (PR #52), data `431627fc…` on
+  active `7678e698…`. The active index was unchanged on 15 Nov.
+- User reported at: 15 Nov 2026, in the tier-1 session, answering "Will you run checks 1-6 on PR #52?".
+- Passed / failed / untested step numbers: none run by the user; 1-6 are untested by the user.
+- Explicitly waived checks: **steps 1-6**, in the user's words: "Waive the checks".
+  - Agent evidence covers steps 1, 2, 3 and 5 at fixed cameras (paused idle, 6 views) and step 4's Flex (`README.md`,
+    "Review").
+  - **Unknowns with no agent evidence:**
+    - the Wave emote (step 4);
+    - free orbiting and the live-playing idle (steps 1 and 3; captures used paused frames);
+    - changing items in the panel and adding the hip bag through it (step 6).
+- Readiness: checks explicitly waived (not user-verified).
+- Merge authorization: not given. The waiver is not a merge instruction. A merge needs the user's separate yes:
+  - merge PR #52 (which contains PR #38) into `main`;
+  - the main session runs the `HANDOFF.md` recipe while the index is idle, and publishes the 9 GLBs.
