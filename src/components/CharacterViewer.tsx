@@ -8,7 +8,7 @@ import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
 import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
 import { bodyTypePreview, isBodyTypeId, type BodyTypeId, type BodyTypePreview } from "../rig/BodyTypePreview";
 import { shownBodyType } from "../lib/body-type";
-import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
+import { loadSourceAssemblyAssets, loadSourceAssemblyItems, sourceHeadComponentCarries, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
@@ -879,10 +879,20 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
           continue;
         }
         const headComponent = headSocketed ? rig.sourceHeadComponentKey() : undefined;
+        // (15 Nov 2026) The index preserves head-component sockets for some heads only (Face 01's): on another worn
+        // head the rig cannot place the part, so the item keeps its ordinary path as without a source head, instead
+        // of failing the whole preview. An item with no ordinary model is left off with a notice (below).
+        const headSockets = headSocketed ? sourceCandidate!.parts
+          .filter(part => !part.hidden && part.definition.bAttachToHeadMesh)
+          .map(part => part.definition.AttachmentSocket ?? "") : [];
+        const headCarries = !headComponent || await sourceHeadComponentCarries(
+          modelUrl("models/reconstructed-assemblies-v1"), rig.sourceHeadMesh(), headSockets).catch(() => false);
+        if (cancelled) return;
+        const headUncarried = !!headComponent && !headCarries;
         // A part wrapped by the head component is shaped by the worn head's wrap cage, so it is re-staged per head.
         const headWrapped = !!sourceCandidate?.parts.some(part => !part.hidden && part.definition.WrapDeformation?.bIsWrapDeformed
           && part.definition.WrapDeformation?.bIsWrapDeformedByHeadComponent);
-        const sourceItem = headSocketed && !headComponent ? undefined : sourceCandidate;
+        const sourceItem = headSocketed && (!headComponent || headUncarried) ? undefined : sourceCandidate;
         const skinCandidate = id && slot === "face" && DEV.sourceMeshes && DEV.sourceFitting ? assembly?.items[id] : undefined;
         let skinParameters: SourceMaterialParameters[] = [];
         if (skinCandidate && assembly) {
@@ -913,6 +923,14 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
             : id;
         if (prev.current[slot] === key) continue;
         const item = id ? getItemById(id) : undefined;
+        if (headUncarried && !item?.model?.gltfPath) {
+          // No ordinary model to fall back on, and no preserved socket on this head: leave it off rather than place it
+          // on another head's socket.
+          rig.unequip(slot);
+          setError("This earring can’t be placed on the current face yet.");
+          prev.current[slot] = key ?? null;
+          continue;
+        }
         // A face without a legacy model renders only through its legacy-free source skin pair (w91-head-skin); with no
         // pair in the index it stays the empty slot it was.
         let legacyFreePair: Awaited<ReturnType<typeof loadSourceSkinPair>>;
