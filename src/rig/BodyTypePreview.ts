@@ -33,6 +33,7 @@
 // With no body type selected, no morph weight, context tag or socket offset is applied anywhere.
 
 import { composeSourceMatrix, type SourceMatrix, type SourceQuaternion, type SourceVector } from "./SourceTransform";
+import type { BodyTypeId as OutfitBodyTypeId } from "../lib/body-type";
 
 /** One DA_BodyType socket offset exactly as the source asset authors it: an FTransform in
  *  Unreal axes — translation in centimetres, rotation a quaternion in (X, Y, Z, W) order. */
@@ -122,7 +123,7 @@ export const BODY_TYPE_PREVIEWS = {
     tag: "Customization.BodyType.Androgynous",
     socketOffsets: {},
   },
-} as const satisfies Record<string, BodyTypePreview>;
+} as const satisfies Record<OutfitBodyTypeId, BodyTypePreview>;
 
 export type BodyTypeId = keyof typeof BODY_TYPE_PREVIEWS;
 
