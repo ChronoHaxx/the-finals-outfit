@@ -23,7 +23,9 @@ static class Export
     static object? Property(UAnimSequence seq, string name) =>
         seq.Properties.FirstOrDefault(p => p.Name.Text == name)?.Tag?.GenericValue;
 
-    static JObject CurveValues(UAnimSequence seq, int frames)
+    // Float curves sampled once per frame. `face`: only the facial expression curves (Face_*, which the head's pose asset
+    // turns into FACIAL_* bone poses, see scripts/anim-export/build-face.mjs); otherwise every other curve.
+    static JObject CurveValues(UAnimSequence seq, int frames, bool face = false)
     {
         var result = new JObject();
         CUE4Parse.UE4.Assets.Exports.Animation.FFloatCurve[]? curves = null;
@@ -32,7 +34,7 @@ static class Export
         foreach (var curve in curves ?? [])
         {
             var name = curve.CurveName.Text;
-            if (name.StartsWith("Face_", StringComparison.OrdinalIgnoreCase) || curve.FloatCurve == null) continue;
+            if (name.StartsWith("Face_", StringComparison.OrdinalIgnoreCase) != face || curve.FloatCurve == null) continue;
             var step = frames > 1 ? seq.SequenceLength / (frames - 1) : 0;
             result[name] = JArray.FromObject(Enumerable.Range(0, frames).Select(f => R(curve.FloatCurve.Eval(f * step, 0))));
         }
@@ -130,9 +132,11 @@ static class Export
                     ["additive"] = seq.AdditiveAnimType.ToString(), ["interpolation"] = seq.Interpolation.ToString(),
                     ["trackCount"] = seq.GetNumTracks(),
                     ["curves"] = JArray.FromObject((seq.CompressedCurveNames ?? []).Select(c => c.DisplayName.Text)),
-                    // Gameplay float curves sampled once per frame (facial Face_* curves left out: many, and unused). The
+                    // Gameplay float curves sampled once per frame (the facial Face_* curves are faceCurveValues below). The
                     // emotes' PropAnimSequenceTime is the explicit time their props' AnimBlueprints evaluate at.
                     ["curveValues"] = CurveValues(seq, frames),
+                    // The facial curves, kept apart so curveValues consumers see what they always did (12 Nov 2026).
+                    ["faceCurveValues"] = CurveValues(seq, frames, face: true),
                     // Root motion: when enabled, UE extracts the root bone's motion and LOCKS the root in the evaluated
                     // pose (RootMotionRootLock: RefPose by default, AnimFirstFrame or Zero), whoever plays it.
                     ["rootMotion"] = Property(seq, "bEnableRootMotion") is true,

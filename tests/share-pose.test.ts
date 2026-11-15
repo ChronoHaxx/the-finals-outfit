@@ -34,27 +34,27 @@ test('times are written to the millisecond without exponents; frames count from 
 });
 
 test('a pose rides beside the outfit in both link styles and reads back; old links have none', () => {
-  const short = buildShareUrl(SITE, outfit, 'short', paused);
+  const short = buildShareUrl(SITE, { build: outfit, bodyType: 'masculine' }, 'short', paused);
   assert.equal(new URL(short).hash, `#/?o=${new URLSearchParams(new URL(short).hash.slice(3)).get('o')}&emote=ace-pilot&t=1.233&paused=1`);
   assert.deepEqual(readPoseLink(short), { clip: 'ace-pilot', time: 1.233, paused: true });
   assert.deepEqual(readOutfitLink(short)?.slots, outfit, 'the outfit still decodes');
 
-  const names = buildShareUrl(SITE, outfit, 'names', { clip: 'wave', time: 0.5, paused: false });
+  const names = buildShareUrl(SITE, { build: outfit, bodyType: 'masculine' }, 'names', { clip: 'wave', time: 0.5, paused: false });
   assert.equal(new URL(names).searchParams.get('emote'), 'wave');
   assert.equal(new URL(names).searchParams.has('paused'), false);
   assert.deepEqual(readPoseLink(names), { clip: 'wave', time: 0.5, paused: false });
   assert.deepEqual(readOutfitLink(names)?.slots, outfit);
 
-  for (const old of [buildShareUrl(SITE, outfit), buildShareUrl(SITE, outfit, 'names'), SITE, `${SITE}#/`, `${SITE}?anim=wave&animTime=1`])
+  for (const old of [buildShareUrl(SITE, { build: outfit, bodyType: 'masculine' }), buildShareUrl(SITE, { build: outfit, bodyType: 'masculine' }, 'names'), SITE, `${SITE}#/`, `${SITE}?anim=wave&animTime=1`])
     assert.equal(readPoseLink(old), null, old);
 });
 
 test('a new share never inherits the pose of the link it was opened from', () => {
-  const opened = buildShareUrl(SITE, outfit, 'names', paused); // the address bar after opening a readable posed link
+  const opened = buildShareUrl(SITE, { build: outfit, bodyType: 'masculine' }, 'names', paused); // the address bar after opening a readable posed link
   for (const style of ['short', 'names'] as const) {
-    const plain = buildShareUrl(opened, outfit, style);
+    const plain = buildShareUrl(opened, { build: outfit, bodyType: 'masculine' }, style);
     assert.equal(readPoseLink(plain), null, style);
-    const other = buildShareUrl(opened, outfit, style, { clip: 'bow', time: 2, paused: false });
+    const other = buildShareUrl(opened, { build: outfit, bodyType: 'masculine' }, style, { clip: 'bow', time: 2, paused: false });
     assert.deepEqual(readPoseLink(other), { clip: 'bow', time: 2, paused: false }, style);
     assert.equal(new URL(other).search.match(/emote=/g)?.length ?? 0, style === 'names' ? 1 : 0);
   }
@@ -98,7 +98,7 @@ test('a link hands its pose to the viewer when its outfit opens, including one m
   await visit();
   openLink(SITE);
   assert.equal(pendingPose(), null, 'no link, no pose');
-  const link = buildShareUrl(SITE, { face: FALLBACK_FACE, feet: 'actionhero-sentinelboots-leather' }, 'short', paused);
+  const link = buildShareUrl(SITE, { build: { face: FALLBACK_FACE, feet: 'actionhero-sentinelboots-leather' }, bodyType: 'masculine' }, 'short', paused);
   openLink(link);
   assert.deepEqual(takePendingPose(), { clip: 'ace-pilot', time: 1.233, paused: true });
   openLink(link); // the same outfit is already on screen: the pose still applies (a link to another frame of it)
@@ -119,7 +119,7 @@ test('a link refused in favour of an unsaved draft brings no pose', async () => 
   randomiseOutfit({ face: FALLBACK_FACE, feet: 'actionhero-sentinelboots-leather' }); // at the cap: an unsaved draft
   useBuildStore.getState().equip(getItemById('attachment-3dpaperglasses-paper')!); // edited: leaving it asks first
   assert.equal(useSavedOutfits.getState().library!.current?.kind, 'draft');
-  const result = openLink(buildShareUrl(SITE, outfit, 'short', paused));
+  const result = openLink(buildShareUrl(SITE, { build: outfit, bodyType: 'masculine' }, 'short', paused));
   assert.equal(result.declined, true);
   assert.equal(pendingPose(), null);
 });

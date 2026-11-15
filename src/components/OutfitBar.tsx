@@ -15,12 +15,15 @@ import { OutfitNotices, OutfitSwitcher, OutfitToast } from "./SavedOutfits";
 import { DiceIcon, FlagIcon, LockIcon, ResetIcon } from "./Icons";
 import { randomiseOutfit, resetOutfit } from "../store/useSavedOutfits";
 import { hideBroken } from "../lib/hide-broken";
+import { BODY_TYPE_LABELS, shownBodyType, VISITOR_BODY_TYPES } from "../lib/body-type";
 
 const ghost = "flex h-8 items-center gap-1.5 px-2 hud text-fg-muted transition-colors hover:text-fg";
 
 // The equipped pieces and everything you do to the outfit as a whole.
 export default function OutfitBar() {
   const build = useBuildStore((s) => s.build);
+  const bodyType = useBuildStore((s) => s.bodyType);
+  const setBodyType = useBuildStore((s) => s.setBodyType);
   const unequip = useBuildStore((s) => s.unequip);
   const { workedOn, state } = useReconstructionProgress();
   const [locked, setLocked] = useState<ReadonlySet<Slot>>(new Set());
@@ -52,12 +55,12 @@ export default function OutfitBar() {
     const items: IssueItem[] = equipped.map(({ slot, item }) =>
       ({ slot, id: item.id, name: item.name, status: REVIEW_LABELS[statusOf(item)] }));
     let shareUrl = window.location.href; // an item without a stable share ID cannot be encoded
-    try { shareUrl = buildShareUrl(window.location.href, build); } catch { /* keep the current address */ }
+    try { shareUrl = buildShareUrl(window.location.href, { build, bodyType }); } catch { /* keep the current address */ }
     const report = (focus?: IssueItem) => issueUrl({ repositoryUrl: REPOSITORY_URL, shareUrl,
       items, focus, catalog: DEVELOPER_CATALOG ? "developer" : "public", userAgent: navigator.userAgent,
       viewport: { width: window.innerWidth, height: window.innerHeight, pixelRatio: window.devicePixelRatio } });
     return { all: report(), bySlot: new Map(items.map(item => [item.slot, report(item)])) };
-  }, [build, workedOn, state]); // equipped and statusOf are derived from exactly these
+  }, [build, bodyType, workedOn, state]); // equipped and statusOf are derived from exactly these
 
   return (
     <div className="relative flex flex-col gap-3 border-b border-line bg-ink-950 px-3 py-3 lg:h-full lg:border lg:bg-ink-900 lg:px-4">
@@ -74,6 +77,22 @@ export default function OutfitBar() {
             title="Back to the starting outfit. An outfit you made yourself is kept; this starts a new one">
             <ResetIcon size={13} />Reset
           </button>
+        </div>
+      </div>
+
+      {/* Body type: part of the outfit (saved and shared with it). Feminine joins after the Season 12 item refresh
+          (src/lib/body-type.ts). A body type this list does not offer shows as the Masculine it renders as. */}
+      <div role="radiogroup" aria-label="Body type" className="flex items-center gap-2.5">
+        <span aria-hidden="true" className="hud text-fg-dim">Body type</span>
+        <div className="flex border border-line">
+          {VISITOR_BODY_TYPES.map(id => {
+            const checked = shownBodyType(bodyType) === id;
+            return <button key={id} type="button" role="radio" aria-checked={checked} onClick={() => setBodyType(id)}
+              className={`h-8 px-3 text-[13px] font-semibold uppercase tracking-[0.02em] [font-stretch:87.5%] transition-colors
+                ${checked ? "bg-fg text-ink-950" : "bg-ink-900 text-fg-muted hover:bg-ink-850 hover:text-fg"}`}>
+              {BODY_TYPE_LABELS[id]}
+            </button>;
+          })}
         </div>
       </div>
 

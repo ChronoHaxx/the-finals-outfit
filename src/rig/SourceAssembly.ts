@@ -391,6 +391,18 @@ export async function loadSourceOutfit(ids: string[], baseUrl: string,
   return resolveSourceOutfit(definitions, ["Customization.Archetype.Medium", ...extraContextTags], options);
 }
 
+/** (12 Nov 2026, facial animation) The face mask an item applies: its definition's FaceAnimationWeights bone
+ *  weights asset (soft object path) when bMaskOutFacialAnimation is set, else null (FaceAnimator.ts). The definition
+ *  is the one loadSourceOutfit reads (same request cache); an item outside the release's catalog has none. */
+export async function loadSourceFaceMask(id: string, baseUrl: string): Promise<string | null> {
+  const catalog = await readJson(`${baseUrl}/catalog.json`) as { formatVersion?: number; items?: string[] };
+  if (catalog.formatVersion !== 1 || !Array.isArray(catalog.items) || !catalog.items.includes(id)) return null;
+  const record = await readJson(`${baseUrl}/items/${encodeURIComponent(id)}.json`) as SourceDefinition;
+  if (record.formatVersion !== 1 || record.id !== id || !record.properties) return null;
+  return record.properties.bMaskOutFacialAnimation === true
+    ? path(record.properties.FaceAnimationWeights as SoftPath | undefined) || null : null;
+}
+
 /** One socket rest authored by a component that is not the body: a head mesh, or an optional
  *  attachment mesh. Matrices are the converted (GLB) axes the preserved meshes already use. */
 export interface SourceSocketFrame {

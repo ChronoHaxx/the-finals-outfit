@@ -19,6 +19,7 @@ import { readOutfitLink } from "../lib/share-url";
 import { POSE_KEYS } from "../lib/share-pose";
 import { migrateOutfit } from "../lib/outfit-slots";
 import type { Slot } from "../lib/slots";
+import { BODY_TYPE_PARAM, DEFAULT_BODY_TYPE } from "../lib/body-type";
 import { startingOutfit, useBuildStore } from "./useBuildStore";
 
 export interface Toast {
@@ -72,7 +73,7 @@ export async function startSavedOutfits(options: StartOptions = {}): Promise<voi
   const lib = library;
   teardown.push(lib.subscribe(onLibraryChange));
   teardown.push(useBuildStore.subscribe((state, previous) => {
-    if (!applying && state.build !== previous.build) onHandEdit();
+    if (!applying && (state.build !== previous.build || state.bodyType !== previous.bodyType)) onHandEdit();
   }));
   teardown.push(() => lib.close());
   if (typeof window !== "undefined" && typeof document !== "undefined") {
@@ -119,23 +120,28 @@ function own<T>(change: () => T): T {
   try { return change(); } finally { ownChange = outer; }
 }
 
-function show(slots: SlotMap, labels?: Record<string, string>) {
+// An outfit's stored body type, as the build store holds it: absent (saved before body types) is Masculine.
+const storedBodyType = (bodyType: string | undefined) => bodyType || DEFAULT_BODY_TYPE;
+
+function show(slots: SlotMap, labels: Record<string, string> | undefined, bodyType: string | undefined) {
   const resolved = resolveSavedSlots(slots, labels);
-  if (!sameBuild(useBuildStore.getState().build, resolved.build)) {
+  const state = useBuildStore.getState();
+  const nextBodyType = storedBodyType(bodyType);
+  if (!sameBuild(state.build, resolved.build) || state.bodyType !== nextBodyType) {
     applying = true;
-    try { useBuildStore.getState().load(resolved.build); } finally { applying = false; }
+    try { state.load(resolved.build, nextBodyType); } finally { applying = false; }
   }
   useSavedOutfits.setState({ missing: resolved.missing });
 }
 
 function showRecord(record: OutfitRecord) {
   appliedSlots = record.slots;
-  show(record.slots, record.labels);
+  show(record.slots, record.labels, record.bodyType);
 }
 
 function showDraft(draft: Draft) {
   appliedSlots = undefined;
-  show(draft.slots, draft.labels);
+  show(draft.slots, draft.labels, draft.bodyType);
 }
 
 function publish() {
@@ -164,19 +170,20 @@ function onLibraryChange() {
 function onHandEdit() {
   const lib = library;
   if (!lib) return;
-  const build = useBuildStore.getState().build;
+  const { build, bodyType } = useBuildStore.getState();
   const { slots, missing } = keepMissing(build, useSavedOutfits.getState().missing);
   const current = lib.getCurrent();
   if (useSavedOutfits.getState().toast?.kind === "roll") useSavedOutfits.setState({ toast: null });
   if (current?.kind === "record") {
     const record = lib.get(current.id)!;
-    own(() => lib.setContent(record.id, slots, labelsFor(slots, record.labels), false));
+    own(() => lib.setContent(record.id, slots, labelsFor(slots, record.labels), false, bodyType));
     appliedSlots = lib.get(record.id)!.slots;
   } else if (current?.kind === "draft") {
-    promoteDraft({ ...current.draft, slots, labels: labelsFor(slots, current.draft.labels), generated: false }, true);
+    promoteDraft({ ...current.draft, slots, labels: labelsFor(slots, current.draft.labels), generated: false, bodyType },
+      true);
   } else {
     // Nothing on screen was chosen yet (should not happen after openFromUrl): keep the edit anyway.
-    promoteDraft({ name: "Outfit", slots, labels: labelsFor(slots), reason: "cap" }, true);
+    promoteDraft({ name: "Outfit", slots, labels: labelsFor(slots), bodyType, reason: "cap" }, true);
   }
   useSavedOutfits.setState({ missing });
   publish();
@@ -184,17 +191,21 @@ function onHandEdit() {
 
 const nextName = (lib: OutfitLibrary, stem: string) => uniqueName(stem, lib.liveNames(), { numberFirst: true });
 
+// New, Reset, Randomise and the first outfit keep the body type on screen: it is the user's choice, not the roll's.
+const currentBodyType = () => useBuildStore.getState().bodyType;
+
 function createStarting(lib: OutfitLibrary): OutfitRecord {
   const slots = startingOutfit() as SlotMap;
   // Uncapped only in effect: called when there are no live outfits at all.
-  return own(() => lib.create({ name: nextName(lib, "Outfit"), slots, labels: labelsFor(slots), generated: true }))!;
+  return own(() => lib.create({ name: nextName(lib, "Outfit"), slots, labels: labelsFor(slots), generated: true,
+    bodyType: currentBodyType() }))!;
 }
 
 /** The draft becomes a saved outfit. At the cap it stays a draft (and says so). */
 function promoteDraft(draft: Draft, edited: boolean): boolean {
   const lib = library!;
   const record = own(() => lib.create({ name: uniqueName(draft.name, lib.liveNames()), slots: draft.slots,
-    labels: draft.labels, generated: draft.generated }));
+    labels: draft.labels, generated: draft.generated, bodyType: draft.bodyType }));
   if (record) {
     own(() => lib.select(record.id));
     appliedSlots = record.slots;
@@ -221,7 +232,8 @@ function cleanUrl() {
   try {
     const url = new URL(window.location.href);
     let changed = false;
-    for (const key of ["outfit", "o", "look", ...POSE_KEYS]) if (url.searchParams.has(key)) { url.searchParams.delete(key); changed = true; }
+    for (const key of ["outfit", "o", "look", BODY_TYPE_PARAM, ...POSE_KEYS])
+      if (url.searchParams.has(key)) { url.searchParams.delete(key); changed = true; }
     if (changed) window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
     const hashLink = url.hash.startsWith("#/?") && new URLSearchParams(url.hash.slice(3)).has("o");
     if (!hashLink) return;
@@ -276,13 +288,16 @@ export function openFromUrl(href: string): LinkResult {
   const outfit = migrateOutfit(decoded);
   const slots = outfit.slots as SlotMap;
   const resolved = resolveSavedSlots(slots);
+  // A link describes the exact look: without a body type it is Masculine, as every link made before body types was.
+  const bodyType = storedBodyType(outfit.bodyType);
   const result = { omitted: resolved.missing.length > 0, error: false };
   const lib = library;
   if (!lib) {
-    useBuildStore.getState().load(resolved.build);
+    useBuildStore.getState().load(resolved.build, bodyType);
     return result;
   }
-  const opened = openUnsaved(lib, outfit.presetName?.trim() || "Shared outfit", resolved.slots, resolved.build, "link", "Open the link anyway?");
+  const opened = openUnsaved(lib, outfit.presetName?.trim() || "Shared outfit", resolved.slots, resolved.build, bodyType,
+    "link", "Open the link anyway?");
   return opened.kind === "declined" ? { ...result, declined: true } : result;
 }
 
@@ -292,21 +307,24 @@ type Opened = { kind: "same" } | { kind: "declined" } | { kind: "record"; record
  * Show an outfit that is not saved yet: a share link, or one of the game's own outfits. It becomes a draft beside the
  * saved outfits, so nothing saved changes until the user edits it or presses Save (which makes a NEW saved outfit).
  * An outfit already on screen changes nothing; a saved outfit with exactly these pieces is shown instead of a draft.
- * `slots` is what the draft keeps, `build` what it wears. A link's address stays while its draft is on screen (a reload
- * shows it again); anything else removes a previous link from the address bar, after the draft is in place, so the
- * router's re-run finds the draft and leaves it alone.
+ * `slots` is what the draft keeps, `build` what it wears, `bodyType` the body it is worn on: the look is the pieces and
+ * the body together, so the same pieces on another body are a different outfit. A link's address stays while its draft
+ * is on screen (a reload shows it again); anything else removes a previous link from the address bar, after the draft
+ * is in place, so the router's re-run finds the draft and leaves it alone.
  */
 function openUnsaved(lib: OutfitLibrary, name: string, slots: SlotMap, build: Partial<Record<Slot, string>>,
-  reason: "link" | "preset", ask: string): Opened {
+  bodyType: string, reason: "link" | "preset", ask: string): Opened {
   ensureCurrent(false);
   const current = lib.getCurrent();
-  if (current && sameBuild(useBuildStore.getState().build, build)) {
+  const state = useBuildStore.getState();
+  if (current && sameBuild(state.build, build) && state.bodyType === bodyType) {
     if (current.kind === "record" && reason === "link") cleanUrl(); // already this saved outfit (also the Roadmap round trip)
     return { kind: "same" };
   }
   if (current?.kind === "draft" && current.draft.edited && !confirmLeave(
     `“${current.draft.name}” is not saved (you have ${lib.cap} saved outfits). ${ask}`)) return { kind: "declined" };
-  const match = lib.live().find(record => sameBuild(resolveSavedSlots(record.slots, record.labels).build, build));
+  const match = lib.live().find(record => sameBuild(resolveSavedSlots(record.slots, record.labels).build, build)
+    && storedBodyType(record.bodyType) === bodyType);
   let opened: Opened;
   if (match) {
     own(() => lib.select(match.id));
@@ -314,7 +332,7 @@ function openUnsaved(lib: OutfitLibrary, name: string, slots: SlotMap, build: Pa
     cleanUrl();
     opened = { kind: "record", record: match };
   } else {
-    const draft: Draft = { name, slots, labels: labelsFor(slots), reason };
+    const draft: Draft = { name, slots, labels: labelsFor(slots), bodyType, reason };
     own(() => lib.setDraft(draft));
     showDraft(draft);
     if (reason !== "link") cleanUrl();
@@ -327,15 +345,16 @@ function openUnsaved(lib: OutfitLibrary, name: string, slots: SlotMap, build: Pa
 /**
  * Put on one of the game's own outfits (src/lib/preset-outfits.ts) as an unsaved draft. `slots` is the whole outfit, built
  * by presetSlots from the outfit on screen; it is resolved against today's catalogue once, and only what can be worn
- * goes into the draft. Undo goes back to what was on screen, but only while the draft is still the one on screen.
+ * goes into the draft. The body type on screen stays: an outfit dresses the contestant, it does not change their body.
+ * Undo goes back to what was on screen, but only while the draft is still the one on screen.
  */
 export function openPreset(name: string, slots: SlotMap): "same" | "declined" | "draft" | "record" {
   const resolved = resolveSavedSlots(slots);
   const lib = library;
-  if (!lib) { useBuildStore.getState().load(resolved.build); return "draft"; }
+  if (!lib) { useBuildStore.getState().load(resolved.build); return "draft"; } // load keeps the body type
   const previous = lib.getCurrent();
   const wearing = { ...resolved.build } as SlotMap;
-  const opened = openUnsaved(lib, name, wearing, resolved.build, "preset", `Wear “${name}” anyway?`);
+  const opened = openUnsaved(lib, name, wearing, resolved.build, currentBodyType(), "preset", `Wear “${name}” anyway?`);
   if (opened.kind === "record") toast(`Your saved outfit “${opened.record.name}” already has these pieces.`, "info");
   if (opened.kind !== "draft") return opened.kind;
   const draft = opened.draft;
@@ -508,7 +527,8 @@ function replaceWithGenerated(build: Partial<Record<Slot, string>>, stem: string
       showDraft(current.draft);
     }
   };
-  const created = own(() => lib.create({ name: nextName(lib, stem), slots, labels, generated: true }));
+  const created = own(() => lib.create({ name: nextName(lib, stem), slots, labels, generated: true,
+    bodyType: currentBodyType() }));
   if (created) {
     if (current?.kind === "draft") cleanUrl();
     own(() => lib.select(created.id));
@@ -521,7 +541,8 @@ function replaceWithGenerated(build: Partial<Record<Slot, string>>, stem: string
     });
   } else {
     // At the cap: show it unsaved. The outfit you had stays exactly as it was.
-    const draft: Draft = { name: stem === "Random" ? "Random outfit" : "New outfit", slots, labels, generated: true, reason: "cap" };
+    const draft: Draft = { name: stem === "Random" ? "Random outfit" : "New outfit", slots, labels, generated: true,
+      bodyType: currentBodyType(), reason: "cap" };
     own(() => lib.setDraft(draft));
     showDraft(draft);
     toast(`${verb}, not saved: you have ${lib.cap} saved outfits.`, "roll", () => {

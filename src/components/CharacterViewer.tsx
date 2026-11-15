@@ -8,6 +8,7 @@ import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
 import { STUDIO_LIGHTING_V2, STUDIO_RIG_V1, STUDIO_RIG_V2 } from "../rig/StudioLighting";
 import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
 import { bodyTypePreview, isBodyTypeId, type BodyTypeId, type BodyTypePreview } from "../rig/BodyTypePreview";
+import { shownBodyType } from "../lib/body-type";
 import { loadSourceAssemblyAssets, loadSourceAssemblyItems, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
 import MaterialTuner from "./MaterialTuner";
@@ -496,6 +497,8 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
   const [canvasGeneration, setCanvasGeneration] = useState(0);
   const exportContext = useRef<ExportContext | null>(null);
   const build = useBuildStore((s) => s.build);
+  // The outfit's body type (src/lib/body-type.ts): Masculine, or another the picker offers.
+  const outfitBodyType = useBuildStore((s) => s.bodyType);
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
   const prev = useRef<Partial<Record<Slot, string | null>>>({});
   // The item whose companion decal is installed for each slot (null: none).
@@ -603,14 +606,13 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
           return;
         }
       }
-      // The gated body-type context (BodyTypePreview.ts): the capture-only dev switch, or the
-      // "bodyType" field the index sets in its assets.json (the active index sets "masculine").
+      // The body-type context (BodyTypePreview.ts): the capture-only dev switch, else the outfit's own body type
+      // (12 Nov 2026: the picker; before it, the index's "bodyType" field, which the active index sets to
+      // "masculine" and the app no longer reads). A body type visitors cannot pick yet renders as Masculine.
       let bodyType: BodyTypePreview | undefined;
       try {
         const selected = DEV.bodyType
-          ?? (DEV.reconstructed && DEV.sourceAssembly
-            ? (await loadSourceAssemblyAssets(modelUrl("models/reconstructed-assemblies-v1"))).bodyType
-            : undefined);
+          ?? (DEV.reconstructed && DEV.sourceAssembly ? shownBodyType(outfitBodyType) : undefined);
         bodyType = bodyTypePreview(selected);
       } catch (e) {
         if (cancelled) return;
@@ -1062,10 +1064,10 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
       controller.abort();
       preparedAppearance?.release();
     };
-  }, [build, ready, rig, retryAttempt, beginOperation, endOperation]);
+  }, [build, outfitBodyType, ready, rig, retryAttempt, beginOperation, endOperation]);
 
   const changePreviewOption = (name: "surface" | "isolate", value: string) => {
-    const url = new URL(buildShareUrl(window.location.href, build));
+    const url = new URL(buildShareUrl(window.location.href, { build, bodyType: outfitBodyType }));
     // Picker edits do not rewrite the address bar.
     // Save the current outfit before reloading to change a preview option.
     url.searchParams.set(name, value);
