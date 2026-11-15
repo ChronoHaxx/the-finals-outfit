@@ -113,7 +113,7 @@ Theme filters, such as playful or tactical, and outfit suggestions, once item ta
 ### Emote effects and props
 <!-- id: emote-effects -->
 
-Emotes play without their effects or sound, and a few props are still wrong, such as wings at the wrong angle or a prop at the wrong size.
+Emotes play their sound effects and music but not yet their visual effects, and a few props are still wrong, such as wings at the wrong angle or a prop at the wrong size.
 
 - Check each emote's props against the game and fix the ones that are off.
 
@@ -152,7 +152,7 @@ Clothing hides the body beneath it, hair swaps to its under-hat shape, and full-
 ### Idle animation and emotes
 <!-- id: idle-emotes -->
 
-The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and the equipped cosmetics follow the body. A timeline pauses an emote on any frame, and a share link keeps that pose. One click returns to the still pose.
+The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and with its sound where it has one, and the equipped cosmetics follow the body. A timeline pauses an emote on any frame, and a share link keeps that pose. One click returns to the still pose.
 
 ### Share, randomise and report
 <!-- id: share-randomise-report -->
