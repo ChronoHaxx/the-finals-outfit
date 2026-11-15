@@ -21,7 +21,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
       "The 3D view now fills the window. The item picker is a drawer you open and close from the Items tab at its edge; on a phone held upright it is a sheet under the character that you tap or swipe. It stays the way you left it.",
       "Press H to hide every control and the mouse pointer for a clean view. H, Esc or a double-click brings them back. On a phone, tap the eye button, then double-tap to return.",
       "Save a screenshot as a PNG from the camera button: on its backdrop, or with a transparent background to lay over anything. The lighting is the same as on screen, at up to three times the view's size.",
-      "Fixed: earrings stopped the preview loading on many faces other than Face 01. A few earrings can only be placed on Face 01 for now and say so on other faces.",
+      "Fixed: earrings stopped the preview loading with many heads other than HEAD 1. A few earrings can only be placed on HEAD 1 for now and say so on other heads.",
     ],
     items: ["faster-builder"],
   },
