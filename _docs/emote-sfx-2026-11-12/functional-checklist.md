@@ -90,12 +90,13 @@ switch mutes it, which is expected.
 
 ## Recorded result
 
-- **Tested revision/build:** pending
-- **User reported at:** pending
-- **Passed / failed / untested step numbers:** pending
-- **Explicitly waived checks, if any:** none
-- **Readiness:** pending
-- **Merge authorization:** not yet given.
+- **Tested revision/build:** none by the user. Waived at head `2e2f21a` (production build against `17ec92c3`).
+- **User reported at:** 2026-11-15 22:28 UTC: "Waive and merge", the answer to "Waive checks 1-8 and merge #47?".
+- **Passed / failed / untested step numbers:** 1-8 untested by the user.
+- **Explicitly waived checks, if any:** 1-8.
+- **Readiness:** agent checks pass (Chrome 17/17, faces 2/2, mode switch, CI build/compatibility/tests); user checks
+  waived.
+- **Merge authorization:** "Waive and merge" (15 Nov 2026).
 - **Publishing:**
   - "Yes, upload it" (12 Nov 2026) covered `ab913ac8`, which is now retired because it lacks the faces.
   - "Yes, upload it" (13 Nov 2026) covered the faces + sounds host `e4608dac`, since superseded.
