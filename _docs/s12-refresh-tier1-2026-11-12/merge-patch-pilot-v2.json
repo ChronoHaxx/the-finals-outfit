@@ -1,0 +1,274 @@
+{
+ "note": "Season 12 item refresh. Apply with scripts/body-types/apply-merge-patch.py --garments-only, only to the active index whose sha256 is activeIndexSha256; otherwise rebuild the candidate.",
+ "activeIndexSha256": "7678e698a7aed12afdf42f12b6a8f067eaf9201d9944d897c1b505925b3d459a",
+ "activeSkinPairsSha256": "f15a73a2a5dfc2f61c3bbd20bf1ea4b9c9e735a64f856ba12310f1e50e1c00a4",
+ "candidateAssetsSha256": "9350ead8a6aacf698edc34e231d12424cda32282af62d9ddc0e3d54ee36c788f",
+ "body": {
+  "source": "/Game/Discovery/Characters/Body/SK_Body_M.SK_Body_M",
+  "url": "../reconstructed-meshes-v2/SK_Body_M.glb",
+  "fromSha256": "62c9f3cb22a78de0f85dd743e71d0736a1e02175ad4541f09ad74d02131dba1d",
+  "toSha256": "920029d00dd09931f133a06708a4d03e2e50de3600a8d119b3e34011ce8e3183",
+  "servedFrom": "public/models/s12-bodytype-refresh-v1/meshes/SK_Body_M.glb",
+  "note": "The S12 body is not part of a garments-only merge; it ships with stage 3 and its app changes."
+ },
+ "admitted": {
+  "/Game/Discovery/Characters/Casual/Assets/Sweater/SK_Casual_Sweater_M.SK_Casual_Sweater_M": {
+   "name": "SK_Casual_Sweater_M",
+   "class": "re-encoded",
+   "by": "proof",
+   "liveSha256": "9faf5479dbf47d88321ac77767e69dac965285035470f33fae43b7b253776528",
+   "s12Sha256": "04d7e49a4087de6d15566bc8ca7ad3261b6a86694f5f48328f83a33d28122d69",
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.073,
+     "verticesChanged": 1939
+    }
+   }
+  },
+  "/Game/Discovery/Characters/Casual/Assets/Tshirt/SK_Casual_Tshirt_M.SK_Casual_Tshirt_M": {
+   "name": "SK_Casual_Tshirt_M",
+   "class": "re-encoded",
+   "by": "proof",
+   "liveSha256": "5df22466d730d22c189c5763005427584cc0ec88140f4525a3f7f2fcc5247e29",
+   "s12Sha256": "b6f0788d0e98d8bcfe4d55d27f1a9a2dfe4f39b46752925d6e3393f26602c5af",
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 2.746,
+     "verticesChanged": 2043
+    },
+    "medium_male": {
+     "maxCm": 0.001,
+     "verticesChanged": 4
+    }
+   }
+  },
+  "/Game/Discovery/Characters/Military/Assets/SniperPants/SK_Military_SniperPants_M.SK_Military_SniperPants_M": {
+   "name": "SK_Military_SniperPants_M",
+   "class": "re-encoded",
+   "by": "proof",
+   "liveSha256": "df9ee511ecc2f9b2f2f310b59eef6f766432df420011e9a0fe8aa459f458fa75",
+   "s12Sha256": "37c585df43ffb083432685ec6f6f435f489db8c4212b43a3fe0a08a34840d938",
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.309,
+     "verticesChanged": 5374
+    },
+    "medium_male": {
+     "maxCm": 1.434,
+     "verticesChanged": 5374
+    }
+   }
+  },
+  "/Game/Discovery/Characters/StarterSet/Assets/TShirt/SK_StarterSet_TShirt_M.SK_StarterSet_TShirt_M": {
+   "name": "SK_StarterSet_TShirt_M",
+   "class": "morph set",
+   "by": "review",
+   "liveSha256": "6aa7672320be90b1692a0e61cb4e75d82c68b5c18139a38ec0f81c7cd4ee5d96",
+   "s12Sha256": "8dbda7bfdb1c985abbf4ee59cbd04207148595e61e686dcba8bbb42f89dcc5e3",
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.558,
+     "verticesChanged": 1560
+    }
+   },
+   "morphsAdded": [
+    "shrink_under_vest"
+   ],
+   "morphsRemoved": []
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/HipBag/SK_Streetwear_HipBag_M.SK_Streetwear_HipBag_M": {
+   "name": "SK_Streetwear_HipBag_M",
+   "class": "normals+weights",
+   "by": "review",
+   "liveSha256": "796bdd35324e2e2e733b36fcd97d2243dd6beacbc3062954b580576c41af34b1",
+   "s12Sha256": "c66867a4f5ff3b22a82c8ccb3dbbf8659f3afcf62b8ca560b50578707c87ce31",
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 1.434,
+     "verticesChanged": 1827
+    }
+   }
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/SingleSleeveTop/SK_Streetwear_SingleSleeveTop_M.SK_Streetwear_SingleSleeveTop_M": {
+   "name": "SK_Streetwear_SingleSleeveTop_M",
+   "class": "weights",
+   "by": "review",
+   "liveSha256": "0d353c4f9e50c8b41d7f7ccde051651d4771774a48ff4ee2c928bbe28f7376e6",
+   "s12Sha256": "95cff0046653cf17366b96a0dbe0eead7309408f13ab4818412fc6ccb0e7e070",
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.371,
+     "verticesChanged": 5796
+    },
+    "medium_male": {
+     "maxCm": 0.339,
+     "verticesChanged": 1060
+    }
+   }
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/TechGloves/SK_Streetwear_TechGloves_M.SK_Streetwear_TechGloves_M": {
+   "name": "SK_Streetwear_TechGloves_M",
+   "class": "re-encoded",
+   "by": "proof",
+   "liveSha256": "30546911a3f3712657a82c59ebd72caa6ae1d3896dbfee3d64e9b110e58b32b7",
+   "s12Sha256": "27c058b4a42eadc309a9b5ab067231b671f554b134020fb234c192627c45a06e",
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 0.029,
+     "verticesChanged": 660
+    },
+    "medium_male": {
+     "maxCm": 0.028,
+     "verticesChanged": 416
+    }
+   }
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/VarsityJacket/SK_Streetwear_VarsityJacket_M.SK_Streetwear_VarsityJacket_M": {
+   "name": "SK_Streetwear_VarsityJacket_M",
+   "class": "re-encoded",
+   "by": "proof",
+   "liveSha256": "f6fdd17eda916e9b17341cfd68a9f2ad78a5b95123df0dbe5e882bc402a2e308",
+   "s12Sha256": "415d6d8e7ad82199581344be0e88acec39d0cf627abe9f6d1848350cf087a661",
+   "morphsChanged": {
+    "medium_female": {
+     "maxCm": 3.678,
+     "verticesChanged": 4803
+    },
+    "medium_male": {
+     "maxCm": 1.363,
+     "verticesChanged": 4804
+    }
+   }
+  }
+ },
+ "meshes": {
+  "/Game/Discovery/Characters/Body/SK_Body_M.SK_Body_M": {
+   "fromUrl": "../reconstructed-meshes-v2/SK_Body_M.glb",
+   "toUrl": "../reconstructed-meshes-v2/SK_Body_M.glb",
+   "fromSha256": "62c9f3cb22a78de0f85dd743e71d0736a1e02175ad4541f09ad74d02131dba1d",
+   "toSha256": "920029d00dd09931f133a06708a4d03e2e50de3600a8d119b3e34011ce8e3183",
+   "morphsChanged": {
+    "medium_female": 3.651,
+    "push_lower_torso": 0.791
+   }
+  },
+  "/Game/Discovery/Characters/Casual/Assets/Sweater/SK_Casual_Sweater_M.SK_Casual_Sweater_M": {
+   "fromUrl": "../reconstructed-family-batch21-casual-sweater-v1/meshes/SK_Casual_Sweater_M.glb",
+   "toUrl": "../s12-bodytype-refresh-v1/meshes/SK_Casual_Sweater_M.glb",
+   "fromSha256": "9faf5479dbf47d88321ac77767e69dac965285035470f33fae43b7b253776528",
+   "toSha256": "04d7e49a4087de6d15566bc8ca7ad3261b6a86694f5f48328f83a33d28122d69",
+   "admitted": {
+    "class": "re-encoded",
+    "by": "proof"
+   },
+   "morphsChanged": {
+    "medium_female": 3.073
+   }
+  },
+  "/Game/Discovery/Characters/Casual/Assets/Tshirt/SK_Casual_Tshirt_M.SK_Casual_Tshirt_M": {
+   "fromUrl": "../reconstructed-casual-tshirts-v1/meshes/SK_Casual_Tshirt_M.glb",
+   "toUrl": "../s12-bodytype-refresh-v1/meshes/SK_Casual_Tshirt_M.glb",
+   "fromSha256": "5df22466d730d22c189c5763005427584cc0ec88140f4525a3f7f2fcc5247e29",
+   "toSha256": "b6f0788d0e98d8bcfe4d55d27f1a9a2dfe4f39b46752925d6e3393f26602c5af",
+   "admitted": {
+    "class": "re-encoded",
+    "by": "proof"
+   },
+   "morphsChanged": {
+    "medium_female": 2.746,
+    "medium_male": 0.001
+   }
+  },
+  "/Game/Discovery/Characters/Hologram/Assets/KneeHologram01/SK_Hologram_KneeHologram01_M.SK_Hologram_KneeHologram01_M": {
+   "fromUrl": "../reconstructed-g100-reuse-b14-military-sniper-pants-v1-v1/meshes/SK_Hologram_KneeHologram01_M.glb",
+   "toUrl": "../s12-bodytype-refresh-v1/meshes/SK_Hologram_KneeHologram01_M.glb",
+   "fromSha256": "342d2b55b42c140a0b8b580feba6ba3141efc07265fe5efb9d9fd0ba88c1ecd6",
+   "toSha256": "65f45717372c68fd96306e90248e08c9c9a1047ab3830fe1e7ab6ce94a510da7",
+   "morphsChanged": {
+    "medium_female": 0.44
+   }
+  },
+  "/Game/Discovery/Characters/Military/Assets/SniperPants/SK_Military_SniperPants_M.SK_Military_SniperPants_M": {
+   "fromUrl": "../reconstructed-family-batch05-sniper-pants-v1/meshes/SK_Military_SniperPants_M.glb",
+   "toUrl": "../s12-bodytype-refresh-v1/meshes/SK_Military_SniperPants_M.glb",
+   "fromSha256": "df9ee511ecc2f9b2f2f310b59eef6f766432df420011e9a0fe8aa459f458fa75",
+   "toSha256": "37c585df43ffb083432685ec6f6f435f489db8c4212b43a3fe0a08a34840d938",
+   "admitted": {
+    "class": "re-encoded",
+    "by": "proof"
+   },
+   "morphsChanged": {
+    "medium_female": 3.309,
+    "medium_male": 1.434
+   }
+  },
+  "/Game/Discovery/Characters/StarterSet/Assets/TShirt/SK_StarterSet_TShirt_M.SK_StarterSet_TShirt_M": {
+   "fromUrl": "../reconstructed-starter-tshirts-v1/meshes/SK_StarterSet_TShirt_M.glb",
+   "toUrl": "../s12-bodytype-refresh-v1/meshes/SK_StarterSet_TShirt_M.glb",
+   "fromSha256": "6aa7672320be90b1692a0e61cb4e75d82c68b5c18139a38ec0f81c7cd4ee5d96",
+   "toSha256": "8dbda7bfdb1c985abbf4ee59cbd04207148595e61e686dcba8bbb42f89dcc5e3",
+   "admitted": {
+    "class": "morph set",
+    "by": "review"
+   },
+   "morphsChanged": {
+    "medium_female": 3.558
+   }
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/HipBag/SK_Streetwear_HipBag_M.SK_Streetwear_HipBag_M": {
+   "fromUrl": "../reconstructed-family-batch21-streetwear-hip-bag-v1/meshes/SK_Streetwear_HipBag_M.glb",
+   "toUrl": "../s12-bodytype-refresh-v1/meshes/SK_Streetwear_HipBag_M.glb",
+   "fromSha256": "796bdd35324e2e2e733b36fcd97d2243dd6beacbc3062954b580576c41af34b1",
+   "toSha256": "c66867a4f5ff3b22a82c8ccb3dbbf8659f3afcf62b8ca560b50578707c87ce31",
+   "admitted": {
+    "class": "normals+weights",
+    "by": "review"
+   },
+   "morphsChanged": {
+    "medium_female": 1.434
+   }
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/SingleSleeveTop/SK_Streetwear_SingleSleeveTop_M.SK_Streetwear_SingleSleeveTop_M": {
+   "fromUrl": "../reconstructed-family-batch21-streetwear-single-sleeve-top-v1/meshes/SK_Streetwear_SingleSleeveTop_M.glb",
+   "toUrl": "../s12-bodytype-refresh-v1/meshes/SK_Streetwear_SingleSleeveTop_M.glb",
+   "fromSha256": "0d353c4f9e50c8b41d7f7ccde051651d4771774a48ff4ee2c928bbe28f7376e6",
+   "toSha256": "95cff0046653cf17366b96a0dbe0eead7309408f13ab4818412fc6ccb0e7e070",
+   "admitted": {
+    "class": "weights",
+    "by": "review"
+   },
+   "morphsChanged": {
+    "medium_female": 3.371,
+    "medium_male": 0.339
+   }
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/TechGloves/SK_Streetwear_TechGloves_M.SK_Streetwear_TechGloves_M": {
+   "fromUrl": "../reconstructed-family-tech-gloves-v1/meshes/SK_Streetwear_TechGloves_M.glb",
+   "toUrl": "../s12-bodytype-refresh-v1/meshes/SK_Streetwear_TechGloves_M.glb",
+   "fromSha256": "30546911a3f3712657a82c59ebd72caa6ae1d3896dbfee3d64e9b110e58b32b7",
+   "toSha256": "27c058b4a42eadc309a9b5ab067231b671f554b134020fb234c192627c45a06e",
+   "admitted": {
+    "class": "re-encoded",
+    "by": "proof"
+   },
+   "morphsChanged": {
+    "medium_female": 0.029,
+    "medium_male": 0.028
+   }
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/VarsityJacket/SK_Streetwear_VarsityJacket_M.SK_Streetwear_VarsityJacket_M": {
+   "fromUrl": "../reconstructed-family-varsity-jackets-v1/meshes/SK_Streetwear_VarsityJacket_M.glb",
+   "toUrl": "../s12-bodytype-refresh-v1/meshes/SK_Streetwear_VarsityJacket_M.glb",
+   "fromSha256": "f6fdd17eda916e9b17341cfd68a9f2ad78a5b95123df0dbe5e882bc402a2e308",
+   "toSha256": "415d6d8e7ad82199581344be0e88acec39d0cf627abe9f6d1848350cf087a661",
+   "admitted": {
+    "class": "re-encoded",
+    "by": "proof"
+   },
+   "morphsChanged": {
+    "medium_female": 3.678,
+    "medium_male": 1.363
+   }
+  }
+ }
+}

@@ -51,7 +51,7 @@ export default function PresetOutfits() {
 
   return <>
     <div className="flex shrink-0 items-center gap-2 border-b border-line px-3 py-2.5 lg:gap-3 lg:px-4 lg:py-3">
-      <div className="mr-auto hidden min-w-0 lg:block">
+      <div className="mr-auto hidden min-w-0 @md:block">
         <h2 className="display truncate text-[30px]">Outfits</h2>
         <p className="hud mt-1 text-fg-dim">{load.state === "ready" ? `${shown.length} in-game ${shown.length === 1 ? "outfit" : "outfits"}` : "In-game outfits"}</p>
       </div>

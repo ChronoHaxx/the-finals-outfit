@@ -202,7 +202,9 @@ export function GraphicsMenu({ deviceDpr }: { deviceDpr: number }) {
         className="hud flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950"
         title="Graphics settings">
         <span>Graphics</span>
-        <span className="text-fg-muted">{summary}</span>
+        {/* The summary lives in the panel too: on a narrow stage (a phone, or beside the items drawer) the top row needs
+            the room (12 Nov: hide-UI and screenshot buttons). The viewer's overlay frame is the size container. */}
+        <span className="hidden whitespace-nowrap text-fg-muted @lg:inline">{summary}</span>
         <svg aria-hidden="true" width="9" height="9" viewBox="0 0 10 10" className={`transition-transform ${open ? "rotate-180" : ""}`}>
           <path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" />
         </svg>

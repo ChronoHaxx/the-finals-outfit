@@ -14,8 +14,8 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
-    id: "2026-11-12-in-game-outfits",
-    date: "2026-11-12",
+    id: "2026-11-15-in-game-outfits",
+    date: "2026-11-15",
     title: "In-game outfits",
     notes: [
       "Outfits, first in the wardrobe, lists the game's own 352 outfits with their in-game icons. One tap puts a whole outfit on and keeps your face and skin.",
@@ -23,6 +23,17 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
       "150 cosmetics join the catalog, among them the practice-range mannequin, Bull’s Eye Barry, and its wooden twin, Bull’s Eye Barrel. They show their icons for now; 3D comes later.",
     ],
     items: ["in-game-outfits", "catalog"],
+  },
+  {
+    id: "2026-11-15-full-window-screenshots",
+    date: "2026-11-15",
+    title: "Full-window view and transparent screenshots",
+    notes: [
+      "The 3D view now fills the window. The item picker is a drawer you open and close from the Items tab at its edge; on a phone held upright it is a sheet under the character that you tap or swipe. It stays the way you left it.",
+      "Press H to hide every control and the mouse pointer for a clean view. H, Esc or a double-click brings them back. On a phone, tap the eye button, then double-tap to return.",
+      "Save a screenshot as a PNG from the camera button: on its backdrop, or with a transparent background to lay over anything. The lighting is the same as on screen, at up to three times the view's size.",
+    ],
+    items: ["faster-builder"],
   },
   {
     id: "2026-11-11-new-studio-light",

@@ -1,0 +1,4 @@
+# Captures and sheets stay local (evidence, not source); the reports and inventory are committed.
+review-*/
+review-*.log
+*.log
