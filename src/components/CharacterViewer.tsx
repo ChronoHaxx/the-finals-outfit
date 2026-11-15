@@ -17,7 +17,8 @@ import { effectiveTier, renderDpr, useGraphicsStore } from "../lib/graphics-qual
 import { ViewerUnavailable } from "./ViewerUnavailable";
 import { AnimationControls, AnimationFrameDriver, clockHeldStill, useAnimatorState, useRigAnimator } from "./AnimationControls";
 import { EmoteTimeline } from "./EmoteTimeline";
-import type { RigAnimator } from "../rig/RigAnimator";
+import { animationsBaseUrl, type RigAnimator } from "../rig/RigAnimator";
+import { chinalsAnimationsBase, type SiteMode } from "../lib/site-mode";
 import MeshInspector from "./MeshInspector";
 import OutfitExportPanel, { type ExportContext } from "./OutfitExportPanel";
 import { createGltfLoader } from "../rig/loaders";
@@ -482,7 +483,7 @@ const TONE_MAPPING: Record<ToneMappingChoice, THREE.ToneMapping> = {
 const SHADOWS = { type: THREE.PCFShadowMap };
 
 /** `immersive`: the page's full-screen mode (lib/immersive-mode), when the page supports one; adds its button. */
-export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMode } = {}) {
+export default function CharacterViewer({ immersive, mode = "global" }: { immersive?: ImmersiveMode; mode?: SiteMode } = {}) {
   const rig = useMemo(
     () =>
       new CharacterRig(createGltfLoader(), undefined, NAIL_MASK_URL, {
@@ -502,8 +503,9 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
   const backdrop = look.backdrop;
   // Light chrome (corner marks, loading text) on a dark backdrop, dark chrome on a light one.
   const darkBackdrop = backdropIsDark(backdrop);
-  // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden).
-  const animator = useRigAnimator();
+  // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden). Chinals mode
+  // (lib/site-mode.ts) plays its own clip set: a mode switch replaces the animator, the character stays loaded.
+  const animator = useRigAnimator(mode === "chinals" ? chinalsAnimationsBase() : animationsBaseUrl());
   // A timeline drag changes the pose every frame while paused: the still view treats it as motion too.
   const animationMoving = useCallback(() => (!!animator?.state.moving || !!animator?.scrubbing) && !clockHeldStill(), [animator]);
   // The emote timeline sits along the bottom while an emote is in front; the right-hand column stops above it.
@@ -1094,6 +1096,8 @@ export default function CharacterViewer({ immersive }: { immersive?: ImmersiveMo
 
   const changePreviewOption = (name: "surface" | "isolate", value: string) => {
     const url = new URL(buildShareUrl(window.location.href, { build, bodyType: outfitBodyType }));
+    // A share link uses the global route; the reload stays in Chinals mode when that is on (lib/site-mode.ts).
+    if (mode === "chinals") url.hash = url.hash.replace(/^#\/\?/, "#/chinals?");
     // Picker edits do not rewrite the address bar.
     // Save the current outfit before reloading to change a preview option.
     url.searchParams.set(name, value);
