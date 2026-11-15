@@ -114,9 +114,8 @@ Theme filters, such as playful or tactical, and outfit suggestions, once item ta
 ### Emote effects and props
 <!-- id: emote-effects -->
 
-Emotes play without their particle effects or sound yet. Props now follow the game's own placement and size; a few may still be off.
+Emotes play their sound effects and music, but not yet their visual effects. Props now follow the game's own placement and size; a few may still be off.
 
-- Add each emote's sound, in time with the animation.
 - Add particle effects such as sparks, smoke and confetti.
 - Check each emote's props against the game and fix the ones that are off.
 
@@ -155,7 +154,7 @@ Clothing hides the body beneath it, hair swaps to its under-hat shape, and full-
 ### Idle animation and emotes
 <!-- id: idle-emotes -->
 
-The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and the equipped cosmetics follow the body. The face moves too: blinks, glances and expressions, with beards and scarves following. A timeline pauses an emote on any frame or loops it, and a share link keeps that pose. One click returns to the still pose.
+The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and with its sound where it has one, and the equipped cosmetics follow the body. The face moves too: blinks, glances and expressions, with beards and scarves following. A timeline pauses an emote on any frame or loops it, and a share link keeps that pose. One click returns to the still pose.
 
 ### Chinals emotes
 <!-- id: chinals-emotes -->

@@ -856,6 +856,21 @@ export function assemblyResolveGates(assets: AssemblyAssets,
   };
 }
 
+/** (15 Nov 2026) Whether the index preserves the worn head component's own frame for every one of these sockets.
+ *  Head-component sockets (earrings, nose studs) are authored per head mesh, and the index records them per preserved
+ *  head; the 11 Nov release preserves Face 01's head only. The rig refuses a socket the worn head does not carry, so a
+ *  viewer asks first and keeps such an item on its ordinary path on any other head. */
+export function headComponentCarries(assets: Pick<AssemblyAssets, 'attachmentFrames'>, headMesh: string | undefined,
+  sockets: readonly string[]): boolean {
+  const entry = headMesh ? assets.attachmentFrames?.headComponents?.[headMesh] : undefined;
+  return !!entry && sockets.every(socket => !!entry.sockets?.[socket]);
+}
+
+export async function sourceHeadComponentCarries(baseUrl: string, headMesh: string | undefined,
+  sockets: readonly string[]): Promise<boolean> {
+  return headComponentCarries(await loadSourceAssemblyAssets(baseUrl), headMesh, sockets);
+}
+
 export async function loadSourceAssemblyAssets(baseUrl: string): Promise<AssemblyAssets> {
   const assets = await readJson(`${baseUrl}/assets.json`) as AssemblyAssets;
   if (assets.formatVersion !== 1 || !assets.meshes || !assets.materials
