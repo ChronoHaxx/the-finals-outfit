@@ -69,6 +69,8 @@ scripts/bake-all.report.json
 /scripts/anim-export/obj/
 # Decoded game animation clips (Embark data, same rule as /public/models/).
 /public/animations/
+# In-game scene backdrops (Embark artwork: the logo mask, rendered plates; hosted like animations).
+/public/scenes/
 # Renders of extracted game assets (showcase-animation evidence) stay local, like /probe_*.png.
 /_docs/showcase-animation-2026-11-05/captures/
 /_docs/emote-timeline-2026-11-10/shots/

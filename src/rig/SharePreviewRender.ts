@@ -35,6 +35,8 @@ export interface PreviewScene {
   /** Runs a synchronous draw in the outfit's static pose when an animation is playing (RigAnimator.withStillPose),
    *  so a card without a pose shows the still pose, never a random idle frame. */
   stillPose?: <T>(draw: () => T) => T;
+  /** Runs a synchronous draw with the character facing forward (scene turntable mode may have turned it). */
+  upright?: <T>(draw: () => T) => T;
 }
 
 function visibleBounds(root: THREE.Object3D): THREE.Box3 {
@@ -176,7 +178,7 @@ async function drawCaption(context: CanvasRenderingContext2D, pose: PoseCapture)
 
 /** The card. `pose`: the frame on screen to show (drawn as it is, props included); null for the still pose. The GL
  *  part runs synchronously before the first await, so a caller reading the pose in the same task gets that frame. */
-export async function renderSharePreview({ gl, scene, root, backdrop, stillPose = draw => draw() }: PreviewScene,
+export async function renderSharePreview({ gl, scene, root, backdrop, stillPose = draw => draw(), upright = draw => draw() }: PreviewScene,
   pose: PoseCapture | null = null): Promise<Blob> {
   const width = VIEW_WIDTH * SUPERSAMPLE, height = PREVIEW_HEIGHT * SUPERSAMPLE;
   const linear = new THREE.WebGLRenderTarget(width, height, { type: floatTargetType(gl), samples: 4 });
@@ -191,7 +193,7 @@ export async function renderSharePreview({ gl, scene, root, backdrop, stillPose 
   // Framing and all four views are drawn in one synchronous pass, so they share one pose: the still pose, or the
   // frame on screen when a pose is given (no animation update can run inside a synchronous pass).
   const pass = pose ? <T>(draw: () => T) => draw() : stillPose;
-  try { pass(() => {
+  try { upright(() => pass(() => {
     const { x: cx, z: cz } = pose ? bodyCentre(root) : { x: 0, z: 0 };
     const { centerY, distance } = pose ? posedFraming(posedPoints(root), { x: cx, z: cz }) : framing(visibleBounds(root));
     gl.autoClear = true;
@@ -224,7 +226,7 @@ export async function renderSharePreview({ gl, scene, root, backdrop, stillPose 
       }
       views.push(image);
     }
-  }); } finally {
+  })); } finally {
     gl.setRenderTarget(previousTarget);
     gl.setClearColor(previousColor, previousAlpha);
     gl.autoClear = previousAutoClear;
