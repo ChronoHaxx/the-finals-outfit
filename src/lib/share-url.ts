@@ -4,6 +4,7 @@ import { derivedFromCatalog, getCatalogData } from "./catalog";
 import type { Slot } from "./slots";
 import { POSE_KEYS, poseParams, type SharePose } from "./share-pose";
 import { builderHashParams } from "./site-mode";
+import { BODY_TYPE_PARAM, bodyTypeFromShareCode, bodyTypeShareCode, DEFAULT_BODY_TYPE } from "./body-type";
 
 export type ShareStyle = "short" | "names";
 const shareCodes = derivedFromCatalog(() => {
@@ -17,13 +18,19 @@ const shareCodes = derivedFromCatalog(() => {
 const nameSlug = (name: string) => name.normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
   .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "item";
 
+/** What a link carries: the pieces and the body type (the build store's two fields). The body type is required so
+ *  every caller says which one it means; Masculine adds nothing to the link. */
+export interface ShareLook { build: Partial<Record<Slot, string | null>>; bodyType: string }
+
 // Append-only IDs make links independent of current catalog order and names.
 // The readable label is informational; its stable suffix identifies the variant.
 // `pose` (share-pose.ts) adds the animation frame on screen beside the outfit; a link without one opens as before.
-export function buildShareUrl(currentUrl: string, build: Partial<Record<Slot, string | null>>,
+// `bt` (body-type.ts) follows the outfit code when the body type is not Masculine; a link without one is Masculine.
+export function buildShareUrl(currentUrl: string, look: ShareLook,
   style: ShareStyle = "short", pose: SharePose | null = null): string {
   const url = new URL(currentUrl);
   const { items: itemCodes, slots: slotCodes } = shareCodes();
+  const { build } = look;
   const parts = Object.entries(build).flatMap(([slot, id]) => {
     if (!id) return [];
     const item = itemCodes.get(id), category = slotCodes.get(slot);
@@ -31,13 +38,15 @@ export function buildShareUrl(currentUrl: string, build: Partial<Record<Slot, st
     const code = category + item;
     return [style === "names" ? `${nameSlug(getBrowseItem(id)?.name ?? id)}--${code}` : code];
   });
-  for (const key of ["outfit", "o", "look", ...POSE_KEYS]) url.searchParams.delete(key);
+  for (const key of ["outfit", "o", "look", BODY_TYPE_PARAM, ...POSE_KEYS]) url.searchParams.delete(key);
   url.hash = "";
-  const posed = pose ? poseParams(pose) : [];
-  if (style === "short") url.hash = `/?o=2.${parts.join(".")}${posed.map(([key, value]) => `&${key}=${encodeURIComponent(value)}`).join("")}`;
+  const bodyType = bodyTypeShareCode(look.bodyType);
+  const extra: [string, string][] = [...(bodyType ? [[BODY_TYPE_PARAM, bodyType] as [string, string]] : []),
+    ...(pose ? poseParams(pose) : [])];
+  if (style === "short") url.hash = `/?o=2.${parts.join(".")}${extra.map(([key, value]) => `&${key}=${encodeURIComponent(value)}`).join("")}`;
   else {
     url.searchParams.set("look", `2.${parts.join(".")}`);
-    for (const [key, value] of posed) url.searchParams.set(key, value);
+    for (const [key, value] of extra) url.searchParams.set(key, value);
   }
   return url.href;
 }
@@ -59,15 +68,24 @@ function decodeCodes(code: string, names: boolean): Outfit {
   return { slots };
 }
 
+// The body type beside a code, read from the same place as the code. Only a named body type is added: a missing or
+// unknown `bt` leaves the outfit without one, which is Masculine.
+function withBodyType(outfit: Outfit, params: URLSearchParams): Outfit {
+  const bodyType = bodyTypeFromShareCode(params.get(BODY_TYPE_PARAM));
+  return bodyType === DEFAULT_BODY_TYPE ? outfit : { ...outfit, bodyType };
+}
+
 export function readOutfitLink(currentUrl: string): Outfit | null {
   const url = new URL(currentUrl);
   // The builder's route, global (#/?o=) or Chinals (#/chinals?o=: the mode toggle keeps an unsaved link draft's
   // address, so a reload there must still open it). Never another page's query (lib/site-mode.ts).
   const fragment = builderHashParams(url.hash) ?? new URLSearchParams();
-  const short = fragment.get("o") ?? url.searchParams.get("o");
-  if (short !== null) return decodeCodes(short, false);
+  const fromFragment = fragment.get("o");
+  if (fromFragment !== null) return withBodyType(decodeCodes(fromFragment, false), fragment);
+  const short = url.searchParams.get("o");
+  if (short !== null) return withBodyType(decodeCodes(short, false), url.searchParams);
   const names = url.searchParams.get("look");
-  if (names !== null) return decodeCodes(names, true);
+  if (names !== null) return withBodyType(decodeCodes(names, true), url.searchParams);
   const legacy = url.searchParams.get("outfit");
   return legacy === null ? null : decodeOutfit(legacy);
 }

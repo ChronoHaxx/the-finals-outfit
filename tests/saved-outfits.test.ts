@@ -42,7 +42,7 @@ const current = () => state().library!.current;
 const currentRecord = () => { const c = current(); return c?.kind === 'record' ? outfits().find(r => r.id === c.id) : undefined; };
 const build = () => useBuildStore.getState().build;
 const equip = (id: string) => useBuildStore.getState().equip(getItemById(id)!);
-const linkTo = (slots: Record<string, string>) => buildShareUrl(SITE, slots);
+const linkTo = (slots: Record<string, string>, bodyType = 'masculine') => buildShareUrl(SITE, { build: slots, bodyType });
 
 beforeEach(() => {
   backend = new MemoryBackend(true);

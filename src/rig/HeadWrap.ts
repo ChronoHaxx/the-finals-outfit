@@ -6,8 +6,8 @@
 //
 // Here each rest vertex binds to its nearest proxy triangle: the closest point's barycentric weights plus the
 // remaining offset in that triangle's orthonormal frame. Evaluated on the reference cage this reproduces every
-// vertex exactly; on a face's cage the vertex moves with its triangle. Rest pose only: facial animation of the cage
-// is not driven, matching the viewer's static head.
+// vertex exactly; on a face's cage the vertex moves with its triangle. At rest here; while a clip animates the face,
+// FaceWrap.ts moves the cage with the face's bones and the part is wrapped again on it (12 Nov 2026).
 //
 // The worn cage carries the head's own morph targets by name (default_ears/chin/nose/brows/face, head_neck_match),
 // published as sparse deltas over reference vertices. The cage takes the same fitting morphs as the head (12 Oct
@@ -142,24 +142,42 @@ export function bindHeadWrap(positions: ArrayLike<number>, reference: ArrayLike<
   return { triangle, weights, offset };
 }
 
-/** Rest positions (and optionally normals/tangents, rotated with their triangle) on the target cage. */
+/** Every triangle's frame (frame()) packed as a, b, c, e1, e2, n: 18 numbers per triangle. */
+function frames(cage: ArrayLike<number>, triangles: ArrayLike<number>): Float64Array {
+  const tris = triangles.length / 3, out = new Float64Array(tris * 18);
+  for (let t = 0; t < tris; t++) {
+    const [a, b, c, e1, e2, n] = frame(cage, triangles, t);
+    out.set(a, t * 18); out.set(b, t * 18 + 3); out.set(c, t * 18 + 6);
+    out.set(e1, t * 18 + 9); out.set(e2, t * 18 + 12); out.set(n, t * 18 + 15);
+  }
+  return out;
+}
+
+/** Rest positions (and optionally normals/tangents, rotated with their triangle) on the target cage.
+ *  (12 Nov 2026) Allocation-free per vertex: the facial animation re-wraps beards (37k vertices) every frame. The
+ *  arithmetic is the earlier per-vertex tuple code's, operation for operation, so the result is bit-identical
+ *  (tests/rig/face-animator.test.ts compares it with that code). */
 export function applyHeadWrap(binding: HeadWrapBinding, target: ArrayLike<number>, reference: ArrayLike<number>,
   triangles: ArrayLike<number>, positions: Float32Array | number[], directions: (Float32Array | number[])[] = [],
   stride: number[] = []): void {
-  const tris = triangles.length / 3;
-  const after = Array.from({ length: tris }, (_, t) => frame(target, triangles, t));
-  const before = Array.from({ length: tris }, (_, t) => frame(reference, triangles, t));
-  const count = binding.triangle.length;
+  const after = frames(target, triangles), before = frames(reference, triangles);
+  const { triangle, weights, offset } = binding, count = triangle.length;
   for (let i = 0; i < count; i++) {
-    const t = binding.triangle[i], [a, b, c, e1, e2, n] = after[t];
-    const w: Vec = [binding.weights[i * 3], binding.weights[i * 3 + 1], binding.weights[i * 3 + 2]];
-    const o = blend(w, a, b, c), k = [binding.offset[i * 3], binding.offset[i * 3 + 1], binding.offset[i * 3 + 2]];
-    for (let j = 0; j < 3; j++) positions[i * 3 + j] = o[j] + k[0] * e1[j] + k[1] * e2[j] + k[2] * n[j];
-    const [, , , f1, f2, fn] = before[t];
-    directions.forEach((v, index) => {
-      const s = stride[index] ?? 3, d: Vec = [v[i * s], v[i * s + 1], v[i * s + 2]];
-      const local: Vec = [dot(d, f1), dot(d, f2), dot(d, fn)];
-      for (let j = 0; j < 3; j++) v[i * s + j] = local[0] * e1[j] + local[1] * e2[j] + local[2] * n[j];
-    });
+    const f = triangle[i] * 18, w0 = weights[i * 3], w1 = weights[i * 3 + 1], w2 = weights[i * 3 + 2];
+    const k0 = offset[i * 3], k1 = offset[i * 3 + 1], k2 = offset[i * 3 + 2];
+    for (let j = 0; j < 3; j++) {
+      // blend(w, a, b, c) + k0 e1 + k1 e2 + k2 n, left to right as before
+      const o = w0 * after[f + j] + w1 * after[f + 3 + j] + w2 * after[f + 6 + j];
+      positions[i * 3 + j] = o + k0 * after[f + 9 + j] + k1 * after[f + 12 + j] + k2 * after[f + 15 + j];
+    }
+    for (let index = 0; index < directions.length; index++) {
+      const v = directions[index], s = stride[index] ?? 3, p = i * s;
+      const d0 = v[p], d1 = v[p + 1], d2 = v[p + 2];
+      // local = (d . f1, d . f2, d . fn) in the reference frame, then rebuilt in the target frame
+      const l0 = d0 * before[f + 9] + d1 * before[f + 10] + d2 * before[f + 11];
+      const l1 = d0 * before[f + 12] + d1 * before[f + 13] + d2 * before[f + 14];
+      const l2 = d0 * before[f + 15] + d1 * before[f + 16] + d2 * before[f + 17];
+      for (let j = 0; j < 3; j++) v[p + j] = l0 * after[f + 9 + j] + l1 * after[f + 12 + j] + l2 * after[f + 15 + j];
+    }
   }
 }

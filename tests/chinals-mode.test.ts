@@ -11,6 +11,7 @@ import {
 import { MemoryBackend, storageJournal } from '../src/lib/outfit-storage';
 import { FALLBACK_FACE, useBuildStore } from '../src/store/useBuildStore';
 import { getItemById } from '../src/lib/catalog';
+import { DEFAULT_BODY_TYPE } from '../src/lib/body-type';
 import { saveDraft, startSavedOutfits, stopSavedOutfits, useSavedOutfits } from '../src/store/useSavedOutfits';
 import { openLink } from '../src/store/open-link';
 import { manualScheduler, memoryStorage } from './helpers/saved-outfits';
@@ -39,6 +40,7 @@ async function visit() {
 }
 const open = (href: string) => { address.href = href; return openLink(href); };
 const library = () => useSavedOutfits.getState().library!;
+const look = () => ({ build: useBuildStore.getState().build, bodyType: useBuildStore.getState().bodyType });
 
 beforeEach(() => { backend = new MemoryBackend(); takePendingPose(); address.href = SITE; });
 
@@ -63,7 +65,7 @@ test('the mode is a route: exactly #/ and #/chinals are builder routes, with the
 });
 
 test('share links keep their one form; a Chinals pose rides in it, and #/chinals addresses read the same', () => {
-  const link = buildShareUrl(SITE, outfit, 'short', chinalsPose);
+  const link = buildShareUrl(SITE, { build: outfit, bodyType: DEFAULT_BODY_TYPE }, 'short', chinalsPose);
   assert.match(link, /#\/\?o=2\.[0-9a-z.]+&emote=cn-emote-applaud&t=1\.5&paused=1$/, 'the global route, as the share Worker writes it');
   const onChinals = link.replace('#/?', '#/chinals?');
   assert.deepEqual(readOutfitLink(onChinals), readOutfitLink(link));
@@ -72,6 +74,13 @@ test('share links keep their one form; a Chinals pose rides in it, and #/chinals
   assert.equal(readOutfitLink(link.replace('#/?', '#/roadmap?')), null, 'the roadmap carries ?o= without opening it');
   assert.equal(readOutfitLink(link.replace('#/?', '#/chinals/roadmap?')), null);
   assert.equal(readPoseLink(link.replace('#/?', '#/chinals/roadmap?')), null);
+});
+
+test('a body type rides in a Chinals link and reads back on the Chinals route; the switch keeps it', () => {
+  const link = buildShareUrl(SITE, { build: outfit, bodyType: 'androgynous' }, 'short', chinalsPose);
+  assert.match(link, /&bt=/);
+  assert.equal(readOutfitLink(link.replace('#/?', '#/chinals?'))?.bodyType, 'androgynous');
+  assert.match(withoutPose(hashSearch(new URL(link).hash)), /&bt=|\?bt=/, 'the switch drops the pose, not the body type');
 });
 
 test('the switch keeps an unsaved link draft in the address and drops the pose', () => {
@@ -84,11 +93,11 @@ test('a link opened in Chinals mode is tidied away without leaving the mode', as
   await visit();
   open(SITE);
   useBuildStore.getState().equip(getItemById('attachment-pumpkinhead-hat')!); // hand-made: saved into "Outfit 1"
-  const own = buildShareUrl(SITE, useBuildStore.getState().build, 'short', chinalsPose).replace('#/?', '#/chinals?');
+  const own = buildShareUrl(SITE, look(), 'short', chinalsPose).replace('#/?', '#/chinals?');
   open(own); // the sharer's own outfit: it matches the saved one, which is selected, and the link leaves the address
   assert.equal(address.href, `${SITE}#/chinals`, 'still on the Chinals route');
   assert.deepEqual(takePendingPose(), chinalsPose, 'the pose was read before the tidy-up');
-  const global = buildShareUrl(SITE, useBuildStore.getState().build, 'short');
+  const global = buildShareUrl(SITE, look(), 'short');
   open(global);
   assert.equal(address.href, `${SITE}#/`, 'a global link tidies to the global route, as before');
 });
@@ -98,7 +107,7 @@ test('switching modes never changes the outfit, a link draft or the saved outfit
   open(SITE);
   useBuildStore.getState().equip(getItemById('attachment-pumpkinhead-hat')!);
   const saved = library().outfits.map(o => o.id);
-  const link = buildShareUrl(SITE, outfit, 'short', chinalsPose);
+  const link = buildShareUrl(SITE, { build: outfit, bodyType: DEFAULT_BODY_TYPE }, 'short', chinalsPose);
   open(link);
   assert.equal(library().current?.kind, 'draft', 'a shared outfit opens as an unsaved draft');
   const draftBuild = { ...useBuildStore.getState().build };

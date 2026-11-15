@@ -84,6 +84,10 @@ right; a rebuild with those fixes would be a new `props-N`, on a new deployment.
   - phone width (375 px): the switch row and the banner.
 - **Browser, mode off:** no switch; a Chinals link and a bare `#/chinals` both show the notice, keep the address and
   still open the outfit.
+- **After merging main through PR #48 (facial animation), `c6ee3c6`:** `npm test` 821 pass with the same 8 asset
+  failures; type check pass. `dispose()` now also unbinds the face. In the browser, switching to Chinals during a
+  global emote with the face posed (7 head meshes bound) left the old face unbound and at rest, and the Chinals idle
+  played. Back on Global, the face bound again and animated.
 - **Not checked:** a real phone, Safari or Firefox, and the share Worker's preview card for a Chinals pose.
 - **Security review (automatic, after the first push):** the preview server's `--proxy` would fetch any host for a
   request like `/animations//other-host/x`. Fixed: it fetches only plain relative paths under the proxy's own folder.
@@ -181,9 +185,13 @@ If something fails, stop at that step and report its number and what happened. R
 
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given
+- Tested revision/build: no user test. Agent checks only (above), last on `7d93978`, PR #44's head before merge.
+- User reported at: 15 Nov 2026, in the Chinals mode session: "idk whats happening, waive checks and merge, make sure
+  to coordinate with main session and be aware of other sessions".
+- Passed / failed / untested step numbers: 1-7 untested by the user.
+- Explicitly waived checks, if any: 1-7, by the message above. Unknowns: real phones, Safari and Firefox, the share
+  Worker's card for a Chinals pose, and the Androgynous body type in Chinals mode in a browser.
+- Readiness: checks waived; agent checks pass.
+- Merge authorization: the same message. Merged to main over SSH (it changes `deploy.yml`). The main coordinating
+  session was told first (it was offline; the message is queued). PRs #49 (props-3) and #51 (Chinals sounds) are
+  stacked on this branch: the branch is kept, and both need retargeting to main. Their checks are not waived.
