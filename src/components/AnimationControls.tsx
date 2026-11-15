@@ -8,6 +8,7 @@ import { modelUrl } from "../lib/assets";
 import { loadSourceFaceMask } from "../rig/SourceAssembly";
 import { pendingPose, subscribePendingPose, takePendingPose } from "../lib/share-pose";
 import { setPoseSource } from "../lib/viewer-handle";
+import { isChinalsClip } from "../lib/site-mode";
 import { EmotePicker, missingSummary } from "./EmotePicker";
 
 // Showcase animation UI (5 Nov 2026): Animate / Static toggle, pause, and the emote picker (EmotePicker.tsx: every
@@ -57,21 +58,26 @@ export function setEmoteLoop(animator: RigAnimator, on: boolean): void {
 
 const IDLE_STATE: AnimatorState = { active: false, moving: false, paused: false, sway: true, loopEmote: false, idle: null, current: null, loading: null, error: null };
 
-/** The animator, once this deployment's clip manifest has loaded (null: no clips published, or still loading). */
-export function useRigAnimator(): RigAnimator | null {
-  const [animator, setAnimator] = useState<RigAnimator | null>(null);
+/** The animator for a clip set, once its manifest has loaded (null: no clips published there, or still loading).
+ *  A new base (Chinals mode, lib/site-mode.ts) disposes the old animator and loads the other set; in between this is
+ *  null at once, in the same render, so nothing drives the body with the old set under the new mode. The controls
+ *  unmount and mount again, so the new set starts from its own idle (or a link's pose). */
+export function useRigAnimator(base: string): RigAnimator | null {
+  const [loaded, setLoaded] = useState<{ base: string; animator: RigAnimator } | null>(null);
   useEffect(() => {
-    let cancelled = false;
-    loadAnimationManifest().then(loaded => {
+    let cancelled = false, created: RigAnimator | null = null;
+    loadAnimationManifest(base).then(loaded => {
       const params = new URLSearchParams(window.location.search);
-      if (!cancelled && loaded) setAnimator(new RigAnimator(loaded.manifest, loaded.clipBase,
+      if (cancelled || !loaded) return;
+      created = new RigAnimator(loaded.manifest, loaded.clipBase,
         { sway: params.get("sway") !== "0", deform: params.get("deform") !== "0", loopEmote: savedLoop(), propsUrl: loaded.propsUrl,
-          facesUrl: loaded.facesUrl, face: params.get("face") !== "0" }));
+          facesUrl: loaded.facesUrl, face: params.get("face") !== "0" });
+      setLoaded({ base, animator: created });
     }).catch(error => console.warn("[animation] manifest unavailable", error));
-    return () => { cancelled = true; };
-  }, []);
-  useEffect(() => () => animator?.reset(), [animator]);
-  return animator;
+    // dispose(), not reset(): a clip still downloading must not bind the body to a discarded animator when it lands.
+    return () => { cancelled = true; created?.dispose(); };
+  }, [base]);
+  return loaded?.base === base ? loaded.animator : null;
 }
 
 export function useAnimatorState(animator: RigAnimator | null): AnimatorState {
@@ -162,6 +168,10 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
   const linkPose = useSyncExternalStore(subscribePendingPose, pendingPose);
   useEffect(() => {
     if (!ready || busy) return;
+    // A Chinals emote's pose (cn-…) that this set lacks: the builder is switching to Chinals mode, or saying the mode
+    // is off here, and the pose waits for the Chinals set (taken there). Nothing starts meanwhile.
+    const waiting = pendingPose();
+    if (waiting && !animator.info(waiting.clip) && isChinalsClip(waiting.clip)) return;
     const pose = takePendingPose();
     if (pose && !animator.info(pose.clip)) console.warn(`[animation] the link's pose names an unknown clip "${pose.clip}"`);
     const posed = pose && animator.info(pose.clip) ? pose : null;

@@ -52,6 +52,11 @@ export interface EmoteInfo {
   itemProps?: { prop: string; item: string }[];
   /** An emote animation in the game files that no current emote item plays (older or default emotes). */
   unlisted?: boolean;
+  /** Chinals emotes (site-mode.ts): the game's Chinese name, when the label is not already it. */
+  nameZh?: string;
+  /** Chinals emotes without English text in the game: this site's own translation of the Chinese name, unofficial and
+   *  shown as such (the label is then the Chinese name). */
+  translation?: string;
 }
 
 export interface ClipInfo {
@@ -80,6 +85,8 @@ export interface FaceSource {
 
 export interface AnimationManifest {
   formatVersion: 1;
+  /** "chinals": the Chinals clip set (site-mode.ts); absent for the global set. */
+  edition?: "chinals";
   base?: string; // set directory the clip files live in, relative to the manifest
   defaultIdle: string;
   rarityOrder?: string[];
@@ -216,6 +223,7 @@ export class RigAnimator {
   private fading = new Set<THREE.AnimationAction>();
   private stopping = false;
   private request = 0; // latest play/stop wins when clip downloads overlap
+  private disposed = false;
   private listeners = new Set<() => void>();
   private poseListeners = new Set<() => void>(); // the held frame moved (seek, scrub, step): no state change
   // The emote in front was paused, scrubbed or stepped by the viewer: it stays on its last frame instead of returning
@@ -517,6 +525,7 @@ export class RigAnimator {
   async play(root: THREE.Object3D, id: string): Promise<void> {
     const info = this.info(id);
     if (!info) throw new Error(`Unknown clip ${id}`);
+    if (this.disposed) return;
     const request = ++this.request;
     this.publish({ loading: id, error: null });
     // The face too (its curves and the worn head's poses; a failure leaves the face at rest): a held frame must not
@@ -711,6 +720,19 @@ export class RigAnimator {
         this.publish({ paused: false });
       }
     }
+  }
+
+  /** The viewer is done with this animator: it unmounts, or Chinals mode swapped the clip set (site-mode.ts). Like
+   *  reset(), and a play() or openPose() still downloading its clip returns without binding when the download lands
+   *  (else it would build a mixer on the shared body that nothing updates, leave its prop showing, and the next
+   *  animator would take that frame for the still pose). */
+  dispose(): void {
+    this.disposed = true;
+    ++this.request;
+    this.reset();
+    // The head is shared with the next animator (Chinals mode, site-mode.ts): its bones back to rest, and a bind still
+    // waiting for the head's files is dropped, so this face never touches it again.
+    this.face.unbind();
   }
 
   /** Drop every action now (no fade): the body is being replaced or the viewer unmounts. */
