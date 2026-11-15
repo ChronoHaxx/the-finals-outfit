@@ -74,6 +74,26 @@ restores it). Live checks after the deploy: the pose URL above now keeps the pos
 `/s/XkVfZU1EMmnr` still opens its outfit and serves its 73 KB card; root redirect; foreign origin 403; a malformed pose
 400 `bad pose` (refused before anything is stored). Bindings unchanged.
 
+## Redeploying for body types (13 Nov 2026)
+
+The app's Body Type picker (PR #41) adds `bt=<code>` beside the outfit code. `bt=a` means Androgynous; Masculine has no
+`bt`. The Worker validates it (`^[a-z]{1,2}$`, else 400 `bad body type`), stores it in the entry's metadata as `bt`,
+returns it in the link and sends people to `#/?o=<code>&bt=a[&emote=...]`. A stored `bt` wins over the link's own while
+the entry lives. Entries made before this have none, which means Masculine. The app refuses a preview link that comes
+back without the `bt` it sent and copies the plain link instead, so the deploy order does not matter for correctness.
+
+**Deployed 13 Nov 2026** (on the user's "Deploy it"): version `f9f734a6-4ab8-4623-b448-47c043f64fe1`, replacing
+`3a05274f-fbd0-4bed-b1a6-a279d7e6a37a`. To restore the previous version:
+`npx --yes wrangler@4.131.1 rollback 3a05274f-fbd0-4bed-b1a6-a279d7e6a37a`. Bindings are unchanged.
+
+Live checks after the deploy, all read-only (nothing stored):
+- `/s/AAAAAAAAAAAA?o=2.&bt=a` opens `#/?o=2.&bt=a`.
+- The same with `&emote=wave&t=1&paused=1` keeps both.
+- A junk `bt` is dropped.
+- The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit and serves its 73 KB card.
+- The root redirects.
+- An upload with `bt=ABC` gets 400 `bad body type`, and a foreign origin gets 403.
+
 ## Live deployment (20 Oct 2026)
 
 - Worker `the-finals-outfit-share` at https://the-finals-outfit-share.chronohaxx.workers.dev (account subdomain renamed from the
