@@ -117,6 +117,27 @@ export function backdropIsDark(b: Backdrop): boolean {
   return luminance(new THREE.Color(b.middle)) < 0.3;
 }
 
+/** A backdrop as the screenshot paints it (12 Nov 2026): backdropCss in numbers. The ellipse's radii and centre are
+ *  fractions of the image (CSS percentages of the box); a solid backdrop has three equal colours. */
+export interface BackdropPaint {
+  colors: [string, string, string];
+  stops: [number, number, number];
+  cx: number; cy: number; rx: number; ry: number;
+}
+
+/** "ellipse 75% 65% at 50% 35%" → its four percentages as fractions (the form sanitizeBackdrop admits). */
+function ellipseNumbers(ellipse: string): { rx: number; ry: number; cx: number; cy: number } | null {
+  const m = /^ellipse ([\d.]+)% ([\d.]+)% at ([\d.]+)% ([\d.]+)%$/.exec(ellipse.trim());
+  if (!m) return null;
+  const [rx, ry, cx, cy] = m.slice(1).map(n => Number(n) / 100);
+  return [rx, ry, cx, cy].every(Number.isFinite) ? { rx, ry, cx, cy } : null;
+}
+
+export function backdropPaint(b: Backdrop): BackdropPaint {
+  const shape = ellipseNumbers(b.ellipse) ?? ellipseNumbers(STUDIO_BACKDROP.ellipse)!;
+  return { colors: [b.inner, b.middle, b.outer], stops: [0, b.middleStop / 100, 1], ...shape };
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Presets.
 

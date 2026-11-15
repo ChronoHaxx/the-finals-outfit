@@ -170,4 +170,4 @@ Share links come with a four-angle preview image. Randomise builds a rules-based
 ### A faster builder that works on phones
 <!-- id: faster-builder -->
 
-The builder was redesigned around the 3D preview. Outfits download faster, with a loading readout, and on phones the preview stays on screen while you browse. Your outfits are saved in your browser as you work, a full-screen view shows only the character, and graphics settings trade quality for speed.
+The builder was redesigned around the 3D preview, which fills the window with the items in a drawer beside it, or in a sheet under it on phones. Outfits download faster, with a loading readout. Your outfits are saved in your browser as you work, a full-screen view or the H key shows only the character, screenshots save as PNG with the backdrop or a transparent background, and graphics settings trade quality for speed.
