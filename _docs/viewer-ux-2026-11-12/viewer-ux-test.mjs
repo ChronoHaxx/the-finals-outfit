@@ -273,7 +273,14 @@ if (only.has("shot")) {
   await page.screenshot({ path: join(outDir, "shot-panel.png") });
   await page.keyboard.press("Escape");
   for (const theme of ["studio", "lobby"]) {
-    if (theme === "lobby") { await page.click('button[title="Toggle scene lighting"]'); await page.waitForFunction(() => window.__rigIdle === true); await page.waitForTimeout(8000); }
+    // The Lobby look from the Lighting panel (PR #40's final: one panel, Studio and Lobby among its looks).
+    if (theme === "lobby") {
+      await page.click('button[title="Lighting and backdrop"]');
+      await page.locator('[role="group"][aria-label="Lighting and backdrop"] button', { hasText: /^Lobby$/ }).click();
+      await page.click('button[title="Lighting and backdrop"]');
+      await page.waitForFunction(() => window.__rigIdle === true);
+      await page.waitForTimeout(8000);
+    }
     await canvasShot(page, join(outDir, `${theme}-screen.png`));
     await backdropShot(page, join(outDir, `${theme}-css-backdrop.png`));
     // The floor kept: the backdrop file has the contact shadow, so the like-for-like transparent file needs it too
@@ -306,11 +313,14 @@ if (only.has("shot")) {
     check(`${theme}: backdrop PNG matches the screen`, report[`${theme}BackdropVsScreen`].meanDiff < 1.5, JSON.stringify(report[`${theme}BackdropVsScreen`]));
   }
   // Floor: with the floor shadow on, a transparent shot leaves it out unless kept.
-  await page.click('button[title="Toggle scene lighting"]');
+  // Back to Studio, then a sun look (it turns the sun's shadow and the floor shadow on).
+  await page.click('button[title="Lighting and backdrop"]');
+  const lighting = page.locator('[role="group"][aria-label="Lighting and backdrop"]');
+  await lighting.locator("button", { hasText: /^Studio$/ }).click();
+  await lighting.locator("button", { hasText: /^Side light$/ }).click();
+  await lighting.getByRole("checkbox", { name: /^Floor shadow/ }).check();
+  await page.click('button[title="Lighting and backdrop"]');
   await page.waitForFunction(() => window.__rigIdle === true);
-  await page.click('button[aria-label="Lighting and backdrop"]');
-  await page.locator('[role=group][aria-label="Lighting and backdrop"] label:has-text("Floor shadow") input').check();
-  await page.keyboard.press("Escape");
   await page.waitForTimeout(5000);
   await saveShot(page, { transparent: true, keepFloor: false }, join(outDir, "floor-off.png"));
   await saveShot(page, { transparent: true, keepFloor: true }, join(outDir, "floor-kept.png"));
@@ -339,7 +349,7 @@ if (only.has("phone")) {
     JSON.stringify(stageOpen));
   check("phone: no sideways scroll", await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   const topRow = await page.evaluate(() => {
-    const anchor = document.querySelector('[data-viewer] button[title="Toggle scene lighting"]').parentElement;
+    const anchor = document.querySelector('[data-viewer] button[title="Lighting and backdrop"]').parentElement.parentElement;
     return [...anchor.querySelectorAll(":scope > *")].map(e => { const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; });
   });
   check("phone: viewer top row fits the screen", topRow.every(([l, r]) => l >= 0 && r <= 390), JSON.stringify(topRow));
@@ -402,7 +412,7 @@ if (only.has("phone")) {
   await page.locator('button[aria-label="Full screen"]').tap();
   await page.waitForTimeout(800);
   await shot(page, "phone-fullscreen", 500);
-  const row = await page.evaluate(() => [...document.querySelectorAll('[data-viewer] button[aria-label="Hide UI"], [data-viewer] button[aria-label="Exit full screen"], [data-viewer] button[title="Toggle scene lighting"]')]
+  const row = await page.evaluate(() => [...document.querySelectorAll('[data-viewer] button[aria-label="Hide UI"], [data-viewer] button[aria-label="Exit full screen"], [data-viewer] button[title="Lighting and backdrop"]')]
     .map(b => { const r = b.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; }));
   check("phone: full-screen top row fits", row.length === 3 && row.every(([l, r]) => l >= 0 && r <= 390), JSON.stringify(row));
   await page.locator('button[aria-label="Exit full screen"]').tap();
@@ -417,7 +427,7 @@ if (only.has("landscape")) {
   const stage = await canvasBox(page);
   check("landscape: side drawer, stage beside it", stage.x > 300 && stage.height > 300, JSON.stringify(stage));
   const row = await page.evaluate(() => {
-    const anchor = document.querySelector('[data-viewer] button[title="Toggle scene lighting"]').parentElement;
+    const anchor = document.querySelector('[data-viewer] button[title="Lighting and backdrop"]').parentElement.parentElement;
     const viewer = document.querySelector("[data-viewer]").getBoundingClientRect();
     return { viewer: [viewer.left, viewer.right], row: [...anchor.querySelectorAll(":scope > *")].map(e => { const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right)]; }) };
   });

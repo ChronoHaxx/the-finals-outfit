@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useBuildStore } from "../store/useBuildStore";
 import { buildShareUrl, type ShareStyle } from "../lib/share-url";
 import { previewLink, SHARE_PREVIEW_BASE, sharePreviewAvailable, shortCode, uploadQuery } from "../lib/share-preview";
@@ -98,6 +98,19 @@ export default function ShareBuild() {
     return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
   }, [open]);
 
+  // In the items drawer the panel can open past the drawer's visible part (on a phone the Share button can sit at the
+  // sheet's bottom edge): scroll the drawer just enough to show it, never past its top. Only the drawer's own scroller
+  // moves; nothing else on the page scrolls.
+  const popover = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const panel = popover.current, scroller = panel?.closest<HTMLElement>("[data-drawer-scroll]");
+    if (!open || !panel || !scroller || !/auto|scroll/.test(getComputedStyle(scroller).overflowY)) return;
+    const p = panel.getBoundingClientRect(), s = scroller.getBoundingClientRect(), gap = 8;
+    const down = Math.min(p.bottom + gap - s.bottom, p.top - gap - s.top), up = s.top - (p.top - gap);
+    const top = down > 0 ? down : up > 0 ? -up : 0;
+    if (top) scroller.scrollBy({ top, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }, [open]);
+
   return <div ref={root} className="relative">
     <button type="button" onClick={share} aria-expanded={open}
       className="chamfer flex h-11 items-center gap-2 whitespace-nowrap bg-finals pl-3.5 pr-4 sm:pl-4 sm:pr-5 text-[18px] font-extrabold uppercase tracking-[0.02em] text-white transition-colors [--cut:11px] [font-stretch:70%] hover:bg-finals-hi active:translate-y-px">
@@ -107,7 +120,7 @@ export default function ShareBuild() {
     <span role="status" className="sr-only">{status}</span>
     {/* Opens upwards over the picker on desktop (the outfit sits at the drawer's foot); on phones the outfit heads the
         items sheet, whose top would clip it, so it opens downwards. */}
-    {open && <div className="absolute bottom-[calc(100%+8px)] right-0 z-40 max-lg:bottom-auto max-lg:top-[calc(100%+8px)] w-[min(calc(100vw-1.5rem),23rem)] animate-rise border border-ink-600 bg-ink-850 p-3 shadow-[0_18px_40px_-12px_rgb(0_0_0/0.8)]">
+    {open && <div ref={popover} className="absolute bottom-[calc(100%+8px)] right-0 z-40 max-lg:bottom-auto max-lg:top-[calc(100%+8px)] w-[min(calc(100vw-1.5rem),23rem)] animate-rise border border-ink-600 bg-ink-850 p-3 shadow-[0_18px_40px_-12px_rgb(0_0_0/0.8)]">
       <div className="flex items-center justify-between gap-3">
         <p aria-hidden="true" className={`text-sm font-medium ${status.startsWith("Link copied") ? "text-fg" : "text-fg-muted"}`}>{status || "Share outfit"}</p>
         <button type="button" onClick={() => setOpen(false)} aria-label="Close share panel" className="-mr-1 grid size-7 place-items-center text-fg-dim hover:text-fg">

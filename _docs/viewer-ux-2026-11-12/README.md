@@ -2,6 +2,8 @@
 
 Community feedback (Shocka, Discord), three features, studio.warfarin.wiki as the look to aim for (looked at only).
 Stacked on PR #40 (`claude/studio-light-options-2026-11-11`, f98e97e), which changes the same viewer files.
+PR #40 merged on 15 Nov in its final form (0242909: one Lighting panel with looks, no Studio/Lobby switch); this branch
+merged main then (see "Re-test after merging main" below).
 
 ## What changed
 
@@ -76,3 +78,27 @@ Stacked on PR #40 (`claude/studio-light-options-2026-11-11`, f98e97e), which cha
   for 2-3x captures, an additive hologram in a transparent PNG, the `?reconstructed=0` legacy view (no still-view
   accumulator on screen there, so a capture is smoother than that screen).
 - Seen, not changed: on a narrow stage the Sun slider (PR #37) sits over the character's head.
+
+## Re-test after merging main (15 Nov 2026)
+
+Main at 0242909 (PR #40 final, Chinals mode, body types, facial animation, mesh gate). Changes in the merge:
+- The screenshot reads the look's single backdrop: `backdropPaint(backdrop)` parses its CSS ellipse (test: equals
+  `backdropCss` for every preset, both full looks and an edited backdrop). The eye and camera buttons sit beside the one
+  Lighting panel; the ground-shadow tags (`STAGE_FLOOR`) moved onto `StageLights`.
+- New fix: on a phone the Share button now sits at the sheet's bottom edge (main's header and body-type row are taller),
+  so its panel opened below the visible sheet. Opening it now scrolls the drawer just enough to show it (`ShareBuild`,
+  only the drawer's own scroller moves).
+- Patch note `2026-11-15-full-window-screenshots` and the roadmap's "A faster builder" item; ROADMAP review lines set.
+
+Checks on the merged branch:
+- `npx tsc -b --noEmit`: PASS. `npm run build` with the deploy hosts (animations e5250f94, Chinals dcb131a5): PASS,
+  roadmap and patch-note checks included.
+- `npm test`: 880 tests, 867 pass, 8 fail, 5 skipped; the 8 are the same fixture failures (no `public/models/*.glb` in
+  a worktree).
+- `viewer-ux-test.mjs` against production builds of this branch and of main 0242909: **54/54 pass**. Canvas box at the
+  harnesses' 760x1100 identical to main (760x484 at y = 99; main's header is taller than PR #40's), 57 pixels differ
+  (alpha-hashed eyes/neckline, as before). Studio and Lobby (chosen in the Lighting panel): backdrop PNG = screen within
+  1 level, transparent over the CSS backdrop = backdrop PNG within 2. Two page errors, both the share Worker refusing
+  the localhost origin (CORS), expected for a local build. Full-size screenshots looked at: desktop open, hidden UI with
+  hint, phone share panel, Lobby transparent over a checkerboard, 2x transparent over a checkerboard.
+- User checks 1-7 waived on 15 Nov ("i trust u, just merge to live"); see functional-checklist.md.
