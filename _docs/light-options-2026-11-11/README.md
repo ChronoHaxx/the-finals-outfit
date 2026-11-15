@@ -104,6 +104,18 @@ Fable 5.2 reviews (thread 164a2365):
     after Reset, and Undo restores the custom look and backdrop; the Lobby look, then red rims (Custom); the four sun
     looks; a travelling emote (big-foot, 0.94 m) with the floor following; the phone layout (390 px: no sideways
     scroll, the panel scrolls inside the viewer). All screenshots looked at.
+- **Merged with main a0a7ae3 (15 Nov)** before merging the PR. Main had gained body types, the mesh gate and facial
+  animation. One import conflict was resolved (both kept). Checks after the merge:
+  - `tsc` PASS;
+  - `npm test`: 862 tests, 849 pass, the same 8 fixture failures, 5 skipped;
+  - a production build with main's hosts (animations `e5250f94`), in headless Edge: Studio default, the Lobby look,
+    then Low sun with the floor shadow; the body-type picker present; no page errors. Screenshots looked at.
+- **User checks waived.** On 15 Nov the user replied "waive, jsut merge" to the 7-step checklist for `3d1aa11`. None
+  of the 7 steps were run by the user. Earlier, on `f98e97e`, steps 1-3 had been ticked.
+- **Three more scripts used the old button.** `render-hair-reference.mjs` and `render-head-details.mjs` hid it from
+  captures; they now hide the Lighting button. `render-temporal-reference.mjs` clicked it twice to check that the
+  remounted renderer converges. It now applies the Lobby and Studio looks (no remount any more) and checks the history
+  converges. None of the three was run here: they need the local recovered-shader fixtures.
 - **Harness moved to the panel.** `scripts/shader-probe/check-integration.mjs` clicked the old "Toggle scene lighting"
   button. It now opens the Lighting panel and applies the Lobby look, then Studio. Those exact steps ran against this
   build under automation: both looks applied, the panel closed, no page errors. The full harness was **not run**. It

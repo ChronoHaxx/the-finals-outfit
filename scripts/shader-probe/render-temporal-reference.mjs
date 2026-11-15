@@ -81,11 +81,20 @@ try {
   const resized = await settled();
   const drawingSize = await page.locator('canvas').first().evaluate(c => ({ width: c.width, height: c.height }));
   record('viewer resize matches canvas pixel size', resized.width === drawingSize.width && resized.height === drawingSize.height, { resized, drawingSize });
-  await page.getByTitle('Toggle scene lighting').click();
+  // The Studio/Lobby switch became two looks in the Lighting panel (PR #40). A look no longer remounts the renderer:
+  // the lights change in place, and the history must restart and converge.
+  const lighting = page.getByTitle('Lighting and backdrop');
+  const look = async name => {
+    await lighting.click();
+    await page.getByRole('group', { name: 'Lighting and backdrop' }).getByRole('button', { name, exact: true }).click();
+    await lighting.click(); // close the panel before capturing
+    await lighting.filter({ hasText: name }).waitFor();
+  };
+  await look('Lobby');
   const lobby = await settled();
   await page.locator('canvas').first().screenshot({ path: `${output}/temporal-lobby.png` });
-  record('lobby renderer remount converges', lobby.active && lobby.samples === 32);
-  await page.getByTitle('Toggle scene lighting').click(); record('studio renderer remount converges', (await settled()).samples === 32);
+  record('lobby look converges', lobby.active && lobby.samples === 32);
+  await look('Studio'); record('studio look converges', (await settled()).samples === 32);
   const isolatedUrl = new URL(base); isolatedUrl.searchParams.set('isolate', '1');
   await page.goto(isolatedUrl.href, { waitUntil: 'networkidle' });
   record('isolated recovered hair and lashes converge', (await settled()).samples === 32);
