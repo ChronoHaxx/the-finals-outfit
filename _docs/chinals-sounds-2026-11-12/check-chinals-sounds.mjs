@@ -4,7 +4,7 @@
 // sound (MetaSound with and without a sync group, SoundCue, SoundWave, a two-layer mixer cue), a silent emote, the
 // first-click unlock, and switching Global <-> Chinals without leaving audio devices behind (RigAnimator.dispose).
 //
-//   node _docs/chinals-sounds-2026-11-12/check-chinals-sounds.mjs [--base=http://127.0.0.1:5190] [--headed]
+//   node _docs/chinals-sounds-2026-11-12/check-chinals-sounds.mjs [--base=http://127.0.0.1:5190] [--chinals=<host URL>] [--headed]
 // (Git Bash or PowerShell, worktree root; serve-preview.mjs running with --chinals). Writes check-chrome.json beside
 // this file, and a screenshot to --shot=<png> when given.
 import { chromium } from "playwright-core";
@@ -15,6 +15,10 @@ import { fileURLToPath } from "node:url";
 const arg = name => process.argv.find(a => a.startsWith(`--${name}=`))?.slice(name.length + 3);
 const BASE = arg("base") ?? "http://127.0.0.1:5190";
 const shot = arg("shot");
+// Where the app's Chinals set lives: the preview's /chinals-animations/ (default), or a published host's URL when the app
+// was started with VITE_CHINALS_ANIMATIONS_BASE set to it.
+const CHINALS = arg("chinals") ?? "/chinals-animations/";
+const chinalsSounds = `${CHINALS.replace(/\/?$/, "/")}sounds-1/sounds.json`;
 const DEFAULT = { face: "head-face-01-base", upperBody: "casual-basictshirt-cotton-black",
   lowerBody: "casual-loosejeans-denim-darkblue", feet: "casual-tallsneakers-canvas" };
 const outfit = "1." + Buffer.from(JSON.stringify({ slots: DEFAULT })).toString("base64url");
@@ -43,7 +47,7 @@ const check = (name, pass, detail) => { report.checks.push({ name, pass, ...(det
 const sounds = "window.__rigAnim.animator.sounds";
 
 // 0. Chinals mode from its address. The intro dialog's button is the first gesture.
-const soundsLoaded = page.waitForResponse(r => r.url().endsWith("/chinals-animations/sounds-1/sounds.json"), { timeout: 240000 }).catch(() => null);
+const soundsLoaded = page.waitForResponse(r => r.url().endsWith(chinalsSounds), { timeout: 240000 }).catch(() => null);
 await page.goto(`${BASE}/?reconstructed=1&outfit=${outfit}#/chinals`, { waitUntil: "load", timeout: 240000 });
 await page.getByRole("button", { name: /Enter builder|View shared outfit/ }).first().click({ timeout: 60000 }).catch(() => {});
 await page.waitForFunction(() => window.__rigAnim?.animator?.manifest?.edition === "chinals" && window.__rigIdle === true, null, { timeout: 240000 });
@@ -54,7 +58,7 @@ await trigger.click();
 await dialog.waitFor();
 await page.waitForFunction(`${sounds}.available`, null, { timeout: 30000 }).catch(() => {});
 check("Chinals mode loads the Chinals set's sounds.json from its own host", !!(await soundsLoaded)
-  && await page.evaluate(`${sounds}.url.endsWith("/chinals-animations/sounds-1/sounds.json") && ${sounds}.available`),
+  && await page.evaluate(`${sounds}.url.endsWith(${JSON.stringify(chinalsSounds)}) && ${sounds}.available`),
   await page.evaluate(`${sounds}.url`));
 
 // The frame sampler: every update the animator makes, the clip time it passes and the audio clock.
@@ -206,6 +210,6 @@ check("mode switches: each mode plays its own sounds", switches.every(s => s.glo
 check("mode switches: at most one audio device open (made - closed <= 1)", last.made - last.closed <= 1, switches.map(s => s.contexts));
 
 check("no console errors or audio warnings", errors.length === 0, errors);
-writeFileSync(join(dirname(fileURLToPath(import.meta.url)), "check-chrome.json"), JSON.stringify(report, null, 1));
+writeFileSync(join(dirname(fileURLToPath(import.meta.url)), arg("out") ?? "check-chrome.json"), JSON.stringify({ chinals: CHINALS, ...report }, null, 1));
 await browser.close();
 process.exitCode = report.checks.every(c => c.pass) ? 0 : 1;

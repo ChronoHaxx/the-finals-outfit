@@ -34,10 +34,11 @@ jobs:
       # animation controls stay hidden. 12 Nov: set-5 clips + props-9 (emote prop placement fixes, root scale)
       # + faces-1 (facial animation: poses, curves, wrap cages, masks).
       ANIMATIONS_BASE: https://e5250f94.the-finals-outfit-assets.pages.dev/
-      # Chinals mode (src/lib/site-mode.ts): the Chinals emote set (set-3 + props-2, 12 Nov 2026), on its own Cloudflare
-      # Pages project the-finals-outfit-chinals-assets so it can be withdrawn in one step. Blank turns the mode off: no
-      # toggle, and a Chinals link says the mode isn't available while its outfit still opens.
-      CHINALS_ANIMATIONS_BASE: https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/
+      # Chinals mode (src/lib/site-mode.ts): the Chinals emote set, on its own Cloudflare Pages project
+      # the-finals-outfit-chinals-assets so it can be withdrawn in one step. Blank turns the mode off: no toggle, and a
+      # Chinals link says the mode isn't available while its outfit still opens. 15 Nov: set-3 + props-3 (e7796a7c's
+      # set, PR #49) + sounds-1 (the Chinals emote sounds). Earlier: e7796a7c (props-3), dcb131a5 (props-2).
+      CHINALS_ANIMATIONS_BASE: https://59209741.the-finals-outfit-chinals-assets.pages.dev/
       # UI preview: another branch built into a sub-path of this same site, e.g.
       # https://chronohaxx.github.io/the-finals-outfit/new-ui-test/. Blank turns it off.
       # Off since the redesign it previewed became the root app; old preview links fall

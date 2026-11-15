@@ -126,17 +126,23 @@ clock (item 5 below).
 [serve-preview.mjs](../chinals-mode-2026-11-12/serve-preview.mjs) with `--chinals=` the staged folder and `--set=` PR
 #47's staged global set (so global has sounds too).
 
-## Hosting (needs your yes)
+## Hosting (published 15 Nov 2026, on the owner's "Yes, upload it")
 
-Staged: `scripts/generated/chinals-sounds-2026-11-12/upload/chinals-20261113-sounds/`, 189 files, 67 MB.
-- The live `dcb131a5` set (144 files: `manifest.json`, `set-3/`, `props-2/`, `_headers`), copied from the folder it was
-  published from. The live manifest was fetched and is byte-identical to that copy.
-- `sounds-1/` (45 files).
-- `manifest.json` differs from the live one by one line: `"sounds": "sounds-1/sounds.json"`.
+**Host:** `https://59209741.the-finals-outfit-chinals-assets.pages.dev/` (alias `chinals-1115-sounds`), a new immutable
+deployment of the Chinals Pages project. `deploy.yml`'s `CHINALS_ANIMATIONS_BASE` points at it on this branch, so
+merging turns the Chinals sounds on.
 
-A new deployment of `the-finals-outfit-chinals-assets` uploads about 45 new files (5.7 MB). Then deploy.yml's
-`CHINALS_ANIMATIONS_BASE` (on PR #44's branch) moves to the new host. **Rollback:** revert that line; `dcb131a5` stays.
-Without the bump, nothing changes for users: the live Chinals manifest has no `sounds`, and the player stays silent.
+- **Built on props-3, not props-2** (the owner's choice): between staging and upload, draft PR #49 had published the
+  fixed props as `e7796a7c`. An animations host is a full snapshot, so the upload is e7796a7c's set plus `sounds-1/`.
+  Whichever of PR #49 and this PR merges, the props never roll back to props-2. Merging this PR ships props-3 too.
+- **Contents:** e7796a7c's 144 files (copied from the folder it was published from, then checked 143/143 byte-identical
+  against e7796a7c itself), `sounds-1/` (45 files), and `manifest.json` with one added line,
+  `"sounds": "sounds-1/sounds.json"`. 189 files; wrangler uploaded 46 new ones and deduplicated 142.
+- **Checks:** `verify-hosted.mjs` 188/188 byte-identical, GLBs `model/gltf-binary` and `.m4a` `audio/mp4`, both with CORS
+  `*` and immutable caching, 404 for a missing file. The app with `VITE_CHINALS_ANIMATIONS_BASE` set to the host passed
+  the Chrome check 12/12, every Chinals file coming from the host ([check-chrome-hosted.json](check-chrome-hosted.json)).
+- **Rollback:** point `CHINALS_ANIMATIONS_BASE` back at `e7796a7c` (props-3, no sounds) or `dcb131a5` (props-2). Both stay
+  up. The staged folder before the props change, `chinals-20261113-sounds` (props-2), was never uploaded.
 
 ## Open items
 

@@ -1,0 +1,365 @@
+{
+ "chinals": "https://59209741.the-finals-outfit-chinals-assets.pages.dev/",
+ "browser": "chrome",
+ "base": "http://127.0.0.1:5191",
+ "checks": [
+  {
+   "name": "Chinals mode loads the Chinals set's sounds.json from its own host",
+   "pass": true,
+   "detail": "https://59209741.the-finals-outfit-chinals-assets.pages.dev/sounds-1/sounds.json"
+  },
+  {
+   "name": "Ovation (MetaSound, no sync group): one voice, within one clip frame of its cue",
+   "pass": true,
+   "detail": [
+    {
+     "key": "0:0",
+     "wave": "Emotes_Frontend_A_Applaud_00",
+     "cue": 0.0321,
+     "at": 1.76,
+     "offset": 0.002,
+     "scheduled": false,
+     "first": true,
+     "errorMs": -1.8
+    }
+   ]
+  },
+  {
+   "name": "Drink Up, Brother! (mixer cue): both layers start, together, at the clip start",
+   "pass": true,
+   "detail": [
+    {
+     "key": "0:0",
+     "wave": "FX_HM_Frontend_Emotes_A_TakeAway_Foley",
+     "cue": 0,
+     "at": 4.5013,
+     "offset": 0.0246,
+     "scheduled": false,
+     "first": true,
+     "errorMs": -2.2
+    },
+    {
+     "key": "1:0",
+     "wave": "FX_HM_Frontend_Emotes_A_TakeAway_AMB_02",
+     "cue": 0,
+     "at": 4.5013,
+     "offset": 0.0246,
+     "scheduled": false,
+     "first": true,
+     "errorMs": -2.2
+    }
+   ]
+  },
+  {
+   "name": "Keepy-Uppy (SoundCue): one voice within one clip frame",
+   "pass": true,
+   "detail": [
+    {
+     "key": "0:0",
+     "wave": "Emote_Frontend_A_BumpTheBall_00",
+     "cue": 0.0891,
+     "at": 7.1876,
+     "offset": 0,
+     "scheduled": true,
+     "first": true,
+     "errorMs": -1.1
+    }
+   ]
+  },
+  {
+   "name": "Forced Ignition (SoundWave): one voice within one clip frame",
+   "pass": true,
+   "detail": [
+    {
+     "key": "0:0",
+     "wave": "Emotes_FrontEnd_Dissun",
+     "cue": 0,
+     "at": 8.9413,
+     "offset": 0.02,
+     "scheduled": false,
+     "first": true,
+     "errorMs": -7.5
+    }
+   ]
+  },
+  {
+   "name": "Floating Greeting (synced MetaSound): one voice at its cue, stopped near its window end (10.21 s)",
+   "pass": true,
+   "detail": {
+    "source": "HM_Frontend_Emotes_A_MidAutumn_00",
+    "duration": 10.433333396911621,
+    "cues": 1,
+    "timing": [
+     {
+      "key": "0:0",
+      "wave": "Emotes_FrontEnd_MidAutumn",
+      "cue": 0.1445,
+      "at": 11.047,
+      "offset": 0,
+      "scheduled": true,
+      "first": true,
+      "errorMs": 3.2
+     }
+    ],
+    "events": {
+     "schedule": 1,
+     "stop": 1
+    },
+    "stops": [
+     {
+      "key": "0:0",
+      "clipTime": 10.218
+     }
+    ],
+    "animationRate": 1,
+    "longestFrameMs": 21
+   }
+  },
+  {
+   "name": "Floating Greeting: restarted only if the animation fell behind real time",
+   "pass": true,
+   "detail": {
+    "restarts": 0,
+    "animationRate": 1,
+    "longestFrameMs": 21
+   }
+  },
+  {
+   "name": "Gacha_01 (no sound in the game): no Sound button, no voice",
+   "pass": true
+  },
+  {
+   "name": "decoded AAC length matches the source within 2 ms",
+   "pass": true,
+   "detail": [
+    {
+     "wave": "Emotes_Frontend_A_Applaud_00",
+     "source": 4.7045,
+     "decoded": 4.704,
+     "extraMs": -0.5
+    },
+    {
+     "wave": "FX_HM_Frontend_Emotes_A_TakeAway_Foley",
+     "source": 9.3994,
+     "decoded": 9.399,
+     "extraMs": -0.4
+    },
+    {
+     "wave": "Emotes_FrontEnd_MidAutumn",
+     "source": 10.5667,
+     "decoded": 10.566,
+     "extraMs": -0.7
+    }
+   ]
+  },
+  {
+   "name": "mode switches: each mode plays its own sounds",
+   "pass": true,
+   "detail": [
+    {
+     "globalUrl": "/animations/sounds-1/sounds.json",
+     "globalStarted": true,
+     "chinalsStarted": true,
+     "contexts": {
+      "made": 3,
+      "closed": 2
+     }
+    },
+    {
+     "globalUrl": "/animations/sounds-1/sounds.json",
+     "globalStarted": true,
+     "chinalsStarted": true,
+     "contexts": {
+      "made": 5,
+      "closed": 4
+     }
+    },
+    {
+     "globalUrl": "/animations/sounds-1/sounds.json",
+     "globalStarted": true,
+     "chinalsStarted": true,
+     "contexts": {
+      "made": 7,
+      "closed": 6
+     }
+    }
+   ]
+  },
+  {
+   "name": "mode switches: at most one audio device open (made - closed <= 1)",
+   "pass": true,
+   "detail": [
+    {
+     "made": 3,
+     "closed": 2
+    },
+    {
+     "made": 5,
+     "closed": 4
+    },
+    {
+     "made": 7,
+     "closed": 6
+    }
+   ]
+  },
+  {
+   "name": "no console errors or audio warnings",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "emotes": {
+  "cn-emote-applaud": {
+   "source": "HM_Frontend_Emotes_A_Applaud_00",
+   "duration": 4.800000190734863,
+   "cues": 1,
+   "timing": [
+    {
+     "key": "0:0",
+     "wave": "Emotes_Frontend_A_Applaud_00",
+     "cue": 0.0321,
+     "at": 1.76,
+     "offset": 0.002,
+     "scheduled": false,
+     "first": true,
+     "errorMs": -1.8
+    }
+   ],
+   "events": {
+    "start": 1
+   },
+   "stops": [],
+   "animationRate": 0.998,
+   "longestFrameMs": 21
+  },
+  "cn-emote-takeaway": {
+   "source": "HM_Frontend_Emotes_A_TakeAway_00",
+   "duration": 9.5,
+   "cues": 2,
+   "timing": [
+    {
+     "key": "0:0",
+     "wave": "FX_HM_Frontend_Emotes_A_TakeAway_Foley",
+     "cue": 0,
+     "at": 4.5013,
+     "offset": 0.0246,
+     "scheduled": false,
+     "first": true,
+     "errorMs": -2.2
+    },
+    {
+     "key": "1:0",
+     "wave": "FX_HM_Frontend_Emotes_A_TakeAway_AMB_02",
+     "cue": 0,
+     "at": 4.5013,
+     "offset": 0.0246,
+     "scheduled": false,
+     "first": true,
+     "errorMs": -2.2
+    }
+   ],
+   "events": {
+    "start": 2
+   },
+   "stops": [],
+   "animationRate": 0.98,
+   "longestFrameMs": 139
+  },
+  "cn-emote-worldcup-juggle": {
+   "source": "HM_Frontend_Emotes_A_Juggle_00",
+   "duration": 7.166666507720947,
+   "cues": 1,
+   "timing": [
+    {
+     "key": "0:0",
+     "wave": "Emote_Frontend_A_BumpTheBall_00",
+     "cue": 0.0891,
+     "at": 7.1876,
+     "offset": 0,
+     "scheduled": true,
+     "first": true,
+     "errorMs": -1.1
+    }
+   ],
+   "events": {
+    "schedule": 1
+   },
+   "stops": [],
+   "animationRate": 0.954,
+   "longestFrameMs": 160
+  },
+  "cn-emote-checkered-dissun": {
+   "source": "HM_Frontend_Emotes_A_CheckeredDissun_00",
+   "duration": 11.166666984558105,
+   "cues": 1,
+   "timing": [
+    {
+     "key": "0:0",
+     "wave": "Emotes_FrontEnd_Dissun",
+     "cue": 0,
+     "at": 8.9413,
+     "offset": 0.02,
+     "scheduled": false,
+     "first": true,
+     "errorMs": -7.5
+    }
+   ],
+   "events": {
+    "start": 1
+   },
+   "stops": [],
+   "animationRate": 0.995,
+   "longestFrameMs": 21
+  },
+  "cn-emote-midautumnfestival-01": {
+   "source": "HM_Frontend_Emotes_A_MidAutumn_00",
+   "duration": 10.433333396911621,
+   "cues": 1,
+   "timing": [
+    {
+     "key": "0:0",
+     "wave": "Emotes_FrontEnd_MidAutumn",
+     "cue": 0.1445,
+     "at": 11.047,
+     "offset": 0,
+     "scheduled": true,
+     "first": true,
+     "errorMs": 3.2
+    }
+   ],
+   "events": {
+    "schedule": 1,
+    "stop": 1
+   },
+   "stops": [
+    {
+     "key": "0:0",
+     "clipTime": 10.218
+    }
+   ],
+   "animationRate": 1,
+   "longestFrameMs": 21
+  }
+ },
+ "decode": [
+  {
+   "wave": "Emotes_Frontend_A_Applaud_00",
+   "source": 4.7045,
+   "decoded": 4.704,
+   "extraMs": -0.5
+  },
+  {
+   "wave": "FX_HM_Frontend_Emotes_A_TakeAway_Foley",
+   "source": 9.3994,
+   "decoded": 9.399,
+   "extraMs": -0.4
+  },
+  {
+   "wave": "Emotes_FrontEnd_MidAutumn",
+   "source": 10.5667,
+   "decoded": 10.566,
+   "extraMs": -0.7
+  }
+ ]
+}
