@@ -144,12 +144,16 @@ merging turns the Chinals sounds on.
 - **Rollback:** point `CHINALS_ANIMATIONS_BASE` back at `e7796a7c` (props-3, no sounds) or `dcb131a5` (props-2). Both stay
   up. The staged folder before the props change, `chinals-20261113-sounds` (props-2), was never uploaded.
 
+## Decided
+
+- **Loud transients: no limiter (user, 15 Nov, "Keep game values").** TakeAway's foley plays at gain 4.8 (cue volume 4 x
+  mixer input 1.2). At the default volume 0.7, 11 of its 830,000 samples go over full scale (19 at full volume) and the
+  browser clips them. Global Jester Drum (gain 2.1) does the same. The user chose the game's gains as read, clipping
+  peaks included, when the PR #47 session asked about a limiter; the decision covers both.
+- **PR #47's global sounds** were rebuilt with the MetaSound volume fix and merged with #47 (host 17ec92c3, 15 Nov).
+
 ## Open items
 
-- **Loud transients.** TakeAway's foley plays at gain 4.8 (cue volume 4 x mixer input 1.2). At the default volume 0.7,
-  11 of its 830,000 samples go over full scale (19 at full volume) and are clipped by the browser. Global has gains up
-  to 3. A limiter on the player's master would catch these; it changes existing behaviour, so it is your call.
-- **PR #47's global staging** needs `sounds.json` rebuilt with the MetaSound volume fix before its upload.
 - **Cue looping (from memory, unchecked):** Fable recalls that a cue's WavePlayer clears the wave's `bLooping`. No
   Chinals wave sets it; one global wave does (`Emote_Frontend_Electro_01`, used by a MetaSound, where it is now
   ignored).

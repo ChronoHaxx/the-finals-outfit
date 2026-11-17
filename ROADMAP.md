@@ -25,8 +25,8 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 
 # Roadmap
 
-Last reviewed: 2026-11-15
-Reviewed after patch note: 2026-11-15-emote-sounds
+Last reviewed: 2026-11-17
+Reviewed after patch note: 2026-11-17-chinals-emote-sounds
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
