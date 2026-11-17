@@ -5,40 +5,48 @@
 The Chinals emotes play their own in-game sounds in time with the motion, and switching between Global and Chinals
 never leaves a sound playing or doubles one.
 
-- **PR / originating issue:** the PR on branch `claude/chinals-emote-sounds-2026-11-12` (Chinals sounds, built on
-  PR #44 Chinals mode and PR #47 emote sounds).
-- **Test this revision:** `af303f1fbb811e5ea594a7688c82aa0ed90aaef4` on `claude/chinals-emote-sounds-2026-11-12`, with the Chinals set from its published
-  host `https://59209741.the-finals-outfit-chinals-assets.pages.dev/` (props-3 + sounds).
-- **Open:** http://127.0.0.1:5191/#/chinals from the local preview below. The global set is PR #47's local staging, so
-  global emotes have sound here too.
+- **PR / originating issue:** PR #51 on branch `claude/chinals-emote-sounds-2026-11-12`. Against main it changes only
+  the Chinals host line, this record, the patch note and the roadmap review: the sound code came to main with PR #47.
+- **Test this revision:** `9d5b9f7` on `claude/chinals-emote-sounds-2026-11-12` (or any later docs-only commit), with
+  both published hosts: Chinals `https://59209741.the-finals-outfit-chinals-assets.pages.dev/` (props-3 + sounds) and
+  global `https://17ec92c3.the-finals-outfit-assets.pages.dev/` (live since PR #47).
+- **Open:** http://127.0.0.1:5192/#/chinals from the local preview below.
 - **Prerequisites:** headphones or speakers; desktop Chrome, Edge or Firefox.
 - **Approximate hands-on time:** 10 minutes.
 - **Agent checks:**
   - Unit tests 25/25 for the sound code (10 resolver, 15 player).
-  - `npm test` 892 pass, 8 fail, 5 skipped at af303f1. The 8 are pre-existing and need game GLBs this worktree lacks.
-  - `npm run build` passes.
+  - `npm test` 897 pass, 8 fail, 5 skipped at 9d5b9f7. The 8 are pre-existing and need game GLBs this worktree lacks.
+  - `npm run build` passes, with its roadmap and public-text checks.
   - Chrome 12/12 in the scripted browser check, both on the local set ([check-chrome.json](check-chrome.json)) and with
-    the app reading the published host ([check-chrome-hosted.json](check-chrome-hosted.json)): onsets within 26 ms, both
-    TakeAway layers together, Floating Greeting stops at its window end, silent Gacha_01, one audio device after three
-    mode round trips, no console errors. Details in [README.md](README.md#verification).
+    the app reading the published host ([check-chrome-hosted.json](check-chrome-hosted.json), last run at 1b5a50e):
+    onsets within 26 ms, both TakeAway layers together, Floating Greeting stops at its window end, silent Gacha_01, one
+    audio device after three mode round trips, no console errors. Details in [README.md](README.md#verification).
+  - Not rerun after merging PR #47 (17 Nov): the run was stopped. Since then the app's sound code is main's, which is
+    this branch's code plus #47's prop prewarm. The preview below was checked to serve both live sets, and its intro
+    shows the new patch note.
   - Not run: Firefox, Safari, phones, a listen against in-game footage.
 - **User checks: PENDING.** Agent results do not check the boxes below.
 
 ## Get it running
 
-The agent may have it running already: if http://127.0.0.1:5191/ opens, skip this. Otherwise, **Git Bash**, in the
-worktree root `E:\Coding\the-finals-outfit\.claude\worktrees\quirky-boyd-472a78`:
+The agent may have it running already: if http://127.0.0.1:5192/ opens, skip this. Otherwise, **Git Bash**, in the
+worktree root `E:\Coding	he-finals-outfit\.claude\worktrees\quirky-boyd-472a78`:
 
 ```bash
-VITE_CHINALS_ANIMATIONS_BASE=https://59209741.the-finals-outfit-chinals-assets.pages.dev/ node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=../reverent-cannon-ce6e39/scripts/generated/emote-sfx-2026-11-12/upload/anim-20261112c --port=5191
+mkdir -p scripts/generated/chinals-sounds-2026-11-12/empty-set
 ```
 
-The first load can take over 30 seconds. Stop it with Ctrl+C in that terminal.
+```bash
+VITE_CHINALS_ANIMATIONS_BASE=https://59209741.the-finals-outfit-chinals-assets.pages.dev/ node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=scripts/generated/chinals-sounds-2026-11-12/empty-set --proxy=https://17ec92c3.the-finals-outfit-assets.pages.dev/ --port=5192
+```
+
+The empty folder plus `--proxy` serves the live global set. The first load can take over 30 seconds. Stop it with
+Ctrl+C in that terminal.
 
 ## Try it yourself
 
-- [ ] **1. Start.** Open http://127.0.0.1:5191/#/chinals and click through the intro. Expected: the Chinals banner
-  shows, the character idles, and nothing is heard.
+- [ ] **1. Start.** Open http://127.0.0.1:5192/#/chinals. Expected: the intro's newest patch note is "Chinals emote
+  sounds". Click through it: the Chinals banner shows, the character idles, and nothing is heard.
 - [ ] **2. A Chinals emote with sound.** Click **Emotes**, search "Ovation", click it. Expected: applause starts with
   the clapping and stays in time; a speaker button appears left of **Pause**.
 - [ ] **3. Two sounds at once.** Search "Drink Up", click **Drink Up, Brother!**. Expected: you hear the foley (glass,
