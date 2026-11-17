@@ -30,7 +30,7 @@ never leaves a sound playing or doubles one.
 ## Get it running
 
 The agent may have it running already: if http://127.0.0.1:5192/ opens, skip this. Otherwise, **Git Bash**, in the
-worktree root `E:\Coding	he-finals-outfit\.claude\worktrees\quirky-boyd-472a78`:
+worktree root `E:\Coding\the-finals-outfit\.claude\worktrees\quirky-boyd-472a78`:
 
 ```bash
 mkdir -p scripts/generated/chinals-sounds-2026-11-12/empty-set
