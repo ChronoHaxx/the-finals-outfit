@@ -14,6 +14,14 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-21-chinals-faces",
+    date: "2026-11-21",
+    title: "Faces in Chinals emotes",
+    notes: [
+      "In Chinals mode, faces now move during the emotes and the idle, as they do in global emotes: blinks, glances, smiles, surprise and anger, from each emote's own animation. Beards and balaclavas follow the face, and masks and helmets soften it where the game does.",
+    ],
+  },
+  {
     id: "2026-11-15-emote-sounds",
     date: "2026-11-15",
     title: "Emote sounds",
