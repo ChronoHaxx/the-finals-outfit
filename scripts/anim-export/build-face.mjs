@@ -48,12 +48,17 @@
 //     --manifest public/animations/manifest.json --wraps scripts/generated/face-anim/head-wraps-c062af24.json \
 //     --cages scripts/generated/face-anim/cages-all --masks scripts/generated/face-anim/json-bwa \
 //     --out public/animations/faces-1 --activate
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative, resolve } from "node:path";
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, arg, i, all) =>
   arg.startsWith("--") ? [...pairs, [arg.slice(2), all[i + 1]?.startsWith("--") ? true : all[i + 1]]] : pairs, []));
-for (const required of ["json", "refs", "run", "manifest", "out"]) if (!args[required]) throw new Error(`--${required} is required`);
+// Adding clips to a published set (21 Nov 2026, the Season 1-2 emotes): --from <published faces dir> --run <export run
+// of the new clips> --manifest <manifest listing them> --out <new dir>. The new directory is a byte copy of the
+// published one (heads, poses, wraps, masks, curves), plus curve files for manifest sources that have none yet; curve
+// names are matched against the published pose files. No --json/--refs needed. faces.json keeps every field it had.
+for (const required of args.from ? ["run", "manifest", "out"] : ["json", "refs", "run", "manifest", "out"])
+  if (!args[required]) throw new Error(`--${required} is required`);
 const out = resolve(args.out);
 if (existsSync(out)) throw new Error(`Output ${out} already exists; choose a new faces directory (runs are kept)`);
 
@@ -68,6 +73,75 @@ function* walk(dir) {
   }
 }
 const assetName = path => path?.split(/[./]/).filter(Boolean).at(-1) ?? null; // "/Game/.../X.X" -> "X"
+
+// --- Curve files (shared by both routes) ----------------------------------------------------------------------------
+function reduce(values) {
+  // Greedy, as convert-clips.mjs: extend each segment while every skipped frame is reproduced by linear interpolation.
+  const keys = [0];
+  let start = 0;
+  for (let end = 2; end < values.length; end++) {
+    let ok = true;
+    for (let k = start + 1; k < end && ok; k++)
+      ok = Math.abs(values[start] + (values[end] - values[start]) * (k - start) / (end - start) - values[k]) <= CURVE_TOL;
+    if (!ok) { keys.push(end - 1); start = end - 1; }
+  }
+  if (values.length > 1) keys.push(values.length - 1);
+  return keys;
+}
+function writeCurves(sources, canonical) {
+  mkdirSync(join(out, "curves"), { recursive: true });
+  const curveIndex = [], unmatched = new Map(), noFace = [];
+  let curveBytes = 0;
+  for (const source of sources) {
+    const path = join(resolve(args.run), "anims", `${source}.json`);
+    if (!existsSync(path)) { noFace.push(`${source} (not exported)`); continue; }
+    const anim = JSON.parse(readFileSync(path, "utf8"));
+    if (!anim.faceCurveValues) throw new Error(`${source}: the export run has no faceCurveValues (rebuild AnimExport)`);
+    const frameTime = anim.length / (anim.frames - 1) / (anim.rateScale || 1); // as convert-clips.mjs
+    const curves = {};
+    for (const [name, raw] of Object.entries(anim.faceCurveValues)) {
+      const pose = canonical.get(name.toLowerCase());
+      if (!pose || pose === "Pose_0") { unmatched.set(name, (unmatched.get(name) ?? 0) + 1); continue; }
+      if (raw.length !== anim.frames) throw new Error(`${source} ${name}: ${raw.length} samples for ${anim.frames} frames`);
+      const values = raw.map(v => Math.min(1, Math.max(0, v)));
+      if (values.every(v => v < 1e-4)) continue;
+      if (curves[pose]) throw new Error(`${source}: two curves name ${pose}`);
+      const keys = reduce(values);
+      curves[pose] = [keys, keys.map(k => round(values[k], 4))];
+    }
+    if (!Object.keys(curves).length) { noFace.push(source); continue; }
+    const text = JSON.stringify({ formatVersion: 1, source, frames: anim.frames, frameTime: round(frameTime, 8), curves });
+    writeFileSync(join(out, "curves", `${source}.json`), text);
+    curveBytes += text.length;
+    curveIndex.push(source);
+  }
+  return { curveIndex, unmatched, noFace, curveBytes };
+}
+
+if (args.from) {
+  const from = resolve(args.from);
+  const published = JSON.parse(readFileSync(join(from, "faces.json"), "utf8"));
+  cpSync(from, out, { recursive: true });
+  const canonical = new Map();
+  for (const file of walk(join(from, "poses"))) for (const name of JSON.parse(readFileSync(file, "utf8")).poses) canonical.set(name.toLowerCase(), name);
+  const have = new Set(published.curves);
+  const manifest = JSON.parse(readFileSync(resolve(args.manifest), "utf8"));
+  const sources = [...new Set(manifest.clips.map(c => c.source).filter(Boolean))].filter(s => !have.has(s)).sort();
+  const added = writeCurves(sources, canonical);
+  const before = published.report ?? {};
+  const unmatched = { ...(before.unmatchedCurves ?? {}) };
+  for (const [name, n] of added.unmatched) unmatched[name] = (unmatched[name] ?? 0) + n;
+  const index = {
+    ...published, generatedAt: new Date().toISOString(), curves: [...published.curves, ...added.curveIndex],
+    report: { ...before, clipSources: (before.clipSources ?? 0) + sources.length, withCurves: published.curves.length + added.curveIndex.length,
+      withoutCurves: [...(before.withoutCurves ?? []), ...added.noFace], curveBytes: (before.curveBytes ?? 0) + added.curveBytes,
+      unmatchedCurves: Object.fromEntries(Object.entries(unmatched).sort()),
+      additions: [...(before.additions ?? []), { from: basename(from), run: basename(resolve(args.run)), sources: sources.length, withCurves: added.curveIndex.length, withoutCurves: added.noFace }] },
+  };
+  writeFileSync(join(out, "faces.json"), JSON.stringify(index, null, 2));
+  console.log(`${basename(from)} + ${added.curveIndex.length} curve files (${sources.length} new sources; without face curves: ${added.noFace.join(", ") || "none"})`);
+  process.exit(0);
+}
 
 // --- Head data assets: head mesh -> FaceRigPoseAsset ------------------------------------------------------------------
 const poseAssets = new Map(); // name -> PoseContainer + path
@@ -151,45 +225,7 @@ for (const [mesh, { pose, da }] of [...heads].sort()) {
 const canonical = new Map([...poseFiles.values()].flatMap(p => p.names.map(n => [n.toLowerCase(), n])));
 const manifest = JSON.parse(readFileSync(resolve(args.manifest), "utf8"));
 const sources = [...new Set(manifest.clips.map(c => c.source).filter(Boolean))].sort();
-function reduce(values) {
-  // Greedy, as convert-clips.mjs: extend each segment while every skipped frame is reproduced by linear interpolation.
-  const keys = [0];
-  let start = 0;
-  for (let end = 2; end < values.length; end++) {
-    let ok = true;
-    for (let k = start + 1; k < end && ok; k++)
-      ok = Math.abs(values[start] + (values[end] - values[start]) * (k - start) / (end - start) - values[k]) <= CURVE_TOL;
-    if (!ok) { keys.push(end - 1); start = end - 1; }
-  }
-  if (values.length > 1) keys.push(values.length - 1);
-  return keys;
-}
-mkdirSync(join(out, "curves"), { recursive: true });
-const curveIndex = [], unmatched = new Map(), noFace = [];
-let curveBytes = 0;
-for (const source of sources) {
-  const path = join(resolve(args.run), "anims", `${source}.json`);
-  if (!existsSync(path)) { noFace.push(`${source} (not exported)`); continue; }
-  const anim = JSON.parse(readFileSync(path, "utf8"));
-  if (!anim.faceCurveValues) throw new Error(`${source}: the export run has no faceCurveValues (rebuild AnimExport)`);
-  const frameTime = anim.length / (anim.frames - 1) / (anim.rateScale || 1); // as convert-clips.mjs
-  const curves = {};
-  for (const [name, raw] of Object.entries(anim.faceCurveValues)) {
-    const pose = canonical.get(name.toLowerCase());
-    if (!pose || pose === "Pose_0") { unmatched.set(name, (unmatched.get(name) ?? 0) + 1); continue; }
-    if (raw.length !== anim.frames) throw new Error(`${source} ${name}: ${raw.length} samples for ${anim.frames} frames`);
-    const values = raw.map(v => Math.min(1, Math.max(0, v)));
-    if (values.every(v => v < 1e-4)) continue;
-    if (curves[pose]) throw new Error(`${source}: two curves name ${pose}`);
-    const keys = reduce(values);
-    curves[pose] = [keys, keys.map(k => round(values[k], 4))];
-  }
-  if (!Object.keys(curves).length) { noFace.push(source); continue; }
-  const text = JSON.stringify({ formatVersion: 1, source, frames: anim.frames, frameTime: round(frameTime, 8), curves });
-  writeFileSync(join(out, "curves", `${source}.json`), text);
-  curveBytes += text.length;
-  curveIndex.push(source);
-}
+const { curveIndex, unmatched, noFace, curveBytes } = writeCurves(sources, canonical);
 
 // --- Wrap cage skins (optional: --wraps <head-wraps.json> --cages <AnimExport mesh-mode dir>) ----------------------------
 // Beards, balaclavas and mouth scarves are wrapped by the head: in the game they follow the head's *_Wraps cage, a
