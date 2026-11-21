@@ -175,3 +175,10 @@ export function SpeakerIcon({ className, size = 14, muted }: IconProps & { muted
     </>}
   </svg>;
 }
+
+export function VideoIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <rect x="1.8" y="4" width="9" height="8" rx="1.3" />
+    <path d="m10.8 7 3.4-2v6l-3.4-2" />
+  </svg>;
+}
