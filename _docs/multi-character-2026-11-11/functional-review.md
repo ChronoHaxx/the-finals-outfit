@@ -11,7 +11,7 @@ assemblies, which were already placed correctly, and in legacy mode the one affe
 sits inside the earlobe at rest with or without the fix. Its evidence is the agent results below; the turned-character
 case becomes visible with the Scene page (Phase 2).
 
-- PR / originating issue: PR link added when the PR opens; design `_docs/multi-character-2026-11-11/README.md`
+- PR / originating issue: https://github.com/ChronoHaxx/the-finals-outfit/pull/66; design `_docs/multi-character-2026-11-11/README.md`
   (request of 11 Nov 2026, "Recommended MVP", Phase 1)
 - Test this revision: branch `claude/multi-character-2026-11-21` at its head (code as of 214991e; later commits on it
   are documentation only unless this line says otherwise)
