@@ -333,3 +333,51 @@ test("dispose() removes the gesture listeners: a later click makes no new AudioC
     delete g.document;
   }
 });
+
+// Emote speed (21 Nov 2026): the clock carries its rate (clip seconds per second); sound follows it like tape.
+
+/** Play the clip clock from `from` to `to` at `rate`, 60 frames a second of audio. */
+function playAt(ctx: FakeContext, sounds: EmoteSounds, from: number, to: number, rate: number, duration = 6) {
+  let t = from;
+  const step = 1 / 60;
+  sounds.update({ time: t, duration, looping: false, rate }, true);
+  while (t < to - 1e-9) {
+    ctx.advance(step);
+    t = Math.min(duration, t + step * rate);
+    sounds.update({ time: t, duration, looping: false, rate }, true);
+  }
+}
+
+test("at half speed a cue lands on its frame on the slower clock, at half rate", async () => {
+  const { ctx, sounds } = await setup(SEQ);
+  playAt(ctx, sounds, 0, 1.2, 0.5);
+  const clap = ctx.started.filter(s => s.wave === "Clap");
+  assert.equal(clap.length, 1);
+  assert.ok(Math.abs(clap[0].when - 2) < 1e-6, `clip 1 s is 2 s of audio at half speed (${clap[0].when})`);
+  assert.equal(clap[0].rate, 0.5);
+  assert.ok(sounds.log.some(e => e.event === "schedule" && e.wave === "Clap"), "still scheduled ahead, not polled");
+});
+
+test("at 2x a long voice keeps its place: no drift restarts, and its window fade is clip time", async () => {
+  const { ctx, sounds } = await setup(SEQ);
+  playAt(ctx, sounds, 1.9, 4.5, 2);
+  const voices = ctx.started.filter(s => s.wave === "Voice");
+  assert.equal(voices.length, 1, "one voice over the whole 2 s line (the drift rule compares at the voice's real rate)");
+  assert.equal(voices[0].rate, 2);
+  // The window ends at clip 4 s = audio 0.05 + 1.05 s after the start; the default fade is halved on the audio clock.
+  const end = voices[0].when + (4 - 2) / 2;
+  assert.ok(voices[0].stoppedAt !== undefined && Math.abs(voices[0].stoppedAt - (end + DEFAULT_FADE_OUT / 2 + 0.01)) < 0.03,
+    `stopped at its window end over half the default fade (${voices[0].stoppedAt}, expected about ${end + DEFAULT_FADE_OUT / 2 + 0.01})`);
+});
+
+test("a speed change fades the voices and rejoins mid-sound at the new rate, once", async () => {
+  const { ctx, sounds } = await setup(SEQ);
+  playAt(ctx, sounds, 0, 2.5, 1);
+  playAt(ctx, sounds, 2.5, 2.8, 4);
+  const voices = ctx.started.filter(s => s.wave === "Voice");
+  assert.equal(voices.length, 2, "one restart at the change, no more");
+  assert.ok(voices[0].stoppedAt !== undefined, "the normal-speed voice faded out");
+  assert.ok(Math.abs(voices[1].offset - 0.5) < 1e-6, `rejoined 0.5 s into the line (offset ${voices[1].offset})`);
+  assert.equal(voices[1].rate, 4);
+  assert.equal(ctx.started.filter(s => s.wave === "Clap").length, 1, "the clap before the change does not replay");
+});
