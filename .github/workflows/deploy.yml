@@ -35,8 +35,10 @@ jobs:
       # animation controls stay hidden. 12 Nov: set-5 clips + props-9 (emote prop placement fixes, root scale)
       # + faces-1 (facial animation: poses, curves, wrap cages, masks).
       # 15 Nov: + sounds-1 (emote sound effects, scripts/anim-export/build-emote-sounds.mjs; MetaSound gains from
-      # their own Volume). Rollback: e5250f94 (no sounds).
-      ANIMATIONS_BASE: https://17ec92c3.the-finals-outfit-assets.pages.dev/
+      # their own Volume).
+      # 21 Nov: + set-6, props-10, faces-2, sounds-2: the 66 missing emotes, mostly Seasons 1-2
+      # (_docs/all-emotes-2026-11-21). A superset of 17ec92c3 (every file kept at its path). Rollback: 17ec92c3.
+      ANIMATIONS_BASE: https://fd946744.the-finals-outfit-assets.pages.dev/
       # Chinals mode (src/lib/site-mode.ts): the Chinals emote set (set-3 + props-2, 12 Nov 2026), on its own Cloudflare
       # Pages project the-finals-outfit-chinals-assets so it can be withdrawn in one step. Blank turns the mode off: no
       # toggle, and a Chinals link says the mode isn't available while its outfit still opens.
