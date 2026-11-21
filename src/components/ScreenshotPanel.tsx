@@ -3,7 +3,7 @@ import { captureView, compositeOver, isBlank, paintBackdrop, screenshotSizes, ty
 import { encodePngAsync } from "../lib/png-encode";
 import { backdropCss, backdropPaint, type Backdrop } from "../lib/stage-lighting";
 import { sceneById } from "../lib/scenes";
-import { CameraIcon } from "./Icons";
+import { CameraIcon, CopyIcon } from "./Icons";
 
 // GPU memory while capturing is about 24 bytes per pixel (the accumulator's half-float targets and depth, and the
 // image): ~150 MB at the desktop cap, ~60 MB on phones and tablets. A phone is told apart by its primary pointer
@@ -34,9 +34,17 @@ function writeChoices(choices: Choices) {
 
 const stamp = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
 
+// Copy to the clipboard (15 Nov 2026): offered where the browser can put a PNG there (a secure page with ClipboardItem;
+// browsers that can say which types they take must list image/png).
+const CAN_COPY = typeof window !== "undefined" && window.isSecureContext && typeof ClipboardItem !== "undefined"
+  && typeof navigator.clipboard?.write === "function"
+  && (typeof ClipboardItem.supports !== "function" || ClipboardItem.supports("image/png"));
+
+type Output = "save" | "copy";
+
 /**
- * Save the view as a PNG (12 Nov 2026): on its backdrop, or with a transparent background (no backdrop, no floor
- * shadow unless kept). Lighting is the screen's (rig/ViewerScreenshot.ts). Built like the Lighting panel: a button in
+ * Save the view as a PNG (12 Nov 2026), or copy it to the clipboard (15 Nov): on its backdrop, or with a transparent
+ * background (no backdrop, no floor shadow unless kept). Lighting is the screen's (rig/ViewerScreenshot.ts). Built like the Lighting panel: a button in
  * the viewer's top row and a panel anchored to that row.
  */
 export function ScreenshotPanel({ context, backdrop, ready }: {
@@ -44,7 +52,7 @@ export function ScreenshotPanel({ context, backdrop, ready }: {
 }) {
   const [open, setOpen] = useState(false);
   const [choices, setChoices] = useState(readChoices);
-  const [running, setRunning] = useState(false);
+  const [running, setRunning] = useState<Output | null>(null);
   const [status, setStatus] = useState("");
   const [stage, setStage] = useState({ width: 0, height: 0, maxSide: 4096 });
   const root = useRef<HTMLDivElement>(null);
@@ -72,35 +80,55 @@ export function ScreenshotPanel({ context, backdrop, ready }: {
   // The remembered scale if it fits this stage, else the largest that does up to it.
   const size = sizes.find(s => s.scale === choices.scale) ?? [...sizes].reverse().find(s => s.scale <= choices.scale) ?? sizes[0];
 
-  const save = async () => {
+  // Render and encode the PNG. Waits a frame first so the status paints before the synchronous render holds the page.
+  // (A playing emote is caught at the frame on screen: the render is synchronous, so no animation step runs inside it.)
+  const render = async (ctx: ScreenshotContext, width: number, height: number) => {
+    await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
+    const capture = await captureView(ctx, width, height, choices);
+    if (isBlank(capture.pixels)) throw new Error("Nothing was drawn");
+    setStatus("Encoding…");
+    const rgba = capture.straight ? capture.pixels
+      : compositeOver(capture.pixels, paintBackdrop(capture.width, capture.height, backdropPaint(backdrop)));
+    const png = await encodePngAsync(capture.width, capture.height, rgba);
+    return { capture, blob: new Blob([png as BlobPart], { type: "image/png" }) };
+  };
+
+  // Not async itself: a copy must start its clipboard write inside the click (browsers allow it only during a user
+  // gesture), so it hands the clipboard a promised PNG now and the render fills it in.
+  const run = (output: Output) => {
     const ctx = context.current;
     if (!ctx || !size || running) return;
-    setRunning(true);
+    setRunning(output);
     setStatus("Rendering…");
-    // Let the status paint before the synchronous render holds the page. (A playing emote is caught at the frame on
-    // screen: the render is synchronous, so no animation step runs inside it.)
-    await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
-    try {
-      const capture = await captureView(ctx, size.width, size.height, choices);
-      if (isBlank(capture.pixels)) throw new Error("Nothing was drawn");
-      setStatus("Encoding…");
-      const rgba = capture.straight ? capture.pixels
-        : compositeOver(capture.pixels, paintBackdrop(capture.width, capture.height, backdropPaint(backdrop)));
-      const png = await encodePngAsync(capture.width, capture.height, rgba);
-      const name = `finals-outfit-${stamp()}${capture.straight ? "-transparent" : ""}.png`;
-      const url = URL.createObjectURL(new Blob([png as BlobPart], { type: "image/png" }));
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = name;
-      link.click();
-      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
-      setStatus(`Saved ${capture.width} × ${capture.height}${capture.samples < 32 ? " (some grain: the scene kept changing)" : ""}`);
-    } catch (error) {
-      console.error("[screenshot]", error);
-      setStatus(`Couldn’t save: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      setRunning(false);
-    }
+    const job = render(ctx, size.width, size.height);
+    const copied = output === "copy"
+      ? navigator.clipboard.write([new ClipboardItem({ "image/png": job.then(result => result.blob) })]) : null;
+    copied?.catch(() => { /* reported below, through the await */ });
+    void (async () => {
+      try {
+        const { capture, blob } = await job;
+        const dimensions = `${capture.width} × ${capture.height}`;
+        if (copied) {
+          await copied;
+        } else {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `finals-outfit-${stamp()}${capture.straight ? "-transparent" : ""}.png`;
+          link.click();
+          window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        }
+        setStatus(`${copied ? `Copied ${dimensions} to the clipboard` : `Saved ${dimensions}`}${capture.samples < 32 ? " (some grain: the scene kept changing)" : ""}`);
+      } catch (error) {
+        console.error("[screenshot]", error);
+        const blocked = error instanceof DOMException && error.name === "NotAllowedError";
+        setStatus(output === "copy"
+          ? `Couldn’t copy: ${blocked ? "the browser didn’t allow the clipboard. Save PNG works instead." : error instanceof Error ? error.message : String(error)}`
+          : `Couldn’t save: ${error instanceof Error ? error.message : String(error)}`);
+      } finally {
+        setRunning(null);
+      }
+    })();
   };
 
   return (
@@ -153,11 +181,20 @@ export function ScreenshotPanel({ context, backdrop, ready }: {
               </option>)}
             </select>
           </label>
-          <button type="button" onClick={save} disabled={!ready || running || !size}
-            title={ready ? undefined : "Wait for the outfit to finish loading"}
-            className="flex h-9 items-center justify-center gap-2 bg-fg px-3 text-xs font-semibold text-ink-950 hover:bg-white disabled:cursor-not-allowed disabled:bg-fg/30">
-            <CameraIcon size={14} />{running ? "Saving…" : "Save PNG"}
-          </button>
+          <div className={`grid gap-1.5 ${CAN_COPY ? "grid-cols-2" : ""}`}>
+            {CAN_COPY && (
+              <button type="button" onClick={() => run("copy")} disabled={!ready || !!running || !size}
+                title={ready ? "Copy the image to the clipboard, to paste it anywhere" : "Wait for the outfit to finish loading"}
+                className="flex h-9 items-center justify-center gap-2 border border-fg/40 px-3 text-xs font-semibold text-fg hover:bg-ink-900 disabled:cursor-not-allowed disabled:opacity-40">
+                <CopyIcon size={14} />{running === "copy" ? "Copying…" : "Copy"}
+              </button>
+            )}
+            <button type="button" onClick={() => run("save")} disabled={!ready || !!running || !size}
+              title={ready ? "Download the PNG" : "Wait for the outfit to finish loading"}
+              className="flex h-9 items-center justify-center gap-2 bg-fg px-3 text-xs font-semibold text-ink-950 hover:bg-white disabled:cursor-not-allowed disabled:bg-fg/30">
+              <CameraIcon size={14} />{running === "save" ? "Saving…" : "Save PNG"}
+            </button>
+          </div>
           <span role="status" aria-live="polite" className="min-h-4 text-xs leading-snug text-fg-muted">
             {ready ? status : "Waiting for the outfit to finish loading."}
           </span>

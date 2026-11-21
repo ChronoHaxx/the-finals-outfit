@@ -221,7 +221,8 @@ export function LightingPanel() {
 }
 
 /** PR #37's Sun slider, kept on the viewer as a shortcut to the sun's direction (0° = in front of the character).
- *  Double-click returns the sun to its reviewed place. Nothing when the look has no sun. */
+ *  Double-click returns the sun to its reviewed place. Nothing when the look has no sun. Left out on a 3D view narrower
+ *  than 28rem (phones; 15 Nov 2026), where it sat over the character's face: the Lighting panel's sun direction remains. */
 export function SunShortcut() {
   const look = useLightingStore(state => state.look);
   const edit = useLightingStore(state => state.edit);
@@ -230,7 +231,7 @@ export function SunShortcut() {
   const bearing = Math.round(lightAngles(sun.position).bearing);
   const reviewed = sun.position.every((v, i) => v === KEY_POSITION[i]);
   return (
-    <label className="hud flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg"
+    <label className="hud hidden h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg @md:flex"
       title="Turn the sun (the light casting the shadow) round the character. Double-click to return it to its default place.">
       <span aria-hidden="true">☀</span>Sun
       <input type="range" min={-180} max={180} step={1} value={bearing}
