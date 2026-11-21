@@ -59,9 +59,21 @@ step numbers), or e.g. "3 fails: the frame jumps when I change speed while pause
 
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given
+- Tested revision/build: none by the user. The waiver applies to commit `932f9ef`.
+- User reported at: 21 Nov 2026, about 20:25 London, in the session: "Waive the checks" (verbatim).
+- Passed / failed / untested step numbers: 1-7 untested by the user.
+- Explicitly waived checks, if any: 1-7, by the user's instruction above. The waiver accepts these unknowns: a real
+  phone and real touch drags, Safari and Firefox, and how the sped-up or slowed sound actually sounds to a listener.
+- Agent re-check after the waiver (same commit, local dev server on the live asset hosts, Playwright Chromium with
+  `navigator.webdriver` masked, 21 Nov about 20:30 London). It covered what the earlier agent run had not driven
+  through the real controls:
+  - Step 1: with only the idle playing there is no Speed row, and the Facial animation button shows.
+  - Step 2: picking Major Coronation through the picker brings up the Speed row.
+  - Step 3: at 2×, Pause on the timeline; changing to 0.5× while paused left the frame at 0.167 s, and Play resumed at
+    exactly 0.5 clip-s per animator second. The browser was rendering about 1 frame a second by then, so the rate is
+    measured per animator step with the fixed capture clock, not per wall-clock second. Close (×) returned to the idle
+    at 1×, and the Speed row went away.
+  - All PASS. Steps 4-6 and Loop were already covered by the earlier run (`README.md`), and step 7 only by an emulated
+    phone.
+- Readiness: checks explicitly waived (not user-verified).
+- Merge authorization: not yet given.
