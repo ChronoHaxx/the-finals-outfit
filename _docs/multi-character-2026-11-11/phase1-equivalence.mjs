@@ -104,6 +104,44 @@ async function record(name) {
   writeFileSync(path.join(here, `phase1-${name}.json`), JSON.stringify(result, null, 1) + "\n");
 }
 
+// Posed mode (21 Nov 2026, for Phase 1.2 onwards: the animation binding, skeleton updates, head-static placement).
+// Each case opens a fresh page on a paused pose link (an exact frame, as a shared link reproduces it) with a visitor's
+// defaults, so the animation path runs: pins, springs (paused holds preroll into the frame), props, the deformation rig.
+// The dump then includes every bone's posed world matrix.
+const POSED = [
+  ["idle-ponytail", { ...START, hair: "hairs-highponytail-black", upperBody: "streetwear-oversizedbomberjacket-nylon-redurban" }, "outfit-idle", "1"],
+  ["boomerang-props", { ...START, hair: "hairs-highponytail-black" }, "boomerang", "1.567"],
+  ["ace-pilot-statics", { ...START, face: "head-face-03-base", hair: "hairs-afrofade-black", eyewear: "attachment-roundsunglasses-metallic-gold",
+    earrings: "bodycosmetics-earrings-bullet-01", wrist: "casual-bangles-metal-gold", upperBack: "assets-ammobackpack" }, "ace-pilot", "2"],
+];
+const outfitCode = (slots) => "1." + Buffer.from(JSON.stringify({ slots })).toString("base64")
+  .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+
+async function recordPosed(name) {
+  const shots = path.join(here, "shots", `phase1-posed-${name}`);
+  mkdirSync(shots, { recursive: true });
+  const browser = await chromium.launch({ channel: process.env.PROBE_CHANNEL ?? "chrome", headless: true });
+  const result = { base: BASE, when: new Date().toISOString(), steps: [] };
+  for (const [step, slots, clip, time] of POSED) {
+    const page = await browser.newPage({ viewport: { width: 1500, height: 1000 }, deviceScaleFactor: 1 });
+    await page.addInitScript(() => Object.defineProperty(navigator, "webdriver", { get: () => false }));
+    await page.goto(`${BASE}/?reconstructed=1&outfit=${outfitCode(slots)}&emote=${clip}&t=${time}&paused=1`, { waitUntil: "load", timeout: 300000 });
+    await page.waitForFunction("window.__rigIdle === true && !!window.__rigRoot && !!window.__temporalPreview && !!window.__rigAnim", null, { timeout: 300000 });
+    const intro = page.getByRole("button", { name: /View shared outfit|Enter builder/ });
+    if (await intro.count()) await intro.first().click();
+    await page.waitForFunction((c) => { const s = window.__rigAnim.state(); return s.current === c && s.paused && !s.loading; }, clip, { timeout: 120000 });
+    await page.waitForTimeout(1500);
+    await page.waitForFunction(() => { const s = window.__temporalPreview; return s && s.samples >= s.maxSamples; }, null, { timeout: 120000 });
+    const dump = await page.evaluate(DUMP);
+    await page.locator("[data-viewer] canvas").screenshot({ path: path.join(shots, `${String(result.steps.length).padStart(2, "0")}-${step}.png`) });
+    result.steps.push({ step, slots, clip, time, ...dump });
+    console.error(`${step}: ${dump.objects.length} objects${dump.alert ? `, alert: ${dump.alert}` : ""}`);
+    await page.close();
+  }
+  await browser.close();
+  writeFileSync(path.join(here, `phase1-posed-${name}.json`), JSON.stringify(result, null, 1) + "\n");
+}
+
 function compare(x, y) {
   const A = JSON.parse(readFileSync(path.join(here, `phase1-${x}.json`), "utf8"));
   const B = JSON.parse(readFileSync(path.join(here, `phase1-${y}.json`), "utf8"));
@@ -128,5 +166,6 @@ function compare(x, y) {
 }
 
 if (mode === "record" && a) await record(a);
+else if (mode === "record-posed" && a) await recordPosed(a); // compare as posed-<name>
 else if (mode === "compare" && a && b) compare(a, b);
-else { console.error("Usage: phase1-equivalence.mjs record <name> | compare <a> <b>"); process.exitCode = 2; }
+else { console.error("Usage: phase1-equivalence.mjs record <name> | record-posed <name> | compare <a> <b>"); process.exitCode = 2; }
