@@ -90,10 +90,10 @@
         }
       ]
     },
-    "footer": "The game's emote animations on your outfit, with their props, sound and facial animation. Effects are not shown yet.",
+    "footer": "The game's emote animations on your outfit, with their props, sound and facial expressions. Effects are not shown yet.",
     "clickPlayed": {
       "clip": "fox-chicken",
-      "reached": 7.45,
+      "reached": 7.61,
       "audioRunning": true,
       "thenIdle": true
     },
@@ -104,7 +104,7 @@
         "200 sounds-2/sounds.json",
         "200 sounds-2/Emotes_FrontEnd_FoxChicken_01.m4a"
       ],
-      "set6": 145
+      "set6": 141
     }
   },
   "non200": [],

@@ -154,7 +154,7 @@ result.ok = !result.error && result.checks.manifest?.emotes === 295 && /295/.tes
   && result.checks.coopCaper?.current === "fox-chicken" && result.checks.gimmeFive?.current === "high-five"
   && r?.props10 > 0 && r?.faces2 > 0 && r?.sounds2.some(f => f.endsWith(".m4a"))
   && result.checks.clickPlayed?.clip === "fox-chicken" && result.checks.clickPlayed.reached > 7 && result.checks.clickPlayed.audioRunning
-  && /sound and facial animation/.test(result.checks.footer ?? "")
+  && /sound and facial expressions/.test(result.checks.footer ?? "")
   && sec(c, "Uncategorised") === 5 && !result.non200.length && !result.errors.length;
 writeFileSync(path.join(scratch, "prod-check.json"), JSON.stringify(result, null, 2));
 writeFileSync(path.join(here, "prod-check.json"), JSON.stringify(result, null, 2));

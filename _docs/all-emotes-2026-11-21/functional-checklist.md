@@ -42,7 +42,7 @@ or click the emote again. Note it if you see it, but it is not what this PR chan
 - [ ] **1. Start:** open http://127.0.0.1:4355/the-finals-outfit/ and close the welcome screen. Expected: the default
   outfit loads and plays its idle.
 - [ ] **2. The new seasons:** click **Emotes**. Expected: the tab reads **Emotes 295**, and the note at the bottom says
-  "with their props, sound and facial animation. Effects are not shown yet." Scroll to the end of the list:
+  "with their props, sound and facial expressions. Effects are not shown yet." (#58's wording since the merge of main) Scroll to the end of the list:
   **Season 2 · 16** and **Season 1 · 41**, each tile with its game icon (Carrot Crusher, Make It Rain, Tama Kickoff...).
 - [ ] **3. Play two of them** (speaker on): click **Coop Caper**, then **Gimme Five**. Expected: Coop Caper has a chicken
   plushie running around the feet, with its sound, and plays to its end; Gimme Five shows the translucent stand-in
@@ -77,5 +77,11 @@ If something fails, stop at that step and report its number and what happened. R
   - No failed request and no page error. Screenshots checked by eye.
   - Seen in an earlier, identical run (1 of 4): Gimme Five went back to the idle at 1.49 of 5.67 s, about 30 s after
     load. The known early-stop issue, which is therefore not limited to the first seconds; passed to the fix session.
+- **Re-run after merging main** (3c8777f: #53 patch notes, #58 emote speed and face switch, #64), at the coordinator's
+  request, because #58 changed emote playback. On a fresh production build, `prod-check.mjs` gives `ok: true`, and
+  `user-steps.mjs` (22:15 UTC) gives `ok: true` with steps 1-5 all PASS. #58's Speed slider and Facial animation switch
+  show while an emote plays. Every emote played to its end, with no early stop, failed request or page error. The
+  picker note now uses #58's wording, "…with their props, sound and facial expressions. Effects are not shown yet."
+  Screenshots checked by eye: plushie, partner (picker closed), speed and face controls.
 - Readiness: ready to merge on the owner's waiver. The host `fd946744` is uploaded and `ANIMATIONS_BASE` points at it.
 - Merge authorization: not yet given

@@ -103,9 +103,9 @@ then **Uncategorised** for emotes without an icon of their own (none, or the sto
   (automation masked, a real click), Coop Caper plays to 7.45 s of 7.67 with its sound (`sounds-2/` 200, audio
   running), then returns to the idle. No failed request to either host, no page error. Screenshots in
   `scripts/generated/all-emotes-2026-11-21/prod/` (gitignored), checked by eye.
-- **Picker footer fixed:** it still said "Effects and facial expressions are not shown yet", though facial animation
-  shipped on 12 Nov (PR #48). It now lists what plays: "with their props, sound and facial animation. Effects are not
-  shown yet." (sound and facial animation only where the host has them; `FaceAnimator.available`).
+- **Picker footer:** it still said "Effects and facial expressions are not shown yet", though facial animation
+  shipped on 12 Nov (PR #48). This branch fixed it, and PR #58 fixed it the same way on main; the merge of main
+  (3c8777f) keeps #58's version: "with their props, sound and facial expressions. Effects are not shown yet."
 
 - **Checklist steps 1-5, run by the agent on the owner's waiver** ([user-steps.mjs](user-steps.mjs),
   [user-steps.json](user-steps.json), `ok: true`): every step's expected result holds on the production build as a

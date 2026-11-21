@@ -88,10 +88,14 @@ out.steps.s2 = { tab, footer, lastSections: sections.slice(-3), icons: iconCheck
 
 // 3. Coop Caper (sound, to its end), then Gimme Five.
 await dialog.locator('button[title^="Coop Caper"]').first().click();
+// PR #58's controls (merged into main 21 Nov) must survive the merge: the speed slider while an emote is in front,
+// and the Facial animation switch.
+const speedControl = await page.getByRole("group", { name: "Emote speed" }).waitFor({ timeout: 15000 }).then(() => true, () => false);
+const faceToggle = await page.getByRole("button", { name: /Facial animation/ }).isVisible();
 const coop = await follow("fox-chicken", "step3-coop-caper", 3);
 await dialog.locator('button[title^="Gimme Five"]').first().click();
 const five = await follow("high-five", "step3-gimme-five", 1.5);
-out.steps.s3 = { coop, five, soundFiles: hosted.filter(h => /sounds-2\/.*\.m4a/.test(h)), propFiles: hosted.filter(h => /props-10\//.test(h)) };
+out.steps.s3 = { speedControl, faceToggle, coop, five, soundFiles: hosted.filter(h => /sounds-2\/.*\.m4a/.test(h)), propFiles: hosted.filter(h => /props-10\//.test(h)) };
 
 // 4. Search "what's up", play What's Up?, then More holds only Tap Dance.
 await dialog.getByPlaceholder("Search emotes").fill("what's up");
@@ -129,10 +133,10 @@ out.badResponses = bad; out.errors = errors;
 const s = out.steps;
 // Not a checklist expectation but recorded: any emote that went back to the idle before its end (README "Found in passing").
 out.earlyStops = [s.s3.coop, s.s3.five, s.s4.wave, s.s5.played].filter(p => !p.playedToEnd).map(p => `${p.id} ${p.reached}/${p.duration}`);
-out.ok = s.s1.idleAdvancing && /^Emotes 295$/i.test(s.s2.tab) && /with their props, sound and facial animation\. Effects are not shown yet\./.test(s.s2.footer)
+out.ok = s.s1.idleAdvancing && /^Emotes 295$/i.test(s.s2.tab) && /with their props, sound and facial expressions\. Effects are not shown yet\./.test(s.s2.footer)
   && s.s2.lastSections.some(x => x.startsWith("Season 2 · 16")) && s.s2.lastSections.at(-1) === "Season 1 · 41"
   && ["Season 2", "Season 1"].every(n => s.s2.icons[n].loaded === s.s2.icons[n].tiles && s.s2.icons[n].noIcon.length === 0)
-  && s.s3.coop.playedToEnd && s.s3.coop.audioRunning && s.s3.soundFiles.length > 0 && s.s3.five.reached > 1
+  && s.s3.speedControl && s.s3.faceToggle && s.s3.coop.playedToEnd && s.s3.coop.audioRunning && s.s3.soundFiles.length > 0 && s.s3.five.reached > 1
   && s.s4.wave.reached > 0 && s.s4.unlisted.length === 1 && /tap dance/i.test(s.s4.unlisted[0])
   && s.s5.lastSections.at(-1) === "Uncategorised · 5" && (s.s5.played.reached ?? 0) > 0
   && bad.length === 0 && errors.length === 0;

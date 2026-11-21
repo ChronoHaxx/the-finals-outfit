@@ -1,19 +1,19 @@
 {
   "app": "http://127.0.0.1:4355/the-finals-outfit/",
-  "at": "2026-11-21T22:07:40.630Z",
+  "at": "2026-11-21T22:15:29.572Z",
   "steps": {
     "s1": {
       "welcomeShown": true,
       "idle": "outfit-idle",
       "idleTimes": [
         0.01,
-        1.12
+        1.11
       ],
       "idleAdvancing": true
     },
     "s2": {
       "tab": "EMOTES 295",
-      "footer": "The game's emote animations on your outfit, with their props, sound and facial animation. Effects are not shown yet.",
+      "footer": "The game's emote animations on your outfit, with their props, sound and facial expressions. Effects are not shown yet.",
       "lastSections": [
         "Season 3 · 19",
         "Season 2 · 16",
@@ -51,6 +51,8 @@
       }
     },
     "s3": {
+      "speedControl": true,
+      "faceToggle": true,
       "coop": {
         "id": "fox-chicken",
         "reached": 7.63,
@@ -61,7 +63,7 @@
       },
       "five": {
         "id": "high-five",
-        "reached": 5.47,
+        "reached": 5.65,
         "duration": 5.67,
         "playedToEnd": true,
         "thenPlaying": "outfit-idle",
@@ -83,7 +85,7 @@
       ],
       "wave": {
         "id": "wave",
-        "reached": 4.48,
+        "reached": 4.61,
         "duration": 4.67,
         "playedToEnd": true,
         "thenPlaying": "outfit-idle",
@@ -109,7 +111,7 @@
       "note": "No icon of their own in the game files.",
       "played": {
         "id": "cn-emote-gacha-01",
-        "reached": 13.23,
+        "reached": 13.11,
         "duration": 13.33,
         "playedToEnd": true,
         "thenPlaying": "cn-outfit-idle",
