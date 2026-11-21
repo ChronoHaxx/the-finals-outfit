@@ -98,17 +98,24 @@ Live checks after the deploy, all read-only (nothing stored):
 
 The app's player number adds `pn=<10–99>` after `bt`. Without it, each piece shows its own number. The Worker validates
 it (`^[1-9][0-9]$`, else 400 `bad player number`), stores it in the entry's metadata as `pn`, returns it in the link
-and sends people to `#/?o=<code>[&bt=a]&pn=42[&emote=...]`. A stored `pn` wins over the link's own while the entry
-lives. Entries and links without one are unchanged. The app refuses a preview link that comes back without the `pn` it
-sent and copies the plain link instead, so the deploy order does not matter for correctness.
+and sends people to `#/?o=<code>[&bt=a]&pn=42[&emote=...][&view=...]`. A stored `pn` wins over the link's own while the
+entry lives. Entries and links without one are unchanged. The app refuses a preview link that comes back without the
+`pn` it sent and copies the plain link instead, so the deploy order does not matter for correctness.
 
-Deploy, only on the owner's yes, from this folder: `npx --yes wrangler@4.131.1 deploy`. It replaces
-`f9f734a6-4ab8-4623-b448-47c043f64fe1` (live since 13 Nov). Restore it with
-`npx --yes wrangler@4.131.1 rollback f9f734a6-4ab8-4623-b448-47c043f64fe1`. No KV or binding changes.
+**Don't deploy from this branch.** PR #59's camera views (`view=`) went live on 21 Nov at 20:30 as version
+`773a350e-976b-4956-9f54-3401e29341b3`, and this branch's Worker has no `view`. Deploy from branch
+`claude/share-worker-pn-view-2026-11-21`, which is this `pn` change on top of PR #59's Worker (links carry
+`o, bt, pn, pose, view` in that order). Whichever of #59 and #60 merges second takes that branch's
+`workers/share-preview/src` files when resolving the conflict.
+
+Deploy, only on the owner's yes, from that build's `workers/share-preview`: `npx --yes wrangler@4.131.1 deploy`. It
+replaces `773a350e`. Restore that with `npx --yes wrangler@4.131.1 rollback 773a350e-976b-4956-9f54-3401e29341b3`;
+**not** `f9f734a6`, which would drop `view`. No KV or binding changes.
 
 Read-only checks after the deploy:
 - `/s/AAAAAAAAAAAA?o=2.&pn=42` opens `#/?o=2.&pn=42`, and `/s/AAAAAAAAAAAA?o=2.&bt=a&pn=42` opens `#/?o=2.&bt=a&pn=42`.
-- `/s/AAAAAAAAAAAA?o=2.&pn=7` drops the junk `pn`.
+- `/s/AAAAAAAAAAAA?o=2.&bt=a&pn=42&emote=wave&t=1&view=0_1_2_0_1_0_5` keeps all of them in that order.
+- `/s/AAAAAAAAAAAA?o=2.&pn=7` drops the junk `pn`; `&view=0_1_2_0_1_0_5` alone still opens with the view.
 - The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit.
 
 ## Live deployment (20 Oct 2026)
