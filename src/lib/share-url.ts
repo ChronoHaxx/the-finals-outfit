@@ -5,6 +5,7 @@ import type { Slot } from "./slots";
 import { POSE_KEYS, poseParams, type SharePose } from "./share-pose";
 import { builderHashParams } from "./site-mode";
 import { BODY_TYPE_PARAM, bodyTypeFromShareCode, bodyTypeShareCode, DEFAULT_BODY_TYPE } from "./body-type";
+import { VIEW_PARAM, viewParams, type CameraView } from "./camera-view";
 
 export type ShareStyle = "short" | "names";
 const shareCodes = derivedFromCatalog(() => {
@@ -26,8 +27,9 @@ export interface ShareLook { build: Partial<Record<Slot, string | null>>; bodyTy
 // The readable label is informational; its stable suffix identifies the variant.
 // `pose` (share-pose.ts) adds the animation frame on screen beside the outfit; a link without one opens as before.
 // `bt` (body-type.ts) follows the outfit code when the body type is not Masculine; a link without one is Masculine.
+// `view` (camera-view.ts) comes last: the camera on screen; a link without one opens on the default framing.
 export function buildShareUrl(currentUrl: string, look: ShareLook,
-  style: ShareStyle = "short", pose: SharePose | null = null): string {
+  style: ShareStyle = "short", pose: SharePose | null = null, view: CameraView | null = null): string {
   const url = new URL(currentUrl);
   const { items: itemCodes, slots: slotCodes } = shareCodes();
   const { build } = look;
@@ -38,11 +40,11 @@ export function buildShareUrl(currentUrl: string, look: ShareLook,
     const code = category + item;
     return [style === "names" ? `${nameSlug(getBrowseItem(id)?.name ?? id)}--${code}` : code];
   });
-  for (const key of ["outfit", "o", "look", BODY_TYPE_PARAM, ...POSE_KEYS]) url.searchParams.delete(key);
+  for (const key of ["outfit", "o", "look", BODY_TYPE_PARAM, VIEW_PARAM, ...POSE_KEYS]) url.searchParams.delete(key);
   url.hash = "";
   const bodyType = bodyTypeShareCode(look.bodyType);
   const extra: [string, string][] = [...(bodyType ? [[BODY_TYPE_PARAM, bodyType] as [string, string]] : []),
-    ...(pose ? poseParams(pose) : [])];
+    ...(pose ? poseParams(pose) : []), ...(view ? viewParams(view) : [])];
   if (style === "short") url.hash = `/?o=2.${parts.join(".")}${extra.map(([key, value]) => `&${key}=${encodeURIComponent(value)}`).join("")}`;
   else {
     url.searchParams.set("look", `2.${parts.join(".")}`);

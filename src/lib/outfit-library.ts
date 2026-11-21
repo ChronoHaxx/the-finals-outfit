@@ -44,17 +44,25 @@ export interface OutfitRecord {
    *  Absent (every outfit saved before 12 Nov 2026) means Masculine. Added without a schema bump: older tabs keep
    *  it as an unknown field. */
   bodyType?: string;
+  /** Camera views saved with the outfit (src/lib/camera-view.ts), kept exactly as written: entries this version cannot
+   *  read stay untouched, deletions are tombstones. Normally a list; any other value (some newer format) is kept and
+   *  never rewritten. Absent before 21 Nov 2026. Added without a schema bump: older tabs keep it as an unknown field. */
+  cameraViews?: unknown;
   [field: string]: unknown;
 }
 
 const KNOWN_FIELDS = ["v", "id", "rev", "writer", "name", "createdAt", "updatedAt", "slots", "labels",
-  "generated", "deletedAt", "bodyType"] as const;
+  "generated", "deletedAt", "bodyType", "cameraViews"] as const;
 
 /** What an outfit shows, as opposed to its bookkeeping. */
-export interface OutfitContent { name: string; slots: SlotMap; labels?: SlotMap; generated?: boolean; bodyType?: string }
+export interface OutfitContent {
+  name: string; slots: SlotMap; labels?: SlotMap; generated?: boolean; bodyType?: string; cameraViews?: unknown;
+}
 
 // Absent and "masculine" are the same body type; compare by meaning so the field's arrival is not an edit.
 const bodyTypeKey = (value: unknown) => typeof value === "string" && value ? value : "masculine";
+// No camera views and an empty list are the same; anything else compares by its exact stored form.
+const viewsKey = (value: unknown) => value === undefined ? "[]" : JSON.stringify(value);
 
 export interface JournalEntry { record: OutfitRecord; base?: number }
 
@@ -89,6 +97,7 @@ export interface Draft {
   labels?: SlotMap;
   generated?: boolean;
   bodyType?: string;
+  cameraViews?: unknown;
   reason: "link" | "cap";
   /** Edited by hand while it could not be saved. Leaving it then needs a confirmation. */
   edited?: boolean;
@@ -183,12 +192,13 @@ const sameMap = (a: SlotMap | undefined, b: SlotMap | undefined) => {
 
 export function sameContent(a: OutfitRecord, b: OutfitRecord): boolean {
   return a.name === b.name && sameMap(a.slots, b.slots) && sameMap(a.labels, b.labels)
-    && !!a.generated === !!b.generated && a.deletedAt === b.deletedAt && bodyTypeKey(a.bodyType) === bodyTypeKey(b.bodyType);
+    && !!a.generated === !!b.generated && a.deletedAt === b.deletedAt && bodyTypeKey(a.bodyType) === bodyTypeKey(b.bodyType)
+    && viewsKey(a.cameraViews) === viewsKey(b.cameraViews);
 }
 
 /** The content fields of a record or draft, for a copy (a duplicate, a fork, a promoted draft). */
 const contentOf = (source: OutfitContent): OutfitContent => ({ name: source.name, slots: source.slots,
-  labels: source.labels, generated: source.generated, bodyType: source.bodyType });
+  labels: source.labels, generated: source.generated, bodyType: source.bodyType, cameraViews: source.cameraViews });
 
 /** "Outfit" -> "Outfit 1", "Outfit 2"...; "Name (2)" style when `paren` is set. */
 export function uniqueName(stem: string, taken: Iterable<string>, opts: { numberFirst?: boolean; paren?: boolean } = {}): string {
@@ -407,6 +417,8 @@ export class OutfitLibrary {
     if (content.labels) record.labels = { ...content.labels };
     if (content.generated) record.generated = true;
     if (content.bodyType) record.bodyType = content.bodyType;
+    if (content.cameraViews !== undefined)
+      record.cameraViews = Array.isArray(content.cameraViews) ? [...content.cameraViews] : content.cameraViews;
     this.records.set(record.id, record);
     this.dirty.add(record.id);
     this.journal?.write(record.id, { record });
@@ -442,6 +454,18 @@ export class OutfitLibrary {
       if (labels) next.labels = { ...labels }; else delete next.labels;
       if (generated) next.generated = true; else delete next.generated;
       if (!sameBodyType) next.bodyType = bodyType;
+      return next;
+    });
+  }
+
+  /** Replace the outfit's camera views (camera-view.ts builds the list). Saving a view is work worth keeping, so the
+   *  outfit stops being a roll that Randomise or Reset may replace in place. */
+  setCameraViews(id: string, cameraViews: unknown[]) {
+    const record = this.records.get(id);
+    if (!record || viewsKey(record.cameraViews) === viewsKey(cameraViews)) return;
+    this.touch(id, r => {
+      const next: OutfitRecord = { ...r, cameraViews };
+      delete next.generated;
       return next;
     });
   }

@@ -25,8 +25,8 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 
 # Roadmap
 
-Last reviewed: 2026-11-15
-Reviewed after patch note: 2026-11-15-emote-sounds
+Last reviewed: 2026-11-21
+Reviewed after patch note: 2026-11-21-camera-controls
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -152,9 +152,9 @@ The character plays the game's outfit-screen idle by default. Every emote in the
 ### Share, randomise and report
 <!-- id: share-randomise-report -->
 
-Share links come with a four-angle preview image. Randomise builds a rules-based outfit and keeps locked pieces. Report issue opens a prefilled GitHub issue for you to review and send.
+Share links come with a four-angle preview image and open on the camera you were looking through. Randomise builds a rules-based outfit and keeps locked pieces. Report issue opens a prefilled GitHub issue for you to review and send.
 
 ### A faster builder that works on phones
 <!-- id: faster-builder -->
 
-The builder was redesigned around the 3D preview, which fills the window with the items in a drawer beside it, or in a sheet under it on phones. Outfits download faster, with a loading readout. Your outfits are saved in your browser as you work, a full-screen view or the H key shows only the character, screenshots save or copy as PNG with the backdrop or a transparent background, and graphics settings trade quality for speed.
+The builder was redesigned around the 3D preview, which fills the window with the items in a drawer beside it, or in a sheet under it on phones. Outfits download faster, with a loading readout. Your outfits are saved in your browser as you work, a full-screen view or the H key shows only the character, screenshots save or copy as PNG with the backdrop or a transparent background, the camera can be placed by numbers, tilted and saved as views with an outfit, and graphics settings trade quality for speed.

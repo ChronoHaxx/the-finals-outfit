@@ -2,7 +2,8 @@
 // which link crawlers (Discord, X, Slack, iMessage...) never send, so every shared link unfurls as the same generic
 // card. This Worker gives a shared outfit its own URL:
 //
-//   POST /api/share?o=<outfit code>[&bt=<body type>][&emote=<clip>&t=<s>&paused=1]   body: a 1200x630 JPEG
+//   POST /api/share?o=<outfit code>[&bt=<body type>][&emote=<clip>&t=<s>&paused=1][&view=<camera>]
+//                                     body: a 1200x630 JPEG
 //                                     -> { url }
 //   GET  /s/<id>?o=<outfit code>[&emote=..]   the page crawlers read: og:image + summary_large_image; people are
 //                                     sent on to the builder with the outfit (and the pose, if any) loaded
@@ -11,13 +12,15 @@
 // Abuse limits: uploads need an allowed Origin, are rate limited per IP, must be a baseline/progressive JPEG of exactly
 // 1200x630 under MAX_BYTES, and get a random unguessable id (nothing can be overwritten). Entries expire after
 // TTL_SECONDS; the outfit code also rides in the link, so an expired link still opens the outfit with the generic card.
-// The optional pose (10 Nov 2026: an emote frame the card shows) and body type (12 Nov 2026: `bt`, absent for
-// Masculine) are stored and carried the same way as the code.
+// The optional pose (10 Nov 2026: an emote frame the card shows), body type (12 Nov 2026: `bt`, absent for
+// Masculine) and camera view (21 Nov 2026: `view`, the camera the builder opens on; the card is unchanged) are stored
+// and carried the same way as the code.
 // Free-plan quotas (1,000 KV writes a day) are a hard ceiling: past it uploads fail and the app shares a plain link.
 
 import {
   bodyTypeMetadata, bodyTypeQuery, HEIGHT, jpegSize, MAX_BYTES, newId, poseMetadata, poseQuery, previewPage, readBodyType,
-  readPose, storedBodyType, storedPose, TTL_SECONDS, validCode, validId, WIDTH, type Env,
+  readPose, readView, storedBodyType, storedPose, storedView, TTL_SECONDS, validCode, validId, viewMetadata, viewQuery,
+  WIDTH, type Env,
 } from "./share";
 
 function cors(env: Env, request: Request): Record<string, string> | null {
@@ -43,6 +46,8 @@ async function upload(request: Request, env: Env, url: URL): Promise<Response> {
   if (pose === null) return json({ error: "bad pose" }, 400, headers);
   const bodyType = readBodyType(url.searchParams);
   if (bodyType === null) return json({ error: "bad body type" }, 400, headers);
+  const view = readView(url.searchParams);
+  if (view === null) return json({ error: "bad camera view" }, 400, headers);
   if (env.UPLOAD_LIMIT) {
     const ip = request.headers.get("CF-Connecting-IP") ?? "unknown";
     if (!(await env.UPLOAD_LIMIT.limit({ key: ip })).success) return json({ error: "slow down" }, 429, headers);
@@ -55,11 +60,12 @@ async function upload(request: Request, env: Env, url: URL): Promise<Response> {
   const id = newId();
   try {
     await env.SHARES.put(`s:${id}`, bytes, { expirationTtl: TTL_SECONDS,
-      metadata: { o: code, ...bodyTypeMetadata(bodyType), ...poseMetadata(pose) } });
+      metadata: { o: code, ...bodyTypeMetadata(bodyType), ...poseMetadata(pose), ...viewMetadata(view) } });
   } catch {
     return json({ error: "storage unavailable" }, 503, headers); // e.g. the daily write quota
   }
-  return json({ url: `${url.origin}/s/${id}?o=${code}${bodyTypeQuery(bodyType)}${poseQuery(pose)}` }, 201, headers);
+  return json({ url: `${url.origin}/s/${id}?o=${code}${bodyTypeQuery(bodyType)}${poseQuery(pose)}${viewQuery(view)}` },
+    201, headers);
 }
 
 export default {
@@ -81,8 +87,8 @@ export default {
     if (page && validId(page[1])) {
       const stored = await env.SHARES.getWithMetadata<Record<string, unknown>>(`s:${page[1]}`, { type: "stream", cacheTtl: 86400 });
       await stored.value?.cancel();
-      // The stored code, body type and pose belong to the stored image; the link's own only open the outfit once the
-      // entry expired.
+      // The stored code, body type, pose and view belong to the stored image; the link's own only open the outfit once
+      // the entry expired.
       const linked = url.searchParams.get("o");
       const storedCode = typeof stored.metadata?.o === "string" ? stored.metadata.o : null;
       const fromStore = !!stored.value && validCode(storedCode);
@@ -90,9 +96,10 @@ export default {
       const pose = !code ? undefined : fromStore ? storedPose(stored.metadata) : readPose(url.searchParams) ?? undefined;
       const bodyType = !code ? undefined
         : fromStore ? storedBodyType(stored.metadata) : readBodyType(url.searchParams) ?? undefined;
-      const self = `${url.origin}/s/${page[1]}${code ? `?o=${code}${bodyTypeQuery(bodyType)}${poseQuery(pose)}` : ""}`;
+      const view = !code ? undefined : fromStore ? storedView(stored.metadata) : readView(url.searchParams) ?? undefined;
+      const self = `${url.origin}/s/${page[1]}${code ? `?o=${code}${bodyTypeQuery(bodyType)}${poseQuery(pose)}${viewQuery(view)}` : ""}`;
       return new Response(previewPage(env, self, stored.value ? `${url.origin}/i/${page[1]}.jpg` : null, code, pose,
-        bodyType), {
+        bodyType, view), {
         headers: { ...security, "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
     }
     return Response.redirect(env.APP_URL, 302);

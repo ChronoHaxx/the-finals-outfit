@@ -14,6 +14,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-21-camera-controls",
+    date: "2026-11-21",
+    title: "Camera controls",
+    notes: [
+      "A new viewfinder button beside the screenshot button shows where the camera is and the point it looks at, in metres. Type any number to place the camera exactly, or nudge one with the arrow keys.",
+      "Roll tilts the camera for an angled shot; Level straightens it again.",
+      "Save views with an outfit and return to one in a click. Views saved with your other outfits are listed too. Like your outfits, they are kept in this browser.",
+      "Share links now open on the camera you were looking through, so someone else can pick up your shot and improve it. Untick Include camera view in the share panel to leave it out. The preview image is unchanged.",
+    ],
+    items: ["share-randomise-report", "faster-builder"],
+  },
+  {
     id: "2026-11-15-emote-sounds",
     date: "2026-11-15",
     title: "Emote sounds",

@@ -41,6 +41,8 @@ import { MeshGateError } from "../lib/mesh-gate";
 import { ScreenshotPanel } from "./ScreenshotPanel";
 import { STAGE_FLOOR, type ScreenshotContext } from "../rig/ViewerScreenshot";
 import { LightingPanel, SunShortcut } from "./LightingPanel";
+import { CameraPanel } from "./CameraPanel";
+import { CameraBridge } from "./CameraBridge";
 import { useLightingStore } from "../lib/lighting-store";
 import {
   STUDIO_RIG, backdropCss, backdropIsDark, lightAngles, shadowFrustum, snapFollow, sunCasts, type EnvironmentKind,
@@ -1192,6 +1194,9 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
           aa={antiAliasing} statusRef={temporalStatus} />}
         <AutoGraphics status={temporalStatus} active={ready && !busy} deviceDpr={deviceDpr} />
         {showFps && <FpsMeter status={temporalStatus} />}
+        {/* The camera for the camera panel and share links, and its roll. It uses the default controls below; its frame
+            step runs after theirs by priority, whatever the order here. */}
+        <CameraBridge />
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
           enablePan
@@ -1233,6 +1238,8 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
             </button>
           )}
           <ScreenshotPanel context={screenshotContext} backdrop={backdrop} ready={ready && !busy} />
+          {/* Camera: position and target to read or type, roll, and views saved with the outfit. */}
+          <CameraPanel />
           {/* Lighting and backdrop: one panel for the whole scene (the Studio/Lobby switch became two of its looks). */}
           <LightingPanel />
         </div>

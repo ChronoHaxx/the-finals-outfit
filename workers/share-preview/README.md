@@ -94,6 +94,26 @@ Live checks after the deploy, all read-only (nothing stored):
 - The root redirects.
 - An upload with `bt=ABC` gets 400 `bad body type`, and a foreign origin gets 403.
 
+## Redeploying for camera views (21 Nov 2026, not deployed yet)
+
+Share links can carry the camera on screen (`src/lib/camera-view.ts`):
+`view=<x>_<y>_<z>_<target x>_<target y>_<target z>[_<roll>]`, metres to the millimetre and degrees to a tenth. The
+Worker validates it (numbers only, else 400 `bad camera view`), stores it in the entry's metadata as `view`, returns it
+last in the link and sends people to `#/?o=<code>[&bt=..][&emote=..]&view=...`. A stored view wins over the link's own
+while the entry lives; entries made before this have none (the default framing). The card is unchanged.
+
+Deploy order does not matter for correctness. Until this is deployed, the live Worker drops `view`: preview links open the
+right outfit on the default framing, and the share panel says "preview links can't keep the camera yet (Short link
+can)". Short and readable links keep the camera without the Worker. Deploy needs the user's yes. From this folder:
+
+```bash
+npx --yes wrangler@4.131.1 deploy
+```
+
+Read-only checks afterwards: `/s/AAAAAAAAAAAA?o=2.&view=0_1_2_0_1_0_5` should open `#/?o=2.&view=0_1_2_0_1_0_5`; the
+same with `&bt=a&emote=wave&t=1` keeps all of them in that order; `&view=junk` is dropped; the 20 Oct link
+`/s/XkVfZU1EMmnr` still opens its outfit and card.
+
 ## Live deployment (20 Oct 2026)
 
 - Worker `the-finals-outfit-share` at https://the-finals-outfit-share.chronohaxx.workers.dev (account subdomain renamed from the
