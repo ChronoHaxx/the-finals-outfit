@@ -102,3 +102,20 @@ Checks on the merged branch:
   the localhost origin (CORS), expected for a local build. Full-size screenshots looked at: desktop open, hidden UI with
   hint, phone share panel, Lobby transparent over a checkerboard, 2x transparent over a checkerboard.
 - User checks 1-7 waived on 15 Nov ("i trust u, just merge to live"); see functional-checklist.md.
+
+## Hotfix: emote picker and UI sweep (15 Nov 2026)
+
+Reported on live after PR #46: "clicking emotes the emoted list show up not at the button". Cause: #46 docked the
+desktop picker beside the 3D view, right when there was room, else left; the full-window stage reaches the window's
+right edge, so it always docked left, over the items drawer.
+- The desktop picker opens in the 3D view's right-hand column under the Emotes button (it now also hides with H).
+  A phone held sideways gets a full-height panel on the drawer's side instead of a 78 px sheet. In a short column only
+  the picker gives way (the Emotes button had shrunk to 12 px and the Sun slider with it).
+- The Sun shortcut is left out on a 3D view narrower than 28rem (phones), where it sat over the character's face;
+  the Lighting panel's sun direction remains.
+- Checks: `viewer-ux-test.mjs` section `emotes` (1568x770, 1440x900 drawer closed, 1024x768, phone, landscape open and
+  closed) reproduced the bug on live (15/20) and passes on the fix; with desktop, phone and landscape 67/67.
+  `ui-sweep.mjs` (Graphics, Lighting, Screenshot, saved outfits, Share, patch notes, Chinals, emote picker and
+  timeline, hidden UI, roadmap at 1568x770 and 390x844): 22/22, every full-size screenshot looked at.
+  `npm test`: 880, 867 pass, the same 8 fixture failures.
+- A more in-game picker: options in `emote-picker-proposal.md`, for the user to choose.
