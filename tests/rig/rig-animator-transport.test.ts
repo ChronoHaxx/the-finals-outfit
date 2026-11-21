@@ -225,3 +225,115 @@ test("opening a paused pose holds its exact frame, inspected; superseded or unkn
   assert.equal(animator.state.current, "bow");
   assert.equal(animator.state.paused, false);
 });
+
+// Emote speed (21 Nov 2026): a time scale on the emote's own clock. The mixer's timeScale stays the pause switch.
+
+test("speed scales the emote's clock; pause still holds; the idle under it keeps normal speed", async () => {
+  stubFetch();
+  const { body, pelvis } = rig();
+  const animator = new RigAnimator(manifest, "clips/");
+  await animator.play(body, "idle");
+  animator.setSpeed(4);
+  step(animator, 0.2);
+  animator.setPaused(true);
+  assert.ok(Math.abs(animator.sharePose()!.time - 0.2) < 1e-6, `the idle ran at normal speed (${animator.sharePose()!.time})`);
+  animator.setPaused(false);
+
+  await animator.play(body, "wave");
+  animator.setSpeed(2);
+  step(animator, 0.25);
+  assert.ok(Math.abs(animator.timeline()!.time - 0.5) < 1e-6, `0.25 s at 2x is 0.5 s into the emote (${animator.timeline()!.time})`);
+  animator.setPaused(true);
+  step(animator, 0.3);
+  assert.equal(animator.state.paused, true);
+  assert.ok(Math.abs(animator.timeline()!.time - 0.5) < 1e-6, "paused: the clock does not move at any speed");
+  assert.ok(Math.abs(pelvis.position.y - heightAt(0.5)) < 1e-4);
+  animator.setSpeed(0.5); // a held frame stays where it is
+  assert.ok(Math.abs(animator.timeline()!.time - 0.5) < 1e-6);
+  animator.setPaused(false);
+  step(animator, 0.2);
+  assert.ok(Math.abs(animator.timeline()!.time - 0.6) < 1e-6, `resumed at the new speed (${animator.timeline()!.time})`);
+  assert.equal(animator.state.speed, 0.5);
+});
+
+test("a later emote starts at the chosen speed; it ends at the scaled time and the idle returns", async () => {
+  stubFetch();
+  const { body } = rig();
+  const animator = new RigAnimator(manifest, "clips/", { speed: 4 });
+  assert.equal(animator.state.speed, 4);
+  await animator.play(body, "idle");
+  await animator.play(body, "wave");
+  step(animator, 0.2);
+  assert.ok(Math.abs(animator.timeline()!.time - 0.8) < 1e-6, `${animator.timeline()!.time}`);
+  step(animator, 0.1); // past the 1 s clip at 4x
+  assert.equal(animator.state.current, "idle", "the untouched emote ended and returned to the idle");
+  assert.equal(new RigAnimator(manifest, "clips/", { speed: 40 }).state.speed, 4, "clamped");
+});
+
+test("a paused link opens on its exact frame whatever the speed, and plays on at that speed", async () => {
+  const wide = { ...manifest, clips: [...manifest.clips, { id: "long", label: "Long", kind: "emote" as const, loop: false, duration: 2, file: "long.json", bytes: 0 }] };
+  clips["long.json"] = clipJson("long", 45, 61);
+  stubFetch();
+  const heights: number[] = [];
+  for (const speed of [1, 0.25, 4]) {
+    const { body, pelvis } = rig();
+    const animator = new RigAnimator(wide, "clips/", { speed });
+    assert.equal(await animator.openPose(body, { clip: "long", time: 1.233, paused: true }, { idle: "idle" }), true);
+    assert.equal(animator.timeline()!.time, 37 / 30, `frame 37 at ${speed}x`);
+    heights.push(pelvis.position.y);
+    assert.equal(animator.sharePose()!.time, 37 / 30, "and a share of it records the same frame");
+    animator.setPaused(false);
+    step(animator, 0.1);
+    assert.ok(Math.abs(animator.timeline()!.time - (37 / 30 + 0.1 * speed)) < 1e-6, `plays on at ${speed}x`);
+  }
+  assert.ok(heights.every(h => h === heights[0]), `the same pose at every speed: ${heights}`);
+});
+
+test("the sounds are told the emote speed with the clock", async () => {
+  stubFetch();
+  const { body } = rig();
+  const animator = new RigAnimator(manifest, "clips/", { speed: 2 });
+  const rates: (number | undefined)[] = [];
+  animator.sounds.update = (clock) => { if (clock) rates.push(clock.rate); };
+  await animator.play(body, "wave");
+  step(animator, 0.1);
+  animator.setSpeed(0.25);
+  step(animator, 0.1);
+  assert.deepEqual([...new Set(rates)], [2, 0.25]);
+});
+
+test("facial animation switched off fetches nothing; switched on, it fetches the faces index and the clip's curves", async () => {
+  const requested: string[] = [];
+  globalThis.fetch = (async (url: string) => {
+    requested.push(String(url));
+    const file = String(url).split("/").pop()!;
+    return { ok: file in clips, status: file in clips ? 200 : 404, json: async () => clips[file] } as Response;
+  }) as typeof fetch;
+  const { body } = rig();
+  const sourced = { ...manifest, clips: manifest.clips.map(c => ({ ...c, source: `HM_${c.id}` })) };
+  const animator = new RigAnimator(sourced, "clips/", { facesUrl: "faces/index.json", face: false });
+  const warn = console.warn;
+  console.warn = () => {}; // the stub serves no faces index: the face then rests, with a warning
+  try {
+    assert.equal(animator.face.available, true, "the set has faces: the switch is offered");
+    await animator.play(body, "wave");
+    assert.ok(!requested.some(url => url.startsWith("faces/")), `off: no face files (${requested})`);
+    assert.equal(animator.state.face, false);
+    animator.setFace(true);
+    assert.equal(animator.state.face, true);
+    await new Promise(resolve => setTimeout(resolve, 0));
+    assert.ok(requested.includes("faces/index.json"), `on: the index is fetched (${requested})`);
+  } finally { console.warn = warn; }
+  assert.equal(new RigAnimator(manifest, "clips/").face.available, false, "a set without faces offers no switch");
+});
+
+test("a looping emote wraps on the scaled clock and stays in front", async () => {
+  stubFetch();
+  const { body } = rig();
+  const animator = new RigAnimator(manifest, "clips/", { loopEmote: true, speed: 2 });
+  await animator.play(body, "idle");
+  await animator.play(body, "wave");
+  step(animator, 0.75); // 1.5 s of a 1 s clip at 2x
+  assert.equal(animator.state.current, "wave");
+  assert.ok(Math.abs(animator.timeline()!.time - 0.5) < 1e-6, `wrapped to 0.5 s (${animator.timeline()!.time})`);
+});

@@ -14,14 +14,27 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
-    id: "2026-11-17-chinals-emote-sounds",
-    date: "2026-11-17",
+    id: "2026-11-21-chinals-emote-sounds",
+    date: "2026-11-21",
     title: "Chinals emote sounds",
     notes: [
       "In Chinals mode, the emotes now play their own sound effects and music too, in time with the animation. 43 of the 45 have sound; the other two are silent in the game too. The speaker button and volume slider work as they do for the other emotes.",
       "A few Chinals emote props now look right: two guns that came apart are whole again, guns that lay on the floor are held, and a prop shown too small is back to its full size.",
     ],
-    items: ["emote-effects"],
+    items: ["chinals-emotes", "emote-effects"],
+  },
+  {
+    id: "2026-11-15-faces-lighting-chinals",
+    date: "2026-11-15",
+    title: "Faces that move, your own lighting, Chinals emotes",
+    notes: [
+      "Faces now move in idles and emotes, from the game's own animation: blinks, glances, brows, jaw and expressions. Beards, balaclavas and scarves follow the face, and masks and helmets soften it where the game does.",
+      "A new Lighting panel. Start from Studio, Lobby or one of four sun looks, then change each light's colour, brightness and direction, add lights, pick a solid or gradient backdrop and turn on a floor shadow. Your own looks can be saved.",
+      "Pick a body type: Masculine or Androgynous. Saved outfits and share links keep it. Feminine follows once the Season 12 clothing has been refitted.",
+      "Chinals mode plays the 45 emotes of 终极角逐, THE FINALS as published in mainland China, on your outfit. Switch with Global | Chinals at the top. Emotes without an English name show the Chinese name with this site's unofficial translation.",
+      "Emote props sit where the game puts them: thrones, tables, brooms and turrets are no longer turned, buried or oversized. Emotes can also loop.",
+    ],
+    items: ["idle-emotes", "lighting-backdrops", "default-lighting", "light-heavy", "chinals-emotes", "emote-effects"],
   },
   {
     id: "2026-11-15-emote-sounds",
@@ -41,7 +54,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     notes: [
       "The 3D view now fills the window. The item picker is a drawer you open and close from the Items tab at its edge; on a phone held upright it is a sheet under the character that you tap or swipe. It stays the way you left it.",
       "Press H to hide every control and the mouse pointer for a clean view. H, Esc or a double-click brings them back. On a phone, tap the eye button, then double-tap to return.",
-      "Save a screenshot as a PNG from the camera button: on its backdrop, or with a transparent background to lay over anything. The lighting is the same as on screen, at up to three times the view's size.",
+      "Save a screenshot as a PNG from the camera button, or copy it to paste straight into a chat: on its backdrop, or with a transparent background to lay over anything. The lighting is the same as on screen, at up to three times the view's size.",
       "Fixed: earrings and Laugh Trigger stopped the preview loading with many faces other than Face 01. A few of them can only be placed on Face 01 for now and say so on other faces.",
     ],
     items: ["faster-builder"],
