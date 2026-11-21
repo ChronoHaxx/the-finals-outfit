@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { buildShareUrl } from "../lib/share-url";
 import { withoutPose } from "../lib/share-pose";
@@ -6,12 +6,16 @@ import { builderPath, chinalsAvailable, hashSearch, modeOfPath, roadmapPath, typ
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { useBuildStore } from "../store/useBuildStore";
 import { useIntroStore } from "../store/useIntroStore";
+import { useGuideStore } from "../store/useGuideStore";
+import { useHint } from "../lib/hints";
+import { GUIDE_HINTS } from "../data/feature-guide";
 import CatalogUpdateNote from "./CatalogUpdateNote";
-import { GitHubIcon, HangerIcon, NotesIcon } from "./Icons";
+import { HintTag } from "./HintTag";
+import { GitHubIcon, GuideIcon, HangerIcon, NotesIcon } from "./Icons";
 
 export const REPOSITORY_URL = "https://github.com/ChronoHaxx/the-finals-outfit";
 
-const navItem = "flex h-8 items-center gap-1.5 px-2.5 hud text-fg-muted transition-colors hover:text-fg aria-[current=page]:text-fg";
+const navItem = "flex h-8 items-center gap-1.5 px-2.5 max-sm:px-2 hud text-fg-muted transition-colors hover:text-fg aria-[current=page]:text-fg";
 
 function Wordmark() {
   return <span className="flex items-center gap-2.5">
@@ -52,9 +56,12 @@ export default function TopBar({ page }: { page: "builder" | "roadmap" }) {
         </button>
         <Link to={page === "builder" ? `${roadmapPath(mode)}${query}` : { pathname: roadmapPath(mode), search: location.search }}
           aria-current={page === "roadmap" ? "page" : undefined} className={navItem}>Roadmap</Link>
-        <a href={REPOSITORY_URL} target="_blank" rel="noreferrer" aria-label="GitHub repository" className={navItem}>
+        {/* Phones: the Guide button needs the room, so the repository link waits for a wider screen (Report issue still
+            leads to GitHub). */}
+        <a href={REPOSITORY_URL} target="_blank" rel="noreferrer" aria-label="GitHub repository" className={`${navItem} max-sm:hidden`}>
           <GitHubIcon size={16} />
         </a>
+        <GuideButton tip={page === "builder"} />
       </nav>
     </header>
     {/* Phones: the header has no room, so the switch gets a row of its own (only where the mode exists). */}
@@ -63,6 +70,35 @@ export default function TopBar({ page }: { page: "builder" | "roadmap" }) {
       <ModeSwitch mode={mode} />
     </div>}
   </>;
+}
+
+// The "What you can do" guide (FeatureGuide.tsx), last in the row so its one-time tip can hang under it at the
+// window's right edge on any width. The tip is for visitors who never opened the guide: shown once on the builder,
+// after the welcome screen has closed, and gone for good once closed, used, or left for 20 s.
+function GuideButton({ tip }: { tip: boolean }) {
+  const showGuide = useGuideStore(state => state.show);
+  const guideOpen = useGuideStore(state => state.open);
+  const introOpen = useIntroStore(state => state.open);
+  const [pending] = useHint("guide");
+  const clear = tip && pending && !introOpen && !guideOpen;
+  // A beat after the welcome screen goes, so the tip arrives on its own rather than in the dialog's fade.
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (!clear) { setReady(false); return; }
+    const timer = window.setTimeout(() => setReady(true), 1500);
+    return () => window.clearTimeout(timer);
+  }, [clear]);
+  return <div className="relative">
+    <button type="button" onClick={showGuide} aria-haspopup="dialog" title="What you can do (?)" className={navItem}>
+      <GuideIcon size={15} /><span className="max-sm:sr-only">Guide</span>
+    </button>
+    {clear && ready && <div className="absolute right-0 top-[calc(100%+10px)] z-40 w-[min(21rem,calc(100vw-1.5rem))]">
+      <span aria-hidden="true" className="absolute -top-1.5 right-4 size-3 rotate-45 bg-ink-950/95" />
+      <HintTag id="guide" autoHideMs={20_000} action={{ label: "Show me", onClick: showGuide }}>
+        {GUIDE_HINTS.guide}
+      </HintTag>
+    </div>}
+  </div>;
 }
 
 // Global | 终极角逐 Chinals (lib/site-mode.ts). It changes the route only: the outfit, the saved outfits and an unsaved
