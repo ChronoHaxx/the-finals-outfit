@@ -75,8 +75,30 @@ Trace on the live site (`early-stop-trace.mjs`, page seconds; `__rigIdle` is the
 node _docs/emote-early-stop-2026-11-21/prod-build.mjs                    # build to scripts/generated/emote-early-stop-2026-11-21/prod/dist
 node _docs/emote-early-stop-2026-11-21/early-stop-probe.mjs "Valkyria"   # clip in front every 0.5 s after a quick click
 node _docs/emote-early-stop-2026-11-21/early-stop-trace.mjs "Valkyria"   # who calls play()/playUnder(), and when
+node _docs/emote-early-stop-2026-11-21/prod-build.mjs --anim=https://fd946744.the-finals-outfit-assets.pages.dev/   # PR #62's emotes
+SHOTS=1 RUNS=4 node _docs/emote-early-stop-2026-11-21/back-to-back-trace.mjs "Coop Caper" "Gimme Five"   # every clip switch, with stacks
 APP_URL=https://chronohaxx.github.io/the-finals-outfit/ node _docs/emote-early-stop-2026-11-21/early-stop-trace.mjs "Valkyria"   # the live site
 ```
+
+## A later stop, reported once, not reproduced
+
+PR #62's agent checks (`_docs/all-emotes-2026-11-21/user-steps.mjs`, its production build on port 4355) saw Gimme
+Five go back to the idle at 1.49/5.67 s about 30 s after load, once in three runs: Coop Caper played to its end, then
+Gimme Five was clicked straight away. That run's record was overwritten (the two saved runs passed, the idle already
+running at step 1).
+
+`back-to-back-trace.mjs` repeats that sequence on fresh pages and logs every clip switch inside the page (play, stop,
+leaveEmote, openPose, playUnder, reset, returnFromEmote, the mixer's `finished` events, each change of the clip in
+front) with call stacks. 0 early stops in 18 runs on 21 Nov:
+- 8 on this branch built against PR #62's animations host (`prod-build.mjs --anim=https://fd946744.the-finals-outfit-assets.pages.dev/`),
+  4 of them with screenshots at user-steps.mjs's moments (the reported stop was at 1.49 s, the screenshot at 1.5 s);
+- 6 on PR #62's own build (port 4355), with those screenshots;
+- 4 running user-steps.mjs's exact steps 1-3 on PR #62's build, with the same logging.
+
+In the code, an emote in front goes back to the idle only through the first-motion effect (the race fixed here; it
+runs once unless a share link's pose arrives), a mixer `finished` event for that emote (three fires it only when the
+clip's time reaches its end), or the viewer's own input (picker, Animate button, the timeline's close). If it shows up
+again, run `back-to-back-trace.mjs` (or add its `instrument()` to the failing script): the log names which one.
 
 ## Not changed here
 
