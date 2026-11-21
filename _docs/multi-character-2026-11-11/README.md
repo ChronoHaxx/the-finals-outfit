@@ -4,18 +4,29 @@ The request (11 Nov): "maybe the whole add more characters blender/3d editor mod
 one scene, each with its own outfit, emote and pose, plus an editor mode: select a character, move and rotate it with
 a gizmo, set each one's emote and time, frame the camera. Group shots and dioramas.
 
-This is a design only. Nothing is implemented yet.
+Design first. Phase 1 (groundwork that changes nothing on screen, plus two fixes) is implemented; see Progress.
 
 **Decision (11 Nov 2026, the user): "Recommended MVP".** Read as the MVP below with its stated defaults: a separate
 Scene page, 3 characters on desktop / 2 on phones, characters hold a copy of their outfit, floor-only gizmo, links
-and Save image before the Worker card. Still open: which learning parts the user builds (decision 7).
+and Save image before the Worker card. Decision 7, for Phase 1's learning parts (1.4, 1.5): "You build them". The
+later learning parts have not been asked yet.
 
-**Progress (branch `claude/multi-character-design-2026-11-11`, local commits, not pushed):**
+**Progress (branch `claude/multi-character-2026-11-21`, from main b2e9c14; local commits, not pushed; the first
+branch `claude/multi-character-design-2026-11-11` is kept as a backup):**
 - Phase 0 on desktop: done (measurements, CPU profile, turned-character check, Fable review).
-- 1.1 outfit pass moved to `src/rig/OutfitPass.ts` (d555077): no structural difference over 12 scripted edits.
-- 1.3 shared loader + injectable clip cache (a75a123); emote-prop templates deferred to Phase 2.
-- Next: 1.2 (animation bookkeeping out of `AnimationControls`). 1.4 (per-frame CPU) and 1.5 (head-static placement)
-  are in the user's learning area and wait for decision 7.
+- Phase 1: done. Every step passed the still probe (14 scripted edits) and, from 1.2, the posed probe (3 paused pose
+  links) with no structural difference (`phase1-equivalence.mjs`).
+  - 1.1 + 1.3 (36fe44a): the outfit pass lives in `src/rig/OutfitPass.ts`; one shared glTF loader; injectable clip
+    cache. Emote-prop templates deferred to Phase 2.
+  - 1.2 (0bd4945): per-character animation bookkeeping in `src/components/useAnimationBinding.ts`.
+  - 1.4 (f6ffa83): `src/rig/SkeletonUpdateMemo.ts` skips repeated bone-matrix updates; the still view records each
+    bone once per capture. Busy JS per frame with the idle playing: 12.43 → 4.34 ms with one character, 62.88 →
+    17.31 ms with four (`profile-before14.json`, `profile-after14.json`).
+  - 1.5 (755df5b): head statics socketed from rest frames; also fixed an earring swapped in mid-emote landing on the
+    head bone (real app, legacy mode: 7.4 cm off; `head-static-swap.mjs --legacy`).
+- The cap stays at 3: four characters still cost about 17 ms of JS a frame before any GPU time.
+- Next: Phase 2 (two characters on `#/scene` behind a flag). Open: the cel family's turn non-invariance (before
+  Phase 3).
 
 ## TLDR
 
@@ -337,9 +348,9 @@ interface SceneCharacter {
 | --- | --- | --- |
 | Saved outfits overwritten from scene mode | autosave watches the global build | `BuildTarget` injection; a test that scene edits never change `useBuildStore` |
 | Refactor changes the builder | the outfit effect has years of edge cases (face/hair transactions, conflicts, companions) and its diff is path-dependent | Phase 1 moves the body verbatim and keeps the React effect; `phase1-equivalence.mjs` records the rig's structure after each of 12 scripted edits before and after (baseline recorded 11 Nov) |
-| Statics misplaced on a turned character | `CharacterRig.ts:832-842` mixes a detached mesh matrix with a placed, posed bone | Socket from rest matrices in rig space; a test equips every head-static kind under a turned placement (and mid-emote) and compares rig-space matrices with an equip at the origin |
+| Statics misplaced on a turned character | `CharacterRig.ts:832-842` mixes a detached mesh matrix with a placed, posed bone | Socket from rest matrices in rig space; a test equips every head-static kind under a turned placement (and mid-emote) and compares rig-space matrices with an equip at the origin. **Done in 1.5** (`tests/rig/head-static-placement.test.ts`) |
 | GPU memory on phones | linear per character; context loss already handled by remounting | Cap per device class, load characters one at a time, measure in Phase 0, reload sequentially after a context loss |
-| Frame time | CPU: `Skeleton.update` per `render()` call and per-mesh bone walks in the still-view capture (profiled) | update skeletons once per frame; capture each bone once; re-profile before raising the cap |
+| Frame time | CPU: `Skeleton.update` per `render()` call and per-mesh bone walks in the still-view capture (profiled) | update skeletons once per frame; capture each bone once; re-profile before raising the cap. **Done in 1.4**: four characters 62.9 → 17.3 ms of JS a frame; the cap stays 3 |
 | Shadows cut off | fixed ±1.4 m frustum at the origin | fit the key light's frustum and the contact-shadow plane to the group's bounds on release, not mid-drag (a refit resets the still view) |
 | Springs flung | world-space spring simulation | reset springs on any non-drag placement change (load, undo, snap) |
 | Cel items turned | a world-fixed term in the cel family (measured) | identify the pin before Phase 3; until then a turned cel contestant may shade darker |
