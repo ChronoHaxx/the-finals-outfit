@@ -12,7 +12,8 @@
 // assemblies, whose attachment placement already works from rest frames (a control).
 //
 // Usage (Git Bash, worktree root, dev server running: node _docs/multi-character-2026-11-11/serve-5186.mjs):
-//   node _docs/multi-character-2026-11-11/head-static-swap.mjs [--legacy]
+//   node _docs/multi-character-2026-11-11/head-static-swap.mjs [--legacy] [--shot=<png>]
+// --shot frames the left ear (dev ?cam=) in case A and saves the settled canvas after the emote stops.
 import { chromium } from "playwright-core";
 
 const BASE = process.env.PROBE_BASE ?? "http://127.0.0.1:5186";
@@ -23,6 +24,8 @@ const MODE = LEGACY ? "" : "reconstructed=1&";
 // (The round sunglasses and the ancient mask have no legacy model: legacy mode leaves them off.)
 const ADDED = { earrings: "bodycosmetics-earrings-bullet-01" };
 const IDS = Object.values(ADDED);
+const SHOT = process.argv.find(arg => arg.startsWith("--shot="))?.slice(7);
+const CAM = SHOT ? "&cam=0.45,1.7,0.25,0.03,1.66,-0.01" : "";
 const outfitCode = (slots) => "1." + Buffer.from(JSON.stringify({ slots })).toString("base64")
   .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
@@ -66,7 +69,7 @@ async function equipEarrings(page) {
 
 const browser = await chromium.launch({ channel: process.env.PROBE_CHANNEL ?? "chrome", headless: true });
 // A: equipped mid-emote, then the emote stops.
-const a = await open(browser, `${BASE}/?${MODE}outfit=${outfitCode(BASE_SLOTS)}&emote=ace-pilot&t=2&paused=1`);
+const a = await open(browser, `${BASE}/?${MODE}outfit=${outfitCode(BASE_SLOTS)}&emote=ace-pilot&t=2&paused=1${CAM}`);
 await a.waitForFunction(() => { const s = window.__rigAnim.state(); return s.current === "ace-pilot" && s.paused && !s.loading; }, null, { timeout: 120000 });
 await a.waitForTimeout(1500);
 await equipEarrings(a);
@@ -75,6 +78,11 @@ await a.evaluate(() => window.__rigAnim.stop());
 await a.waitForFunction(() => !window.__rigAnim.state().active, null, { timeout: 60000 });
 await a.waitForTimeout(1500);
 const afterStop = await a.evaluate(READ, IDS);
+if (SHOT) {
+  await a.waitForFunction(() => { const s = window.__temporalPreview; return !s || s.samples >= s.maxSamples; }, null, { timeout: 120000 });
+  await a.waitForTimeout(500);
+  await a.locator("[data-viewer] canvas").screenshot({ path: SHOT });
+}
 // B: equipped at rest.
 const b = await open(browser, `${BASE}/?${MODE}outfit=${outfitCode(BASE_SLOTS)}`);
 await b.evaluate(() => window.__rigAnim.stop());
