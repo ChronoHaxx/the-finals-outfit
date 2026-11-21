@@ -1,0 +1,113 @@
+{
+  "anim": "https://fd946744.the-finals-outfit-assets.pages.dev/",
+  "chinals": "https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/",
+  "checks": {
+    "manifest": {
+      "clips": 304,
+      "emotes": 295,
+      "wave": "What's Up?",
+      "tapDance": "emote"
+    },
+    "globalPicker": {
+      "tab": "EMOTES 295",
+      "sections": [
+        {
+          "title": "Season 12",
+          "tiles": 14
+        },
+        {
+          "title": "Season 11",
+          "tiles": 15
+        },
+        {
+          "title": "Season 10",
+          "tiles": 20
+        },
+        {
+          "title": "Season 9",
+          "tiles": 17
+        },
+        {
+          "title": "Season 8",
+          "tiles": 71
+        },
+        {
+          "title": "Season 7",
+          "tiles": 21
+        },
+        {
+          "title": "Season 6",
+          "tiles": 18
+        },
+        {
+          "title": "Season 5",
+          "tiles": 24
+        },
+        {
+          "title": "Season 4",
+          "tiles": 19
+        },
+        {
+          "title": "Season 3",
+          "tiles": 19
+        },
+        {
+          "title": "Season 2",
+          "tiles": 16
+        },
+        {
+          "title": "Season 1",
+          "tiles": 41
+        }
+      ]
+    },
+    "waveLink": {
+      "current": "wave",
+      "label": "What's Up?"
+    },
+    "coopCaper": {
+      "current": "fox-chicken",
+      "paused": true
+    },
+    "gimmeFive": {
+      "current": "high-five",
+      "paused": true
+    },
+    "makeItRain": {
+      "current": "make-it-rain",
+      "paused": true
+    },
+    "chinalsPicker": {
+      "tab": "EMOTES 45",
+      "sections": [
+        {
+          "title": "Chinals emotes",
+          "tiles": 40
+        },
+        {
+          "title": "Uncategorised",
+          "tiles": 5
+        }
+      ]
+    },
+    "footer": "The game's emote animations on your outfit, with their props, sound and facial animation. Effects are not shown yet.",
+    "clickPlayed": {
+      "clip": "fox-chicken",
+      "reached": 7.45,
+      "audioRunning": true,
+      "thenIdle": true
+    },
+    "hostedRequests": {
+      "props10": 5,
+      "faces2": 12,
+      "sounds2": [
+        "200 sounds-2/sounds.json",
+        "200 sounds-2/Emotes_FrontEnd_FoxChicken_01.m4a"
+      ],
+      "set6": 145
+    }
+  },
+  "non200": [],
+  "errors": [],
+  "ok": true
+}

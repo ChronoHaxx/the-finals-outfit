@@ -104,6 +104,12 @@ export function missingBadge(info: ClipInfo, props?: PropsView): string | null {
   return null;
 }
 
+/** "a", "a and b", "a, b and c" (falsy entries skipped). */
+function andList(parts: readonly (string | false | null | undefined)[]): string {
+  const list = parts.filter((part): part is string => Boolean(part));
+  return list.length < 2 ? list.join("") : `${list.slice(0, -1).join(", ")} and ${list[list.length - 1]}`;
+}
+
 /** Whether an emote has its own UI icon. A few Chinals emotes name the store's generic emote card
  *  (T_UI_Icon_General_Emote) instead of their own; they, and any emote with no icon, go under "Uncategorised". */
 export function hasOwnIcon(clip: ClipInfo): boolean {
@@ -292,7 +298,8 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
           </p>
         </> : <p className="text-[11px] leading-snug text-fg-dim">
           {chinals ? "Chinals emotes on your outfit (global cosmetics)" : "The game's emote animations on your outfit"}, with
-          their props{animator.sounds.available ? " and sound" : ""}. Effects and facial expressions are not shown yet.
+          {" "}{andList(["their props", animator.sounds.available && "sound", animator.face.available && "facial animation"])}.
+          Effects are not shown yet.
         </p>}
       </div>
     </div>

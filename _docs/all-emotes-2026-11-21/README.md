@@ -1,7 +1,8 @@
-# Every emote in the picker (21 Nov 2026, in progress)
+# Every emote in the picker (21 Nov 2026)
 
 Shocka's feedback item 1 (`_docs/feedback-shocka-2026-11/README.md`). Branch `claude/all-emotes-2026-11-21` off main
-0951e1b. Outputs are in this worktree's gitignored `scripts/generated/all-emotes-2026-11-21/`. Nothing is uploaded.
+0951e1b; PR #62. Outputs are in this worktree's gitignored `scripts/generated/all-emotes-2026-11-21/`. The animations
+host `fd946744` is uploaded (below); the live site uses it once the PR merges.
 
 ## Why Seasons 1-2 were missing
 
@@ -56,18 +57,26 @@ an animation, 61 missing.
 
 Note: BP_Emote_FoxChicken_Prop is 5.9 MB (its plushie animation is stored at 1920 fps); left as the game stores it.
 
-## Staged deployment (not uploaded)
+## Animations host `fd946744` (uploaded 21 Nov, on the owner's yes)
 
-`upload/anim-20261121a` (`stage-superset.mjs`): every file of the live host 17ec92c3 at its path, byte for byte, plus
-`set-6/` (set-5 + 59 clips + 66 icons), `props-10/` (props-9 + 50 GLBs), `faces-2/` and `sounds-2/`; the manifest
-points at them. 2,587 files, **323 new (35.4 MB)**; the rest dedupe on upload. 304 clips: the 7 live "unlisted"
+Staged as `upload/anim-20261121a` (`stage-superset.mjs`): every file of the live host 17ec92c3 at its path, byte for
+byte, plus `set-6/` (set-5 + 59 clips + 66 icons), `props-10/` (props-9 + 50 GLBs), `faces-2/` and `sounds-2/`; the
+manifest points at them. 2,587 files; staging counted 323 new paths (35.4 MB). 304 clips: the 7 live "unlisted"
 entries became named emotes (ids kept) and 59 were appended. Live wins every overlap; one differs and keeps the live
 copy (`BP_Emote_LeanOnWall_Prop.glb`, shared with a live emote).
 
 Checked first: the live host 17ec92c3 equals `reverent-cannon-ce6e39/.../upload/anim-20261115e` (1132/1132,
-`upload/verify-live-17ec92c3-vs-15e.json`), not `anim-20261112c` as the brief said. After an upload: run
-`verify-hosted.mjs` against the new host, bump `ANIMATIONS_BASE` in `deploy.yml`, and re-run the checklist on a
-production build.
+`upload/verify-live-17ec92c3-vs-15e.json`), not `anim-20261112c` as the brief said.
+
+- **Upload:** wrangler 4.131.1 `pages deploy` to `the-finals-outfit-assets`, alias `anim-1121-all-emotes`. Cloudflare
+  stored 326 files and found 2,260 already stored (it counts by content, not path)
+  ([upload-anim.txt](upload-anim.txt)).
+- **Verified** ([deployment-anim-fd946744.json](deployment-anim-fd946744.json), `verify-hosted.mjs`): all 2,586 files
+  byte-identical to staging (`_headers` is applied, not served); `.glb` as `model/gltf-binary` and `.m4a` as
+  `audio/mp4`, CORS `*`, immutable caching; a missing file returns 404.
+- **`deploy.yml`:** `ANIMATIONS_BASE` is now `https://fd946744.the-finals-outfit-assets.pages.dev/`; rollback
+  17ec92c3. The live site changes only when this PR merges.
+- **Production build** ([prod-check.json](prod-check.json), `prod-check.mjs`): see Verification.
 
 ## Picker
 
@@ -87,5 +96,24 @@ then **Uncategorised** for emotes without an icon of their own (none, or the sto
 - Preview trap: the dev server needs `VITE_RECONSTRUCTION_ROUTES_FILE=src/data/reconstruction-routes.json` and the
   asset hosts from `deploy.yml`, or the outfit fails ("Skin pair requires its preserved fitted body"). The root
   checkout's `public/models/body` was mid-rewrite by another session, so models come from the live hosts.
+- **Production build against `fd946744`** (`prod-check.mjs`, [prod-check.json](prod-check.json), `ok: true`): built with
+  `deploy.yml`'s settings and served at `/the-finals-outfit/`. Emotes 295 with Season 2 · 16 and Season 1 · 41; the old
+  link `?anim=wave` opens What's Up?; Coop Caper, Gimme Five and Make It Rain hold with their props (`props-10/`) and
+  face curves (`faces-2/`); Chinals mode (production host dcb131a5) ends with Uncategorised · 5. As a visitor
+  (automation masked, a real click), Coop Caper plays to 7.45 s of 7.67 with its sound (`sounds-2/` 200, audio
+  running), then returns to the idle. No failed request to either host, no page error. Screenshots in
+  `scripts/generated/all-emotes-2026-11-21/prod/` (gitignored), checked by eye.
+- **Picker footer fixed:** it still said "Effects and facial expressions are not shown yet", though facial animation
+  shipped on 12 Nov (PR #48). It now lists what plays: "with their props, sound and facial animation. Effects are not
+  shown yet." (sound and facial animation only where the host has them; `FaceAnimator.available`).
+
+## Found in passing, not fixed here: an emote picked in the first seconds stops early
+
+As a visitor (the app's automation flag masked), an emote clicked within a few seconds of the controls enabling plays
+about 1.5-2 s, then snaps back to the idle. After a 20 s wait the same emotes play to their end. Seen on this branch's
+build and on the live site (Valkyria's Embrace, live since 6 Nov), so it predates this change. Under automation (no
+idle autoplay, no sound) it does not happen. Measured in headless Chrome only
+([early-stop-probe.mjs](early-stop-probe.mjs)); not yet confirmed by hand. The visitor path differs by the idle autoplay, sound, the welcome dialog and stored
+preferences, so the cause is likely something that finishes loading and restarts the idle.
 
 User checks: [functional-checklist.md](functional-checklist.md).
