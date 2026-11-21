@@ -11,6 +11,9 @@ export class StableFrameState {
   private materials = new Set<THREE.Material>();
   private textures = new Set<THREE.Texture>();
   private geometries = new Set<THREE.BufferGeometry>();
+  // Per capture: bones already recorded, and which objects sit under the captured scene (memoised up the parent chain).
+  private bones = new Set<THREE.Object3D>();
+  private inScene = new Map<THREE.Object3D, boolean>();
   private masked = false;
   // A visible recovered additive (M_FloatingHologram) material: its One/One blend is exact only in the linear HDR
   // accumulation target, where tone mapping follows blending. Not a recorded input; derived from the materials visited.
@@ -39,6 +42,15 @@ export class StableFrameState {
       }
     }
     this.values[this.cursor++] = value;
+  }
+
+  private underScene(object: THREE.Object3D, scene: THREE.Scene): boolean {
+    let known = this.inScene.get(object);
+    if (known === undefined) {
+      known = object === scene || (object.parent !== null && this.underScene(object.parent, scene));
+      this.inScene.set(object, known);
+    }
+    return known;
   }
 
   private transform(matrix: THREE.Matrix4) {
@@ -100,7 +112,7 @@ export class StableFrameState {
 
   capture(scene: THREE.Scene, camera: THREE.Camera, renderer: THREE.WebGLRenderer, samplingCamera = camera as Pick<THREE.Camera, 'matrixWorld' | 'projectionMatrix'>) {
     this.cursor = 0; this.reason = ''; this.masked = false; this.additive = false; this.onlyTransforms = true; this.firstOther = '';
-    this.materials.clear(); this.textures.clear(); this.geometries.clear();
+    this.materials.clear(); this.textures.clear(); this.geometries.clear(); this.bones.clear(); this.inScene.clear();
     scene.updateMatrixWorld(true); camera.updateMatrixWorld(true);
     this.category = 'camera';
     this.add(camera); this.transform(samplingCamera.matrixWorld); this.transform(samplingCamera.projectionMatrix); this.add(camera.layers.mask);
@@ -154,7 +166,18 @@ export class StableFrameState {
           this.add(object.skeleton); this.transform(object.bindMatrix); this.transform(object.bindMatrixInverse);
           // Bones can live outside the rendered subtree. Their transforms still
           // determine the skinning even when the mesh itself is stationary.
-          for (const bone of object.skeleton.bones) { bone.updateWorldMatrix(true, false); this.transform(bone.matrixWorld); }
+          // (21 Nov 2026, multi-character Phase 1.4) Every cosmetic's skeleton is bound to the body's bones, so the same
+          // bones came round once per skinned mesh, each refreshed by a walk up its parents: the largest part of a capture
+          // with several characters. Each bone is now recorded once per capture, at the first mesh that uses it (the
+          // traversal order is fixed, so any bone change still changes the same recorded value), and only a bone outside
+          // the scene is refreshed: scene.updateMatrixWorld(true) above already refreshed every bone inside it, with the
+          // same arithmetic.
+          for (const bone of object.skeleton.bones) {
+            if (this.bones.has(bone)) continue;
+            this.bones.add(bone);
+            if (!this.underScene(bone, scene)) bone.updateWorldMatrix(true, false);
+            this.transform(bone.matrixWorld);
+          }
           for (const inverse of object.skeleton.boneInverses) this.value(inverse);
         }
         if (object instanceof THREE.InstancedMesh) {
@@ -199,7 +222,7 @@ export class StableFrameState {
     }
   }
 
-  clear() { this.values.length = 0; this.materials.clear(); this.textures.clear(); this.geometries.clear(); }
+  clear() { this.values.length = 0; this.materials.clear(); this.textures.clear(); this.geometries.clear(); this.bones.clear(); this.inScene.clear(); }
 }
 
 /** The materials three's renderer draws one side at a time, setting needsUpdate around each side: double-sided and

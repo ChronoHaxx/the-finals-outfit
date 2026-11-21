@@ -16,8 +16,13 @@ import { multiplySourceMatrices, type SourceMatrix } from "./SourceTransform";
 import { LEGACY_EQUIVALENT_HEAD_BASELINE, type SourceRigPart, type SourceSkinPair, type SourceSkinPart } from "./SourceAssembly";
 import { applyHeadWrap, bindHeadWrap, headWrapInputs, type HeadWrapBinding, type HeadWrapData } from "./HeadWrap";
 import type { CageDisplace, FaceWrapPart } from "./FaceWrap";
+import { installSkeletonUpdateMemo } from "./SkeletonUpdateMemo";
 
 export type { RigDecal } from "./BodyDecals";
+
+// Every page that renders rigs imports this module: skip three's repeated bone-matrix updates within a frame
+// (SkeletonUpdateMemo.ts; content-checked, so nothing on screen changes).
+installSkeletonUpdateMemo();
 
 // Framework-agnostic three.js rig: loads a base body, then equips/unequips cosmetic
 // glTFs by rebinding each cosmetic SkinnedMesh to the body's shared skeleton. No React.
