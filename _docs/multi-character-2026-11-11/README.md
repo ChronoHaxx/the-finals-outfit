@@ -11,18 +11,18 @@ Scene page, 3 characters on desktop / 2 on phones, characters hold a copy of the
 and Save image before the Worker card. Decision 7, for Phase 1's learning parts (1.4, 1.5): "You build them". The
 later learning parts have not been asked yet.
 
-**Progress (branch `claude/multi-character-2026-11-21`, from main b2e9c14; local commits, not pushed; the first
+**Progress (branch `claude/multi-character-2026-11-21`, rebased on main a2c6019, draft PR; the first
 branch `claude/multi-character-design-2026-11-11` is kept as a backup):**
 - Phase 0 on desktop: done (measurements, CPU profile, turned-character check, Fable review).
 - Phase 1: done. Every step passed the still probe (14 scripted edits) and, from 1.2, the posed probe (3 paused pose
   links) with no structural difference (`phase1-equivalence.mjs`).
-  - 1.1 + 1.3 (36fe44a): the outfit pass lives in `src/rig/OutfitPass.ts`; one shared glTF loader; injectable clip
+  - 1.1 + 1.3 (1e1efa1): the outfit pass lives in `src/rig/OutfitPass.ts`; one shared glTF loader; injectable clip
     cache. Emote-prop templates deferred to Phase 2.
-  - 1.2 (0bd4945): per-character animation bookkeeping in `src/components/useAnimationBinding.ts`.
-  - 1.4 (f6ffa83): `src/rig/SkeletonUpdateMemo.ts` skips repeated bone-matrix updates; the still view records each
-    bone once per capture. Busy JS per frame with the idle playing: 12.43 → 4.34 ms with one character, 62.88 →
+  - 1.2 (902387c): per-character animation bookkeeping in `src/components/useAnimationBinding.ts`.
+  - 1.4 (the code reached main through PR #64, 8bb5c5d; evidence 35d4b4f): `src/rig/SkeletonUpdateMemo.ts` skips
+    repeated bone-matrix updates; the still view records each bone once per capture. Busy JS per frame with the idle playing: 12.43 → 4.34 ms with one character, 62.88 →
     17.31 ms with four (`profile-before14.json`, `profile-after14.json`).
-  - 1.5 (755df5b): head statics socketed from rest frames; also fixed an earring swapped in mid-emote landing on the
+  - 1.5 (214991e): head statics socketed from rest frames; also fixed an earring swapped in mid-emote landing on the
     head bone (real app, legacy mode: 7.4 cm off; `head-static-swap.mjs --legacy`).
 - The cap stays at 3: four characters still cost about 17 ms of JS a frame before any GPU time.
 - Next: Phase 2 (two characters on `#/scene` behind a flag). Open: the cel family's turn non-invariance (before
