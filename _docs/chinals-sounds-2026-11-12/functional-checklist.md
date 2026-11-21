@@ -7,15 +7,15 @@ never leaves a sound playing or doubles one.
 
 - **PR / originating issue:** PR #51 on branch `claude/chinals-emote-sounds-2026-11-12`. Against main it changes only
   the Chinals host line, this record, the patch note and the roadmap review: the sound code came to main with PR #47.
-- **Test this revision:** `6df715b` on `claude/chinals-emote-sounds-2026-11-12` (or any later docs-only commit), with
+- **Test this revision:** `cd8469f` on `claude/chinals-emote-sounds-2026-11-12` (or any later docs-only commit), with
   both published hosts: Chinals `https://59209741.the-finals-outfit-chinals-assets.pages.dev/` (props-3 + sounds) and
-  global `https://17ec92c3.the-finals-outfit-assets.pages.dev/` (live since PR #47).
+  global `https://fd946744.the-finals-outfit-assets.pages.dev/` (live since PR #62, all 295 emotes).
 - **Open:** http://127.0.0.1:5192/#/chinals from the local preview below.
 - **Prerequisites:** headphones or speakers; desktop Chrome, Edge or Firefox.
 - **Approximate hands-on time:** 10 minutes.
 - **Agent checks:**
   - Unit tests 25/25 for the sound code (10 resolver, 15 player).
-  - `npm test` 925 pass, 8 fail, 5 skipped at 6df715b. The 8 are pre-existing and need game GLBs this worktree lacks.
+  - `npm test` 927 pass, 8 fail, 5 skipped at cd8469f. The 8 are pre-existing and need game GLBs this worktree lacks.
   - `npm run build` passes, with its roadmap and public-text checks.
   - Chrome 12/12 in the scripted browser check, both on the local set ([check-chrome.json](check-chrome.json)) and with
     the app reading the published host ([check-chrome-hosted.json](check-chrome-hosted.json), last run at 1b5a50e):
@@ -37,7 +37,7 @@ mkdir -p scripts/generated/chinals-sounds-2026-11-12/empty-set
 ```
 
 ```bash
-VITE_CHINALS_ANIMATIONS_BASE=https://59209741.the-finals-outfit-chinals-assets.pages.dev/ node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=scripts/generated/chinals-sounds-2026-11-12/empty-set --proxy=https://17ec92c3.the-finals-outfit-assets.pages.dev/ --port=5192
+VITE_CHINALS_ANIMATIONS_BASE=https://59209741.the-finals-outfit-chinals-assets.pages.dev/ node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=scripts/generated/chinals-sounds-2026-11-12/empty-set --proxy=https://fd946744.the-finals-outfit-assets.pages.dev/ --port=5192
 ```
 
 The empty folder plus `--proxy` serves the live global set. The first load can take over 30 seconds. Stop it with
