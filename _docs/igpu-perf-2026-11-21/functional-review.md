@@ -6,8 +6,10 @@ The viewer stops spending most of each frame re-checking the head's skeleton, so
 (MSAA and Off most of all) and looks exactly the same; this catches a slower or changed-looking viewer, or a view that
 no longer settles after you move it.
 
-- PR / originating issue: PR_LINK; `_docs/feedback-shocka-2026-11/README.md`, item 7
-- Test this revision: branch `claude/igpu-perf-2026-11-21`, commit COMMIT
+- PR / originating issue: https://github.com/ChronoHaxx/the-finals-outfit/pull/64;
+  `_docs/feedback-shocka-2026-11/README.md`, item 7
+- Test this revision: branch `claude/igpu-perf-2026-11-21` at its head (code as of c0b75e3; later commits on it
+  are documentation only unless this line says otherwise)
 - Open: a local production build of the branch at http://127.0.0.1:5195/, next to the live site
   https://chronohaxx.github.io/the-finals-outfit/
 - Prerequisites: this worktree (its `node_modules` is already linked); Chrome or Edge; internet (models come from the
