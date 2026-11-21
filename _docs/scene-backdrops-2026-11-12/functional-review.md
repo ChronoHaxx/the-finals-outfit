@@ -17,14 +17,14 @@ The check catches four failures:
 - **PR / origin:** ChronoHaxx/the-finals-outfit#57, from this branch into `main`. On 21 Nov it was rebased onto main,
   which already has #40, #46, #47, #48 and #55. The design is in `README.md` section 8.
 - **Test this revision:** branch `claude/scene-backdrops-p2-2026-11-15`, app code at
-  `1182dc6a0dae5f8a0d0dc162ec6627ba7f2f0291`. Later commits on the branch that touch only `_docs/` leave it the same.
+  `ec6a7cf698bfc8e2237c2cfff9ba007951247cbb`. Later commits on the branch that touch only `_docs/` leave it the same.
 - **Open:** http://127.0.0.1:5243 in Chrome, served from the worktree below.
 - **Prerequisites:**
   - The scene files stream from their pinned host, `scenes-1` (`1d367244`), as the models stream from theirs. You need
     an internet connection; no account is needed.
 - **Approximate hands-on time:** 10 minutes.
 - **Agent checks:** PASS.
-  - **21 Nov, after the rebase and the scenes host pin:**
+  - **21 Nov, after the rebase, the scenes host pin and merging main at 0951e1b (#54, #56):**
     - Typecheck and production build pass.
     - Scene tests: 9 of 9 pass.
     - Full suite: 906 pass. 8 fail only because extracted GLBs (`public/models`) are absent in the worktree.
