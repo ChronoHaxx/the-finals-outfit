@@ -49,7 +49,11 @@ for (const clip of CLIPS) {
     const box = await page.locator("canvas").first().boundingBox();
     for (const f of TIMES) {
       const t = +(f * duration).toFixed(3);
-      await page.evaluate(([id, time]) => window.__rigAnim.play(id, time), [clip, t]);
+      // The body can still be loading when the idle flag is up (first load after a server start): retry for 30 s.
+      for (let attempt = 0; ; attempt++) {
+        try { await page.evaluate(([id, time]) => window.__rigAnim.play(id, time), [clip, t]); break; }
+        catch (error) { if (attempt >= 30 || !/Body not loaded/.test(String(error))) throw error; await page.waitForTimeout(1000); }
+      }
       await converged();
       tiles.push({ view, t, png: await page.screenshot({ clip: box }) });
     }

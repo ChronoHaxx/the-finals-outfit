@@ -35,8 +35,13 @@ an animation, 61 missing.
   the other 277 are global emotes, which global mode lists after this change.
 - Five Chinals emotes use the generic store icon (`T_UI_Icon_General_Emote`): Campus_Left, CLittlePainter_01,
   Gacha_01, PolicePTU, SpaceBotanist. They belong in the Uncategorised group.
-- Floss: no name or description in either build mentions it. Gacha_01 is not it (`sheets-floss/`, hands at chest
-  height). Likely candidate: Street Grooves (`NotEDance`, S1, in both clients). **Not yet checked by eye.**
+- **Floss: no emote in either client is a floss.** No name or description mentions one. A motion scan
+  (`floss-scan.mjs`: both hands on the same side of the hips, switching sides) over all 296 global and 45 Chinals
+  emote clips finds at most 2 side switches per clip; a floss makes 10 or more in a few seconds. Gacha_01 works its
+  hands at chest height (`sheets-floss/`); Street Grooves (`NotEDance`, S1, in both clients) keeps each hand on its own
+  side (`hand-trace.mjs`). Our Chinals client copy is from 29 Oct 2026. So the floss in the store video is another kind
+  of cosmetic (the game also has squad-intro animations, `BP_SquadIntros_*`), or it was added after 29 Oct; checking
+  that needs a newer Chinals pak.
 
 ## Built so far (all byte-checked where possible)
 
@@ -51,16 +56,36 @@ an animation, 61 missing.
 
 Note: BP_Emote_FoxChicken_Prop is 5.9 MB (its plushie animation is stored at 1920 fps); left as the game stores it.
 
-## Next
+## Staged deployment (not uploaded)
 
-1. Merge into a superset of the live host. **The live host 17ec92c3 was uploaded from
-   `reverent-cannon-ce6e39/.../upload/anim-20261115e`, not `anim-20261112c`** (its manifest matches live). Verify it
-   byte for byte against the host first (`verify-hosted.mjs`). New dirs: `set-6` (set-5 + set-new + icons), `props-10`
-   (props-9 + new actors, live entries win), `faces-2`, `sounds-2` (sounds-1 + new keys), manifest with the 66 new clip
-   entries replacing the 8 unlisted ones (same ids).
-2. Picker (`src/components/EmotePicker.tsx`): the in-game emotes group by season; an **Uncategorised** group for emotes
-   without an icon (Chinals generic-icon ones; unlisted animations such as `tap-dance`).
-3. Check in the real app (`serve-preview.mjs`, `?reconstructed=1`): contact sheets (`capture-sheet.mjs`) of the new
-   emotes and props; confirm or rule out the floss.
-4. PR with user checks (`_ops/templates/pr-functional-review.md`); ask the owner to approve the upload (host, size,
-   changes) and decide on the 18 held items; message coordinator local_5cf48e40.
+`upload/anim-20261121a` (`stage-superset.mjs`): every file of the live host 17ec92c3 at its path, byte for byte, plus
+`set-6/` (set-5 + 59 clips + 66 icons), `props-10/` (props-9 + 50 GLBs), `faces-2/` and `sounds-2/`; the manifest
+points at them. 2,587 files, **323 new (35.4 MB)**; the rest dedupe on upload. 304 clips: the 7 live "unlisted"
+entries became named emotes (ids kept) and 59 were appended. Live wins every overlap; one differs and keeps the live
+copy (`BP_Emote_LeanOnWall_Prop.glb`, shared with a live emote).
+
+Checked first: the live host 17ec92c3 equals `reverent-cannon-ce6e39/.../upload/anim-20261115e` (1132/1132,
+`upload/verify-live-17ec92c3-vs-15e.json`), not `anim-20261112c` as the brief said. After an upload: run
+`verify-hosted.mjs` against the new host, bump `ANIMATIONS_BASE` in `deploy.yml`, and re-run the checklist on a
+production build.
+
+## Picker
+
+`emoteGroups()` in `src/components/EmotePicker.tsx`: seasons newest first (now with Seasons 1 and 2), the Chinals set,
+then **Uncategorised** for emotes without an icon of their own (none, or the store's generic card
+`T_UI_Icon_General_Emote`); a tile with no icon says so. Tests: `tests/rig/emote-groups.test.ts`.
+
+## Verification (agent, 21 Nov)
+
+- Census: 229/229 old items read as on 5 Nov with the patched mapping; 0 exceptions.
+- Pipelines against live bytes: 3 re-converted clips, 3 regenerated face-curve files, 8 waves and 8 cue/wave dumps are
+  identical to the live or 12 Nov files.
+- `tsc -b` clean. `npm test`: 899 pass, 8 known failures (gitignored model files, ski-blade fixture).
+- Real app (`serve-preview.mjs` on the staged set, live model hosts, `?reconstructed=1`, headless Chrome): Emotes 295
+  with Season 2 · 16 and Season 1 · 41; Chinals mode ends with Uncategorised · 5 (`picker-shots/`). Coop Caper's
+  plushie and Gimme Five's hologram partner look right (`sheets-new/`).
+- Preview trap: the dev server needs `VITE_RECONSTRUCTION_ROUTES_FILE=src/data/reconstruction-routes.json` and the
+  asset hosts from `deploy.yml`, or the outfit fails ("Skin pair requires its preserved fitted body"). The root
+  checkout's `public/models/body` was mid-rewrite by another session, so models come from the live hosts.
+
+User checks: [functional-checklist.md](functional-checklist.md).
