@@ -380,9 +380,11 @@ export class StableFrameAccumulator {
       this.status.samples = 0; this.status.resets++;
       this.status.reason = this.invalidated || input.changed; this.invalidated = '';
       // Every new history starts at the exact current pose, even if the old
-      // camera was retained within the subpixel damping tolerance.
+      // camera was retained within the subpixel damping tolerance. Only the sampling camera is recorded again: the
+      // scene was captured above, this frame (21 Nov 2026: a second full capture here doubled the cost of every
+      // animated frame under MSAA and Off).
       this.camera.clear(); this.camera.select(camera, width, height);
-      this.state.capture(scene, camera, renderer, this.camera);
+      this.state.recordSamplingCamera(camera, this.camera);
       if (high) this.velocity?.forget();
     }
 

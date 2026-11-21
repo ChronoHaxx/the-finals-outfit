@@ -791,8 +791,11 @@ export class CharacterRig {
       else this.applyMaterial(mesh, legacyMaterial, regionTex, garmentDecals, bakedSet, hairCov, emissiveTex);
     };
 
-    for (const mesh of meshes) {
-      const cosmeticSkel = mesh.skeleton;
+    // Sections that shared a skeleton in the file share its rebound copy too (21 Nov 2026, integrated-GPU report): three
+    // updates and uploads every distinct skeleton on every render pass, and Face 11's twelve sections each had their own
+    // copy of the same 323 head bones. The copies were identical (same bones, same inverses), so sharing draws the same.
+    const reboundSkeletons = new Map<THREE.Skeleton, THREE.Skeleton>();
+    const rebind = (cosmeticSkel: THREE.Skeleton) => {
       // Remap the cosmetic's bones onto the body's bones by name. Missing bones fall
       // back to the cosmetic's own bone (renders, but won't follow the body) and warn.
       const mappedBones = cosmeticSkel.bones.map((bone, i) => {
@@ -813,7 +816,11 @@ export class CharacterRig {
       const inverses = item.sourceMeshUrl ? cosmeticSkel.bones.map((bone, i) =>
         this.bodyRestInverses.get(bone.name)?.clone() ?? cosmeticSkel.boneInverses[i]) : cosmeticSkel.boneInverses;
       const rebound = new THREE.Skeleton(mappedBones, inverses);
-      mesh.bind(rebound, mesh.bindMatrix);
+      reboundSkeletons.set(cosmeticSkel, rebound);
+      return rebound;
+    };
+    for (const mesh of meshes) {
+      mesh.bind(reboundSkeletons.get(mesh.skeleton) ?? rebind(mesh.skeleton), mesh.bindMatrix);
       mesh.frustumCulled = false; // skinned bounds aren't auto-updated
 
       applyMat(mesh);
