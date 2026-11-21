@@ -14,12 +14,19 @@ import { SunIcon, TrashIcon } from "./Icons";
  * the reviewed default; Lobby; sun looks; saved looks), the backdrop, each light, the sky/ground fill and reflections,
  * the ground shadows, exposure and tone mapping, Reset and Undo. Everything is remembered in this browser as it changes
  * (lighting-store.ts). Built like the Graphics menu: a button in the viewer's top row and a panel anchored to that row.
+ *
+ * 21 Nov 2026 (community request): more ready-made looks (Season 12 menu, Dramatic, Cool, Warm, Fullbright, Nighttime)
+ * and "Show lights": bulbs and cones in the 3D view (LightMarkers.tsx). While they are shown, a press in the 3D view does
+ * not close this panel, so its Direction and Height sliders can be watched following a dragged bulb; picking a bulb
+ * opens that light's card here.
  */
 export function LightingPanel() {
   const look = useLightingStore(state => state.look);
   const previous = useLightingStore(state => state.previous);
   const looks = useLightingStore(state => state.looks);
-  const { edit, apply, reset, undo, saveLook, deleteLook } = useLightingStore.getState();
+  const markers = useLightingStore(state => state.markers);
+  const selected = useLightingStore(state => state.selected);
+  const { edit, apply, reset, undo, saveLook, deleteLook, setMarkers } = useLightingStore.getState();
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [viewerHeight, setViewerHeight] = useState(0);
@@ -31,7 +38,13 @@ export function LightingPanel() {
     if (!open) { setConfirmDelete(null); return; }
     const viewer = root.current?.closest("[data-viewer]");
     if (viewer) setViewerHeight(viewer.clientHeight);
-    const outside = (event: PointerEvent) => { if (!root.current?.contains(event.target as Node)) setOpen(false); };
+    const outside = (event: PointerEvent) => {
+      const target = event.target;
+      if (root.current?.contains(target as Node)) return;
+      // With the lights shown, working in the 3D view (dragging a bulb, turning round to find one) keeps the panel open.
+      if (useLightingStore.getState().markers && target instanceof Element && target.closest("[data-viewer] canvas")) return;
+      setOpen(false);
+    };
     const escape = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); button.current?.focus(); } };
     document.addEventListener("pointerdown", outside);
     document.addEventListener("keydown", escape);
@@ -94,8 +107,13 @@ export function LightingPanel() {
           </Section>
 
           <Section title="Lights">
+            <Check label="Show lights in the 3D view" checked={markers} onChange={setMarkers}
+              hint={look.lights.length
+                ? "A bulb for each light, a cone the way it shines. Drag a bulb to move its light. Never in screenshots, share images or exports."
+                : "This look has no lights: add one below."} />
             {look.lights.map(light => (
-              <LightCard key={light.id} light={light} onChange={change => editLight(light.id, change)}
+              <LightCard key={light.id} light={light} selected={markers && selected === light.id}
+                onChange={change => editLight(light.id, change)}
                 onRemove={light.role === "sun" ? undefined
                   : () => apply({ ...structuredClone(look), lights: look.lights.filter(l => l.id !== light.id) })} />
             ))}
@@ -247,13 +265,20 @@ export function SunShortcut() {
   );
 }
 
-function LightCard({ light, onChange, onRemove }: {
-  light: StageLight; onChange(change: (light: StageLight) => StageLight): void; onRemove?: () => void;
+function LightCard({ light, selected, onChange, onRemove }: {
+  light: StageLight; selected: boolean; onChange(change: (light: StageLight) => StageLight): void; onRemove?: () => void;
 }) {
   const { bearing, height } = lightAngles(light.position);
   const isSun = light.role === "sun";
+  const card = useRef<HTMLDetailsElement>(null);
+  // Picked in the 3D view: open this card and bring it into view.
+  useEffect(() => {
+    if (!selected || !card.current) return;
+    card.current.open = true;
+    card.current.scrollIntoView?.({ block: "nearest" });
+  }, [selected]);
   return (
-    <details open={isSun} className="border border-line">
+    <details ref={card} open={isSun} className={`border ${selected ? "border-finals" : "border-line"}`}>
       <summary className="flex cursor-pointer list-none items-center gap-2 px-2 py-1.5 hover:bg-ink-900">
         <span aria-hidden="true" className="size-3 shrink-0 border border-fg/40"
           style={{ background: light.enabled ? light.color : "transparent" }} />

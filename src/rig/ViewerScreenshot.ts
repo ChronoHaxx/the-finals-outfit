@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { StableFrameAccumulator } from "./StableFrameAccumulator";
+import { withoutOverlays } from "./ViewerOverlay";
 import type { BackdropPaint } from "../lib/stage-lighting";
 
 // The viewer's screenshot (12 Nov 2026, community request): the view on screen as a PNG, on its backdrop or with a
@@ -147,8 +148,9 @@ export class ViewCapture {
     if (!gl.extensions.has("EXT_color_buffer_float")) throw new Error("This browser cannot draw the still view offscreen (no float render targets)");
     this.width = width; this.height = height;
     this.options = { ...options, supersample: factor, maxTile: Math.min(options.maxTile, max) };
-    // Same position and orientation (all the shading reads), the image's aspect. r3f's camera has no parent.
-    this.view = camera.clone();
+    // Same position and orientation (all the shading reads), the image's aspect. r3f's camera has no parent. A copy keeps
+    // the live camera's layers, so the on-screen helpers (light markers) are switched off on it: never in a capture.
+    this.view = withoutOverlays(camera.clone());
     this.view.clearViewOffset();
     this.view.aspect = width / height;
     this.view.updateProjectionMatrix();
