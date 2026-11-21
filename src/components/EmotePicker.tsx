@@ -2,6 +2,7 @@ import { useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternal
 import { createPortal } from "react-dom";
 import type { AnimatorState, ClipInfo, RigAnimator } from "../rig/RigAnimator";
 import { CloseIcon, SearchIcon } from "./Icons";
+import { useChromeLayout } from "../lib/viewer-chrome";
 
 // The emote picker (showcase animation, 5 Nov 2026): every Season 12 emote item with the game's own icon, newest
 // season first. Most emotes also spawn a prop (a guitar, a flag, wings) or effects (smoke, sparks) from notifies in
@@ -9,11 +10,12 @@ import { CloseIcon, SearchIcon } from "./Icons";
 // say what is not shown (once props.json has loaded, only what is really missing).
 // Reactions, idles and the emote animations no current item plays sit under "More".
 //
-// Layout: the character stays visible while choosing. On desktop the panel docks beside the 3D viewer: right of it
-// when there is room, else left of it, over the items drawer (inside the viewer it hid the character); with no room
-// either side (drawer closed) it sits in the viewer's right-hand column. On phones it is a sheet over the lower part of
-// the screen, below where the stage shows the character with the items sheet open. Docked panels and sheets render at
-// the body, so the sticky slot rail cannot paint over them.
+// Layout: the character stays visible while choosing. On desktop the panel opens under the Emotes button, in the 3D
+// view's right-hand column (15 Nov 2026: the full-window stage reaches the window's right edge, so docking beside it
+// could only land over the items drawer, far from the button). On phones it is a sheet over the lower part of the
+// screen, below where the stage shows the character with the items sheet open. On a phone held sideways (the side
+// layout) a sheet under the short stage would be a sliver, so the panel takes the full height on the drawer's side and
+// the character stays in view beside it. Sheets render at the body, so the sticky slot rail cannot paint over them.
 
 const DESKTOP = "(min-width: 64rem)"; // Tailwind lg, where the builder switches to its two-pane layout
 function useDesktop(): boolean {
@@ -23,30 +25,26 @@ function useDesktop(): boolean {
   );
 }
 
-const DOCK_MIN = 20 * 16, DOCK_MAX = 26 * 16, GAP = 12; // px
-
-/** Where to dock beside the viewer (fixed coordinates, kept current on resize), or null when there is no room. */
-function useDock(anchor: HTMLElement | null, enabled: boolean): CSSProperties | null {
+/** Phone held sideways: a full-height panel from the left edge up to the stage (over the items drawer), or, with the
+ *  drawer closed, over the stage's left part, leaving the character (centred) in view. */
+function useSideSheet(anchor: HTMLElement | null, enabled: boolean): CSSProperties | null {
   const [style, setStyle] = useState<CSSProperties | null>(null);
   useEffect(() => {
     if (!anchor || !enabled) { setStyle(null); return; }
     const measure = () => {
       const rect = anchor.getBoundingClientRect();
-      const right = window.innerWidth - rect.right - 2 * GAP, left = rect.left - 2 * GAP;
-      const box = { position: "fixed", top: rect.top, height: rect.height } as const;
-      setStyle(right >= DOCK_MIN ? { ...box, left: rect.right + GAP, width: Math.min(DOCK_MAX, right) }
-        : left >= DOCK_MIN ? { ...box, left: rect.left - GAP - Math.min(DOCK_MAX, left), width: Math.min(DOCK_MAX, left) }
-        : null);
+      const width = rect.left >= SIDE_MIN ? rect.left : Math.min(SIDE_MAX, Math.round(0.42 * window.innerWidth));
+      setStyle({ top: Math.round(rect.top), width });
     };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(anchor);
     window.addEventListener("resize", measure);
-    window.addEventListener("scroll", measure, true);
-    return () => { observer.disconnect(); window.removeEventListener("resize", measure); window.removeEventListener("scroll", measure, true); };
+    return () => { observer.disconnect(); window.removeEventListener("resize", measure); };
   }, [anchor, enabled]);
   return style;
 }
+const SIDE_MIN = 16 * 16, SIDE_MAX = 23 * 16; // px
 
 /** Phone sheet: its top edge, under the stage's first --stage-h (44% of the screen, at least 16rem; the stage's height
  *  while the items sheet is open), so the character keeps the same spot whether the items sheet is open or not. */
@@ -113,12 +111,13 @@ const zhHans = (text: string) => /\p{Script=Han}/u.test(text) ? "zh-Hans" : unde
 
 export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
   animator: RigAnimator; state: AnimatorState; onPlay: (id: string) => void; onClose: () => void;
-  /** The 3D viewer, to dock beside on desktop. */
+  /** The 3D viewer: the phone sheet starts below where it shows the character. */
   anchor: HTMLElement | null;
 }) {
   const desktop = useDesktop();
-  const dock = useDock(anchor, desktop);
-  const sheetTop = useSheetTop(anchor, !desktop);
+  const sideways = useChromeLayout() === "side" && !desktop;
+  const side = useSideSheet(anchor, sideways);
+  const sheetTop = useSheetTop(anchor, !desktop && !sideways);
   const [tab, setTab] = useState<Tab>("emotes");
   const [query, setQuery] = useState("");
   const [bodyOnly, setBodyOnly] = useState(false);
@@ -202,9 +201,9 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
   const body = (
     <div ref={panel} role="dialog" aria-label="Emotes" onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); onClose(); } }}
       onPointerLeave={() => setDetail(null)}
-      style={dock ?? (!desktop && sheetTop !== null ? { top: sheetTop } : undefined)}
-      className={dock ? "z-40 flex flex-col border border-line bg-ink-950 shadow-2xl"
-        : desktop ? "flex min-h-0 w-[23rem] max-w-[calc(100vw-2rem)] flex-col border border-line bg-ink-950/95 shadow-2xl"
+      style={sideways ? side ?? undefined : !desktop && sheetTop !== null ? { top: sheetTop } : undefined}
+      className={desktop ? "flex min-h-0 shrink! w-[23rem] max-w-[calc(100vw-2rem)] flex-col border border-line bg-ink-950/95 shadow-2xl"
+        : sideways ? "fixed bottom-0 left-0 z-40 flex flex-col border-r border-line bg-ink-950 pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)]"
         : "fixed inset-x-0 bottom-0 top-(--stage-h) z-40 flex flex-col border-t border-line bg-ink-950 pb-[env(safe-area-inset-bottom)]"}>
       <div className="flex shrink-0 items-center gap-1 border-b border-line pl-2 pr-1">
         {tabButton("emotes", <>Emotes <span className="text-fg-dim">{emotes.length}</span></>)}
@@ -277,5 +276,5 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
       </div>
     </div>
   );
-  return desktop && !dock ? body : createPortal(body, document.body);
+  return desktop ? body : createPortal(body, document.body);
 }
