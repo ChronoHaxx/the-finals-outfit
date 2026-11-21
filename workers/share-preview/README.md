@@ -94,32 +94,7 @@ Live checks after the deploy, all read-only (nothing stored):
 - The root redirects.
 - An upload with `bt=ABC` gets 400 `bad body type`, and a foreign origin gets 403.
 
-## One deploy for player numbers and camera views (PRs #60 + #59, NOT deployed yet)
-
-The two sections below ship as **one** Worker version, built from branch `claude/share-worker-pn-view-2026-11-21`
-(PR #60's `pn` with PR #59's `view` merged in). Deploy from that build, never from either PR branch alone: each PR's
-own Worker drops the other's parameter. Links carry `o, bt, pn, pose, view` in that order; old links are unchanged.
-It replaces `f9f734a6-4ab8-4623-b448-47c043f64fe1`; restore that with
-`npx --yes wrangler@4.131.1 rollback f9f734a6-4ab8-4623-b448-47c043f64fe1`. No KV or binding changes.
-
-## Redeploying for player numbers (PR #60, NOT deployed yet)
-
-The app's player number adds `pn=<10–99>` after `bt`. Without it, each piece shows its own number. The Worker validates
-it (`^[1-9][0-9]$`, else 400 `bad player number`), stores it in the entry's metadata as `pn`, returns it in the link
-and sends people to `#/?o=<code>[&bt=a]&pn=42[&emote=...]`. A stored `pn` wins over the link's own while the entry
-lives. Entries and links without one are unchanged. The app refuses a preview link that comes back without the `pn` it
-sent and copies the plain link instead, so the deploy order does not matter for correctness.
-
-Deploy, only on the owner's yes, from this folder: `npx --yes wrangler@4.131.1 deploy`. It replaces
-`f9f734a6-4ab8-4623-b448-47c043f64fe1` (live since 13 Nov). Restore it with
-`npx --yes wrangler@4.131.1 rollback f9f734a6-4ab8-4623-b448-47c043f64fe1`. No KV or binding changes.
-
-Read-only checks after the deploy:
-- `/s/AAAAAAAAAAAA?o=2.&pn=42` opens `#/?o=2.&pn=42`, and `/s/AAAAAAAAAAAA?o=2.&bt=a&pn=42` opens `#/?o=2.&bt=a&pn=42`.
-- `/s/AAAAAAAAAAAA?o=2.&pn=7` drops the junk `pn`.
-- The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit.
-
-## Redeploying for camera views (21 Nov 2026, not deployed yet)
+## Redeploying for camera views (21 Nov 2026)
 
 Share links can carry the camera on screen (`src/lib/camera-view.ts`):
 `view=<x>_<y>_<z>_<target x>_<target y>_<target z>[_<roll>]`, metres to the millimetre and degrees to a tenth. The
@@ -127,17 +102,45 @@ Worker validates it (numbers only, else 400 `bad camera view`), stores it in the
 last in the link and sends people to `#/?o=<code>[&bt=..][&emote=..]&view=...`. A stored view wins over the link's own
 while the entry lives; entries made before this have none (the default framing). The card is unchanged.
 
-Deploy order does not matter for correctness. Until this is deployed, the live Worker drops `view`: preview links open the
+Deploy order does not matter for correctness. A Worker without this change drops `view`: preview links then open the
 right outfit on the default framing, and the share panel says "preview links can't keep the camera yet (Short link
-can)". Short and readable links keep the camera without the Worker. Deploy needs the user's yes. From this folder:
+can)". Short and readable links keep the camera without the Worker. An app from before this change never sends `view`.
 
-```bash
-npx --yes wrangler@4.131.1 deploy
-```
+**Deployed 21 Nov 2026, 20:30 London** (on the user's "Deploy the Worker"), from commit `56caa09`: version
+`773a350e-976b-4956-9f54-3401e29341b3`, replacing `f9f734a6-4ab8-4623-b448-47c043f64fe1`. The only code change since
+`f9f734a6` is this one; bindings unchanged. To restore the previous version:
+`npx --yes wrangler@4.131.1 rollback f9f734a6-4ab8-4623-b448-47c043f64fe1`.
 
-Read-only checks afterwards: `/s/AAAAAAAAAAAA?o=2.&view=0_1_2_0_1_0_5` should open `#/?o=2.&view=0_1_2_0_1_0_5`; the
-same with `&bt=a&emote=wave&t=1` keeps all of them in that order; `&view=junk` is dropped; the 20 Oct link
-`/s/XkVfZU1EMmnr` still opens its outfit and card.
+Live checks after the deploy, all read-only (nothing stored):
+- `/s/AAAAAAAAAAAA?o=2.&view=0_1_2_0_1_0_5` opens `#/?o=2.&view=0_1_2_0_1_0_5`.
+- The same with `&bt=a&emote=wave&t=1` opens `#/?o=2.&bt=a&emote=wave&t=1&view=0_1_2_0_1_0_5`.
+- `&view=junk` is dropped (`#/?o=2.`).
+- The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit and serves its 73 KB card.
+- The root redirects (302).
+- An upload with `view=0,1,2` gets 400 `bad camera view`; a foreign origin gets 403.
+
+## Redeploying for player numbers (PR #60, NOT deployed yet)
+
+The app's player number adds `pn=<10–99>` after `bt`. Without it, each piece shows its own number. The Worker validates
+it (`^[1-9][0-9]$`, else 400 `bad player number`), stores it in the entry's metadata as `pn`, returns it in the link
+and sends people to `#/?o=<code>[&bt=a]&pn=42[&emote=...][&view=...]`. A stored `pn` wins over the link's own while the
+entry lives. Entries and links without one are unchanged. The app refuses a preview link that comes back without the
+`pn` it sent and copies the plain link instead, so the deploy order does not matter for correctness.
+
+Build: branch `claude/share-worker-pn-view-2026-11-21`, which is PR #60's `pn` on top of the camera-view code live in
+`773a350e` (PR #59's Worker, unchanged from `56caa09`/`22d086d`). Deploy from that build only: PR #60's own branch has
+no `view` and would drop it from live links. Links carry `o, bt, pn, pose, view` in that order.
+
+Deploy, only on the owner's yes, from this folder: `npx --yes wrangler@4.131.1 deploy`. It replaces
+`773a350e-976b-4956-9f54-3401e29341b3` (camera views, live since 21 Nov 20:30). Restore that with
+`npx --yes wrangler@4.131.1 rollback 773a350e-976b-4956-9f54-3401e29341b3`; **not** `f9f734a6`, which would drop `view`.
+No KV or binding changes.
+
+Read-only checks after the deploy:
+- `/s/AAAAAAAAAAAA?o=2.&pn=42` opens `#/?o=2.&pn=42`, and `/s/AAAAAAAAAAAA?o=2.&bt=a&pn=42` opens `#/?o=2.&bt=a&pn=42`.
+- `/s/AAAAAAAAAAAA?o=2.&bt=a&pn=42&emote=wave&t=1&view=0_1_2_0_1_0_5` keeps all of them in that order.
+- `/s/AAAAAAAAAAAA?o=2.&pn=7` drops the junk `pn`; `&view=0_1_2_0_1_0_5` alone still opens with the view.
+- The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit.
 
 ## Live deployment (20 Oct 2026)
 
