@@ -49,15 +49,18 @@ Trace on the live site (`early-stop-trace.mjs`, page seconds; `__rigIdle` is the
 - Unit tests (`tests/rig/rig-animator-transport.test.ts`, 3 new): the idle started during an emote goes under it, the
   emote keeps its clock and plays to its end, then crossfades into the idle; an emote still downloading is not
   superseded; with nothing up it plays the idle, and after the viewer's stop or with an idle running it does nothing.
-  The 3 failed before the fix (no `playUnder`) and pass after it. Whole file: 11/11.
+  The 3 failed before the fix (no `playUnder`) and pass after it. After rebasing onto main `80ea734` (the emote speed
+  and face switch, PR #58, merged meanwhile; its first-motion effect is unchanged): whole file 17/17, with
+  `rig-animator` and `emote-sounds` 47/47.
 - `npm run typecheck` (`tsc -b`): PASS.
-- `npm test`: 925 tests, 912 pass, 8 fail, all 8 the known ones needing gitignored files (the ski-blade GLB fixture,
-  5 socketed-static checks, base body geometry and UV).
+- `npm test` (rebased): 941 tests, 928 pass, 8 fail, all 8 the known ones needing gitignored files (the ski-blade GLB
+  fixture, 5 socketed-static checks, base body geometry and UV).
 - Local production build (`prod-build.mjs`: deploy.yml's hosts, animations `17ec92c3`), headless Chrome as a visitor
   (`early-stop-probe.mjs`, Valkyria = `ace-pilot`, 7.33 s):
-  - main's source (baseline): `ace-pilot 1.42/7.33`, then `outfit-idle`. The bug reproduces locally.
-  - this fix, click 0.5 s after the button enables: plays to `6.93/7.33`, then `outfit-idle`; clicked at once
-    (`SETTLE=0`): plays to `7.33/7.33`, then `outfit-idle`.
+  - main's source (baseline, `a2c6019`): `ace-pilot 1.42/7.33`, then `outfit-idle`. The bug reproduces locally.
+  - this fix on `a2c6019`, click 0.5 s after the button enables: plays to `6.93/7.33`, then `outfit-idle`; clicked at
+    once (`SETTLE=0`): plays to `7.33/7.33`, then `outfit-idle`.
+  - this fix rebased on `80ea734`: `6.88/7.33` (0.5 s) and `7.29/7.33` (at once), each then `outfit-idle`.
   - trace of the fix: the outfit pass ends at 7.84 s with the emote at 1.77 s; `playUnder(outfit-idle) -> true`; the
     state reads `front=ace-pilot idle=outfit-idle` up to 6.97 s, then `front=outfit-idle`.
   - late click (`SETTLE=15000`, ordinary path): `play(outfit-idle)` when the outfit loads, the emote over it, back to
