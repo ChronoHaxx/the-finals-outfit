@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState, type RefObject } from "react";
 import { captureView, compositeOver, isBlank, paintBackdrop, screenshotSizes, type ScreenshotContext } from "../rig/ViewerScreenshot";
 import { encodePngAsync } from "../lib/png-encode";
 import { backdropCss, backdropPaint, type Backdrop } from "../lib/stage-lighting";
+import { sceneById } from "../lib/scenes";
 import { CameraIcon } from "./Icons";
 
 // GPU memory while capturing is about 24 bytes per pixel (the accumulator's half-float targets and depth, and the
@@ -126,9 +127,12 @@ export function ScreenshotPanel({ context, backdrop, ready }: {
                 </button>
               ))}
             </div>
+            {/* An in-game scene (scenes.ts) is drawn outside this canvas, so the PNG gets the scene's colours instead. */}
             <span className="text-xs leading-snug text-fg-muted">{choices.transparent
               ? "PNG with alpha, no backdrop or floor: lay it over anything. Same lighting as on screen."
-              : "As on screen, with the backdrop."}</span>
+              : sceneById(backdrop.scene)
+                ? "On the scene’s colours: the scene itself isn’t in screenshots yet."
+                : "As on screen, with the backdrop."}</span>
           </div>
           {choices.transparent && (
             <label className="flex cursor-pointer items-start gap-2">
