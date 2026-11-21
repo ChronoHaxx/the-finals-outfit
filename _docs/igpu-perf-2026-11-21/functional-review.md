@@ -55,11 +55,14 @@ Reply "1-6 pass" (using the actual step numbers), or e.g. "4 fails: Off keeps sh
 
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given
+- Tested revision/build: none (not tested by the user)
+- User reported at: 21 Nov 2026, in the session that made the PR
+- Passed / failed / untested step numbers: 1-6 untested
+- Explicitly waived checks, if any: 1-6, all of them. The user's reply to "Run the 6 user checks for PR #64?" was
+  "Waive and merge". Unknowns: no human looked at the look, the camera settle under Off/MSAA, Face 11 or emotes in a
+  real browser; the agent's same-pose comparison and timing covered those only in headless Chrome. Not checked on an
+  integrated GPU (Shocka's laptop) at all.
+- Readiness: explicitly waived checks
+- Merge authorization: given by the user with the same reply, 21 Nov 2026
 
 A later patch invalidates affected checks. Keep results for the previous revision and record the retest.
