@@ -7,7 +7,7 @@ never leaves a sound playing or doubles one.
 
 - **PR / originating issue:** PR #51 on branch `claude/chinals-emote-sounds-2026-11-12`. Against main it changes only
   the Chinals host line, this record, the patch note and the roadmap review: the sound code came to main with PR #47.
-- **Test this revision:** `9d5b9f7` on `claude/chinals-emote-sounds-2026-11-12` (or any later docs-only commit), with
+- **Test this revision:** `6df715b` on `claude/chinals-emote-sounds-2026-11-12` (or any later docs-only commit), with
   both published hosts: Chinals `https://59209741.the-finals-outfit-chinals-assets.pages.dev/` (props-3 + sounds) and
   global `https://17ec92c3.the-finals-outfit-assets.pages.dev/` (live since PR #47).
 - **Open:** http://127.0.0.1:5192/#/chinals from the local preview below.
@@ -15,15 +15,15 @@ never leaves a sound playing or doubles one.
 - **Approximate hands-on time:** 10 minutes.
 - **Agent checks:**
   - Unit tests 25/25 for the sound code (10 resolver, 15 player).
-  - `npm test` 897 pass, 8 fail, 5 skipped at 9d5b9f7. The 8 are pre-existing and need game GLBs this worktree lacks.
+  - `npm test` 925 pass, 8 fail, 5 skipped at 6df715b. The 8 are pre-existing and need game GLBs this worktree lacks.
   - `npm run build` passes, with its roadmap and public-text checks.
   - Chrome 12/12 in the scripted browser check, both on the local set ([check-chrome.json](check-chrome.json)) and with
     the app reading the published host ([check-chrome-hosted.json](check-chrome-hosted.json), last run at 1b5a50e):
     onsets within 26 ms, both TakeAway layers together, Floating Greeting stops at its window end, silent Gacha_01, one
     audio device after three mode round trips, no console errors. Details in [README.md](README.md#verification).
-  - Not rerun after merging PR #47 (17 Nov): the run was stopped. Since then the app's sound code is main's, which is
-    this branch's code plus #47's prop prewarm. The preview below was checked to serve both live sets, and its intro
-    shows the new patch note.
+  - Not rerun since 1b5a50e: the run after merging PR #47 was stopped. The app's sound code is now main's, which is
+    this branch's code plus #47's prop prewarm and PR #58's emote speed (sounds follow the scaled clock). On 17 Nov
+    the preview below served both live sets and its intro showed the new patch note.
   - Not run: Firefox, Safari, phones, a listen against in-game footage.
 - **User checks: PENDING.** Agent results do not check the boxes below.
 
