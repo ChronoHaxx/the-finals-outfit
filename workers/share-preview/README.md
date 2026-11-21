@@ -94,6 +94,23 @@ Live checks after the deploy, all read-only (nothing stored):
 - The root redirects.
 - An upload with `bt=ABC` gets 400 `bad body type`, and a foreign origin gets 403.
 
+## Redeploying for player numbers (PR #60, NOT deployed yet)
+
+The app's player number adds `pn=<10–99>` after `bt`. Without it, each piece shows its own number. The Worker validates
+it (`^[1-9][0-9]$`, else 400 `bad player number`), stores it in the entry's metadata as `pn`, returns it in the link
+and sends people to `#/?o=<code>[&bt=a]&pn=42[&emote=...]`. A stored `pn` wins over the link's own while the entry
+lives. Entries and links without one are unchanged. The app refuses a preview link that comes back without the `pn` it
+sent and copies the plain link instead, so the deploy order does not matter for correctness.
+
+Deploy, only on the owner's yes, from this folder: `npx --yes wrangler@4.131.1 deploy`. It replaces
+`f9f734a6-4ab8-4623-b448-47c043f64fe1` (live since 13 Nov). Restore it with
+`npx --yes wrangler@4.131.1 rollback f9f734a6-4ab8-4623-b448-47c043f64fe1`. No KV or binding changes.
+
+Read-only checks after the deploy:
+- `/s/AAAAAAAAAAAA?o=2.&pn=42` opens `#/?o=2.&pn=42`, and `/s/AAAAAAAAAAAA?o=2.&bt=a&pn=42` opens `#/?o=2.&bt=a&pn=42`.
+- `/s/AAAAAAAAAAAA?o=2.&pn=7` drops the junk `pn`.
+- The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit.
+
 ## Live deployment (20 Oct 2026)
 
 - Worker `the-finals-outfit-share` at https://the-finals-outfit-share.chronohaxx.workers.dev (account subdomain renamed from the
