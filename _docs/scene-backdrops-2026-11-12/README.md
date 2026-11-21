@@ -671,10 +671,28 @@ Routes as recommended: D for the menu (a live stage) and A for the tunnel (a pla
   - Colours as in the table above.
   - Leaving the scene restores the camera, the orbit and a turn of 0.
 
+**21 Nov: rebased onto main.** Main now carries #40 merged, #46 (drawer, full-window viewer, PNG screenshots), #47,
+#48 and #55.
+- One conflict: the viewer's animator line. The fix kept main's Chinals clip set and the scene lookup.
+- Rechecked on the dev server with today's hosts:
+  - **Tunnel:** with the drawer open and closed, the viewer, canvas and plate share one rectangle (#46 adds no camera
+    view offset), and the feet stay on the walkway.
+  - **Turntable:** turns with the camera held.
+  - **Menu stage:** renders under the "Season 12 menu" look.
+  - **Leaving:** a switch to Studio restores the orbit camera and removes the stage canvas.
+- **#46's PNG screenshot** paints the look's colours behind the character, so with a scene it saves the fallback
+  colours. Its text now says so instead of "As on screen".
+- Typecheck and build pass. The tests: 906 pass and 8 fail, all on GLB fixtures absent from the worktree.
+
 **Not done yet:**
 - **Hosting.** The scene files are game artwork and live in the ignored `public/scenes/` for development. Production
   needs a scenes deployment pinned like `ANIMATIONS_BASE`, and the upload needs the user's yes.
-- **The share card** paints the scene's fallback colours, not the scene. Painting a card still is a follow-up.
+  - Without it, a production build falls back to the scene's colours: the plate does not paint, and the stage's
+    texture fails into its error boundary.
+- **The share card and PNG screenshots** paint the scene's fallback colours, not the scene. Painting a scene still into
+  both is one follow-up.
+  - For the plate, that needs CORS on the scenes host.
+  - For the stage, it needs a capture of its second canvas.
 - **The tunnel has no ready-made look.** The character keeps the user's lights, so with Studio it reads warmer than the
   indigo tunnel. A tunnel look (blue rims) would be like "Season 12 menu".
 - **Not yet checked:**

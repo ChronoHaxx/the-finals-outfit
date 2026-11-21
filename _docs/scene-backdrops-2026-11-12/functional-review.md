@@ -14,25 +14,30 @@ The check catches four failures:
 - a turntable that drifts the camera;
 - a default view that changed.
 
-- **PR / origin:** not opened yet. The branch is stacked on PR #40. The design is in `README.md` section 8.
+- **PR / origin:** the draft PR from this branch into `main`. On 21 Nov it was rebased onto main, which already has
+  #40, #46, #47, #48 and #55. The design is in `README.md` section 8.
 - **Test this revision:** branch `claude/scene-backdrops-p2-2026-11-15`, app code at
-  `705d7aa3b207b2b24bdf0192b9314cc55b9c9c81`. Later commits on the branch that touch only `_docs/` leave it the same.
+  `aabd8a15c8813294210635097afd2663a67b0ec8`. Later commits on the branch that touch only `_docs/` leave it the same.
 - **Open:** http://127.0.0.1:5243 in Chrome, served from the worktree below.
 - **Prerequisites:**
   - The scene files are in the worktree's ignored `public/scenes/` folder: `s12-menu/icon-stroke-a.webp` and
     `s12-tunnel/plate-v1.webp`.
   - The models stream from the deployed asset hosts, so you need an internet connection. No account is needed.
 - **Approximate hands-on time:** 10 minutes.
-- **Agent checks (15 Nov):** PASS.
-  - Typecheck passes.
-  - Scene tests: 9 of 9 pass.
-  - Full suite: 804 pass. 8 fail only because extracted GLBs (`public/models`) are absent in the worktree.
-  - In the dev browser pane (synthetic mouse input), the agent checked:
+- **Agent checks:** PASS.
+  - **21 Nov, after the rebase:**
+    - Typecheck and production build pass.
+    - Scene tests: 9 of 9 pass.
+    - Full suite: 906 pass. 8 fail only because extracted GLBs (`public/models`) are absent in the worktree.
+    - In the dev browser pane:
+      - tunnel fit with the drawer open and closed;
+      - the turn;
+      - the menu stage under its look;
+      - the screenshot panel's wording;
+      - restore on leaving for Studio.
+  - **15 Nov, in the dev browser pane (synthetic mouse input):**
     - menu colours against your screenshot;
-    - the tunnel's feet on the walkway;
     - zoom scaling;
-    - the turn;
-    - restore on leave;
     - phone size;
     - persistence across a reload.
   - Not covered: real touch input, a real phone's memory, the feel.
@@ -46,7 +51,7 @@ Otherwise, in **PowerShell**, run these commands. The asset hosts are the deploy
 
 ```powershell
 cd E:\Coding\the-finals-outfit\.claude\worktrees\trusting-davinci-1693fd
-$env:VITE_ASSETS_BASE = "https://f4a8e069.the-finals-outfit-assets.pages.dev/"; $env:VITE_MODELS_BASE = "https://a029b249.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_BASE = "https://c062af24.the-finals-outfit-assets.pages.dev/"; $env:VITE_ANIMATIONS_BASE = "https://cd858839.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_ROUTES_FILE = "src/data/reconstruction-routes.json"
+$env:VITE_ASSETS_BASE = "https://f4a8e069.the-finals-outfit-assets.pages.dev/"; $env:VITE_MODELS_BASE = "https://a029b249.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_BASE = "https://c062af24.the-finals-outfit-assets.pages.dev/"; $env:VITE_ANIMATIONS_BASE = "https://17ec92c3.the-finals-outfit-assets.pages.dev/"; $env:VITE_CHINALS_ANIMATIONS_BASE = "https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_ROUTES_FILE = "src/data/reconstruction-routes.json"
 npx vite --host 127.0.0.1 --port 5243 --strictPort
 ```
 
@@ -55,16 +60,17 @@ Stop it with Ctrl+C. The look you pick is saved in this browser for `127.0.0.1:5
 ## Try it yourself
 
 - [ ] **1. Start: the default is unchanged.**
-  - Do: open http://127.0.0.1:5243 in Chrome.
+  - Do: open http://127.0.0.1:5243 in Chrome. Click **Enter builder** if the start page shows.
   - Expected: the builder loads with the usual Studio look. Dragging orbits the camera around the character, as before.
 - [ ] **2. Menu stage.**
   - Do: click the sun button above the viewer ("Lighting and backdrop"), then under **Scenes** pick
-    **Season 12 menu**.
+    **Season 12 menu**. Then open and close the item drawer with the **Items** tab at its edge.
   - Expected:
     - a blue stage replaces the gradient;
     - the large glowing LED "A" sits behind the character, with the grid of round lights and haze;
     - the floor faintly reflects the glow;
-    - the character stands in front of it, framed as before.
+    - the character stands in front of it, framed as before, with the drawer open and closed;
+    - the camera button's **Backdrop** option says the scene itself isn't in screenshots yet.
 - [ ] **3. Turntable.**
   - Do: close the panel, drag left and right across the viewer, then scroll the wheel up and down. Then click the viewer
     and press the Left and Right arrow keys.
