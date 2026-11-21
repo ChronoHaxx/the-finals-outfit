@@ -25,8 +25,8 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 
 # Roadmap
 
-Last reviewed: 2026-11-15
-Reviewed after patch note: 2026-11-15-in-game-outfits
+Last reviewed: 2026-11-21
+Reviewed after patch note: 2026-11-21-in-game-outfits
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -68,8 +68,9 @@ An item that looks right alone can break another: a helmet that hides a beard, o
 ### Light and Heavy contestants
 <!-- id: light-heavy -->
 
-The preview shows the Medium contestant only. Light and Heavy bodies, and the body-shape choices the game offers for each, are next.
+The preview shows the Medium contestant. Its Masculine and Androgynous body types can already be picked. Feminine follows once the Season 12 clothing has been refitted, then the Light and Heavy bodies with their own body types.
 
+- Refit clothing that changed in Season 12, so it fits the body it was made for.
 - Fit every garment and accessory to each body, using the game's own fitting data.
 - Report each item's status per body, so blue on Medium does not imply blue on Heavy.
 
@@ -113,8 +114,9 @@ Theme filters, such as playful or tactical, and outfit suggestions, once item ta
 ### Emote effects and props
 <!-- id: emote-effects -->
 
-Emotes play their sound effects and music but not yet their visual effects, and a few props are still wrong, such as wings at the wrong angle or a prop at the wrong size.
+Emotes play their sound effects and music, but not yet their visual effects. Props now follow the game's own placement and size; a few may still be off.
 
+- Add particle effects such as sparks, smoke and confetti.
 - Check each emote's props against the game and fix the ones that are off.
 
 ### Contributing fixes
@@ -142,7 +144,12 @@ Meshes and materials are rebuilt from the game's own files for {blue} items so f
 ### Default lighting
 <!-- id: default-lighting -->
 
-The default Studio light was rebuilt from measurements against the in-game icons. Dark clothing no longer washes out to grey, and fabrics catch the light the way they do in the game. The Lobby light is still one click away.
+The default Studio light was rebuilt from measurements against the in-game icons. Dark clothing no longer washes out to grey, and fabrics catch the light the way they do in the game. It is the look every outfit opens in.
+
+### Lighting and backdrops
+<!-- id: lighting-backdrops -->
+
+A Lighting panel offers ready-made looks, Studio and Lobby among them, and lets you change each light's colour, brightness and direction, add lights, choose a solid or gradient backdrop and turn on a floor shadow. Your own looks can be saved.
 
 ### Outfits that fit together
 <!-- id: outfit-fitting -->
@@ -152,7 +159,12 @@ Clothing hides the body beneath it, hair swaps to its under-hat shape, and full-
 ### Idle animation and emotes
 <!-- id: idle-emotes -->
 
-The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and with its sound where it has one, and the equipped cosmetics follow the body. A timeline pauses an emote on any frame, and a share link keeps that pose. One click returns to the still pose.
+The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and with its sound where it has one, and the equipped cosmetics follow the body. The face moves too: blinks, glances and expressions, with beards and scarves following. A timeline pauses an emote on any frame or loops it, and a share link keeps that pose. One click returns to the still pose.
+
+### Chinals emotes
+<!-- id: chinals-emotes -->
+
+A labelled Chinals mode plays the emotes of 终极角逐, THE FINALS as published in mainland China, on your outfit. Emotes without an English name show the Chinese name with this site's unofficial translation. Chinals cosmetics are not on the site.
 
 ### Share, randomise and report
 <!-- id: share-randomise-report -->
@@ -162,4 +174,4 @@ Share links come with a four-angle preview image. Randomise builds a rules-based
 ### A faster builder that works on phones
 <!-- id: faster-builder -->
 
-The builder was redesigned around the 3D preview, which fills the window with the items in a drawer beside it, or in a sheet under it on phones. Outfits download faster, with a loading readout. Your outfits are saved in your browser as you work, a full-screen view or the H key shows only the character, screenshots save as PNG with the backdrop or a transparent background, and graphics settings trade quality for speed.
+The builder was redesigned around the 3D preview, which fills the window with the items in a drawer beside it, or in a sheet under it on phones. Outfits download faster, with a loading readout. Your outfits are saved in your browser as you work, a full-screen view or the H key shows only the character, screenshots save or copy as PNG with the backdrop or a transparent background, and graphics settings trade quality for speed.

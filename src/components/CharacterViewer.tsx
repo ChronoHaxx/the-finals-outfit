@@ -1239,7 +1239,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
         {/* One right-hand column under the top row, so the animation controls and the developer export panel
             stack instead of overlapping. It spans to the bottom so the emote picker can fit the viewer's height; only
             its children take pointer events, so the canvas behind the empty part still orbits. */}
-        <div className={`pointer-events-none absolute right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto ${timelineShown ? "bottom-15 pointer-coarse:bottom-17" : "bottom-3"}`}>
+        <div className={`pointer-events-none absolute right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto *:shrink-0 ${timelineShown ? "bottom-15 pointer-coarse:bottom-17" : "bottom-3"}`}>
           {/* PR #37's Sun slider, kept as a shortcut to the sun's direction. */}
           <SunShortcut />
           {animator && <AnimationControls animator={animator} rig={rig} ready={ready} busy={busy} studio={!darkBackdrop} />}
