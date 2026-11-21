@@ -23,6 +23,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
       "150 cosmetics join the catalog, among them the practice-range mannequin, Bull’s Eye Barry, and its wooden twin, Bull’s Eye Barrel. They show their icons for now; 3D comes later.",
       "42 more cosmetics render in 3D, among them the space pilot jackets, capes and skirts, the tiger pants and hoodie, the ballistic and demon LED masks, the carbon racing helmet and more hair. 15 cosmetics with a glitch pattern also render in 3D, without that effect, which the preview cannot show yet.",
       "3,151 of the catalog's 3,482 cosmetics now have a first-pass 3D reconstruction. The share reads 90% because the catalog grew.",
+      "Earrings and Laugh Trigger now sit in place on every face, not only Face 01.",
     ],
     items: ["in-game-outfits", "catalog", "red-items"],
   },
