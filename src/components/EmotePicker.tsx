@@ -109,6 +109,9 @@ type Tab = "emotes" | "more";
 // Japanese render differently by language).
 const zhHans = (text: string) => /\p{Script=Han}/u.test(text) ? "zh-Hans" : undefined;
 
+/** "a", "a and b", "a, b and c". */
+const listed = (items: string[]) => items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
+
 export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
   animator: RigAnimator; state: AnimatorState; onPlay: (id: string) => void; onClose: () => void;
   /** The 3D viewer: the phone sheet starts below where it shows the character. */
@@ -271,7 +274,8 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
           </p>
         </> : <p className="text-[11px] leading-snug text-fg-dim">
           {chinals ? "Chinals emotes on your outfit (global cosmetics)" : "The game's emote animations on your outfit"}, with
-          their props{animator.sounds.available ? " and sound" : ""}. Effects and facial expressions are not shown yet.
+          their {listed(["props", ...(animator.sounds.available ? ["sound"] : []), ...(animator.face.available ? ["facial expressions"] : [])])}.
+          {animator.face.available ? " Effects are not shown yet." : " Effects and facial expressions are not shown yet."}
         </p>}
       </div>
     </div>

@@ -31,7 +31,8 @@ function saveMotion(still: boolean): void {
   } catch { /* the choice just is not remembered */ }
 }
 
-const IDLE_STATE: AnimatorState = { active: false, moving: false, paused: false, sway: true, loopEmote: false, idle: null, current: null, loading: null, error: null };
+const IDLE_STATE: AnimatorState = { active: false, moving: false, paused: false, sway: true, loopEmote: false, speed: 1, face: true,
+  idle: null, current: null, loading: null, error: null };
 
 /** The animator's state for React (moved from AnimationControls.tsx, which re-exports it). */
 export function useAnimatorState(animator: RigAnimator | null): AnimatorState {
