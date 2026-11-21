@@ -1,0 +1,20 @@
+Game patch of 12 Nov 2026: what changed for the two scenes
+=========================================================
+
+The game updated on 12 Nov 2026 at 12:26 UTC: 78 pak files, 77.6 GB. The user's screenshot shows build CL1439418.
+
+The first probe runs read the 29 Oct files: assets-v1 at 11:50 UTC, assets-v2 and textures-v1 at 11:51 UTC, before the
+patch. The re-run used the same request lists against the patched files, whose newest container is from 12:26 UTC.
+
+Results (old usmap e5b29e28, built for CL 1432394):
+- The 95 + 7 packages parsed with 0 failures.
+- 38 packages differ in bytes. None of them is a mesh: all 17 static meshes are byte-identical.
+- All 33 textures are identical, mip for mip, by sha256.
+- The parameters of every material instance are identical.
+- The 22 changed records are the master materials and one widget. The masters differ only in flags:
+  bIncludedInBaseGame, TextureStreamingData, AssetUserData, StateId, EmbarkClusterMeshAlignmentMode and
+  bContactShadowsDeferred. This looks like a recompile or repackage, not an art change.
+- WBP_TextRenderWidget: its BackgroundText text and style changed.
+
+Conclusion: the scene evidence in s12-scene-assets-v1.json holds for CL1439418. If a later read of the new build fails or
+looks wrong, get a usmap for that build first.
