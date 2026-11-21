@@ -205,3 +205,44 @@ test("a malformed pose is refused; the stored pose wins over the link's; old ent
   const junk = await (await worker.fetch(new Request(`${BASE}/s/AAAAAAAAAAAA?o=2.12a&emote=%22%3E&t=1`), e)).text();
   assert.match(junk, /#\/\?o=2\.12a"\)/);
 });
+
+// Camera views (21 Nov 2026): the camera the builder opens on (src/lib/camera-view.ts). Stored and carried like the
+// pose and the body type; the card does not change.
+test("a camera view is stored, returned last in the link, and the page opens the builder on it", async () => {
+  const e = env();
+  const response = await uploadPosed(e, "&bt=a&emote=wave&t=1&view=0.621_1.42_3.1_0_0.95_0_-8");
+  assert.equal(response.status, 201);
+  const { url } = await response.json() as { url: string };
+  const id = /\/s\/([0-9A-Za-z]{12})\?o=2\.12a&bt=a&emote=wave&t=1&view=0\.621_1\.42_3\.1_0_0\.95_0_-8$/.exec(url)?.[1];
+  assert.ok(id, url);
+  assert.deepEqual(e.SHARES.entries.get(`s:${id}`)!.metadata,
+    { o: "2.12a", bt: "a", emote: "wave", t: "1", view: "0.621_1.42_3.1_0_0.95_0_-8" });
+  const page = await (await worker.fetch(new Request(url), e)).text();
+  assert.match(page, /location\.replace\("[^"]*#\/\?o=2\.12a&bt=a&emote=wave&t=1&view=0\.621_1\.42_3\.1_0_0\.95_0_-8"\)/);
+
+  const alone = await (await uploadPosed(e, "&view=0_1_2_0_1_0")).json() as { url: string };
+  assert.match(alone.url, /\?o=2\.12a&view=0_1_2_0_1_0$/);
+});
+
+test("a malformed view is refused; the stored view wins over the link's; old entries and expired links keep working", async () => {
+  const e = env();
+  for (const bad of ["&view=0_1", "&view=%22%3E%3Cscript%3E", "&view=0,1,2,0,1,0", "&view=0_1_2_0_1_0_1.25"])
+    assert.equal((await uploadPosed(e, bad)).status, 400, bad);
+  assert.equal(e.SHARES.entries.size, 0);
+
+  // An entry stored before camera views: a view added to its link is not trusted while the entry lives.
+  const plain = await (await upload(e, jpeg(1200, 630), { code: "2.12a" })).json() as { url: string };
+  const tampered = await (await worker.fetch(new Request(`${plain.url}&view=0_1_2_0_1_0`), e)).text();
+  assert.match(tampered, /#\/\?o=2\.12a"\)/);
+
+  const viewed = await (await uploadPosed(e, "&view=0_1_2_0_1_0")).json() as { url: string };
+  const viewedId = /\/s\/(\w{12})/.exec(viewed.url)![1];
+  const swapped = await (await worker.fetch(new Request(`${BASE}/s/${viewedId}?o=2.12a&view=5_5_5_0_1_0`), e)).text();
+  assert.match(swapped, /#\/\?o=2\.12a&view=0_1_2_0_1_0"\)/);
+
+  // Expired: the link's own (valid) view still opens; a junk one is dropped and the outfit still opens.
+  const expired = await (await worker.fetch(new Request(`${BASE}/s/AAAAAAAAAAAA?o=2.12a&view=0_1_2_0_1_0_5`), e)).text();
+  assert.match(expired, /#\/\?o=2\.12a&view=0_1_2_0_1_0_5"\)/);
+  const junk = await (await worker.fetch(new Request(`${BASE}/s/AAAAAAAAAAAA?o=2.12a&view=junk`), e)).text();
+  assert.match(junk, /#\/\?o=2\.12a"\)/);
+});
