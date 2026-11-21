@@ -91,6 +91,29 @@ export function storedPlayerNumber(metadata: Record<string, unknown> | null | un
   return typeof value === "string" && PLAYER_NUMBER.test(value) ? value : undefined;
 }
 
+// The camera the link opens on (21 Nov 2026), in the app's grammar (src/lib/camera-view.ts):
+// view=<x>_<y>_<z>_<target x>_<target y>_<target z>[_<roll>], metres to the millimetre, roll to a tenth of a degree.
+// Numbers only, never free text. The card does not change with it; the app checks the ranges when it opens the link.
+const VIEW = /^-?\d{1,3}(?:\.\d{1,3})?(?:_-?\d{1,3}(?:\.\d{1,3})?){5}(?:_-?\d{1,3}(?:\.\d)?)?$/;
+
+/** The camera view in these parameters: undefined when there is none, null when it is malformed. */
+export function readView(params: URLSearchParams): string | null | undefined {
+  const view = params.get("view");
+  return view === null ? undefined : VIEW.test(view) ? view : null;
+}
+
+/** The view's parameter, to follow the pose in a link ("" without one). Validated values need no escaping. */
+export const viewQuery = (view: string | undefined) => view ? `&view=${view}` : "";
+
+/** KV metadata beside the outfit code (absent without a view, as for every entry made before camera views). */
+export const viewMetadata = (view: string | undefined): Record<string, string> => view ? { view } : {};
+
+/** The view stored with an entry (entries made before camera views have none: the default framing). */
+export function storedView(metadata: Record<string, unknown> | null | undefined): string | undefined {
+  const view = metadata?.view;
+  return typeof view === "string" && VIEW.test(view) ? view : undefined;
+}
+
 /** Width and height of a JPEG from its first SOF marker, or null when the bytes are not a well-formed JPEG. */
 export function jpegSize(bytes: Uint8Array): { width: number; height: number } | null {
   if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8 || bytes[2] !== 0xff) return null;
@@ -123,14 +146,14 @@ export function newId(): string {
 }
 
 const escape = (text: string) => text.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
-const appLink = (env: Env, code: string | null, pose?: Pose, bodyType?: string, playerNumber?: string) =>
-  `${env.APP_URL}${code ? `#/?o=${code}${bodyTypeQuery(bodyType)}${playerNumberQuery(playerNumber)}${poseQuery(pose)}` : ""}`;
+const appLink = (env: Env, code: string | null, pose?: Pose, bodyType?: string, playerNumber?: string, view?: string) =>
+  `${env.APP_URL}${code ? `#/?o=${code}${bodyTypeQuery(bodyType)}${playerNumberQuery(playerNumber)}${poseQuery(pose)}${viewQuery(view)}` : ""}`;
 
 export function previewPage(env: Env, self: string, image: string | null, code: string | null, pose?: Pose,
-  bodyType?: string, playerNumber?: string): string {
-  // A pose, a body type and a player number belong to an outfit.
-  if (!code) { pose = undefined; bodyType = undefined; playerNumber = undefined; }
-  const app = appLink(env, code, pose, bodyType, playerNumber);
+  bodyType?: string, playerNumber?: string, view?: string): string {
+  // A pose, a body type, a player number and a camera view belong to an outfit.
+  if (!code) { pose = undefined; bodyType = undefined; playerNumber = undefined; view = undefined; }
+  const app = appLink(env, code, pose, bodyType, playerNumber, view);
   const title = code ? "THE FINALS outfit" : "the-finals-outfit";
   const posed = pose ? `, ${pose.paused ? "frozen" : "caught"} ${pose.t} s into an emote` : "";
   const meta = [
