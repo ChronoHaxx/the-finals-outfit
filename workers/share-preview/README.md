@@ -119,7 +119,7 @@ Live checks after the deploy, all read-only (nothing stored):
 - The root redirects (302).
 - An upload with `view=0,1,2` gets 400 `bad camera view`; a foreign origin gets 403.
 
-## Redeploying for player numbers (PR #60, NOT deployed yet)
+## Redeploying for player numbers (21 Nov 2026)
 
 The app's player number adds `pn=<10–99>` after `bt`. Without it, each piece shows its own number. The Worker validates
 it (`^[1-9][0-9]$`, else 400 `bad player number`), stores it in the entry's metadata as `pn`, returns it in the link
@@ -127,20 +127,22 @@ and sends people to `#/?o=<code>[&bt=a]&pn=42[&emote=...][&view=...]`. A stored 
 entry lives. Entries and links without one are unchanged. The app refuses a preview link that comes back without the
 `pn` it sent and copies the plain link instead, so the deploy order does not matter for correctness.
 
-Build: branch `claude/share-worker-pn-view-2026-11-21`, which is PR #60's `pn` on top of the camera-view code live in
-`773a350e` (PR #59's Worker, unchanged from `56caa09`/`22d086d`). Deploy from that build only: PR #60's own branch has
-no `view` and would drop it from live links. Links carry `o, bt, pn, pose, view` in that order.
+**Deployed 21 Nov 2026, 22:01 London** (on the user's "Deploy it"): version `efb3af6b-f785-41d7-a70c-9769458b6764`,
+replacing `773a350e-976b-4956-9f54-3401e29341b3` (PR #59's camera views). Built from this branch, `claude/share-worker-pn-view-2026-11-21` at `91a22dd`: PR #60's
+`pn` on top of PR #59's Worker (unchanged from `56caa09`/`22d086d`), so the live Worker keeps `view`. Links carry
+`o, bt, pn, pose, view` in that order. Bindings unchanged. To restore the previous version:
+`npx --yes wrangler@4.131.1 rollback 773a350e-976b-4956-9f54-3401e29341b3` (**not** `f9f734a6`, which would drop `view`).
+Whichever of PRs #59 and #60 merges second takes that build's `workers/share-preview/src` files when resolving the
+conflict, so `main` matches what is live.
 
-Deploy, only on the owner's yes, from this folder: `npx --yes wrangler@4.131.1 deploy`. It replaces
-`773a350e-976b-4956-9f54-3401e29341b3` (camera views, live since 21 Nov 20:30). Restore that with
-`npx --yes wrangler@4.131.1 rollback 773a350e-976b-4956-9f54-3401e29341b3`; **not** `f9f734a6`, which would drop `view`.
-No KV or binding changes.
-
-Read-only checks after the deploy:
-- `/s/AAAAAAAAAAAA?o=2.&pn=42` opens `#/?o=2.&pn=42`, and `/s/AAAAAAAAAAAA?o=2.&bt=a&pn=42` opens `#/?o=2.&bt=a&pn=42`.
+Live checks after the deploy, all read-only (nothing stored):
+- `/s/AAAAAAAAAAAA?o=2.&pn=42` opens `#/?o=2.&pn=42`; with `&bt=a` before it, `#/?o=2.&bt=a&pn=42`.
 - `/s/AAAAAAAAAAAA?o=2.&bt=a&pn=42&emote=wave&t=1&view=0_1_2_0_1_0_5` keeps all of them in that order.
-- `/s/AAAAAAAAAAAA?o=2.&pn=7` drops the junk `pn`; `&view=0_1_2_0_1_0_5` alone still opens with the view.
-- The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit.
+- `&pn=7` is dropped (`#/?o=2.`); `&view=0_1_2_0_1_0_5` alone still opens with the view; a pose link without `pn`
+  is unchanged.
+- The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit and serves its 73 KB card.
+- The root redirects (302).
+- An upload with `pn=7` gets 400 `bad player number`; a foreign origin gets 403.
 
 ## Live deployment (20 Oct 2026)
 
