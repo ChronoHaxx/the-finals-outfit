@@ -260,7 +260,9 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
   const missing = state.moving && emote ? missingSummary(emote, animator.props) : null;
 
   return (
-    <div ref={controls} className="flex min-h-0 flex-col items-end gap-1.5">
+    // When the column is short only the emote picker gives way: everything else keeps its height (shrink-0), while the
+    // picker and this block that holds it may shrink (shrink!).
+    <div ref={controls} className="flex min-h-0 shrink! flex-col items-end gap-1.5 *:shrink-0">
       <div className="flex gap-1.5">
         {emote && animator.sounds.hasSound(emote.source) && <EmoteSoundControl sounds={animator.sounds} />}
         {state.active && (
