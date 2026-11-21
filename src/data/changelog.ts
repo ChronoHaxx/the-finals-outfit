@@ -14,8 +14,8 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
-    id: "2026-11-15-in-game-outfits",
-    date: "2026-11-15",
+    id: "2026-11-21-in-game-outfits",
+    date: "2026-11-21",
     title: "In-game outfits",
     notes: [
       "Outfits, first in the wardrobe, lists the game's own 352 outfits with their in-game icons. One tap puts a whole outfit on and keeps your face and skin.",

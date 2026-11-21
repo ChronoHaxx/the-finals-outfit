@@ -161,8 +161,8 @@ export default function SlotPicker() {
       && getReconstructionReview(i, workedOn, progressState).status === statusFilter));
   }, [slot, deferredQuery, workedOn, statusFilter, progressState]);
 
-  // Start each view at its top. Desktop scrolls the grid pane; on phones the drawer scrolls, so bring the
-  // strip back to the drawer's top if the visitor is deep in a list.
+  // Start each view at its top. Desktop scrolls the grid pane; on phones the drawer scrolls, so bring the strip
+  // back to the drawer's top if the visitor is deep in a list.
   const toTop = () => {
     grid.current?.scrollTo({ top: 0 });
     const el = section.current;
@@ -182,8 +182,8 @@ export default function SlotPicker() {
     <div ref={section} className="flex flex-col lg:h-full lg:min-h-0 lg:flex-row">
       <SlotRail view={outfits ? { kind: "outfits" } : { kind: "slot", slot }} onSelect={selectSlot} onOutfits={selectOutfits} />
 
-      {outfits ? <div className="flex min-w-0 flex-1 flex-col lg:min-h-0"><PresetOutfits /></div> :
-      // A size container: in a narrow drawer the slot title (also on the rail) gives its room to the search.
+      {/* A size container: in a narrow drawer the slot title (also on the rail) gives its room to the search. */}
+      {outfits ? <div className="@container flex min-w-0 flex-1 flex-col lg:min-h-0"><PresetOutfits /></div> :
       <div className="@container flex min-w-0 flex-1 flex-col lg:min-h-0">
         <div className="flex shrink-0 items-center gap-2 border-b border-line px-3 py-2.5 lg:gap-3 lg:px-4 lg:py-3">
           <div className="mr-auto hidden min-w-0 @md:block">
