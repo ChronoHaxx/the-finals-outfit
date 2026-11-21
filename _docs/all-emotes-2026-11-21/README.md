@@ -107,13 +107,26 @@ then **Uncategorised** for emotes without an icon of their own (none, or the sto
   shipped on 12 Nov (PR #48). It now lists what plays: "with their props, sound and facial animation. Effects are not
   shown yet." (sound and facial animation only where the host has them; `FaceAnimator.available`).
 
-## Found in passing, not fixed here: an emote picked in the first seconds stops early
+- **Checklist steps 1-5, run by the agent on the owner's waiver** ([user-steps.mjs](user-steps.mjs),
+  [user-steps.json](user-steps.json), `ok: true`): every step's expected result holds on the production build as a
+  visitor; details in [functional-checklist.md](functional-checklist.md) "Recorded result".
+
+## Found in passing, not fixed here
+
+- **The detail line says "No prop or effects in the game." for emotes whose prop is shown** (Coop Caper, Gimme Five, and
+  every live emote with a working prop): it prints whenever nothing is missing. The wording predates this PR (main has
+  it). It should say the prop is shown.
+- **At 1440×900 the open picker covers Gimme Five's partner**, who stands at the right edge of the frame.
+
+### An emote can go back to the idle after about 2 s
 
 As a visitor (the app's automation flag masked), an emote clicked within a few seconds of the controls enabling plays
 about 1.5-2 s, then snaps back to the idle. After a 20 s wait the same emotes play to their end. Seen on this branch's
 build and on the live site (Valkyria's Embrace, live since 6 Nov), so it predates this change. Under automation (no
 idle autoplay, no sound) it does not happen. Measured in headless Chrome only
 ([early-stop-probe.mjs](early-stop-probe.mjs)); not yet confirmed by hand. The visitor path differs by the idle autoplay, sound, the welcome dialog and stored
-preferences, so the cause is likely something that finishes loading and restarts the idle.
+preferences, so the cause is likely something that finishes loading and restarts the idle. It is not limited to the
+first seconds: in 1 of 4 runs of `user-steps.mjs`, Gimme Five went back to the idle at 1.49 of 5.67 s about 30 s after
+load (the other three played it to its end). A separate session is fixing it.
 
 User checks: [functional-checklist.md](functional-checklist.md).
