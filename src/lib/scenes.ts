@@ -80,7 +80,7 @@ export const sceneById = (id: string | null | undefined): SceneDef | null =>
 /** The scenes base URL: VITE_SCENES_BASE when set, else scenes/ next to the app (as animations/). */
 export function scenesBaseUrl(): string {
   const env = typeof import.meta !== "undefined" ? import.meta.env : undefined; // no env in the node tests
-  const base = (env?.VITE_SCENES_BASE as string | undefined)?.trim()
+  const base = env?.VITE_SCENES_BASE?.trim()
     || `${(env?.BASE_URL ?? "/").replace(/\/?$/, "/")}scenes/`;
   return base.replace(/\/?$/, "/");
 }
