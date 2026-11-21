@@ -4,7 +4,8 @@
 //
 // Outfit B with the idle playing, graphics pinned to High (localStorage, as a viewer's own choice would be), pixel
 // ratio 1. Three extra copies of the rig are cloned in as in measure-character-cost.mjs (shared geometry and materials,
-// own skeletons, still pose). Chrome's sampling profiler runs for a fixed window; self time is summed per function.
+// own skeletons; since 21 Nov they copy the original's bone pose every frame). Chrome's sampling profiler runs for a
+// fixed window; self time is summed per function.
 //
 // Usage (Git Bash, worktree root, dev server running: node _docs/multi-character-2026-11-11/serve-5186.mjs):
 //   node _docs/multi-character-2026-11-11/profile-frame.mjs > _docs/multi-character-2026-11-11/profile-v1.json
@@ -28,7 +29,14 @@ const ADD_COPIES = () => {
       const source = [...pairs].find(([, b]) => b === o)[0];
       o.bind(new THREE.Skeleton(source.skeleton.bones.map(b => pairs.get(b) ?? b), source.skeleton.boneInverses), source.bindMatrix);
     });
-    copy.position.x = x; root.parent.add(copy); return copy;
+    copy.position.x = x; root.parent.add(copy);
+    // (21 Nov) The copies follow the original's pose every frame, as real scene characters would each animate: a still
+    // copy would let per-frame caches (the skeleton update memo) skip it entirely and flatter the result.
+    const follow = [...pairs].filter(([a]) => a.isBone);
+    const step = () => { for (const [a, b] of follow) { b.position.copy(a.position); b.quaternion.copy(a.quaternion); b.scale.copy(a.scale); }
+      if (window.__copies) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+    return copy;
   });
 };
 
