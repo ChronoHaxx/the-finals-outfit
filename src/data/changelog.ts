@@ -14,6 +14,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-15-emote-sounds",
+    date: "2026-11-15",
+    title: "Emote sounds",
+    notes: [
+      "Emotes now play the game's own sound effects and music, in time with the animation. 235 of the 237 emotes in the picker have sound; the other two are silent in the game too.",
+      "Sound starts with your first click or tap, as browsers require, and follows the emote through pause, scrubbing and loops. A speaker button beside Pause mutes it, and on a computer a slider sets the volume. Both are remembered in this browser.",
+      "Props now appear without a hitch the first time an emote shows them.",
+    ],
+    items: ["emote-effects", "idle-emotes"],
+  },
+  {
     id: "2026-11-15-full-window-screenshots",
     date: "2026-11-15",
     title: "Full-window view and transparent screenshots",
@@ -21,6 +32,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
       "The 3D view now fills the window. The item picker is a drawer you open and close from the Items tab at its edge; on a phone held upright it is a sheet under the character that you tap or swipe. It stays the way you left it.",
       "Press H to hide every control and the mouse pointer for a clean view. H, Esc or a double-click brings them back. On a phone, tap the eye button, then double-tap to return.",
       "Save a screenshot as a PNG from the camera button: on its backdrop, or with a transparent background to lay over anything. The lighting is the same as on screen, at up to three times the view's size.",
+      "Fixed: earrings and Laugh Trigger stopped the preview loading with many faces other than Face 01. A few of them can only be placed on Face 01 for now and say so on other faces.",
     ],
     items: ["faster-builder"],
   },

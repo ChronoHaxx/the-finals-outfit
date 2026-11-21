@@ -1,0 +1,52 @@
+{
+  "app": "http://127.0.0.1:5192",
+  "anim": "http://127.0.0.1:5192/animations/",
+  "cases": [
+    {
+      "name": "balaclava",
+      "clip": "take-a-bow",
+      "paused": true,
+      "head": "SK_Head_Face_01_Base",
+      "masks": [
+        "BWA_FaceJoints_FaceMask"
+      ],
+      "wraps": 1,
+      "posed": true,
+      "wrapped": true,
+      "soundsAvailable": false,
+      "faceFiles": [
+        "200 faces-1/faces.json",
+        "200 faces-1/heads/SK_Head_Face_01_Base.json",
+        "200 faces-1/poses/Head_Face_01_Base_PoseAsset.json",
+        "200 faces-1/wraps/SK_Head_Face_01_Base_Wraps.json",
+        "200 faces-1/curves/HM_Frontend_Emotes_A_TakeABow_00.json",
+        "200 faces-1/masks/BWA_FaceJoints_FaceMask.json"
+      ],
+      "faceNon200": [],
+      "soundFiles": [],
+      "errors": []
+    },
+    {
+      "name": "beard",
+      "clip": "evil-jester",
+      "paused": true,
+      "head": "SK_Head_Face_01_Base",
+      "masks": [],
+      "wraps": 1,
+      "posed": true,
+      "wrapped": true,
+      "soundsAvailable": false,
+      "faceFiles": [
+        "200 faces-1/faces.json",
+        "200 faces-1/wraps/SK_Head_Face_01_Base_Wraps.json",
+        "200 faces-1/heads/SK_Head_Face_01_Base.json",
+        "200 faces-1/curves/HM_Frontend_Emotes_A_EvilJester_00.json",
+        "200 faces-1/poses/Head_Face_01_Base_PoseAsset.json"
+      ],
+      "faceNon200": [],
+      "soundFiles": [],
+      "errors": []
+    }
+  ],
+  "ok": true
+}
