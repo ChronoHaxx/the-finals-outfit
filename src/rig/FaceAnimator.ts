@@ -315,6 +315,9 @@ export class FaceAnimator {
     this.enabled = options.enabled ?? true;
   }
 
+  /** This deployment ships facial animation and it is on (false when the manifest names no faces index, or ?face=0). */
+  get available(): boolean { return !!this.indexUrl && this.enabled; }
+
   private base(): string { return this.indexUrl!.replace(/[^/]*$/, ""); }
 
   private loadIndex(): Promise<FaceIndex | null> {

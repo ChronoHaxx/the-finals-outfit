@@ -21,7 +21,7 @@ export function ChinalsBanner() {
       </p>
       <p>
         Names: the game's own English text where it has one. Otherwise the Chinese name, with our own unofficial
-        translation marked as such. Props are shown; effects, sound and facial expressions are not.
+        translation marked as such. Props, sound and facial expressions are shown; effects are not.
       </p>
       <p>
         There are no Chinals cosmetics on the site yet: the outfit is made of global items, and it is the same outfit

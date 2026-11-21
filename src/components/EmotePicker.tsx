@@ -103,6 +103,12 @@ export function missingBadge(info: ClipInfo, props?: PropsView): string | null {
   return null;
 }
 
+/** What the picker's footer says the emotes come with: props always; sound and faces when this deployment ships them. */
+export function shownParts(sound: boolean, faces: boolean): string {
+  const parts = ["props", sound && "sound", faces && "facial expressions"].filter((part): part is string => !!part);
+  return parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts.at(-1)}` : parts[0];
+}
+
 type Tab = "emotes" | "more";
 
 // Chinese text is marked as such, so the browser picks Simplified Chinese glyph forms (Han characters shared with
@@ -271,7 +277,8 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
           </p>
         </> : <p className="text-[11px] leading-snug text-fg-dim">
           {chinals ? "Chinals emotes on your outfit (global cosmetics)" : "The game's emote animations on your outfit"}, with
-          their props{animator.sounds.available ? " and sound" : ""}. Effects and facial expressions are not shown yet.
+          their {shownParts(animator.sounds.available, animator.face.available)}.
+          {animator.face.available ? " Effects are not shown yet." : " Effects and facial expressions are not shown yet."}
         </p>}
       </div>
     </div>
