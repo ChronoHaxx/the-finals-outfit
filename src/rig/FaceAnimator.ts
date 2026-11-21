@@ -315,8 +315,8 @@ export class FaceAnimator {
     this.enabled = options.enabled ?? true;
   }
 
-  /** The manifest names a faces index and facial animation is on (?face=0 turns it off). */
-  get available(): boolean { return this.enabled && this.indexUrl !== null; }
+  /** This clip set has facial animation (the viewer then offers its switch). */
+  get available(): boolean { return !!this.indexUrl; }
 
   private base(): string { return this.indexUrl!.replace(/[^/]*$/, ""); }
 
@@ -369,9 +369,15 @@ export class FaceAnimator {
    *  unavailable). */
   bind(meshes: readonly THREE.SkinnedMesh[], wraps: readonly FaceWrapPart[] = [],
     masks: readonly string[] | Promise<readonly string[]> = []): Promise<void> {
+    const same = meshes.length === this.meshes.length && meshes.every((m, i) => m === this.meshes[i]);
+    if (!this.enabled) {
+      // Switched off: nothing is fetched. The head bound before stays bound, so switching on again is instant; another
+      // head is forgotten and bound when the face is switched on (RigAnimator.setFace), its bones still at rest then.
+      if (!same) this.unbind();
+      return Promise.resolve();
+    }
     const parts = Promise.all([this.bindWraps(wraps), this.bindMasks(masks)]);
-    if (meshes.length === this.meshes.length && meshes.every((m, i) => m === this.meshes[i]))
-      return Promise.all([this.pending, parts]).then(() => undefined);
+    if (same) return Promise.all([this.pending, parts]).then(() => undefined);
     this.restore();
     this.meshes = [...meshes];
     this.head = null;
@@ -499,7 +505,7 @@ export class FaceAnimator {
     this.posed = false;
   }
 
-  /** Turn the face on or off (?face=0 compares); off puts the bones back to rest. */
+  /** Turn the face on or off (the viewer's switch, through RigAnimator.setFace); off puts the bones back to rest. */
   setEnabled(on: boolean): void {
     if (!on) this.restore();
     this.enabled = on;
