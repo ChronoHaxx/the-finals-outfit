@@ -89,7 +89,8 @@ export interface Draft {
   labels?: SlotMap;
   generated?: boolean;
   bodyType?: string;
-  reason: "link" | "cap";
+  /** "link": an opened share link; "preset": one of the game's own outfits; "cap": made at the cap, so it could not be saved. */
+  reason: "link" | "preset" | "cap";
   /** Edited by hand while it could not be saved. Leaving it then needs a confirmation. */
   edited?: boolean;
 }
