@@ -12,7 +12,7 @@ Shocka's feedback, item 3 (`_docs/feedback-shocka-2026-11/README.md`, held in th
 | Ask | Where | How |
 |---|---|---|
 | Links keep the camera | `src/lib/camera-view.ts`, `share-url.ts`, `ShareBuild.tsx`, `open-link.ts` | `view=x_y_z_tx_ty_tz[_roll]` rides last in the short (hash) and readable (query) links. Omitted when the camera is on the default framing. "Include camera view" in the share panel leaves it out. The 4-angle card is unchanged. |
-| Preview links keep it | `workers/share-preview` | The Worker validates, stores (KV metadata `view`) and returns the view like `bt` and the pose. **Not deployed**: needs the user's yes. Until then preview links drop the view, and the share panel says so. |
+| Preview links keep it | `workers/share-preview` | The Worker validates, stores (KV metadata `view`) and returns the view like `bt` and the pose. Deployed 21 Nov 20:30 London, version `773a350e` (rollback `f9f734a6`); checks in the Worker README. If a Worker without it ever serves, preview links drop the view and the share panel says so. |
 | Saved views | `camera-view.ts` (list rules), `outfit-library.ts` (`cameraViews` field), `useSavedOutfits.ts` (actions) | Up to 20 views per outfit, saved into the outfit record as you go (journal, then IndexedDB). Rename, delete with Undo (tombstone). Views of other saved outfits are listed for recall. |
 | Coordinates | `CameraPanel.tsx`, `CameraBridge.tsx` | A viewfinder button in the viewer's top row. Camera and Looking-at X/Y/Z follow the camera live; typing applies on Enter or leaving the field; arrows nudge 1 cm (Shift 10 cm); Escape reverts. |
 | Roll | `CameraBridge.tsx` | A slider (-180..180°, 0.5° steps) and Level. Applied after OrbitControls' update each frame, from scratch, so it never accumulates. |
