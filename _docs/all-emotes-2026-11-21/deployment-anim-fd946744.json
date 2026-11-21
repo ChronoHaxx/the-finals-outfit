@@ -1,0 +1,14 @@
+{
+  "base": "https://fd946744.the-finals-outfit-assets.pages.dev/",
+  "files": 2586,
+  "identical": 2586,
+  "mismatched": [],
+  "glbHeaders": {
+    "file": "props-10/BP_Emote_AdventurerMap_Prop.glb",
+    "type": "model/gltf-binary",
+    "cors": "*",
+    "cache": "public, max-age=31536000, immutable"
+  },
+  "missingStatus": 404,
+  "ok": true
+}

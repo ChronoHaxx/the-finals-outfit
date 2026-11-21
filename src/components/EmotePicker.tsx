@@ -2,18 +2,21 @@ import { useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternal
 import { createPortal } from "react-dom";
 import type { AnimatorState, ClipInfo, RigAnimator } from "../rig/RigAnimator";
 import { CloseIcon, SearchIcon } from "./Icons";
+import { useChromeLayout } from "../lib/viewer-chrome";
 
-// The emote picker (showcase animation, 5 Nov 2026): every Season 12 emote item with the game's own icon, newest
+// The emote picker (showcase animation, 5 Nov 2026): every emote item in the game files (since 21 Nov 2026 both
+// families: DA_Emote_* and the Season 1-2 DA_InGameEmote_*), with the game's own icon, newest
 // season first. Most emotes also spawn a prop (a guitar, a flag, wings) or effects (smoke, sparks) from notifies in
 // their animation. Props are shown (EmoteProps.ts) except a few; effects are not, so every tile and the details line
 // say what is not shown (once props.json has loaded, only what is really missing).
 // Reactions, idles and the emote animations no current item plays sit under "More".
 //
-// Layout: the character stays visible while choosing. On desktop the panel docks beside the 3D viewer: right of it
-// when there is room, else left of it, over the items drawer (inside the viewer it hid the character); with no room
-// either side (drawer closed) it sits in the viewer's right-hand column. On phones it is a sheet over the lower part of
-// the screen, below where the stage shows the character with the items sheet open. Docked panels and sheets render at
-// the body, so the sticky slot rail cannot paint over them.
+// Layout: the character stays visible while choosing. On desktop the panel opens under the Emotes button, in the 3D
+// view's right-hand column (15 Nov 2026: the full-window stage reaches the window's right edge, so docking beside it
+// could only land over the items drawer, far from the button). On phones it is a sheet over the lower part of the
+// screen, below where the stage shows the character with the items sheet open. On a phone held sideways (the side
+// layout) a sheet under the short stage would be a sliver, so the panel takes the full height on the drawer's side and
+// the character stays in view beside it. Sheets render at the body, so the sticky slot rail cannot paint over them.
 
 const DESKTOP = "(min-width: 64rem)"; // Tailwind lg, where the builder switches to its two-pane layout
 function useDesktop(): boolean {
@@ -23,30 +26,26 @@ function useDesktop(): boolean {
   );
 }
 
-const DOCK_MIN = 20 * 16, DOCK_MAX = 26 * 16, GAP = 12; // px
-
-/** Where to dock beside the viewer (fixed coordinates, kept current on resize), or null when there is no room. */
-function useDock(anchor: HTMLElement | null, enabled: boolean): CSSProperties | null {
+/** Phone held sideways: a full-height panel from the left edge up to the stage (over the items drawer), or, with the
+ *  drawer closed, over the stage's left part, leaving the character (centred) in view. */
+function useSideSheet(anchor: HTMLElement | null, enabled: boolean): CSSProperties | null {
   const [style, setStyle] = useState<CSSProperties | null>(null);
   useEffect(() => {
     if (!anchor || !enabled) { setStyle(null); return; }
     const measure = () => {
       const rect = anchor.getBoundingClientRect();
-      const right = window.innerWidth - rect.right - 2 * GAP, left = rect.left - 2 * GAP;
-      const box = { position: "fixed", top: rect.top, height: rect.height } as const;
-      setStyle(right >= DOCK_MIN ? { ...box, left: rect.right + GAP, width: Math.min(DOCK_MAX, right) }
-        : left >= DOCK_MIN ? { ...box, left: rect.left - GAP - Math.min(DOCK_MAX, left), width: Math.min(DOCK_MAX, left) }
-        : null);
+      const width = rect.left >= SIDE_MIN ? rect.left : Math.min(SIDE_MAX, Math.round(0.42 * window.innerWidth));
+      setStyle({ top: Math.round(rect.top), width });
     };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(anchor);
     window.addEventListener("resize", measure);
-    window.addEventListener("scroll", measure, true);
-    return () => { observer.disconnect(); window.removeEventListener("resize", measure); window.removeEventListener("scroll", measure, true); };
+    return () => { observer.disconnect(); window.removeEventListener("resize", measure); };
   }, [anchor, enabled]);
   return style;
 }
+const SIDE_MIN = 16 * 16, SIDE_MAX = 23 * 16; // px
 
 /** Phone sheet: its top edge, under the stage's first --stage-h (44% of the screen, at least 16rem; the stage's height
  *  while the items sheet is open), so the character keeps the same spot whether the items sheet is open or not. */
@@ -105,20 +104,50 @@ export function missingBadge(info: ClipInfo, props?: PropsView): string | null {
   return null;
 }
 
+/** Whether an emote has its own UI icon. A few Chinals emotes name the store's generic emote card
+ *  (T_UI_Icon_General_Emote) instead of their own; they, and any emote with no icon, go under "Uncategorised". */
+export function hasOwnIcon(clip: ClipInfo): boolean {
+  return Boolean(clip.icon) && !/General_Emote/i.test(clip.icon ?? "");
+}
+
+export interface EmoteGroup { key: string; title: string; clips: ClipInfo[] }
+
+/** The emote grid's sections (21 Nov 2026): by season, newest first (the Season 1-2 emotes included), then the
+ *  season-less Chinals set, then "Uncategorised" for emotes without their own icon. Each sorted by rarity, then name. */
+export function emoteGroups(emotes: ClipInfo[], rarityOrder: readonly string[], chinals: boolean): EmoteGroup[] {
+  const rank = (r?: string | null) => { const i = rarityOrder.indexOf(r ?? ""); return i < 0 ? rarityOrder.length : i; };
+  const order = (list: ClipInfo[]) => list.sort((a, b) => rank(a.emote?.rarity) - rank(b.emote?.rarity) || a.label.localeCompare(b.label));
+  const bySeason = new Map<number, ClipInfo[]>(), uncategorised: ClipInfo[] = [];
+  for (const c of emotes) {
+    if (!hasOwnIcon(c)) { uncategorised.push(c); continue; }
+    const season = c.emote?.season ?? 0;
+    bySeason.set(season, [...(bySeason.get(season) ?? []), c]);
+  }
+  const groups = [...bySeason.entries()].sort((a, b) => b[0] - a[0]).map(([season, list]) => ({
+    key: `season-${season}`, title: season ? `Season ${season}` : chinals ? "Chinals emotes" : "Other", clips: order(list),
+  }));
+  if (uncategorised.length) groups.push({ key: "uncategorised", title: "Uncategorised", clips: order(uncategorised) });
+  return groups;
+}
+
 type Tab = "emotes" | "more";
 
 // Chinese text is marked as such, so the browser picks Simplified Chinese glyph forms (Han characters shared with
 // Japanese render differently by language).
 const zhHans = (text: string) => /\p{Script=Han}/u.test(text) ? "zh-Hans" : undefined;
 
+/** "a", "a and b", "a, b and c". */
+const listed = (items: string[]) => items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
+
 export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
   animator: RigAnimator; state: AnimatorState; onPlay: (id: string) => void; onClose: () => void;
-  /** The 3D viewer, to dock beside on desktop. */
+  /** The 3D viewer: the phone sheet starts below where it shows the character. */
   anchor: HTMLElement | null;
 }) {
   const desktop = useDesktop();
-  const dock = useDock(anchor, desktop);
-  const sheetTop = useSheetTop(anchor, !desktop);
+  const sideways = useChromeLayout() === "side" && !desktop;
+  const side = useSideSheet(anchor, sideways);
+  const sheetTop = useSheetTop(anchor, !desktop && !sideways);
   const [tab, setTab] = useState<Tab>("emotes");
   const [query, setQuery] = useState("");
   const [bodyOnly, setBodyOnly] = useState(false);
@@ -139,20 +168,12 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
   const emotes = useMemo(() => clips.filter(c => c.kind === "emote" && c.emote && !c.emote.unlisted), [clips]);
   const groups = useMemo(() => {
     const needle = deferredQuery.trim().toLowerCase();
-    const rank = (r?: string | null) => { const i = rarityOrder.indexOf(r ?? ""); return i < 0 ? rarityOrder.length : i; };
     const matches = (c: ClipInfo) => [c.label, c.emote?.description, c.emote?.nameZh, c.emote?.translation]
       .some(text => text?.toLowerCase().includes(needle));
     const shown = emotes.filter(c => (!needle || matches(c))
       && (!bodyOnly || !missingBadge(c, animator.props)));
-    const bySeason = new Map<number, ClipInfo[]>();
-    for (const c of shown) {
-      const season = c.emote?.season ?? 0;
-      bySeason.set(season, [...(bySeason.get(season) ?? []), c]);
-    }
-    return [...bySeason.entries()].sort((a, b) => b[0] - a[0]).map(([season, list]) => ({
-      season, clips: list.sort((a, b) => rank(a.emote?.rarity) - rank(b.emote?.rarity) || a.label.localeCompare(b.label)),
-    }));
-  }, [emotes, deferredQuery, bodyOnly, rarityOrder, propsLoaded, animator]);
+    return emoteGroups(shown, rarityOrder, chinals);
+  }, [emotes, deferredQuery, bodyOnly, rarityOrder, chinals, propsLoaded, animator]);
   const shownCount = groups.reduce((n, g) => n + g.clips.length, 0);
   const more = useMemo(() => [
     { label: "Idle loops", clips: clips.filter(c => c.kind === "idle") },
@@ -175,8 +196,9 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
         onClick={() => onPlay(clip.id)} onPointerEnter={() => setDetail(clip.id)} onFocus={() => setDetail(clip.id)}
         className={`group relative flex flex-col bg-ink-900 text-left outline-none transition-colors [contain-intrinsic-size:auto_118px] [content-visibility:auto] hover:bg-ink-800 focus-visible:ring-2 focus-visible:ring-fg ${active ? "bg-ink-800" : ""}`}>
         <span className="relative block aspect-square overflow-hidden bg-ink-850">
-          {icon && <img src={icon} alt="" width={80} height={80} loading="lazy" decoding="async"
-            className="size-full object-cover transition-transform duration-200 ease-out group-hover:scale-[1.05]" />}
+          {icon ? <img src={icon} alt="" width={80} height={80} loading="lazy" decoding="async"
+            className="size-full object-cover transition-transform duration-200 ease-out group-hover:scale-[1.05]" />
+            : <span aria-hidden="true" className="hud absolute inset-0 grid place-items-center text-ink-600">No icon</span>}
           {badge && <span className="absolute left-1 top-1 bg-ink-950/85 px-1 py-[3px] text-[8px] font-bold uppercase leading-none tracking-[0.08em] text-fg-muted">{badge}</span>}
           {loading && <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[3px] overflow-hidden bg-ink-950/60"><span className="block h-full w-1/3 animate-sweep bg-fg" /></span>}
         </span>
@@ -202,9 +224,9 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
   const body = (
     <div ref={panel} role="dialog" aria-label="Emotes" onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); onClose(); } }}
       onPointerLeave={() => setDetail(null)}
-      style={dock ?? (!desktop && sheetTop !== null ? { top: sheetTop } : undefined)}
-      className={dock ? "z-40 flex flex-col border border-line bg-ink-950 shadow-2xl"
-        : desktop ? "flex min-h-0 w-[23rem] max-w-[calc(100vw-2rem)] flex-col border border-line bg-ink-950/95 shadow-2xl"
+      style={sideways ? side ?? undefined : !desktop && sheetTop !== null ? { top: sheetTop } : undefined}
+      className={desktop ? "flex min-h-0 shrink! w-[23rem] max-w-[calc(100vw-2rem)] flex-col border border-line bg-ink-950/95 shadow-2xl"
+        : sideways ? "fixed bottom-0 left-0 z-40 flex flex-col border-r border-line bg-ink-950 pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)]"
         : "fixed inset-x-0 bottom-0 top-(--stage-h) z-40 flex flex-col border-t border-line bg-ink-950 pb-[env(safe-area-inset-bottom)]"}>
       <div className="flex shrink-0 items-center gap-1 border-b border-line pl-2 pr-1">
         {tabButton("emotes", <>Emotes <span className="text-fg-dim">{emotes.length}</span></>)}
@@ -230,10 +252,11 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
           {shownCount === 0 && <p className="py-6 text-center text-sm text-fg-muted">No emotes match.</p>}
           {groups.map(group => (
-            <section key={group.season} aria-label={group.season ? `Season ${group.season}` : chinals ? "Chinals emotes" : "No season"}>
+            <section key={group.key} aria-label={group.title}>
               <h3 className="hud sticky top-0 z-10 bg-ink-950 py-1.5 text-fg-dim">
-                {group.season ? `Season ${group.season}` : chinals ? "Chinals emotes" : "Other"} <span className="text-ink-600">·</span> {group.clips.length}
+                {group.title} <span className="text-ink-600">·</span> {group.clips.length}
               </h3>
+              {group.key === "uncategorised" && <p className="mb-1.5 text-[11px] text-fg-dim">No icon of their own in the game files.</p>}
               <div className="grid grid-cols-[repeat(auto-fill,minmax(84px,1fr))] gap-1">{group.clips.map(tile)}</div>
             </section>
           ))}
@@ -272,10 +295,11 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
           </p>
         </> : <p className="text-[11px] leading-snug text-fg-dim">
           {chinals ? "Chinals emotes on your outfit (global cosmetics)" : "The game's emote animations on your outfit"}, with
-          their props{animator.sounds.available ? " and sound" : ""}. Effects and facial expressions are not shown yet.
+          their {listed(["props", ...(animator.sounds.available ? ["sound"] : []), ...(animator.face.available ? ["facial expressions"] : [])])}.
+          {animator.face.available ? " Effects are not shown yet." : " Effects and facial expressions are not shown yet."}
         </p>}
       </div>
     </div>
   );
-  return desktop && !dock ? body : createPortal(body, document.body);
+  return desktop ? body : createPortal(body, document.body);
 }

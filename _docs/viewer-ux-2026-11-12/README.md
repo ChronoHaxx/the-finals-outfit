@@ -102,3 +102,35 @@ Checks on the merged branch:
   the localhost origin (CORS), expected for a local build. Full-size screenshots looked at: desktop open, hidden UI with
   hint, phone share panel, Lobby transparent over a checkerboard, 2x transparent over a checkerboard.
 - User checks 1-7 waived on 15 Nov ("i trust u, just merge to live"); see functional-checklist.md.
+
+## Copy to the clipboard (15 Nov 2026, user request)
+
+"for screenshot, is it possible to have options to copy to clipboard too instead of save to pc". The screenshot panel
+has a Copy button beside Save PNG (same background, ground-shadow and size choices).
+- Browsers write to the clipboard only during a click, and the render and encode take longer than a click. So the click
+  calls `navigator.clipboard.write` at once with a `ClipboardItem` whose PNG is a promise the render fills in (the
+  share link's copy works the same way; Safari accepts only this form). Offered only on a secure page with
+  `ClipboardItem` that accepts `image/png`; a refusal says to use Save PNG.
+- Check (`viewer-ux-test.mjs`, section `copy`, headless Chrome with clipboard permission): the PNG read back from the
+  clipboard has the saved file's size; transparent: alpha identical and opaque pixels identical, soft-edge colour within
+  8 levels (Chrome keeps clipboard images premultiplied, which costs precision at low alpha); backdrop: identical.
+  11/11, and the other sections 52/52 on the same build. Panel looked at, desktop and phone.
+- Not covered: pasting into another app. Headless Chrome keeps its own clipboard (the system clipboard was unchanged
+  after the run), so what Windows apps receive (and whether they keep the transparency) is the user's check.
+
+## Hotfix: emote picker and UI sweep (15 Nov 2026)
+
+Reported on live after PR #46: "clicking emotes the emoted list show up not at the button". Cause: #46 docked the
+desktop picker beside the 3D view, right when there was room, else left; the full-window stage reaches the window's
+right edge, so it always docked left, over the items drawer.
+- The desktop picker opens in the 3D view's right-hand column under the Emotes button (it now also hides with H).
+  A phone held sideways gets a full-height panel on the drawer's side instead of a 78 px sheet. In a short column only
+  the picker gives way (the Emotes button had shrunk to 12 px and the Sun slider with it).
+- The Sun shortcut is left out on a 3D view narrower than 28rem (phones), where it sat over the character's face;
+  the Lighting panel's sun direction remains.
+- Checks: `viewer-ux-test.mjs` section `emotes` (1568x770, 1440x900 drawer closed, 1024x768, phone, landscape open and
+  closed) reproduced the bug on live (15/20) and passes on the fix; with desktop, phone and landscape 67/67.
+  `ui-sweep.mjs` (Graphics, Lighting, Screenshot, saved outfits, Share, patch notes, Chinals, emote picker and
+  timeline, hidden UI, roadmap at 1568x770 and 390x844): 22/22, every full-size screenshot looked at.
+  `npm test`: 880, 867 pass, the same 8 fixture failures.
+- A more in-game picker: options in `emote-picker-proposal.md`, for the user to choose.

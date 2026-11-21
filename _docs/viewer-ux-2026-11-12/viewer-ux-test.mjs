@@ -1,7 +1,7 @@
 // Viewer UX (12 Nov 2026): items drawer, hide UI (H), transparent screenshots. Headless Chrome against production
 // builds. Full-size screenshots and saved PNGs go to <outDir> (renders of game assets: keep them out of git).
 //   node _docs/viewer-ux-2026-11-12/viewer-ux-test.mjs <url> <baselineUrl> <outDir>
-// ONLY=auto,desktop,shot,phone,landscape picks sections.
+// ONLY=auto,desktop,shot,phone,landscape,copy,emotes picks sections.
 import { createRequire } from "node:module";
 import { writeFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -16,7 +16,7 @@ if (!url || !baselineUrl || !outDir) throw new Error("usage: viewer-ux-test.mjs 
 if (existsSync(outDir)) throw new Error(`refusing to overwrite ${outDir}`);
 mkdirSync(outDir, { recursive: true });
 const report = { url, baselineUrl, when: new Date().toISOString(), errors: [], checks: [] };
-const only = new Set((process.env.ONLY ?? "auto,desktop,shot,phone,landscape").split(","));
+const only = new Set((process.env.ONLY ?? "auto,desktop,shot,phone,landscape,copy,emotes").split(","));
 const browser = await chromium.launch({ channel: "chrome", headless: true, args: ["--enable-unsafe-swiftshader"] });
 const check = (name, pass, detail = "") => { report.checks.push({ name, pass: !!pass, detail }); console.log(`${pass ? "PASS" : "FAIL"} ${name}${detail ? ` · ${detail}` : ""}`); };
 
@@ -452,6 +452,115 @@ if (only.has("landscape")) {
   check("rotation: picker search survives side -> sheet -> side, same 3D canvas", rigBefore && portrait.sheet
     && portrait.search === "cap" && back.search === "cap" && portrait.sameCanvas && back.sameCanvas, JSON.stringify({ portrait, back }));
   await context.close();
+}
+
+// ---- 6. Copy to the clipboard (15 Nov 2026): the PNG read back from the clipboard is the saved file, alpha included.
+if (only.has("copy")) {
+  const { context, page } = await newPage({ person: true });
+  await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: new URL(url).origin });
+  await open(page, url);
+  await page.waitForTimeout(5000);
+  for (const transparent of [true, false]) {
+    const name = transparent ? "transparent" : "backdrop";
+    const savedPath = join(outDir, `copy-${name}-saved.png`);
+    await saveShot(page, { transparent, keepFloor: true }, savedPath);
+    await openShotPanel(page);
+    const copyButton = page.locator(`${SHOT_PANEL} button`, { hasText: /^Copy$/ });
+    check(`copy (${name}): button offered`, (await copyButton.count()) === 1);
+    if (!(await copyButton.count())) continue;
+    await copyButton.click();
+    await page.locator(`${SHOT_PANEL} [role=status]`, { hasText: /Copied|Couldn/ }).waitFor({ timeout: 180000 });
+    const status = await page.locator(`${SHOT_PANEL} [role=status]`).innerText();
+    check(`copy (${name}): status says copied`, /^Copied \d+ × \d+ to the clipboard/.test(status), status);
+    const read = await page.evaluate(async () => {
+      const items = await navigator.clipboard.read();
+      const item = items.find(i => i.types.includes("image/png"));
+      if (!item) return { types: items.map(i => i.types) };
+      const buffer = new Uint8Array(await (await item.getType("image/png")).arrayBuffer());
+      let text = "";
+      for (let i = 0; i < buffer.length; i += 0x8000) text += String.fromCharCode(...buffer.subarray(i, i + 0x8000));
+      return { types: items.map(i => i.types), base64: btoa(text) };
+    });
+    await page.keyboard.press("Escape");
+    check(`copy (${name}): clipboard holds an image/png`, !!read.base64, JSON.stringify(read.types));
+    if (!read.base64) continue;
+    const clipPath = join(outDir, `copy-${name}-clipboard.png`);
+    writeFileSync(clipPath, Buffer.from(read.base64, "base64"));
+    const clip = readPng(clipPath), saved = readPng(savedPath);
+    check(`copy (${name}): same size as the saved PNG`, clip.png.width === saved.png.width && clip.png.height === saved.png.height,
+      `${clip.png.width}x${clip.png.height} vs ${saved.png.width}x${saved.png.height}`);
+    if (clip.png.width !== saved.png.width || clip.png.height !== saved.png.height) continue;
+    let alphaMax = 0, colorMax = 0, colorMaxSoft = 0;
+    for (let i = 0; i < clip.png.data.length; i += 4) {
+      const a = saved.png.data[i + 3];
+      alphaMax = Math.max(alphaMax, Math.abs(clip.png.data[i + 3] - a));
+      for (let c = 0; c < 3; c++) {
+        const d = Math.abs(clip.png.data[i + c] - saved.png.data[i + c]);
+        if (a === 255) colorMax = Math.max(colorMax, d); else if (a >= 16) colorMaxSoft = Math.max(colorMaxSoft, d);
+      }
+    }
+    const stats = alphaStats(clip.png);
+    report[`copy_${name}`] = { status, types: read.types, colorType: clip.colorType, alphaMax, colorMax, colorMaxSoft, stats };
+    if (transparent) {
+      check(`copy (transparent): alpha survives the clipboard`, stats.clear > 0 && stats.partial > 0 && alphaMax <= 1,
+        JSON.stringify(report[`copy_${name}`]));
+      writeFileSync(join(outDir, "copy-transparent-clipboard-over-checker.png"), PNG.sync.write(over(clip.png, null)));
+    }
+    check(`copy (${name}): pixels match the saved PNG`, colorMax <= 1, JSON.stringify(report[`copy_${name}`]));
+  }
+  await context.close();
+}
+
+// ---- 7. Emote picker placement (15 Nov 2026 hotfix): under the Emotes button inside the 3D view on desktop, a sheet
+// within the screen on phones; opening and closing it leaves the drawer as it was.
+if (only.has("emotes")) {
+  const sizes = [
+    { name: "1568x770", viewport: { width: 1568, height: 770 } },
+    { name: "1440x900-closed", viewport: { width: 1440, height: 900 }, closeDrawer: true },
+    { name: "1024x768", viewport: { width: 1024, height: 768 } },
+    { name: "phone-390x844", viewport: { width: 390, height: 844 }, mobile: true, scale: 2 },
+    { name: "landscape-844x390", viewport: { width: 844, height: 390 }, mobile: true, scale: 2 },
+    { name: "landscape-844x390-closed", viewport: { width: 844, height: 390 }, mobile: true, scale: 2, closeDrawer: true },
+  ];
+  for (const size of sizes) {
+    const { context, page } = await newPage({ person: true, viewport: size.viewport, mobile: size.mobile, scale: size.scale ?? 1 });
+    await open(page, url);
+    if (size.closeDrawer && await expanded(page)) { await drawerTab(page).click(); await page.waitForTimeout(800); }
+    const drawerBefore = await expanded(page);
+    const trigger = page.locator('[data-viewer] button[aria-haspopup="dialog"][title="Play an emote"]');
+    if (!(await trigger.count())) { check(`emotes ${size.name}: Emotes button present`, false); await context.close(); continue; }
+    await (size.mobile ? trigger.tap() : trigger.click());
+    const dialog = page.locator('[role="dialog"][aria-label="Emotes"]');
+    await dialog.waitFor({ timeout: 30000 });
+    await shot(page, `emotes-${size.name}`, 1500);
+    const geometry = await page.evaluate(() => {
+      const r = e => { const b = e.getBoundingClientRect(); return { left: Math.round(b.left), top: Math.round(b.top), right: Math.round(b.right), bottom: Math.round(b.bottom) }; };
+      const picker = document.querySelector('[role="dialog"][aria-label="Emotes"]');
+      return { picker: r(picker), button: r(document.querySelector('[data-viewer] button[title="Play an emote"]')),
+        viewer: r(document.querySelector("[data-viewer]")), inViewer: !!picker.closest("[data-viewer]"), vw: innerWidth, vh: innerHeight,
+        sun: Math.round(document.querySelector('[data-viewer] input[aria-label="Sun direction"]')?.closest("label")?.getBoundingClientRect().height ?? 0) };
+    });
+    report[`emotes_${size.name}`] = geometry;
+    const { picker, button, viewer, vw, vh } = geometry;
+    const onScreen = picker.left >= 0 && picker.top >= 0 && picker.right <= vw && picker.bottom <= vh;
+    check(`emotes ${size.name}: picker on screen`, onScreen, JSON.stringify(geometry));
+    check(`emotes ${size.name}: picker has room for the grid`, picker.bottom - picker.top >= 160, JSON.stringify(picker));
+    if (!size.mobile) {
+      check(`emotes ${size.name}: opens under the Emotes button, inside the 3D view`,
+        geometry.inViewer && picker.top >= button.bottom && picker.top - button.bottom <= 60 && Math.abs(picker.right - button.right) <= 2
+          && picker.left >= viewer.left, JSON.stringify(geometry));
+      check(`emotes ${size.name}: the buttons above keep their height`, button.bottom - button.top >= 28 && geometry.sun >= 28,
+        JSON.stringify({ button, sun: geometry.sun }));
+    } else {
+      check(`emotes ${size.name}: sheet below the top of the stage`, picker.top >= viewer.top, JSON.stringify(geometry));
+      if (size.viewport.width > size.viewport.height) check(`emotes ${size.name}: the character (stage centre) stays clear`,
+        picker.right <= (viewer.left + viewer.right) / 2 - 60, JSON.stringify(geometry));
+    }
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+    check(`emotes ${size.name}: Esc closes it, drawer as it was`, !(await dialog.count()) && (await expanded(page)) === drawerBefore);
+    await context.close();
+  }
 }
 
 await browser.close();
