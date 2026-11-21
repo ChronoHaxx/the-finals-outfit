@@ -42,12 +42,16 @@ test("an unknown but well-formed scene id (a newer build's) is kept, not dropped
     assert.equal(sanitizeLook({ ...studioLook(), backdrop: { ...studioLook().backdrop, scene: bad } }).backdrop.scene, undefined, String(bad));
 });
 
-test("an older build's write keeps the scene id it does not know (the store merges unknown fields back)", () => {
-  // What this build stored: a scene. What an older build writes: its look, which has no `scene` field at all.
-  const stored = { ...studioLook(), backdrop: { ...studioLook().backdrop, scene: "s12-menu" } };
-  const olderLook = studioLook(); // no scene field
-  const written = mergedLook(stored, olderLook) as { backdrop: { scene?: string } };
-  assert.equal(written.backdrop.scene, "s12-menu");
+test("a backdrop field the build does not know is kept on write; leaving a scene in this build removes it", () => {
+  // An older build keeps `scene` because its own merge keeps every backdrop field it does not know. This build's merge
+  // does the same for fields it does not know (`future` here), but `scene` it knows: a look without one has no scene,
+  // so leaving a scene must not leave the id in storage, to come back on the next reload (21 Nov 2026).
+  const stored = { ...studioLook(), backdrop: { ...studioLook().backdrop, scene: "s12-menu", future: "x" } };
+  const kept = mergedLook(stored, { ...studioLook(), backdrop: { ...studioLook().backdrop, scene: "s12-menu" } }) as { backdrop: { scene?: string } };
+  assert.equal(kept.backdrop.scene, "s12-menu");
+  const left = mergedLook(stored, studioLook()) as { backdrop: { scene?: string; future?: string } };
+  assert.equal("scene" in left.backdrop, false);
+  assert.equal(left.backdrop.future, "x");
 });
 
 test("plate zoom is a pure scale about the centre: 1 at the plate's own field, tan ratio otherwise", () => {
