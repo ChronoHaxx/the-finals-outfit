@@ -76,4 +76,5 @@ step numbers), or e.g. "3 fails: the frame jumps when I change speed while pause
   - All PASS. Steps 4-6 and Loop were already covered by the earlier run (`README.md`), and step 7 only by an emulated
     phone.
 - Readiness: checks explicitly waived (not user-verified).
-- Merge authorization: not yet given.
+- Merge authorization: given by the user on 21 Nov 2026, about 22:00 London, in the session: "Yes, merge it"
+  (verbatim). It covers this PR with the waiver above. Nobody has checked it by hand.
