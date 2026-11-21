@@ -38,8 +38,11 @@ const STEPS = [
   ["accessories", { ...START, face: "head-face-03-base", hair: "hairs-highponytail-black", hands: "actionhero-sentinelgloves-leather",
     upperBack: "assets-ammobackpack", wrist: "casual-bangles-metal-gold", earrings: "bodycosmetics-earrings-bullet-01" }],
   ["hair-swap", { ...START, face: "head-face-03-base", hair: "hairs-afrofade-black", hands: "actionhero-sentinelgloves-leather" }],
+  // The outfit's body type (picker, 12 Nov) flows through the pass: a morph context change with the same pieces.
+  ["androgynous", { ...START, hair: "hairs-highponytail-black", outerwear: "casual-longcoat-leather-black" }, "androgynous"],
+  ["masculine-again", { ...START, hair: "hairs-highponytail-black", outerwear: "casual-longcoat-leather-black" }],
   ["back-to-start", START],
-].map(([name, slots]) => [name, Object.fromEntries(Object.entries(slots).filter(([, id]) => id))]);
+].map(([name, slots, bodyType = "masculine"]) => [name, Object.fromEntries(Object.entries(slots).filter(([, id]) => id)), bodyType]);
 
 // In the page: the rig's structure. Program keys carry a global creation counter for tinted legacy materials
 // (CharacterRig tintUid); that counter is normalised away, every other part of the key is kept.
@@ -83,18 +86,18 @@ async function record(name) {
   await page.waitForFunction("window.__rigIdle === true && !!window.__rigRoot && !!window.__temporalPreview", null, { timeout: 300000 });
   if (await intro.count()) await intro.first().click();
   const result = { base: BASE, when: new Date().toISOString(), steps: [] };
-  for (const [step, slots] of STEPS) {
-    await page.evaluate(async (s) => {
+  for (const [step, slots, bodyType] of STEPS) {
+    await page.evaluate(async ({ s, b }) => {
       const m = await import("/src/store/useBuildStore.ts");
       window.__rigIdle = false; // the pass this load starts sets it true when it settles
-      m.useBuildStore.getState().load(s);
-    }, slots);
+      m.useBuildStore.getState().load(s, b); // load(slots, bodyType) since the body-type picker (12 Nov)
+    }, { s: slots, b: bodyType });
     await page.waitForFunction("window.__rigIdle === true", null, { timeout: 300000 });
     await page.waitForTimeout(600);
     await page.waitForFunction(() => { const s = window.__temporalPreview; return s && s.samples >= s.maxSamples; }, null, { timeout: 120000 });
     const dump = await page.evaluate(DUMP);
     await page.locator("[data-viewer] canvas").screenshot({ path: path.join(shots, `${String(result.steps.length).padStart(2, "0")}-${step}.png`) });
-    result.steps.push({ step, slots, ...dump });
+    result.steps.push({ step, slots, bodyType, ...dump });
     console.error(`${step}: ${dump.objects.length} objects${dump.alert ? `, alert: ${dump.alert}` : ""}`);
   }
   await browser.close();
