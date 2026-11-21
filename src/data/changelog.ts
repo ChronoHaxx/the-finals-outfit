@@ -20,6 +20,20 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     notes: [
       "In Chinals mode, faces now move during the emotes and the idle, as they do in global emotes: blinks, glances, smiles, surprise and anger, from each emote's own animation. Beards and balaclavas follow the face, and masks and helmets soften it where the game does.",
     ],
+    items: ["chinals-emotes"],
+  },
+  {
+    id: "2026-11-15-faces-lighting-chinals",
+    date: "2026-11-15",
+    title: "Faces that move, your own lighting, Chinals emotes",
+    notes: [
+      "Faces now move in idles and emotes, from the game's own animation: blinks, glances, brows, jaw and expressions. Beards, balaclavas and scarves follow the face, and masks and helmets soften it where the game does.",
+      "A new Lighting panel. Start from Studio, Lobby or one of four sun looks, then change each light's colour, brightness and direction, add lights, pick a solid or gradient backdrop and turn on a floor shadow. Your own looks can be saved.",
+      "Pick a body type: Masculine or Androgynous. Saved outfits and share links keep it. Feminine follows once the Season 12 clothing has been refitted.",
+      "Chinals mode plays the 45 emotes of 终极角逐, THE FINALS as published in mainland China, on your outfit. Switch with Global | Chinals at the top. Emotes without an English name show the Chinese name with this site's unofficial translation.",
+      "Emote props sit where the game puts them: thrones, tables, brooms and turrets are no longer turned, buried or oversized. Emotes can also loop.",
+    ],
+    items: ["idle-emotes", "lighting-backdrops", "default-lighting", "light-heavy", "chinals-emotes", "emote-effects"],
   },
   {
     id: "2026-11-15-emote-sounds",

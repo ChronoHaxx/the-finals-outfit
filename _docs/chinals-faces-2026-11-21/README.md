@@ -43,11 +43,15 @@ Everything was read offline from the Chinals client's paks (UE 5.3) with `chinal
 The rest of the deployment is 59209741's set unchanged (set-3, props-3, sounds-1; checked 188/188 byte-identical
 against the live host before staging), and `manifest.json` gains one line, `"faces": "faces-1/faces.json"`.
 
-**Runtime:** no new face code: `FaceAnimator` already drives whatever faces index the manifest names. Two wording fixes:
-- The emote picker's footer said "Effects and facial expressions are not shown yet" in both modes, which had been
-  wrong for global emotes since PR #48. It now names props, sound and facial expressions according to what the
-  deployment ships (`FaceAnimator.available`, `shownParts`, tested).
-- The Chinals banner now says props, sound and facial expressions are shown, effects not.
+**Runtime:** no code change: `FaceAnimator` already drives whatever faces index the manifest names.
+- The emote picker's footer is the one Shocka read. It said "Effects and facial expressions are not shown yet" in both
+  modes. This branch first fixed it, but PR #58 (emote speed and the face switch) merged the same fix to main first,
+  so the branch takes main's: the footer names facial expressions whenever the set ships a faces index. With this
+  host, Chinals mode does.
+- The Chinals banner said "Props are shown; effects, sound and facial expressions are not." It now says props, sound
+  and facial expressions are shown, effects not. The host carries the sounds too (59209741's set).
+- Public text: the patch note `2026-11-21-chinals-faces`, the roadmap's review lines, and one sentence on the Chinals
+  emotes item ("Their faces move as in global emotes.").
 
 ## Verification (agent)
 

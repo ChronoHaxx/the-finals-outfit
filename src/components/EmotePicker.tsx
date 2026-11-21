@@ -103,17 +103,14 @@ export function missingBadge(info: ClipInfo, props?: PropsView): string | null {
   return null;
 }
 
-/** What the picker's footer says the emotes come with: props always; sound and faces when this deployment ships them. */
-export function shownParts(sound: boolean, faces: boolean): string {
-  const parts = ["props", sound && "sound", faces && "facial expressions"].filter((part): part is string => !!part);
-  return parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts.at(-1)}` : parts[0];
-}
-
 type Tab = "emotes" | "more";
 
 // Chinese text is marked as such, so the browser picks Simplified Chinese glyph forms (Han characters shared with
 // Japanese render differently by language).
 const zhHans = (text: string) => /\p{Script=Han}/u.test(text) ? "zh-Hans" : undefined;
+
+/** "a", "a and b", "a, b and c". */
+const listed = (items: string[]) => items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
 
 export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
   animator: RigAnimator; state: AnimatorState; onPlay: (id: string) => void; onClose: () => void;
@@ -277,7 +274,7 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
           </p>
         </> : <p className="text-[11px] leading-snug text-fg-dim">
           {chinals ? "Chinals emotes on your outfit (global cosmetics)" : "The game's emote animations on your outfit"}, with
-          their {shownParts(animator.sounds.available, animator.face.available)}.
+          their {listed(["props", ...(animator.sounds.available ? ["sound"] : []), ...(animator.face.available ? ["facial expressions"] : [])])}.
           {animator.face.available ? " Effects are not shown yet." : " Effects and facial expressions are not shown yet."}
         </p>}
       </div>

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import * as THREE from "three";
 import { EmoteProps, sampleCurve, WARM_TIMEOUT_MS, type PropsManifest, type PropTemplate } from "../../src/rig/EmoteProps";
 import { propClock } from "../../src/rig/RigAnimator";
-import { missingSummary, missingBadge, shownParts } from "../../src/components/EmotePicker";
+import { missingSummary, missingBadge } from "../../src/components/EmotePicker";
 import type { ClipInfo } from "../../src/rig/RigAnimator";
 
 // Emote props (6 Nov 2026): when a prop shows, where it attaches, and which clock its own animation runs on. No
@@ -232,14 +232,6 @@ test("the picker says only what is still missing once props.json says which prop
   const complete = { ...info, emote: { props: ["Bat"], fx: [] } } as ClipInfo;
   assert.equal(missingSummary(complete, props), null);
   assert.equal(missingBadge(complete, props), null);
-});
-
-// 21 Nov 2026: the footer said "facial expressions are not shown yet" in both modes, months after faces shipped.
-test("the picker footer names sound and faces only when the deployment ships them", () => {
-  assert.equal(shownParts(false, false), "props");
-  assert.equal(shownParts(true, false), "props and sound");
-  assert.equal(shownParts(false, true), "props and facial expressions");
-  assert.equal(shownParts(true, true), "props, sound and facial expressions");
 });
 
 // Prewarm (15 Nov 2026): an emote's props are compiled and uploaded before it starts, so their first frame does not stall

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { RigAnimator } from "../rig/RigAnimator";
 import { frameAt } from "../lib/share-pose";
+import { setEmoteSpeed, stepSpeed } from "../lib/emote-playback";
 import { setEmoteLoop, useAnimatorState } from "./AnimationControls";
 import { CloseIcon, FrameStepIcon, LoopIcon, PauseIcon, PlayIcon } from "./Icons";
 
@@ -19,6 +20,9 @@ import { CloseIcon, FrameStepIcon, LoopIcon, PauseIcon, PlayIcon } from "./Icons
 // Loop (11 Nov 2026): the emote repeats from its first frame until Loop is turned off (it then finishes the pass and
 // returns to the idle), the close button, or another pick. It applies to every later emote too, and is remembered in
 // this browser.
+//
+// Speed (21 Nov 2026): the slider sits with the animation controls (EmoteSpeedControl.tsx); here < and > step it, as
+// Shift+, and Shift+. do in video players. The frame counter and the slider are clip time, the same at any speed.
 
 /** Keys typed into a field are the field's. Sliders, buttons and boxes do not take , or . themselves. */
 function typing(target: EventTarget | null): boolean {
@@ -62,12 +66,17 @@ export function EmoteTimeline({ animator }: { animator: RigAnimator }) {
   };
   useEffect(() => () => { window.clearTimeout(settle.current); animator.scrubbing = false; }, [animator]);
 
-  // , and . step a frame, as in video players.
+  // , and . step a frame; < and > change the speed, as in video players.
   useEffect(() => {
     if (!visible) return;
     const key = (event: KeyboardEvent) => {
-      if ((event.key !== "," && event.key !== ".") || event.ctrlKey || event.metaKey || event.altKey || event.defaultPrevented
-        || typing(event.target)) return;
+      if (event.ctrlKey || event.metaKey || event.altKey || event.defaultPrevented || typing(event.target)) return;
+      if (event.key === "<" || event.key === ">") {
+        event.preventDefault();
+        setEmoteSpeed(animator, stepSpeed(animator.state.speed, event.key === "<" ? -1 : 1));
+        return;
+      }
+      if (event.key !== "," && event.key !== ".") return;
       event.preventDefault();
       if (event.repeat) scrubbing();
       animator.step(event.key === "," ? -1 : 1);
