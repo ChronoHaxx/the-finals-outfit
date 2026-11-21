@@ -13,8 +13,9 @@ case becomes visible with the Scene page (Phase 2).
 
 - PR / originating issue: https://github.com/ChronoHaxx/the-finals-outfit/pull/66; design `_docs/multi-character-2026-11-11/README.md`
   (request of 11 Nov 2026, "Recommended MVP", Phase 1)
-- Test this revision: branch `claude/multi-character-2026-11-21` at its head (code as of 214991e; later commits on it
-  are documentation only unless this line says otherwise)
+- Test this revision: branch `claude/multi-character-2026-11-21` at its head (code as of 7e482c3, the merge of main
+  80ea734 with the emote speed slider and facial animation switch; later commits on it are documentation only unless
+  this line says otherwise)
 - Open: a local production build of the branch at http://127.0.0.1:5195/, next to the live site
   https://chronohaxx.github.io/the-finals-outfit/
 - Prerequisites: this worktree (its `node_modules` is present); Chrome or Edge; internet (models come from the live
@@ -68,6 +69,10 @@ Reply "1-4 pass" (using the actual step numbers), or e.g. "3 fails: the idle sta
   is not a user check.
 - Type check; `npm test` (the worktree lacks extracted models, so 8 model-reading tests fail there and on main alike).
 - Phase 1.4 (frame-time) code reached main through PR #64 before this PR; its profile evidence is kept here.
+- After merging main 80ea734 (7e482c3; #58 speed slider and facial animation switch touch the moved animation code):
+  both equivalence probes against the `main-a2c6019` baselines show no difference; `npm test` 933 pass (same 8
+  model-reading failures); production-like build: the speed slider runs the emote at 1.5x, and the facial animation
+  switch stops the face (0 of 610 facial bones moving) and restarts it (289 moving, as before switching off).
 
 ## Recorded result
 
