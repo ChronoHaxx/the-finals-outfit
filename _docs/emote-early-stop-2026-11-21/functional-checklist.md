@@ -5,9 +5,9 @@
 An emote clicked in the first seconds after the page opens (the character is there, the outfit still loading) now
 plays to its end and then eases into the idle, instead of snapping back to the idle after 1-2 s.
 
-- PR / originating issue: found while verifying PR #62 (`_docs/all-emotes-2026-11-21/README.md`, "An emote can go
-  back to the idle after about 2 s"); this PR: see the branch below.
-- Test this revision: branch `claude/emote-early-stop-2026-11-21`, the PR's head commit, as a local production build
+- PR / originating issue: PR #69 (https://github.com/ChronoHaxx/the-finals-outfit/pull/69); found while verifying PR #62 (`_docs/all-emotes-2026-11-21/README.md`, "An emote can go
+  back to the idle after about 2 s").
+- Test this revision: branch `claude/emote-early-stop-2026-11-21`; code as of `e885cf1` (the head commit adds this record only), as a local production build
   (deploy.yml's asset hosts, animations `17ec92c3`, what the live site uses today).
 - Open: http://127.0.0.1:4356/the-finals-outfit/ (local copy with the fix). Step 3 also uses the live site,
   https://chronohaxx.github.io/the-finals-outfit/ (without the fix), for comparison.
