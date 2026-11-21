@@ -32,6 +32,14 @@ node node_modules/vite/bin/vite.js --port 5243 --strictPort --host 127.0.0.1
 
 Wait for `Local: http://127.0.0.1:5243/`. The first page load takes about a minute. Stop it with Ctrl+C.
 
+**Before anyone removes this worktree,** delete its three links first (PowerShell, removes only the links):
+
+```powershell
+foreach ($l in 'node_modules','public\items','public\models') { (Get-Item "E:\Coding\the-finals-outfit\.claude\worktrees\infallible-morse-05b63a\$l" -Force).Delete() }
+```
+
+Then confirm they are gone before running `git worktree remove`.
+
 ## Try it yourself
 
 - [ ] **1. Start:** open `http://localhost:5243/?reconstructed=1#/?o=2.36o.81qz.a1bl.cct` and press Esc on the intro.
