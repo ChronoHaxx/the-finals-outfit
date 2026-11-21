@@ -19,7 +19,9 @@ lost.
   - PASS, by looking at full-size captures in Chrome on an RTX 3080: the jersey sleeve went 32 → 45 → 10 → 99 → 32;
     the cargo-pants waist went 14 → 45 → 10 → 99 → 14 in the pants' own font. 23 held after a reload, and a `pn=77`
     link opened at 77.
-  - NOT RUN: Safari, Firefox and phones; the share card upload, which needs the Worker deploy.
+  - PASS: the share Worker with `pn` is live (version `efb3af6b`, 21 Nov 22:01, combined with PR #59's camera view);
+    read-only live checks keep `pn=42` alone, with `bt`, and with a pose and view, and drop `pn=7`.
+  - NOT RUN: Safari, Firefox and phones; a preview-card upload from the app, which only the published site offers.
 - User checks: **PENDING**. Agent results do not check the boxes below.
 
 ## Get it running
@@ -52,7 +54,7 @@ Then confirm they are gone before running `git worktree remove`.
       model. Then clear the box and click elsewhere. Expected: Own is highlighted again, sleeve **32**, waist **14**.
 - [ ] **4. Reload:** type `23`, then press F5. Expected: after loading, the box still says **23** and the sleeve shows 23.
 - [ ] **5. Share:** click **Share outfit** and open the copied link in a new tab. Expected: the link contains `&pn=23`,
-      and the new tab shows 23. (Until the share Worker is deployed, the panel may say a plain link was copied.)
+      and the new tab shows 23. (The dev server has no preview-card option, so the link has no card; that's expected.)
 - [ ] **6. Nearby use:** press **Randomise**. Expected: the number box keeps 23. If no piece in the new outfit prints a
       number, the hint says "Nothing equipped prints a number".
 
