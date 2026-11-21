@@ -684,11 +684,21 @@ Routes as recommended: D for the menu (a live stage) and A for the tunnel (a pla
   colours. Its text now says so instead of "As on screen".
 - Typecheck and build pass. The tests: 906 pass and 8 fail, all on GLB fixtures absent from the worktree.
 
+**Hosting (21 Nov, on the user's "Yes, upload and pin").**
+- **Deployment.** `scenes-1` is deployment `1d367244` of the Cloudflare Pages project `the-finals-outfit-assets`,
+  uploaded under the branch alias `scenes-1`, so the project's production deployment is unchanged.
+  - It holds `s12-menu/icon-stroke-a.webp` (14,762 B) and `s12-tunnel/plate-v1.webp` (762,162 B).
+  - Its `_headers` sends `Access-Control-Allow-Origin: *` and a year of immutable caching, as the other asset hosts
+    do. The stage's texture is loaded cross-origin, so it needs the first.
+- **Checks.**
+  - Both files are byte-identical to the tested ones (SHA-256) and served as `image/webp`.
+  - A missing path returns 404.
+  - With `VITE_SCENES_BASE` set, the dev app fetched both scenes from that host and painted them.
+- **Pin.** `deploy.yml` sets `SCENES_BASE` and passes it as `VITE_SCENES_BASE` to both build steps.
+- **Without the pin**, a build falls back to `scenes/` beside the app. A missing file shows the scene's colours: the
+  plate does not paint, and the stage's texture fails into its error boundary.
+
 **Not done yet:**
-- **Hosting.** The scene files are game artwork and live in the ignored `public/scenes/` for development. Production
-  needs a scenes deployment pinned like `ANIMATIONS_BASE`, and the upload needs the user's yes.
-  - Without it, a production build falls back to the scene's colours: the plate does not paint, and the stage's
-    texture fails into its error boundary.
 - **The share card and PNG screenshots** paint the scene's fallback colours, not the scene. Painting a scene still into
   both is one follow-up.
   - For the plate, that needs CORS on the scenes host.
@@ -781,5 +791,16 @@ Not yet verified:
      `--fit REF.png` instead of `--exposure` finds the exposure that matches a reference's mean. That was how −1.66
      was found, from the screenshot's camera.
   3. Encode as WebP quality 85, method 6, into `public/scenes/s12-tunnel/plate-v1.webp` (ignored by git).
+- **Uploading a scenes set.**
+  1. Stage it as a folder: `s12-menu/`, `s12-tunnel/`, and a `_headers` file with this rule for `/*`:
+     `Access-Control-Allow-Origin: *` and `Cache-Control: public, max-age=31536000, immutable`.
+  2. From a folder on the E: drive, run:
+
+     `node <wrangler 4.131.1>/bin/wrangler.js pages deploy <folder> --project-name the-finals-outfit-assets --branch
+     scenes-N --commit-dirty=true`
+  3. Pin the deployment's hash URL as `SCENES_BASE`.
+
+  **Trap.** Wrangler keeps its login in the Windows keyring through `@napi-rs/keyring`, which it finds with
+  `npm root -g`. The user's `.npmrc` prefix has no drive letter, so from the C: drive the module "is not installed".
 - **P2 menu stage.** The only file is the A's stroke mask, `public/scenes/s12-menu/icon-stroke-a.webp`. It is the
   decoded `T_THEFINALS_01_IconStroke_A` converted to greyscale (Pillow `convert("L")`), WebP quality 92, method 6.

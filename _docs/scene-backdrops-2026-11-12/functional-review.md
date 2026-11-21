@@ -14,18 +14,17 @@ The check catches four failures:
 - a turntable that drifts the camera;
 - a default view that changed.
 
-- **PR / origin:** the draft PR from this branch into `main`. On 21 Nov it was rebased onto main, which already has
-  #40, #46, #47, #48 and #55. The design is in `README.md` section 8.
+- **PR / origin:** ChronoHaxx/the-finals-outfit#57, from this branch into `main`. On 21 Nov it was rebased onto main,
+  which already has #40, #46, #47, #48 and #55. The design is in `README.md` section 8.
 - **Test this revision:** branch `claude/scene-backdrops-p2-2026-11-15`, app code at
-  `aabd8a15c8813294210635097afd2663a67b0ec8`. Later commits on the branch that touch only `_docs/` leave it the same.
+  `1182dc6a0dae5f8a0d0dc162ec6627ba7f2f0291`. Later commits on the branch that touch only `_docs/` leave it the same.
 - **Open:** http://127.0.0.1:5243 in Chrome, served from the worktree below.
 - **Prerequisites:**
-  - The scene files are in the worktree's ignored `public/scenes/` folder: `s12-menu/icon-stroke-a.webp` and
-    `s12-tunnel/plate-v1.webp`.
-  - The models stream from the deployed asset hosts, so you need an internet connection. No account is needed.
+  - The scene files stream from their pinned host, `scenes-1` (`1d367244`), as the models stream from theirs. You need
+    an internet connection; no account is needed.
 - **Approximate hands-on time:** 10 minutes.
 - **Agent checks:** PASS.
-  - **21 Nov, after the rebase:**
+  - **21 Nov, after the rebase and the scenes host pin:**
     - Typecheck and production build pass.
     - Scene tests: 9 of 9 pass.
     - Full suite: 906 pass. 8 fail only because extracted GLBs (`public/models`) are absent in the worktree.
@@ -34,7 +33,8 @@ The check catches four failures:
       - the turn;
       - the menu stage under its look;
       - the screenshot panel's wording;
-      - restore on leaving for Studio.
+      - restore on leaving for Studio;
+      - both scenes loading from the pinned `scenes-1` host (`1d367244`).
   - **15 Nov, in the dev browser pane (synthetic mouse input):**
     - menu colours against your screenshot;
     - zoom scaling;
@@ -51,7 +51,7 @@ Otherwise, in **PowerShell**, run these commands. The asset hosts are the deploy
 
 ```powershell
 cd E:\Coding\the-finals-outfit\.claude\worktrees\trusting-davinci-1693fd
-$env:VITE_ASSETS_BASE = "https://f4a8e069.the-finals-outfit-assets.pages.dev/"; $env:VITE_MODELS_BASE = "https://a029b249.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_BASE = "https://c062af24.the-finals-outfit-assets.pages.dev/"; $env:VITE_ANIMATIONS_BASE = "https://17ec92c3.the-finals-outfit-assets.pages.dev/"; $env:VITE_CHINALS_ANIMATIONS_BASE = "https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_ROUTES_FILE = "src/data/reconstruction-routes.json"
+$env:VITE_ASSETS_BASE = "https://f4a8e069.the-finals-outfit-assets.pages.dev/"; $env:VITE_MODELS_BASE = "https://a029b249.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_BASE = "https://c062af24.the-finals-outfit-assets.pages.dev/"; $env:VITE_ANIMATIONS_BASE = "https://17ec92c3.the-finals-outfit-assets.pages.dev/"; $env:VITE_CHINALS_ANIMATIONS_BASE = "https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/"; $env:VITE_SCENES_BASE = "https://1d367244.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_ROUTES_FILE = "src/data/reconstruction-routes.json"
 npx vite --host 127.0.0.1 --port 5243 --strictPort
 ```
 
