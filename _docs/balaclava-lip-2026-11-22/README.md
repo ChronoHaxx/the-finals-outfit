@@ -6,7 +6,11 @@ with no hand-tuned offset. Branch `claude/chinals-balaclava-lip-2026-11-22`.
 
 ## Result
 
-**The game's own data causes the clip, so no faithful fix exists. The viewer is unchanged.**
+**The game's own data causes the clip, so no fix built from the game's data exists. This PR changes no app code.**
+
+While this was being investigated, PR #71 reached the same diagnosis and merged **FaceContact** (`fdfc3dd`, main
+`abfa045`), which hides the sliver in the viewer. FaceContact is a viewer-side contact, not game data (see "On main now"
+below). This PR leaves it as it is. Whether to keep it is the owner's choice.
 
 - It is the **upper** lip's centre, not the lower lip. About nine vertices of the upper-lip centre, driven by
   `FACIAL_C_LipUpper1/2`, end up at most 0.9 mm outside the knit.
@@ -15,7 +19,7 @@ with no hand-tuned offset. Branch `claude/chinals-balaclava-lip-2026-11-22`.
 - It is not specific to Chinals. The global emote Carrot Crusher at 1.47 s (Face_JawOpen 0.8) shows the same sliver at
   0.90 mm, although its carrot covers the mouth at that moment. Evil Jester's peak comes within 0.06 to 0.19 mm.
 
-![Unrivaled Master 3.2 s, production build: facial animation on (left), off (right)](unrivaled-master-3.2s-face-on-off.jpg)
+![Unrivaled Master 3.2 s, production build of main d31db11 (before FaceContact): facial animation on (left), off (right)](unrivaled-master-3.2s-face-on-off.jpg)
 
 ## Mechanism
 
@@ -57,13 +61,30 @@ on every face that is not HeadMaster, so adopting it would need its own review.
 which normals the knit's 5 mm offset follows. Across the variants above, that choice moves the result by about ±0.3 mm,
 not enough to close a 0.9 mm sliver, but the game's exact figure is not knowable from the paks.
 
-## What would hide it, and why not here
+## On main now: FaceContact (PR #71)
 
-Hiding it would take an offset the game does not author. Options would be pushing the knit out over the mouth,
-inflating the proxy, or damping Face_JawOpen under the mask beyond the asset's 0.5. The owner asked for no hand offset.
-**Recommendation:** accept it as a known, faithful limitation of this balaclava's proxy and record it on PR #71's
-checklist. It is about 1 mm, at the mouth-open peaks of two Chinals clips and of global Carrot Crusher (where the carrot
-hides it).
+Hiding the sliver takes something the game does not author. PR #71's `fdfc3dd` added such a thing: **FaceContact**, in
+`src/rig/FaceWrap.ts`.
+
+- **How it works:** each head vertex a wrapped part covers is bound to the part triangle above it. While the face moves,
+  a head vertex that comes closer than min(its rest gap, 1 mm) pushes that triangle's corners out along their normals.
+  It only ever pushes the part out, and a still face changes nothing.
+- **What it is:** a viewer-side contact. It is neither a fixed offset nor part of the game's data.
+- **Measured on production builds** (`prod-steps.mjs`), upper-lip vertices outside the knit:
+
+| Pose | main d31db11 (before #71) | this branch with main abfa045 (FaceContact) |
+| --- | --- | --- |
+| Unrivaled Master 3.2 s | 9 vertices, at most 0.87 mm | none (nearest 0.62 mm inside) |
+| Carrot Crusher 1.47 s (global) | 8, at most 0.90 mm | none (0.39 mm inside) |
+| Goblin Horn 0.3 s (global pout) | none (0.74 mm inside) | none (0.92 mm inside) |
+| Facial animation off | none (1.78 mm inside) | none (1.78 mm inside) |
+
+**For the owner to decide:**
+- **Keep FaceContact:** no lip shows through, but the viewer then shows less than the game most likely does here.
+- **Remove it:** the about-1 mm sliver returns at the mouth-open peaks of two Chinals clips and of global Carrot Crusher,
+  where the carrot hides it. That would be faithful to the game's proxy.
+
+Two independent analyses, #71's and this one, conclude that the game most likely shows the sliver.
 
 ## Files
 
@@ -71,7 +92,8 @@ hides it).
   below and the published HeadMaster cage skin (`faces-2/wraps/SK_Head_HeadMaster_Base_Wraps.json` on fd946744).
 - `measure-lip.mjs`, `trace-vertex.mjs`, `formula-ab.mjs`, `balaclava-pout.mjs`: in-page probes on a dev server
   (usage in each header).
-- `prod-steps.mjs` and `prod-steps.json`: the production-build run of `functional-checklist.md`.
+- `prod-steps.mjs`: the production-build run of `functional-checklist.md`. Results: `prod-steps.json` for this branch
+  with main abfa045 merged in (FaceContact), and `prod-steps-d31db11.json` for main d31db11 (before it).
 - `engine-binding-experiment.patch`: the engine-exact binding, measured and reverted.
 - `scripts/anim-export/MeshDump.cs`: `AnimExport mesh` also writes `<mesh>.cloth.json` (each LOD0 section's
   `ClothMappingDataLODs[0]`) when the mesh has cloth. Mesh files are unchanged.
