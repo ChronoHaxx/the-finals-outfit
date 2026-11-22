@@ -38,10 +38,13 @@ jobs:
       # 21 Nov: + set-6, props-10, faces-2, sounds-2: the 66 missing emotes, mostly Seasons 1-2
       # (_docs/all-emotes-2026-11-21). A superset of 17ec92c3 (every file kept at its path). Rollback: 17ec92c3.
       ANIMATIONS_BASE: https://fd946744.the-finals-outfit-assets.pages.dev/
-      # Chinals mode (src/lib/site-mode.ts): the Chinals emote set (set-3 + props-2, 12 Nov 2026), on its own Cloudflare
-      # Pages project the-finals-outfit-chinals-assets so it can be withdrawn in one step. Blank turns the mode off: no
-      # toggle, and a Chinals link says the mode isn't available while its outfit still opens.
-      CHINALS_ANIMATIONS_BASE: https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/
+      # Chinals mode (src/lib/site-mode.ts): the Chinals emote set, on its own Cloudflare Pages project
+      # the-finals-outfit-chinals-assets so it can be withdrawn in one step. Blank turns the mode off: no toggle, and a
+      # Chinals link says the mode isn't available while its outfit still opens. 15 Nov: set-3 + props-3 (e7796a7c's
+      # set, PR #49) + sounds-1 (the Chinals emote sounds). 21 Nov: + faces-1 (the Chinals emotes' own face curves on
+      # the global face rig, _docs/chinals-faces-2026-11-21): a superset of 59209741 (every file kept at its path).
+      # Earlier: 59209741 (no faces), e7796a7c (props-3), dcb131a5 (props-2).
+      CHINALS_ANIMATIONS_BASE: https://7c9add72.the-finals-outfit-chinals-assets.pages.dev/
       # UI preview: another branch built into a sub-path of this same site, e.g.
       # https://chronohaxx.github.io/the-finals-outfit/new-ui-test/. Blank turns it off.
       # Off since the redesign it previewed became the root app; old preview links fall
