@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { MAX_LOOKS, useLightingStore } from "../lib/lighting-store";
 import {
   BACKDROP_PRESETS, EXPOSURE_MAX, EXPOSURE_MIN, FULL_LOOKS, INTENSITY_MAX, KEY_POSITION, LIGHT_HEIGHT_MAX, LIGHT_HEIGHT_MIN,
@@ -8,6 +8,8 @@ import {
 } from "../lib/stage-lighting";
 import { SCENES, sceneById } from "../lib/scenes";
 import { SunIcon, TrashIcon } from "./Icons";
+import { useFeature } from "../lib/discovery";
+import { onViewerCanvas, PanelSheet, PanelTrigger, usePanel } from "./ViewerPanel";
 
 /**
  * Lighting and backdrop (11-12 Nov 2026): the whole scene in one panel, a colour picker for everything. Looks (Studio,
@@ -32,29 +34,12 @@ export function LightingPanel() {
   const selected = useLightingStore(state => state.selected);
   const shared = useLightingStore(state => state.shared);
   const { edit, apply, reset, undo, saveLook, deleteLook, setMarkers, keepShared, leaveShared } = useLightingStore.getState();
-  const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
-  const [viewerHeight, setViewerHeight] = useState(0);
-  const root = useRef<HTMLDivElement>(null);
-  const button = useRef<HTMLButtonElement>(null);
-  const panelId = useId();
-
-  useEffect(() => {
-    if (!open) { setConfirmDelete(null); return; }
-    const viewer = root.current?.closest("[data-viewer]");
-    if (viewer) setViewerHeight(viewer.clientHeight);
-    const outside = (event: PointerEvent) => {
-      const target = event.target;
-      if (root.current?.contains(target as Node)) return;
-      // With the lights shown, working in the 3D view (dragging a bulb, turning round to find one) keeps the panel open.
-      if (useLightingStore.getState().markers && target instanceof Element && target.closest("[data-viewer] canvas")) return;
-      setOpen(false);
-    };
-    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); button.current?.focus(); } };
-    document.addEventListener("pointerdown", outside);
-    document.addEventListener("keydown", escape);
-    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
-  }, [open]);
+  // With the lights shown, working in the 3D view (dragging a bulb, turning round to find one) keeps the panel open.
+  const panel = usePanel(target => useLightingStore.getState().markers && onViewerCanvas(target));
+  const feature = useFeature("lighting", "Lighting and backdrop");
+  const open = panel.open;
+  useEffect(() => { if (!open) setConfirmDelete(null); }, [open]);
 
   const name = fullLookName(look) ?? "Custom";
   const sun = sunOf(look);
@@ -68,22 +53,12 @@ export function LightingPanel() {
   };
 
   return (
-    // Not positioned itself: the panel anchors to the whole button row (CharacterViewer), as the Graphics menu's does.
-    <div ref={root}>
-      <button ref={button} type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} aria-controls={panelId}
-        title="Lighting and backdrop"
-        className="hud flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950">
-        <SunIcon size={14} />
-        <span className="sr-only">Lighting and backdrop: </span>
-        <span>{shared ? `Link · ${name}` : name}</span>
-        <svg aria-hidden="true" width="9" height="9" viewBox="0 0 10 10" className={`transition-transform ${open ? "rotate-180" : ""}`}>
-          <path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        </svg>
-      </button>
-      {open && (
-        <div id={panelId} role="group" aria-label="Lighting and backdrop"
-          style={viewerHeight ? { maxHeight: viewerHeight - 56 } : undefined}
-          className="absolute right-0 top-9 z-30 flex w-80 max-w-[calc(100vw-1.5rem)] flex-col gap-3 overflow-y-auto border border-line bg-ink-950 p-3 text-sm text-fg shadow-lg">
+    // Not positioned itself: the panel anchors to the whole button row (CharacterViewer), as every viewer panel does.
+    // The button names the look, not the panel: it is the one thing worth reading there at a glance.
+    <div ref={panel.root}>
+      <PanelTrigger panel={panel} {...feature} icon={<SunIcon size={14} />} always
+        name={<><span className="sr-only">Lighting and backdrop: </span>{shared ? `Link · ${name}` : name}</>} />
+      <PanelSheet panel={panel} label="Lighting and backdrop" title="Lighting" icon={<SunIcon size={13} />}>
 
           {shared && <div className="flex flex-col gap-2 border border-fg/30 bg-ink-900 p-2">
             <span className="text-xs leading-snug">
@@ -118,7 +93,7 @@ export function LightingPanel() {
               ))}
             </div>}
             <span className="text-xs leading-snug text-fg-muted">
-              Studio is the default, for comparing item colours. Sun looks move the sun and turn the floor shadow on.
+              Studio shows item colours truest. Sun looks also turn the floor shadow on.
             </span>
           </Section>
 
@@ -129,7 +104,7 @@ export function LightingPanel() {
           <Section title="Lights">
             <Check label="Show lights in the 3D view" checked={markers} onChange={setMarkers}
               hint={look.lights.length
-                ? "A bulb for each light, a cone the way it shines. Drag a bulb to move its light. Never in screenshots, share images or exports."
+                ? "A bulb and a cone for each light. Drag a bulb to move it. Never in captures or share images."
                 : "This look has no lights: add one below."} />
             {look.lights.map(light => (
               <LightCard key={light.id} light={light} selected={markers && selected === light.id}
@@ -144,7 +119,7 @@ export function LightingPanel() {
             </button>
             <span className="text-xs leading-snug text-fg-muted">
               {look.lights.length >= MAX_LIGHTS ? `${MAX_LIGHTS} lights at most. ` : ""}
-              Adding or removing a light, or switching a shadow on or off, makes the 3D view pause briefly while its shaders rebuild.
+              Adding a light or a shadow pauses the view for a moment.
             </span>
           </Section>
 
@@ -252,8 +227,7 @@ export function LightingPanel() {
               </button>
             )}
           </div>
-        </div>
-      )}
+      </PanelSheet>
     </div>
   );
 }
@@ -264,14 +238,14 @@ export function LightingPanel() {
 export function SunShortcut() {
   const look = useLightingStore(state => state.look);
   const edit = useLightingStore(state => state.edit);
+  const feature = useFeature("sun", "Turn the sun (the light casting the shadow) round the character. Double-click to return it to its default place.");
   const sun = sunOf(look);
   if (!sun) return null;
   const bearing = Math.round(lightAngles(sun.position).bearing);
   const reviewed = sun.position.every((v, i) => v === KEY_POSITION[i]);
   return (
-    <label className="hud hidden h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg @md:flex"
-      title="Turn the sun (the light casting the shadow) round the character. Double-click to return it to its default place.">
-      <span aria-hidden="true">☀</span>Sun
+    <label {...feature} className="hud hidden h-8 items-center gap-2 bg-ink-950/80 px-2.5 text-fg @md:flex">
+      <SunIcon size={14} />Sun
       <input type="range" min={-180} max={180} step={1} value={bearing}
         onChange={event => {
           const value = Number(event.target.value);

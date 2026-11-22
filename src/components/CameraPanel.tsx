@@ -1,10 +1,12 @@
-import { useEffect, useId, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import {
   COORD_LIMIT, DEFAULT_VIEW, MAX_DISTANCE, VIEW_CAP, formatView, getCameraHandle, liveViews, sameView, subscribeCamera,
   viewsWritable, type CameraView, type SavedView, type Vec3,
 } from "../lib/camera-view";
 import { deleteCameraView, renameCameraView, saveCameraView, useSavedOutfits, type ViewChange } from "../store/useSavedOutfits";
-import { PencilIcon, TrashIcon, ViewfinderIcon } from "./Icons";
+import { AxesIcon, PencilIcon, TrashIcon } from "./Icons";
+import { useFeature } from "../lib/discovery";
+import { onViewerCanvas, PanelSheet, PanelTrigger, usePanel } from "./ViewerPanel";
 
 /**
  * Camera (21 Nov 2026, Shocka's feedback item 3): where the camera is and what it looks at, typed or read as it moves;
@@ -12,44 +14,17 @@ import { PencilIcon, TrashIcon, ViewfinderIcon } from "./Icons";
  * viewer's top row and a panel anchored to that row. The camera itself is reached through CameraBridge.
  */
 export function CameraPanel() {
-  const [open, setOpen] = useState(false);
-  const [viewerHeight, setViewerHeight] = useState(0);
-  const root = useRef<HTMLDivElement>(null);
-  const button = useRef<HTMLButtonElement>(null);
-  const panelId = useId();
-
-  useEffect(() => {
-    if (!open) return;
-    const viewer = root.current?.closest("[data-viewer]");
-    if (viewer) setViewerHeight(viewer.clientHeight);
-    // A press elsewhere closes it, except on the 3D view: the panel stays open while you orbit, so the numbers follow.
-    const outside = (event: PointerEvent) => {
-      const target = event.target as Element | null;
-      if (root.current?.contains(target) || (target instanceof HTMLCanvasElement && target.closest("[data-viewer]"))) return;
-      setOpen(false);
-    };
-    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); button.current?.focus(); } };
-    document.addEventListener("pointerdown", outside);
-    document.addEventListener("keydown", escape);
-    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
-  }, [open]);
-
+  // A press on the 3D view keeps it open: the panel stays up while you orbit, so the numbers follow.
+  const panel = usePanel(onViewerCanvas);
+  const feature = useFeature("camera", "Camera: position, roll and saved views");
   return (
-    // Not positioned itself: the panel anchors to the whole button row (CharacterViewer), as the Lighting panel's does.
-    <div ref={root}>
-      <button ref={button} type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} aria-controls={panelId}
-        aria-label="Camera" title="Camera: position, roll and saved views"
-        className="hud flex h-8 w-8 items-center justify-center bg-ink-950/80 text-fg transition-colors hover:bg-ink-950 aria-expanded:bg-ink-950">
-        <ViewfinderIcon size={15} />
-      </button>
-      {open && (
-        <div id={panelId} role="group" aria-label="Camera"
-          style={viewerHeight ? { maxHeight: viewerHeight - 56 } : undefined}
-          className="absolute right-0 top-9 z-30 flex w-80 max-w-[calc(100vw-1.5rem)] flex-col gap-3 overflow-y-auto border border-line bg-ink-950 p-3 text-sm text-fg shadow-lg">
-          {/* Mounted only while open: it follows the camera every frame it moves. */}
-          <CameraPanelBody />
-        </div>
-      )}
+    // Not positioned itself: the panel anchors to the whole button row (CharacterViewer), as every viewer panel does.
+    <div ref={panel.root}>
+      <PanelTrigger panel={panel} {...feature} aria-label="Camera" icon={<AxesIcon size={15} />} name="Camera" />
+      <PanelSheet panel={panel} label="Camera" title="Camera" icon={<AxesIcon size={13} />}>
+        {/* Mounted only while open: it follows the camera every frame it moves. */}
+        <CameraPanelBody />
+      </PanelSheet>
     </div>
   );
 }
@@ -124,7 +99,7 @@ function CameraPanelBody() {
           style={{ "--played": `${((view.roll + 180) / 360) * 100}%` } as CSSProperties} />
       </div>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs leading-snug text-fg-muted">Metres; y is up. The camera stays within {MAX_DISTANCE} m of where it looks.</span>
+        <span className="text-xs leading-snug text-fg-muted">Metres, y up; at most {MAX_DISTANCE} m from where it looks.</span>
         <button type="button" onClick={() => move(() => DEFAULT_VIEW)} disabled={sameView(view, DEFAULT_VIEW)}
           className="h-8 shrink-0 border border-line px-2 text-xs hover:bg-ink-900 disabled:text-fg-dim disabled:hover:bg-transparent">Reset camera</button>
       </div>

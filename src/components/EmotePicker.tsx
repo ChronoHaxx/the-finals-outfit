@@ -225,10 +225,12 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
     <div ref={panel} role="dialog" aria-label="Emotes" onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); onClose(); } }}
       onPointerLeave={() => setDetail(null)}
       style={sideways ? side ?? undefined : !desktop && sheetTop !== null ? { top: sheetTop } : undefined}
-      className={desktop ? "flex min-h-0 shrink! w-[23rem] max-w-[calc(100vw-2rem)] flex-col border border-line bg-ink-950/95 shadow-2xl"
-        : sideways ? "fixed bottom-0 left-0 z-40 flex flex-col border-r border-line bg-ink-950 pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)]"
-        : "fixed inset-x-0 bottom-0 top-(--stage-h) z-40 flex flex-col border-t border-line bg-ink-950 pb-[env(safe-area-inset-bottom)]"}>
-      <div className="flex shrink-0 items-center gap-1 border-b border-line pl-2 pr-1">
+      className={desktop ? "panel flex min-h-0 shrink! w-[23rem] max-w-[calc(100vw-2rem)] animate-drop flex-col motion-reduce:animate-none"
+        : sideways ? "fixed bottom-0 left-0 z-40 flex flex-col border-r border-ink-700 bg-ink-900 pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)]"
+        : "fixed inset-x-0 bottom-0 top-(--stage-h) z-40 flex flex-col border-t border-ink-700 bg-ink-900 pb-[env(safe-area-inset-bottom)]"}>
+      {/* The same header as every panel (ViewerPanel.tsx): the red bar, the name (here two tabs), close. */}
+      <div className="flex shrink-0 items-center gap-1 border-b border-line pl-3 pr-1">
+        <span aria-hidden="true" className="mr-1 h-3 w-[3px] shrink-0 bg-finals" />
         {tabButton("emotes", <>Emotes <span className="text-fg-dim">{emotes.length}</span></>)}
         {tabButton("more", "More")}
         <button type="button" onClick={onClose} aria-label="Close emotes" title="Close (Esc)"
@@ -253,7 +255,7 @@ export function EmotePicker({ animator, state, onPlay, onClose, anchor }: {
           {shownCount === 0 && <p className="py-6 text-center text-sm text-fg-muted">No emotes match.</p>}
           {groups.map(group => (
             <section key={group.key} aria-label={group.title}>
-              <h3 className="hud sticky top-0 z-10 bg-ink-950 py-1.5 text-fg-dim">
+              <h3 className="hud sticky top-0 z-10 bg-ink-900 py-1.5 text-fg-dim">
                 {group.title} <span className="text-ink-600">·</span> {group.clips.length}
               </h3>
               {group.key === "uncategorised" && <p className="mb-1.5 text-[11px] text-fg-dim">No icon of their own in the game files.</p>}

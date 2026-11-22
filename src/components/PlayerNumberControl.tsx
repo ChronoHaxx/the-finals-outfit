@@ -2,6 +2,7 @@ import { useEffect, useId, useState, useSyncExternalStore } from "react";
 import { useBuildStore } from "../store/useBuildStore";
 import { isPlayerNumber, PLAYER_NUMBER_MAX, PLAYER_NUMBER_MIN, shownPlayerNumber } from "../lib/player-number";
 import { playerNumberPieces, subscribePlayerNumberPieces } from "../rig/PlayerNumber";
+import { useFeature } from "../lib/discovery";
 
 // The player (contestant) number: part of the outfit, saved and shared with it (lib/player-number.ts). "Own" shows
 // each piece's authored number, as the item icons do; a number 0-99 replaces it on every piece that prints one (a
@@ -33,13 +34,15 @@ export default function PlayerNumberControl() {
     else setDraft(isPlayerNumber(Number(draft)) ? String(Number(draft)) : shown === null ? "" : String(shown));
   };
 
+  // The Own | number pair is the control the discovery layer names (its callout says what Own means).
+  const feature = useFeature("player-number");
   const hint = pieces === 0 ? "Nothing equipped prints a number"
     : `On ${pieces} ${pieces === 1 ? "piece" : "pieces"}${shown === null ? " · each shows its own" : ""}`;
 
   return (
     <div role="group" aria-label="Player number" className="flex flex-wrap items-center gap-2.5">
       <span aria-hidden="true" className="hud text-fg-dim">Number</span>
-      <div className="flex border border-line">
+      <div className="flex border border-line" {...feature}>
         <button type="button" aria-pressed={shown === null} onClick={() => { setPlayerNumber(null); setDraft(""); }}
           title="Each piece shows the number it was made with, as in its icon"
           className={`h-8 px-3 text-[13px] font-semibold uppercase tracking-[0.02em] [font-stretch:87.5%] transition-colors

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { buildShareUrl } from "../lib/share-url";
 import { withoutPose } from "../lib/share-pose";
@@ -9,10 +9,8 @@ import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { useBuildStore } from "../store/useBuildStore";
 import { useIntroStore } from "../store/useIntroStore";
 import { useGuideStore } from "../store/useGuideStore";
-import { useHint } from "../lib/hints";
-import { GUIDE_HINTS } from "../data/feature-guide";
+import { useFeature } from "../lib/discovery";
 import CatalogUpdateNote from "./CatalogUpdateNote";
-import { HintTag } from "./HintTag";
 import { GitHubIcon, GuideIcon, HangerIcon, NotesIcon } from "./Icons";
 
 export const REPOSITORY_URL = "https://github.com/ChronoHaxx/the-finals-outfit";
@@ -63,7 +61,7 @@ export default function TopBar({ page }: { page: "builder" | "roadmap" }) {
         <a href={REPOSITORY_URL} target="_blank" rel="noreferrer" aria-label="GitHub repository" className={`${navItem} max-sm:hidden`}>
           <GitHubIcon size={16} />
         </a>
-        <GuideButton tip={page === "builder"} />
+        <GuideButton />
       </nav>
     </header>
     {/* Phones: the header has no room, so the switch gets a row of its own (only where the mode exists). */}
@@ -74,33 +72,14 @@ export default function TopBar({ page }: { page: "builder" | "roadmap" }) {
   </>;
 }
 
-// The "What you can do" guide (FeatureGuide.tsx), last in the row so its one-time tip can hang under it at the
-// window's right edge on any width. The tip is for visitors who never opened the guide: shown once on the builder,
-// after the welcome screen has closed, and gone for good once closed, used, or left for 20 s.
-function GuideButton({ tip }: { tip: boolean }) {
+// The Guide (FeatureGuide.tsx): the tour, an index that points at each control, and the keys. Last in the row, at the
+// window's corner. Until a visitor has opened it, it may wear the red "not tried yet" corner (lib/discovery.ts).
+function GuideButton() {
   const showGuide = useGuideStore(state => state.show);
-  const guideOpen = useGuideStore(state => state.open);
-  const introOpen = useIntroStore(state => state.open);
-  const [pending] = useHint("guide");
-  const clear = tip && pending && !introOpen && !guideOpen;
-  // A beat after the welcome screen goes, so the tip arrives on its own rather than in the dialog's fade.
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    if (!clear) { setReady(false); return; }
-    const timer = window.setTimeout(() => setReady(true), 1500);
-    return () => window.clearTimeout(timer);
-  }, [clear]);
-  return <div className="relative">
-    <button type="button" onClick={showGuide} aria-haspopup="dialog" title="What you can do (?)" className={navItem}>
-      <GuideIcon size={15} /><span className="max-sm:sr-only">Guide</span>
-    </button>
-    {clear && ready && <div className="absolute right-0 top-[calc(100%+10px)] z-40 w-[min(21rem,calc(100vw-1.5rem))]">
-      <span aria-hidden="true" className="absolute -top-1.5 right-4 size-3 rotate-45 bg-ink-950/95" />
-      <HintTag id="guide" autoHideMs={20_000} action={{ label: "Show me", onClick: showGuide }}>
-        {GUIDE_HINTS.guide}
-      </HintTag>
-    </div>}
-  </div>;
+  const feature = useFeature("guide", "Guide: the tour, every control and the shortcuts (?)");
+  return <button type="button" onClick={showGuide} aria-haspopup="dialog" {...feature} className={navItem}>
+    <GuideIcon size={15} /><span className="max-sm:sr-only">Guide</span>
+  </button>;
 }
 
 // Global | 终极角逐 Chinals (lib/site-mode.ts). It changes the route only: the outfit, the saved outfits and an unsaved
@@ -120,7 +99,8 @@ function ModeSwitch({ mode }: { mode: SiteMode }) {
       {label}
     </button>
   );
-  return <div role="group" aria-label="Game version" className="flex border border-line">
+  const feature = useFeature("chinals");
+  return <div role="group" aria-label="Game version" {...feature} className="flex border border-line">
     {option("global", "Global", "THE FINALS as published worldwide")}
     {option("chinals", <><span lang="zh-Hans" className="normal-case tracking-normal">终极角逐</span> Chinals</>,
       "终极角逐: THE FINALS as Tencent publishes it in mainland China (emotes only, for now)")}

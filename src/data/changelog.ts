@@ -14,6 +14,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-builder-shows-you-around",
+    date: "2026-11-22",
+    title: "The builder shows you around",
+    notes: [
+      "Bring the pointer near a control you haven't tried and a one-line note names it, says what it does and shows its key. Once you have used it, the note waits for a hover. A small red corner marks a few controls you haven't tried yet.",
+      "Take the tour from the welcome screen or the Guide: it frames each control in turn, right on the page, and nothing is blocked while it runs. Esc stops it, and it carries on from that stop next time.",
+      "The Guide, also on the ? key, is now short: the tour, every control in one line with Show me to point at it, and the keys and gestures. On a phone, Show me and the tour do the pointing.",
+      "Lighting, Camera, Capture and Graphics now look and open the same way, with their names on the buttons when there is room. Camera has a new icon, so it is no longer mixed up with Capture.",
+    ],
+    items: ["faster-builder"],
+  },
+  {
     id: "2026-11-22-player-number-one-digit",
     date: "2026-11-22",
     title: "One-digit player numbers",
