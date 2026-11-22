@@ -8,3 +8,5 @@ const claimed = new Set<number>();
 export function claimPointer(id: number): void { claimed.add(id); }
 export function releasePointer(id: number): void { claimed.delete(id); }
 export function pointerClaimed(id: number): boolean { return claimed.has(id); }
+/** True while any tool holds a pointer (CameraBridge: a marker drag switches the orbit off only for the drag). */
+export function anyPointerClaimed(): boolean { return claimed.size > 0; }
