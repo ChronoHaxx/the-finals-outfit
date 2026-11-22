@@ -832,7 +832,8 @@ export class CharacterRig {
     // socket-attached in-engine — so for those slots we re-parent onto the matching bone
     // (re-parenting moves them out of gltf.scene, so they're tracked for disposal).
     const attached: THREE.Mesh[] = [];
-    const eyeAnchor = item.slot === "eyewear" ? this.eyeWorldCenter() : null;
+    const eyeBone = item.slot === "eyewear" ? this.staticBone("eyewear") : null;
+    const eyeAnchor = eyeBone ? this.eyeRestCenter(eyeBone) : null; // rig space, at rest
     for (const mesh of statics) {
       mesh.frustumCulled = false;
       applyMat(mesh);
@@ -867,6 +868,11 @@ export class CharacterRig {
           // that turns earrings on their side and can put glasses behind the face. Socket them at
           // the authored offset while KEEPING the authored world orientation (counter the bone
           // rotation), so they sit correctly and still follow the posed head.
+          // (21 Nov 2026, multi-character Phase 1.5) Both sides of that are in rig space at rest: the
+          // mesh's matrix is taken while its glTF scene is still detached (rig space), and the bone's
+          // is its rest frame in rig space. The bone's live matrixWorld also carried where the
+          // character stood and the pose it was in, so a turned character, or a swap mid-emote,
+          // socketed the item somewhere else.
           const wp = new THREE.Vector3();
           const wq = new THREE.Quaternion();
           const ws = new THREE.Vector3();
@@ -874,7 +880,7 @@ export class CharacterRig {
           const bwp = new THREE.Vector3();
           const bwq = new THREE.Quaternion();
           const bws = new THREE.Vector3();
-          bone.matrixWorld.decompose(bwp, bwq, bws);
+          this.restInRig(bone).decompose(bwp, bwq, bws);
           const invBwq = bwq.clone().invert();
           mesh.quaternion.copy(invBwq).multiply(wq); // net world orientation = authored (forward)
           mesh.scale.set(ws.x / bws.x, ws.y / bws.y, ws.z / bws.z);
@@ -889,7 +895,9 @@ export class CharacterRig {
           const center = mesh.geometry.boundingBox?.getCenter(new THREE.Vector3());
           if (center) {
             const currentWorld = center.applyMatrix4(mesh.matrixWorld);
-            const targetLocal = bone.worldToLocal(eyeAnchor.clone());
+            // The anchor is at rest in rig space, so it goes into the bone's rest frame; the mesh's centre in the
+            // bone's live frame is its local placement, the same at any pose.
+            const targetLocal = eyeAnchor.clone().applyMatrix4(this.restInRig(bone).invert());
             const currentLocal = bone.worldToLocal(currentWorld);
             mesh.position.add(targetLocal.sub(currentLocal));
           }
@@ -1557,6 +1565,25 @@ export class CharacterRig {
   }
 
   // Bone an origin-authored static accessory attaches to, by slot.
+  // A bone's rest frame relative to the rig root, whatever the rig's placement and whatever pose it is in now
+  // (21 Nov 2026, multi-character Phase 1.5). A driver bone's is the rest recorded at body load. A bone below a driver
+  // bone (a head's facial branch, hung from the driver's head while animating) keeps its live offset from that driver
+  // bone, carried to the driver bone's rest. A bone on no driver bone (the head's own armature, static while still)
+  // does not follow the pose: its live matrix in rig space is its rest.
+  private restInRig(bone: THREE.Object3D): THREE.Matrix4 {
+    const restOf = (o: THREE.Object3D) => this.bonesByName.get(o.name) === o ? this.bodyRestInverses.get(o.name) : undefined;
+    const own = restOf(bone);
+    if (own) return own.clone().invert();
+    bone.updateWorldMatrix(true, false);
+    const toRoot = this.root.matrixWorld.clone().invert();
+    const live = toRoot.clone().multiply(bone.matrixWorld);
+    for (let o = bone.parent; o && o !== this.root; o = o.parent) {
+      const inverse = restOf(o);
+      if (inverse) return inverse.clone().invert().multiply(toRoot.clone().multiply(o.matrixWorld).invert()).multiply(live);
+    }
+    return live;
+  }
+
   private staticBone(slot: Slot): THREE.Bone | null {
     const bone = (...names: string[]) => {
       for (const n of names) {
@@ -1579,11 +1606,15 @@ export class CharacterRig {
         // items are visually side-agnostic; prefer the LEFT lobe (matches in-game icons).
         const face = this.equipped.get("face");
         let lobe: THREE.Bone | null = null;
-        face?.scene.traverse((o) => {
+        const visit = (o: THREE.Object3D) => {
           const b = o as THREE.Bone;
           if (!b.isBone || !/earlobe/i.test(b.name)) return;
           if (!lobe || /_L_/i.test(b.name)) lobe = b;
-        });
+        };
+        face?.scene.traverse(visit);
+        // While animating, the head's facial branches hang from the driver's head (setAnimationPins), outside its
+        // scene: an earring swapped mid-emote went onto the head bone and stayed there (21 Nov 2026, Phase 1.5).
+        if (face) for (const [object, pin] of this.animationPins) if (pin.handle === face && (object as THREE.Bone).isBone) object.traverse(visit);
         return lobe ?? bone("head", "neck_01");
       }
       case "eyewear":
@@ -1608,11 +1639,20 @@ export class CharacterRig {
   // Origin-authored eyewear has no actor/socket transform in the extracted static mesh. Derive
   // its anchor from the equipped head's visible eyeball geometry instead of inventing a world
   // coordinate (rooted, body-space eyewear such as GamingGlasses never enters this path).
-  private eyeWorldCenter(): THREE.Vector3 | null {
+  // (21 Nov 2026, multi-character Phase 1.5) The eyes are measured as they sit at rest, in rig space: the same box as
+  // before (each mesh's own-axis bounds, carried by its matrix), but with every vertex first carried back by the head's
+  // motion since rest. A box of turned vertices is not the turned box, so measuring the live pose let the anchor drift
+  // with the pose at equip time; the cached posed bounds of a skinned mesh could also predate the pose. At the origin
+  // and at rest the carry-back is the identity: the anchor is what it always was. (Assumes the eyes follow the head
+  // while it is posed, which the animation pins see to.)
+  private eyeRestCenter(head: THREE.Object3D): THREE.Vector3 | null {
     const face = this.equipped.get("face")?.scene;
     if (!face) return null;
     face.updateWorldMatrix(true, true);
-    const box = new THREE.Box3();
+    head.updateWorldMatrix(true, false);
+    const toRoot = this.root.matrixWorld.clone().invert();
+    const unpose = this.restInRig(head).multiply(toRoot.clone().multiply(head.matrixWorld).invert()); // head rest x live^-1
+    const box = new THREE.Box3(), part = new THREE.Box3(), vertex = new THREE.Vector3();
     let found = false;
     face.traverse((o) => {
       const mesh = o as THREE.Mesh;
@@ -1620,9 +1660,22 @@ export class CharacterRig {
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       const label = [mesh.name, ...mats.map((m) => m.name)].join(" ");
       if (!/eye/i.test(label) || /shell|edge|lash|brow/i.test(label)) return;
-      const part = new THREE.Box3().setFromObject(mesh);
+      const live = toRoot.clone().multiply(mesh.matrixWorld);
+      // A skinned mesh stays put and its vertices move: undo their motion in its own frame. A static mesh moves whole
+      // (hung from the head while animating): undo its frame's motion and keep its geometry's bounds.
+      const skinned = (mesh as THREE.SkinnedMesh).isSkinnedMesh;
+      const frame = skinned ? live : unpose.clone().multiply(live);
+      if (skinned) {
+        const toRest = live.clone().invert().multiply(unpose).multiply(live);
+        const count = mesh.geometry.getAttribute("position")?.count ?? 0;
+        part.makeEmpty();
+        for (let i = 0; i < count; i++) part.expandByPoint(mesh.getVertexPosition(i, vertex).applyMatrix4(toRest));
+      } else {
+        if (!mesh.geometry.boundingBox) mesh.geometry.computeBoundingBox();
+        part.copy(mesh.geometry.boundingBox!);
+      }
       if (part.isEmpty()) return;
-      box.union(part);
+      box.union(part.applyMatrix4(frame));
       found = true;
     });
     return found ? box.getCenter(new THREE.Vector3()) : null;

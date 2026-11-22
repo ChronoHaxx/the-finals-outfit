@@ -112,7 +112,7 @@ export interface AnimationManifest {
   componentSpace?: ComponentSpace;
 }
 
-interface ClipData {
+export interface ClipData {
   formatVersion: 1;
   id: string;
   frameTime: number;
@@ -224,11 +224,15 @@ function buildClip(data: ClipData, name: string): THREE.AnimationClip {
   return new THREE.AnimationClip(name, -1, tracks);
 }
 
+/** Clip files by URL. Each animator keeps its own unless it is given one to share (multi-character design, 11 Nov 2026:
+ *  characters playing the same animation then download and parse it once). The data is read-only; buildClip copies. */
+export type ClipFileCache = Map<string, Promise<ClipData>>;
+
 export class RigAnimator {
+  private readonly clipFiles: ClipFileCache;
   private mixer: THREE.AnimationMixer | null = null;
   private root: THREE.Object3D | null = null;
   private clips = new Map<string, Promise<THREE.AnimationClip>>(); // by clip id: its name is the id the state reports
-  private files = new Map<string, Promise<ClipData>>(); // by file: emotes that share an animation download it once
   private propClocks = new Map<string, (time: number) => number>(); // by clip id, for clips with a prop clock
   private frameTimes = new Map<string, number>(); // by clip id: seconds per frame, from its file
   private idleAction: THREE.AnimationAction | null = null;
@@ -273,7 +277,8 @@ export class RigAnimator {
 
   constructor(readonly manifest: AnimationManifest, private readonly clipBase: string,
     options: { sway?: boolean; deform?: boolean; loopEmote?: boolean; speed?: number; propsUrl?: string | null; facesUrl?: string | null;
-      face?: boolean; soundsUrl?: string | null } = {}) {
+      face?: boolean; soundsUrl?: string | null; clipFiles?: ClipFileCache } = {}) {
+    this.clipFiles = options.clipFiles ?? new Map();
     this.snapshot.sway = options.sway ?? true;
     this.snapshot.loopEmote = options.loopEmote ?? false;
     this.snapshot.speed = clampSpeed(options.speed ?? 1);
@@ -485,14 +490,15 @@ export class RigAnimator {
     if (!pending) {
       const info = this.info(id);
       if (!info) return Promise.reject(new Error(`Unknown clip ${id}`));
-      let data = this.files.get(info.file);
+      const href = this.clipBase + info.file;
+      let data = this.clipFiles.get(href);
       if (!data) {
-        data = fetch(this.clipBase + info.file).then(async response => {
+        const download = fetch(href).then(async response => {
           if (!response.ok) throw new Error(`Clip ${id} request failed (${response.status})`);
           return await response.json() as ClipData;
         });
-        data.catch(() => this.files.delete(info.file)); // a failed download may be retried
-        this.files.set(info.file, data);
+        download.catch(() => { if (this.clipFiles.get(href) === download) this.clipFiles.delete(href); }); // a failed download may be retried
+        this.clipFiles.set(href, data = download);
       }
       // Each id gets its own AnimationClip (cheap: the tracks are rebuilt from the shared data), so the playing
       // clip's name is always the emote that was picked, not whichever emote first downloaded the file.

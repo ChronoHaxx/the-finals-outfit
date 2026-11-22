@@ -15,7 +15,8 @@ import { compactReconstructionRoutes, joinBase, modelBase, parseReconstructionRo
 export const SITE_URL = 'https://chronohaxx.github.io/the-finals-outfit/';
 export const REPO_ROOT = fileURLToPath(new URL('../..', import.meta.url));
 // Files every source-mode outfit loads before any item: the body mesh (CharacterViewer.tsx) and the assembly index
-// (SourceAssembly.ts, from modelUrl("models/reconstructed-assemblies-v1")). The test pins them to that code.
+// (SourceAssembly.ts, from modelUrl("models/reconstructed-assemblies-v1") in the outfit pass, rig/OutfitPass.ts). The
+// test pins them to that code.
 export const ALWAYS_LOADED = ['models/reconstructed-meshes-v2/SK_Body_M.glb',
   'models/reconstructed-assemblies-v1/supported-items.json'];
 const USER_AGENT = 'the-finals-outfit-site-health (+https://github.com/ChronoHaxx/the-finals-outfit)';

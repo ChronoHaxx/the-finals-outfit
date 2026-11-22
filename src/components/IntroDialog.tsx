@@ -9,8 +9,9 @@ import { REVIEW_COLOURS, REVIEW_MEANINGS, REVIEW_STYLES } from "../lib/reconstru
 import { readOutfitLink } from "../lib/share-url";
 import { AUTOMATED } from "../lib/automation";
 import { useIntroStore } from "../store/useIntroStore";
+import { useGuideStore } from "../store/useGuideStore";
 import PatchNotes from "./PatchNotes";
-import { ArrowIcon, CloseIcon } from "./Icons";
+import { ArrowIcon, CloseIcon, GuideIcon } from "./Icons";
 
 const SEEN_KEY = "tfo:patch-notes-seen";
 // Storage can be missing or throw (private windows, blocked site data); the dialog then simply
@@ -44,6 +45,7 @@ export default function IntroDialog() {
 
 function IntroContent({ fresh }: { fresh: number }) {
   const hide = useIntroStore(s => s.hide);
+  const showGuide = useGuideStore(s => s.show);
   const dialog = useRef<HTMLDialogElement>(null);
   const cta = useRef<HTMLButtonElement>(null);
   const [closing, setClosing] = useState(false);
@@ -60,12 +62,13 @@ function IntroContent({ fresh }: { fresh: number }) {
     return () => element.close();
   }, []);
 
-  const close = () => {
+  // `then` runs once this dialog has gone, so a dialog it opens (the guide) is never stacked under this one's close.
+  const close = (then?: () => void) => {
     if (closing) return;
     writeSeen(LATEST_CHANGELOG_ID);
     setClosing(true);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.setTimeout(hide, reduced ? 0 : 160);
+    window.setTimeout(() => { hide(); then?.(); }, reduced ? 0 : 160);
   };
 
   return (
@@ -91,7 +94,7 @@ function IntroContent({ fresh }: { fresh: number }) {
           <span className="hud truncate text-fg-dim">
             Catalog seasons 1–{CATALOG_UPDATE.throughSeason} · Updated {CATALOG_UPDATE.updatedLabel} · Through game update {CATALOG_UPDATE.latestGamePatch}
           </span>
-          <button type="button" onClick={close} aria-label="Close" className="ml-auto grid size-9 shrink-0 place-items-center text-fg-muted hover:text-fg">
+          <button type="button" onClick={() => close()} aria-label="Close" className="ml-auto grid size-9 shrink-0 place-items-center text-fg-muted hover:text-fg">
             <CloseIcon />
           </button>
         </div>
@@ -117,10 +120,14 @@ function IntroContent({ fresh }: { fresh: number }) {
             </dl>
 
             <div className="mt-8 flex animate-rise flex-wrap items-center gap-x-5 gap-y-3 [animation-delay:200ms]">
-              <button ref={cta} type="button" onClick={close}
+              <button ref={cta} type="button" onClick={() => close()}
                 className="chamfer group flex h-14 items-center gap-3 bg-finals pl-6 pr-8 text-[26px] font-extrabold uppercase tracking-[0.01em] text-white transition-colors [--cut:14px] [font-stretch:62.5%] hover:bg-finals-hi">
                 {shared ? "View shared outfit" : "Enter builder"}
                 <ArrowIcon size={20} className="transition-transform duration-200 group-hover:translate-x-1" />
+              </button>
+              <button type="button" onClick={() => close(showGuide)}
+                className="hud flex h-14 items-center gap-2 border border-ink-600 px-4 text-fg transition-colors hover:border-fg hover:bg-ink-900">
+                <GuideIcon size={15} />What you can do
               </button>
               <span className="hud hidden text-fg-dim sm:block">or press Esc</span>
             </div>
