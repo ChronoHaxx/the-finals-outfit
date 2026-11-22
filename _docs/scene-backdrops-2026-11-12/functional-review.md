@@ -16,17 +16,31 @@ The check catches four failures:
 
 - **PR / origin:** ChronoHaxx/the-finals-outfit#57, from this branch into `main`. On 21 Nov it was rebased onto main,
   which already has #40, #46, #47, #48 and #55. On 22 Nov main was merged in at `e04075e` (multi-character Phase 1
-  #66, player number #60, all emotes #62, emote early-stop #69, emote speed #58). The design is in `README.md`
-  section 8.
+  #66, player number #60, all emotes #62, emote early-stop #69, emote speed #58). Later that day main was merged in
+  twice more: at `70b6a4d` (supersampled screenshots and video export, #63) and at `95e9bee` (the 12 Nov release,
+  #67). The design is in `README.md` section 8.
 - **Test this revision:** branch `claude/scene-backdrops-p2-2026-11-15`, app code at
-  `3e3db00b9aa2fb637604b8e4f258688682934dbf` (the merge of main). Later commits on the branch that touch only `_docs/`
-  leave it the same.
+  `863d1931c8b9987617337acb0d55b4655f7154ed` (the merge of main at `95e9bee`). Later commits on the branch that touch
+  only `_docs/` leave it the same.
 - **Open:** http://127.0.0.1:5243 in Chrome, served from the worktree below.
 - **Prerequisites:**
   - The scene files stream from their pinned host, `scenes-1` (`1d367244`), as the models stream from theirs. You need
     an internet connection; no account is needed.
 - **Approximate hands-on time:** 10 minutes.
 - **Agent checks:** PASS.
+  - **22 Nov, after merging main at `70b6a4d` (#63) and `95e9bee` (#67), on `863d193`:**
+    - #63's conflicts: the viewer keeps main's capture driver plus the turntable's turn. The capture panel keeps main's
+      Image and Video tabs, with the scene note on Image and a new matching note on Video, because an MP4 is also
+      painted on the look's colours. #67's conflicts were notes only: both 22 Nov patch notes are kept, scenes first.
+    - Typecheck and production build (with its roadmap and public-text checks) pass. Full suite: 1001 pass; the same 8
+      fail on the absent extracted GLBs.
+    - In the dev browser pane, against `deploy.yml`'s hosts:
+      - the default Studio view is unchanged;
+      - the Season 12 menu look shows the stage, cyan as in your menu screenshot;
+      - a drag turns the character while the stage stays still;
+      - the capture panel's Image tab shows the screenshot note and its Video tab the MP4 note;
+      - Studio removes the stage canvas, turns the character back to 0 and stores no scene, and a reload keeps it gone;
+      - the tunnel, picked and then reloaded, comes back, with the shoes on the walkway.
   - **22 Nov, after merging main at `e04075e`:**
     - One conflict, the viewer's imports. Typecheck and production build pass.
     - Full suite: 963 pass, scene tests included. The same 8 fail on the absent extracted GLBs.
@@ -65,7 +79,7 @@ Otherwise, in **PowerShell**, run these commands. The asset hosts are the deploy
 
 ```powershell
 cd E:\Coding\the-finals-outfit\.claude\worktrees\trusting-davinci-1693fd
-$env:VITE_ASSETS_BASE = "https://f4a8e069.the-finals-outfit-assets.pages.dev/"; $env:VITE_MODELS_BASE = "https://a029b249.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_BASE = "https://c062af24.the-finals-outfit-assets.pages.dev/"; $env:VITE_ANIMATIONS_BASE = "https://fd946744.the-finals-outfit-assets.pages.dev/"; $env:VITE_CHINALS_ANIMATIONS_BASE = "https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/"; $env:VITE_SCENES_BASE = "https://1d367244.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_ROUTES_FILE = "src/data/reconstruction-routes.json"
+$env:VITE_ASSETS_BASE = "https://2cbead71.the-finals-outfit-assets.pages.dev/"; $env:VITE_MODELS_BASE = "https://a029b249.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_BASE = "https://a70ffa7f.the-finals-outfit-assets.pages.dev/"; $env:VITE_ANIMATIONS_BASE = "https://fd946744.the-finals-outfit-assets.pages.dev/"; $env:VITE_CHINALS_ANIMATIONS_BASE = "https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/"; $env:VITE_SCENES_BASE = "https://1d367244.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_ROUTES_FILE = "src/data/reconstruction-routes.json"
 npx vite --host 127.0.0.1 --port 5243 --strictPort
 ```
 
@@ -84,7 +98,8 @@ Stop it with Ctrl+C. The look you pick is saved in this browser for `127.0.0.1:5
     - the large glowing LED "A" sits behind the character, with the grid of round lights and haze;
     - the floor faintly reflects the glow;
     - the character stands in front of it, framed as before, with the drawer open and closed;
-    - the camera button's **Backdrop** option says the scene itself isn't in screenshots yet.
+    - the camera button's **Backdrop** option says the scene itself isn't in screenshots yet, and its **Video** tab
+      says the same for videos.
 - [ ] **3. Turntable.**
   - Do: close the panel, drag left and right across the viewer, then scroll the wheel up and down. Then click the viewer
     and press the Left and Right arrow keys.
@@ -145,6 +160,17 @@ it), or for example "4 fails: the shoes float above the tiles."
   7. On a 390 x 844 phone view (CDP touch, not a real finger), a one-finger drag turns the character in both scenes,
      and a two-finger pinch on the 3D view zooms. A pinch with one finger on the controls column over the view (Pause,
      Facial animation) turns him instead. That is the existing phone layout and Studio behaves the same.
+- After that run the revision changed: main was merged in at `70b6a4d` (#63) and at `95e9bee` (#67), giving `863d193`.
+  The affected steps were run again on `863d193` in the dev browser pane, 22 Nov about 03:15 London. **Pass:**
+  - 1: the default Studio view is unchanged.
+  - 2: the menu stage, and the capture panel's notes on both tabs, the Video tab's being new.
+  - 3: the drag.
+  - 4: the shoes on the walkway.
+  - 5: leaving for Studio, then reloading.
+  - 6: the tunnel survives a reload.
+
+  Not run again on `863d193`: the drawer, the wheel, the arrow keys, the zoom, and step 7. That code is unchanged
+  since the full run, apart from the viewer's capture driver.
 - Explicitly waived checks: steps 1-7 as user checks (run by the agent instead). Not covered: real touch on a real
   phone, a real phone's memory with the second canvas, Safari and Firefox.
 - Readiness: ready.
