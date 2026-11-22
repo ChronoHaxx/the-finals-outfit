@@ -86,12 +86,13 @@ export { frameClock, clockFrozen, clockHeldStill } from "../lib/frame-clock";
 const TELEPORT = 0.6, MAX_TURN = 0.15; // radians per frame
 
 /** Canvas child: advances the mixer each frame, before the priority-1 still-view render draws it. */
-export function AnimationFrameDriver({ animator }: { animator: RigAnimator }) {
+/** `yaw`: the character's own turn (scene turntable mode), which turns it against the camera just as orbiting does. */
+export function AnimationFrameDriver({ animator, yaw }: { animator: RigAnimator; yaw?: () => number }) {
   const lastAzimuth = useRef<number | null>(null);
   useFrame(({ camera, controls }, delta) => {
     if (clockFrozen()) return;
     const target = (controls as unknown as { target?: THREE.Vector3 } | null)?.target;
-    const azimuth = Math.atan2(camera.position.x - (target?.x ?? 0), camera.position.z - (target?.z ?? 0));
+    const azimuth = Math.atan2(camera.position.x - (target?.x ?? 0), camera.position.z - (target?.z ?? 0)) - (yaw?.() ?? 0);
     const last = lastAzimuth.current;
     lastAzimuth.current = azimuth;
     // (A video export records through its own fixed camera: orbiting meanwhile turns nothing.)

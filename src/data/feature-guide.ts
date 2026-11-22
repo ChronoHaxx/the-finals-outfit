@@ -148,8 +148,14 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
       {
         id: "lighting",
         title: "Lighting and backdrop",
-        text: "Start from Studio, Lobby or a sun look, then change each light's colour, brightness and direction, pick a solid or gradient backdrop, turn on a floor shadow and save your own looks.",
+        text: "Start from Studio, Lobby, Season 12 menu or a sun look, then change each light's colour, brightness and direction, pick a solid or gradient backdrop, turn on a floor shadow and save your own looks.",
         where: "The button named after the look, top right",
+      },
+      {
+        id: "scenes",
+        title: "Scenes",
+        text: "Put the Season 12 menu stage or the tunnel from the Season 12 intro behind the character. While a scene shows, a drag turns the character and the camera stays still. Pick another backdrop or look to leave it.",
+        where: "Backdrop, in the lighting panel",
       },
       {
         id: "graphics",

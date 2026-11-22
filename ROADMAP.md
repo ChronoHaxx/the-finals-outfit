@@ -26,7 +26,7 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 # Roadmap
 
 Last reviewed: 2026-11-22
-Reviewed after patch note: 2026-11-22-in-game-outfits
+Reviewed after patch note: 2026-11-22-scene-backdrops
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -149,7 +149,7 @@ The default Studio light was rebuilt from measurements against the in-game icons
 ### Lighting and backdrops
 <!-- id: lighting-backdrops -->
 
-A Lighting panel offers ready-made looks, Studio and Lobby among them, and lets you change each light's colour, brightness and direction, add lights, choose a solid or gradient backdrop and turn on a floor shadow. Your own looks can be saved.
+A Lighting panel offers ready-made looks, Studio and Lobby among them, and lets you change each light's colour, brightness and direction, add lights, choose a solid or gradient backdrop and turn on a floor shadow. Your own looks can be saved. Two scenes from the game, the Season 12 menu stage and the tunnel from the Season 12 intro, can stand behind the character.
 
 ### Outfits that fit together
 <!-- id: outfit-fitting -->
