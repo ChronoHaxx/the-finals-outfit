@@ -36,8 +36,9 @@ let library: SquadLibrary | undefined;
 let starting: Promise<SquadLibrary> | undefined;
 let teardown: (() => void)[] = [];
 
-/** Opens squad storage (once) and makes sure a squad is current: this tab's last, else the last used, else a new one.
- *  Never rejects: with no usable storage, squads live in memory and the page says saving is off. */
+/** Opens squad storage (once) and selects this tab's last squad, else the last used. Opening the page writes nothing:
+ *  with no squad yet, the first Add or New makes one. Never rejects: with no usable storage, squads live in memory and
+ *  the page says saving is off. */
 export function startSquads(options: Partial<SquadLibraryOptions> = {}): Promise<SquadLibrary> {
   if (starting) return starting;
   starting = (async () => {
@@ -62,7 +63,7 @@ export function startSquads(options: Partial<SquadLibraryOptions> = {}): Promise
         window.removeEventListener("pagehide", hide);
       });
     }
-    const boot = lib.bootCurrentId() ?? lib.createSquad()?.id;
+    const boot = lib.bootCurrentId();
     if (boot) lib.select(boot);
     useSquads.setState({ snapshot: lib.snapshot() });
     return lib;
@@ -92,26 +93,36 @@ export function newSquad(): boolean {
 
 export function renameSquad(id: string, name: string) { library?.renameSquad(id, name); }
 
-/** Tombstone; the returned function undoes it (false when the cap meanwhile refuses). Selects another squad, or a new
- *  one when none is left. */
+/** Tombstone; the returned function undoes it (false when the cap meanwhile refuses). Selects another squad, or none
+ *  when it was the last: making a replacement here would leave an empty "Squad 1" beside the one Undo brings back. */
 export function deleteSquad(id: string): () => boolean {
   if (!library) return () => false;
   const lib = library;
   lib.remove(id);
   if (lib.snapshot().current === id) {
-    const next = lib.bootCurrentId() ?? lib.createSquad()?.id;
-    if (next) lib.select(next);
+    const next = lib.bootCurrentId();
+    if (next) lib.select(next); else lib.deselect();
   }
   return () => { const ok = lib.undelete(id); if (ok) lib.select(id); return ok; };
+}
+
+/** The current squad, or a new one when there is none (or another tab deleted it); null at the squad cap. */
+function currentOrNewSquad(lib: SquadLibrary): string | null {
+  const { current, squads } = lib.snapshot();
+  if (current && squads.some(squad => squad.id === current)) return current;
+  const created = lib.createSquad();
+  if (!created) return null;
+  lib.select(created.id);
+  return created.id;
 }
 
 /** An outfit-shaped source for a new contestant: a saved outfit record, or the builder's outfit on screen. */
 export interface OutfitSource { slots: SlotMap; labels?: SlotMap; bodyType?: string; playerNumber?: number | null;
   name: string; outfitId?: string; [field: string]: unknown }
 
-/** A copy of the outfit joins the current squad at the next free spot; false at the cap. */
+/** A copy of the outfit joins the current squad (a new one when there is none) at the next free spot; false at a cap. */
 export function addContestant(source: OutfitSource): boolean {
-  const squad = library?.snapshot().current;
+  const squad = library ? currentOrNewSquad(library) : null;
   if (!library || !squad) return false;
   const taken = library.contestantsOf(squad).map(c => c.place);
   const content: ContestantContent = contestantFromOutfit(source, nextSpot(taken),

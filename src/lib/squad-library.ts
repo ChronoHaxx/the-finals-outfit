@@ -430,6 +430,14 @@ export class SquadLibrary {
     this.changed();
   }
 
+  /** No current squad (the last one was deleted). Nothing is written: the next Add or New makes one, so deleting and
+   *  undoing never leaves a stray empty squad behind. */
+  deselect() {
+    if (this.current === null) return;
+    this.current = null;
+    this.changed();
+  }
+
   /** A new, empty squad ("Squad 1", "Squad 2"...), or null at the cap (nothing is evicted to make room). */
   createSquad(name?: string): SquadRecord | null {
     if (this.liveSquads().length >= this.cap) return null;

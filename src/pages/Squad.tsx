@@ -96,8 +96,10 @@ function SquadPage() {
 
         <section className="flex flex-col gap-2" aria-label="Squad">
           <div className="flex gap-1.5">
-            <select aria-label="Squad" value={current ?? ""} onChange={e => selectSquad(e.target.value)}
+            <select aria-label="Squad" value={squad ? squad.id : ""} onChange={e => selectSquad(e.target.value)}
               className="select-plain h-9 min-w-0 flex-1 border border-line bg-ink-900 px-2">
+              {/* Nothing is made until the first Add or New (useSquads.ts), so a visit or a deleted last squad has none. */}
+              {!squad && <option value="">No squad yet</option>}
               {snapshot.squads.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
             <button type="button" className="hud h-9 border border-line px-3 hover:border-fg disabled:opacity-40"
