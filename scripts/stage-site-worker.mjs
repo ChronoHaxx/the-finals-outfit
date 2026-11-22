@@ -24,7 +24,7 @@ import { appendFileSync, copyFileSync, existsSync, mkdirSync, readdirSync, readF
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { collectAssetRefs } from "./lib/asset-refs.mjs";
-import { gatedMeshPath, isMeshPath, modelUrlFor, parseReconstructionRoutes } from "../src/lib/asset-routing.mjs";
+import { gatedMeshPath, isMeshPath, meshOrigins, modelUrlFor, parseReconstructionRoutes } from "../src/lib/asset-routing.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const MARKER = "# staged by scripts/stage-site-worker.mjs";
@@ -116,8 +116,8 @@ const sources = new Map(values("--source").map(spec => {
   if (!existsSync(folder)) throw new Error(`no folder ${folder}`);
   return [normalize(spec.slice(0, at)), folder];
 }));
-const modelHosts = new Set([bases.modelsBase, bases.reconstructionBase, ...Object.values(bases.reconstructionRoutes)]
-  .filter(Boolean).map(normalize));
+// The same hosts the app gates (meshOrigins): every mesh the app sends to the gate must be staged here.
+const modelHosts = new Set(meshOrigins(bases).map(normalize));
 const unsourced = [...modelHosts].filter(h => !sources.has(h));
 const meshes = new Map(); // "<label>/<path>" -> absolute file
 for (const [host, folder] of sources) {

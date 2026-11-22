@@ -51,3 +51,27 @@ test('a public mesh URL maps to its host label and path, and nothing else maps',
     assert.equal(gatedMeshPath(url), null, url);
   assert.ok(isMeshPath('a/b.glb?v=1') && !isMeshPath('a/b.glb.json'));
 });
+
+test('only meshes on the release model hosts are gated; props and scenes keep their own hosts', async () => {
+  const { gatedMeshPath, meshOrigins } = await import('../src/lib/asset-routing.mjs');
+  const origins = meshOrigins({
+    assetsBase: 'https://icons1.the-finals-outfit-assets.pages.dev/',
+    modelsBase: ' https://models1.the-finals-outfit-assets.pages.dev/ ',
+    reconstructionBase: 'https://control1.the-finals-outfit-assets.pages.dev/',
+    reconstructionRoutes: { 'models/reconstructed-w1/': 'https://leaf1.the-finals-outfit-assets.pages.dev/' },
+  });
+  assert.deepEqual(origins.sort(), ['https://control1.the-finals-outfit-assets.pages.dev',
+    'https://leaf1.the-finals-outfit-assets.pages.dev', 'https://models1.the-finals-outfit-assets.pages.dev']);
+  assert.equal(gatedMeshPath('https://leaf1.the-finals-outfit-assets.pages.dev/models/reconstructed-w1/a.glb', origins),
+    'leaf1/models/reconstructed-w1/a.glb');
+  assert.equal(gatedMeshPath('https://models1.the-finals-outfit-assets.pages.dev/models/body/SK_Body_M.glb', origins),
+    'models1/models/body/SK_Body_M.glb');
+  // An emote prop (animations host), a scene and a Chinals asset are not staged by the gate, so they are never sent to it.
+  for (const url of ['https://anim1.the-finals-outfit-assets.pages.dev/props-10/BP_Emote_MariachiGuitar_Prop.glb',
+    'https://scenes1.the-finals-outfit-assets.pages.dev/scenes/arena.glb',
+    'https://chin1.the-finals-outfit-chinals-assets.pages.dev/props/a.glb'])
+    assert.equal(gatedMeshPath(url, origins), null, url);
+  // Without a models host, meshes come from the asset host; a relative base (local checkout) is never gated.
+  assert.deepEqual(meshOrigins({ assetsBase: 'https://icons1.example/' }), ['https://icons1.example']);
+  assert.deepEqual(meshOrigins({ assetsBase: '/' }), []);
+});
