@@ -4,7 +4,8 @@ import { isPlayerNumber, PLAYER_NUMBER_MAX, PLAYER_NUMBER_MIN, shownPlayerNumber
 import { playerNumberPieces, subscribePlayerNumberPieces } from "../rig/PlayerNumber";
 
 // The player (contestant) number: part of the outfit, saved and shared with it (lib/player-number.ts). "Own" shows
-// each piece's authored number, as the item icons do; a two-digit number replaces it on every piece that prints one.
+// each piece's authored number, as the item icons do; a number 0-99 replaces it on every piece that prints one (a
+// one-digit number prints centred, as in game). There is no "off": the game has none (lib/player-number.ts).
 export default function PlayerNumberControl() {
   const stored = useBuildStore((s) => s.playerNumber);
   const setPlayerNumber = useBuildStore((s) => s.setPlayerNumber);
@@ -13,9 +14,10 @@ export default function PlayerNumberControl() {
   const [draft, setDraft] = useState(shown === null ? "" : String(shown));
   const hintId = useId();
 
-  // Another outfit, a link or another tab changed it: show that, unless the field already says the same number.
+  // Another outfit, a link or another tab changed it: show that, unless the field already says the same number
+  // (an empty field is not 0).
   useEffect(() => {
-    setDraft(current => (isPlayerNumber(Number(current)) && Number(current) === shown) ? current
+    setDraft(current => (current !== "" && Number(current) === shown) ? current
       : shown === null ? "" : String(shown));
   }, [shown]);
 
@@ -23,12 +25,12 @@ export default function PlayerNumberControl() {
     const digits = text.replace(/\D/g, "").slice(0, 2);
     setDraft(digits);
     const value = Number(digits);
-    if (digits.length === 2 && isPlayerNumber(value)) setPlayerNumber(value);
+    if (digits !== "" && isPlayerNumber(value)) setPlayerNumber(value);
   };
-  // Leaving the field: an empty field means each piece's own number; an unfinished one goes back to what is shown.
+  // Leaving the field: an empty field means each piece's own number; a number is shown as it is stored ("07" is 7).
   const commit = () => {
     if (draft === "") setPlayerNumber(null);
-    else if (!isPlayerNumber(Number(draft))) setDraft(shown === null ? "" : String(shown));
+    else setDraft(isPlayerNumber(Number(draft)) ? String(Number(draft)) : shown === null ? "" : String(shown));
   };
 
   const hint = pieces === 0 ? "Nothing equipped prints a number"

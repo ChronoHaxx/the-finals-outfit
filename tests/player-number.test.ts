@@ -1,7 +1,8 @@
-// The player (contestant) number (21 Nov 2026). Two halves:
-// - the shader route (src/rig/PlayerNumber.ts): find the two atlas lanes the slicer left as literals, rewrite them to a
-//   uniform, and drive every live material from the viewer's choice. Synthetic programs here; the census over the
-//   real recovered programs is scripts/check-player-number.mjs (237 of 237 matched their authored DecalNumber).
+// The player (contestant) number (21 Nov 2026; 0-9 since 22 Nov). Two halves:
+// - the shader route (src/rig/PlayerNumber.ts): find MF_CharacterAtlasUV's arithmetic in a program by its shape, rewrite
+//   its six folded lanes to uniforms, and drive every live material from the viewer's choice. Synthetic programs here;
+//   the census over the real recovered programs is scripts/check-player-number.mjs (22 Nov: 294 of 294 matched their
+//   authored DecalNumber, and every rewrite prints 0, 5, 7, 10, 32 and 99 exactly as the game's assembly does).
 // - the outfit field (src/lib/player-number.ts): it must survive everything the body type survives. Loss paths: a
 //   number-only edit then a kill, two tabs, a conflict fork, a duplicate, an older tab that does not know the field, a
 //   value from a newer site, every link made before numbers, a stale `pn` in the address bar, and the share Worker.
@@ -13,8 +14,9 @@ import {
   isPlayerNumber, playerNumberFromShareCode, playerNumberShareCode, samePlayerNumber, shownPlayerNumber, storedPlayerNumber,
 } from '../src/lib/player-number';
 import {
-  findPlayerNumberSites, PLAYER_NUMBER_UNIFORM, playerNumberLanes, playerNumberPieces, playerNumberUniform,
-  rewritePlayerNumberGlsl, setPlayerNumber,
+  evaluatePlayerNumberNode, findPlayerNumberSites, PLAYER_NUMBER_CENTRE_UNIFORM, PLAYER_NUMBER_UNIFORM, playerNumberLanes,
+  playerNumberPieces, playerNumberUniforms, referenceAtlasU, rewritePlayerNumberGlsl, setPlayerNumber,
+  type PlayerNumberUniforms,
 } from '../src/rig/PlayerNumber';
 import { encodeOutfit } from '../src/lib/outfit';
 import { buildShareUrl, readOutfitLink } from '../src/lib/share-url';
@@ -38,80 +40,132 @@ const PIECES = { face: FALLBACK_FACE, feet: BOOTS };
 
 // ------------------------------------------------------------------ the shader route
 
-const literal = (value: number) => Math.fround(value).toPrecision(9);
-// A synthetic program in the slicer's output form: one atlas site (u * 2 * 0.1, then the tens and ones adds from one
-// instruction) per number slot, plus unrelated arithmetic.
-function program(numbers: number[], options: { foldOnes?: boolean; noScale?: boolean } = {}) {
+// A literal as the slicer writes it ('%.9g' of the float32, with a '.0' on whole numbers).
+const glslFloat = (value: number) => {
+  const text = String(Number(Math.fround(value).toPrecision(9)));
+  return /[.e]/.test(text) ? text : `${text}.0`;
+};
+interface ProgramOptions { guarded?: boolean; noScale?: boolean; leak?: boolean }
+// A synthetic program in the slicer's output form: per number slot, MF_CharacterAtlasUV with the number's lanes folded
+// in exactly as sm5_slice.py folds them (a zero lane leaves no add; single folds into the saturate's +1.0), plus
+// unrelated arithmetic. `guarded`: max/min with the NaN rule spelled out, as newer programs carry them.
+function program(numbers: number[], options: ProgramOptions = {}) {
   const lines = ['ReconstructedSurface recoveredSurface(vec2 uv0, vec2 uv1, vec3 viewTangent) {',
     '  float n1 = (uv0.x + 0.300000012); // asm:10'];
-  let node = 2;
-  numbers.forEach((n, i) => {
-    const [tens, ones] = playerNumberLanes(n);
-    const u = node++, scaled = node++, tensNode = node++, onesNode = node++;
-    lines.push(`  float n${u} = (n1 * 2.0); // asm:${100 + i}`);
-    lines.push(options.noScale ? `  float n${scaled} = (n${u} * 0.5); // asm:${110 + i}`
-      : `  float n${scaled} = (n${u} * 0.100000001); // asm:${110 + i}`);
-    lines.push(`  float n${tensNode} = (n${scaled} + ${literal(tens)}); // asm:${140 + i}`);
-    if (!options.foldOnes) lines.push(`  float n${onesNode} = (n${scaled} + ${literal(ones)}); // asm:${140 + i}`);
-  });
+  let node = 2, asm = 100;
+  const clampText = (fn: string, value: string, bound: string) => options.guarded
+    ? `(isnan(${value}) ? ${bound} : isnan(${bound}) ? ${value} : ${fn}(${value}, ${bound}))` : `${fn}(${value}, ${bound})`;
+  const emit = (expr: string) => { const name = `n${node++}`; lines.push(`  float ${name} = ${expr}; // asm:${asm++}`); return name; };
+  for (const n of numbers) {
+    const l = playerNumberLanes(n);
+    const m = emit(clampText('max', 'n1', glslFloat(l.lo)));
+    const uc = emit(clampText('min', m, glslFloat(l.hi)));
+    const s = emit(`(${uc} * 2.0)`);
+    const base = emit(options.noScale ? `(${s} * 0.5)` : `(${s} * 0.100000001)`);
+    const left = l.tens ? emit(`(${base} + ${glslFloat(l.tens)})`) : base;
+    const nL = emit(`(-${left})`);
+    const right0 = l.ones ? emit(`(${base} + ${glslFloat(l.ones)})`) : base;
+    const right = emit(`(${glslFloat(-l.k)} + ${right0})`);
+    const d = emit(`(${nL} + ${right})`);
+    const half = emit(`(${uc} + 0.5)`);
+    const fl = emit(`floor(${half})`);
+    const satIn = l.single ? emit(`(${fl} + 1.0)`) : fl;
+    const satLo = emit(clampText('max', satIn, '0.0'));
+    const sel = emit(clampText('min', satLo, '1.0'));
+    const r = emit(`(${d} * ${sel})`);
+    const out = emit(`(${r} + ${left})`);
+    lines.push(`  vec4 n${node++} = texture(u_t8, vec2(${out}, uv0.y)); // asm:${asm++}`);
+    if (options.leak) emit(`(${uc} * 3.0)`); // the clamp feeds something else: the rewrite would change it too
+  }
   lines.push('  return surface;', '}');
   return lines.join('\n');
 }
+const U_GRID = Array.from({ length: 23 }, (_, i) => -0.05 + i * 0.05);
+const atlasAt = (glsl: string, site: { uNode: string; atlasNode: string }, u: number, n?: number) =>
+  evaluatePlayerNumberNode(glsl, site.atlasNode, { [site.uNode]: u }, n === undefined ? undefined : playerNumberLanes(n));
 
 test('the lanes are the preshader\'s float32 values: 32 gives the literals the shipped programs carry', () => {
-  const [tens, ones] = playerNumberLanes(32);
-  assert.equal(tens, Math.fround(0.300000012));
-  assert.equal(ones, Math.fround(0.200000048), 'frac(3.2) in float32, not 0.2');
-  const pairs = new Set<string>();
-  for (let n = 10; n <= 99; n++) {
-    const [t, o] = playerNumberLanes(n);
-    pairs.add(`${t}|${o}`);
-    assert.ok(Math.abs(t - Math.floor(n / 10) / 10) < 1e-6 && Math.abs(o - (n % 10) / 10) < 1e-6, String(n));
+  const l32 = playerNumberLanes(32);
+  assert.equal(l32.tens, Math.fround(0.300000012));
+  assert.equal(l32.ones, Math.fround(0.200000048), 'frac(3.2) in float32, not 0.2');
+  assert.deepEqual([l32.lo, l32.hi, l32.k, l32.single], [0, 1, Math.fround(0.1), 0], 'two digits: the whole decal, two cells');
+  const l7 = playerNumberLanes(7);
+  assert.deepEqual([l7.tens, l7.lo, l7.hi, l7.k, l7.single], [0, 0.25, 0.75, Math.fround(0.05), 1], 'one digit: the middle half');
+  assert.equal(playerNumberLanes(0).ones, 0);
+  const sets = new Set<string>();
+  for (let n = 0; n <= 99; n++) {
+    const l = playerNumberLanes(n);
+    sets.add(JSON.stringify(l));
+    assert.ok(Math.abs(l.tens - Math.floor(n / 10) / 10) < 1e-6 && Math.abs(l.ones - (n % 10) / 10) < 1e-6, String(n));
   }
-  assert.equal(pairs.size, 90, 'every two-digit number has its own pair');
+  assert.equal(sets.size, 100, 'every number has its own lanes');
 });
 
-test('the route finds every site of an authored two-digit number and rewrites exactly those adds', () => {
-  const source = program([68, 68]);
-  const found = findPlayerNumberSites(source);
-  assert.equal(found?.authored, 68);
-  assert.equal(found?.sites.length, 2);
-  const rewritten = rewritePlayerNumberGlsl(source, found!);
-  assert.ok(rewritten.startsWith(`uniform vec2 ${PLAYER_NUMBER_UNIFORM};\n`));
-  assert.equal(rewritten.split(`${PLAYER_NUMBER_UNIFORM}.x`).length - 1, 2);
-  assert.equal(rewritten.split(`${PLAYER_NUMBER_UNIFORM}.y`).length - 1, 2);
-  assert.match(rewritten, /float n1 = \(uv0\.x \+ 0\.300000012\); \/\/ asm:10/, 'an unrelated 0.3 is left alone');
-  const untouched = source.split('\n').filter(line => !/\+ 0\.(600000024|800000[0-9]+)\)/.test(line));
-  for (const line of untouched) assert.ok(rewritten.includes(line), line);
+test('the game\'s layout: two digits fill the decal; one digit prints centred at one cell\'s width', () => {
+  const cell = (u: number, n: number) => referenceAtlasU(u, n) * 10;
+  assert.ok(Math.abs(cell(0.25, 42) - 4.5) < 1e-5, 'left half: the middle of the 4 cell');
+  assert.ok(Math.abs(cell(0.75, 42) - 2.5) < 1e-5, 'right half: the middle of the 2 cell');
+  assert.ok(Math.abs(cell(0.5, 7) - 7.5) < 1e-5, 'a lone 7 is centred on the decal');
+  assert.ok(Math.abs(cell(0.25, 7) - 7) < 1e-5 && Math.abs(cell(0.75, 7) - 8) < 1e-5, 'across the middle half only');
+  assert.equal(referenceAtlasU(0.1, 7), referenceAtlasU(0.25, 7), 'outside it the clamp holds the cell\'s edge column');
+  assert.equal(referenceAtlasU(0.9, 7), referenceAtlasU(0.75, 7));
+  assert.ok(Math.abs(cell(0.5, 0) - 0.5) < 1e-5, '0 is a digit like the others');
 });
 
-test('the route refuses what it cannot change exactly: one-digit and round numbers, disagreeing sites, other shapes', () => {
-  assert.equal(findPlayerNumberSites(program([30], { foldOnes: true })), undefined, 'a round number folded its ones lane');
+test('the route finds every authored shape, and its rewrite prints every number 0-99 as the game does', () => {
+  for (const [numbers, options] of [[[68, 68], {}], [[32], { guarded: true }], [[5], {}], [[8], { guarded: true }],
+    [[10], {}], [[30], { guarded: true }], [[0], {}], [[11], {}]] as [number[], ProgramOptions][]) {
+    const source = program(numbers, options);
+    const found = findPlayerNumberSites(source);
+    const label = `${numbers.join('+')}${options.guarded ? ' guarded' : ''}`;
+    assert.equal(found?.authored, numbers[0], label);
+    assert.equal(found?.sites.length, numbers.length, label);
+    const rewritten = rewritePlayerNumberGlsl(source, found!);
+    assert.ok(rewritten.startsWith(`uniform vec4 ${PLAYER_NUMBER_UNIFORM};\nuniform vec2 ${PLAYER_NUMBER_CENTRE_UNIFORM};\n`), label);
+    assert.match(rewritten, /float n1 = \(uv0\.x \+ 0\.300000012\); \/\/ asm:10/, 'an unrelated 0.3 is left alone');
+    assert.equal(rewritten.split('\n').length, source.split('\n').length + 2, 'lines are rewritten in place, none added');
+    for (const site of found!.sites) for (const u of U_GRID) {
+      assert.equal(atlasAt(source, site, u), referenceAtlasU(u, numbers[0]), `${label}: the original prints its own, u=${u}`);
+      for (let n = 0; n <= 99; n++) assert.equal(atlasAt(rewritten, site, u, n), referenceAtlasU(u, n), `${label}: N=${n} u=${u}`);
+    }
+  }
+});
+
+test('the route refuses what it cannot change exactly: disagreeing sites, other shapes, a clamp that feeds more', () => {
   assert.equal(findPlayerNumberSites(program([32, 68])), undefined, 'sites must agree on the one DecalNumber');
   assert.equal(findPlayerNumberSites(program([32], { noScale: true })), undefined, 'not the two-cell atlas scale');
+  assert.equal(findPlayerNumberSites(program([32], { leak: true })), undefined, 'the clamp is used elsewhere');
   assert.equal(findPlayerNumberSites('void main() {}'), undefined);
-  // A one-digit authored number has no tens lane (0 folds away) and centring lanes in its place.
-  const single = program([5]).replace(/\n {2}float n\d+ = \(n\d+ \+ 0\.0+\); \/\/ asm:140/, '');
-  assert.equal(findPlayerNumberSites(single), undefined);
+  assert.throws(() => rewritePlayerNumberGlsl('void main() {}', findPlayerNumberSites(program([32]))!), /every expression/);
 });
+
+const lanesOf = (uniforms: PlayerNumberUniforms) => {
+  const [tens, ones, lo, hi] = uniforms[PLAYER_NUMBER_UNIFORM].value.toArray();
+  const [k, single] = uniforms[PLAYER_NUMBER_CENTRE_UNIFORM].value.toArray();
+  return { tens, ones, lo, hi, k, single };
+};
 
 test('live materials follow the viewer\'s number; null puts each piece\'s own back; disposed ones leave', () => {
   setPlayerNumber(null);
   const a = new THREE.MeshPhysicalMaterial(), b = new THREE.MeshPhysicalMaterial(), shadow = new THREE.MeshDepthMaterial();
-  const ua = playerNumberUniform(a, 32, 'jersey'), ub = playerNumberUniform(b, 68, 'shorts');
-  playerNumberUniform(shadow, 32, 'jersey');
+  const ua = playerNumberUniforms(a, 32, 'jersey'), ub = playerNumberUniforms(b, 68, 'shorts');
+  playerNumberUniforms(shadow, 32, 'jersey');
   assert.equal(playerNumberPieces(), 2, 'counted by piece, not by pass');
-  assert.deepEqual(ua.value.toArray(), playerNumberLanes(32));
-  assert.deepEqual(ub.value.toArray(), playerNumberLanes(68));
+  assert.deepEqual(lanesOf(ua), playerNumberLanes(32));
+  assert.deepEqual(lanesOf(ub), playerNumberLanes(68));
   const version = a.version;
   setPlayerNumber(7);
-  assert.deepEqual(ua.value.toArray(), playerNumberLanes(32), 'a one-digit number is not printed: each piece\'s own');
-  setPlayerNumber(45);
-  assert.deepEqual(ua.value.toArray(), playerNumberLanes(45));
-  assert.deepEqual(ub.value.toArray(), playerNumberLanes(45));
+  assert.deepEqual(lanesOf(ua), playerNumberLanes(7), 'a one-digit number prints');
+  assert.deepEqual(lanesOf(ub), playerNumberLanes(7));
   assert.ok(a.version > version, 'marked for update, which restarts the still-view accumulation');
+  setPlayerNumber(0);
+  assert.deepEqual(lanesOf(ua), playerNumberLanes(0), '0 is a number, not "none"');
+  setPlayerNumber(100);
+  assert.deepEqual(lanesOf(ua), playerNumberLanes(32), 'a value the site cannot print: each piece\'s own');
+  setPlayerNumber(45);
+  assert.deepEqual(lanesOf(ub), playerNumberLanes(45));
   setPlayerNumber(null);
-  assert.deepEqual(ub.value.toArray(), playerNumberLanes(68));
+  assert.deepEqual(lanesOf(ub), playerNumberLanes(68));
   b.dispose();
   assert.equal(playerNumberPieces(), 1);
   a.dispose(); shadow.dispose();
@@ -122,20 +176,20 @@ test('each owner prints its own number: a squad contestant\'s choice leaves the 
   setPlayerNumber(null);
   const red = {}, blue = {};
   const builderJersey = new THREE.MeshPhysicalMaterial(), redCargos = new THREE.MeshPhysicalMaterial();
-  const builder = playerNumberUniform(builderJersey, 32, 'jersey');
+  const builder = playerNumberUniforms(builderJersey, 32, 'jersey');
   const redJersey = new THREE.MeshPhysicalMaterial(), blueJersey = new THREE.MeshPhysicalMaterial();
-  const r = playerNumberUniform(redJersey, 32, 'jersey', red), b = playerNumberUniform(blueJersey, 32, 'jersey', blue);
-  setPlayerNumber(45, red);
-  assert.deepEqual(r.value.toArray(), playerNumberLanes(45));
-  assert.deepEqual(b.value.toArray(), playerNumberLanes(32), 'the other contestant keeps its own');
-  assert.deepEqual(builder.value.toArray(), playerNumberLanes(32), 'the builder keeps its own');
+  const r = playerNumberUniforms(redJersey, 32, 'jersey', red), b = playerNumberUniforms(blueJersey, 32, 'jersey', blue);
+  setPlayerNumber(4, red);
+  assert.deepEqual(lanesOf(r), playerNumberLanes(4));
+  assert.deepEqual(lanesOf(b), playerNumberLanes(32), 'the other contestant keeps its own');
+  assert.deepEqual(lanesOf(builder), playerNumberLanes(32), 'the builder keeps its own');
   const blueVersion = blueJersey.version;
   setPlayerNumber(68);
-  assert.deepEqual(builder.value.toArray(), playerNumberLanes(68));
-  assert.deepEqual(r.value.toArray(), playerNumberLanes(45), 'the builder\'s choice does not reach a contestant');
+  assert.deepEqual(lanesOf(builder), playerNumberLanes(68));
+  assert.deepEqual(lanesOf(r), playerNumberLanes(4), 'the builder\'s choice does not reach a contestant');
   assert.equal(blueJersey.version, blueVersion, 'untouched materials are not marked for update');
-  const later = playerNumberUniform(redCargos, 14, 'cargos', red);
-  assert.deepEqual(later.value.toArray(), playerNumberLanes(45), 'a piece loaded later takes its owner\'s choice');
+  const later = playerNumberUniforms(redCargos, 14, 'cargos', red);
+  assert.deepEqual(lanesOf(later), playerNumberLanes(4), 'a piece loaded later takes its owner\'s choice');
   assert.equal(playerNumberPieces(red), 2);
   assert.equal(playerNumberPieces(), 1, 'the builder\'s hint counts its own pieces only');
   setPlayerNumber(null);
@@ -146,19 +200,23 @@ test('each owner prints its own number: a squad contestant\'s choice leaves the 
 // ------------------------------------------------------------------ the value and its link code
 
 test('what a stored value means, and its link code', () => {
-  for (const n of [10, 32, 99]) {
+  for (const n of [0, 7, 10, 32, 99]) {
     assert.ok(isPlayerNumber(n));
     assert.equal(playerNumberFromShareCode(playerNumberShareCode(n)), n);
   }
-  for (const bad of [9, 100, 3.5, -10, NaN, '32', null, undefined]) {
+  assert.equal(playerNumberShareCode(7), '7', 'one digit, no leading zero');
+  assert.equal(playerNumberShareCode(0), '0');
+  for (const bad of [-1, 100, 3.5, -10, NaN, '32', '7', null, undefined]) {
     assert.equal(isPlayerNumber(bad), false, String(bad));
     assert.equal(shownPlayerNumber(bad), null, String(bad));
     assert.equal(playerNumberShareCode(bad), undefined, String(bad));
   }
-  assert.equal(storedPlayerNumber(7), 7, 'a value from a newer site is kept as stored');
+  assert.equal(storedPlayerNumber(123), 123, 'a value from a newer site is kept as stored');
+  assert.equal(storedPlayerNumber(0), 0, '0 is a number, not "none"');
   assert.equal(storedPlayerNumber('7'), null);
   assert.ok(samePlayerNumber(undefined, null));
-  for (const code of [null, undefined, '', '7', '07', '100', '3a', ' 32', '32 ']) assert.equal(playerNumberFromShareCode(code), null, String(code));
+  assert.ok(!samePlayerNumber(0, null));
+  for (const code of [null, undefined, '', '07', '00', '-1', '100', '3a', ' 32', '32 ', '7 ']) assert.equal(playerNumberFromShareCode(code), null, String(code));
 });
 
 test('links carry the number in both styles beside the body type and a pose; without one they are as before', () => {
@@ -176,8 +234,14 @@ test('links carry the number in both styles beside the body type and a pose; wit
   assert.equal(readOutfitLink(own)?.playerNumber, undefined);
   const fromNamed = buildShareUrl(named, { build: PIECES, bodyType: 'masculine', playerNumber: null }, 'names');
   assert.equal(new URL(fromNamed).searchParams.get('pn'), null, 'a stale pn is removed');
-  // A number this site cannot print is not written into a link.
-  assert.doesNotMatch(buildShareUrl(SITE, { build: PIECES, bodyType: 'masculine', playerNumber: 7 }), /pn=/);
+  // One digit, and 0, travel like any other number; a number this site cannot print is not written into a link.
+  for (const n of [7, 0]) {
+    const link = buildShareUrl(SITE, { build: PIECES, bodyType: 'masculine', playerNumber: n });
+    assert.match(link, new RegExp(`&pn=${n}$`));
+    assert.equal(readOutfitLink(link)?.playerNumber, n);
+    assert.equal(readOutfitLink(buildShareUrl(link, { build: PIECES, bodyType: 'masculine', playerNumber: n }, 'names'))?.playerNumber, n);
+  }
+  assert.doesNotMatch(buildShareUrl(SITE, { build: PIECES, bodyType: 'masculine', playerNumber: 123 }), /pn=/);
 
   for (const old of [`${SITE}#/?o=2.36o.1l9.81qo.a17f.cct`, `${SITE}?o=2.36o.1l9.81qo.a17f.cct`,
     `${SITE}?outfit=${encodeOutfit({ slots: { face: FALLBACK_FACE } })}`])
@@ -191,7 +255,7 @@ test('links carry the number in both styles beside the body type and a pose; wit
 });
 
 test('a malformed pn never breaks a link: the outfit opens with each piece\'s own number', () => {
-  for (const pn of ['7', '100', '%22%3E', '', 'ab']) {
+  for (const pn of ['07', '100', '-1', '%22%3E', '', 'ab']) {
     const outfit = readOutfitLink(`${SITE}#/?o=2.36o.1l9.81qo.a17f.cct&pn=${pn}`);
     assert.equal(Object.keys(outfit?.slots ?? {}).length, 5, pn);
     assert.equal(outfit?.playerNumber, undefined, pn);
@@ -401,7 +465,8 @@ test('the share Worker stores the number with the card and opens the builder on 
 
 test('the Worker refuses a malformed number and keeps number-less uploads exactly as before', async () => {
   const e = workerEnv();
-  for (const bad of ['%22%3E', '7', '100', 'ab']) assert.equal((await post(e, `o=2.12a&pn=${bad}`)).status, 400, bad);
+  for (const bad of ['%22%3E', '07', '100', '-1', 'ab']) assert.equal((await post(e, `o=2.12a&pn=${bad}`)).status, 400, bad);
+  for (const good of ['0', '7', '10', '99']) assert.equal(readPlayerNumber(new URLSearchParams(`pn=${good}`)), good, good);
   assert.equal(readPlayerNumber(new URLSearchParams('o=2.12a')), undefined);
   const plain = await (await post(e, 'o=2.12a')).json() as { url: string };
   assert.match(plain.url, /\?o=2\.12a$/);

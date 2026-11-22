@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-player-number-one-digit",
+    date: "2026-11-22",
+    title: "One-digit player numbers",
+    notes: [
+      "The player number now goes from 0 to 99. A one-digit number prints centred on the piece, the way the game prints it, in the same lettering as the piece's own number.",
+      "Three pieces that always kept their own printed number, among them a baseball jersey, now show yours too, so every piece that prints a number follows your pick.",
+    ],
+    items: ["first-pass-3d"],
+  },
+  {
     id: "2026-11-22-shared-lighting",
     date: "2026-11-22",
     title: "Share links keep your lighting",

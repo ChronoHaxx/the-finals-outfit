@@ -5,11 +5,13 @@
 // it and carried by links as `pn=<number>`. Without one, every piece shows its own authored number (the material's
 // DecalNumber, 32 unless the skin sets another), which is what the site always showed and what the item icons show.
 //
-// Only two-digit numbers are offered: those are the ones the recovered programs can print exactly
-// (src/rig/PlayerNumber.ts explains why a single digit cannot be). This module stays free of three.js so the outfit
-// store, the saved-outfit library and the link codec can use it in Node tests.
+// 0-99 are offered (22 Nov 2026): the recovered programs print every one of them through the game's own atlas
+// arithmetic, a one-digit number centred as the game centres it (src/rig/PlayerNumber.ts). The game has no "off": its
+// option only sets the number (PlayerCosmeticNumberOption, "This number will appear on any cosmetics that display
+// numbers"), so neither has the site. This module stays free of three.js so the outfit store, the saved-outfit library
+// and the link codec can use it in Node tests.
 
-export const PLAYER_NUMBER_MIN = 10;
+export const PLAYER_NUMBER_MIN = 0;
 export const PLAYER_NUMBER_MAX = 99;
 export const PLAYER_NUMBER_PARAM = "pn";
 
@@ -32,7 +34,8 @@ export function shownPlayerNumber(value: unknown): number | null {
 /** Absent and null mean the same: compare by meaning, so the field's arrival is not an edit. */
 export const samePlayerNumber = (a: unknown, b: unknown) => storedPlayerNumber(a) === storedPlayerNumber(b);
 
-const SHARE_CODE = /^[1-9][0-9]$/;
+// One canonical spelling per number: 0-9 as one digit, 10-99 as two, never a leading zero.
+const SHARE_CODE = /^(?:[0-9]|[1-9][0-9])$/;
 
 /** The `pn` value for an outfit's number, or undefined when the link needs none. */
 export function playerNumberShareCode(value: unknown): string | undefined {
