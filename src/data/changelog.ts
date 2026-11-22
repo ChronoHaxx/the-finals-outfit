@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-light-markers-looks",
+    date: "2026-11-22",
+    title: "See the lights, drag them, five more looks",
+    notes: [
+      "Tick Show lights in the 3D view, in the lighting panel, to see each light as a bulb where it sits, with a cone the way it shines. Drag a bulb to move its light: the light's Direction and Height sliders follow. The bulbs never appear in screenshots or share images, and H hides them.",
+      "Five more ready-made looks: Dramatic, Cool, Warm, Fullbright and Nighttime. The Season 12 menu look now lights the character the way the menu does: a warm key from above, strong blue light and a white back light from behind on the left, and a weak fill from below.",
+    ],
+    items: ["lighting-backdrops"],
+  },
+  {
     id: "2026-11-22-scene-backdrops",
     date: "2026-11-22",
     title: "Scenes from the game behind your outfit",

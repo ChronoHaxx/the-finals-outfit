@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { create } from "zustand";
 import { backdropCss } from "../lib/stage-lighting";
 import { SCENE_FOV_MIN, plateScale, sceneUrl, wrapAngle, type SceneDef } from "../lib/scenes";
+import { pointerClaimed } from "../lib/pointer-claims";
 
 /**
  * Turntable mode for in-game scene backdrops (scenes.ts; design in _docs/scene-backdrops-2026-11-12/README.md section 4).
@@ -86,6 +87,8 @@ export function SceneTurntable({ scene, root }: { scene: SceneDef; root: THREE.O
       pinch = pointers.size === 2 ? spread() : null;
     };
     const move = (event: PointerEvent) => {
+      // A light marker took this pointer (pointer-claims.ts): it moves the light, not the character.
+      if (pointerClaimed(event.pointerId)) { pointers.delete(event.pointerId); pinch = null; return; }
       const last = pointers.get(event.pointerId);
       if (!last) return;
       const dx = event.clientX - last.x;

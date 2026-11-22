@@ -198,18 +198,155 @@ export function lobbyLook(): Look {
 
 export const DEFAULT_LOOK: Readonly<Look> = Object.freeze(studioLook());
 
-/** The Lobby lights in front of the Season 12 menu stage (scenes.ts): the game's menu lights its character with blue
- *  side light, which the Lobby look's rims already give. */
+/** A light aimed from a bearing and height (degrees, as the panel shows them), PRESET_DISTANCE away. */
+const PRESET_DISTANCE = 7;
+const aimed = (id: string, name: string, role: LightRole, color: string, intensity: number, bearing: number,
+  height: number, castShadow = false): StageLight => light(id, name, role, color, intensity, positionFrom(bearing, height, PRESET_DISTANCE), castShadow);
+const gradient = (inner: string, middle: string, outer: string): Backdrop =>
+  ({ inner, middle, outer, ellipse: STUDIO_ELLIPSE, middleStop: 55 });
+
+/**
+ * The Season 12 main menu: the game's own character lights in front of the menu stage (scenes.ts).
+ *
+ * Measured, not guessed (21 Nov 2026): the lights of CharacterSelection_Lighting round the menu character, read from
+ * the level (_docs/scene-backdrops-2026-11-12, section 7). Of its 25 lights only four reach the character; the rest are
+ * switched off in the level (bAffectsWorld false) or at 0 lm. Each is turned into a direction seen from the character's
+ * chest (bearing + to the viewer's right), and its strength there is lumens / distance², times Unreal's cone and radius
+ * falloff:
+ * - the key: a 5600 K spot from the upper right (54° / 54°), 45 lm; its 2.9 m radius fades it from the head down;
+ * - a saturated blue (#007bff) spot, low from behind on the left (-116° / 9°), 350 lm: the strongest light on the body;
+ * - a cool white point light behind on the left (-155° / 8°), 50 lm, nearly as strong at the chest;
+ * - a weak lilac fill from in front and below (0° / -21°), 10 lm.
+ * The ratios at the chest are about 1 : 2.6 : 2.3 : 0.6 (key at the head); a directional light has no falloff, so the
+ * key is set between its head and chest values. The level's sky light and the stage's blue glow are the hemisphere.
+ * Absolute brightness and the exposure were set by eye: the game's auto-exposure is not in the level.
+ */
 export function menuS12Look(): Look {
   const scene = sceneById("s12-menu");
-  return { ...lobbyLook(), backdrop: scene ? { ...scene.fallback, scene: scene.id } : { ...LOBBY_BACKDROP } };
+  return {
+    version: 2,
+    lights: [
+      aimed("sun", "Key", "sun", "#ffeee3", 2.2, 54, 54, true),
+      aimed("blue-side", "Blue side", "light", "#007bff", 5.5, -116, 9),
+      aimed("back", "Back light", "light", "#edf3f9", 2.6, -155, 8),
+      aimed("under-fill", "Under fill", "light", "#dadaff", 0.6, 0, -21),
+    ],
+    hemisphere: { sky: "#9fb4ff", ground: "#0b2a6b", intensity: 0.5 },
+    environment: { kind: "room", intensity: 0.35, rotation: 0 },
+    toneMapping: "aces",
+    exposure: 1.0,
+    contactShadow: false,
+    floorShadow: false,
+    floorShadowOpacity: 0.4,
+    backdrop: scene ? { ...scene.fallback, scene: scene.id } : { ...LOBBY_BACKDROP },
+  };
 }
 
-/** Full looks replace everything. */
+/** One hard key from the side and front (half the face in shadow) and a cool rim, on near black. */
+export function dramaticLook(): Look {
+  return {
+    version: 2,
+    lights: [
+      aimed("sun", "Key", "sun", "#fff1e0", 6, 60, 30, true),
+      aimed("rim", "Rim", "light", "#a8c0ff", 3, -135, 25),
+    ],
+    hemisphere: { sky: "#556070", ground: "#0a0a0c", intensity: 0.05 },
+    environment: { kind: "room", intensity: 0.08, rotation: 0 },
+    toneMapping: "aces",
+    exposure: 1.0,
+    contactShadow: true,
+    floorShadow: false,
+    floorShadowOpacity: 0.4,
+    backdrop: gradient("#2a2c31", "#121316", "#050506"),
+  };
+}
+
+/** Blue daylight: a pale blue key, a blue fill and rim, on slate. */
+export function coolLook(): Look {
+  return {
+    version: 2,
+    lights: [
+      aimed("sun", "Key", "sun", "#dbe7ff", 3.6, 28, 45, true),
+      aimed("fill", "Fill", "light", "#9cc0ff", 0.8, -55, 15),
+      aimed("rim", "Rim", "light", "#6aa2ff", 2.2, -150, 35),
+    ],
+    hemisphere: { sky: "#d6e4ff", ground: "#26313d", intensity: 0.35 },
+    environment: { kind: "softbox", intensity: 1, rotation: 0 },
+    toneMapping: "neutral",
+    exposure: 1.0,
+    contactShadow: true,
+    floorShadow: false,
+    floorShadowOpacity: 0.4,
+    backdrop: gradient("#5d7894", "#3a5069", "#1d2a38"),
+  };
+}
+
+/** Low golden-hour sun with its floor shadow, an orange rim, on sand. */
+export function warmLook(): Look {
+  return {
+    version: 2,
+    lights: [
+      aimed("sun", "Sun", "sun", "#ffc489", 4.2, 50, 22, true),
+      aimed("fill", "Fill", "light", "#ffe0bd", 0.6, -60, 20),
+      aimed("rim", "Rim", "light", "#ff9455", 1.8, 150, 30),
+    ],
+    hemisphere: { sky: "#ffe2c2", ground: "#4d3222", intensity: 0.35 },
+    environment: { kind: "room", intensity: 0.35, rotation: 0 },
+    toneMapping: "aces",
+    exposure: 1.0,
+    contactShadow: true,
+    floorShadow: true,
+    floorShadowOpacity: 0.35,
+    backdrop: gradient("#f5d9b4", "#dcae7c", "#9c6a41"),
+  };
+}
+
+/** Even light from everywhere and no shadows: every part of the outfit visible, colours flat. No lights to cast. */
+export function fullbrightLook(): Look {
+  return {
+    version: 2,
+    lights: [],
+    hemisphere: { sky: "#ffffff", ground: "#ffffff", intensity: 3 },
+    environment: { kind: "softbox", intensity: 1, rotation: 0 },
+    toneMapping: "neutral",
+    exposure: 1.0,
+    contactShadow: false,
+    floorShadow: false,
+    floorShadowOpacity: 0.4,
+    backdrop: { ...STUDIO_BACKDROP },
+  };
+}
+
+/** Moonlight from behind, a dim blue fill and a warm lamp low on the right, on night blue. */
+export function nighttimeLook(): Look {
+  return {
+    version: 2,
+    lights: [
+      aimed("sun", "Moon", "sun", "#a9bcff", 1.6, 140, 50, true),
+      aimed("fill", "Fill", "light", "#33457f", 0.5, -40, 20),
+      aimed("lamp", "Lamp", "light", "#ffb26b", 1.2, 70, 10),
+    ],
+    hemisphere: { sky: "#2b3b6b", ground: "#07090f", intensity: 0.35 },
+    environment: { kind: "room", intensity: 0.12, rotation: 0 },
+    toneMapping: "aces",
+    exposure: 1.1,
+    contactShadow: false,
+    floorShadow: false,
+    floorShadowOpacity: 0.4,
+    backdrop: gradient("#23315c", "#0e1430", "#04060e"),
+  };
+}
+
+/** Full looks replace everything. Ids are not stored anywhere (a look is matched by its data), so they may change. */
 export const FULL_LOOKS: readonly { id: string; label: string; look: () => Look }[] = [
   { id: "studio", label: "Studio", look: () => studioLook() },
   { id: "lobby", label: "Lobby", look: lobbyLook },
   { id: "menu-s12", label: "Season 12 menu", look: menuS12Look },
+  { id: "dramatic", label: "Dramatic", look: dramaticLook },
+  { id: "cool", label: "Cool", look: coolLook },
+  { id: "warm", label: "Warm", look: warmLook },
+  { id: "fullbright", label: "Fullbright", look: fullbrightLook },
+  { id: "nighttime", label: "Nighttime", look: nighttimeLook },
 ];
 /** Sun looks move the sun (and turn its shadow and the floor shadow on) over whatever look is in use. */
 export const SUN_LOOKS: readonly { id: string; label: string; bearing: number; height: number }[] = [
@@ -241,6 +378,67 @@ export function positionFrom(bearing: number, height: number, distance: number):
 export function movedLight(l: StageLight, change: { bearing?: number; height?: number }): StageLight {
   const now = lightAngles(l.position);
   return { ...l, position: positionFrom(change.bearing ?? now.bearing, change.height ?? now.height, now.distance || KEY_DISTANCE) };
+}
+
+/** The heights the panel's Height slider allows for a light (the sun stays above the floor, for its shadow). */
+export const heightRange = (l: Pick<StageLight, "role">): [number, number] =>
+  l.role === "sun" ? [SUN_HEIGHT_MIN, SUN_HEIGHT_MAX] : [LIGHT_HEIGHT_MIN, LIGHT_HEIGHT_MAX];
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Light markers (21 Nov 2026, community request): a bulb for each light and a cone the way it shines, shown in the 3D
+// view on request (LightMarkers.tsx), and dragged to move the light.
+//
+// These lights are directional: like the sun, only their direction matters, not how far away they are (their stored
+// distance only sizes the sun's shadow box). Drawn at its real place, 7 m out, a marker would sit behind the camera. So
+// every marker sits on one sphere round the character's chest, MARKER_RADIUS out along its light's direction: a "light
+// dome". Dragging a marker slides it over that dome, which changes the light's bearing and height and nothing else.
+
+export const MARKER_CENTRE: readonly [number, number, number] = Object.freeze([0, 1, 0]) as unknown as [number, number, number];
+export const MARKER_RADIUS = 0.8;
+
+type Vec3 = readonly [number, number, number];
+const sub = (a: Vec3, b: Vec3): [number, number, number] => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const dot = (a: Vec3, b: Vec3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const unit = (a: Vec3): [number, number, number] => { const n = Math.hypot(...a) || 1; return [a[0] / n, a[1] / n, a[2] / n]; };
+
+/** Where a light's marker sits: on the dome, along the light's direction. */
+export function markerPosition(l: Pick<StageLight, "position">, centre: Vec3 = MARKER_CENTRE, radius = MARKER_RADIUS): [number, number, number] {
+  const d = unit(l.position);
+  return [centre[0] + d[0] * radius, centre[1] + d[1] * radius, centre[2] + d[2] * radius];
+}
+
+/**
+ * The direction (a unit vector from the dome's centre) under a pointer ray, for dragging a marker over the dome.
+ *
+ * A ray through a sphere crosses it twice: the near side (facing the camera) and the far side. `side` keeps a marker on
+ * the half it was picked up on, so a light behind the character stays behind it while dragged; both points lie under
+ * the pointer, so the marker stays under the pointer either way. A ray that misses the sphere takes the point of the
+ * sphere's outline nearest to it, so dragging past the edge slides the marker round the rim instead of stopping.
+ */
+export function directionOnDome(origin: Vec3, direction: Vec3, side: "near" | "far",
+  centre: Vec3 = MARKER_CENTRE, radius = MARKER_RADIUS): [number, number, number] {
+  const d = unit(direction), oc = sub(origin, centre);
+  const along = -dot(oc, d); // how far along the ray its closest approach to the centre is
+  const closest: [number, number, number] = [oc[0] + d[0] * along, oc[1] + d[1] * along, oc[2] + d[2] * along];
+  const miss2 = dot(closest, closest), r2 = radius * radius;
+  if (miss2 >= r2) return unit(closest);
+  const half = Math.sqrt(r2 - miss2), t = side === "near" ? along - half : along + half;
+  return unit([oc[0] + d[0] * t, oc[1] + d[1] * t, oc[2] + d[2] * t]);
+}
+
+/** Which half of the dome a marker is on, seen from the camera. */
+export function domeSide(l: Pick<StageLight, "position">, camera: Vec3, centre: Vec3 = MARKER_CENTRE): "near" | "far" {
+  return dot(unit(l.position), sub(camera, centre)) >= 0 ? "near" : "far";
+}
+
+/** A light turned to shine from `direction` (from the character towards the light): its bearing and height follow,
+ *  the height kept within its slider's range, and its distance stays. Straight up or down keeps the bearing. */
+export function lightTowards(l: StageLight, direction: Vec3): StageLight {
+  const [x, y, z] = unit(direction);
+  const [min, max] = heightRange(l);
+  const height = THREE.MathUtils.clamp(THREE.MathUtils.radToDeg(Math.asin(THREE.MathUtils.clamp(y, -1, 1))), min, max);
+  const bearing = Math.hypot(x, z) < 1e-6 ? lightAngles(l.position).bearing : THREE.MathUtils.radToDeg(Math.atan2(x, z));
+  return movedLight(l, { bearing, height });
 }
 
 export interface ShadowFrustum { left: number; right: number; top: number; bottom: number; near: number; far: number; bias: number }

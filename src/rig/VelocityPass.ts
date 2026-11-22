@@ -264,7 +264,9 @@ export class VelocityPass {
       return cached.velocity;
     }
     const make = (source: THREE.Material) => {
-      if (!source.visible || source.blending === THREE.AdditiveBlending || source.userData.recoveredAdditive === true) return SKIP;
+      // On-screen helpers (light markers, ViewerOverlay.ts) are no surface either: they draw over the character.
+      if (!source.visible || source.blending === THREE.AdditiveBlending || source.userData.recoveredAdditive === true
+        || source.userData.viewerOverlay === true) return SKIP;
       const material = new THREE.ShaderMaterial({
         name: 'Stable preview velocity', vertexShader: VERTEX, fragmentShader: FRAGMENT, side: source.side,
         uniforms: { prevModelMatrix: { value: new THREE.Matrix4() }, prevViewProjection: { value: new THREE.Matrix4() },
