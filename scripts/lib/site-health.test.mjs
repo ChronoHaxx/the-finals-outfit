@@ -94,9 +94,11 @@ test('the real deploy.yml and routes file parse, and every host gets a file the 
 
 test('the always-loaded samples are still what the app loads first', () => {
   const viewer = readFileSync(resolve(REPO_ROOT, 'src/components/CharacterViewer.tsx'), 'utf8');
+  // The outfit pass (moved out of the viewer, 11 Nov 2026) reads the assembly index on every pass.
+  const pass = readFileSync(resolve(REPO_ROOT, 'src/rig/OutfitPass.ts'), 'utf8');
   const assembly = readFileSync(resolve(REPO_ROOT, 'src/rig/SourceAssembly.ts'), 'utf8');
   assert(viewer.includes(`modelUrl("${ALWAYS_LOADED[0]}")`));
-  assert(viewer.includes('modelUrl("models/reconstructed-assemblies-v1")'));
+  assert(pass.includes('modelUrl("models/reconstructed-assemblies-v1")'));
   assert(assembly.includes('${baseUrl}/supported-items.json') && ALWAYS_LOADED[1].endsWith('/supported-items.json'));
 });
 

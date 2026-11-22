@@ -228,6 +228,22 @@ test("emotes sharing one animation download it once and each reports its own id"
   assert.deepEqual(requested, ["bow.json"]);
 });
 
+test("characters given one clip cache download a shared animation once; without one each downloads its own", async () => {
+  const requested = stubFetch({ "wave.json": 20 });
+  const shared = new Map();
+  const first = new RigAnimator(manifest, "clips/", { clipFiles: shared });
+  const second = new RigAnimator(manifest, "clips/", { clipFiles: shared });
+  const a = rig(), b = rig();
+  await Promise.all([first.play(a.body, "wave"), second.play(b.body, "wave")]); // overlapping requests
+  step(first, 0.4); step(second, 0.4);
+  assert.deepEqual(requested, ["wave.json"]);
+  // Each character still poses its own bones.
+  assert.ok(angleTo(a.pelvis.quaternion, 90) < 1 && angleTo(b.pelvis.quaternion, 90) < 1);
+  const own = new RigAnimator(manifest, "clips/");
+  await own.play(rig().body, "wave");
+  assert.deepEqual(requested, ["wave.json", "wave.json"]);
+});
+
 test("prop attach bones are added before the mixer binds, so emote clips drive them; a reset removes them", async () => {
   stubFetch();
   clips["swing.json"] = { ...clipJson("swing", 0), q: [["prop_01", [0, 30], [...qInts(turn(45)), ...qInts(turn(45))]]], p: [] };

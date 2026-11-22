@@ -34786,6 +34786,950 @@
       "method": "exact-localized-name",
       "isHidden": false,
       "isUnreleased": false
+    },
+    "attachment-ancientcalender-01": {
+      "name": "MY ANCIENT MARK",
+      "pageId": 15599,
+      "revisionId": 69205,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-arrowmedieval-01": {
+      "name": "MISSED THE MARK",
+      "pageId": 19967,
+      "revisionId": 67658,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "asiansword-01": {
+      "name": "PHOENIX CUT",
+      "pageId": 22036,
+      "revisionId": 68231,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-askmebadge-01": {
+      "name": "FREE ADVICE",
+      "pageId": 15659,
+      "revisionId": 78064,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-banana-01": {
+      "name": "COMBAT RATION B",
+      "pageId": 21716,
+      "revisionId": 72710,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-banana-apesquad": {
+      "name": "APE SQUAD BANANA",
+      "pageId": 12552,
+      "revisionId": 71321,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-baseballbat-matte-orf": {
+      "name": "PROBLEM SOLVER",
+      "pageId": 22340,
+      "revisionId": 67857,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-cansoda-ospuze-01": {
+      "name": "PRO JUICE PENDANT",
+      "pageId": 15904,
+      "revisionId": 70179,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-cansoda-ospuzetiger": {
+      "name": "PITSTOP POP",
+      "pageId": 12111,
+      "revisionId": 77714,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-carvedfish-01": {
+      "name": "CHISEL CHUM",
+      "pageId": 13891,
+      "revisionId": 70044,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-clover-01": {
+      "name": "LUCK RUNS OUT",
+      "pageId": 16153,
+      "revisionId": 68614,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-coin-01": {
+      "name": "COIN OF PRIVILEGE",
+      "pageId": 21626,
+      "revisionId": 70825,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-coweggcharm": {
+      "name": "MOOLAH & TAMA",
+      "pageId": 14632,
+      "revisionId": 73888,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-detectivebadge-01": {
+      "name": "STOLEN CASHOUT UNIT",
+      "pageId": 20331,
+      "revisionId": 53929,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-football-01": {
+      "name": "BACK OF THE NET",
+      "pageId": 22580,
+      "revisionId": 67886,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-geofence-01": {
+      "name": "GEOFENCE",
+      "pageId": 14995,
+      "revisionId": 72373,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-geofence-01-arctic": {
+      "name": "SNOWZONE RIG",
+      "pageId": 22446,
+      "revisionId": 68394,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-geofence-01-drg-01": {
+      "name": "DRG GEOFENCE",
+      "pageId": 16337,
+      "revisionId": 71369,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-geofence-01-fivefears": {
+      "name": "FIVE FEARS GEOFENCE",
+      "pageId": 16318,
+      "revisionId": 71351,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-geofence-01-ntmr-01": {
+      "name": "NTMR GEOFENCE",
+      "pageId": 16075,
+      "revisionId": 71063,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-geofence-01-white": {
+      "name": "URBAN GEOFENCE",
+      "pageId": 17627,
+      "revisionId": 71622,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-koidragon-01": {
+      "name": "WATERFALL CLIMB",
+      "pageId": 12069,
+      "revisionId": 69022,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-lute-01-back": {
+      "name": "COURTLY APPROVAL",
+      "pageId": 18075,
+      "revisionId": 68833,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-mask-gasmask-03-alfaacta": {
+      "name": "FAMILY RESEMBLANCE",
+      "pageId": 28215,
+      "revisionId": 80509,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-medalsports-01": {
+      "name": "CHAMPION'S TOKEN",
+      "pageId": 13856,
+      "revisionId": 69253,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-merch-moolahbadge": {
+      "name": "MINI MOOVER",
+      "pageId": 10572,
+      "revisionId": 35547,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-merch-namabadge": {
+      "name": "TAMA TOT",
+      "pageId": 10217,
+      "revisionId": 42212,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-militaryglasses-volpe": {
+      "name": "PATRIOT OPTICS",
+      "pageId": 28015,
+      "revisionId": 79956,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-militarymedal-pink": {
+      "name": "STARSTRUCK MEDAL",
+      "pageId": 19829,
+      "revisionId": 73556,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-militarymedal-star": {
+      "name": "ARENA ETERNAL",
+      "pageId": 12333,
+      "revisionId": 69540,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-namebadge-01": {
+      "name": "EARTHLING PASS",
+      "pageId": 15717,
+      "revisionId": 68582,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-pizzaplushie-01": {
+      "name": "PIECE OFFERING",
+      "pageId": 22400,
+      "revisionId": 70851,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-pressuregauge-01": {
+      "name": "PRESSURE'S ON",
+      "pageId": 11064,
+      "revisionId": 70778,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-rosebrooch-beige-01": {
+      "name": "THORN TO WIN",
+      "pageId": 22765,
+      "revisionId": 67922,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-roundsunglasses-metallic-arenase-b682": {
+      "name": "RUNNING GLASSES",
+      "pageId": 28008,
+      "revisionId": 79907,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-sakuraflower-01": {
+      "name": "LAPEL BLOOM",
+      "pageId": 13878,
+      "revisionId": 70032,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-sportmedal-01-bronze": {
+      "name": "BRONZE SPORTY SPIRIT",
+      "pageId": 10267,
+      "revisionId": 76713,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-sportmedal-01-gold": {
+      "name": "GOLD SPORTY SPIRIT",
+      "pageId": 10269,
+      "revisionId": 76711,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-sportmedal-01-silver": {
+      "name": "SILVER SPORTY SPIRIT",
+      "pageId": 10268,
+      "revisionId": 76712,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-spraycan-01-90sskateboarder": {
+      "name": "SIGNATURE SPRAY",
+      "pageId": 21458,
+      "revisionId": 71973,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-strawberryplushie-cotton-red": {
+      "name": "CUDDLY PLUSHIE",
+      "pageId": 13392,
+      "revisionId": 73670,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachment-valentinesheart": {
+      "name": "BEATING BADGE",
+      "pageId": 12042,
+      "revisionId": 77386,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "attachments-weddingbouquet-01": {
+      "name": "FINAL TOSS",
+      "pageId": 15577,
+      "revisionId": 69186,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-bodypaint-wraith-02": {
+      "name": "WRAITH OF PASSAGE",
+      "pageId": 28152,
+      "revisionId": 80417,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-eyes-emissiveblue-03": {
+      "name": "BLAZORIN LENSES",
+      "pageId": 28150,
+      "revisionId": 80415,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "bodycosmetics-makeup-casual-01": {
+      "name": "BARN BLUSH",
+      "pageId": 22761,
+      "revisionId": 67920,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "casual-mapleleaf-plastic-red": {
+      "name": "MAPLE MARKUP",
+      "pageId": 10519,
+      "revisionId": 71581,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cowboy-ammopouch-metal-blacksilver": {
+      "name": "FULL-METAL POCKET",
+      "pageId": 22012,
+      "revisionId": 68219,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cowboy-ammopouch-metal-geng": {
+      "name": "GEN.G BULLET CASE",
+      "pageId": 16262,
+      "revisionId": 71162,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cowboy-huntingknife-leather-bandit": {
+      "name": "NOCTOVANTAGE KNIFE",
+      "pageId": 16902,
+      "revisionId": 72332,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cowboy-huntingknife-nylon": {
+      "name": "NOCTOVANTAGE KNIFE",
+      "pageId": 17155,
+      "revisionId": 73069,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cowboy-huntingknife-nylon-fnesport": {
+      "name": "FN ESPORTS KNIFE",
+      "pageId": 16413,
+      "revisionId": 71387,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cowboy-huntingknife-nylon-fnatic": {
+      "name": "FNATIC SIDE KNIFE",
+      "pageId": 16303,
+      "revisionId": 71201,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "cowboy-huntingknife-nylon-green": {
+      "name": "CHANTCAVER",
+      "pageId": 15610,
+      "revisionId": 69215,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "halloween-lowheels-leather-white": {
+      "name": "DEAD ON YOUR FEET",
+      "pageId": 28158,
+      "revisionId": 80423,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "halloween-vampiredress-cotton-white": {
+      "name": "GRAVE OCCASION",
+      "pageId": 28154,
+      "revisionId": 80419,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "head-face-25-base": {
+      "name": "HEAD 25",
+      "pageId": 22759,
+      "revisionId": 67919,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "historic-togaupper-cotton": {
+      "name": "VOTIVE MANTLE",
+      "pageId": 14278,
+      "revisionId": 44004,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-dragonslayershield-bone": {
+      "name": "WYRM CONTRACT",
+      "pageId": 20551,
+      "revisionId": 70690,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-elegantknightlegs-steel": {
+      "name": "IRONWILL GREAVES",
+      "pageId": 20031,
+      "revisionId": 67677,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-jestergloves-satin-bright": {
+      "name": "GRUDGE HOLDERS",
+      "pageId": 28156,
+      "revisionId": 80421,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-knightsword-02-steel": {
+      "name": "LAST LINE BLADE",
+      "pageId": 22225,
+      "revisionId": 56575,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-peasantshoulderbag-leather": {
+      "name": "WAYFARER SATCHEL",
+      "pageId": 22767,
+      "revisionId": 67923,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-scifiknightsword-metal-blackorange": {
+      "name": "CITYBREAKER BLADE",
+      "pageId": 19351,
+      "revisionId": 67636,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "medieval-techknightlower-plastic": {
+      "name": "DATA MARCH GREAVES",
+      "pageId": 22171,
+      "revisionId": 67838,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-botgloves-cotton": {
+      "name": "ALIEN DIGITS",
+      "pageId": 15719,
+      "revisionId": 68583,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-bothead": {
+      "name": "CRITICAL HIT MASK",
+      "pageId": 12382,
+      "revisionId": 77356,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-bothead-wood": {
+      "name": "BARREL'S PLANKFACE",
+      "pageId": 19958,
+      "revisionId": 67654,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-botlegs": {
+      "name": "LEGIT TARGET PANTS",
+      "pageId": 12384,
+      "revisionId": 77357,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-botlegs-blackivada": {
+      "name": "FINDER'S GREAVES",
+      "pageId": 16945,
+      "revisionId": 69722,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-botlegs-whitevaiiya": {
+      "name": "PROTOCOL WALKERS",
+      "pageId": 16472,
+      "revisionId": 69438,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-botlegs-wood": {
+      "name": "OAKBOUND STRIDE",
+      "pageId": 19963,
+      "revisionId": 67656,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-botshoes": {
+      "name": "SOFT PREY SLIPS",
+      "pageId": 12385,
+      "revisionId": 77358,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-botshoes-wood": {
+      "name": "SPLINTER SPRINTERS",
+      "pageId": 19965,
+      "revisionId": 67657,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-bottorso": {
+      "name": "CENTER MASS TOP",
+      "pageId": 12383,
+      "revisionId": 77355,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-bottorso-blackivada": {
+      "name": "PATHBREAKER CORE",
+      "pageId": 16941,
+      "revisionId": 69720,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-bottorso-whitevaiiya": {
+      "name": "TELEMETRY VEST",
+      "pageId": 16470,
+      "revisionId": 69437,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "meta-bottorso-wood": {
+      "name": "CENTER OF ATTENTION",
+      "pageId": 19960,
+      "revisionId": 67655,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "mexico-ancientrings-metal": {
+      "name": "GLYPHGRASPER RINGS",
+      "pageId": 15612,
+      "revisionId": 69217,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "mexico-ancientrings-metal-wizard": {
+      "name": "GLYPHGRASPER RINGS",
+      "pageId": 18300,
+      "revisionId": 68941,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-acepilotgloves-leather-sponsorospuze": {
+      "name": "STICKYPROOF GLOVES",
+      "pageId": 28360,
+      "revisionId": 80790,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-bombsuitvest-nylon-sponsoralfaacta": {
+      "name": "THE GOOD SCION",
+      "pageId": 28213,
+      "revisionId": 80507,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-claviclegun-steel-sponsoralfaacta": {
+      "name": "CLOSE RELATIONS",
+      "pageId": 28203,
+      "revisionId": 80497,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-flashlight-metal": {
+      "name": "NIGHTJAW TORCH",
+      "pageId": 12606,
+      "revisionId": 69806,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-flashlight-metal-blackblue": {
+      "name": "NIGHTJAW TORCH",
+      "pageId": 17041,
+      "revisionId": 68632,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-hardcase-plastic": {
+      "name": "CLUTCH CRATE",
+      "pageId": 20624,
+      "revisionId": 71756,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-hardcase-plastic-darkblue": {
+      "name": "CLUTCH CRATE",
+      "pageId": 17043,
+      "revisionId": 68633,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-hardcase-plastic-sponsoralfaacta": {
+      "name": "JUST IN CASE",
+      "pageId": 28205,
+      "revisionId": 80499,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-marinepants-canvas-sponsoralfaacta": {
+      "name": "PROPERTY RIGHTS",
+      "pageId": 28211,
+      "revisionId": 80505,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-riotmedievalshield-plastic-black": {
+      "name": "DEFENSIVE DIRECTIVE",
+      "pageId": 20226,
+      "revisionId": 67712,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-riotmedievalsword-metal-black": {
+      "name": "LAST RESORT BLADE",
+      "pageId": 20228,
+      "revisionId": 67713,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-sniperboots-leather-sponsoralfaacta": {
+      "name": "HOMESTEAD BOOTS",
+      "pageId": 28207,
+      "revisionId": 80501,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-sniperboots-leather-sponsorospuzeblack": {
+      "name": "RUNAROUND BOOTS",
+      "pageId": 28358,
+      "revisionId": 80788,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "military-tacticalhelmet-base-sponsoralfaacta": {
+      "name": "HEAD OF HOUSE",
+      "pageId": 28217,
+      "revisionId": 80511,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "monsters-easterndemonbrooch-metal-brass": {
+      "name": "A DEMON'S MARK",
+      "pageId": 16175,
+      "revisionId": 68194,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "ospuze-babymonitor-plastic": {
+      "name": "CRADLE COMMS",
+      "pageId": 28354,
+      "revisionId": 80784,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "ospuze-toddlerbandolier-leather": {
+      "name": "FORMULA READY",
+      "pageId": 28356,
+      "revisionId": 80786,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "prop-namaplushie-lumbar": {
+      "name": "CHIPPED NAMA TAMA",
+      "pageId": 22511,
+      "revisionId": 57106,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "prop-namaplushie-lumbar-easter": {
+      "name": "HATCH & HUG TAMA",
+      "pageId": 13311,
+      "revisionId": 53052,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "prop-skateboard-lumbar-90sskateboarder": {
+      "name": "DECKED OUT",
+      "pageId": 21452,
+      "revisionId": 71970,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "prop-skateboard-lumbar-orf": {
+      "name": "ALLEY-ÖRF BOARD",
+      "pageId": 22698,
+      "revisionId": 74100,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "prop-skateboard-lumbar-stickers-street": {
+      "name": "DECKED-OUT DECK",
+      "pageId": 21400,
+      "revisionId": 74091,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "prop-skateboard-lumbar-vaporwave01": {
+      "name": "VAPORWAVE BOARD",
+      "pageId": 22819,
+      "revisionId": 71975,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-katanas-metal": {
+      "name": "WICKED ECHOES",
+      "pageId": 19926,
+      "revisionId": 71662,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-scifiknightheadwear-plastic": {
+      "name": "SUNFORGED WARHELM",
+      "pageId": 20472,
+      "revisionId": 67757,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-singlekatana-metal-blackgold": {
+      "name": "IRON OATH TWINS",
+      "pageId": 22810,
+      "revisionId": 71686,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "scifi-singlekatana-metal-bluesilver": {
+      "name": "IRON OATH TWINS",
+      "pageId": 22794,
+      "revisionId": 71678,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotradio-plastic": {
+      "name": "DRIFTER'S LINE",
+      "pageId": 23469,
+      "revisionId": 68657,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacepilotradio-plastic-black": {
+      "name": "PHANTOM CHANNEL",
+      "pageId": 23452,
+      "revisionId": 68649,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "space-spacesoldierradio-plastic": {
+      "name": "BASE CALLING",
+      "pageId": 26774,
+      "revisionId": 76192,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "sport-glasses-metal-goldbrown": {
+      "name": "NO-TELL SPECS",
+      "pageId": 28377,
+      "revisionId": 80809,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-baseballcap-cotton-sponsorospuze-c01d": {
+      "name": "ON-CALL CAP",
+      "pageId": 28366,
+      "revisionId": 80796,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-heistpants-polyester-sponsorospu-627b": {
+      "name": "SITTER CARGOES",
+      "pageId": 28362,
+      "revisionId": 80792,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-heisttorso-cotton-sponsorospuzeblack": {
+      "name": "SPILLPROOF SHELL",
+      "pageId": 28364,
+      "revisionId": 80794,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-techgloves-nylon-sponsoralfaacta": {
+      "name": "FARM HAND GLOVES",
+      "pageId": 28209,
+      "revisionId": 80503,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "streetwear-vaporwaveglasses-plastic-cns": {
+      "name": "VAPORWAVE SPECS",
+      "pageId": 28011,
+      "revisionId": 79945,
+      "method": "exact-localized-name",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "traditional-urbanwarriorsword-leather-gold": {
+      "name": "DRIFTER'S EDGE",
+      "pageId": 16460,
+      "revisionId": 69835,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
+    },
+    "traditional-urbanwarriorsword-leather-silver": {
+      "name": "DRIFTER'S EDGE",
+      "pageId": 12930,
+      "revisionId": 69106,
+      "method": "outfit-member-type",
+      "isHidden": false,
+      "isUnreleased": false
     }
   }
 }
