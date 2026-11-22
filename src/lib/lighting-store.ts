@@ -18,6 +18,10 @@ import { DEFAULT_LOOK, sameLook, sanitizeLook, studioLook, rotated, KEY_POSITION
  *   first settings and PR #37's Sun angle are converted.
  * Storage can be missing or blocked: every access is guarded and the choice simply is not remembered.
  * Automated browsers (audits, visual diffs) never read it: they always render DEFAULT_LOOK.
+ *
+ * Beside the look, the same key keeps one viewer preference (21 Nov 2026): `markers`, whether the lights are shown in the
+ * 3D view (LightMarkers.tsx). It is not part of any look, so saving, sharing or applying a look never carries it, and the
+ * markers never reach a screenshot, share image or export whatever it says. Which light is selected is not stored.
  */
 export const LIGHTING_KEY = "finals-outfit.lighting";
 /** PR #37's Sun slider kept its angle here (degrees round from the reviewed key); read when nothing newer is stored. */
@@ -110,6 +114,12 @@ export function nextLookName(looks: readonly SavedLook[]): string {
 
 interface LightingStore {
   look: Look;
+  /** Whether the lights are shown in the 3D view (bulbs and cones that can be dragged). Starts off in automated browsers. */
+  markers: boolean;
+  /** The light last picked in the 3D view (its card opens in the panel); null when none. Not stored. */
+  selected: string | null;
+  setMarkers(on: boolean): void;
+  select(id: string | null): void;
   /** What Reset or the last applied look replaced, for Undo; null when there is nothing to undo. */
   previous: Look | null;
   looks: SavedLook[];
@@ -128,10 +138,10 @@ interface LightingStore {
   refresh(): void;
 }
 
-function initial(): Pick<LightingStore, "look" | "previous" | "looks"> {
-  if (AUTOMATED) return { look: sanitizeLook(DEFAULT_LOOK), previous: null, looks: [] };
+function initial(): Pick<LightingStore, "look" | "previous" | "looks" | "markers"> {
+  if (AUTOMATED) return { look: sanitizeLook(DEFAULT_LOOK), previous: null, looks: [], markers: false };
   const store = storage(), stored = readStored(store);
-  return { look: currentFrom(stored, store), previous: previousFrom(stored), looks: looksFrom(stored) };
+  return { look: currentFrom(stored, store), previous: previousFrom(stored), looks: looksFrom(stored), markers: stored.markers === true };
 }
 
 export const useLightingStore = create<LightingStore>((set, get) => {
@@ -148,6 +158,13 @@ export const useLightingStore = create<LightingStore>((set, get) => {
   };
   return {
     ...initial(),
+    selected: null,
+    setMarkers: on => {
+      set({ markers: on, ...(on ? {} : { selected: null }) });
+      // Automated browsers start with the markers off and never store the choice (they never read it either).
+      if (!AUTOMATED) writeStored(storage(), stored => { stored.markers = on; });
+    },
+    select: id => set({ selected: id }),
     edit: change => {
       set({ look: change(structuredClone(get().look)) });
       if (pending) clearTimeout(pending);

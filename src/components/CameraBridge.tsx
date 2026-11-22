@@ -4,6 +4,7 @@ import * as THREE from "three";
 import {
   notifyCamera, pendingView, roundView, setCameraHandle, takePendingView, type CameraView, type Vec3,
 } from "../lib/camera-view";
+import { anyPointerClaimed } from "../lib/pointer-claims";
 
 /**
  * The viewer's camera for controls outside the canvas (21 Nov 2026): the camera panel reads and types its position,
@@ -17,8 +18,11 @@ import {
  * swings around the world's vertical and the horizon stays tilted. Panning follows the tilted picture, because the
  * controls pan along the camera's own axes. Roll 0 leaves the frame exactly as the controls made it.
  *
- * While OrbitControls are off (a scene backdrop that holds the camera still, PR #57) the camera is left alone: nothing
- * can be typed or recalled, a link's view waits, and no roll is applied, so the scene's fixed framing stays exact.
+ * While OrbitControls are off (a scene backdrop that holds the camera still, PR #57) the camera is fixed and left
+ * alone: nothing can be typed or recalled, a link's view waits, and no roll is applied, so the scene's fixed framing
+ * stays exact. Dragging a light marker (PR #61) also switches the controls off, but only for the drag and while it holds
+ * the pointer (lib/pointer-claims.ts): the camera keeps the state it had, so a rolled view stays rolled and a scene
+ * stays level.
  */
 
 interface Controls {
@@ -32,10 +36,19 @@ interface Controls {
 
 // Degrees. Module state, so a Canvas remount (Retry after a lost graphics context) keeps the tilt.
 let roll = 0;
+let fixed = false;
 
-// The camera as drawn. While the controls are off no roll is applied, so it reads 0 (the held roll returns with them).
+/** Whether the camera is held still (a scene). Re-read whenever no tool holds the pointer; during a marker drag the
+ *  controls are off for the drag only, so the answer from before the drag stands. */
+function cameraFixed(controls: Controls): boolean {
+  if (!anyPointerClaimed()) fixed = !controls.enabled;
+  return fixed;
+}
+
+// The camera as drawn. While it is fixed no roll is applied, so it reads 0 (the held roll returns afterwards).
 const liveView = (camera: THREE.Camera, controls: Controls): CameraView => roundView({
-  position: camera.position.toArray() as Vec3, target: controls.target.toArray() as Vec3, roll: controls.enabled ? roll : 0,
+  position: camera.position.toArray() as Vec3, target: controls.target.toArray() as Vec3,
+  roll: cameraFixed(controls) ? 0 : roll,
 });
 
 /** Moves the camera to a view and holds it there. Its position and target go through the controls, so the orbit's
@@ -59,19 +72,19 @@ export function CameraBridge() {
   const camera = useThree(s => s.camera);
   const controls = useThree(s => s.controls) as unknown as Controls | null;
   const invalidate = useThree(s => s.invalidate);
-  const wasEnabled = useRef<boolean | null>(null);
+  const wasFixed = useRef<boolean | null>(null);
 
   useEffect(() => {
     if (!controls) return;
     setCameraHandle({
       get: () => liveView(camera, controls),
       set: view => {
-        if (!controls.enabled) return false;
+        if (cameraFixed(controls)) return false;
         place(camera, controls, view);
         invalidate();
         return true;
       },
-      locked: () => !controls.enabled,
+      locked: () => cameraFixed(controls),
     });
     const changed = () => notifyCamera();
     controls.addEventListener("change", changed);
@@ -83,9 +96,10 @@ export function CameraBridge() {
 
   useFrame(() => {
     if (!controls) return;
-    // The panel says when the camera is held still, so it hears when the controls are switched on or off.
-    if (controls.enabled !== wasEnabled.current) { wasEnabled.current = controls.enabled; notifyCamera(); }
-    if (!controls.enabled) return;
+    // The panel says when the camera is held still, so it hears when that changes.
+    const isFixed = cameraFixed(controls);
+    if (isFixed !== wasFixed.current) { wasFixed.current = isFixed; notifyCamera(); }
+    if (isFixed) return;
     // A link's view (lib/camera-view.ts) waits for a camera that can move.
     if (pendingView()) place(camera, controls, takePendingView()!);
     if (!roll) return;

@@ -131,3 +131,22 @@ Playwright Chromium, webdriver masked, storage cleared first, the preview Worker
 | Console | One error: the blocked preview upload (intended). Warnings: three's texture-units false alarm, Clock deprecation, a shader `isnan` note |
 
 Not run: the phone layout, and an end-to-end preview-image share (it would store a real entry on the live Worker).
+
+### Second merge: main `d31db11` (#61 light markers, #72 patch notes), 22 Nov 2026
+
+Text conflicts only (patch notes, roadmap, guide): the camera note stays first, the roadmap is reviewed after it, the
+guide keeps #63's "Emote video" and this PR's "Camera position and saved views". The patch note now calls the capture
+button the camera button, as the other public text does.
+
+#61 lets you drag a light's bulb in the view, and switches the OrbitControls off for the drag. This PR read "controls
+off" as "camera fixed", so mid-drag the camera panel showed the scene note and Roll 0° over a still-tilted picture, and
+in a scene the drag would have let the roll back onto the scene camera. `CameraBridge` now re-reads "fixed" only while
+no tool holds the pointer (`anyPointerClaimed()` in `lib/pointer-claims.ts`), so a drag keeps whatever state the camera
+had before it.
+
+Checked 22 Nov 12:22-12:30 London on a production build of this merge (Playwright, Worker blocked): Studio, Show
+lights, camera at (0, 1, 6) with Roll 20°, camera panel open. Dragging the rim bulb moved the light; mid-drag the panel
+read Roll 20°, no note, footer "open on the camera you see", camera unchanged, picture still tilted. In the tunnel scene
+the same drag kept Roll 0°, the note, the scene camera (0, 1, 3.6) and a level picture; leaving the scene restored
+(0, 1, 6) with Roll 20°. `tsc -b`, build, catalog split PASS; `npm test` 1026 pass, the same 8 fixture failures,
+6 skipped; the affected suites 126/126.
