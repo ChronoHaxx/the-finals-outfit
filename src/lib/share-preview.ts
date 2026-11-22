@@ -4,6 +4,7 @@ import { poseParams, type PoseCapture } from "./share-pose";
 import { BODY_TYPE_PARAM } from "./body-type";
 import { VIEW_PARAM, viewParams, type CameraView } from "./camera-view";
 import { PLAYER_NUMBER_PARAM } from "./player-number";
+import { LIGHTING_PARAM } from "./share-lighting";
 
 // Share links with a preview image. The app is static and its outfit lives in the URL fragment, which link
 // crawlers never see, so the preview Worker (workers/share-preview) hosts a small page per shared outfit that
@@ -26,28 +27,32 @@ export function shortCode(shortUrl: string): string | null {
 
 /** The upload's query: the outfit code, the body type's share code (body-type.ts; none for Masculine), the player
  *  number's (player-number.ts; none for each piece's own), then the pose's parameters (share-pose.ts grammar), then
- *  the camera view (camera-view.ts grammar). */
+ *  the camera view (camera-view.ts grammar), then the lighting's code (share-lighting.ts grammar). */
 export function uploadQuery(code: string, pose: PoseCapture | null, bodyType?: string, playerNumber?: string,
-  view: CameraView | null = null): string {
+  view: CameraView | null = null, lighting: string | null = null): string {
   const params = new URLSearchParams({ o: code });
   if (bodyType) params.set(BODY_TYPE_PARAM, bodyType);
   if (playerNumber) params.set(PLAYER_NUMBER_PARAM, playerNumber);
   for (const [key, value] of pose ? poseParams(pose) : []) params.set(key, value);
   for (const [key, value] of view ? viewParams(view) : []) params.set(key, value);
+  if (lighting) params.set(LIGHTING_PARAM, lighting);
   return params.toString();
 }
 
 /** True when a preview link carries a camera view (a Worker from before camera views leaves it out). */
 export const previewKeptView = (url: string) => new URL(url).searchParams.has(VIEW_PARAM);
+/** True when a preview link carries this lighting (a Worker from before shared lighting leaves it out). */
+export const previewKeptLighting = (url: string, lighting: string) => new URL(url).searchParams.get(LIGHTING_PARAM) === lighting;
 
 async function create(code: string, pose: PoseCapture | null, bodyType: string | undefined,
-  playerNumber: string | undefined, view: CameraView | null): Promise<string> {
+  playerNumber: string | undefined, view: CameraView | null, lighting: string | null): Promise<string> {
   const scene = getPreviewScene();
   if (!scene) throw new Error("The viewer is not ready");
   // Runs synchronously up to its first await, so the frame drawn is the one on screen when the click arrived.
   const image = await renderSharePreview(scene, pose);
-  // The card is the same four views whatever the camera: only the link opens on the camera's view.
-  const response = await fetch(`${SHARE_PREVIEW_BASE}/api/share?${uploadQuery(code, pose, bodyType, playerNumber, view)}`, {
+  // The card is the same four views whatever the camera: only the link opens on the camera's view. The card is drawn in
+  // the lighting on screen, which the link carries when `lighting` is given.
+  const response = await fetch(`${SHARE_PREVIEW_BASE}/api/share?${uploadQuery(code, pose, bodyType, playerNumber, view, lighting)}`, {
     method: "POST", headers: { "Content-Type": "image/jpeg" }, body: image });
   const body = await response.json().catch(() => ({})) as { url?: unknown; error?: unknown };
   if (!response.ok || typeof body.url !== "string" || !body.url.startsWith(`${SHARE_PREVIEW_BASE}/s/`))
@@ -57,6 +62,9 @@ async function create(code: string, pose: PoseCapture | null, bodyType: string |
   // A Worker from before camera views (21 Nov 2026) drops the view too. Still the right outfit, so the link is kept and
   // the share panel says the camera was left out (previewKeptView).
   if (view && !previewKeptView(body.url)) console.warn("[share preview] the share Worker dropped the camera view");
+  // A Worker from before shared lighting (22 Nov 2026) drops the lighting the same way: the link opens the right outfit in
+  // the viewer's own lighting, and the share panel says so (previewKeptLighting).
+  if (lighting && !previewKeptLighting(body.url, lighting)) console.warn("[share preview] the share Worker dropped the lighting");
   // A Worker from before body types would open the outfit as Masculine under a card that shows another body type.
   // That link would be wrong, not just plainer, so refuse it: the caller copies the plain link instead.
   if (bodyType && new URL(body.url).searchParams.get(BODY_TYPE_PARAM) !== bodyType)
@@ -72,13 +80,17 @@ async function create(code: string, pose: PoseCapture | null, bodyType: string |
  *  render or the upload fails. Call it in the same task as reading the pose, before any frame can move it.
  *  `bodyType` is the body type's share code (body-type.ts bodyTypeShareCode): undefined for Masculine.
  *  `playerNumber` is the number's share code (player-number.ts playerNumberShareCode): undefined for each piece's own.
- *  `view` is the camera the link opens on; the card does not change with it. */
+ *  `view` is the camera the link opens on; the card does not change with it.
+ *  `lighting` is the lighting's code (share-lighting.ts lightingCode) the link opens with, null to leave it out.
+ *  `cardLighting` is the code of the lighting on screen, which the card is drawn in whether or not the link carries it:
+ *  a repeat click reuses a link only while it is unchanged. */
 export function previewLink(code: string, pose: PoseCapture | null = null, bodyType?: string,
-  playerNumber?: string, view: CameraView | null = null): Promise<string> {
-  const key = uploadQuery(code, pose, bodyType, playerNumber, view);
+  playerNumber?: string, view: CameraView | null = null, lighting: string | null = null,
+  cardLighting: string = lighting ?? ""): Promise<string> {
+  const key = `${uploadQuery(code, pose, bodyType, playerNumber, view, lighting)}#${cardLighting}`;
   let link = links.get(key);
   if (!link) {
-    link = create(code, pose, bodyType, playerNumber, view);
+    link = create(code, pose, bodyType, playerNumber, view, lighting);
     links.set(key, link);
     link.catch(() => links.delete(key));
   }

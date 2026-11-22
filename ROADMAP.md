@@ -26,7 +26,7 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 # Roadmap
 
 Last reviewed: 2026-11-22
-Reviewed after patch note: 2026-11-22-chinals-emote-sounds
+Reviewed after patch note: 2026-11-22-shared-lighting
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -169,7 +169,7 @@ A labelled Chinals mode plays the emotes of 终极角逐, THE FINALS as publishe
 ### Share, randomise and report
 <!-- id: share-randomise-report -->
 
-Share links come with a four-angle preview image and open on the camera you were looking through. Randomise builds a rules-based outfit and keeps locked pieces. Report issue opens a prefilled GitHub issue for you to review and send.
+Share links come with a four-angle preview image and open on the camera you were looking through, in your lighting. Randomise builds a rules-based outfit and keeps locked pieces. Report issue opens a prefilled GitHub issue for you to review and send.
 
 ### A faster builder that works on phones
 <!-- id: faster-builder -->

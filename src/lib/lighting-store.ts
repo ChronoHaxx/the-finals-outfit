@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { AUTOMATED } from "./automation";
 import { DEFAULT_LOOK, sameLook, sanitizeLook, studioLook, rotated, KEY_POSITION, type Look } from "./stage-lighting";
+import { lightingCode, type LightingRead } from "./share-lighting";
 
 /**
  * The viewer's look (stage-lighting.ts), remembered in this browser.
@@ -22,6 +23,13 @@ import { DEFAULT_LOOK, sameLook, sanitizeLook, studioLook, rotated, KEY_POSITION
  * Beside the look, the same key keeps one viewer preference (21 Nov 2026): `markers`, whether the lights are shown in the
  * 3D view (LightMarkers.tsx). It is not part of any look, so saving, sharing or applying a look never carries it, and the
  * markers never reach a screenshot, share image or export whatever it says. Which light is selected is not stored.
+ *
+ * Shared looks (22 Nov 2026): a share link can carry its sender's look (share-lighting.ts). Opening one shows that look
+ * in place of the viewer's own without writing anything: `look` is what is drawn, `shared.own` the viewer's own look,
+ * and storage only ever receives the viewer's own (writeCurrent). The viewer keeps it (it becomes their look, and a new
+ * saved look; their look before stays one Undo away) or goes back to theirs. Changing the shared look in the panel or by
+ * dragging a light keeps it the same way, without the saved look: an edit is the viewer's work and is written at once.
+ * Picking another look leaves the shared one and applies over the viewer's own, so Undo still returns to theirs.
  */
 export const LIGHTING_KEY = "finals-outfit.lighting";
 /** PR #37's Sun slider kept its angle here (degrees round from the reviewed key); read when nothing newer is stored. */
@@ -58,6 +66,9 @@ export function writeStored(store: StorageLike | null, change: (stored: Stored) 
  *  leaving a scene (a ready-made look, a colour) kept `scene` in storage and the scene came back on the next reload
  *  (21 Nov 2026). Fields this version does not know are still kept, for the newer build that wrote them. */
 const OPTIONAL_BACKDROP_FIELDS = ["scene"] as const;
+/** Likewise a newer build's link additions (stage-lighting.ts `linkExtras`), on the look and on each light: a look that
+ *  has none must not inherit the stored look's. */
+const OPTIONAL_LINK_FIELDS = ["linkExtras"] as const;
 function withoutDropped(merged: Record<string, unknown>, written: object, fields: readonly string[]): Record<string, unknown> {
   for (const field of fields) if (!(field in written)) delete merged[field];
   return merged;
@@ -71,13 +82,13 @@ export function mergedLook(stored: unknown, look: Look): Record<string, unknown>
   const storedLights = Array.isArray(base.lights) ? base.lights.filter(isObject) : [];
   // A first-version setting stored here: its fields do not belong to a look; start from a clean object.
   const top = Array.isArray(base.lights) ? base : {};
-  return {
+  return withoutDropped({
     ...top, ...look,
     hemisphere: part("hemisphere", look.hemisphere),
     environment: part("environment", look.environment),
     backdrop: withoutDropped(part("backdrop", look.backdrop), look.backdrop, OPTIONAL_BACKDROP_FIELDS),
-    lights: look.lights.map(l => ({ ...(storedLights.find(s => s.id === l.id) ?? {}), ...l })),
-  };
+    lights: look.lights.map(l => withoutDropped({ ...(storedLights.find(s => s.id === l.id) ?? {}), ...l }, l, OPTIONAL_LINK_FIELDS)),
+  }, look, OPTIONAL_LINK_FIELDS);
 }
 
 export function currentFrom(stored: Stored, store: StorageLike | null): Look {
@@ -106,6 +117,22 @@ export function looksFrom(stored: Stored): SavedLook[] {
 
 const previousFrom = (stored: Stored) => isObject(stored.previous) ? sanitizeLook(stored.previous) : null;
 
+/** "Shared look", then "Shared look 2", 3...: the first name no saved look has. */
+export function sharedLookName(looks: readonly SavedLook[]): string {
+  const taken = new Set(looks.map(look => look.name));
+  let n = 1;
+  while (taken.has(n === 1 ? "Shared look" : `Shared look ${n}`)) n++;
+  return n === 1 ? "Shared look" : `Shared look ${n}`;
+}
+
+/** What became of a link's lighting, for the notice that says so (cleared when dismissed). */
+export type SharedOutcome =
+  /** Kept: it is the viewer's look now. `savedAs` names the saved look holding it (new, or one that already did);
+   *  null when the saved looks were full. */
+  | { kind: "kept"; savedAs: string | null; added: boolean }
+  /** The link's lighting cannot be shown by this build (a newer look or format, or a broken value): theirs stays. */
+  | { kind: "unavailable" };
+
 /** The next free "Look N" name. */
 export function nextLookName(looks: readonly SavedLook[]): string {
   const taken = looks.map(look => /^Look (\d+)$/.exec(look.name)?.[1]).filter(Boolean).map(Number);
@@ -132,6 +159,21 @@ interface LightingStore {
   /** Save the current look as a new one. False when MAX_LOOKS are already saved (nothing is replaced). */
   saveLook(): boolean;
   deleteLook(id: string): void;
+  /**
+   * A look from a share link, shown while the viewer's own waits (null when none). `code` is its lt value, `label` the
+   * ready-made look's name when the link named one.
+   */
+  shared: { own: Look; code: string; label: string | null } | null;
+  /** What became of the last link's lighting; the notice shows it until dismissed. */
+  sharedOutcome: SharedOutcome | null;
+  /** Show a link's look in place of the viewer's own, writing nothing. A look the viewer already has changes nothing. */
+  showShared(look: Look, label?: string | null): void;
+  /** The shared look becomes the viewer's own (Undo returns to theirs) and is added to the saved looks when there is room
+   *  and no saved look holds it already. */
+  keepShared(): void;
+  /** Back to the viewer's own look. Nothing was written, so nothing changes. */
+  leaveShared(): void;
+  dismissSharedOutcome(): void;
   /** Write a pending change now (page hidden or closing). */
   flush(): void;
   /** Re-read storage (another tab changed it). */
@@ -146,11 +188,14 @@ function initial(): Pick<LightingStore, "look" | "previous" | "looks" | "markers
 
 export const useLightingStore = create<LightingStore>((set, get) => {
   let pending: ReturnType<typeof setTimeout> | null = null;
+  /** The viewer's own look: the one on screen, unless a shared look stands in for it. */
+  const own = () => get().shared?.own ?? get().look;
   const writeCurrent = (previous?: Look | null) => {
     if (pending) { clearTimeout(pending); pending = null; }
     const written = writeStored(storage(), stored => {
       stored.version = 2;
-      stored.current = mergedLook(stored.current, get().look);
+      // Never the shared look: it reaches storage only once the viewer keeps or changes it (shared is null by then).
+      stored.current = mergedLook(stored.current, own());
       if (previous === null) delete stored.previous;
       else if (previous) stored.previous = mergedLook(stored.previous, previous);
     });
@@ -159,6 +204,8 @@ export const useLightingStore = create<LightingStore>((set, get) => {
   return {
     ...initial(),
     selected: null,
+    shared: null,
+    sharedOutcome: null,
     setMarkers: on => {
       set({ markers: on, ...(on ? {} : { selected: null }) });
       // Automated browsers start with the markers off and never store the choice (they never read it either).
@@ -166,18 +213,29 @@ export const useLightingStore = create<LightingStore>((set, get) => {
     },
     select: id => set({ selected: id }),
     edit: change => {
+      const { shared } = get();
+      if (shared) {
+        // Changing the shared look makes it the viewer's: written at once, their own look kept for Undo.
+        set({ look: change(structuredClone(get().look)), previous: shared.own, shared: null, sharedOutcome: null });
+        writeCurrent(shared.own);
+        return;
+      }
       set({ look: change(structuredClone(get().look)) });
       if (pending) clearTimeout(pending);
       pending = setTimeout(() => writeCurrent(), WRITE_DELAY_MS);
     },
     apply: next => {
-      const current = get().look;
+      // Over the viewer's own look: picking a look leaves a shared one, and Undo returns to theirs.
+      const current = own();
+      if (get().shared) set({ look: current, shared: null, sharedOutcome: null });
       if (sameLook(current, next)) return;
       set({ look: sanitizeLook(next), previous: current });
       writeCurrent(current);
     },
     reset: () => get().apply(sanitizeLook(DEFAULT_LOOK)),
     undo: () => {
+      // While a shared look shows, the viewer's own history is not on screen: Undo first returns to their look.
+      if (get().shared) { get().leaveShared(); return; }
       const previous = get().previous;
       if (!previous) return;
       set({ look: previous, previous: null });
@@ -203,12 +261,65 @@ export const useLightingStore = create<LightingStore>((set, get) => {
       });
       set({ looks: looksFrom(written) });
     },
+    showShared: (next, label = null) => {
+      const look = sanitizeLook(next), code = lightingCode(look), mine = own();
+      if (code === lightingCode(mine)) { if (get().shared) get().leaveShared(); return; }
+      get().flush(); // the viewer's own pending change is written first
+      set({ look, shared: { own: mine, code, label }, sharedOutcome: null, selected: null });
+    },
+    keepShared: () => {
+      const { shared, look } = get();
+      if (!shared) return;
+      const code = lightingCode(look);
+      let savedAs: string | null = null, added = false;
+      const written = writeStored(storage(), stored => {
+        const looks = Array.isArray(stored.looks) ? stored.looks : [];
+        const existing = looksFrom({ looks });
+        const holding = existing.find(saved => lightingCode(saved.look) === code);
+        if (holding) { savedAs = holding.name; return; }
+        if (existing.length >= MAX_LOOKS) return;
+        savedAs = sharedLookName(existing);
+        looks.push({ id: `look-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+          name: savedAs, savedAt: Date.now(), look: structuredClone(look) });
+        stored.looks = looks;
+        added = true;
+      });
+      set({ looks: looksFrom(written), previous: shared.own, shared: null, sharedOutcome: { kind: "kept", savedAs, added } });
+      writeCurrent(shared.own);
+    },
+    leaveShared: () => {
+      const { shared } = get();
+      if (shared) set({ look: shared.own, shared: null, sharedOutcome: null, selected: null });
+    },
+    dismissSharedOutcome: () => set({ sharedOutcome: null }),
     flush: () => { if (pending) writeCurrent(); },
-    refresh: () => { if (!AUTOMATED) { get().flush(); set(initial()); } },
+    refresh: () => {
+      if (AUTOMATED) return;
+      get().flush();
+      const next = initial(), { shared } = get();
+      // Another tab changed the viewer's own look: it waits behind a shared look still on screen.
+      set(shared ? { ...next, look: get().look, shared: { ...shared, own: next.look } } : next);
+    },
   };
 });
 
-if (typeof window !== "undefined" && !AUTOMATED) {
+/** The address the builder last read (store/open-link.ts): it reads the address at boot and again whenever the router's
+ *  copy changes, often the same address twice in a row, and one reading of a link offers its look once. Opening the link
+ *  again after the address moved on (or a reload) offers it again, as it shows the link's outfit again. */
+let lastRead: string | null = null;
+
+/** A share link's lighting, as store/open-link.ts read it: shown in place of the viewer's own, or a notice when this build
+ *  cannot show it. Null (a link without lighting) changes nothing. */
+export function offerLinkLighting(href: string, read: LightingRead | null): void {
+  if (href === lastRead) return;
+  lastRead = href;
+  if (!read) return;
+  const store = useLightingStore.getState();
+  if (read.kind === "look") store.showShared(read.look, read.preset);
+  else useLightingStore.setState({ sharedOutcome: { kind: "unavailable" } });
+}
+
+if (typeof window !== "undefined" && typeof document !== "undefined" && !AUTOMATED) {
   window.addEventListener("storage", event => {
     if (event.key === LIGHTING_KEY || event.key === null) useLightingStore.getState().refresh();
   });

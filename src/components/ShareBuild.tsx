@@ -1,7 +1,9 @@
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useBuildStore } from "../store/useBuildStore";
 import { buildShareUrl, type ShareStyle } from "../lib/share-url";
-import { previewKeptView, previewLink, SHARE_PREVIEW_BASE, sharePreviewAvailable, shortCode, uploadQuery } from "../lib/share-preview";
+import { previewKeptLighting, previewKeptView, previewLink, SHARE_PREVIEW_BASE, sharePreviewAvailable, shortCode, uploadQuery } from "../lib/share-preview";
+import { lightingCode, lightingLabel } from "../lib/share-lighting";
+import { useLightingStore } from "../lib/lighting-store";
 import { formatView, shareableView, subscribeCamera, type CameraView } from "../lib/camera-view";
 import { formatPoseTime, poseKey, type PoseCapture } from "../lib/share-pose";
 import { getPoseCapture, subscribePose } from "../lib/viewer-handle";
@@ -25,11 +27,11 @@ async function copyText(text: Promise<string>): Promise<string> {
   return value;
 }
 
-// The cache identity of a preview: the outfit code, the body type, the player number, the exact frame its card shows
-// and the camera the link opens on.
+// The cache identity of a preview: the outfit code, the body type, the player number, the exact frame its card shows,
+// the camera the link opens on and the lighting it opens with.
 const previewKey = (code: string | null, pose: PoseCapture | null, bodyType: string | undefined,
-  playerNumber: string | undefined, view: CameraView | null) =>
-  code === null ? "" : uploadQuery(code, pose, bodyType, playerNumber, view);
+  playerNumber: string | undefined, view: CameraView | null, lighting: string | null) =>
+  code === null ? "" : uploadQuery(code, pose, bodyType, playerNumber, view, lighting);
 const noSubscription = () => () => {};
 const viewKey = (view: CameraView | null) => view ? formatView(view) : "";
 /** "0.62, 1.42, 3.1 · roll −8°" */
@@ -45,6 +47,10 @@ const describeView = (view: CameraView) => `${view.position.join(", ")}${view.ro
 // Camera views (21 Nov 2026): when the camera is off the default framing, the link opens on the camera you see (its
 // position, target and roll: lib/camera-view.ts), so someone else can start from your shot. "Include camera view"
 // leaves it out. The preview card stays the same four views either way.
+//
+// Lighting (22 Nov 2026): the link opens with the lighting on screen (lib/share-lighting.ts): a ready-made look by name,
+// any other look in full, scene and backdrop included. The preview card is drawn in it either way. "Include lighting"
+// leaves it out, and the link then opens with whatever lighting its viewer has.
 export default function ShareBuild() {
   const build = useBuildStore(s => s.build);
   const bodyType = useBuildStore(s => s.bodyType);
@@ -61,6 +67,11 @@ export default function ShareBuild() {
   // The pose of the last copy (a playing emote moves on; the panel keeps showing the frame that was copied).
   const [copiedPose, setCopiedPose] = useState<PoseCapture | null>(null);
   const [withView, setWithView] = useState(true);
+  // The lighting of the last copy (its code and what the panel calls it), and the lighting on screen now.
+  const [withLighting, setWithLighting] = useState(true);
+  const [copiedLighting, setCopiedLighting] = useState<{ code: string; label: string } | null>(null);
+  const screenLook = useLightingStore(s => s.look);
+  const liveLighting = useMemo(() => lightingCode(screenLook), [screenLook]);
   // The camera of the last copy, and the camera now (followed only while the panel is open: it moves every frame).
   const [copiedView, setCopiedView] = useState<CameraView | null>(null);
   const liveView = useSyncExternalStore(open ? subscribeCamera : noSubscription, () => viewKey(shareableView()));
@@ -69,14 +80,17 @@ export default function ShareBuild() {
   const root = useRef<HTMLDivElement>(null);
   const pose = withPose ? copiedPose : null;
   const view = withView ? copiedView : null;
+  const lighting = withLighting ? copiedLighting?.code ?? null : null;
   // Derive from the current selection so an already-open copy box never goes stale.
-  const short = buildShareUrl(window.location.href, look, "short", pose, view);
+  const short = buildShareUrl(window.location.href, look, "short", pose, view, lighting);
   const code = shortCode(short);
-  const link = style === "preview" ? (preview && preview.key === previewKey(code, pose, bt, pn, view) ? preview.url : short)
-    : buildShareUrl(window.location.href, look, style, pose, view);
+  const link = style === "preview" ? (preview && preview.key === previewKey(code, pose, bt, pn, view, lighting) ? preview.url : short)
+    : buildShareUrl(window.location.href, look, style, pose, view, lighting);
   const poseMoved = withPose && livePose !== poseKey(copiedPose);
   const viewMoved = withView && open && liveView !== viewKey(copiedView);
-  const status = message.startsWith("Link copied") && (copiedLink !== link || poseMoved || viewMoved)
+  // The card is drawn in the lighting on screen, so a change shows even when the link leaves the lighting out.
+  const lightingMoved = !!copiedLighting && liveLighting !== copiedLighting.code;
+  const status = message.startsWith("Link copied") && (copiedLink !== link || poseMoved || viewMoved || lightingMoved)
     ? "Link changed · copy again" : message;
 
   const share = async () => {
@@ -88,20 +102,27 @@ export default function ShareBuild() {
     const camera = shareableView();
     const viewNow = withView ? camera : null;
     setCopiedView(camera);
+    const onScreen = useLightingStore.getState().look;
+    const lit = { code: lightingCode(onScreen), label: lightingLabel(onScreen) };
+    const lightingNow = withLighting ? lit.code : null;
+    setCopiedLighting(lit);
     setOpen(true);
-    const shortNow = buildShareUrl(window.location.href, look, "short", now, viewNow);
+    const shortNow = buildShareUrl(window.location.href, look, "short", now, viewNow, lightingNow);
     const codeNow = shortCode(shortNow);
     let result: Promise<{ url: string; note: string }>;
     if (style !== "preview" || !codeNow)
-      result = Promise.resolve({ url: buildShareUrl(window.location.href, look, style === "preview" ? "short" : style, now, viewNow),
+      result = Promise.resolve({ url: buildShareUrl(window.location.href, look, style === "preview" ? "short" : style, now, viewNow, lightingNow),
         note: now ? `Link copied · opens on frame ${now.frame}` : "Link copied" });
     else if (!sharePreviewAvailable()) result = Promise.resolve({ url: shortNow, note: "Outfit still loading · plain link copied" });
     else {
       setMessage("Making preview…");
-      result = previewLink(codeNow, now, bt, pn, viewNow).then(url => {
-        setPreview({ key: previewKey(codeNow, now, bt, pn, viewNow), url });
-        // A share Worker from before camera views opens the right outfit on the default framing: say so.
-        if (viewNow && !previewKeptView(url)) return { url, note: "Link copied · preview links can’t keep the camera yet (Short link can)" };
+      result = previewLink(codeNow, now, bt, pn, viewNow, lightingNow, lit.code).then(url => {
+        setPreview({ key: previewKey(codeNow, now, bt, pn, viewNow, lightingNow), url });
+        // A share Worker from before camera views (or before shared lighting) opens the right outfit on the default
+        // framing (or in the viewer's own lighting): say what it left out.
+        const dropped = [viewNow && !previewKeptView(url) ? "the camera" : "",
+          lightingNow && !previewKeptLighting(url, lightingNow) ? "the lighting" : ""].filter(Boolean);
+        if (dropped.length) return { url, note: `Link copied · preview links can’t keep ${dropped.join(" or ")} yet (Short link can)` };
         return { url, note: now ? `Link copied · preview shows frame ${now.frame}` : "Link copied · with preview image" };
       }, error => { console.warn("[share preview]", error); return { url: shortNow, note: "Preview unavailable · plain link copied" }; });
     }
@@ -171,6 +192,12 @@ export default function ShareBuild() {
         <input type="checkbox" checked={withView} onChange={e => setWithView(e.target.checked)} className="size-4 accent-finals" />
         <span className="min-w-0">Include camera view
           <span className="block truncate text-fg-dim">Opens from {describeView(copiedView)}</span>
+        </span>
+      </label>}
+      {copiedLighting && <label className="mt-3 flex items-center gap-2.5 text-xs text-fg-muted">
+        <input type="checkbox" checked={withLighting} onChange={e => setWithLighting(e.target.checked)} className="size-4 accent-finals" />
+        <span className="min-w-0">Include lighting
+          <span className="block truncate text-fg-dim" title={copiedLighting.label}>{copiedLighting.label}</span>
         </span>
       </label>}
       <label className="mt-3 flex items-center justify-between gap-3">

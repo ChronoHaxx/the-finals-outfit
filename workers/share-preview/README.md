@@ -144,6 +144,23 @@ Live checks after the deploy, all read-only (nothing stored):
 - The root redirects (302).
 - An upload with `pn=7` gets 400 `bad player number`; a foreign origin gets 403.
 
+## Redeploying for lighting (22 Nov 2026)
+
+Share links can carry the lighting look (`src/lib/share-lighting.ts`): `lt=<ready-made look id>` such as `lt=lobby`, or
+`lt=1.<fields>` for any other look (letters, digits, `.`, `_` and `-`, at most 1,500 characters). The Worker checks only
+that shape (else 400 `bad lighting`) and never what the value means, so a newer app's looks and formats pass through
+unchanged. It stores the value in the entry's metadata as `lt`, returns it last in the link and sends people to
+`#/?o=<code>[&bt=..][&pn=..][&emote=..][&view=..]&lt=...`. A stored `lt` wins over the link's own while the entry lives;
+entries and links made before this have none, and the builder then opens with its viewer's own lighting.
+
+Workers KV keeps at most 1,024 bytes of metadata per entry. A full outfit with a long emote id and a long custom look can
+pass that, so the Worker now measures the metadata first and refuses such an upload with 413 `link too long for a
+preview`, before anything is stored. The app then copies the plain short link, which carries everything.
+
+Deploy order does not matter for correctness. A Worker without this change drops `lt`: preview links then open the right
+outfit in the viewer's own lighting, and the share panel says "preview links can't keep the lighting yet (Short link
+can)". Short and readable links keep the lighting without the Worker.
+
 ## Live deployment (20 Oct 2026)
 
 - Worker `the-finals-outfit-share` at https://the-finals-outfit-share.chronohaxx.workers.dev (account subdomain renamed from the
