@@ -161,8 +161,8 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
             <button type="button" disabled={!range || running} onClick={() => setRange(ranged.clip, null)}
               className="h-8 border border-line px-2 text-xs text-fg-muted hover:bg-ink-900 disabled:cursor-not-allowed disabled:opacity-40">Whole</button>
           </div>
-          <span className="text-[11px] leading-snug text-fg-muted">{range
-            ? "Also on the timeline: drag its red markers, or press I and O at a frame."
+          <span className="text-[11px] leading-snug text-fg-muted">{PHONE ? (range ? "The part of the emote the video records." : "The whole emote. Type times to record a part of it.")
+            : range ? "Also on the timeline: drag its red markers, or press I and O at a frame."
             : "The whole emote. Type times here, or turn on Video range on the timeline."}</span>
         </div>
       )}

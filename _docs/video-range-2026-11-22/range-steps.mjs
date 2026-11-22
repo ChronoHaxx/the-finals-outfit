@@ -219,7 +219,8 @@ report.steps[5] = { clicked, afterTyping, p1, p2 };
 save();
 await context.close();
 
-// ---- 6. Phone (390x844, touch): the timeline shows Video range and its markers within the screen.
+// ---- 6. Phone (390x844, touch): the timeline keeps its scrub track (no Video range button or markers there); the
+//         Video tab's typed times set the range instead.
 const phone = await openApp("phone", { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true,
   userAgent: "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36" });
 const pp = phone.page;
@@ -230,15 +231,19 @@ await dialog.locator(`button[title^="${EMOTE}"]`).first().click();
 await pp.waitForFunction(() => window.__rigAnim.animator.state.loading === null && !!window.__rigAnim.animator.timeline(), null, { timeout: 120000 });
 if (await dialog.isVisible()) await dialog.getByRole("button", { name: "Close emotes" }).click();
 const phoneTimeline = pp.getByRole("group", { name: /timeline$/ });
-const markBoxes = await phoneTimeline.getByRole("slider", { name: /^Video (start|end)$/ }).evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return [r.left, r.right, r.width, r.height]; }));
+const rangeVisible = await phoneTimeline.getByRole("button", { name: "Video range" }).isVisible();
+const trackWidth = (await phoneTimeline.locator("input[type=range]").boundingBox())?.width ?? 0;
 await phoneTimeline.screenshot({ path: join(outDir, "6-phone-timeline.png") });
-const phoneButton = phoneTimeline.getByRole("button", { name: "Video range" });
-await phoneButton.click();
-const phoneMarks = await phoneTimeline.getByRole("slider", { name: /^Video (start|end)$/ }).evaluateAll(els => els.map(e => { const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right), Math.round(r.width), Math.round(r.height)]; }));
-await phoneTimeline.screenshot({ path: join(outDir, "6-phone-timeline-range.png") });
-check(6, "on a phone Video range shows both markers on screen, with touch-sized tabs", phoneMarks.length === 2 && phoneMarks.every(([l, r, w, h]) => l >= 0 && r <= 390 && w >= 16 && h >= 14),
-  JSON.stringify({ before: markBoxes, after: phoneMarks }));
-report.steps[6] = { phoneMarks };
+await pp.locator('button[aria-label^="Capture"]').click();
+await pp.getByRole("tab", { name: "Video" }).click();
+await pp.getByLabel("Video start (seconds)").fill("1"); await pp.getByLabel("Video start (seconds)").press("Enter");
+await pp.getByLabel("Video end (seconds)").fill("2.5"); await pp.getByLabel("Video end (seconds)").press("Enter");
+const phoneSummary = await pp.locator('[role=group][aria-label=Capture] span', { hasText: "frames at 60 fps" }).first().textContent();
+const phoneMarks = await phoneTimeline.getByRole("slider", { name: /^Video (start|end)$/ }).evaluateAll(els => els.filter(e => e.getClientRects().length).length);
+await pp.screenshot({ path: join(outDir, "6-phone-video-tab.png") });
+check(6, "on a phone the timeline keeps its scrub track: no Video range button", !rangeVisible && trackWidth > 100, `button visible ${rangeVisible} · track ${Math.round(trackWidth)} px`);
+check(6, "on a phone typed times set the range, with no markers over the track", /Clip 1\.00–2\.50 s/.test(phoneSummary ?? "") && phoneMarks === 0, `${phoneSummary} · ${phoneMarks} markers shown`);
+report.steps[6] = { rangeVisible, trackWidth, phoneSummary, phoneMarks };
 await phone.context.close();
 
 save();

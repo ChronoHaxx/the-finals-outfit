@@ -33,7 +33,8 @@ import { CloseIcon, FrameStepIcon, LoopIcon, PauseIcon, PlayIcon } from "./Icons
 //
 // Video range (22 Nov 2026): Range marks the part of the emote a video records (lib/video-range.ts). Its two markers
 // sit above the track, so the playhead stays draggable under them; I and O move them to the frame on screen, as in
-// video editors. The Video tab shows the same range as typed times. Off is the whole emote.
+// video editors. The Video tab shows the same range as typed times. Off is the whole emote. On a touch screen the bar
+// has no room for them (the track would shrink to a sliver under two markers), so phones set the range by its times.
 
 /** Keys typed into a field are the field's. Sliders, buttons and boxes do not take , or . themselves. */
 function typing(target: EventTarget | null): boolean {
@@ -152,7 +153,9 @@ export function EmoteTimeline({ animator }: { animator: RigAnimator }) {
           onChange={event => { scrubbing(); animator.scrub(Number(event.target.value) * timeline.frameTime); redraw(n => n + 1); }}
           className="timeline-range w-full min-w-0 cursor-pointer"
           style={{ "--played": `${(frame / lastFrame) * 100}%` } as CSSProperties} />
-        {range && <RangeMarks clip={timeline.clip} range={range} duration={timeline.duration} frameTime={timeline.frameTime} />}
+        {range && <div className="contents pointer-coarse:hidden">
+          <RangeMarks clip={timeline.clip} range={range} duration={timeline.duration} frameTime={timeline.frameTime} />
+        </div>}
       </div>
       <button type="button" className={button} onClick={() => animator.step(1)} disabled={frame >= lastFrame && paused}
         aria-label="Next frame" title="Next frame ( . )">
@@ -162,7 +165,7 @@ export function EmoteTimeline({ animator }: { animator: RigAnimator }) {
         <span className="text-fg normal-case">{seconds}&thinsp;s</span>
         <span className="block text-fg-dim">{frame}&thinsp;/&thinsp;{lastFrame}</span>
       </span>
-      <button type="button" className={`${button} ${range ? "text-finals" : "text-fg-muted"}`} {...rangeFeature}
+      <button type="button" className={`${button} pointer-coarse:hidden ${range ? "text-finals" : "text-fg-muted"}`} {...rangeFeature}
         onClick={() => setRange(timeline.clip, range ? null : { from: 0, to: timeline.duration })}
         aria-pressed={!!range} aria-label="Video range"
         title={range ? `Video range ${range.from.toFixed(2)}–${range.to.toFixed(2)} s: click for the whole emote` : "Mark the part a video records ( I start, O end )"}>
