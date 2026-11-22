@@ -2,12 +2,16 @@ import { useEffect, useRef, useState, useSyncExternalStore, type RefObject } fro
 import { backdropPaint, type Backdrop } from "../lib/stage-lighting";
 import type { ScreenshotContext } from "../rig/ViewerScreenshot";
 import type { RigAnimator } from "../rig/RigAnimator";
-import { FPS, QUALITY, exportName, framePlan, recordVideo, videoSizes, videoSupport,
-  type VideoFormat, type VideoProgress, type VideoQuality, type VideoSupport } from "../rig/VideoExport";
+import { FPS, QUALITY, exportName, formatSpeed, framePlan, recordVideo, videoSizes, videoSupport,
+  type ExportRange, type VideoFormat, type VideoProgress, type VideoQuality, type VideoSupport } from "../rig/VideoExport";
+import { moveMark, setRange, useVideoRange } from "../lib/video-range";
 
 // The capture panel's Video tab (21 Nov 2026): the emote in front as a 60 fps video, rendered in this browser
 // (rig/VideoExport.ts). The job's state lives in the panel's button (useVideoExport), which stays mounted: the panel
 // may close while a long render runs, and the button shows its progress.
+//
+// Range, loops and speed (22 Nov 2026): an emote's video covers the timeline's range (typed here or marked there;
+// lib/video-range.ts), repeated Loops times, at the emote speed. The defaults are the whole emote, once, at 1x.
 
 // Memory guards. A phone gets at most 1080p frames, smaller GPU tiles, and a smaller ceiling for the finished file (it
 // is held in memory, or the browser's blob storage, until saved). A phone is told apart by its primary pointer.
@@ -18,8 +22,9 @@ export const CAPTURE_TILE = PHONE ? 1024 : 2048;
 const MAX_FILE_BYTES = LOW_MEMORY ? 400e6 : 2e9;
 
 const KEY = "finals-outfit.video";
-interface VideoChoices { format: VideoFormat; quality: VideoQuality; height: number; sound: boolean }
-const DEFAULTS: VideoChoices = { format: "mp4", quality: "standard", height: 1080, sound: true };
+interface VideoChoices { format: VideoFormat; quality: VideoQuality; height: number; sound: boolean; loops: number }
+const DEFAULTS: VideoChoices = { format: "mp4", quality: "standard", height: 1080, sound: true, loops: 1 };
+export const MAX_LOOPS = 20;
 function readChoices(): VideoChoices {
   try {
     const s = JSON.parse(localStorage.getItem(KEY) ?? "{}") as Partial<VideoChoices>;
@@ -28,6 +33,7 @@ function readChoices(): VideoChoices {
       quality: s.quality === "draft" || s.quality === "standard" || s.quality === "best" ? s.quality : DEFAULTS.quality,
       height: typeof s.height === "number" && Number.isFinite(s.height) ? s.height : DEFAULTS.height,
       sound: typeof s.sound === "boolean" ? s.sound : DEFAULTS.sound,
+      loops: typeof s.loops === "number" && Number.isInteger(s.loops) && s.loops >= 1 && s.loops <= MAX_LOOPS ? s.loops : DEFAULTS.loops,
     };
   } catch { return DEFAULTS; }
 }
@@ -45,7 +51,8 @@ export interface VideoJob {
   running: boolean;
   progress: VideoProgress | null;
   status: string;
-  start: (options: { width: number; height: number; format: VideoFormat; quality: VideoQuality; sound: boolean; keepFloor: boolean }) => void;
+  start: (options: { width: number; height: number; format: VideoFormat; quality: VideoQuality; sound: boolean; keepFloor: boolean;
+    range?: Partial<ExportRange> }) => void;
   cancel: () => void;
 }
 
@@ -55,7 +62,7 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
   const [status, setStatus] = useState("");
   const controller = useRef<AbortController | null>(null);
   useEffect(() => () => controller.current?.abort(), []); // the viewer unmounts: stop, and give the clock back
-  const start: VideoJob["start"] = ({ width, height, format, quality, sound, keepFloor }) => {
+  const start: VideoJob["start"] = ({ width, height, format, quality, sound, keepFloor, range }) => {
     const ctx = context.current;
     if (!ctx || !animator || controller.current) return;
     const abort = new AbortController();
@@ -66,7 +73,7 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
     void (async () => {
       try {
         const result = await recordVideo(ctx, animator, { format, width, height, quality, keepFloor, sound,
-          backdrop: backdropPaint(backdrop), maxTile: CAPTURE_TILE, maxBytes: MAX_FILE_BYTES }, setProgress, abort.signal, when);
+          backdrop: backdropPaint(backdrop), maxTile: CAPTURE_TILE, maxBytes: MAX_FILE_BYTES, range }, setProgress, abort.signal, when);
         const name = `${exportName(result.clip, when)}.${result.extension}`;
         const url = URL.createObjectURL(result.blob);
         const link = document.createElement("a");
@@ -113,12 +120,17 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
   useSyncExternalStore(listener => animator?.subscribe(listener) ?? (() => {}), () => animator?.state ?? null);
   const clip = animator?.recordable() ?? null;
   const change = (patch: Partial<VideoChoices>) => setChoices(current => { const next = { ...current, ...patch }; writeChoices(next); return next; });
+  // The range belongs to the emote in front (the idle has no timeline: it records whole loops).
+  const timeline = animator?.timeline() ?? null;
+  const ranged = clip && timeline && timeline.clip === clip.clip ? timeline : null;
+  const range = useVideoRange(ranged?.clip, ranged?.duration ?? 0, ranged?.frameTime);
+  const exportRange: Partial<ExportRange> = { ...(range ?? {}), loops: choices.loops, speed: clip?.speed ?? 1 };
 
   const sizes = videoSizes(stage.width, stage.height, MAX_VIDEO_PIXELS, stage.maxSide);
   const size = sizes.find(s => s.height === choices.height) ?? [...sizes].reverse().find(s => s.height <= choices.height) ?? sizes[0];
   const available = (format: VideoFormat) => format === "png" || (format === "mov" ? !PHONE : support ? support[format] : false);
   const format = available(choices.format) ? choices.format : support ? (available("mp4") ? "mp4" : "png") : choices.format;
-  const plan = clip ? framePlan(clip) : null;
+  const plan = clip ? framePlan(clip, FPS, exportRange) : null;
   const hasSound = !!clip && !!animator?.sounds.hasSound(clip.source);
   const soundPossible = ownEncoder(format) || (format === "webm" ? !!support?.opus : !!(support?.aac || support?.opus));
   const transparent = format !== "mp4";
@@ -129,9 +141,36 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
     <div className="flex flex-col gap-3">
       <span className="text-xs leading-snug text-fg-muted">
         {clip && plan
-          ? <><span className="text-fg">{clip.label}</span> · {plan.duration.toFixed(2)} s · {plan.frames} frames at {FPS} fps{clip.loop ? " (one loop)" : ""}</>
+          ? <><span className="text-fg">{clip.label}</span> · {plan.duration.toFixed(2)} s · {plan.frames} frames at {FPS} fps{clip.loop && plan.loops === 1 ? " (one loop)" : ""}
+            {(range || plan.loops > 1 || plan.speed !== 1) && <span className="block">
+              {range ? `Clip ${range.from.toFixed(2)}–${range.to.toFixed(2)} s` : clip.loop ? "Whole loops" : "The whole emote"}
+              {plan.loops > 1 ? `, ${plan.loops} times` : ""}{plan.speed !== 1 ? `, at ${formatSpeed(plan.speed)} speed (the emote speed)` : ""}
+            </span>}</>
           : "Play an emote, then record it here."}
       </span>
+      {ranged && (
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1.5 text-xs">
+            <span className="hud mr-auto text-fg-muted">Range</span>
+            <NumberField label="Video start (seconds)" value={range?.from ?? 0} min={0} max={ranged.duration} decimals={2} disabled={running}
+              onCommit={t => setRange(ranged.clip, moveMark(range, "from", t, ranged.duration, ranged.frameTime))} />
+            <span className="text-fg-muted">to</span>
+            <NumberField label="Video end (seconds)" value={range?.to ?? ranged.duration} min={0} max={ranged.duration} decimals={2} disabled={running}
+              onCommit={t => setRange(ranged.clip, moveMark(range, "to", t, ranged.duration, ranged.frameTime))} />
+            <span className="text-fg-muted">s</span>
+            <button type="button" disabled={!range || running} onClick={() => setRange(ranged.clip, null)}
+              className="h-8 border border-line px-2 text-xs text-fg-muted hover:bg-ink-900 disabled:cursor-not-allowed disabled:opacity-40">Whole</button>
+          </div>
+          <span className="text-[11px] leading-snug text-fg-muted">{PHONE ? (range ? "The part of the emote the video records." : "The whole emote. Type times to record a part of it.")
+            : range ? "Also on the timeline: drag its red markers, or press I and O at a frame."
+            : "The whole emote. Type times here, or turn on Video range on the timeline."}</span>
+        </div>
+      )}
+      <label className="flex items-center justify-between gap-3">
+        <span className="hud text-fg-muted">Loops</span>
+        <NumberField label="Loops" value={choices.loops} min={1} max={MAX_LOOPS} decimals={0} disabled={running}
+          onCommit={n => change({ loops: Math.round(n) })} />
+      </label>
       <div role="radiogroup" aria-label="Video format" className="flex flex-col gap-1.5">
         {FORMATS.map(f => {
           const usable = available(f.id);
@@ -201,7 +240,7 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
       ) : (
         <button type="button" disabled={disabled}
           onClick={() => size && job.start({ width: size.width, height: size.height, format, quality: choices.quality,
-            sound: choices.sound && hasSound && soundPossible, keepFloor })}
+            sound: choices.sound && hasSound && soundPossible, keepFloor, range: exportRange })}
           title={!ready ? "Wait for the outfit to finish loading" : !clip ? "Play an emote first" : "Render the emote frame by frame"}
           className="flex h-9 items-center justify-center gap-2 bg-fg px-3 text-xs font-semibold text-ink-950 hover:bg-white disabled:cursor-not-allowed disabled:bg-fg/30">
           Record video
@@ -213,5 +252,24 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
         your monitor’s). Keep this tab in front while it renders.
       </span>
     </div>
+  );
+}
+
+/** A number typed in full before it applies: on Enter or leaving the field, clamped; anything else reverts. */
+function NumberField({ label, value, min, max, decimals, disabled, onCommit }: {
+  label: string; value: number; min: number; max: number; decimals: number; disabled?: boolean; onCommit: (value: number) => void;
+}) {
+  const [text, setText] = useState<string | null>(null); // null: not being edited, shows the value
+  const commit = () => {
+    if (text === null) return;
+    const n = Number(text);
+    setText(null);
+    if (text.trim() !== "" && Number.isFinite(n)) onCommit(Math.min(max, Math.max(min, n)));
+  };
+  return (
+    <input type="number" inputMode="decimal" aria-label={label} min={min} max={max} step="any" disabled={disabled}
+      value={text ?? value.toFixed(decimals)} onChange={event => setText(event.target.value)} onBlur={commit}
+      onKeyDown={event => { if (event.key === "Enter") commit(); else if (event.key === "Escape") setText(null); }}
+      className="h-8 w-16 border border-line bg-ink-900 px-2 text-right text-xs tabular-nums text-fg disabled:opacity-40" />
   );
 }

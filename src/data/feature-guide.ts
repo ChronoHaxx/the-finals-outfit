@@ -53,6 +53,7 @@ export const FEATURES = [
   { id: "emotes", group: "pose", name: "Emotes", hint: "Play any emote from the game, with its props, sound and face." },
   { id: "timeline", group: "pose", name: "Timeline", hint: "Pause, drag or step through an emote one frame at a time.", keys: [",", "."], needs: "Play an emote" },
   { id: "emote-speed", group: "pose", name: "Speed", hint: "Slow an emote to a quarter, or speed it up four times.", keys: ["<", ">"], needs: "Play an emote" },
+  { id: "video-range", group: "shoot", name: "Video range", hint: "Mark the part of an emote a video records, from I to O.", keys: ["I", "O"], needs: "Play an emote" },
   { id: "animate", group: "pose", name: "Animate", hint: "Switch between the outfit-screen idle and a still pose." },
   { id: "chinals", group: "pose", name: "Chinals", hint: "Play the emotes of 终极角逐 on your outfit.", only: "chinals" },
   // Light
@@ -114,6 +115,7 @@ export const POINTER_SHORTCUTS: readonly GuideShortcut[] = [
   { keys: ["H"], action: "Hide or show the UI" },
   { keys: [",", "."], action: "Step an emote back or on a frame" },
   { keys: ["<", ">"], action: "Slow an emote down or speed it up" },
+  { keys: ["I", "O"], action: "Start or end a video's range at this frame" },
   { keys: ["Esc"], action: "Close a panel, show the UI or leave full screen" },
   { keys: ["?"], action: "Open or close the guide" },
 ];

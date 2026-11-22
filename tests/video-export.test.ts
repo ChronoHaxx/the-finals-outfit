@@ -39,6 +39,50 @@ test("frame plan: a one-shot records its first to last frame; a loop one pass wi
   assert.equal(float32.time(340), Math.fround(340 / 60));
 });
 
+test("frame plan with a range: the part, its loops and the emote speed, end pose kept, loops seamless", () => {
+  // A one-shot from 1 s to 2 s: 61 frames, ending on the range's end pose.
+  const part = framePlan({ duration: 4, loop: false }, 60, { from: 1, to: 2 });
+  assert.deepEqual([part.frames, part.time(0), part.time(30), part.time(60)], [61, 1, 1.5, 2]);
+  // Half speed: twice the frames, clip time advancing 1/120 s a frame.
+  const slow = framePlan({ duration: 4, loop: false }, 60, { from: 1, to: 2, speed: 0.5 });
+  assert.equal(slow.frames, 121);
+  assert.ok(Math.abs(slow.time(1) - (1 + 1 / 120)) < 1e-12 && slow.time(120) === 2);
+  assert.equal(slow.duration, 121 / 60);
+  // Three times over at 2x: each pass 30 frames, back to the start between passes, the end pose last.
+  const thrice = framePlan({ duration: 4, loop: false }, 60, { from: 1, to: 2, loops: 3, speed: 2 });
+  assert.equal(thrice.frames, 91);
+  assert.ok(Math.abs(thrice.time(29) - (1 + 29 / 30)) < 1e-9);
+  assert.equal(thrice.time(30), 1, "the second pass starts again at the range's start");
+  assert.equal(thrice.time(60), 1);
+  assert.equal(thrice.time(90), 2);
+  // A looping clip records whole passes without the repeat, so the video loops seamlessly.
+  const loop = framePlan({ duration: 4, loop: true }, 60, { from: 0.5, to: 1.5, loops: 2 });
+  assert.deepEqual([loop.frames, loop.time(59), loop.time(60)], [120, 0.5 + 59 / 60, 0.5]);
+  // A range snapped to a clip's float32 frame time (0.033333335 s) is a hair longer than its video frames: each pass
+  // must still start on the range's start, not show its end one frame late (seen in the app, 22 Nov 2026).
+  const f32 = Math.fround(1 / 30), snapped = { from: 12 * f32, to: 60 * f32 };
+  const halves = framePlan({ duration: 4.333, loop: false }, 60, { ...snapped, loops: 2, speed: 0.5 });
+  assert.equal(halves.frames, 385);
+  assert.equal(halves.time(192), snapped.from, "the second pass starts at the start");
+  assert.ok(halves.time(191) < snapped.to && halves.time(191) > snapped.to - 0.01);
+  assert.equal(halves.time(384), snapped.to, "the end pose last");
+  for (const speed of [0.25, 1 / 3, 0.5, 2 / 3, 0.8, 1, 1.25, 1.5, 2, 3, 4]) {
+    const plan = framePlan({ duration: 4.333, loop: false }, 60, { ...snapped, loops: 3, speed });
+    const exact = 1.6 * 60 / speed, perPass = Math.round(exact);
+    if (Math.abs(exact - perPass) > 1e-6) continue; // 1.25x: a pass is 76.8 frames, so no frame falls on its start
+    for (let pass = 1; pass < 3; pass++) assert.ok(Math.abs(plan.time(pass * perPass) - snapped.from) < 1e-6, `pass ${pass} at ${speed}x`);
+  }
+  // Out of bounds and odd input are clamped: a range past the end, zero or negative loops, a non-positive speed.
+  const clamped = framePlan({ duration: 2, loop: false }, 60, { from: 1.5, to: 9, loops: 0, speed: -1 });
+  assert.deepEqual([clamped.from, clamped.to, clamped.loops, clamped.speed, clamped.frames], [1.5, 2, 1, 1, 31]);
+  // Left out, it is exactly the old plan: the whole clip once at 1x.
+  for (const clip of [{ duration: 4.21, loop: false }, { duration: 3, loop: true }]) {
+    const a = framePlan(clip), b = framePlan(clip, 60, {});
+    assert.equal(a.frames, b.frames);
+    for (let f = 0; f < a.frames; f++) assert.equal(a.time(f), clip.loop ? f / 60 : Math.min(f / 60, clip.duration));
+  }
+});
+
 test("video sizes keep the stage's shape at even sizes within the budget", () => {
   const sizes = videoSizes(1500, 844, 3840 * 2176, 16384);
   assert.deepEqual(sizes.map(s => s.label), ["480p", "720p", "1080p", "1440p", "2160p"]);
@@ -630,6 +674,27 @@ test("offline sound: windows stop at their end (or the clip's), loops cover the 
     assert.equal(music.stop, undefined);
     assert.deepEqual(music.gain.events.slice(0, 2), [["set", 0, 0], ["ramp", 1, 0.05]], "the attack");
     assert.equal(await sounds.renderOffline("Nope", { duration: 1, clipLength: 1, looping: false }), null);
+
+    // A range of 2.5-3.5 s, twice, at half speed (4 s of video). The voice (from 2 s, 3 s long) is mid-sound at 2.5 s:
+    // each pass joins it 0.5 s of clip in (times its rate), with a short fade-in, and stops it at the range's end.
+    // The clap (1 s) is before the range and over: silent. Rates and the fade are scaled by the speed, like tape.
+    await sounds.renderOffline("Seq", { duration: 4, clipLength: 3.5, looping: false, range: { from: 2.5, to: 3.5, loops: 2, speed: 0.5 } });
+    const passes = FakeOffline.last.sources;
+    assert.equal(passes.length, 2, "the voice once per pass; the clap never");
+    passes.forEach((v, pass) => {
+      assert.equal(v.wave, "Voice");
+      assert.ok(Math.abs(v.when! - pass * 2) < 1e-9, `pass ${pass} starts at ${pass * 2} s`);
+      assert.ok(Math.abs(v.offset! - 0.5 * rate) < 1e-9, "joined where the sound would be");
+      assert.ok(Math.abs(v.rate - rate * 0.5) < 1e-9, "half speed: half the playback rate");
+      assert.deepEqual(v.gain.events[0], ["set", 0, pass * 2]);
+      assert.ok(Math.abs(v.gain.events[1][2] - (pass * 2 + 0.015)) < 1e-9, "a short fade-in, no click");
+    });
+    assert.ok(Math.abs(passes[0].stop! - (2 + 0.25 / 0.5 + 0.01)) < 1e-9, "pass 1 stops at the range's end, its fade at half speed");
+    assert.equal(passes[1].stop, undefined, "the last pass runs to the recording's end");
+    // A looping clip's covering musical window, the whole clip twice: started once, never cut.
+    await sounds.renderOffline("Loop", { duration: 12, clipLength: 6, looping: true, range: { from: 0, to: 6, loops: 2, speed: 1 } });
+    assert.equal(FakeOffline.last.sources.length, 1);
+    assert.equal(FakeOffline.last.sources[0].stop, undefined);
   } finally {
     delete (globalThis as { OfflineAudioContext?: unknown }).OfflineAudioContext;
   }
