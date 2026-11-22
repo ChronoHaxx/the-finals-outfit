@@ -293,6 +293,8 @@ export class SquadLibrary {
   private listeners = new Set<() => void>();
   private snap?: SquadSnapshot;
   private stopListening?: () => void;
+  /** The last createdAt this tab gave out: strictly increasing, so records made in one millisecond keep their order. */
+  private lastCreated = 0;
 
   private constructor(options: SquadLibraryOptions) {
     this.backend = options.backend;
@@ -436,7 +438,7 @@ export class SquadLibrary {
   }
 
   private addSquad(name: string, camera?: SquadCamera): SquadRecord {
-    const time = this.now();
+    const time = this.createdNow();
     const record: SquadRecord = { v: SQUAD_SCHEMA_VERSION, id: this.newId(), rev: 1, writer: this.writer, kind: "squad",
       name, createdAt: time, updatedAt: time };
     if (camera) record.camera = camera;
@@ -466,7 +468,7 @@ export class SquadLibrary {
 
   // Uncapped: recovered work (a conflict fork, a journal replay) is kept even past the cap.
   private insertContestant(squadId: string, content: ContestantContent): ContestantRecord {
-    const time = this.now();
+    const time = this.createdNow();
     const record: ContestantRecord = { ...(content.extra ?? {}), v: SQUAD_SCHEMA_VERSION, id: this.newId(), rev: 1,
       writer: this.writer, kind: "contestant", squad: squadId, createdAt: time, updatedAt: time,
       slots: { ...content.slots }, place: readPlace(content.place) };
@@ -519,6 +521,11 @@ export class SquadLibrary {
     if (!this.notice) return;
     this.notice = undefined;
     this.changed();
+  }
+
+  private createdNow(): number {
+    this.lastCreated = Math.max(this.now(), this.lastCreated + 1);
+    return this.lastCreated;
   }
 
   private insert(record: SquadStoreRecord) {

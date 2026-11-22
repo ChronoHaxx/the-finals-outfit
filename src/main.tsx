@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { StrictMode, Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
@@ -13,6 +13,9 @@ import FeatureGuide from "./components/FeatureGuide";
 import { startAnalytics } from "./lib/analytics";
 import { startSavedOutfits } from "./store/useSavedOutfits";
 import { openLink } from "./store/open-link";
+
+// The squad page (multi-character preview, behind a flag): its own chunk, loaded only when opened.
+const Squad = lazy(() => import("./pages/Squad"));
 
 // Before the catalog: a visit whose catalog fails to load is the one worth counting. No-op outside production.
 if (import.meta.env.PROD) startAnalytics();
@@ -55,6 +58,7 @@ function mount() {
               <Route path="chinals" element={null} />
             </Route>
             <Route path="/roadmap" element={<Roadmap />} />
+            <Route path="/squad" element={<Suspense fallback={null}><Squad /></Suspense>} />
             <Route path="/chinals/roadmap" element={<Roadmap />} />
             <Route path="/o/:code" element={<Outfit />} />
             <Route path="*" element={<NotFound />} />
