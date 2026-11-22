@@ -3,14 +3,12 @@ import { OrbitControls, ContactShadows } from "@react-three/drei";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal, type RigItem } from "../rig/CharacterRig";
-import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
-import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
-import { bodyTypePreview, isBodyTypeId, type BodyTypeId, type BodyTypePreview } from "../rig/BodyTypePreview";
+import { CharacterRig } from "../rig/CharacterRig";
+import { SURFACE_VIEWS } from "../rig/ReconstructedMaterial";
+import type { SourceOutfit } from "../rig/SourceAssembly";
+import { newOutfitPassState, runOutfitPass, type OutfitPassControl } from "../rig/OutfitPass";
 import { setPlayerNumber } from "../rig/PlayerNumber";
-import { shownBodyType } from "../lib/body-type";
-import { loadSourceAssemblyAssets, loadSourceAssemblyItems, sourceHeadComponentCarries, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
-import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
+import { DEV } from "../lib/viewer-dev-params";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
 import { AutoGraphics, FpsMeter, FpsOverlay, GraphicsMenu, useDevicePixelRatio, type TemporalStatusRef } from "./GraphicsSetting";
@@ -22,18 +20,14 @@ import { animationsBaseUrl, type RigAnimator } from "../rig/RigAnimator";
 import { chinalsAnimationsBase, type SiteMode } from "../lib/site-mode";
 import MeshInspector from "./MeshInspector";
 import OutfitExportPanel, { type ExportContext } from "./OutfitExportPanel";
-import { createGltfLoader } from "../rig/loaders";
-import { useBuildStore, effectiveBuild, withRenderableFace } from "../store/useBuildStore";
-import { equipmentConflicts } from "../lib/equipment";
-import { getItemById } from "../lib/catalog";
-import { getBrowseItem } from "../lib/browse-catalog";
+import { sharedGltfLoader } from "../rig/loaders";
+import { useBuildStore } from "../store/useBuildStore";
 import { modelUrl } from "../lib/assets";
 import { buildShareUrl } from "../lib/share-url";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { setPreviewScene } from "../lib/viewer-handle";
-import { SLOTS, type Slot } from "../lib/slots";
+import { SLOTS } from "../lib/slots";
 import { getDownloadProgress, subscribeDownloadProgress } from "../lib/load-progress";
-import type { Item } from "../lib/item";
 import { AUTOMATED } from "../lib/automation";
 import type { ImmersiveMode } from "../lib/immersive-mode";
 import type { HideUi } from "../lib/viewer-chrome";
@@ -51,103 +45,9 @@ import {
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
 const NAIL_MASK_URL = modelUrl("models/decals/_shared/nailmask.webp");
-const RECOVERED_ITEMS = ["casual-longcoat-leather-black", "casual-longcoat-leather-camo", "casual-longcoat-satin"];
 
 // Coarse quality tier: phones get smaller shadow maps / cheaper grounding.
 const IS_TOUCH = typeof navigator !== "undefined" && navigator.maxTouchPoints > 0;
-
-// Dev-only harness hooks (scripts/visual-diff): pin the camera (?cam=x,y,z,tx,ty,tz&fov=N)
-// and render unlit albedo for color calibration (?debugAlbedo=1 — region-tinted materials
-// output their albedo directly; tone mapping is switched off so the PNG is sRGB(albedo)).
-interface DevParams {
-  cam?: number[];
-  fov?: number;
-  debugAlbedo: boolean;
-  pose?: "a" | "idle";
-  noBaked: boolean;
-  tune: boolean;
-  reconstructed?: boolean;
-  sourceMeshes?: boolean;
-  sourceAssembly?: boolean;
-  sourceFitting?: boolean;
-  surfaceView?: SurfaceView;
-  isolate?: boolean;
-  temporal?: boolean;
-  inspect: boolean;
-  // Capture-only switch for the gated body-type preview (?bodyType=masculine|feminine|androgynous):
-  // one of BODY_TYPE_PREVIEWS, applied before any source staging. Production reads the "bodyType"
-  // field in the active index's assets.json instead (masculine today).
-  bodyType?: BodyTypeId;
-  // Capture-only switch for the gated hair TagOverride precedence (?hairPrecedence=agreeing-orderings
-  // or ?hairPrecedence=hide-wins): the gated precedence rule of SourceResolveOptions. Production keeps
-  // it off; the activation path is the "hairOverridePrecedence" field in the active index's assets.json.
-  hairPrecedence?: "agreeing-orderings" | "hide-wins";
-  // Capture-only switch for the gated mirrored attachment scale (?mirroredScale=nonzero, w45-resolver):
-  // accept finite nonzero authored LocalScale components on attached parts for this capture only.
-  // Production keeps it off; the activation path is the "attachmentMirroredScale" field in the
-  // active index's assets.json.
-  mirroredScale?: "nonzero";
-  // Capture-only switch for the gated inert merged-part transforms (?mergedTransforms=inert,
-  // w45-resolver): draw eligible nonattached, mergeable skeletal parts with the identity placement
-  // for this capture only. Production keeps it off; the activation path is the
-  // "mergedPartTransforms" field in the active index's assets.json.
-  mergedTransforms?: "inert";
-  // Capture-only switch for the gated activated effect parts (?activatedEffectParts=drop, w61):
-  // render nothing for a part whose only renderable is an activated effect, for this capture only,
-  // so the item's real meshes render. Production keeps it off; the activation path is the
-  // "activatedEffectParts" field in the active index's assets.json.
-  activatedEffectParts?: "drop";
-}
-function readDevParams(): DevParams {
-  if (typeof window === "undefined")
-    return { debugAlbedo: false, noBaked: false, tune: false, inspect: false };
-  const p = new URLSearchParams(window.location.search);
-  // Production uses the validated source paths automatically. Diagnostic URL
-  // switches remain local; reconstructed=0 is a complete legacy comparison.
-  if (!import.meta.env.DEV) return {
-    debugAlbedo: false, noBaked: false, tune: false, inspect: false,
-    reconstructed: p.get("reconstructed") !== "0",
-    sourceMeshes: true, sourceAssembly: true, sourceFitting: true,
-    surfaceView: "lit", isolate: false, temporal: true,
-  };
-  const cam = p.get("cam")?.split(",").map(Number);
-  const fov = Number(p.get("fov"));
-  return {
-    cam: cam && cam.length === 6 && cam.every(Number.isFinite) ? cam : undefined,
-    fov: Number.isFinite(fov) && fov > 0 ? fov : undefined,
-    debugAlbedo: p.get("debugAlbedo") === "1",
-    pose: p.get("pose") === "a" ? "a" : undefined, // harness pins A-pose for calibration
-    // ?nobaked=1 forces the legacy region-tint path even when a baked composite exists —
-    // for flat-vs-faithful before/after comparison of the layered-material reconstruction.
-    noBaked: p.get("nobaked") === "1",
-    // ?tune=1 mounts the DEV MaterialTuner (icon-vs-render slider panel).
-    tune: p.get("tune") === "1",
-    reconstructed: p.get("reconstructed") === "1",
-    sourceMeshes: p.get("sourceMeshes") !== "0",
-    sourceAssembly: p.get("sourceAssembly") !== "0",
-    sourceFitting: p.get("sourceFitting") !== "0",
-    surfaceView: SURFACE_VIEWS.find((v) => v === p.get("surface")) ?? "lit",
-    isolate: p.get("isolate") === "1",
-    temporal: p.get("temporal") !== "0",
-    // ?inspect=1 mounts the DEV MeshInspector. Unlike the tuner it takes its own
-    // column rather than overlaying the canvas, so the model is never occluded.
-    inspect: p.get("inspect") === "1",
-    // ?bodyType=<id> selects that Season 12 Medium body type for this capture only; anything else
-    // leaves the index's own choice.
-    bodyType: isBodyTypeId(p.get("bodyType")) ? p.get("bodyType") as BodyTypeId : undefined,
-    // ?hairPrecedence=agreeing-orderings or ?hairPrecedence=hide-wins gates that hair precedence
-    // rule on for this capture only.
-    hairPrecedence: p.get("hairPrecedence") === "agreeing-orderings" || p.get("hairPrecedence") === "hide-wins"
-      ? p.get("hairPrecedence") as "agreeing-orderings" | "hide-wins" : undefined,
-    // ?mirroredScale=nonzero gates the mirrored attachment scale on for this capture only.
-    mirroredScale: p.get("mirroredScale") === "nonzero" ? "nonzero" : undefined,
-    // ?mergedTransforms=inert gates the inert merged-part transforms on for this capture only.
-    mergedTransforms: p.get("mergedTransforms") === "inert" ? "inert" : undefined,
-    // ?activatedEffectParts=drop gates the activated-effect-part drop on for this capture only.
-    activatedEffectParts: p.get("activatedEffectParts") === "drop" ? "drop" : undefined,
-  };
-}
-const DEV = readDevParams();
 
 // The Studio rig's numbers (w157 lighting calibration; dev ?light= overrides) live in lib/stage-lighting.ts with the
 // rest of the look: STUDIO_RIG. The softbox reflection scene below still reads its panel values from it.
@@ -167,9 +67,6 @@ function formatDownload(loaded: number, total: number): string | null {
   return total > 0 ? `${megabytes(Math.min(loaded, total))} / ${megabytes(total)} MB` : null;
 }
 
-const sourcePreviewKey = (id: string, item: SourceOutfit['items'][string], skinParameters: SourceMaterialParameters[] = []) =>
-  `${id}|parts:${JSON.stringify(item.parts)}|parameters:${JSON.stringify([item.materialParameters, skinParameters])}`;
-
 // The scene is one "look" (lib/stage-lighting.ts): lights, reflections, exposure and backdrop, all the viewer's to change.
 // Studio (the reviewed rig, for comparing item colours) is the default; Lobby (dark, warm key, blue rims) is a look too.
 
@@ -179,91 +76,6 @@ const sourcePreviewKey = (id: string, item: SourceOutfit['items'][string], skinP
 // following the bottom inset there would make the lower third jump as Safari's toolbar hides on scroll.
 const SAFE_SIDES: CSSProperties = { top: 0, bottom: 0, left: "env(safe-area-inset-left, 0px)", right: "env(safe-area-inset-right, 0px)" };
 const SAFE_ALL: CSSProperties = { ...SAFE_SIDES, top: "env(safe-area-inset-top, 0px)", bottom: "env(safe-area-inset-bottom, 0px)" };
-
-// Resolve a catalog item's decal (2D body cosmetic) into rig form (paths -> URLs).
-function toRigDecal(decal: NonNullable<Item["decal"]>): RigDecal {
-  return {
-    layers: decal.layers.map((l) => ({
-      target: l.target,
-      colorUrl: l.colorPath ? modelUrl(l.colorPath) : undefined,
-      colorLinear: l.colorLinear,
-      maskUrl: l.maskPath ? modelUrl(l.maskPath) : undefined,
-      surfaceUrl: l.surfacePath ? modelUrl(l.surfacePath) : undefined,
-      surfaceOverride: l.surfaceOverride,
-      normalOverride: l.normalOverride,
-      uv: l.uv,
-      uvScale: l.uvScale,
-      uvLayout: l.uvLayout,
-      uvOffsetX: l.uvOffsetX,
-      colorOverride: l.colorOverride,
-      colorMultiply: l.colorMultiply,
-      tint: l.tint,
-      emissive: l.emissive,
-      faceShadowRoughness: l.faceShadowRoughness,
-    })),
-  };
-}
-
-// Per-skin maps (region map, decals, baked composite) are re-generated in place by the asset
-// pipeline (same filename, changed bytes), so a long-lived dev browser caches the stale texture
-// and re-bakes never appear. In DEV append a cache-buster so equips always fetch the current
-// map; prod keeps clean URLs (content is versioned by the off-repo publish).
-const bust = (u: string): string =>
-  import.meta.env.DEV ? u + (u.includes("?") ? "&" : "?") + "v=" + Date.now() : u;
-
-// Resolve a catalog item's material into rig form (ColorMask path -> resolved URL).
-function toRigMaterial(model: NonNullable<Item["model"]>): RigMaterial | undefined {
-  const m = model.material;
-  if (!m) return undefined;
-  return {
-    regionMapUrl: m.regionMapPath ? bust(modelUrl(m.regionMapPath)) : undefined,
-    regionColors: m.regionColors,
-    regionRoughness: m.regionRoughness,
-    regionMetalness: m.regionMetalness,
-    regionSheen: m.regionSheen,
-    regionMeanLuma: m.regionMeanLuma,
-    garmentDecals: m.garmentDecals?.map((d) => ({
-      region: d.region,
-      url: bust(modelUrl(d.path)),
-      place: d.place,
-      colorA: d.colorA,
-      colorB: d.colorB,
-    })),
-    bakedSet:
-      m.bakedSet && !DEV.noBaked
-        ? {
-            albedo: bust(modelUrl(m.bakedSet.albedo)),
-            normal: bust(modelUrl(m.bakedSet.normal)),
-            orm: bust(modelUrl(m.bakedSet.orm)),
-          }
-        : undefined,
-    roughness: m.roughness,
-    metalness: m.metalness,
-    emissiveMapUrl: m.emissiveMap ? bust(modelUrl(m.emissiveMap)) : undefined,
-    emissiveIntensity: m.emissiveIntensity,
-  };
-}
-
-function toRigMaterialBindings(
-  model: NonNullable<Item["model"]>,
-  tintRecolor?: string,
-): Record<string, RigMaterialBinding> | undefined {
-  if (!model.materialBindings) return undefined;
-  const resolve = (path: string | undefined) => path ? bust(modelUrl(path)) : undefined;
-  return Object.fromEntries(Object.entries(model.materialBindings).map(([name, binding]) => [name, {
-    ...toRigMaterial({ gltfPath: model.gltfPath, material: binding }),
-    ...(tintRecolor ? { tintRecolor } : {}),
-    family: binding.family,
-    doubleSided: binding.doubleSided,
-    glass: binding.glass ? { ...binding.glass, normal: resolve(binding.glass.normal) } : undefined,
-    ledScreen: binding.ledScreen ? {
-      ...binding.ledScreen,
-      animation: resolve(binding.ledScreen.animation)!,
-      colorRamp: resolve(binding.ledScreen.colorRamp),
-      normal: resolve(binding.ledScreen.normal),
-    } : undefined,
-  }]));
-}
 
 // Procedural studio reflection environment. A neutral fill and broad panels keep
 // recovered metal detail visible instead of leaving black interiors between bright
@@ -523,7 +335,7 @@ const SHADOWS = { type: THREE.PCFShadowMap };
 export default function CharacterViewer({ immersive, hideUi, mode = "global" }: { immersive?: ImmersiveMode; hideUi?: HideUi; mode?: SiteMode } = {}) {
   const rig = useMemo(
     () =>
-      new CharacterRig(createGltfLoader(), undefined, NAIL_MASK_URL, {
+      new CharacterRig(sharedGltfLoader(), undefined, NAIL_MASK_URL, {
         sheen: !IS_TOUCH,
         albedoDebug: DEV.debugAlbedo,
         faceBodyHideUrl: modelUrl("models/decals/_shared/bodyhide-face.webp"),
@@ -571,9 +383,8 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   const outfitPlayerNumber = useBuildStore((s) => s.playerNumber);
   useEffect(() => { setPlayerNumber(outfitPlayerNumber); }, [outfitPlayerNumber]);
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
-  const prev = useRef<Partial<Record<Slot, string | null>>>({});
-  // The item whose companion decal is installed for each slot (null: none).
-  const companions = useRef<Partial<Record<Slot, string | null>>>({});
+  // What the rig wore after its last committed outfit pass (rig/OutfitPass.ts), kept between passes.
+  const outfitState = useRef(newOutfitPassState());
   const [hasRecoveredPreview, setHasRecoveredPreview] = useState(false);
   // One owner for "the preview is still changing". Every body/outfit pass takes a new id and
   // only the latest id may clear it, so a superseded pass can never end a newer one.
@@ -640,11 +451,11 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
       cancelled = true;
       rig.dispose();
       setReady(false);
-      prev.current = {};
+      outfitState.current.prev = {};
     };
   }, [rig, beginOperation, endOperation]);
 
-  // Diff the serializable `build` -> rig equip/unequip whenever it changes.
+  // Diff the serializable `build` -> rig equip/unequip whenever it changes (rig/OutfitPass.ts).
   useEffect(() => {
     if (!ready) return;
     const operationId = beginOperation();
@@ -652,498 +463,17 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
     setMissingFittingData(false);
     let cancelled = false;
     const controller = new AbortController();
-    let preparedAppearance: Awaited<ReturnType<CharacterRig['prepareSourceItems']>>;
-    (async () => {
-      // Render a base top under Outerwear when Upper Body is empty (never-bare torso). Derived
-      // from `build` only for the rig — the store/share-link `build` is untouched.
-      let supported = new Set<string>();
-      let faceCosmetics = new Map<string, string[]>();
-      let headWraps: HeadWrapData | undefined;
-      // Every item with a source reconstruction (assemblies, skin pairs, face cosmetics): the picker's "3D" set. Known
-      // only when the source data loaded; undefined keeps the old behaviour.
-      let sourceRenderable: ReadonlySet<string> | undefined;
-      if (DEV.reconstructed && DEV.sourceMeshes && DEV.sourceAssembly) {
-        try {
-          [supported, faceCosmetics, headWraps, sourceRenderable] = await Promise.all([
-            loadSourceAssemblyItems(modelUrl("models/reconstructed-assemblies-v1")),
-            loadSourceFaceCosmetics(modelUrl("models/reconstructed-assemblies-v1")),
-            loadHeadWraps(modelUrl("models/reconstructed-assemblies-v1")),
-            loadSourceReconstructionItems(modelUrl("models/reconstructed-assemblies-v1"))]);
-          if (cancelled) return;
-        } catch (e) {
-          if (cancelled) return;
-          console.error(e);
-          setError("Couldn’t load reconstructed item data.");
-          return;
-        }
-      }
-      // The body-type context (BodyTypePreview.ts): the capture-only dev switch, else the outfit's own body type
-      // (12 Nov 2026: the picker; before it, the index's "bodyType" field, which the active index sets to
-      // "masculine" and the app no longer reads). A body type visitors cannot pick yet renders as Masculine.
-      let bodyType: BodyTypePreview | undefined;
-      try {
-        const selected = DEV.bodyType
-          ?? (DEV.reconstructed && DEV.sourceAssembly ? shownBodyType(outfitBodyType) : undefined);
-        bodyType = bodyTypePreview(selected);
-      } catch (e) {
-        if (cancelled) return;
-        console.error(e);
-        setError("Couldn’t load the body-type preview context.");
-        return;
-      }
-      // The gated hair TagOverride precedence (w43-hair-precedence): the capture-only dev switch,
-      // or the "hairOverridePrecedence" field a preview index sets in its assets.json — the field
-      // the activation will set in the active index. The active index carries none, so the default
-      // stays off and the resolver refuses exactly as before.
-      let hairPrecedence: HairOverridePrecedence | undefined;
-      try {
-        hairPrecedence = hairOverridePrecedenceGate(DEV.hairPrecedence
-          ?? (DEV.reconstructed && DEV.sourceAssembly
-            ? (await loadSourceAssemblyAssets(modelUrl("models/reconstructed-assemblies-v1"))).hairOverridePrecedence
-            : undefined));
-      } catch (e) {
-        if (cancelled) return;
-        console.error(e);
-        setError("Couldn’t load the hair override precedence context.");
-        return;
-      }
-      // The gated rig-part resolver behaviour (w45-resolver, w61): the capture-only dev switches, or
-      // the "attachmentMirroredScale" / "mergedPartTransforms" / "activatedEffectParts" fields a
-      // preview index sets in its assets.json — the fields the activation will set in the active
-      // index. The active index carries none, so all stay off and the resolver refuses exactly as
-      // before.
-      let resolverGates: { attachmentMirroredScale?: string; mergedPartTransforms?: string; activatedEffectParts?: string };
-      try {
-        const index = DEV.reconstructed && DEV.sourceAssembly
-          ? await loadSourceAssemblyAssets(modelUrl("models/reconstructed-assemblies-v1")) : undefined;
-        resolverGates = {
-          attachmentMirroredScale: DEV.mirroredScale ?? index?.attachmentMirroredScale,
-          mergedPartTransforms: DEV.mergedTransforms ?? index?.mergedPartTransforms,
-          activatedEffectParts: DEV.activatedEffectParts ?? index?.activatedEffectParts,
-        };
-        attachmentMirroredScaleGate(resolverGates.attachmentMirroredScale);
-        mergedPartTransformsGate(resolverGates.mergedPartTransforms);
-        activatedEffectPartsGate(resolverGates.activatedEffectParts);
-      } catch (e) {
-        if (cancelled) return;
-        console.error(e);
-        setError("Couldn’t load the rig resolver gate context.");
-        return;
-      }
-      // Before any source staging: the context's morph and socket offsets apply from the
-      // first equip, and its tag resolves every outfit below as in game.
-      rig.setBodyTypePreview(bodyType);
-      const completeCoat = !!build.outerwear && supported.has(build.outerwear);
-      const covered = completeCoat ? build : effectiveBuild(build);
-      // An icon-only face renders the default face instead of a headless body (render-time only).
-      const renderableSet = sourceRenderable;
-      const eff = renderableSet
-        ? withRenderableFace(covered, id => !!getItemById(id)?.model || renderableSet.has(id))
-        : covered;
-      let assembly: SourceOutfit | undefined;
-      let sourceShirtConflict = false;
-      if (DEV.reconstructed && DEV.sourceAssembly) {
-        try {
-          const ids = Object.values(eff).filter((id): id is string => !!id);
-          const sourceUrl = modelUrl("models/reconstructed-assembly-v2");
-          assembly = await loadSourceOutfit(ids, sourceUrl, bodyType ? [bodyType.tag] : [],
-            { hairOverridePrecedence: hairPrecedence });
-          sourceShirtConflict = !!completeCoat && assembly.slotConflicts.some(c =>
-            c.slot === "EBodySlot::BodyUpper" && c.items.includes(build.outerwear!) && c.items.includes(build.upperBody!));
-          if (sourceShirtConflict) {
-            // The coat includes its authored top and occupies BodyUpper. Keep the
-            // user's shirt selection for removal of the coat, but it contributes
-            // neither geometry nor active tags while that complete coat is worn.
-            assembly = await loadSourceOutfit(ids.filter(id => id !== build.upperBody), sourceUrl,
-              bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence });
-          }
-          if (cancelled) return;
-        } catch (e) {
-          if (cancelled) return;
-          if (e instanceof MissingSourceDefinitionError) {
-            const names = e.itemIds.map(id => getBrowseItem(id)?.name ?? getItemById(id)?.name ?? id).join(', ');
-            setMissingFittingData(true);
-            setError(`Preview paused: fitting data is missing for ${names}. Remove or replace the item to update the preview.`);
-          } else {
-            console.error(e);
-            setError("Couldn’t load outfit fitting data.");
-          }
-          return;
-        }
-      }
-      // A supported source hair this outfit leaves ambiguous is refused as a whole combination:
-      // nothing is mutated, the selection is kept, and the next valid change retries.
-      if (assembly && eff.hair && DEV.sourceMeshes && DEV.sourceFitting && supported.has(eff.hair)) {
-        const ambiguity = sourceHairUnresolved(assembly, eff.hair);
-        if (!ambiguity.length) {
-          let assets;
-          try { assets = await loadSourceAssemblyAssets(modelUrl("models/reconstructed-assemblies-v1")); }
-          catch (e) { if (cancelled) return; console.error(e); setError("Couldn’t load reconstructed item data."); return; }
-          if (cancelled) return;
-          ambiguity.push(...sourceHairMissingMeshes(assembly, eff.hair, assets.meshes));
-        }
-        if (ambiguity.length) {
-          console.warn(`Unsupported source hair combination ${eff.hair}: ${ambiguity.join('; ')}`);
-          setMissingFittingData(true);
-          setError('Preview paused: this hairstyle and headwear combination is not supported yet. Remove or replace the hair or headwear to update the preview.');
-          return;
-        }
-      }
-      // Only touch the current appearance after every selected item has fitting metadata.
-      // In particular, a refused outfit must also retain the previous isolation visibility.
-      rig.root.traverse((o) => {
-        if (typeof o.userData.reconstructionOriginalVisibility === "boolean") {
-          o.visible = o.userData.reconstructionOriginalVisibility;
-          delete o.userData.reconstructionOriginalVisibility;
-        }
-      });
-      const appearanceSlots = new Set<Slot>();
-      let commitAppearance: (() => boolean) | undefined;
-      let appearanceOmitsHead = false;
-      let equipFailed = false;
-      const pendingConflictRemovals: { slot: Slot; replacements: Slot[] }[] = [];
-      // Source hair attaches through the preserved body's head frame. The
-      // legacy-body diagnostic modes must keep their legacy hair path as well.
-      const requestedHair = eff.hair && DEV.sourceMeshes && DEV.sourceFitting && supported.has(eff.hair) ? assembly?.items[eff.hair] : undefined;
-      const requestedFace = eff.face && DEV.sourceMeshes && DEV.sourceFitting ? assembly?.items[eff.face] : undefined;
-      const faceItem = eff.face ? getItemById(eff.face) : undefined;
-      // Whether a scalp has a recipient is a question about the hair the user actually selected,
-      // not about the hair the source path happens to support: an unsupported or legacy hairstyle
-      // keeps its own geometry and still needs the head it sits on.
-      const hairSelection = { id: eff.hair ?? undefined, item: requestedHair };
-      // A supported eye cosmetic is material-only: it recolours the worn source face's eye slots.
-      const eyes = eff.eyes && faceCosmetics.has(eff.eyes) ? eff.eyes : undefined;
-      // A supported makeup or body paint keeps its head paint on the decal path; only its eyelash rule restages the face.
-      const cosmeticRule = faceCosmeticRule(faceCosmetics, [eyes, eff.blush, eff.bodyPaint]);
-      // A face without a legacy model takes this path too; it renders only when the index holds its legacy-free pair (w91-head-skin).
-      if (assembly && requestedFace && faceItem && (requestedHair || !eff.hair)) {
-        appearanceSlots.add('hair'); appearanceSlots.add('face');
-        if (eyes) appearanceSlots.add('eyes');
-        try {
-          const parameters = assembly.materialParameters.filter(p => p.itemId === eff.hair || cosmeticRule(p));
-          const assetsUrl = modelUrl('models/reconstructed-assemblies-v1');
-          const pair = await loadSourceSkinPair(faceItem.id, requestedFace, assetsUrl, parameters, hairSelection);
-          if (cancelled) return;
-          if (!pair) appearanceSlots.clear(); // this face remains on the existing path
-          else {
-            const hairKey = requestedHair ? sourcePreviewKey(eff.hair!, requestedHair) : null;
-            const faceKey = sourcePreviewKey(faceItem.id, requestedFace, parameters);
-            const changes: RigItem[] = [], removals: Slot[] = [];
-            if (prev.current.hair !== hairKey) {
-              if (requestedHair) changes.push({ id: eff.hair!, slot: 'hair', url: '',
-                sourceParts: await loadSourceRigParts(requestedHair, assetsUrl, resolverGates),
-                sourceSurfaceView: DEV.debugAlbedo ? 'baseColor' : DEV.surfaceView });
-              else removals.push('hair');
-            }
-            // (w128) A pair that records attached statics (a face's skull) brings their rig parts; none otherwise.
-            const faceAttachments = pair.attachedParts?.length
-              ? await loadSourceSkinPairAttachments(requestedFace, pair, assetsUrl, resolverGates) : undefined;
-            if (cancelled) return;
-            if (prev.current.face !== faceKey) changes.push({ id: faceItem.id, slot: 'face',
-              url: faceItem.model?.gltfPath ? modelUrl(faceItem.model.gltfPath) : '',
-              sourceSkinPair: pair, ...(faceAttachments?.length ? { sourceParts: faceAttachments } : {}),
-              sourceSurfaceView: DEV.debugAlbedo ? 'baseColor' : DEV.surfaceView,
-              bodySkin: faceItem.model?.bodySkin ? { colorMultiply: faceItem.model.bodySkin.colorMultiply,
-                roughness: faceItem.model.bodySkin.roughness,
-                texUrl: faceItem.model.bodySkin.texPath ? modelUrl(faceItem.model.bodySkin.texPath) : undefined } : undefined });
-            if (cancelled) return;
-            preparedAppearance = await rig.prepareSourceItems(changes, removals, controller.signal);
-            if (cancelled) return;
-            if (!preparedAppearance) { delete prev.current.hair; delete prev.current.face; return; }
-            commitAppearance = () => {
-              const committed = preparedAppearance!.commit();
-              if (committed) {
-                prev.current.hair = hairKey; prev.current.face = faceKey;
-                if (eyes) delete prev.current.eyes; // legacy decal was cleared by the face transaction
-              }
-              else { delete prev.current.hair; delete prev.current.face; }
-              return committed;
-            };
-            appearanceOmitsHead = !!pair.headOmitted;
-            // Restore a head before removing its covering. For the reverse transition, keep
-            // the previous head until every requested covering has actually loaded.
-            if (!appearanceOmitsHead) { if (!commitAppearance()) return; commitAppearance = undefined; }
-          }
-        } catch (e) {
-          if (cancelled) return;
-          console.error(e); setError('Couldn’t load this face and hair preview.');
-          delete prev.current.hair; delete prev.current.face;
-          return; // Do not remove a covering while the head underneath failed to restore.
-        }
-      }
-      for (const slot of SLOTS) {
-        if (appearanceSlots.has(slot)) continue;
-        const id = eff[slot];
-        // Open-coat undersuit tint: when Upper Body was auto-substituted under an open coat,
-        // recolour the base top to the coat's mean colour so its open back blends. The tint
-        // lives on the OUTERWEAR, so fold it into the dedup key — otherwise switching between two
-        // coats that share the same undersuit mesh would keep the previous coat's colour.
-        const underTint =
-          slot === "upperBody" && !build.upperBody && build.outerwear
-            ? getItemById(build.outerwear)?.model?.underLayerTint
-            : undefined;
-        // Real under-mesh: composite the actual game lining/undershirt onto a torso garment. An
-        // upperBody garment (vest/open jacket) always shows its own lining; an outerwear coat shows
-        // its lining only when the user hasn't equipped their own Upper Body (then THAT shows).
-        const realUnder =
-          id && (slot === "upperBody" || (slot === "outerwear" && !build.upperBody))
-            ? getItemById(id)?.model?.underLayerUrl
-            : undefined;
-        const sourceCandidate = id && supported.has(id) && (slot !== 'hair' || (DEV.sourceMeshes && DEV.sourceFitting))
-          ? assembly?.items[id] : undefined;
-        // A part socketed onto the head component only exists while a source head is worn: its
-        // sockets are that head's own. Without one, keep the ordinary path instead of failing.
-        const headSocketed = !!sourceCandidate?.parts.some(part => !part.hidden && part.definition.bAttachToHeadMesh);
-        if (headSocketed && appearanceOmitsHead) {
-          // No native replacement-head socket is established. Do not fall back to an unrelated
-          // legacy/body socket, or leave an accessory attached to the head about to be removed.
-          rig.unequip(slot);
-          delete prev.current[slot];
-          continue;
-        }
-        const headComponent = headSocketed ? rig.sourceHeadComponentKey() : undefined;
-        // (15 Nov 2026) The index preserves head-component sockets for some heads only (Face 01's): on another worn
-        // head the rig cannot place the part, so the item keeps its ordinary path as without a source head, instead
-        // of failing the whole preview. An item with no ordinary model is left off with a notice (below).
-        const headSockets = headSocketed ? sourceCandidate!.parts
-          .filter(part => !part.hidden && part.definition.bAttachToHeadMesh)
-          .map(part => part.definition.AttachmentSocket ?? "") : [];
-        const headCarries = !headComponent || await sourceHeadComponentCarries(
-          modelUrl("models/reconstructed-assemblies-v1"), rig.sourceHeadMesh(), headSockets).catch(() => false);
-        if (cancelled) return;
-        const headUncarried = !!headComponent && !headCarries;
-        // A part wrapped by the head component is shaped by the worn head's wrap cage, so it is re-staged per head.
-        const headWrapped = !!sourceCandidate?.parts.some(part => !part.hidden && part.definition.WrapDeformation?.bIsWrapDeformed
-          && part.definition.WrapDeformation?.bIsWrapDeformedByHeadComponent);
-        const sourceItem = headSocketed && (!headComponent || headUncarried) ? undefined : sourceCandidate;
-        const skinCandidate = id && slot === "face" && DEV.sourceMeshes && DEV.sourceFitting ? assembly?.items[id] : undefined;
-        let skinParameters: SourceMaterialParameters[] = [];
-        if (skinCandidate && assembly) {
-          // Hair is staged before the face. Use the successfully equipped source
-          // hairstyle, including the previous one when a replacement fails.
-          const hair = rig.sourceAssemblyId('hair');
-          try {
-            const parameterOutfit = hair === eff.hair ? assembly : await loadSourceOutfit(
-              [...Object.entries(eff).filter(([slot]) => slot !== 'hair').map(([, id]) => id), hair]
-                .filter((id): id is string => !!id), modelUrl('models/reconstructed-assembly-v2'),
-              bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence });
-            if (cancelled) return;
-            skinParameters = parameterOutfit.materialParameters.filter(p => p.itemId === hair || cosmeticRule(p));
-          } catch (e) {
-            if (cancelled) return;
-            console.error(e); setError('Couldn’t load scalp fitting data.'); delete prev.current[slot]; continue;
-          }
-        }
-        const sourceKey = sourceItem ?? skinCandidate;
-        // An item socketed onto the head component belongs to the head that is worn: the face is
-        // staged before this loop, so a head swap has to re-stage it rather than be deduplicated.
-        const key = sourceKey ? sourcePreviewKey(id!, sourceKey, skinParameters)
-          + (headSocketed ? `|head:${headComponent ?? "none"}` : "")
-          + (headWrapped ? `|wrap:${rig.sourceHeadComponentKey() ?? "none"}` : "") : underTint
-          ? `${id}|${underTint}`
-          : realUnder
-            ? `${id}|u:${realUnder}`
-            : id;
-        if (prev.current[slot] === key) continue;
-        const item = id ? getItemById(id) : undefined;
-        if (headUncarried && !item?.model?.gltfPath) {
-          // No ordinary model to fall back on, and no preserved socket on this head: leave it off rather than place it
-          // on another head's socket.
-          rig.unequip(slot);
-          setError("This item can’t be placed on the current face yet.");
-          prev.current[slot] = key ?? null;
-          continue;
-        }
-        // A face without a legacy model renders only through its legacy-free source skin pair (w91-head-skin); with no
-        // pair in the index it stays the empty slot it was.
-        let legacyFreePair: Awaited<ReturnType<typeof loadSourceSkinPair>>;
-        if (item && !item.model?.gltfPath && !sourceItem && skinCandidate) {
-          try {
-            legacyFreePair = await loadSourceSkinPair(item.id, skinCandidate,
-              modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection);
-          } catch (e) {
-            if (cancelled) return;
-            console.error(e);
-            setError("Couldn’t load the selected preview. Some items may still show the previous selection.");
-            delete prev.current[slot];
-            equipFailed = true;
-            continue;
-          }
-          if (cancelled) return;
-        }
-        if (item && (item.model?.gltfPath || sourceItem || legacyFreePair)) {
-          try {
-            // TODO(M4-dye): override material.regions[].tint from build dyes here.
-            const base = item.model ? toRigMaterial(item.model) : undefined;
-            if (base && DEV.reconstructed && RECOVERED_ITEMS.includes(item.id)) {
-              base.reconstructed = {
-                url: bust(modelUrl(`models/reconstructed/${item.id}.json`)),
-                view: DEV.debugAlbedo ? "baseColor" : DEV.surfaceView,
-              };
-            }
-            const material = underTint ? { ...(base ?? {}), tintRecolor: underTint } : base;
-            // Fallback under-mesh (the generic recoloured top) if the real one fails to load — keeps
-            // a shirt under the coat instead of a bare torso.
-            const fallbackGlb =
-              realUnder && item.model?.underLayer
-                ? getItemById(item.model.underLayer)?.model?.gltfPath
-                : undefined;
-            const sourceParts = sourceItem ? await loadSourceRigParts(sourceItem,
-              modelUrl("models/reconstructed-assemblies-v1"), resolverGates) : undefined;
-            const sourceSkinPair = legacyFreePair ?? (skinCandidate ? await loadSourceSkinPair(item.id, skinCandidate,
-              modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection) : undefined);
-            // (w128) A pair that records attached statics (a face's skull) brings their rig parts instead.
-            const pairAttachments = sourceSkinPair?.attachedParts?.length && skinCandidate
-              ? await loadSourceSkinPairAttachments(skinCandidate, sourceSkinPair,
-                  modelUrl("models/reconstructed-assemblies-v1"), resolverGates) : undefined;
-            await rig.equip({
-              id: item.id,
-              slot,
-              url: item.model?.gltfPath ? modelUrl(item.model.gltfPath) : sourceParts?.[0]?.url ?? "",
-              sourceMeshUrl: DEV.reconstructed && DEV.sourceMeshes && RECOVERED_ITEMS.includes(item.id)
-                ? modelUrl("models/reconstructed-meshes-v2/SK_Casual_LongCoat_M.glb") : undefined,
-              sourceParts: pairAttachments?.length ? pairAttachments : sourceParts,
-              sourceSkinPair,
-              sourceSurfaceView: DEV.debugAlbedo ? "baseColor" : DEV.surfaceView,
-              headWraps,
-              material,
-              materialBindings: item.model ? toRigMaterialBindings(item.model, underTint) : undefined,
-              underLayerUrl: realUnder ? modelUrl(realUnder) : undefined,
-              underLayerTint: realUnder ? item.model?.underLayerTint : undefined,
-              underLayerFallbackUrl: fallbackGlb ? modelUrl(fallbackGlb) : undefined,
-              bodySkin: item.model?.bodySkin
-                ? {
-                    colorMultiply: item.model.bodySkin.colorMultiply,
-                    roughness: item.model.bodySkin.roughness,
-                    texUrl: item.model.bodySkin.texPath
-                      ? modelUrl(item.model.bodySkin.texPath)
-                      : undefined,
-                  }
-                : undefined,
-            }, controller.signal);
-            if (!cancelled && sourceSkinPair && eyes) {
-              // The fallback-hair path also binds eyes through the recovered face.
-              // Do not apply this same item's legacy decal later in the slot loop.
-              appearanceSlots.add('eyes');
-              delete prev.current.eyes;
-            }
-          } catch (e) {
-            if (cancelled) return;
-            console.error(e);
-            setError("Couldn’t load the selected preview. Some items may still show the previous selection.");
-            // Failed loads remain retryable on the next build change.
-            delete prev.current[slot];
-            equipFailed = true;
-            continue;
-          }
-          if (cancelled) return;
-        } else if (item?.decal) {
-          // 2D body cosmetic (tattoo/makeup/paint/eyes/nails) composited onto the body/head.
-          // A source item may still occupy the slot (a native nail replaced by a legacy-only
-          // polish). Remove it, and forget the committed key so a cancelled pass reprocesses it.
-          rig.unequip(slot);
-          delete prev.current[slot];
-          try {
-            await rig.equipDecal(slot, toRigDecal(item.decal));
-          } catch (e) {
-            console.error(e);
-          }
-          if (cancelled) return;
-        } else {
-          // empty slot
-          const previousId = rig.equippedItemId(slot);
-          const replacements = previousId ? SLOTS.filter(other => eff[other] &&
-            equipmentConflicts(slot, previousId, other, eff[other]!)) : [];
-          if (replacements.length) {
-            // A full-body replacement may occupy another UI slot that loads later.
-            // Keep its old companions until that exact replacement commits, so a
-            // failed request cannot strip trousers/coat (or the old full outfit).
-            pendingConflictRemovals.push({ slot, replacements });
-            continue;
-          }
-          rig.unequip(slot);
-          rig.unequipDecal(slot);
-        }
-        prev.current[slot] = key ?? null;
-      }
-      for (const { slot, replacements } of pendingConflictRemovals) {
-        if (!replacements.every(other => rig.equippedItemId(other) === eff[other])) continue;
-        rig.unequip(slot);
-        rig.unequipDecal(slot);
-        prev.current[slot] = null;
-      }
-      if (commitAppearance) {
-        if (equipFailed) { delete prev.current.hair; delete prev.current.face; return; }
-        if (!commitAppearance()) return;
-      }
-      // A source item's companion decal (a mask's face shadow on the worn head) follows the item actually equipped
-      // from its own source assembly; a failed or legacy equip leaves none.
-      for (const slot of SLOTS) {
-        const id = rig.equippedItemId(slot);
-        const companion = id && rig.sourceAssemblyId(slot) === id ? getItemById(id)?.companionDecal : undefined;
-        const key = companion ? id : null;
-        if ((companions.current[slot] ?? null) === key) continue;
-        delete companions.current[slot];
-        if (companion) {
-          try { await rig.equipCompanionDecal(slot, toRigDecal(companion)); } catch (e) { console.error(e); }
-          if (cancelled) return;
-        } else rig.unequipCompanionDecal(slot);
-        companions.current[slot] = key;
-      }
-      if (assembly) {
-        const activeCoat = rig.sourceAssemblyId("outerwear");
-        // Failed replacements retain their previous source assemblies in any slot.
-        // Resolve visibility from the items actually equipped after the batch.
-        const actual = Object.fromEntries(SLOTS.map(slot => [slot, rig.equippedItemId(slot)
-          ?? (getItemById(eff[slot] ?? "")?.decal ? eff[slot] : undefined)])) as typeof eff;
-        if (SLOTS.some(slot => actual[slot] !== eff[slot])) {
-          try {
-            const ids = Object.values(actual).filter((id): id is string => !!id);
-            assembly = await loadSourceOutfit(ids, modelUrl("models/reconstructed-assembly-v2"),
-              bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence });
-            sourceShirtConflict = !!activeCoat && assembly.slotConflicts.some(c =>
-              c.slot === "EBodySlot::BodyUpper" && c.items.includes(activeCoat) && c.items.includes(actual.upperBody!));
-            if (sourceShirtConflict) assembly = await loadSourceOutfit(ids.filter(id => id !== actual.upperBody),
-              modelUrl("models/reconstructed-assembly-v2"), bodyType ? [bodyType.tag] : [],
-              { hairOverridePrecedence: hairPrecedence });
-            if (cancelled) return;
-          } catch (e) {
-            if (cancelled) return;
-            console.error(e);
-            setError("Couldn’t load outfit fitting data.");
-          }
-        }
-        for (const slot of SLOTS) rig.setAssemblyVisibility(slot,
-          !(slot === "upperBody" && sourceShirtConflict && !!activeCoat) &&
-          !assembly.items[actual[slot] ?? ""]?.hidden);
-        rig.setSourceFittingTags(DEV.sourceFitting ? assembly.fittingTags : []);
-        rigHarness().__sourceAssembly = assembly;
-      }
-      await rig.whenBodyHidesReady();
-      if (cancelled) return;
-      let recovered = false;
-      rig.root.traverse(o => {
-        const mesh = o as THREE.Mesh;
-        if (mesh.isMesh && (Array.isArray(mesh.material) ? mesh.material : [mesh.material])
-          .some(m => m.userData.reconstructed === true)) recovered = true;
-      });
-      if (!cancelled) setHasRecoveredPreview(recovered);
-      if (DEV.reconstructed && DEV.isolate && recovered) {
-        rig.root.traverse((o) => {
-          const mesh = o as THREE.Mesh;
-          if (!mesh.isMesh) return;
-          const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-          mesh.userData.reconstructionOriginalVisibility = mesh.visible;
-          mesh.visible = materials.some((m) => m.userData.reconstructed === true);
-        });
-      }
-    })().catch((e) => {
-      // Anything the per-step handlers above did not anticipate: surface it so Retry works.
+    const prepared: OutfitPassControl["prepared"] = {};
+    runOutfitPass(rig, build, outfitBodyType, outfitState.current,
+      { cancelled: () => cancelled, signal: controller.signal, prepared },
+      { setError, setMissingFittingData, setHasRecoveredPreview,
+        onAssembly: assembly => { rigHarness().__sourceAssembly = assembly; } }).catch((e) => {
+      // Anything the pass's own per-step handlers did not anticipate: surface it so Retry works.
       if (cancelled) return;
       console.error(e);
       setError("Couldn’t update the preview.");
     }).finally(() => {
-      preparedAppearance?.release();
+      prepared.current?.release();
       // Idle only once the whole pass, including body hides, has settled. A cancelled pass
       // leaves the busy state to the pass that superseded it.
       if (!cancelled) endOperation(operationId);
@@ -1151,7 +481,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
     return () => {
       cancelled = true;
       controller.abort();
-      preparedAppearance?.release();
+      prepared.current?.release();
     };
   }, [build, outfitBodyType, ready, rig, retryAttempt, beginOperation, endOperation]);
 

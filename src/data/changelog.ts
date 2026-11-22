@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-21-emote-speed-face",
+    date: "2026-11-21",
+    title: "Emote speed and a face switch",
+    notes: [
+      "Emotes have a speed slider, from a quarter speed to four times. Sound follows it, so every clap and footstep stays on its frame, and its pitch rises and falls with the speed. Pause, the frame slider, Loop and shared poses work the same at any speed. On a keyboard, < and > change it.",
+      "A Facial animation switch keeps the face still when you'd rather it didn't move. The speed and the switch are both remembered in this browser.",
+    ],
+    items: ["idle-emotes"],
+  },
+  {
     id: "2026-11-21-season-1-2-emotes",
     date: "2026-11-21",
     title: "Season 1 and 2 emotes",
