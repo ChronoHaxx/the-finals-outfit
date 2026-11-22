@@ -58,10 +58,13 @@ The owner handed the steps to the agent on 22 Nov 2026: "do the checks for me, i
 them, and the boxes above stay unticked: they are the owner's. Script `user-steps.mjs`, analysis `analyse-steps.py`
 (details in `README.md`, "22 Nov").
 
-- Tested revision/build: the merge of main into this branch (057b959) plus the end-frame fix, committed as the
-  commit after 057b959 on this branch. Dev viewer (`dev.sh`, production asset hosts), headless Chrome 158 on the
-  RTX 3080.
-- Agent run at: 22 Nov 2026, 00:34–00:38 (run `steps-0122c`, in the session scratchpad).
+- Tested revision/build: 0f4bb31, the second merge of main (with #65 and #66 multi-character Phase 1) on top of
+  6678dfe (the first merge plus the end-frame fix). Dev viewer (`dev.sh`, production asset hosts), headless Chrome
+  158 on the RTX 3080.
+- Agent runs at: 22 Nov 2026.
+  - 00:34–00:38, run `steps-0122c`, on 6678dfe.
+  - 00:42–00:46, run `steps-0122d`, on 0f4bb31.
+  - Both in the session scratchpad, and both runs give the same results.
 - Results:
   - Steps 1–6 pass.
   - Step 7 passes on an emulated phone (390×844, touch, DPR 3): a 720p MP4 of the idle, 1400 frames in 32 s.

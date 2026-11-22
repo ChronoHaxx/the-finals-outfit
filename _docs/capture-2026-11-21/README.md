@@ -129,3 +129,13 @@ cue at 1.304 s.
 
 Page errors: one 403 per page load, the same request as in the 21 Nov runs before the merge. The dev-only
 "Recovered shader" box covers the panel's Image tab on a phone in the dev viewer; production doesn't show it.
+
+**Second merge of main (0f4bb31).** It brings in #65 (the guide), #66 (multi-character Phase 1, which moves the
+animation binding into `useAnimationBinding.ts` and outfit passes into `OutfitPass.ts`), #68 and #70.
+- One conflict: `Icons.tsx`, where both sides added an icon; both are kept.
+- `CaptureDriver`, the screenshot context, the recording guard on camera turns and the dev hooks all survive.
+- `tsc -b` is clean and `npm run build` passes.
+- `npm test`: 988 tests, 975 pass, the same 8 fixture failures, 5 skipped.
+- Run `steps-0122d`: every check passes again, and the analysis passes 14 of 14. The numbers match `steps-0122c`
+  (MP4 341 frames, onset 98.2 ms with the wave's lead, WAV 1 sample from the MP4, phone 1400 frames in 31.5 s).
+  The frames were looked at again.
