@@ -25,8 +25,8 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 
 # Roadmap
 
-Last reviewed: 2026-11-21
-Reviewed after patch note: 2026-11-21-in-game-outfits
+Last reviewed: 2026-11-22
+Reviewed after patch note: 2026-11-22-in-game-outfits
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -139,7 +139,7 @@ The game's preset outfits are listed with their in-game icons, and one tap puts 
 ### A first-pass 3D preview on Medium
 <!-- id: first-pass-3d -->
 
-Meshes and materials are rebuilt from the game's own files for {blue} items so far. Recovered materials include layered fabrics, glass and gems, fur, hair, eyes and faces, makeup and glowing LED pieces.
+Meshes and materials are rebuilt from the game's own files for {blue} items so far. Recovered materials include layered fabrics, glass and gems, fur, hair, eyes and faces, makeup and glowing LED pieces. Numbers printed on clothing show the player number you pick.
 
 ### Default lighting
 <!-- id: default-lighting -->

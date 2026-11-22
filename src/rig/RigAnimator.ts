@@ -629,6 +629,37 @@ export class RigAnimator {
     this.publish({ loading: null, paused: false });
   }
 
+  /** Start an idle without taking the front (21 Nov 2026): the viewer's first motion once the outfit has loaded, when
+   *  the viewer already picked an emote while it was loading (AnimationControls). The emote stays in front and the
+   *  idle runs under it, as play() leaves an idle under an emote, so the emote comes back to it when it ends. Takes no
+   *  new request, so an emote still downloading is not superseded; it waits for that one to land. With nothing up any
+   *  more (the emote ended, or failed to load) it plays as play() would. Does nothing (resolves false) when an idle
+   *  already runs or the viewer stopped or closed their emote meanwhile. */
+  async playUnder(root: THREE.Object3D, id: string): Promise<boolean> {
+    if (!this.info(id)?.loop) throw new Error(`Not an idle: ${id}`);
+    const request = this.request;
+    const clip = await this.clip(id);
+    while (this.snapshot.loading !== null) { // the viewer's pick still downloading: look again once it lands or fails
+      if (this.disposed) return false;
+      await new Promise<void>(resolve => { const off = this.subscribe(() => { off(); resolve(); }); });
+    }
+    if (this.disposed || this.idleAction) return false;
+    if (this.emoteAction && !this.stopping && this.mixer && this.root === root) {
+      const action = this.mixer.clipAction(clip);
+      this.fading.delete(action);
+      action.setEffectiveTimeScale(1).setEffectiveWeight(1); // as play() sets an idle (normal speed)
+      action.setLoop(THREE.LoopRepeat, Infinity);
+      action.reset().play();
+      action.enabled = false; // no weight until the emote ends into it (returnFromEmote)
+      this.idleAction = action;
+      this.publish({});
+      return true;
+    }
+    if (request !== this.request) return false; // stopped or closed meanwhile: the viewer's choice
+    await this.play(root, id);
+    return this.snapshot.idle === id;
+  }
+
   /** Fade back to the static pose. */
   stop(): void {
     ++this.request;

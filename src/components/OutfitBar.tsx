@@ -16,6 +16,7 @@ import { DiceIcon, FlagIcon, LockIcon, ResetIcon } from "./Icons";
 import { randomiseOutfit, resetOutfit } from "../store/useSavedOutfits";
 import { hideBroken } from "../lib/hide-broken";
 import { BODY_TYPE_LABELS, shownBodyType, VISITOR_BODY_TYPES } from "../lib/body-type";
+import PlayerNumberControl from "./PlayerNumberControl";
 
 const ghost = "flex h-8 items-center gap-1.5 px-2 hud text-fg-muted transition-colors hover:text-fg";
 
@@ -23,6 +24,7 @@ const ghost = "flex h-8 items-center gap-1.5 px-2 hud text-fg-muted transition-c
 export default function OutfitBar() {
   const build = useBuildStore((s) => s.build);
   const bodyType = useBuildStore((s) => s.bodyType);
+  const playerNumber = useBuildStore((s) => s.playerNumber);
   const setBodyType = useBuildStore((s) => s.setBodyType);
   const unequip = useBuildStore((s) => s.unequip);
   const { workedOn, state } = useReconstructionProgress();
@@ -55,12 +57,12 @@ export default function OutfitBar() {
     const items: IssueItem[] = equipped.map(({ slot, item }) =>
       ({ slot, id: item.id, name: item.name, status: REVIEW_LABELS[statusOf(item)] }));
     let shareUrl = window.location.href; // an item without a stable share ID cannot be encoded
-    try { shareUrl = buildShareUrl(window.location.href, { build, bodyType }); } catch { /* keep the current address */ }
+    try { shareUrl = buildShareUrl(window.location.href, { build, bodyType, playerNumber }); } catch { /* keep the current address */ }
     const report = (focus?: IssueItem) => issueUrl({ repositoryUrl: REPOSITORY_URL, shareUrl,
       items, focus, catalog: DEVELOPER_CATALOG ? "developer" : "public", userAgent: navigator.userAgent,
       viewport: { width: window.innerWidth, height: window.innerHeight, pixelRatio: window.devicePixelRatio } });
     return { all: report(), bySlot: new Map(items.map(item => [item.slot, report(item)])) };
-  }, [build, bodyType, workedOn, state]); // equipped and statusOf are derived from exactly these
+  }, [build, bodyType, playerNumber, workedOn, state]); // equipped and statusOf are derived from exactly these
 
   return (
     <div className="relative flex flex-col gap-3 border-b border-line bg-ink-950 px-3 py-3 lg:border-b-0 lg:border-t lg:bg-ink-900 lg:px-4">
@@ -82,6 +84,7 @@ export default function OutfitBar() {
 
       {/* Body type: part of the outfit (saved and shared with it). Feminine joins after the Season 12 item refresh
           (src/lib/body-type.ts). A body type this list does not offer shows as the Masculine it renders as. */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
       <div role="radiogroup" aria-label="Body type" className="flex items-center gap-2.5">
         <span aria-hidden="true" className="hud text-fg-dim">Body type</span>
         <div className="flex border border-line">
@@ -94,6 +97,8 @@ export default function OutfitBar() {
             </button>;
           })}
         </div>
+      </div>
+      <PlayerNumberControl />
       </div>
 
       {equipped.length === 0 ? (

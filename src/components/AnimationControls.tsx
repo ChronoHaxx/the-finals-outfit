@@ -21,7 +21,8 @@ import { savedFace, savedSpeed, setFacialAnimation } from "../lib/emote-playback
 //
 // The outfit-screen idle plays by default once the first outfit has loaded (the user's call, 5 Nov). It stays still
 // when the viewer last chose the still pose (remembered in this browser), when the system asks for reduced motion, and
-// in automated browsers: the visual-diff, probe and audit harnesses compare still-pose captures.
+// in automated browsers: the visual-diff, probe and audit harnesses compare still-pose captures. An emote the viewer
+// picks while the outfit is still loading stays in front: the idle then starts under it (RigAnimator.playUnder).
 //
 // URL switches for captures and reviews: ?anim=<clip id> starts that clip once the outfit has loaded, and
 // &animTime=<seconds> then holds it at that time, paused (a deterministic mid-motion frame); ?anim=0 opens still;
@@ -199,6 +200,9 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
     if (pose && !animator.info(pose.clip)) console.warn(`[animation] the link's pose names an unknown clip "${pose.clip}"`);
     const posed = pose && animator.info(pose.clip) ? pose : null;
     if (!posed && started.current) return;
+    // The emote button works from the body's load, before the outfit has: a clip the viewer picked meanwhile is their
+    // latest choice and stays in front (21 Nov 2026: the idle used to replace it here once the outfit finished).
+    const viewerFirst = !started.current && (animator.state.active || animator.state.loading !== null);
     started.current = true;
     const params = new URLSearchParams(window.location.search);
     const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
@@ -206,6 +210,11 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
       reducedMotion, savedStill: savedStill() });
     const root = rig.animationRoot();
     if (!root) return;
+    if (viewerFirst) {
+      // The idle the viewer would be animating with goes under it, so their emote ends into it as if they had waited.
+      if (id && animator.info(id)?.loop) animator.playUnder(root, id).catch(error => console.error(error));
+      return;
+    }
     if (posed) {
       prepare(root);
       // The idle runs under an emote when the viewer would be animating anyway, so it comes back when the emote ends.

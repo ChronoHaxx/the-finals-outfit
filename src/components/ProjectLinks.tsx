@@ -30,12 +30,13 @@ function Wordmark() {
 export default function TopBar({ page }: { page: "builder" | "roadmap" }) {
   const build = useBuildStore(state => state.build);
   const bodyType = useBuildStore(state => state.bodyType);
+  const playerNumber = useBuildStore(state => state.playerNumber);
   const showNotes = useIntroStore(state => state.show);
   const location = useLocation();
   const mode = modeOfPath(location.pathname);
   const switchable = page === "builder" && chinalsAvailable();
   // Carry the edited outfit in the route so Back still works after a roadmap reload.
-  const query = page === "builder" ? new URL(buildShareUrl(window.location.href, { build, bodyType })).hash.slice(2) : "";
+  const query = page === "builder" ? new URL(buildShareUrl(window.location.href, { build, bodyType, playerNumber })).hash.slice(2) : "";
   return <>
     <header className="relative z-30 flex h-14 shrink-0 items-center gap-3 border-b border-line bg-ink-950 px-3 sm:px-4">
       {page === "builder"
