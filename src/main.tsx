@@ -9,6 +9,7 @@ import Roadmap from "./pages/Roadmap";
 import { ReconstructionProgressProvider } from "./context/ReconstructionProgress";
 import { loadCatalog } from "./lib/catalog-load";
 import IntroDialog from "./components/IntroDialog";
+import FeatureGuide from "./components/FeatureGuide";
 import { startAnalytics } from "./lib/analytics";
 import { startSavedOutfits } from "./store/useSavedOutfits";
 import { openLink } from "./store/open-link";
@@ -59,6 +60,7 @@ function mount() {
             <Route path="*" element={<NotFound />} />
           </Routes>
           <IntroDialog />
+          <FeatureGuide />
         </ReconstructionProgressProvider>
       </HashRouter>
     </StrictMode>,
