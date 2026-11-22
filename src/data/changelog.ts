@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-video-range",
+    date: "2026-11-22",
+    title: "Record part of an emote, looped or slowed",
+    notes: [
+      "Turn on Video range on the emote timeline and drag its two red markers, or press I and O at a frame, to choose the part of an emote a video records. The Video tab under Capture shows the same range as times you can type; Whole goes back to the full emote. Each emote keeps its own range.",
+      "Loops repeats the video's part up to 20 times, and videos now follow the emote speed: at half speed you get slow motion, with the sound slowed down too, as you hear it in the builder.",
+    ],
+    items: ["faster-builder"],
+  },
+  {
     id: "2026-11-22-transparent-mov",
     date: "2026-11-22",
     title: "See-through MOV for video editors",

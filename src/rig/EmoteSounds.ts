@@ -553,9 +553,15 @@ export class EmoteSounds {
    * animation's name, so every export of an emote sounds the same. If the cues add up past full scale, the whole track
    * is scaled down to just under it (one constant factor, not a limiter: the cues keep their game balance) rather than
    * clipped. Null when the animation has no cues or this deployment ships no sounds.
+   *
+   * A range (22 Nov 2026: the video's part of the clip, its loops and the emote speed) schedules each pass in turn. A
+   * cue already sounding at the range's start joins mid-sound, where it would be by then (with a short fade-in, no
+   * click); a window stops at the range's end at the latest, as a one-shot's do at the clip's end; a "once" sound rings
+   * on into the next pass. Speed works like tape, as in playback: rates and times scale with it, and pitch moves.
    */
   async renderOffline(source: string | null | undefined, options: { duration: number; clipLength: number; looping: boolean;
-    sampleRate?: number; signal?: AbortSignal }): Promise<{ buffer: AudioBuffer; peak: number; scaled: number } | null> {
+    sampleRate?: number; signal?: AbortSignal; range?: { from: number; to: number; loops: number; speed: number } })
+    : Promise<{ buffer: AudioBuffer; peak: number; scaled: number } | null> {
     const manifest = await this.load();
     const cues = (source && manifest?.formatVersion === 1 && manifest.emotes[source]) || [];
     if (!cues.length || typeof OfflineAudioContext === "undefined") return null;
@@ -581,30 +587,57 @@ export class EmoteSounds {
       } catch (error) { console.warn(`[sound] ${wave} did not decode`, error); waves.set(wave, null); }
     }));
     if (options.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+    const from = Math.max(0, Math.min(options.range?.from ?? 0, clipLength));
+    const to = Math.max(from, Math.min(options.range?.to ?? clipLength, clipLength));
+    const loops = Math.max(1, Math.round(options.range?.loops ?? 1));
+    const speed = options.range?.speed && options.range.speed > 0 ? options.range.speed : 1;
+    const whole = from <= 1e-6 && to >= clipLength - 1e-6;
     let voices = 0;
-    for (const { cue, variant, gain, rate } of plans) {
-      const wave = waves.get(variant.wave);
-      if (!wave || cue.start >= duration) continue;
-      const node = context.createGain();
-      const buffer = context.createBufferSource();
-      buffer.buffer = wave.buffer;
-      buffer.playbackRate.value = rate;
-      if (variant.loop) { buffer.loop = true; buffer.loopStart = wave.lead; buffer.loopEnd = wave.lead + wave.length; }
-      if (cue.attack) {
-        node.gain.setValueAtTime(0, cue.start);
-        node.gain.linearRampToValueAtTime(gain, cue.start + cue.attack);
-      } else node.gain.value = gain;
-      buffer.connect(node).connect(context.destination);
-      buffer.start(cue.start, wave.lead);
-      if (cue.kind === "window" && !(looping && this.covers(cue, clipLength))) {
-        const stop = Math.min(cue.start + (cue.duration ?? 0), clipLength), fade = Math.max(DECLICK, cue.fadeOut ?? DEFAULT_FADE_OUT);
-        if (stop < duration) {
-          node.gain.setValueAtTime(cue.attack && stop < cue.start + cue.attack ? gain * (stop - cue.start) / cue.attack : gain, stop);
-          node.gain.linearRampToValueAtTime(0, stop + fade);
-          buffer.stop(stop + fade + 0.01);
+    for (let pass = 0; pass < loops; pass++) {
+      const base = pass * (to - from) / speed; // where this pass starts in the recording
+      if (base >= duration) break;
+      for (const { cue, variant, gain, rate } of plans) {
+        const wave = waves.get(variant.wave);
+        if (!wave || cue.start >= to) continue;
+        // A musical window over a looping clip's whole pass carries on across passes: started once, never cut.
+        const carried = looping && whole && this.covers(cue, clipLength);
+        if (carried && pass > 0) continue;
+        const end = cue.kind === "window" ? cue.start + (cue.duration ?? 0) : Infinity;
+        let when = base + (cue.start - from) / speed, offset = 0; // recording seconds; wave seconds into the sound
+        if (cue.start < from) { // already sounding at the range's start: join it where it would be
+          if (end <= from) continue;
+          offset = (from - cue.start) * rate;
+          if (variant.loop) offset %= wave.length;
+          else if (offset >= wave.length) continue;
+          when = base;
         }
+        if (when >= duration) continue;
+        const node = context.createGain();
+        const buffer = context.createBufferSource();
+        buffer.buffer = wave.buffer;
+        buffer.playbackRate.value = rate * speed;
+        if (variant.loop) { buffer.loop = true; buffer.loopStart = wave.lead; buffer.loopEnd = wave.lead + wave.length; }
+        if (cue.attack && !offset) {
+          node.gain.setValueAtTime(0, when);
+          node.gain.linearRampToValueAtTime(gain, when + cue.attack / speed);
+        } else if (offset) {
+          node.gain.setValueAtTime(0, when);
+          node.gain.linearRampToValueAtTime(gain, when + MID_FADE_IN);
+        } else node.gain.value = gain;
+        buffer.connect(node).connect(context.destination);
+        buffer.start(when, wave.lead + offset);
+        if (cue.kind === "window" && !carried) {
+          const stopClip = Math.min(end, to), stop = base + (stopClip - from) / speed;
+          const fade = Math.max(DECLICK, (cue.fadeOut ?? DEFAULT_FADE_OUT) / speed);
+          if (stop < duration) {
+            const attackEnd = cue.attack && !offset ? cue.start + cue.attack : -Infinity;
+            node.gain.setValueAtTime(stopClip < attackEnd ? gain * (stopClip - cue.start) / cue.attack! : gain, stop);
+            node.gain.linearRampToValueAtTime(0, stop + fade);
+            buffer.stop(stop + fade + 0.01);
+          }
+        }
+        voices++;
       }
-      voices++;
     }
     if (!voices) return null;
     const rendered = await context.startRendering();
