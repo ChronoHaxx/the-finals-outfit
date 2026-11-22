@@ -7,6 +7,7 @@ import { CharacterRig, type RigMaterial, type RigMaterialBinding, type RigDecal,
 import { SURFACE_VIEWS, type SurfaceView } from "../rig/ReconstructedMaterial";
 import { loadHeadWraps, type HeadWrapData } from "../rig/HeadWrap";
 import { bodyTypePreview, isBodyTypeId, type BodyTypeId, type BodyTypePreview } from "../rig/BodyTypePreview";
+import { setPlayerNumber } from "../rig/PlayerNumber";
 import { shownBodyType } from "../lib/body-type";
 import { loadSourceAssemblyAssets, loadSourceAssemblyItems, sourceHeadComponentCarries, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "../rig/SourceAssembly";
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "../rig/SourceHairAvailability";
@@ -565,6 +566,10 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   const build = useBuildStore((s) => s.build);
   // The outfit's body type (src/lib/body-type.ts): Masculine, or another the picker offers.
   const outfitBodyType = useBuildStore((s) => s.bodyType);
+  // The outfit's player number (lib/player-number.ts): every recovered material that prints one reads it live
+  // (rig/PlayerNumber.ts), so a change re-uploads two uniforms and reloads nothing.
+  const outfitPlayerNumber = useBuildStore((s) => s.playerNumber);
+  useEffect(() => { setPlayerNumber(outfitPlayerNumber); }, [outfitPlayerNumber]);
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
   const prev = useRef<Partial<Record<Slot, string | null>>>({});
   // The item whose companion decal is installed for each slot (null: none).
@@ -1151,7 +1156,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   }, [build, outfitBodyType, ready, rig, retryAttempt, beginOperation, endOperation]);
 
   const changePreviewOption = (name: "surface" | "isolate", value: string) => {
-    const url = new URL(buildShareUrl(window.location.href, { build, bodyType: outfitBodyType }));
+    const url = new URL(buildShareUrl(window.location.href, { build, bodyType: outfitBodyType, playerNumber: outfitPlayerNumber }));
     // A share link uses the global route; the reload stays in Chinals mode when that is on (lib/site-mode.ts).
     if (mode === "chinals") url.hash = url.hash.replace(/^#\/\?/, "#/chinals?");
     // Picker edits do not rewrite the address bar.

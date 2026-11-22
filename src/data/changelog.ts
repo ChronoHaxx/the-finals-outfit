@@ -14,6 +14,30 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-21-season-1-2-emotes",
+    date: "2026-11-21",
+    title: "Season 1 and 2 emotes",
+    notes: [
+      "The emote picker now lists all 295 emotes in the game files. 66 were missing, most of them from Seasons 1 and 2, such as Make It Rain, Keyed Up and Applause Pause. They play with their props, sound and facial animation like the rest.",
+      "Eight of them were already under More with working-title names (Wave, Clap, Flex and others). They now show their game names and icons, and links to them still work.",
+      "In Chinals mode, five emotes that have no icon of their own in the game files now sit under Uncategorised, at the end of the list.",
+    ],
+    items: ["idle-emotes"],
+  },
+  {
+    id: "2026-11-15-faces-lighting-chinals",
+    date: "2026-11-15",
+    title: "Faces that move, your own lighting, Chinals emotes",
+    notes: [
+      "Faces now move in idles and emotes, from the game's own animation: blinks, glances, brows, jaw and expressions. Beards, balaclavas and scarves follow the face, and masks and helmets soften it where the game does.",
+      "A new Lighting panel. Start from Studio, Lobby or one of four sun looks, then change each light's colour, brightness and direction, add lights, pick a solid or gradient backdrop and turn on a floor shadow. Your own looks can be saved.",
+      "Pick a body type: Masculine or Androgynous. Saved outfits and share links keep it. Feminine follows once the Season 12 clothing has been refitted.",
+      "Chinals mode plays the 45 emotes of 终极角逐, THE FINALS as published in mainland China, on your outfit. Switch with Global | Chinals at the top. Emotes without an English name show the Chinese name with this site's unofficial translation.",
+      "Emote props sit where the game puts them: thrones, tables, brooms and turrets are no longer turned, buried or oversized. Emotes can also loop.",
+    ],
+    items: ["idle-emotes", "lighting-backdrops", "default-lighting", "light-heavy", "chinals-emotes", "emote-effects"],
+  },
+  {
     id: "2026-11-15-emote-sounds",
     date: "2026-11-15",
     title: "Emote sounds",

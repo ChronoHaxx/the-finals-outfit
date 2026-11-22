@@ -12,6 +12,8 @@ import { getPreviewScene, setPoseSource } from "../lib/viewer-handle";
 import { isChinalsClip } from "../lib/site-mode";
 import { EmotePicker, missingSummary } from "./EmotePicker";
 import { EmoteSoundControl } from "./EmoteSoundControl";
+import { EmoteSpeedControl } from "./EmoteSpeedControl";
+import { savedFace, savedSpeed, setFacialAnimation } from "../lib/emote-playback";
 
 // Showcase animation UI (5 Nov 2026): Animate / Static toggle, pause, and the emote picker (EmotePicker.tsx: every
 // emote with its icon, plus outfit-screen reactions and idles). Hidden unless the deployment publishes a clip manifest
@@ -19,12 +21,18 @@ import { EmoteSoundControl } from "./EmoteSoundControl";
 //
 // The outfit-screen idle plays by default once the first outfit has loaded (the user's call, 5 Nov). It stays still
 // when the viewer last chose the still pose (remembered in this browser), when the system asks for reduced motion, and
-// in automated browsers: the visual-diff, probe and audit harnesses compare still-pose captures.
+// in automated browsers: the visual-diff, probe and audit harnesses compare still-pose captures. An emote the viewer
+// picks while the outfit is still loading stays in front: the idle then starts under it (RigAnimator.playUnder).
 //
 // URL switches for captures and reviews: ?anim=<clip id> starts that clip once the outfit has loaded, and
 // &animTime=<seconds> then holds it at that time, paused (a deterministic mid-motion frame); ?anim=0 opens still;
 // ?sway=0 starts with the approximate secondary motion off; ?deform=0 leaves the twist/volume joints at rest (the
-// game's deformation rig off, for comparisons); ?face=0 leaves the face at rest (no facial animation, FaceAnimator.ts).
+// game's deformation rig off, for comparisons); ?face=0 opens with the facial animation off (FaceAnimator.ts) for that
+// visit, without changing the viewer's remembered choice.
+//
+// Emote speed and the facial animation switch (21 Nov 2026, lib/emote-playback.ts): a speed slider while an emote is in
+// front (EmoteSpeedControl.tsx) and a Facial animation toggle beside Sway, both remembered in this browser. Automated
+// browsers ignore both remembered choices, as they do Loop, so captures stay at normal speed with the face on.
 //
 // Share links can carry a pose (10 Nov 2026, lib/share-pose.ts: &emote=<clip>&t=<s>[&paused=1]). The builder hands it
 // over before the link is tidied away; it is applied here once the outfit has loaded, instead of the default idle,
@@ -58,7 +66,8 @@ export function setEmoteLoop(animator: RigAnimator, on: boolean): void {
   } catch { /* the choice just is not remembered */ }
 }
 
-const IDLE_STATE: AnimatorState = { active: false, moving: false, paused: false, sway: true, loopEmote: false, idle: null, current: null, loading: null, error: null };
+const IDLE_STATE: AnimatorState = { active: false, moving: false, paused: false, sway: true, loopEmote: false, speed: 1, face: true,
+  idle: null, current: null, loading: null, error: null };
 
 /** The animator for a clip set, once its manifest has loaded (null: no clips published there, or still loading).
  *  A new base (Chinals mode, lib/site-mode.ts) disposes the old animator and loads the other set; in between this is
@@ -72,8 +81,9 @@ export function useRigAnimator(base: string): RigAnimator | null {
       const params = new URLSearchParams(window.location.search);
       if (cancelled || !loaded) return;
       created = new RigAnimator(loaded.manifest, loaded.clipBase,
-        { sway: params.get("sway") !== "0", deform: params.get("deform") !== "0", loopEmote: savedLoop(), propsUrl: loaded.propsUrl,
-          facesUrl: loaded.facesUrl, face: params.get("face") !== "0",
+        { sway: params.get("sway") !== "0", deform: params.get("deform") !== "0", loopEmote: savedLoop(),
+          speed: AUTOMATED ? 1 : savedSpeed(), propsUrl: loaded.propsUrl, facesUrl: loaded.facesUrl,
+          face: params.get("face") !== "0" && (AUTOMATED || savedFace()),
           // Automated browsers get no sounds at all (no audio device, no downloads): captures stay silent and deterministic.
           soundsUrl: AUTOMATED ? null : loaded.soundsUrl });
       setLoaded({ base, animator: created });
@@ -191,6 +201,9 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
     if (pose && !animator.info(pose.clip)) console.warn(`[animation] the link's pose names an unknown clip "${pose.clip}"`);
     const posed = pose && animator.info(pose.clip) ? pose : null;
     if (!posed && started.current) return;
+    // The emote button works from the body's load, before the outfit has: a clip the viewer picked meanwhile is their
+    // latest choice and stays in front (21 Nov 2026: the idle used to replace it here once the outfit finished).
+    const viewerFirst = !started.current && (animator.state.active || animator.state.loading !== null);
     started.current = true;
     const params = new URLSearchParams(window.location.search);
     const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
@@ -198,6 +211,11 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
       reducedMotion, savedStill: savedStill() });
     const root = rig.animationRoot();
     if (!root) return;
+    if (viewerFirst) {
+      // The idle the viewer would be animating with goes under it, so their emote ends into it as if they had waited.
+      if (id && animator.info(id)?.loop) animator.playUnder(root, id).catch(error => console.error(error));
+      return;
+    }
     if (posed) {
       prepare(root);
       // The idle runs under an emote when the viewer would be animating anyway, so it comes back when the emote ends.
@@ -294,6 +312,16 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
         anchor={controls.current?.closest<HTMLElement>("[data-viewer]") ?? null} />}
       {missing && !picking && (
         <span className={`hud max-w-56 px-1 text-right normal-case tracking-[0.04em] ${studio ? "text-ink-700" : "text-fg-muted"}`}>{missing}</span>
+      )}
+      {state.active && emote && <EmoteSpeedControl animator={animator} speed={state.speed} />}
+      {state.active && animator.face.available && (
+        <button type="button" className={`${button} h-7 px-2.5 text-fg-muted`} aria-pressed={state.face}
+          title={state.face ? "Facial animation: the game's own expressions on the face. Turn it off to keep the face at rest."
+            : "The face stays at rest. Turn on the game's own facial expressions."}
+          onClick={() => setFacialAnimation(animator, !state.face)}>
+          <span aria-hidden="true" className={`size-2 ${state.face ? "bg-fg-muted" : "border border-fg/50"}`} />
+          Facial animation
+        </button>
       )}
       {state.active && (
         <button type="button" className={`${button} h-7 px-2.5 text-fg-muted`} aria-pressed={state.sway}
