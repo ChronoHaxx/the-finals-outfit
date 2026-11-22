@@ -234,13 +234,19 @@ function validateHologram(manifest: Manifest): string[] {
 // gl_FragCoord, rectMin = (vx, H - vy - vh), invSize = 1 / (vw, vh), for the current viewport (vx, vy, vw, vh) in
 // physical pixels and the bound render target's (or drawing buffer's) height H. rect = (rectMin, invSize); the
 // reciprocal is taken here, once per draw, as UE does on the CPU, so the shader sees the float32-rounded 1 / size.
+// A camera drawing one tile of a larger image (setViewOffset: the supersampled screenshot and video, 21 Nov 2026) gets
+// the whole image's rectangle, so screen positions run across the tiles as in one draw.
 const hologramViewport = new THREE.Vector4();
-function updateHologramView(renderer: THREE.WebGLRenderer, rect: THREE.Vector4, height: { value: number }) {
+function updateHologramView(renderer: THREE.WebGLRenderer, rect: THREE.Vector4, height: { value: number }, camera?: THREE.Camera) {
   renderer.getCurrentViewport(hologramViewport);
   const target = renderer.getRenderTarget();
   const H = target ? Math.max(1, target.height >> renderer.getActiveMipmapLevel()) : renderer.getContext().drawingBufferHeight;
   const { x, y, z: w, w: h } = hologramViewport;
-  rect.set(x, H - y - h, 1 / w, 1 / h);
+  const view = (camera as THREE.PerspectiveCamera | undefined)?.view;
+  if (view?.enabled && view.width > 0 && view.height > 0) {
+    const sx = w / view.width, sy = h / view.height;
+    rect.set(x - view.offsetX * sx, H - y - h - view.offsetY * sy, 1 / (view.fullWidth * sx), 1 / (view.fullHeight * sy));
+  } else rect.set(x, H - y - h, 1 / w, 1 / h);
   height.value = H;
 }
 
@@ -614,7 +620,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     }
     // The view rectangle of the draw being made (updateHologramView); three calls this right before each draw.
     const rect = new THREE.Vector4(0, 0, 1, 1), height = { value: 1 };
-    material.onBeforeRender = (renderer) => updateHologramView(renderer, rect, height);
+    material.onBeforeRender = (renderer, _scene, camera) => updateHologramView(renderer, rect, height, camera);
     material.customProgramCacheKey = () =>
       `recovered-hologram-v1:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${needsUv1}:${viewFields.join(",")}`;
     const number = numberProgram ? playerNumberUniform(material, numberProgram.authored, manifest.itemId) : undefined;

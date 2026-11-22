@@ -100,6 +100,19 @@ function writeSettings(settings: SoundSettings): void {
 const pick = (value: number | [number, number], random: () => number) =>
   Array.isArray(value) ? value[0] + (value[1] - value[0]) * random() : value;
 
+/** A repeatable random sequence in [0, 1) from a name (FNV-1a seed, mulberry32 steps): the video export's sound picks. */
+export function seededRandom(name: string): () => number {
+  let seed = 0x811c9dc5;
+  for (let i = 0; i < name.length; i++) seed = Math.imul(seed ^ name.charCodeAt(i), 0x01000193) >>> 0;
+  return () => {
+    seed = (seed + 0x6d2b79f5) >>> 0;
+    let t = seed;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 /** A decoded wave and where its real samples are (a decoder that keeps the AAC priming puts them `lead` in). */
 interface Wave { buffer: AudioBuffer; lead: number; length: number }
 
@@ -529,6 +542,84 @@ export class EmoteSounds {
     this.voices.clear();
     this.finished.clear();
     this.lastTime = null;
+  }
+
+  /**
+   * Video export (21 Nov 2026): an emote's sounds for one pass from its start, rendered offline at the game's gains
+   * (not the viewer's volume or mute), by the same cue rules as playback: a window stops at its end with its fade, or
+   * at the clip's end for a one-shot emote (as at a natural end); a "once" sound rings out to the end of the recording;
+   * a musical loop starts at its window, from the top of its track; a window covering a looping clip's whole pass
+   * carries on (cut where the recording ends). Variant picks and random gain and pitch come from a seed made from the
+   * animation's name, so every export of an emote sounds the same. If the cues add up past full scale, the whole track
+   * is scaled down to just under it (one constant factor, not a limiter: the cues keep their game balance) rather than
+   * clipped. Null when the animation has no cues or this deployment ships no sounds.
+   */
+  async renderOffline(source: string | null | undefined, options: { duration: number; clipLength: number; looping: boolean;
+    sampleRate?: number; signal?: AbortSignal }): Promise<{ buffer: AudioBuffer; peak: number; scaled: number } | null> {
+    const manifest = await this.load();
+    const cues = (source && manifest?.formatVersion === 1 && manifest.emotes[source]) || [];
+    if (!cues.length || typeof OfflineAudioContext === "undefined") return null;
+    const sampleRate = options.sampleRate ?? 48000, { duration, clipLength, looping } = options;
+    const context = new OfflineAudioContext(2, Math.max(1, Math.round(duration * sampleRate)), sampleRate);
+    const random = seededRandom(source!);
+    const plans = cues.map(cue => {
+      const total = cue.variants.reduce((s, v) => s + v.weight, 0);
+      let r = random() * total, variant = cue.variants[cue.variants.length - 1];
+      for (const v of cue.variants) { if ((r -= v.weight) < 0) { variant = v; break; } }
+      return { cue, variant, gain: pick(variant.gain, random), rate: pick(variant.rate, random) };
+    });
+    const waves = new Map<string, Wave | null>();
+    await Promise.all([...new Set(plans.map(p => p.variant.wave))].map(async wave => {
+      const data = await this.fetchWave(wave);
+      this.bytes.delete(wave); // fetched for this render only (a live decode holds its own promise)
+      const info = manifest!.files[wave];
+      if (!data || !info) { waves.set(wave, null); return; }
+      try {
+        const buffer = await context.decodeAudioData(data.slice(0));
+        const extra = buffer.duration - info.duration;
+        waves.set(wave, { buffer, lead: extra > 0.005 ? Math.min(AAC_PRIMING, extra) : 0, length: info.duration });
+      } catch (error) { console.warn(`[sound] ${wave} did not decode`, error); waves.set(wave, null); }
+    }));
+    if (options.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+    let voices = 0;
+    for (const { cue, variant, gain, rate } of plans) {
+      const wave = waves.get(variant.wave);
+      if (!wave || cue.start >= duration) continue;
+      const node = context.createGain();
+      const buffer = context.createBufferSource();
+      buffer.buffer = wave.buffer;
+      buffer.playbackRate.value = rate;
+      if (variant.loop) { buffer.loop = true; buffer.loopStart = wave.lead; buffer.loopEnd = wave.lead + wave.length; }
+      if (cue.attack) {
+        node.gain.setValueAtTime(0, cue.start);
+        node.gain.linearRampToValueAtTime(gain, cue.start + cue.attack);
+      } else node.gain.value = gain;
+      buffer.connect(node).connect(context.destination);
+      buffer.start(cue.start, wave.lead);
+      if (cue.kind === "window" && !(looping && this.covers(cue, clipLength))) {
+        const stop = Math.min(cue.start + (cue.duration ?? 0), clipLength), fade = Math.max(DECLICK, cue.fadeOut ?? DEFAULT_FADE_OUT);
+        if (stop < duration) {
+          node.gain.setValueAtTime(cue.attack && stop < cue.start + cue.attack ? gain * (stop - cue.start) / cue.attack : gain, stop);
+          node.gain.linearRampToValueAtTime(0, stop + fade);
+          buffer.stop(stop + fade + 0.01);
+        }
+      }
+      voices++;
+    }
+    if (!voices) return null;
+    const rendered = await context.startRendering();
+    if (options.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+    let peak = 0;
+    for (let c = 0; c < rendered.numberOfChannels; c++) {
+      const data = rendered.getChannelData(c);
+      for (let i = 0; i < data.length; i++) peak = Math.max(peak, Math.abs(data[i]));
+    }
+    const scaled = peak > 1 ? 0.999 / peak : 1;
+    if (scaled !== 1) for (let c = 0; c < rendered.numberOfChannels; c++) {
+      const data = rendered.getChannelData(c);
+      for (let i = 0; i < data.length; i++) data[i] *= scaled;
+    }
+    return { buffer: rendered, peak, scaled };
   }
 
   private record(event: SoundLogEntry["event"], voice: Voice, clipTime: number | null): void {

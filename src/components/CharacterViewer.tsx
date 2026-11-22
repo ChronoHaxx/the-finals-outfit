@@ -36,6 +36,7 @@ import type { HideUi } from "../lib/viewer-chrome";
 import { CollapseIcon, ExpandIcon, EyeOffIcon } from "./Icons";
 import { MeshGateError } from "../lib/mesh-gate";
 import { ScreenshotPanel } from "./ScreenshotPanel";
+import { captureSlot } from "../rig/VideoExport";
 import { STAGE_FLOOR, type ScreenshotContext } from "../rig/ViewerScreenshot";
 import { LightingPanel, SunShortcut } from "./LightingPanel";
 import { useLightingStore } from "../lib/lighting-store";
@@ -125,6 +126,20 @@ function PreviewBridge({ root, backdrop, active, animator }: {
   return null;
 }
 
+// The still-view accumulator draws the canvas (every look but the developer debug views).
+const STABLE_PREVIEW = DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit";
+
+// Runs a video export's frames inside the frame loop (rig/VideoExport.ts): each frame is drawn after the contact shadow
+// has followed the new pose (priority 0) and before the live view draws (priority 1); the next pose is set after the
+// live view has drawn. Without the accumulator (debug views) it draws the canvas itself, since any positive priority
+// turns off r3f's own draw.
+function CaptureDriver({ ownsDraw }: { ownsDraw: boolean }) {
+  useFrame(() => captureSlot.current?.capture(), 0.5);
+  useFrame(({ gl, scene, camera }) => { if (ownsDraw) gl.render(scene, camera); }, 1);
+  useFrame(() => captureSlot.current?.advance(), 2);
+  return null;
+}
+
 // Hands the screenshot panel (outside the Canvas) the live renderer, scene and camera.
 function ScreenshotBridge({ target }: { target: { current: ScreenshotContext | null } }) {
   const gl = useThree((s) => s.gl);
@@ -132,7 +147,10 @@ function ScreenshotBridge({ target }: { target: { current: ScreenshotContext | n
   const camera = useThree((s) => s.camera);
   useEffect(() => {
     target.current = { gl, scene, camera };
-    return () => { target.current = null; };
+    // Dev only: capture test rigs (_docs/capture-2026-11-21) draw through the same context.
+    const host = window as unknown as { __captureContext?: ScreenshotContext };
+    if (import.meta.env.DEV) host.__captureContext = target.current;
+    return () => { target.current = null; if (host.__captureContext?.gl === gl) delete host.__captureContext; };
   }, [gl, scene, camera, target]);
   return null;
 }
@@ -531,8 +549,8 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
         <ScreenshotBridge target={screenshotContext} />
         <PreviewBridge root={rig.root} backdrop={backdrop} active={ready && !busy} animator={animator} />
         {animator && <AnimationFrameDriver animator={animator} yaw={() => rig.root.rotation.y} />}
-        {DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit" && <StablePreview isMoving={animationMoving}
-          aa={antiAliasing} statusRef={temporalStatus} />}
+        {STABLE_PREVIEW && <StablePreview isMoving={animationMoving} aa={antiAliasing} statusRef={temporalStatus} />}
+        <CaptureDriver ownsDraw={!STABLE_PREVIEW} />
         <AutoGraphics status={temporalStatus} active={ready && !busy} deviceDpr={deviceDpr} />
         {showFps && <FpsMeter status={temporalStatus} />}
         <OrbitControls
@@ -577,7 +595,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
               <EyeOffIcon size={15} />
             </button>
           )}
-          <ScreenshotPanel context={screenshotContext} backdrop={backdrop} ready={ready && !busy} />
+          <ScreenshotPanel context={screenshotContext} backdrop={backdrop} ready={ready && !busy} animator={animator} />
           {/* Lighting and backdrop: one panel for the whole scene (the Studio/Lobby switch became two of its looks). */}
           <LightingPanel />
         </div>

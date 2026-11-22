@@ -95,7 +95,8 @@ export function AnimationFrameDriver({ animator, yaw }: { animator: RigAnimator;
     const azimuth = Math.atan2(camera.position.x - (target?.x ?? 0), camera.position.z - (target?.z ?? 0)) - (yaw?.() ?? 0);
     const last = lastAzimuth.current;
     lastAzimuth.current = azimuth;
-    if (last !== null && animator.state.sway && animator.state.moving) {
+    // (A video export records through its own fixed camera: orbiting meanwhile turns nothing.)
+    if (last !== null && animator.state.sway && animator.state.moving && !animator.recording) {
       const change = Math.atan2(Math.sin(azimuth - last), Math.cos(azimuth - last)); // wrapped to (-pi, pi]
       if (Math.abs(change) < TELEPORT) animator.springs.turn(THREE.MathUtils.clamp(change, -MAX_TURN, MAX_TURN));
     }
