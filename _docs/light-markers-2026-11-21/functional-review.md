@@ -13,14 +13,15 @@ catches markers leaking into pictures, drags that turn the camera instead, and l
   live asset hosts). No account or secret.
 - Approximate hands-on time: 10 minutes.
 - Agent checks: see "Agent results" at the end.
-- User checks: **PENDING**. Agent results do not check the boxes below.
+- User checks: **WAIVED** by the user on 22 Nov 2026 (standing waiver, quoted under "Recorded result"). The agent ran
+  steps 1-6 on a production build instead: **agent PASS under the waiver**, not a user PASS.
 
 ## Get it running
 
 Git Bash, in the worktree `E:\Coding\the-finals-outfit\.claude\worktrees\elated-stonebraker-5f34bd`:
 
 ```bash
-VITE_ASSETS_BASE=https://f4a8e069.the-finals-outfit-assets.pages.dev/ VITE_MODELS_BASE=https://a029b249.the-finals-outfit-assets.pages.dev/ VITE_RECONSTRUCTION_BASE=https://c062af24.the-finals-outfit-assets.pages.dev/ VITE_ANIMATIONS_BASE=https://17ec92c3.the-finals-outfit-assets.pages.dev/ VITE_SCENES_BASE=https://1d367244.the-finals-outfit-assets.pages.dev/ VITE_RECONSTRUCTION_ROUTES_FILE=src/data/reconstruction-routes.json npx vite --host 127.0.0.1 --port 5261 --strictPort
+VITE_ASSETS_BASE=https://f4a8e069.the-finals-outfit-assets.pages.dev/ VITE_MODELS_BASE=https://a029b249.the-finals-outfit-assets.pages.dev/ VITE_RECONSTRUCTION_BASE=https://c062af24.the-finals-outfit-assets.pages.dev/ VITE_ANIMATIONS_BASE=https://fd946744.the-finals-outfit-assets.pages.dev/ VITE_SCENES_BASE=https://1d367244.the-finals-outfit-assets.pages.dev/ VITE_RECONSTRUCTION_ROUTES_FILE=src/data/reconstruction-routes.json npx vite --host 127.0.0.1 --port 5261 --strictPort
 ```
 
 Open `http://127.0.0.1:5261/?reconstructed=1`, click **Enter builder**, and close the Items drawer (the ITEMS tab at its
@@ -56,14 +57,52 @@ Do not assume a step passed because a merge is requested.
 
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given (and #57 merges first)
+- Tested revision/build: app code `920cfca` (this branch rebased onto #57 `8e93a1c`), merged locally with main
+  `96bf586` (not pushed) as it will land, in a production build with `deploy.yml`'s asset hosts, served by
+  `vite preview --base /the-finals-outfit/`.
+- User reported at: none. The user waived the hands-on checks:
+  - 22 Nov 2026, about 00:08 London, for all PRs: "for all sessions and subsession especially ones that are still open
+    and waiting for me, where possible please waive manual checks, i trust u as u can do the same checks better than me".
+  - 22 Nov 2026, for this PR: "do the checks for me, if pass, merge it".
+- Agent run under the waiver, 22 Nov 2026 00:31 London: steps **1-6 pass** (details under "Agent results, 22 Nov").
+  Untested: real touch, Safari, Firefox.
+- Explicitly waived checks: steps 1-6 as user checks (run by the agent instead).
+- Readiness: ready, once #57 is on main (this PR is stacked on it).
+- Merge authorization: "if pass, merge it" (22 Nov). #57 merges first.
 
 A later patch invalidates affected checks. Keep results for the previous revision and record the retest.
+
+## Agent results, 22 Nov 2026 (the checklist under the waiver)
+
+On `920cfca` + main `96bf586`, as it will land. Checks:
+- Production build (typecheck included): PASS.
+- Unit tests: 964 pass; the same 8 GLB-fixture failures (`public/models` absent from worktrees).
+- The checklist, steps 1-6, on the production build: `checklist-run.mjs` (headless Chrome as a visitor, the
+  checklist's own clicks and drags; bulbs found with the default camera and confirmed by hovering their labels): 24 of 24
+  pass, 0 page errors. Each step's full-page screenshot was also judged by eye:
+  1. Two bulbs with cones: Sun with its ring upper right, Rim behind on the left and paler; the panel stays open.
+  2. The label follows the drag (mid-drag "Sun · -11° / 41°", released at "-55° / 37°"). The camera does not move,
+     the light moves to his right side, and the Sun card is outlined in red with Direction -55 / Height 37.
+  3. Direction 149° slides the bulb round behind him on the right. Brightness 10 vs 0.65 makes the cone bolder or
+     fainter; the change is modest for a light behind him, which is drawn at half strength. Colour #33ff66 turns the
+     bulb, cone and rim light green.
+  4. The saved PNG (2880 × 1688) shows the green-lit character on the backdrop with no bulbs or cones. H hides the bulbs
+     with the UI ("Press H to show UI"); H again brings them back.
+  5. Each look names itself and its bulbs are its lights:
+     - Dramatic: Key, Rim;
+     - Cool: Key, Fill, Rim;
+     - Warm: Sun, Fill, Rim, with the floor shadow;
+     - Fullbright: no bulbs, even light, no shadow;
+     - Nighttime: Moon, Fill, Lamp;
+     - Season 12 menu: the live menu stage, with Key, Blue side, Back light, Under fill.
+
+     Dragging the Blue side bulb in the menu scene moves it from -116°/9° to -160°/19°, and the character still faces
+     forward.
+  6. Warm, then the sun dragged to 20°/15°, then Save current look ("Look 1"). After a reload: Custom, Show lights still
+     ticked, the sun's bulb at 20°/15°, and Look 1 kept.
+- The scripted suite (`light-markers-test.mjs`) on a dev server of the same code: 31 of 31 pass. This includes the share
+  card, which was also judged by eye: four views, no markers. The only console noise is dev-only: a font 403 through the
+  `node_modules` link, and a catalog fetch cut off by a reload.
 
 ## Agent results (21 Nov 2026, on #57 9c484f0)
 
