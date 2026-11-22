@@ -27,6 +27,8 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
       "An emote picked while the outfit is still loading now plays to its end instead of going back to the idle after a second or two.",
       "The preview does far less work each frame, so it runs more smoothly on slower computers such as laptops with built-in graphics, most of all with a face on.",
       "Pick your player number, 10 to 99, beside Body type. Clothing that prints a number, such as jerseys and cargo pants, shows yours in its own lettering, and Own keeps each piece's printed number. The number is saved with the outfit and carried by share links.",
+      "Screenshots are now drawn at twice their size and scaled down, for crisper detail. The camera button's new Video tab saves the emote on screen as a 60 fps video, made in your own browser: an MP4 with sound, a see-through WebM, or a see-through PNG sequence for video editors.",
+      "A What you can do guide lists everything the builder does and where each control is. Open it from the welcome screen, the Guide button in the top bar, or the ? key.",
     ],
     items: ["in-game-outfits", "catalog", "red-items", "idle-emotes", "faster-builder", "first-pass-3d"],
   },
