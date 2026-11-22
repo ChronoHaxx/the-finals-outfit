@@ -135,8 +135,11 @@ def compare(live_path, new_path, driver):
     for i, (a, b) in enumerate(zip(lp, np_)):
         if a.get('material') != b.get('material'):
             surface.append(f'primitive {i} material index differs')
-        if set(a['attributes']) != set(b['attributes']):
-            (loader if {k for k in set(a['attributes']) ^ set(b['attributes'])} <= {'JOINTS_1', 'WEIGHTS_1', 'JOINTS_2', 'WEIGHTS_2'}
+        extra = set(a['attributes']) ^ set(b['attributes'])
+        # A second influence set alone (JOINTS_1/WEIGHTS_1) is judged by the weights below ("influences"); JOINTS_2 is
+        # a loader refusal; anything else is a surface change.
+        if extra and not extra <= {'JOINTS_1', 'WEIGHTS_1'}:
+            (loader if extra <= {'JOINTS_1', 'WEIGHTS_1', 'JOINTS_2', 'WEIGHTS_2'}
              else surface).append(f'primitive {i} attribute sets differ: {sorted(a["attributes"])} vs {sorted(b["attributes"])}')
         if not same(live.acc(a['indices']), new.acc(b['indices'])):
             surface.append(f'primitive {i} indices differ')
@@ -185,8 +188,16 @@ def compare(live_path, new_path, driver):
         lnames = [live.node(j).get('name') for j in ls[0]['joints']]
         nnames = [new.node(j).get('name') for j in ns[0]['joints']]
         detail.update(jointsLive=len(lnames), jointsS12=len(nnames))
-        if any(influence_sets(p['attributes']) != influence_sets(lp[0]['attributes']) for p in lp + np_):
-            loader.append('influence layout differs between primitives or files')
+        # 4 vs 8 influences per vertex (JOINTS_0 alone vs JOINTS_0 + JOINTS_1) is not a loader problem: SourceMesh.ts
+        # reads either, and weights are compared by joint name below whatever the layout (tier 2, 22 Nov 2026: 7 meshes
+        # were refused only for this). Within one file every primitive must still share a layout.
+        within = all(influence_sets(p['attributes']) == influence_sets(ps[0]['attributes']) for ps in (lp, np_) for p in ps)
+        if not within:
+            loader.append('influence layout differs between primitives of one file')
+        elif influence_sets(lp[0]['attributes']) != influence_sets(np_[0]['attributes']):
+            kinds.append('influences')
+            detail.update(influencesLive=4 * len(influence_sets(lp[0]['attributes'])),
+                          influencesS12=4 * len(influence_sets(np_[0]['attributes'])))
         if any('JOINTS_2' in p['attributes'] for p in np_):
             loader.append('JOINTS_2 (SourceMesh.ts throws)')
         bad = unresolvable(new, driver)
