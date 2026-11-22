@@ -14,6 +14,27 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-chinals-faces",
+    date: "2026-11-22",
+    title: "Faces in Chinals emotes",
+    notes: [
+      "In Chinals mode, faces now move during the emotes and the idle, as they do in global emotes: blinks, glances, smiles, surprise and anger, from each emote's own animation. Beards and balaclavas follow the face, and masks and helmets soften it where the game does.",
+    ],
+    items: ["chinals-emotes"],
+  },
+  {
+    id: "2026-11-22-camera-controls",
+    date: "2026-11-22",
+    title: "Camera controls",
+    notes: [
+      "A new viewfinder button beside the camera button shows where the camera is and the point it looks at, in metres. Type any number to place the camera exactly, or nudge one with the arrow keys.",
+      "Roll tilts the camera for an angled shot; Level straightens it again.",
+      "Save views with an outfit and return to one in a click. Views saved with your other outfits are listed too. Like your outfits, they are kept in this browser.",
+      "Share links now open on the camera you were looking through, so someone else can pick up your shot and improve it. Untick Include camera view in the share panel to leave it out. While a scene from the game is behind your outfit, the camera stays put and links leave it out. The preview image is unchanged.",
+    ],
+    items: ["share-randomise-report", "faster-builder"],
+  },
+  {
     id: "2026-11-22-light-markers-looks",
     date: "2026-11-22",
     title: "See the lights, drag them, five more looks",

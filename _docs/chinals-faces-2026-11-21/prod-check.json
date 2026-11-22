@@ -1,0 +1,42 @@
+{
+  "anim": "https://fd946744.the-finals-outfit-assets.pages.dev/",
+  "chinals": "https://7c9add72.the-finals-outfit-chinals-assets.pages.dev/",
+  "checks": {
+    "paused": {
+      "current": "cn-emote-weaponmaster",
+      "paused": true,
+      "faceAvailable": true,
+      "soundsAvailable": false
+    },
+    "banner": "Props, sound and facial expressions are shown; effects are not.",
+    "footer": "Chinals emotes on your outfit (global cosmetics), with their props, sound and facial expressions. Effects are not shown yet.",
+    "clickPlayed": {
+      "clip": "cn-emote-weaponmaster",
+      "reached": 5.92,
+      "audioRunning": true,
+      "after": "cn-outfit-idle"
+    },
+    "hostedRequests": {
+      "faces": [
+        "200 faces-1/faces.json",
+        "200 faces-1/heads/SK_Head_Face_01_Base.json",
+        "200 faces-1/curves/HM_Frontend_Emote_A_WeaponMaster_00.json",
+        "200 faces-1/poses/Head_Face_01_Base_PoseAsset.json",
+        "200 faces-1/faces.json",
+        "200 faces-1/curves/HM_Frontend_Outfit_L_Idle_01.json",
+        "200 faces-1/heads/SK_Head_Face_01_Base.json",
+        "200 faces-1/poses/Head_Face_01_Base_PoseAsset.json",
+        "200 faces-1/curves/HM_Frontend_Emote_A_WeaponMaster_00.json"
+      ],
+      "sounds": [
+        "200 sounds-1/sounds.json",
+        "200 sounds-1/Emote_Frontend_A_WeaponMaster_00.m4a"
+      ],
+      "clips": 45,
+      "props": 6
+    }
+  },
+  "non200": [],
+  "errors": [],
+  "ok": true
+}

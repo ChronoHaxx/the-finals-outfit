@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { FaceCage, nextWrapToken, type FaceWrapPart, type FaceWrapSkin } from "./FaceWrap";
+import { FaceCage, FaceContact, nextWrapToken, type FaceWrapPart, type FaceWrapSkin } from "./FaceWrap";
 
 // Facial animation (12 Nov 2026): the game's own face poses, driven by the clips' facial curves.
 //
@@ -40,7 +40,8 @@ import { FaceCage, nextWrapToken, type FaceWrapPart, type FaceWrapSkin } from ".
 // Lifecycle (RigAnimator.ts owns the calls): bind() records the worn head's bones and their rest locals, while they are
 // at rest (before any apply); apply() runs after the clip and the deformation rig, every frame and in every hold;
 // restore() puts the rest back when the animation stops. Nothing runs while no clip plays, so still renders and the
-// automated captures are unchanged. Head-wrapped parts (beards, balaclavas) ride on the face's wrap cage: FaceWrap.ts.
+// automated captures are unchanged. Head-wrapped parts (beards, balaclavas) ride on the face's wrap cage, and a face
+// contact keeps the face from coming through where they lie on it: FaceWrap.ts.
 
 export interface FaceIndex {
   formatVersion: 1;
@@ -304,6 +305,8 @@ export class FaceAnimator {
   private wrapWeights: Map<string, number> | null = null; // the weights the parts were last wrapped for
   private wrapToken = 0;
   private wrapped = false; // a part sits on a moved cage
+  // Each worn part's face contact (FaceWrap.ts), bound for a head and the morphs worn with it (the key).
+  private contacts = new WeakMap<THREE.Mesh, { key: string; contact: FaceContact | null }>();
   // Face masks of the worn items: the loaded files, and the per-bone weights for the bound head (built at apply).
   private masks: MaskFile[] = [];
   private maskRequest = 0;
@@ -473,7 +476,7 @@ export class FaceAnimator {
         }
         const cage = this.cage;
         if (!updated) { cage.update(); updated = true; }
-        part.rewrap(target => cage.displace(target), this.wrapToken);
+        if (part.rewrap(target => cage.displace(target), this.wrapToken)) this.applyContact(part);
         this.wrapped = true;
       } catch (error) {
         console.warn(`[face] wrapped part stays still on ${part.cage}:`, error);
@@ -481,6 +484,27 @@ export class FaceAnimator {
         part.rewrap(null, 0);
       }
     }
+  }
+
+  /** Keep the posed face from coming through a part just re-wrapped on the moved cage (FaceContact). Bound on first use
+   *  for this head and these morphs; a part the contact cannot bind (no vertex over the face) keeps the wrap alone. */
+  private applyContact(part: FaceWrapPart): void {
+    const contact = part.contact, head = this.head, rest = this.rest;
+    if (!contact || !head || !rest) return;
+    const { mesh } = contact, influences = (m: THREE.Mesh) => (m.morphTargetInfluences ?? []).map(w => w.toFixed(4)).join(",");
+    const key = [this.bindRequest, ...this.meshes.map(influences), influences(mesh), ...(mesh.userData.headWrapMorphs ?? [])].join(";");
+    let entry = this.contacts.get(mesh);
+    if (entry?.key !== key) {
+      entry = { key, contact: null };
+      this.contacts.set(mesh, entry);
+      try {
+        const still = contact.still();
+        if (still) entry.contact = FaceContact.bind(mesh, still, this.meshes, rest);
+      } catch (error) { console.warn(`[face] ${mesh.name}: no face contact, the wrap alone carries it:`, error); }
+    }
+    const position = mesh.geometry.attributes.position as THREE.BufferAttribute, normal = mesh.geometry.attributes.normal;
+    if (entry.contact && normal && entry.contact.apply(position.array as Float32Array, normal.array as ArrayLike<number>, normal.itemSize))
+      position.needsUpdate = true;
   }
 
   /** The bound head's poses are being fetched or checked: resolves when that is over. */

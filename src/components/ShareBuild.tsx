@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useBuildStore } from "../store/useBuildStore";
 import { buildShareUrl, type ShareStyle } from "../lib/share-url";
-import { previewLink, SHARE_PREVIEW_BASE, sharePreviewAvailable, shortCode, uploadQuery } from "../lib/share-preview";
+import { previewKeptView, previewLink, SHARE_PREVIEW_BASE, sharePreviewAvailable, shortCode, uploadQuery } from "../lib/share-preview";
+import { formatView, shareableView, subscribeCamera, type CameraView } from "../lib/camera-view";
 import { formatPoseTime, poseKey, type PoseCapture } from "../lib/share-pose";
 import { getPoseCapture, subscribePose } from "../lib/viewer-handle";
 import { bodyTypeShareCode } from "../lib/body-type";
@@ -24,15 +25,26 @@ async function copyText(text: Promise<string>): Promise<string> {
   return value;
 }
 
-// The cache identity of a preview: the outfit code, the body type, the player number and the exact frame its card shows.
-const previewKey = (code: string | null, pose: PoseCapture | null, bodyType: string | undefined, playerNumber: string | undefined) =>
-  code === null ? "" : uploadQuery(code, pose, bodyType, playerNumber);
+// The cache identity of a preview: the outfit code, the body type, the player number, the exact frame its card shows
+// and the camera the link opens on.
+const previewKey = (code: string | null, pose: PoseCapture | null, bodyType: string | undefined,
+  playerNumber: string | undefined, view: CameraView | null) =>
+  code === null ? "" : uploadQuery(code, pose, bodyType, playerNumber, view);
+const noSubscription = () => () => {};
+const viewKey = (view: CameraView | null) => view ? formatView(view) : "";
+/** "0.62, 1.42, 3.1 · roll −8°" */
+const describeView = (view: CameraView) => `${view.position.join(", ")}${view.roll
+  ? ` · roll ${view.roll < 0 ? "−" : ""}${Math.abs(view.roll)}°` : ""}`;
 
 // One click copies the link. The panel that opens shows what was copied and lets you switch style.
 //
 // Poses (10 Nov 2026): when an emote is on screen (playing or paused), or the idle is paused, the link records that
 // frame and the preview card shows it. The frame is read at the click, in the same task as the card's render, so the
 // two always agree even while the emote plays on. "Include this frame" leaves it out.
+//
+// Camera views (21 Nov 2026): when the camera is off the default framing, the link opens on the camera you see (its
+// position, target and roll: lib/camera-view.ts), so someone else can start from your shot. "Include camera view"
+// leaves it out. The preview card stays the same four views either way.
 export default function ShareBuild() {
   const build = useBuildStore(s => s.build);
   const bodyType = useBuildStore(s => s.bodyType);
@@ -48,17 +60,24 @@ export default function ShareBuild() {
   const [withPose, setWithPose] = useState(true);
   // The pose of the last copy (a playing emote moves on; the panel keeps showing the frame that was copied).
   const [copiedPose, setCopiedPose] = useState<PoseCapture | null>(null);
+  const [withView, setWithView] = useState(true);
+  // The camera of the last copy, and the camera now (followed only while the panel is open: it moves every frame).
+  const [copiedView, setCopiedView] = useState<CameraView | null>(null);
+  const liveView = useSyncExternalStore(open ? subscribeCamera : noSubscription, () => viewKey(shareableView()));
   // What is on screen now, as "has it changed": a clip and its paused frame, or a clip playing (see poseKey).
   const livePose = useSyncExternalStore(subscribePose, () => poseKey(getPoseCapture()));
   const root = useRef<HTMLDivElement>(null);
   const pose = withPose ? copiedPose : null;
+  const view = withView ? copiedView : null;
   // Derive from the current selection so an already-open copy box never goes stale.
-  const short = buildShareUrl(window.location.href, look, "short", pose);
+  const short = buildShareUrl(window.location.href, look, "short", pose, view);
   const code = shortCode(short);
-  const link = style === "preview" ? (preview && preview.key === previewKey(code, pose, bt, pn) ? preview.url : short)
-    : buildShareUrl(window.location.href, look, style, pose);
+  const link = style === "preview" ? (preview && preview.key === previewKey(code, pose, bt, pn, view) ? preview.url : short)
+    : buildShareUrl(window.location.href, look, style, pose, view);
   const poseMoved = withPose && livePose !== poseKey(copiedPose);
-  const status = message.startsWith("Link copied") && (copiedLink !== link || poseMoved) ? "Link changed · copy again" : message;
+  const viewMoved = withView && open && liveView !== viewKey(copiedView);
+  const status = message.startsWith("Link copied") && (copiedLink !== link || poseMoved || viewMoved)
+    ? "Link changed · copy again" : message;
 
   const share = async () => {
     // Everything up to the first await runs in this click's task: the pose read here and the card rendered by
@@ -66,18 +85,23 @@ export default function ShareBuild() {
     const capture = getPoseCapture();
     const now = withPose ? capture : null;
     setCopiedPose(capture);
+    const camera = shareableView();
+    const viewNow = withView ? camera : null;
+    setCopiedView(camera);
     setOpen(true);
-    const shortNow = buildShareUrl(window.location.href, look, "short", now);
+    const shortNow = buildShareUrl(window.location.href, look, "short", now, viewNow);
     const codeNow = shortCode(shortNow);
     let result: Promise<{ url: string; note: string }>;
     if (style !== "preview" || !codeNow)
-      result = Promise.resolve({ url: buildShareUrl(window.location.href, look, style === "preview" ? "short" : style, now),
+      result = Promise.resolve({ url: buildShareUrl(window.location.href, look, style === "preview" ? "short" : style, now, viewNow),
         note: now ? `Link copied · opens on frame ${now.frame}` : "Link copied" });
     else if (!sharePreviewAvailable()) result = Promise.resolve({ url: shortNow, note: "Outfit still loading · plain link copied" });
     else {
       setMessage("Making preview…");
-      result = previewLink(codeNow, now, bt, pn).then(url => {
-        setPreview({ key: previewKey(codeNow, now, bt, pn), url });
+      result = previewLink(codeNow, now, bt, pn, viewNow).then(url => {
+        setPreview({ key: previewKey(codeNow, now, bt, pn, viewNow), url });
+        // A share Worker from before camera views opens the right outfit on the default framing: say so.
+        if (viewNow && !previewKeptView(url)) return { url, note: "Link copied · preview links can’t keep the camera yet (Short link can)" };
         return { url, note: now ? `Link copied · preview shows frame ${now.frame}` : "Link copied · with preview image" };
       }, error => { console.warn("[share preview]", error); return { url: shortNow, note: "Preview unavailable · plain link copied" }; });
     }
@@ -141,6 +165,12 @@ export default function ShareBuild() {
           <span className="block truncate text-fg-dim">
             {copiedPose.label} · {formatPoseTime(copiedPose.time)} s · frame {copiedPose.frame}{copiedPose.paused ? " · paused" : ""}
           </span>
+        </span>
+      </label>}
+      {copiedView && <label className="mt-3 flex items-center gap-2.5 text-xs text-fg-muted">
+        <input type="checkbox" checked={withView} onChange={e => setWithView(e.target.checked)} className="size-4 accent-finals" />
+        <span className="min-w-0">Include camera view
+          <span className="block truncate text-fg-dim">Opens from {describeView(copiedView)}</span>
         </span>
       </label>}
       <label className="mt-3 flex items-center justify-between gap-3">

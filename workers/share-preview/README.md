@@ -94,6 +94,31 @@ Live checks after the deploy, all read-only (nothing stored):
 - The root redirects.
 - An upload with `bt=ABC` gets 400 `bad body type`, and a foreign origin gets 403.
 
+## Redeploying for camera views (21 Nov 2026)
+
+Share links can carry the camera on screen (`src/lib/camera-view.ts`):
+`view=<x>_<y>_<z>_<target x>_<target y>_<target z>[_<roll>]`, metres to the millimetre and degrees to a tenth. The
+Worker validates it (numbers only, else 400 `bad camera view`), stores it in the entry's metadata as `view`, returns it
+last in the link and sends people to `#/?o=<code>[&bt=..][&emote=..]&view=...`. A stored view wins over the link's own
+while the entry lives; entries made before this have none (the default framing). The card is unchanged.
+
+Deploy order does not matter for correctness. A Worker without this change drops `view`: preview links then open the
+right outfit on the default framing, and the share panel says "preview links can't keep the camera yet (Short link
+can)". Short and readable links keep the camera without the Worker. An app from before this change never sends `view`.
+
+**Deployed 21 Nov 2026, 20:30 London** (on the user's "Deploy the Worker"), from commit `56caa09`: version
+`773a350e-976b-4956-9f54-3401e29341b3`, replacing `f9f734a6-4ab8-4623-b448-47c043f64fe1`. The only code change since
+`f9f734a6` is this one; bindings unchanged. To restore the previous version:
+`npx --yes wrangler@4.131.1 rollback f9f734a6-4ab8-4623-b448-47c043f64fe1`.
+
+Live checks after the deploy, all read-only (nothing stored):
+- `/s/AAAAAAAAAAAA?o=2.&view=0_1_2_0_1_0_5` opens `#/?o=2.&view=0_1_2_0_1_0_5`.
+- The same with `&bt=a&emote=wave&t=1` opens `#/?o=2.&bt=a&emote=wave&t=1&view=0_1_2_0_1_0_5`.
+- `&view=junk` is dropped (`#/?o=2.`).
+- The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit and serves its 73 KB card.
+- The root redirects (302).
+- An upload with `view=0,1,2` gets 400 `bad camera view`; a foreign origin gets 403.
+
 ## Redeploying for player numbers (21 Nov 2026)
 
 The app's player number adds `pn=<10–99>` after `bt`. Without it, each piece shows its own number. The Worker validates
@@ -103,12 +128,12 @@ entry lives. Entries and links without one are unchanged. The app refuses a prev
 `pn` it sent and copies the plain link instead, so the deploy order does not matter for correctness.
 
 **Deployed 21 Nov 2026, 22:01 London** (on the user's "Deploy it"): version `efb3af6b-f785-41d7-a70c-9769458b6764`,
-replacing `773a350e-976b-4956-9f54-3401e29341b3` (PR #59's camera views). Built from branch `claude/share-worker-pn-view-2026-11-21` at `91a22dd`, not from this branch: PR #60's
+replacing `773a350e-976b-4956-9f54-3401e29341b3` (PR #59's camera views). Built from branch `claude/share-worker-pn-view-2026-11-21` at `91a22dd`: PR #60's
 `pn` on top of PR #59's Worker (unchanged from `56caa09`/`22d086d`), so the live Worker keeps `view`. Links carry
 `o, bt, pn, pose, view` in that order. Bindings unchanged. To restore the previous version:
 `npx --yes wrangler@4.131.1 rollback 773a350e-976b-4956-9f54-3401e29341b3` (**not** `f9f734a6`, which would drop `view`).
-Whichever of PRs #59 and #60 merges second takes that build's `workers/share-preview/src` files when resolving the
-conflict, so `main` matches what is live.
+PR #60 merged first; PR #59's merge of `main` took that build's `workers/share-preview/src` files (and its Worker
+test), so `main` matches what is live.
 
 Live checks after the deploy, all read-only (nothing stored):
 - `/s/AAAAAAAAAAAA?o=2.&pn=42` opens `#/?o=2.&pn=42`; with `&bt=a` before it, `#/?o=2.&bt=a&pn=42`.
