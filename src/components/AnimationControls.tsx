@@ -1,15 +1,11 @@
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import type { CharacterRig } from "../rig/CharacterRig";
-import { initialClip, loadAnimationManifest, RigAnimator, type AnimatorState } from "../rig/RigAnimator";
+import { loadAnimationManifest, RigAnimator } from "../rig/RigAnimator";
 import { AUTOMATED } from "../lib/automation";
-import { modelUrl } from "../lib/assets";
-import { loadSourceFaceMask } from "../rig/SourceAssembly";
-import { warmForDraw } from "../rig/EmoteProps";
-import { pendingPose, subscribePendingPose, takePendingPose } from "../lib/share-pose";
-import { getPreviewScene, setPoseSource } from "../lib/viewer-handle";
-import { isChinalsClip } from "../lib/site-mode";
+import { frameClock, clockFrozen } from "../lib/frame-clock";
+import { useAnimationBinding, useAnimatorState } from "./useAnimationBinding";
 import { EmotePicker, missingSummary } from "./EmotePicker";
 import { EmoteSoundControl } from "./EmoteSoundControl";
 import { EmoteSpeedControl } from "./EmoteSpeedControl";
@@ -39,18 +35,6 @@ import { savedFace, savedSpeed, setFacialAnimation } from "../lib/emote-playback
 // and wins over ?anim=. A paused pose holds its frame; one without paused plays on from it (held still for reduced
 // motion and automated browsers). The pose on screen is published for the Share button (lib/viewer-handle.ts).
 
-// Per-viewer convenience: "still" after the viewer stops the idle, removed when they start it again. Storage can be
-// missing or blocked (private windows, previews): every access is guarded and the default then applies.
-const MOTION_KEY = "finals-outfit.motion";
-function savedStill(): boolean {
-  try { return window.localStorage.getItem(MOTION_KEY) === "still"; } catch { return false; }
-}
-function saveMotion(still: boolean): void {
-  try {
-    if (still) window.localStorage.setItem(MOTION_KEY, "still"); else window.localStorage.removeItem(MOTION_KEY);
-  } catch { /* the choice just is not remembered */ }
-}
-
 // The timeline's Loop toggle (11 Nov 2026), remembered the same way: "1" while on. Automated browsers ignore it, so
 // scripted captures always see an emote end and return to the idle.
 const LOOP_KEY = "finals-outfit.emote-loop";
@@ -65,9 +49,6 @@ export function setEmoteLoop(animator: RigAnimator, on: boolean): void {
     if (on) window.localStorage.setItem(LOOP_KEY, "1"); else window.localStorage.removeItem(LOOP_KEY);
   } catch { /* the choice just is not remembered */ }
 }
-
-const IDLE_STATE: AnimatorState = { active: false, moving: false, paused: false, sway: true, loopEmote: false, speed: 1, face: true,
-  idle: null, current: null, loading: null, error: null };
 
 /** The animator for a clip set, once its manifest has loaded (null: no clips published there, or still loading).
  *  A new base (Chinals mode, lib/site-mode.ts) disposes the old animator and loads the other set; in between this is
@@ -94,24 +75,11 @@ export function useRigAnimator(base: string): RigAnimator | null {
   return loaded?.base === base ? loaded.animator : null;
 }
 
-export function useAnimatorState(animator: RigAnimator | null): AnimatorState {
-  return useSyncExternalStore(
-    listener => animator?.subscribe(listener) ?? (() => {}),
-    () => animator?.state ?? IDLE_STATE,
-  );
-}
+// The animator state hook lives with the binding (one import direction); re-exported for existing importers.
+export { useAnimatorState } from "./useAnimationBinding";
 
-/**
- * Capture clock for test rigs (6 Nov 2026), reached through window.__rigAnim.clock. `fixed` replaces each frame's
- * real time step with a fixed one, so a run plays the same poses on every machine and at any frame rate. `steps` counts
- * the animator updates. Once `steps` reaches `freezeAt` the animation holds (no further updates) and the view counts as
- * still, so the still path converges on exactly that pose: a ground-truth frame to score the moving frames against.
- * The defaults (real time, never frozen) leave the app unchanged.
- */
-export const frameClock = { fixed: null as number | null, freezeAt: Infinity, steps: 0, frozenMoving: false };
-export const clockFrozen = () => frameClock.steps >= frameClock.freezeAt;
-/** Frozen but still drawn as moving (`frozenMoving`): what the moving view converges to on a pose that holds. */
-export const clockHeldStill = () => clockFrozen() && !frameClock.frozenMoving;
+// The test clock lives in lib/frame-clock.ts (shared with the animation binding); re-exported for existing importers.
+export { frameClock, clockFrozen, clockHeldStill } from "../lib/frame-clock";
 
 // Orbiting the camera counts as turning the character for the sway springs (SpringBones.turn), as the game turns
 // the character itself. A jump larger than this in one frame is a camera reset, not a turn; a fast flick is capped.
@@ -141,130 +109,8 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
   animator: RigAnimator; rig: CharacterRig; ready: boolean; busy: boolean; studio: boolean;
 }) {
   const state = useAnimatorState(animator);
-  // While anything plays: pin legacy root-level statics and stranded legacy bone branches to the driver, then collect
-  // the jiggle chains for sway. A finished outfit pass may have added new ones. (The animator resets the springs
-  // itself before it publishes "inactive", so a swung chain is never unpinned mid-swing.)
-  useEffect(() => {
-    if (!ready || busy) return;
-    rig.setAnimationPins(state.active);
-    const root = rig.animationRoot();
-    if (state.active && root) animator.rememberStillPose(root); // bones a mid-playback outfit change added
-    // The worn head, for the facial animation: bound while its bones are still at rest (just recorded above).
-    if (state.active) void animator.bindFace();
-    if (state.active && state.sway) {
-      animator.springs.rebuild(root);
-      // Paused: the rebuilt chains hang at rest. Hold the same frame again, with the preroll, so they carry the
-      // motion leading into it (also settles a link's pose that arrived while its outfit was still changing).
-      if (animator.state.paused) {
-        const at = animator.timeline()?.time ?? animator.sharePose()?.time;
-        if (at !== undefined) animator.seek(at);
-      }
-    }
-  }, [animator, rig, ready, busy, state.active, state.sway]);
-  useEffect(() => () => { animator.springs.reset(); rig.setAnimationPins(false); }, [animator, rig]);
-  useEffect(() => {
-    // Props are compiled and uploaded while their emote loads, not on their first frame (EmoteProps.warmForDraw): a
-    // 100-200 ms first draw stalls the motion, and the sounds already scheduled ahead of it come out early. The viewer
-    // publishes its renderer and scene once the outfit has loaded; before that a prop just warms on first draw.
-    animator.props.setWarmer(object => {
-      const view = getPreviewScene();
-      return view ? warmForDraw(view.gl, view.scene, object) : Promise.resolve();
-    });
-    return () => animator.props.setWarmer(null);
-  }, [animator]);
-  useEffect(() => {
-    // The face masks come from the worn items' definitions (the same files the outfit is assembled from).
-    const assembly = modelUrl("models/reconstructed-assembly-v2");
-    animator.setFaceSource(() => ({ meshes: rig.faceMeshes(), wraps: rig.faceWraps(),
-      masks: Promise.all(rig.equippedItemIds().map(id => loadSourceFaceMask(id, assembly).catch(() => null)))
-        .then(list => list.filter((m): m is string => !!m)) }));
-    return () => animator.setFaceSource(null);
-  }, [animator, rig]);
-  const prepare = (root: THREE.Object3D) => {
-    rig.setAnimationPins(true);
-    if (animator.state.sway) animator.springs.rebuild(root);
-  };
-
-  // The first motion once the outfit has loaded: a link's pose, else the default idle (see the top of this file) or
-  // ?anim=<id>&animTime=<s>. One effect decides, so the two can never both start. A pose arriving later (a link opened
-  // inside the app) is applied the same way. window.__rigAnim is for scripted captures.
-  const started = useRef(false);
-  const linkPose = useSyncExternalStore(subscribePendingPose, pendingPose);
-  useEffect(() => {
-    if (!ready || busy) return;
-    // A Chinals emote's pose (cn-…) that this set lacks: the builder is switching to Chinals mode, or saying the mode
-    // is off here, and the pose waits for the Chinals set (taken there). Nothing starts meanwhile.
-    const waiting = pendingPose();
-    if (waiting && !animator.info(waiting.clip) && isChinalsClip(waiting.clip)) return;
-    const pose = takePendingPose();
-    if (pose && !animator.info(pose.clip)) console.warn(`[animation] the link's pose names an unknown clip "${pose.clip}"`);
-    const posed = pose && animator.info(pose.clip) ? pose : null;
-    if (!posed && started.current) return;
-    // The emote button works from the body's load, before the outfit has: a clip the viewer picked meanwhile is their
-    // latest choice and stays in front (21 Nov 2026: the idle used to replace it here once the outfit finished).
-    const viewerFirst = !started.current && (animator.state.active || animator.state.loading !== null);
-    started.current = true;
-    const params = new URLSearchParams(window.location.search);
-    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-    const id = initialClip({ anim: params.get("anim"), defaultIdle: animator.manifest.defaultIdle, automated: AUTOMATED,
-      reducedMotion, savedStill: savedStill() });
-    const root = rig.animationRoot();
-    if (!root) return;
-    if (viewerFirst) {
-      // The idle the viewer would be animating with goes under it, so their emote ends into it as if they had waited.
-      if (id && animator.info(id)?.loop) animator.playUnder(root, id).catch(error => console.error(error));
-      return;
-    }
-    if (posed) {
-      prepare(root);
-      // The idle runs under an emote when the viewer would be animating anyway, so it comes back when the emote ends.
-      animator.openPose(root, posed, { idle: id === animator.manifest.defaultIdle ? id : null, play: !reducedMotion && !AUTOMATED })
-        .catch(error => console.error(error));
-      return;
-    }
-    const time = Number(params.get("animTime"));
-    if (!id || !animator.info(id)) return;
-    prepare(root);
-    animator.play(root, id).then(() => { if (params.has("animTime") && Number.isFinite(time)) animator.seek(time); })
-      .catch(error => console.error(error));
-  }, [animator, rig, ready, busy, linkPose]);
-  // The frame on screen, for the Share button (outside the canvas).
-  useEffect(() => {
-    setPoseSource({ capture: () => animator.sharePose(), subscribe: listener => animator.subscribePose(listener) });
-    return () => setPoseSource(null);
-  }, [animator]);
-  useEffect(() => {
-    const host = window as unknown as { __rigAnim?: unknown };
-    host.__rigAnim = {
-      animator,
-      play: async (id: string, time?: number) => {
-        const root = rig.animationRoot();
-        if (!root) throw new Error("Body not loaded");
-        prepare(root);
-        await animator.play(root, id);
-        if (time !== undefined) animator.seek(time);
-      },
-      seek: (time: number) => animator.seek(time),
-      stop: () => animator.stop(),
-      sway: (on: boolean) => animator.setSway(on),
-      deform: (on: boolean) => animator.setDeform(on),
-      face: (on: boolean) => animator.setFace(on),
-      state: () => animator.state,
-      clock: frameClock,
-    };
-    return () => { delete host.__rigAnim; };
-  }, [animator, rig]);
-
-  // The viewer's own clicks: remember still vs. animated for the next visit.
-  const play = (id: string) => {
-    const root = rig.animationRoot();
-    if (!root) return;
-    // Starting an idle loop means "animated"; an emote from the still pose returns to it, so it changes nothing.
-    if (animator.info(id)?.loop) saveMotion(false);
-    prepare(root);
-    animator.play(root, id).catch(error => console.error(error));
-  };
-  const stop = () => { saveMotion(true); animator.stop(); };
+  // The rig-side bookkeeping for this character (useAnimationBinding.ts); the builder's is the primary one.
+  const { play, stop } = useAnimationBinding({ animator, rig, ready, busy, primary: true });
   const [picking, setPicking] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const controls = useRef<HTMLDivElement>(null);
