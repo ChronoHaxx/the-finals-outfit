@@ -84,6 +84,17 @@ function FollowGroup({ centre }: { centre: [number, number] }) {
   return null;
 }
 
+// Dev only: the renderer for probes (squad-profile.mjs reads its memory and program counts).
+function RendererBridge() {
+  const gl = useThree(s => s.gl);
+  useEffect(() => {
+    const host = window as unknown as { __squadRenderer?: THREE.WebGLRenderer };
+    host.__squadRenderer = gl;
+    return () => { if (host.__squadRenderer === gl) delete host.__squadRenderer; };
+  }, [gl]);
+  return null;
+}
+
 // Steps every contestant's animator, then counts one frame (the test clock's frames, lib/frame-clock.ts).
 function SquadFrameDriver({ driven }: { driven: Set<Driven> }) {
   useFrame(({ camera, controls }, delta) => {
@@ -272,6 +283,7 @@ export default function SquadViewer({ contestants, onStatus }: {
         <AutoGraphics status={temporalStatus} active={allSettled && contestants.length > 0} deviceDpr={deviceDpr} />
         <OrbitControls target={CAMERA_TARGET} enablePan screenSpacePanning minDistance={0.05} maxDistance={14} makeDefault />
         <FollowGroup centre={centre} />
+        {import.meta.env.DEV && <RendererBridge />}
       </Canvas>
       {loadingIndex >= 0 && (
         <div role="status" className="pointer-events-none absolute bottom-3 left-3 flex h-8 items-center gap-2.5 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3 text-fg">
