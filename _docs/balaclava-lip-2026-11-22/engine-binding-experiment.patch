@@ -1,0 +1,303 @@
+diff --git a/src/rig/CharacterRig.ts b/src/rig/CharacterRig.ts
+index efe56b5..3c9be9e 100644
+--- a/src/rig/CharacterRig.ts
++++ b/src/rig/CharacterRig.ts
+@@ -2680,7 +2680,7 @@ function wrapToSourceHead(mesh: THREE.Mesh, source: string, data: HeadWrapData |
+   if (attributes.some(a => (a as unknown as THREE.InterleavedBufferAttribute).isInterleavedBufferAttribute || a.normalized
+     || !(a.array instanceof Float32Array))) throw new Error("Unsupported head-wrapped geometry layout");
+   const rest = attributes.map(a => (a.array as Float32Array).slice());
+-  const binding = bindHeadWrap(rest[0], reference, triangles);
++  const binding = bindHeadWrap(rest[0], reference, triangles, rest.slice(1), attributes.slice(1).map(a => a.itemSize));
+   headWrapStates.set(mesh, { data, source, head, binding, attributes, rest, morphs: "" });
+   if (!rewrapToSourceHead(mesh, morphs, true)) throw new Error("Head wrap state was not recorded");
+ }
+@@ -2705,12 +2705,12 @@ function retargetHeadWrap(mesh: THREE.Mesh, head: string, morphs: ReadonlySet<st
+ function rewrapToSourceHead(mesh: THREE.Mesh, morphs: ReadonlySet<string>, force = false): boolean {
+   const state = headWrapStates.get(mesh);
+   if (!state) return false;
+-  const { reference, target, triangles, morphs: active } = headWrapInputs(state.data, state.source, state.head, morphs);
++  const { target, triangles, morphs: active } = headWrapInputs(state.data, state.source, state.head, morphs);
+   const key = active.join("|");
+   if (!force && key === state.morphs) return true;
+   const [position, ...directions] = state.attributes;
+   state.attributes.forEach((a, i) => (a.array as Float32Array).set(state.rest[i]));
+-  applyHeadWrap(state.binding, target, reference, triangles, position.array as Float32Array,
++  applyHeadWrap(state.binding, target, triangles, position.array as Float32Array,
+     directions.map(a => a.array as Float32Array), directions.map(a => a.itemSize));
+   state.attributes.forEach(a => { a.needsUpdate = true; });
+   state.morphs = key;
+@@ -2733,11 +2733,11 @@ function rewrapOnMovedCage(mesh: THREE.Mesh, displace: CageDisplace | null, toke
+     return;
+   }
+   if (state.face === token) return;
+-  const { reference, target, triangles } = headWrapInputs(state.data, state.source, state.head, morphs);
++  const { target, triangles } = headWrapInputs(state.data, state.source, state.head, morphs);
+   const moved = displace(target);
+   const [position, ...directions] = state.attributes;
+   state.attributes.forEach((a, i) => (a.array as Float32Array).set(state.rest[i]));
+-  applyHeadWrap(state.binding, moved, reference, triangles, position.array as Float32Array,
++  applyHeadWrap(state.binding, moved, triangles, position.array as Float32Array,
+     directions.map(a => a.array as Float32Array), directions.map(a => a.itemSize));
+   state.attributes.forEach(a => { a.needsUpdate = true; });
+   state.face = token;
+diff --git a/src/rig/HeadWrap.ts b/src/rig/HeadWrap.ts
+index 5a24957..13b25b1 100644
+--- a/src/rig/HeadWrap.ts
++++ b/src/rig/HeadWrap.ts
+@@ -4,10 +4,17 @@
+ // engine drives the proxy with the worn head's cage and the render mesh follows it (cloth mesh-to-mesh deformer).
+ // scripts/shader-probe/build-head-wraps.py writes those cages and proxies (head-wraps.json, converted GLB frame).
+ //
+-// Here each rest vertex binds to its nearest proxy triangle: the closest point's barycentric weights plus the
+-// remaining offset in that triangle's orthonormal frame. Evaluated on the reference cage this reproduces every
+-// vertex exactly; on a face's cage the vertex moves with its triangle. At rest here; while a clip animates the face,
+-// FaceWrap.ts moves the cage with the face's bones and the part is wrapped again on it (12 Nov 2026).
++// The binding is the engine's own cloth mesh-to-mesh mapping (22 Nov 2026: read from the balaclava's cooked
++// ClothMappingDataLODs and reproduced for all 1,081 vertices, _docs/balaclava-lip-2026-11-22/). Each rest vertex binds to
++// its nearest proxy triangle by closest point, but the weights and distance kept are those of the point projected onto
++// that triangle ALONG THE PROXY'S VERTEX NORMALS (each the normalised sum of the unit normals of the proxy triangles
++// around it), and the part is evaluated as sum_k w_k (P_k + d N_k) with the target proxy's own normals. A normal or a
++// tangent binds as the point 1 cm along it. On the reference cage this reproduces every vertex exactly.
++// Before, the viewer kept the closest point's weights plus a rigid offset in the triangle's own frame: the same at rest on
++// HeadMaster, different on a deformed cage. Over the mouth the balaclava's proxy runs straight from the nose tip to the
++// lower lip (it has no upper-lip vertex), and with the rigid offset the knit over the upper lip sank as the jaw opened
++// until the lip came through it. At rest here; while a clip animates the face, FaceWrap.ts moves the cage with the face's
++// bones and the part is wrapped again on it (12 Nov 2026).
+ //
+ // The worn cage carries the head's own morph targets by name (default_ears/chin/nose/brows/face, head_neck_match),
+ // published as sparse deltas over reference vertices. The cage takes the same fitting morphs as the head (12 Oct
+@@ -26,7 +33,9 @@ export interface HeadWrapData {
+ 
+ export interface HeadWrapMorph { vertices: number[]; deltas: number[] }
+ 
+-export interface HeadWrapBinding { triangle: Uint32Array; weights: Float32Array; offset: Float32Array }
++/** Per vertex: the proxy triangle, the engine's [w0, w1, w2, d] for the position (PositionBaryCoordsAndDist), and for
++ *  each bound direction the same for its point 1 cm along it (NormalBaryCoordsAndDist, TangentBaryCoordsAndDist). */
++export interface HeadWrapBinding { triangle: Uint32Array; position: Float32Array; directions: Float32Array[] }
+ 
+ const pending = new Map<string, Promise<HeadWrapData | undefined>>();
+ 
+@@ -77,18 +86,38 @@ export function headWrapInputs(data: HeadWrapData, mesh: string, head: string |
+   return { reference: data.reference.positions, target, triangles: proxy.triangles, morphs: active };
+ }
+ 
++
+ type Vec = [number, number, number];
+ const sub = (a: Vec, b: Vec): Vec => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+ const dot = (a: Vec, b: Vec) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+ const cross = (a: Vec, b: Vec): Vec => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+ const unit = (a: Vec): Vec => { const l = Math.hypot(a[0], a[1], a[2]); return l > 0 ? [a[0] / l, a[1] / l, a[2] / l] : [0, 0, 0]; };
+ const at = (p: ArrayLike<number>, i: number): Vec => [p[i * 3], p[i * 3 + 1], p[i * 3 + 2]];
++const along = (a: Vec, n: Vec, d: number): Vec => [a[0] + d * n[0], a[1] + d * n[1], a[2] + d * n[2]];
++
++/** The engine binds a direction (normal, tangent) as the point one unit (1 cm) along it; the viewer's frame is metres. */
++export const HEAD_WRAP_DIRECTION_STEP = 0.01;
+ 
+-/** Orthonormal frame of one triangle: first edge, in-plane normal, face normal. */
+-function frame(cage: ArrayLike<number>, triangles: ArrayLike<number>, t: number): [Vec, Vec, Vec, Vec, Vec, Vec] {
+-  const a = at(cage, triangles[t * 3]), b = at(cage, triangles[t * 3 + 1]), c = at(cage, triangles[t * 3 + 2]);
+-  const e1 = unit(sub(b, a)), n = unit(cross(sub(b, a), sub(c, a))), e2 = cross(n, e1);
+-  return [a, b, c, e1, e2, n];
++/** The proxy's vertex normals as the engine takes them: per vertex, the normalised sum of the unit normals of the proxy
++ *  triangles around it (vertices no proxy triangle uses stay zero). Written into `out` when it has the right length. */
++export function proxyNormals(cage: ArrayLike<number>, triangles: ArrayLike<number>,
++  out?: Float64Array<ArrayBuffer>): Float64Array<ArrayBuffer> {
++  const n = out && out.length === cage.length ? out.fill(0) : new Float64Array(cage.length);
++  for (let t = 0; t < triangles.length; t += 3) {
++    const a = triangles[t] * 3, b = triangles[t + 1] * 3, c = triangles[t + 2] * 3;
++    const ux = cage[b] - cage[a], uy = cage[b + 1] - cage[a + 1], uz = cage[b + 2] - cage[a + 2];
++    const vx = cage[c] - cage[a], vy = cage[c + 1] - cage[a + 1], vz = cage[c + 2] - cage[a + 2];
++    let x = uy * vz - uz * vy, y = uz * vx - ux * vz, z = ux * vy - uy * vx;
++    const l = Math.hypot(x, y, z);
++    if (!(l > 0)) continue;
++    x /= l; y /= l; z /= l;
++    for (const v of [a, b, c]) { n[v] += x; n[v + 1] += y; n[v + 2] += z; }
++  }
++  for (let v = 0; v < n.length; v += 3) {
++    const l = Math.hypot(n[v], n[v + 1], n[v + 2]);
++    if (l > 0) { n[v] /= l; n[v + 1] /= l; n[v + 2] /= l; }
++  }
++  return n;
+ }
+ 
+ /** Closest point on triangle abc to p, as barycentric weights (Ericson, Real-Time Collision Detection 5.1.5). */
+@@ -113,71 +142,129 @@ function closest(p: Vec, a: Vec, b: Vec, c: Vec): Vec {
+ const blend = (w: Vec, a: Vec, b: Vec, c: Vec): Vec =>
+   [w[0] * a[0] + w[1] * b[0] + w[2] * c[0], w[0] * a[1] + w[1] * b[1] + w[2] * c[1], w[0] * a[2] + w[1] * b[2] + w[2] * c[2]];
+ 
+-/** Bind rest positions (xyz triples) to the nearest proxy triangle of the reference cage. */
+-export function bindHeadWrap(positions: ArrayLike<number>, reference: ArrayLike<number>, triangles: ArrayLike<number>): HeadWrapBinding {
++/** Real roots of c3 d^3 + c2 d^2 + c1 d + c0, each polished by Newton on the full cubic. Candidates come from the cubic,
++ *  quadratic and linear forms, so a vanishing leading coefficient does not lose the small roots. */
++function cubicRoots(c3: number, c2: number, c1: number, c0: number): number[] {
++  const f = (d: number) => ((c3 * d + c2) * d + c1) * d + c0, df = (d: number) => (3 * c3 * d + 2 * c2) * d + c1;
++  const candidates: number[] = [];
++  if (c3 !== 0) {
++    const a = c2 / c3, b = c1 / c3, c = c0 / c3, q = (a * a - 3 * b) / 9, r = (2 * a * a * a - 9 * a * b + 27 * c) / 54;
++    if (r * r < q * q * q) {
++      const theta = Math.acos(Math.max(-1, Math.min(1, r / Math.sqrt(q * q * q)))), s = -2 * Math.sqrt(q);
++      candidates.push(s * Math.cos(theta / 3) - a / 3, s * Math.cos((theta + 2 * Math.PI) / 3) - a / 3,
++        s * Math.cos((theta - 2 * Math.PI) / 3) - a / 3);
++    } else {
++      const A = -Math.sign(r) * Math.cbrt(Math.abs(r) + Math.sqrt(r * r - q * q * q)), B = A !== 0 ? q / A : 0;
++      candidates.push(A + B - a / 3);
++    }
++  }
++  if (c2 !== 0) {
++    const disc = c1 * c1 - 4 * c2 * c0;
++    if (disc >= 0) { const s = Math.sqrt(disc), k = -0.5 * (c1 + (c1 >= 0 ? s : -s)); candidates.push(k / c2); if (k !== 0) candidates.push(c0 / k); }
++  }
++  if (c1 !== 0) candidates.push(-c0 / c1);
++  const roots: number[] = [];
++  for (let d of candidates) {
++    if (!Number.isFinite(d)) continue;
++    for (let i = 0; i < 30; i++) {
++      const slope = df(d);
++      if (slope === 0) break;
++      const step = f(d) / slope;
++      d -= step;
++      if (Math.abs(step) <= 1e-15 * Math.max(1, Math.abs(d))) break;
++    }
++    const scale = Math.abs(c3 * d * d * d) + Math.abs(c2 * d * d) + Math.abs(c1 * d) + Math.abs(c0);
++    if (Number.isFinite(d) && Math.abs(f(d)) <= 1e-9 * scale + 1e-300) roots.push(d);
++  }
++  return roots;
++}
++
++/** The engine's binding of point p to triangle abc with vertex normals na, nb, nc (UE ClothingMeshUtils): the
++ *  barycentric weights w and distance d with p = sum_k w_k (P_k + d N_k), i.e. p projected onto the triangle along its
++ *  interpolated normals. p lies on the plane of the triangle offset by d along the normals, a cubic in d; the engine
++ *  takes the root nearest the triangle (smallest |d|). Weights may fall slightly outside [0, 1]. Returns [w0, w1, w2, d]. */
++export function projectAlongNormals(p: Vec, a: Vec, b: Vec, c: Vec, na: Vec, nb: Vec, nc: Vec): [number, number, number, number] {
++  const e1 = sub(b, a), e2 = sub(c, a), f1 = sub(nb, na), f2 = sub(nc, na), q = sub(p, a);
++  // cross(e1 + d f1, e2 + d f2) . (q - d na) = c0 + c1 d + c2 d^2 + c3 d^3
++  const x0 = cross(e1, e2), x1 = cross(e1, f2).map((v, i) => v + cross(f1, e2)[i]) as Vec, x2 = cross(f1, f2);
++  const roots = cubicRoots(-dot(x2, na), dot(x2, q) - dot(x1, na), dot(x1, q) - dot(x0, na), dot(x0, q));
++  let d = roots.length ? roots.reduce((m, r) => (Math.abs(r) < Math.abs(m) ? r : m)) : NaN;
++  if (!Number.isFinite(d)) d = dot(q, unit(x0)); // degenerate normals: the plane projection
++  const A = along(a, na, d), B = along(b, nb, d), C = along(c, nc, d), n = cross(sub(B, A), sub(C, A)), nn = dot(n, n);
++  if (!(nn > 0)) { const w = closest(p, a, b, c); return [w[0], w[1], w[2], 0]; }
++  const w1 = dot(cross(sub(p, A), sub(C, A)), n) / nn, w2 = dot(cross(sub(B, A), sub(p, A)), n) / nn;
++  return [1 - w1 - w2, w1, w2, d];
++}
++
++/** Bind rest positions (xyz triples), and optionally rest directions (normals, tangents; `stride` floats per vertex),
++ *  to the proxy on the reference cage as the engine's cloth mesh-to-mesh mapping does (see the top of this file). */
++export function bindHeadWrap(positions: ArrayLike<number>, reference: ArrayLike<number>, triangles: ArrayLike<number>,
++  directions: ArrayLike<number>[] = [], stride: number[] = []): HeadWrapBinding {
+   const count = positions.length / 3, tris = triangles.length / 3;
+-  const frames = Array.from({ length: tris }, (_, t) => frame(reference, triangles, t));
+-  const centres = frames.map(([a, b, c]) => blend([1 / 3, 1 / 3, 1 / 3], a, b, c));
+-  const triangle = new Uint32Array(count), weights = new Float32Array(count * 3), offset = new Float32Array(count * 3);
+-  const nearest: { t: number; d: number }[] = [];
++  const corners = Array.from({ length: tris }, (_, t) => [at(reference, triangles[t * 3]), at(reference, triangles[t * 3 + 1]),
++    at(reference, triangles[t * 3 + 2])] as [Vec, Vec, Vec]);
++  const centres = corners.map(([a, b, c]) => blend([1 / 3, 1 / 3, 1 / 3], a, b, c));
++  const radii = corners.map((tri, t) => Math.max(...tri.map(v => Math.hypot(...sub(v, centres[t])))));
++  const normals = proxyNormals(reference, triangles);
++  const triangle = new Uint32Array(count), position = new Float32Array(count * 4);
++  const bound = directions.map(() => new Float32Array(count * 4));
++  const nearest: { t: number; d: number }[] = [], centreD = new Float64Array(tris);
+   for (let i = 0; i < count; i++) {
+     const p = at(positions, i);
+-    // Exact point-triangle distance over the few triangles with the nearest centres.
++    // The nearest triangle by closest point (the engine's choice): first the few with the nearest centres, then every
++    // triangle whose bounding sphere could still hold a closer point.
+     nearest.length = 0;
+     for (let t = 0; t < tris; t++) {
+-      const q = sub(p, centres[t]), d = dot(q, q);
++      const q = sub(p, centres[t]), d = centreD[t] = Math.sqrt(dot(q, q));
+       if (nearest.length < 8) { nearest.push({ t, d }); nearest.sort((x, y) => x.d - y.d); }
+       else if (d < nearest[7].d) { nearest[7] = { t, d }; nearest.sort((x, y) => x.d - y.d); }
+     }
+-    let best = -1, bestD = Infinity, bestW: Vec = [1, 0, 0];
+-    for (const { t } of nearest) {
+-      const [a, b, c] = frames[t], w = closest(p, a, b, c), q = sub(p, blend(w, a, b, c)), d = dot(q, q);
+-      if (d < bestD) { bestD = d; best = t; bestW = w; }
+-    }
+-    const [a, b, c, e1, e2, n] = frames[best], r = sub(p, blend(bestW, a, b, c));
++    let best = -1, bestD = Infinity;
++    const test = (t: number) => {
++      const [a, b, c] = corners[t], w = closest(p, a, b, c), q = sub(p, blend(w, a, b, c)), d = Math.sqrt(dot(q, q));
++      if (d < bestD) { bestD = d; best = t; }
++    };
++    for (const { t } of nearest) test(t);
++    for (let t = 0; t < tris; t++) if (centreD[t] - radii[t] < bestD && !nearest.some(n => n.t === t)) test(t);
+     triangle[i] = best;
+-    weights.set(bestW, i * 3);
+-    offset.set([dot(r, e1), dot(r, e2), dot(r, n)], i * 3);
++    const [a, b, c] = corners[best], k = triangles.length ? [triangles[best * 3], triangles[best * 3 + 1], triangles[best * 3 + 2]] : [];
++    const na = at(normals, k[0]), nb = at(normals, k[1]), nc = at(normals, k[2]);
++    position.set(projectAlongNormals(p, a, b, c, na, nb, nc), i * 4);
++    directions.forEach((v, index) => {
++      const s = stride[index] ?? 3, dir = unit([v[i * s], v[i * s + 1], v[i * s + 2]]);
++      bound[index].set(projectAlongNormals(along(p, dir, HEAD_WRAP_DIRECTION_STEP), a, b, c, na, nb, nc), i * 4);
++    });
+   }
+-  return { triangle, weights, offset };
++  return { triangle, position, directions: bound };
+ }
+ 
+-/** Every triangle's frame (frame()) packed as a, b, c, e1, e2, n: 18 numbers per triangle. */
+-function frames(cage: ArrayLike<number>, triangles: ArrayLike<number>): Float64Array {
+-  const tris = triangles.length / 3, out = new Float64Array(tris * 18);
+-  for (let t = 0; t < tris; t++) {
+-    const [a, b, c, e1, e2, n] = frame(cage, triangles, t);
+-    out.set(a, t * 18); out.set(b, t * 18 + 3); out.set(c, t * 18 + 6);
+-    out.set(e1, t * 18 + 9); out.set(e2, t * 18 + 12); out.set(n, t * 18 + 15);
+-  }
+-  return out;
+-}
++let scratchNormals = new Float64Array(0);
+ 
+-/** Rest positions (and optionally normals/tangents, rotated with their triangle) on the target cage.
+- *  (12 Nov 2026) Allocation-free per vertex: the facial animation re-wraps beards (37k vertices) every frame. The
+- *  arithmetic is the earlier per-vertex tuple code's, operation for operation, so the result is bit-identical
+- *  (tests/rig/face-animator.test.ts compares it with that code). */
+-export function applyHeadWrap(binding: HeadWrapBinding, target: ArrayLike<number>, reference: ArrayLike<number>,
+-  triangles: ArrayLike<number>, positions: Float32Array | number[], directions: (Float32Array | number[])[] = [],
+-  stride: number[] = []): void {
+-  const after = frames(target, triangles), before = frames(reference, triangles);
+-  const { triangle, weights, offset } = binding, count = triangle.length;
++/** Rest positions (and the bound directions) on the target cage, as the engine's cloth skinning evaluates the mapping:
++ *  sum_k w_k (P_k + d N_k) with the target proxy's vertex normals N (proxyNormals); a direction is the unit vector from
++ *  the position to its bound point. Allocation-free per vertex: the facial animation re-wraps beards (37k vertices)
++ *  every frame. `directions` must be the attributes bound, in the same order (a tangent's w is kept). */
++export function applyHeadWrap(binding: HeadWrapBinding, target: ArrayLike<number>, triangles: ArrayLike<number>,
++  positions: Float32Array | number[], directions: (Float32Array | number[])[] = [], stride: number[] = []): void {
++  if (directions.length > binding.directions.length) throw new Error("Head wrap direction was not bound");
++  const n = scratchNormals = proxyNormals(target, triangles, scratchNormals);
++  const { triangle, position } = binding, count = triangle.length;
++  const evaluate = (w: Float32Array, i: number, t: number, out: number[]) => {
++    const w0 = w[i * 4], w1 = w[i * 4 + 1], w2 = w[i * 4 + 2], d = w[i * 4 + 3];
++    const a = triangles[t * 3] * 3, b = triangles[t * 3 + 1] * 3, c = triangles[t * 3 + 2] * 3;
++    for (let j = 0; j < 3; j++)
++      out[j] = w0 * (target[a + j] + d * n[a + j]) + w1 * (target[b + j] + d * n[b + j]) + w2 * (target[c + j] + d * n[c + j]);
++  };
++  const p = [0, 0, 0], q = [0, 0, 0];
+   for (let i = 0; i < count; i++) {
+-    const f = triangle[i] * 18, w0 = weights[i * 3], w1 = weights[i * 3 + 1], w2 = weights[i * 3 + 2];
+-    const k0 = offset[i * 3], k1 = offset[i * 3 + 1], k2 = offset[i * 3 + 2];
+-    for (let j = 0; j < 3; j++) {
+-      // blend(w, a, b, c) + k0 e1 + k1 e2 + k2 n, left to right as before
+-      const o = w0 * after[f + j] + w1 * after[f + 3 + j] + w2 * after[f + 6 + j];
+-      positions[i * 3 + j] = o + k0 * after[f + 9 + j] + k1 * after[f + 12 + j] + k2 * after[f + 15 + j];
+-    }
++    const t = triangle[i];
++    evaluate(position, i, t, p);
++    positions[i * 3] = p[0]; positions[i * 3 + 1] = p[1]; positions[i * 3 + 2] = p[2];
+     for (let index = 0; index < directions.length; index++) {
+-      const v = directions[index], s = stride[index] ?? 3, p = i * s;
+-      const d0 = v[p], d1 = v[p + 1], d2 = v[p + 2];
+-      // local = (d . f1, d . f2, d . fn) in the reference frame, then rebuilt in the target frame
+-      const l0 = d0 * before[f + 9] + d1 * before[f + 10] + d2 * before[f + 11];
+-      const l1 = d0 * before[f + 12] + d1 * before[f + 13] + d2 * before[f + 14];
+-      const l2 = d0 * before[f + 15] + d1 * before[f + 16] + d2 * before[f + 17];
+-      for (let j = 0; j < 3; j++) v[p + j] = l0 * after[f + 9 + j] + l1 * after[f + 12 + j] + l2 * after[f + 15 + j];
++      evaluate(binding.directions[index], i, t, q);
++      const v = directions[index], s = stride[index] ?? 3, x = q[0] - p[0], y = q[1] - p[1], z = q[2] - p[2];
++      const l = Math.hypot(x, y, z);
++      if (l > 0) { v[i * s] = x / l; v[i * s + 1] = y / l; v[i * s + 2] = z / l; }
+     }
+   }
+ }

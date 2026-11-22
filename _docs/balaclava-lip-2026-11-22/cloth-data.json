@@ -1,0 +1,65 @@
+{
+ "mesh": "Discovery/Content/Discovery/Characters/Streetwear/Assets/Balaclava/SK_Streetwear_Balaclava_M.uasset",
+ "renderVertices": 1081,
+ "proxy": {
+  "vertices": 103,
+  "triangles": 194
+ },
+ "clothLod": {
+  "bUseMultipleInfluences": false,
+  "bSmoothTransition": false
+ },
+ "embark": {
+  "bApplyAvaliableMorphTargetsAsDefault": true,
+  "PreSimulationDeformerTypes": [
+   "EEmbarkClothDeformerType::LinearSkinning"
+  ],
+  "PostSimulationDeformerTypes": [
+   "EEmbarkClothDeformerType::SoftenNormals"
+  ],
+  "SimulationType": "EEmbarkClothSimulationType::None"
+ },
+ "skin": {
+  "proxyOnCageWorstMm": 0.0008,
+  "worstWeightL1": 0.035
+ },
+ "mouth": {
+  "upperLipVertices": [],
+  "lowerLipCentre": {
+   "k": 68,
+   "skin": "FACIAL_C_LipLower1:0.55 FACIAL_C_LipLower2:0.44 FACIAL_L_LipLower1:0.01",
+   "triangles": [
+    "66(FACIAL_C_Chin3:0.63) 68(FACIAL_C_LipLower1:0.55) 34(FACIAL_R_ChinSide:0.55)",
+    "34(FACIAL_R_ChinSide:0.55) 68(FACIAL_C_LipLower1:0.55) 36(FACIAL_R_LipLower1:0.40)",
+    "36(FACIAL_R_LipLower1:0.40) 68(FACIAL_C_LipLower1:0.55) 27(FACIAL_R_Nostril:0.84)",
+    "68(FACIAL_C_LipLower1:0.55) 66(FACIAL_C_Chin3:0.63) 69(FACIAL_L_ChinSide:0.55)",
+    "68(FACIAL_C_LipLower1:0.55) 69(FACIAL_L_ChinSide:0.55) 73(FACIAL_L_LipLower1:0.40)",
+    "74(FACIAL_L_Nostril:0.84) 68(FACIAL_C_LipLower1:0.55) 73(FACIAL_L_LipLower1:0.40)",
+    "27(FACIAL_R_Nostril:0.84) 68(FACIAL_C_LipLower1:0.55) 75(FACIAL_C_NoseTip:0.61)",
+    "75(FACIAL_C_NoseTip:0.61) 68(FACIAL_C_LipLower1:0.55) 74(FACIAL_L_Nostril:0.84)"
+   ]
+  }
+ },
+ "binding": {
+  "renderVerticesMapped": 1081,
+  "sections": [
+   {
+    "section": 0,
+    "vertices": 1081,
+    "mapping": 1081
+   }
+  ],
+  "reproducedWithSmoothNormals": {
+   "meanCm": 0.0000459,
+   "worstCm": 0.000216
+  },
+  "planeProjectionWorstCm": 1.6152,
+  "ownSolveOnGameTriangleWorst": 0.0000804,
+  "weightsOutsideTriangle": 112,
+  "triangleChoice": {
+   "closestPointSame": 1025,
+   "closestPointTiesOtherOrder": 56,
+   "different": 0
+  }
+ }
+}
