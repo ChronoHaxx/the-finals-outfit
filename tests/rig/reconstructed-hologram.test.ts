@@ -206,6 +206,46 @@ test("hologram manifests that leave the signed-off contract fail closed", async 
   await assert.rejects(loadReconstructedMaterial(BASE + "ordinary-view.json"), /hologram contract: route selector/);
 });
 
+// w177: the M_Character_PanningHologram program 5530ee90 (additive, default-lit, one-sided, ambient excluded).
+const PANNING = "5530ee9017bb9e641faa8bbd72b91e69bcbeff45258722870fbb3f9e489567cf";
+const panning = { ...plain, itemId: "panning-test", shadingModel: "MSM_DefaultLit", twoSided: false,
+  ambientPolicy: "translucency-lighting-volume ambient excluded", hologramProgram: { textSha256: PANNING, qualityLevel: "High",
+  shape: "panning-additive" } };
+
+test("a panning hologram becomes the same additive unlit material on front faces only", async t => {
+  serve(t, { "p.json": panning });
+  const { mesh, material, shader } = await compiled("p.json");
+  assert.ok((material as THREE.Material as { isMeshBasicMaterial?: boolean }).isMeshBasicMaterial);
+  assert.equal(material.side, THREE.FrontSide);
+  assert.deepEqual([material.blending, material.blendSrc, material.blendDst],
+    [THREE.CustomBlending, THREE.OneFactor, THREE.OneFactor]);
+  assert.equal(material.depthWrite, false);
+  assert.equal(material.forceSinglePass, true);
+  assert.equal(material.userData.recoveredAdditive, true);
+  assert.match(material.userData.hologramPolicy, /^one-sided additive unlit emission/);
+  assert.equal(mesh.castShadow, false);
+  // No view inputs: the shader gets neither the view struct nor its fill.
+  assert.ok(!shader.fragmentShader.includes("ReconstructedView"));
+});
+
+test("panning and floating hologram manifests cannot borrow each other's state", async t => {
+  const invalid: Record<string, unknown> = {
+    "panning-unlit.json": { ...panning, shadingModel: "MSM_Unlit" },
+    "panning-two-sided.json": { ...panning, twoSided: true },
+    "panning-no-ambient.json": without(panning, "ambientPolicy"),
+    "panning-empty-ambient.json": { ...panning, ambientPolicy: "" },
+    "panning-view.json": { ...panning, requiredViewFields: ["fragCoord"] },
+    "panning-translucent.json": { ...panning, blendMode: "BLEND_TranslucentGreyTransmittance" },
+    "panning-fogged.json": { ...panning, fogPolicy: { fog: "height" } },
+    "floating-ambient.json": { ...hologram, ambientPolicy: "translucency-lighting-volume ambient excluded" },
+    "floating-one-sided-lit.json": { ...hologram, shadingModel: "MSM_DefaultLit", twoSided: false,
+      ambientPolicy: "translucency-lighting-volume ambient excluded" },
+  };
+  serve(t, invalid);
+  for (const name of Object.keys(invalid))
+    await assert.rejects(loadReconstructedMaterial(BASE + name), /Unsupported recovered hologram contract/, name);
+});
+
 test("a hologram on a multi-section mesh or another section is refused", async t => {
   serve(t, { "h.json": hologram });
   const loaded = await loadReconstructedMaterial(BASE + "h.json");

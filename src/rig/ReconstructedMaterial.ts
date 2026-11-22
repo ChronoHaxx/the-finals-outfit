@@ -103,10 +103,12 @@ interface Manifest {
   // A qualified attachment-family program (scripts/shader-probe/attachment_family_contract.py), on the worldSurface route.
   attachmentFamily?: boolean;
   // M_FloatingHologram (scripts/shader-probe/hologram_contract.py): additive unlit emission with screen-space view inputs.
+  // M_Character_PanningHologram (panning_contract.py): additive default-lit one-sided emission, its ambient excluded.
   hologramSurface?: boolean;
   shadingModel?: string;
   requiredViewFields?: string[];
-  hologramProgram?: { textSha256?: string; rawSha256?: string; qualityLevel?: string };
+  hologramProgram?: { textSha256?: string; rawSha256?: string; qualityLevel?: string; shape?: string };
+  ambientPolicy?: string;
   timePolicy?: { gameTime?: number };
   fogPolicy?: { fog?: string };
   normalSpace?: "world" | "tangent" | "strand-tangent";
@@ -204,6 +206,11 @@ function installThinPasses(mesh: THREE.Mesh) {
 // M_FloatingHologram preview contract, runtime half (_docs/goal-100-2026-10-11/floatinghologram-contract/, design section 5).
 // The one qualified program, by its CRLF-normalised asm text hash (scripts/shader-probe/hologram_programs.json).
 const HOLOGRAM_PROGRAMS = new Set(["538e2b69d7363ccdf0fcd21735877c3699ecc5051b1e3e5a923f3c5b5a6a3d57"]);
+// w177 (22 Nov 2026, _docs/goal-100-2026-10-11/w177-panning-contract/): the M_Character_PanningHologram program 5530ee90
+// (Ospuze strip, CNS lenses). BLEND_Additive like M_FloatingHologram, but DefaultLit and one-sided: its translucent base
+// pass adds a translucency-volume ambient term the build excludes (manifest ambientPolicy), so the emission is again the
+// whole colour and the same unlit additive material draws it, front faces only. It reads no view inputs.
+const PANNING_HOLOGRAM_PROGRAMS = new Set(["5530ee9017bb9e641faa8bbd72b91e69bcbeff45258722870fbb3f9e489567cf"]);
 const HOLOGRAM_VIEW_FIELDS = new Set(["fragCoord", "invSize", "rectMin"]);
 // The emitter declares the view struct in the shader text itself; the runtime fills it by these field names.
 const HOLOGRAM_VIEW_STRUCT = /^struct ReconstructedView \{ vec2 fragCoord; vec2 rectMin; vec2 invSize; \};$/m;
@@ -216,14 +223,18 @@ const HOLOGRAM_FORBIDDEN_FIELDS = ["geometryDependentNormals", "viewDependentClo
 function validateHologram(manifest: Manifest): string[] {
   const fail = (why: string) => { throw new Error(`Unsupported recovered hologram contract: ${why}`); };
   if (manifest.hologramSurface !== true || manifest.surfaceKind !== "hologram") fail("route selector");
+  const panning = PANNING_HOLOGRAM_PROGRAMS.has(manifest.hologramProgram?.textSha256 ?? "");
   if (manifest.recoveredEmissive !== true || manifest.blendMode !== "BLEND_Additive"
-    || manifest.shadingModel !== "MSM_Unlit" || manifest.twoSided !== true) fail("blend, shading or emission state");
+    || manifest.shadingModel !== (panning ? "MSM_DefaultLit" : "MSM_Unlit") || manifest.twoSided !== !panning
+    || (panning ? typeof manifest.ambientPolicy !== "string" || manifest.ambientPolicy === ""
+      : manifest.ambientPolicy !== undefined)) fail("blend, shading or emission state");
   for (const field of HOLOGRAM_FORBIDDEN_FIELDS)
     if ((manifest as unknown as Record<string, unknown>)[field] !== undefined) fail(`geometry or surface field ${field}`);
   const fields = manifest.requiredViewFields;
   if (!Array.isArray(fields) || new Set(fields).size !== fields.length || !fields.every(f => HOLOGRAM_VIEW_FIELDS.has(f)))
     fail("view fields");
-  if (!HOLOGRAM_PROGRAMS.has(manifest.hologramProgram?.textSha256 ?? "")) fail("program");
+  if (!HOLOGRAM_PROGRAMS.has(manifest.hologramProgram?.textSha256 ?? "") && !panning) fail("program");
+  if (panning && fields!.length) fail("view fields");
   // Signed-off pins (signoffs-2026-10-12.json gameTimeZeroAndNameGate, noFogPin): a frozen frame and no fog term.
   // The runtime adds neither; it only refuses a manifest built under some other policy.
   if (manifest.timePolicy?.gameTime !== 0 || manifest.fogPolicy?.fog !== "none") fail("time or fog policy");
@@ -592,8 +603,10 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
   const uniformBindings = samplerUniformBindings(plan);
   const dispose = () => textures.forEach((t) => t.dispose());
   // UE BLEND_Additive + MSM_Unlit, two-sided (design section 5), on an unlit material: no lights, no specular, no fog.
+  // The panning program (w177) is one-sided: the same material on front faces only.
   const makeHologramMaterial = (old: THREE.Material) => {
-    const material = new THREE.MeshBasicMaterial({ name: `${manifest.itemId}:recovered`, side: THREE.DoubleSide });
+    const material = new THREE.MeshBasicMaterial({ name: `${manifest.itemId}:recovered`,
+      side: manifest.twoSided ? THREE.DoubleSide : THREE.FrontSide });
     // Colour One/One onto what is behind; alpha Zero/One, so the target's coverage alpha is unchanged. Depth tested,
     // never written. One DoubleSide draw: three otherwise draws a transparent DoubleSide material as a back pass and
     // a front pass; additive light is order-free and reads no face sign, so one pass equals UE's single two-sided draw.
@@ -612,7 +625,8 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     // StableFrameState: a visible additive material activates the stable-frame accumulator, whose linear HDR target
     // is where One/One blending is exact (tone mapping follows the blend). The direct path is dev-only and inexact.
     material.userData.recoveredAdditive = true;
-    material.userData.hologramPolicy = "additive unlit emission at GameTime 0 with fog off; exact in the stable-frame "
+    material.userData.hologramPolicy = (manifest.ambientPolicy ? "one-sided " : "")
+      + "additive unlit emission at GameTime 0 with fog off; exact in the stable-frame "
       + "accumulator (light over the empty backdrop passes through); the direct ?temporal=0 path tone-maps before blending";
     material.userData.recoveredSamplers = planReport;
     for (const resource of plan.resources) {

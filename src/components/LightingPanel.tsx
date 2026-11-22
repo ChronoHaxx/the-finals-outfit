@@ -14,12 +14,24 @@ import { SunIcon, TrashIcon } from "./Icons";
  * the reviewed default; Lobby; sun looks; saved looks), the backdrop, each light, the sky/ground fill and reflections,
  * the ground shadows, exposure and tone mapping, Reset and Undo. Everything is remembered in this browser as it changes
  * (lighting-store.ts). Built like the Graphics menu: a button in the viewer's top row and a panel anchored to that row.
+ *
+ * 21 Nov 2026 (community request): more ready-made looks (Season 12 menu, Dramatic, Cool, Warm, Fullbright, Nighttime)
+ * and "Show lights": bulbs and cones in the 3D view (LightMarkers.tsx). While they are shown, a press in the 3D view does
+ * not close this panel, so its Direction and Height sliders can be watched following a dragged bulb; picking a bulb
+ * opens that light's card here.
+ *
+ * 22 Nov 2026: a share link can bring its sender's lighting (lighting-store.ts `shared`). While it shows, the button says
+ * so, the panel opens on the same two choices as the notice bar (SharedLightingNotice.tsx), and Undo, which belongs to
+ * the viewer's own lighting, waits until they are back on it.
  */
 export function LightingPanel() {
   const look = useLightingStore(state => state.look);
   const previous = useLightingStore(state => state.previous);
   const looks = useLightingStore(state => state.looks);
-  const { edit, apply, reset, undo, saveLook, deleteLook } = useLightingStore.getState();
+  const markers = useLightingStore(state => state.markers);
+  const selected = useLightingStore(state => state.selected);
+  const shared = useLightingStore(state => state.shared);
+  const { edit, apply, reset, undo, saveLook, deleteLook, setMarkers, keepShared, leaveShared } = useLightingStore.getState();
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [viewerHeight, setViewerHeight] = useState(0);
@@ -31,7 +43,13 @@ export function LightingPanel() {
     if (!open) { setConfirmDelete(null); return; }
     const viewer = root.current?.closest("[data-viewer]");
     if (viewer) setViewerHeight(viewer.clientHeight);
-    const outside = (event: PointerEvent) => { if (!root.current?.contains(event.target as Node)) setOpen(false); };
+    const outside = (event: PointerEvent) => {
+      const target = event.target;
+      if (root.current?.contains(target as Node)) return;
+      // With the lights shown, working in the 3D view (dragging a bulb, turning round to find one) keeps the panel open.
+      if (useLightingStore.getState().markers && target instanceof Element && target.closest("[data-viewer] canvas")) return;
+      setOpen(false);
+    };
     const escape = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); button.current?.focus(); } };
     document.addEventListener("pointerdown", outside);
     document.addEventListener("keydown", escape);
@@ -57,7 +75,7 @@ export function LightingPanel() {
         className="hud flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950">
         <SunIcon size={14} />
         <span className="sr-only">Lighting and backdrop: </span>
-        <span>{name}</span>
+        <span>{shared ? `Link · ${name}` : name}</span>
         <svg aria-hidden="true" width="9" height="9" viewBox="0 0 10 10" className={`transition-transform ${open ? "rotate-180" : ""}`}>
           <path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" />
         </svg>
@@ -66,6 +84,21 @@ export function LightingPanel() {
         <div id={panelId} role="group" aria-label="Lighting and backdrop"
           style={viewerHeight ? { maxHeight: viewerHeight - 56 } : undefined}
           className="absolute right-0 top-9 z-30 flex w-80 max-w-[calc(100vw-1.5rem)] flex-col gap-3 overflow-y-auto border border-line bg-ink-950 p-3 text-sm text-fg shadow-lg">
+
+          {shared && <div className="flex flex-col gap-2 border border-fg/30 bg-ink-900 p-2">
+            <span className="text-xs leading-snug">
+              This is the lighting from the link you opened. Your own lighting is kept until you choose. Changing anything
+              here keeps this lighting as yours, and Undo returns to yours.
+            </span>
+            <div className="flex gap-1.5">
+              <button type="button" onClick={keepShared} className="h-8 flex-1 bg-fg px-2 text-xs text-ink-950 hover:bg-white">
+                Keep this lighting
+              </button>
+              <button type="button" onClick={leaveShared} className="h-8 flex-1 border border-line px-2 text-xs hover:bg-ink-800">
+                Use my lighting
+              </button>
+            </div>
+          </div>}
 
           <Section title="Looks">
             <div className="flex flex-wrap gap-1.5">
@@ -94,8 +127,13 @@ export function LightingPanel() {
           </Section>
 
           <Section title="Lights">
+            <Check label="Show lights in the 3D view" checked={markers} onChange={setMarkers}
+              hint={look.lights.length
+                ? "A bulb for each light, a cone the way it shines. Drag a bulb to move its light. Never in screenshots, share images or exports."
+                : "This look has no lights: add one below."} />
             {look.lights.map(light => (
-              <LightCard key={light.id} light={light} onChange={change => editLight(light.id, change)}
+              <LightCard key={light.id} light={light} selected={markers && selected === light.id}
+                onChange={change => editLight(light.id, change)}
                 onRemove={light.role === "sun" ? undefined
                   : () => apply({ ...structuredClone(look), lights: look.lights.filter(l => l.id !== light.id) })} />
             ))}
@@ -207,7 +245,7 @@ export function LightingPanel() {
               className="h-8 flex-1 bg-fg px-2 text-xs text-ink-950 hover:bg-white disabled:cursor-not-allowed disabled:bg-fg/30">
               Reset to Studio
             </button>
-            {previous && (
+            {previous && !shared && (
               <button type="button" onClick={undo} title={`Back to: ${describeLook(previous)}`}
                 className="h-8 border border-line px-3 text-xs hover:bg-ink-900">
                 Undo
@@ -247,13 +285,20 @@ export function SunShortcut() {
   );
 }
 
-function LightCard({ light, onChange, onRemove }: {
-  light: StageLight; onChange(change: (light: StageLight) => StageLight): void; onRemove?: () => void;
+function LightCard({ light, selected, onChange, onRemove }: {
+  light: StageLight; selected: boolean; onChange(change: (light: StageLight) => StageLight): void; onRemove?: () => void;
 }) {
   const { bearing, height } = lightAngles(light.position);
   const isSun = light.role === "sun";
+  const card = useRef<HTMLDetailsElement>(null);
+  // Picked in the 3D view: open this card and bring it into view.
+  useEffect(() => {
+    if (!selected || !card.current) return;
+    card.current.open = true;
+    card.current.scrollIntoView?.({ block: "nearest" });
+  }, [selected]);
   return (
-    <details open={isSun} className="border border-line">
+    <details ref={card} open={isSun} className={`border ${selected ? "border-finals" : "border-line"}`}>
       <summary className="flex cursor-pointer list-none items-center gap-2 px-2 py-1.5 hover:bg-ink-900">
         <span aria-hidden="true" className="size-3 shrink-0 border border-fg/40"
           style={{ background: light.enabled ? light.color : "transparent" }} />

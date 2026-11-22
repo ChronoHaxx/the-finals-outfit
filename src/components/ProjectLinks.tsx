@@ -2,6 +2,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { buildShareUrl } from "../lib/share-url";
 import { withoutPose } from "../lib/share-pose";
+import { withoutView } from "../lib/camera-view";
+import { withoutLighting } from "../lib/share-lighting";
 import { builderPath, chinalsAvailable, hashSearch, modeOfPath, roadmapPath, type SiteMode } from "../lib/site-mode";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { useBuildStore } from "../store/useBuildStore";
@@ -103,12 +105,14 @@ function GuideButton({ tip }: { tip: boolean }) {
 
 // Global | 终极角逐 Chinals (lib/site-mode.ts). It changes the route only: the outfit, the saved outfits and an unsaved
 // link draft (whose ?o= stays in the address) are the same in both modes. A pose is dropped, since it names the other
-// mode's emotes. Replace, not push: Back would otherwise bring back a link the saved outfits had already tidied away.
+// mode's emotes, and so are a camera view and the lighting, both applied when the link opened (re-reading them would move
+// the camera back and offer the lighting again). Replace, not push: Back would otherwise bring back a link the saved
+// outfits had already tidied away.
 function ModeSwitch({ mode }: { mode: SiteMode }) {
   const navigate = useNavigate();
   const go = (target: SiteMode) => {
     if (target === mode) return;
-    navigate({ pathname: builderPath(target), search: withoutPose(hashSearch(window.location.hash)) }, { replace: true });
+    navigate({ pathname: builderPath(target), search: withoutLighting(withoutView(withoutPose(hashSearch(window.location.hash)))) }, { replace: true });
   };
   const option = (value: SiteMode, label: ReactNode, title: string) => (
     <button type="button" aria-pressed={mode === value} onClick={() => go(value)} title={title}

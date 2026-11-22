@@ -78,11 +78,28 @@ export function modelUrlFor(path, bases) {
 // and every URL the rig uses as an identity stays unchanged. Only the download is redirected (asset-fetch.ts).
 export const isMeshPath = path => /\.glb$/i.test(String(path).replace(/[?#].*$/, ''));
 
-export function gatedMeshPath(url) {
+// With `origins` (from meshOrigins), only a mesh on one of those hosts maps; anything else keeps its own host.
+export function gatedMeshPath(url, origins) {
   let parsed;
   try { parsed = new URL(url); } catch { return null; }
   if (parsed.protocol !== 'https:' || parsed.search || parsed.hash || !isMeshPath(parsed.pathname)) return null;
+  if (origins && !origins.includes(parsed.origin)) return null;
   const label = parsed.hostname.split('.')[0];
   if (!/^[a-z0-9-]+$/.test(label) || parsed.pathname.split('/').some(s => s === '..' || s === '.')) return null;
   return `${label}${parsed.pathname}`;
+}
+
+// The hosts a release's cosmetic meshes come from, as origins:
+// - every reconstruction route;
+// - the reconstruction host;
+// - the models host, or the asset host when no models host is set (modelBase).
+// The site Worker stages exactly these hosts (scripts/stage-site-worker.mjs), so only their meshes may be gated. Other
+// .glb files (emote props, scene backdrops, Chinals assets) stay on their own hosts: nothing stages them, so the gate
+// would answer 404. A relative base (a local checkout) is never gated.
+export function meshOrigins({ assetsBase, modelsBase, reconstructionBase, reconstructionRoutes }) {
+  const origins = new Set();
+  for (const base of [...Object.values(reconstructionRoutes ?? {}), reconstructionBase, modelsBase?.trim() || assetsBase]) {
+    try { if (base?.trim()) origins.add(new URL(base.trim()).origin); } catch { /* relative: not a public host */ }
+  }
+  return [...origins];
 }

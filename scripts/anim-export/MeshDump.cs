@@ -102,6 +102,31 @@ static class MeshDump
                 Add("jointsAll", "u16", width, allJoints);
                 Add("weightsAll", "f32", width, allWeights);
             }
+            // The engine's own cloth binding (22 Nov 2026, balaclava lip probe): each LOD0 render section's
+            // ClothMappingDataLODs[0], one FMeshToMeshVertData per section vertex (more with multiple influences):
+            // three cloth physical-mesh vertex indices, barycentric weights plus a distance along the interpolated
+            // physical-mesh normals, for the position, a point off the normal and a point off the tangent. Written to
+            // <path>.cloth.json only when a section carries one; the mesh files are unchanged.
+            var model = skeletalMesh.LODModels?.FirstOrDefault();
+            var clothSections = (model?.Sections ?? []).Select((s, i) => (s, i))
+                .Where(x => x.s.ClothMappingDataLODs is { Length: > 0 } lods && lods[0] is { Length: > 0 }).ToArray();
+            if (clothSections.Length > 0)
+            {
+                static double[] V4(FVector4 v) => [R(v.X), R(v.Y), R(v.Z), R(v.W)];
+                var cloth = clothSections.Select(x => new
+                {
+                    section = x.i, baseVertex = x.s.BaseVertexIndex, numVertices = x.s.NumVertices,
+                    clothAsset = x.s.CorrespondClothAssetIndex,
+                    assetGuid = x.s.ClothingData.AssetGuid.ToString(), assetLod = x.s.ClothingData.AssetLodIndex,
+                    mapping = x.s.ClothMappingDataLODs[0].Select(m => new
+                    {
+                        p = V4(m.PositionBaryCoordsAndDist), n = V4(m.NormalBaryCoordsAndDist), t = V4(m.TangentBaryCoordsAndDist),
+                        i = m.SourceMeshVertIndices, w = R(m.Weight),
+                    }).ToArray(),
+                }).ToArray();
+                Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+                File.WriteAllText(target + ".cloth.json", JsonConvert.SerializeObject(new { path = packagePath, sections = cloth }));
+            }
         }
         else throw new InvalidDataException("no StaticMesh or SkeletalMesh export");
 

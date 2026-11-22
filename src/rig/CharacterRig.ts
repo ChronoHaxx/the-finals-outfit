@@ -15,7 +15,7 @@ import { bodyTypeOffsetMatrix, type BodyTypePreview } from "./BodyTypePreview";
 import { multiplySourceMatrices, type SourceMatrix } from "./SourceTransform";
 import { LEGACY_EQUIVALENT_HEAD_BASELINE, type SourceRigPart, type SourceSkinPair, type SourceSkinPart } from "./SourceAssembly";
 import { applyHeadWrap, bindHeadWrap, headWrapInputs, type HeadWrapBinding, type HeadWrapData } from "./HeadWrap";
-import type { CageDisplace, FaceWrapPart } from "./FaceWrap";
+import type { CageDisplace, FaceWrapPart, StillWrap } from "./FaceWrap";
 import { installSkeletonUpdateMemo } from "./SkeletonUpdateMemo";
 
 export type { RigDecal } from "./BodyDecals";
@@ -315,7 +315,8 @@ export class CharacterRig {
     this.root.traverse(o => {
       const mesh = o as THREE.Mesh, state = mesh.isMesh ? headWrapStates.get(mesh) : undefined;
       const cage = state?.head ? state.data.heads[state.head] : undefined;
-      if (cage) parts.push({ cage, rewrap: (displace, token) => rewrapOnMovedCage(mesh, displace, token) });
+      if (cage) parts.push({ cage, rewrap: (displace, token) => rewrapOnMovedCage(mesh, displace, token),
+        contact: { mesh, still: () => stillWrap(mesh) } });
     });
     return parts;
   }
@@ -2726,16 +2727,18 @@ function rewrapToSourceHead(mesh: THREE.Mesh, morphs: ReadonlySet<string>, force
 
 /** (Facial animation) Re-wraps a head-wrapped mesh on its cage as the face has moved it (`displace`, FaceWrap.ts), with
  *  the fitting morphs of its last still wrap; null puts it back on the still cage. A token it is already wrapped for
- *  changes nothing. The bounds stay those of the still wrap: the face moves the part by millimetres. */
-function rewrapOnMovedCage(mesh: THREE.Mesh, displace: CageDisplace | null, token: number): void {
+ *  changes nothing. The bounds stay those of the still wrap: the face moves the part by millimetres. Returns whether it
+ *  wrote the mesh's geometry. */
+function rewrapOnMovedCage(mesh: THREE.Mesh, displace: CageDisplace | null, token: number): boolean {
   const state = headWrapStates.get(mesh);
-  if (!state) return;
+  if (!state) return false;
   const morphs = new Set<string>(mesh.userData.headWrapMorphs ?? []);
   if (!displace) {
-    if (state.face !== undefined) rewrapToSourceHead(mesh, morphs, true);
-    return;
+    if (state.face === undefined) return false;
+    rewrapToSourceHead(mesh, morphs, true);
+    return true;
   }
-  if (state.face === token) return;
+  if (state.face === token) return false;
   const { reference, target, triangles } = headWrapInputs(state.data, state.source, state.head, morphs);
   const moved = displace(target);
   const [position, ...directions] = state.attributes;
@@ -2744,4 +2747,18 @@ function rewrapOnMovedCage(mesh: THREE.Mesh, displace: CageDisplace | null, toke
     directions.map(a => a.array as Float32Array), directions.map(a => a.itemSize));
   state.attributes.forEach(a => { a.needsUpdate = true; });
   state.face = token;
+  return true;
+}
+
+/** (Face contact, FaceWrap.ts) A head-wrapped mesh as wrapped on its still cage, with the fitting morphs of its last
+ *  still wrap: positions and normals in its geometry space, computed aside (the mesh is left as it is). */
+function stillWrap(mesh: THREE.Mesh): StillWrap | null {
+  const state = headWrapStates.get(mesh), normal = mesh.geometry.attributes.normal;
+  const slot = state ? state.attributes.indexOf(normal as THREE.BufferAttribute) : -1;
+  if (!state || slot < 1 || normal.itemSize !== 3) return null;
+  const morphs = new Set<string>(mesh.userData.headWrapMorphs ?? []);
+  const { reference, target, triangles } = headWrapInputs(state.data, state.source, state.head, morphs);
+  const positions = state.rest[0].slice(), normals = state.rest[slot].slice();
+  applyHeadWrap(state.binding, target, reference, triangles, positions, [normals], [3]);
+  return { positions, normals };
 }

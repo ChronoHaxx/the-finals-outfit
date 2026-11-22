@@ -27,6 +27,7 @@ import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { setPreviewScene } from "../lib/viewer-handle";
 import { sceneById } from "../lib/scenes";
 import { SceneBackdrop, SceneTurntable, withUpright } from "./SceneMode";
+import { LightMarkers } from "./LightMarkers";
 import { SLOTS } from "../lib/slots";
 import { getDownloadProgress, subscribeDownloadProgress } from "../lib/load-progress";
 import { AUTOMATED } from "../lib/automation";
@@ -38,6 +39,8 @@ import { ScreenshotPanel } from "./ScreenshotPanel";
 import { captureSlot } from "../rig/VideoExport";
 import type { ScreenshotContext } from "../rig/ViewerScreenshot";
 import { LightingPanel, SunShortcut } from "./LightingPanel";
+import { CameraPanel } from "./CameraPanel";
+import { CameraBridge } from "./CameraBridge";
 import { useLightingStore } from "../lib/lighting-store";
 import { backdropCss, backdropIsDark } from "../lib/stage-lighting";
 import { IS_TOUCH, SHADOWS, StageLights, TONE_MAPPING } from "./ViewerStage";
@@ -148,6 +151,9 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   // The look (lighting-store.ts): lights, reflections, exposure, backdrop. The reviewed Studio look unless this viewer
   // changed it; always so when automated.
   const look = useLightingStore((s) => s.look);
+  // "Show lights" (Lighting panel): a bulb and cone per light, draggable (LightMarkers.tsx). Hidden with the rest of the
+  // UI (H), so a clean view for the system's own screenshot tool never shows them; the site's pictures never do.
+  const showLightMarkers = useLightingStore((s) => s.markers);
   const backdrop = look.backdrop;
   // Light chrome (corner marks, loading text) on a dark backdrop, dark chrome on a light one.
   // An in-game scene behind the character (scenes.ts), when the look has one this build knows; null otherwise (an
@@ -348,6 +354,9 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
         <CaptureDriver ownsDraw={!STABLE_PREVIEW} />
         <AutoGraphics status={temporalStatus} active={ready && !busy} deviceDpr={deviceDpr} />
         {showFps && <FpsMeter status={temporalStatus} />}
+        {/* The camera for the camera panel and share links, and its roll. It uses the default controls below; its frame
+            step runs after theirs by priority, whatever the order here. */}
+        <CameraBridge />
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
           enablePan
@@ -358,6 +367,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
           enabled={!scene}
         />
         {scene && <SceneTurntable scene={scene} root={rig.root} />}
+        {showLightMarkers && !uiHidden && <LightMarkers dark={darkBackdrop} />}
       </Canvas>
       {contextLost && <div className="absolute inset-0 z-20">
         <ViewerUnavailable lost onRetry={() => { setContextLost(false); setCanvasGeneration((n) => n + 1); }} />
@@ -391,6 +401,8 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
             </button>
           )}
           <ScreenshotPanel context={screenshotContext} backdrop={backdrop} ready={ready && !busy} animator={animator} />
+          {/* Camera: position and target to read or type, roll, and views saved with the outfit. */}
+          <CameraPanel />
           {/* Lighting and backdrop: one panel for the whole scene (the Studio/Lobby switch became two of its looks). */}
           <LightingPanel />
         </div>

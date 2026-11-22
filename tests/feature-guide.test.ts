@@ -37,12 +37,16 @@ test("section and item ids are unique, and every item says something", () => {
   for (const section of FEATURE_GUIDE) for (const item of section.items) assert.ok(item.title && item.text.length > 20, item.id);
 });
 
-test("the guide never says a share link carries the lighting", () => {
-  // Share links hold the outfit, the body type and optionally the emote frame; lighting stays in the browser
-  // (src/lib/share-url.ts). A visitor told otherwise would share a look nobody else sees.
+test("the guide says share links carry the lighting, and how to leave it out", () => {
+  // Since 22 Nov 2026 a share link carries the lighting look (src/lib/share-lighting.ts), and the share panel's Include
+  // lighting leaves it out. Before that the guide said the opposite: keep the two in step with the app.
   const share = FEATURE_GUIDE.find(section => section.id === "share")!;
   const text = share.items.map(item => item.text).join(" ");
-  assert.match(text, /Lighting is not part of the link/);
+  assert.match(text, /opens in your lighting/);
+  assert.match(text, /Include lighting/);
+  assert.doesNotMatch(text, /Lighting is not part of the link/);
+  const look = FEATURE_GUIDE.find(section => section.id === "look")!;
+  assert.match(look.items.find(item => item.id === "shared-lighting")!.text, /Keep this lighting.*Use my lighting/);
 });
 
 test("the shortcut lists name the keys the builder handles", () => {

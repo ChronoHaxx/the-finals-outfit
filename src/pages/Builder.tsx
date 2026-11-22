@@ -18,6 +18,7 @@ import { SLOTS } from "../lib/slots";
 import { probeWebGL2 } from "../lib/webgl-support";
 import { ViewerUnavailable } from "../components/ViewerUnavailable";
 import { SlowScriptNotice } from "../components/SlowScriptNotice";
+import { SharedLightingNotice } from "../components/SharedLightingNotice";
 import { ChinalsBanner } from "../components/ChinalsBanner";
 import { pendingPose, subscribePendingPose, takePendingPose } from "../lib/share-pose";
 import { builderPath, chinalsAvailable, CHINALS_PATH, hashSearch, isChinalsClip, modeOfPath, type SiteMode } from "../lib/site-mode";
@@ -101,6 +102,7 @@ export default function Builder() {
             <CloseIcon size={12} />
           </button>
         </div>}
+        {webgl.ok && <SharedLightingNotice />}
         {webgl.ok && <SlowScriptNotice />}
       </div>
 

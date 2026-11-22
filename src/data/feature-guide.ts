@@ -38,6 +38,12 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
     title: "Build an outfit",
     items: [
       {
+        id: "in-game-outfits",
+        title: "In-game outfits",
+        text: "Outfits lists the game's own outfits with their in-game icons. Wear this outfit puts one on and keeps your face and skin. It is not saved until you change something or press Save, so your saved outfits stay as they were.",
+        where: "Outfits, under In game at the top of the item list",
+      },
+      {
         id: "items",
         title: "Items",
         text: "Pick cosmetics from the Items drawer beside the 3D view. Search a slot by name, or filter it by 3D status.",
@@ -93,7 +99,7 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
       {
         id: "share-link",
         title: "Share links",
-        text: "Share outfit copies a link to the outfit, its body type and player number. With an emote on screen, tick Include this frame to share that exact pose, paused or playing. Lighting is not part of the link: whoever opens it sees the lighting set in their own browser.",
+        text: "Share outfit copies a link to the outfit, its body type and player number. It opens on the camera you see; untick Include camera view to leave that out. With an emote on screen, tick Include this frame to share that exact pose, paused or playing. The link also opens in your lighting and backdrop; untick Include lighting to leave them out.",
         where: "Share outfit, at the foot of the outfit",
       },
       {
@@ -142,8 +148,20 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
       {
         id: "lighting",
         title: "Lighting and backdrop",
-        text: "Start from Studio, Lobby, Season 12 menu or a sun look, then change each light's colour, brightness and direction, pick a solid or gradient backdrop, turn on a floor shadow and save your own looks.",
+        text: "Start from a ready-made look, such as Studio, Lobby, Season 12 menu, Dramatic or Nighttime, then change each light's colour, brightness and direction, pick a solid or gradient backdrop, turn on a floor shadow and save your own looks.",
         where: "The button named after the look, top right",
+      },
+      {
+        id: "shared-lighting",
+        title: "Lighting from a link",
+        text: "A link someone shares opens in their lighting, while yours stays as it was. Keep this lighting makes it yours and adds it to your saved looks; Use my lighting brings yours back. Changing anything in the lighting panel keeps it too, and Undo returns to yours.",
+        where: "The bar under the top menu, or the top of the lighting panel",
+      },
+      {
+        id: "light-markers",
+        title: "Show lights",
+        text: "See each light in the 3D view as a bulb, with a cone the way it shines. Drag a bulb to move its light: its Direction and Height sliders follow. The bulbs never appear in screenshots or share images, and H hides them.",
+        where: "Show lights in the 3D view, under Lights in the lighting panel",
       },
       {
         id: "scenes",
@@ -174,6 +192,18 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
         title: "Screenshots",
         text: "Save a PNG or copy it to paste into a chat, on the backdrop or with a transparent background, at up to three times the view's size.",
         where: "Camera button, top right",
+      },
+      {
+        id: "emote-video",
+        title: "Emote video",
+        text: "Save the emote on screen as a 60 fps video, made in your own browser: an MP4 with sound, a see-through WebM, or a see-through PNG sequence for video editors.",
+        where: "Camera button, Video tab",
+      },
+      {
+        id: "camera-views",
+        title: "Camera position and saved views",
+        text: "See where the camera is and the point it looks at, in metres, and type a number to place it exactly. Roll tilts the shot and Level straightens it. Save views with the outfit and come back to one in a click.",
+        where: "Viewfinder button, top right",
       },
     ],
   },

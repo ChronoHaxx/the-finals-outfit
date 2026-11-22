@@ -10,17 +10,22 @@
 // - Delete is a tombstone with an Undo.
 import { create } from "zustand";
 import {
-  isReadOnly, OutfitLibrary, uniqueName,
+  isReadOnly, makeId, OutfitLibrary, uniqueName,
   type Draft, type LibraryOptions, type LibrarySnapshot, type OutfitRecord, type SlotMap,
 } from "../lib/outfit-library";
 import { MemoryBackend, openOutfitStorage, requestPersistentStorage, type StorageEnvironment } from "../lib/outfit-storage";
 import { keepMissing, labelsFor, resolveSavedSlots, sameBuild, type MissingPiece } from "../lib/saved-outfit-pieces";
 import { readOutfitLink } from "../lib/share-url";
 import { POSE_KEYS } from "../lib/share-pose";
+import { LIGHTING_PARAM } from "../lib/share-lighting";
 import { builderHashMode, builderHashParams, builderPath } from "../lib/site-mode";
 import { migrateOutfit } from "../lib/outfit-slots";
 import type { Slot } from "../lib/slots";
 import { BODY_TYPE_PARAM, DEFAULT_BODY_TYPE } from "../lib/body-type";
+import {
+  VIEW_CAP, VIEW_PARAM, hasDeletedView, liveViews, viewsWritable, withViewAdded, withViewDeleted, withViewRenamed, withViewRestored,
+  type CameraView,
+} from "../lib/camera-view";
 import { PLAYER_NUMBER_PARAM, samePlayerNumber, storedPlayerNumber } from "../lib/player-number";
 import { startingOutfit, useBuildStore } from "./useBuildStore";
 
@@ -214,7 +219,8 @@ function createStarting(lib: OutfitLibrary): OutfitRecord {
 function promoteDraft(draft: Draft, edited: boolean): boolean {
   const lib = library!;
   const record = own(() => lib.create({ name: uniqueName(draft.name, lib.liveNames()), slots: draft.slots,
-    labels: draft.labels, generated: draft.generated, bodyType: draft.bodyType, playerNumber: draft.playerNumber }));
+    labels: draft.labels, generated: draft.generated, bodyType: draft.bodyType, playerNumber: draft.playerNumber,
+    cameraViews: draft.cameraViews }));
   if (record) {
     own(() => lib.select(record.id));
     appliedSlots = record.slots;
@@ -235,13 +241,14 @@ function leavingDraft(): boolean {
 }
 
 /** Remove the share link from the address bar once it has done its job, so a reload shows the saved outfit. A link's
- *  pose (share-pose.ts) goes with it: the builder read it before this could run. */
+ *  pose (share-pose.ts), camera view (camera-view.ts) and lighting (share-lighting.ts) go with it: the builder read them
+ *  before this could run. */
 function cleanUrl() {
   if (typeof window === "undefined") return;
   try {
     const url = new URL(window.location.href);
     let changed = false;
-    for (const key of ["outfit", "o", "look", BODY_TYPE_PARAM, PLAYER_NUMBER_PARAM, ...POSE_KEYS])
+    for (const key of ["outfit", "o", "look", BODY_TYPE_PARAM, PLAYER_NUMBER_PARAM, VIEW_PARAM, LIGHTING_PARAM, ...POSE_KEYS])
       if (url.searchParams.has(key)) { url.searchParams.delete(key); changed = true; }
     if (changed) window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
     // Either builder route (lib/site-mode.ts): tidying a link away never leaves Chinals mode.
@@ -567,6 +574,91 @@ function replaceWithGenerated(build: Partial<Record<Slot, string>>, stem: string
     });
   }
   publish();
+}
+
+// ------------------------------------------------------------------ camera views
+//
+// Views are saved with the outfit on screen (lib/camera-view.ts keeps the list's rules). Each change is an edit of that
+// outfit, written as it happens like any other. On an unsaved draft the first saved view makes it a saved outfit, as
+// a hand edit does; at the cap it stays on the draft (kept for this visit, and leaving asks first).
+
+export type ViewChange = { ok: true; name: string } | { ok: false; message: string };
+
+interface ViewsTarget {
+  list: unknown;
+  change(next: unknown[]): void;
+  /** The same outfit's views later (for Undo), or null once that outfit is gone or no longer this draft. */
+  again(): ViewsTarget | null;
+}
+
+/** A saved outfit's stored views, for changing them; on screen or not (Undo after switching outfits). */
+function recordViews(lib: OutfitLibrary, id: string): ViewsTarget | null {
+  const record = lib.get(id);
+  if (!record || record.deletedAt !== undefined) return null;
+  return { list: record.cameraViews, change: next => own(() => lib.setCameraViews(id, next)),
+    again: () => library === lib ? recordViews(lib, id) : null };
+}
+
+/** The outfit on screen's stored views, for changing them. */
+function viewsOnScreen(): ViewsTarget | null {
+  const lib = library;
+  const current = lib?.getCurrent();
+  if (!lib || !current) return null;
+  if (current.kind === "record") return recordViews(lib, current.id);
+  const draft = current.draft;
+  return {
+    list: draft.cameraViews,
+    // Views only stay on a draft at the cap; Undo works while a draft is still on screen (the view's id checks it).
+    again: () => library === lib && lib.getCurrent()?.kind === "draft" ? viewsOnScreen() : null,
+    change: next => {
+      if (!promoteDraft({ ...draft, cameraViews: next, generated: false }, true))
+        toast(`The view is kept for this visit only: you have ${lib.cap} saved outfits. Delete one to save this outfit.`, "info");
+      requestPersistentStorage();
+    },
+  };
+}
+
+const viewsUnavailable: ViewChange = { ok: false, message: "Saving views needs an outfit on screen." };
+const viewsNewer: ViewChange = { ok: false, message: "This outfit's views were saved by a newer version of the site." };
+
+/** Save the camera's current view with the outfit on screen. */
+export function saveCameraView(view: CameraView, now = Date.now()): ViewChange {
+  const target = viewsOnScreen();
+  if (!target) return viewsUnavailable;
+  if (!viewsWritable(target.list)) return viewsNewer;
+  const next = withViewAdded(target.list, view, { id: makeId(), now });
+  if (!next) return { ok: false, message: `An outfit keeps ${VIEW_CAP} views at most. Delete one to make room.` };
+  target.change(next);
+  publish();
+  return { ok: true, name: liveViews(next).at(-1)!.name };
+}
+
+export function renameCameraView(id: string, name: string, now = Date.now()) {
+  const target = viewsOnScreen();
+  if (!target || !viewsWritable(target.list)) return;
+  const next = withViewRenamed(target.list, id, name, now);
+  if (JSON.stringify(next) === JSON.stringify(target.list ?? [])) return;
+  target.change(next);
+  publish();
+}
+
+/** Delete a view of the outfit on screen. Returns its Undo (null when nothing was deleted). */
+export function deleteCameraView(id: string, now = Date.now()): (() => ViewChange) | null {
+  const target = viewsOnScreen();
+  if (!target || !viewsWritable(target.list) || !liveViews(target.list).some(v => v.id === id)) return null;
+  const name = liveViews(target.list).find(v => v.id === id)!.name;
+  target.change(withViewDeleted(target.list, id, now));
+  publish();
+  return () => {
+    const again = target.again();
+    if (!again || !viewsWritable(again.list) || !hasDeletedView(again.list, id))
+      return { ok: false, message: "That view's outfit is no longer here." };
+    const restored = withViewRestored(again.list, id, Date.now());
+    if (!restored) return { ok: false, message: `An outfit keeps ${VIEW_CAP} views at most. Delete one to make room.` };
+    again.change(restored);
+    publish();
+    return { ok: true, name };
+  };
 }
 
 export function dismissToast() {

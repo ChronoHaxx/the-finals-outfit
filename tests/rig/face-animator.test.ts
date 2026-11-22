@@ -3,7 +3,7 @@ import test from "node:test";
 import * as THREE from "three";
 import { bindHead, convertRotation, convertTranslation, headKey, maskWeights, poseHead, poseWeights, recordRest,
   sampleCurve, type FaceCurves } from "../../src/rig/FaceAnimator.ts";
-import { FaceCage, type FaceWrapSkin } from "../../src/rig/FaceWrap.ts";
+import { FaceCage, FaceContact, type FaceWrapSkin } from "../../src/rig/FaceWrap.ts";
 import { applyHeadWrap, bindHeadWrap } from "../../src/rig/HeadWrap.ts";
 
 // Facial animation (12 Nov 2026): the maths of FaceAnimator.ts / FaceWrap.ts against hand-computed results.
@@ -209,4 +209,44 @@ test("the allocation-free head wrap is bit-identical to the code it replaced (st
   applyHeadWrap(binding, target, cage, triangles, mine[0], [mine[1], mine[2]], [3, 4]);
   referenceApply(binding, target, cage, triangles, theirs[0], [theirs[1], theirs[2]], [3, 4]);
   for (let k = 0; k < 3; k++) assert.deepEqual(mine[k], theirs[k]);
+});
+
+test("the face contact pushes a part back out where the face moves into it, and never pulls it in", () => {
+  // A face patch skinned to one lip bone, and a part 1.6 mm above it (the balaclava over Face 01's lips).
+  const { mesh: face, bones } = head([{ name: "FACIAL_C_LipUpper" }]);
+  const square = (z: number) => [-0.01, -0.01, z, 0.01, -0.01, z, 0.01, 0.01, z, -0.01, 0.01, z];
+  const up = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1];
+  const surface = new THREE.BufferGeometry();
+  surface.setAttribute("position", new THREE.Float32BufferAttribute(square(0), 3));
+  surface.setAttribute("normal", new THREE.Float32BufferAttribute(up, 3));
+  surface.setAttribute("skinIndex", new THREE.Uint16BufferAttribute(Array.from({ length: 4 }, () => [1, 0, 0, 0]).flat(), 4));
+  surface.setAttribute("skinWeight", new THREE.Float32BufferAttribute(Array.from({ length: 4 }, () => [1, 0, 0, 0]).flat(), 4));
+  surface.setIndex([0, 1, 2, 0, 2, 3]);
+  face.geometry = surface;
+  const part = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial());
+  part.geometry.setAttribute("position", new THREE.Float32BufferAttribute(square(0.0016), 3));
+  part.geometry.setAttribute("normal", new THREE.Float32BufferAttribute(up, 3));
+  part.geometry.setIndex([0, 1, 2, 0, 2, 3]);
+  const still = { positions: new Float32Array(square(0.0016)), normals: new Float32Array(up) };
+  const contact = FaceContact.bind(part, still, [face], recordRest([face]));
+  assert.ok(contact && contact.size === 4, "every face vertex under the part is held");
+  const positions = still.positions.slice(), z = () => [2, 5, 8, 11].map(i => +positions[i].toFixed(6));
+  // At rest nothing moves.
+  assert.equal(contact.apply(positions, still.normals), false);
+  assert.deepEqual(z(), [0.0016, 0.0016, 0.0016, 0.0016]);
+  // The lip moves 3 mm out, through the part: the part is pushed out to keep 1 mm (less than its 1.6 mm rest gap).
+  const lip = bones.get("FACIAL_C_LipUpper")!;
+  lip.position.z = 0.003;
+  assert.equal(contact.apply(positions, still.normals), true);
+  assert.deepEqual(z(), [0.004, 0.004, 0.004, 0.004]);
+  // The lip moves 3 mm in: the part keeps its wrapped place (the contact never pulls it towards the face).
+  positions.set(still.positions);
+  lip.position.z = -0.003;
+  assert.equal(contact.apply(positions, still.normals), false);
+  assert.deepEqual(z(), [0.0016, 0.0016, 0.0016, 0.0016]);
+  // A part over a still face but pulled in by its cage, to 0.5 mm: pushed back to the 1 mm the contact keeps.
+  lip.position.z = 0;
+  positions.set(square(0.0005));
+  assert.equal(contact.apply(positions, still.normals), true);
+  assert.deepEqual(z(), [0.001, 0.001, 0.001, 0.001]);
 });
