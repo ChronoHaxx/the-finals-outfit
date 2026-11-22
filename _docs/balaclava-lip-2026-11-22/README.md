@@ -12,10 +12,12 @@ While this was being investigated, PR #71 reached the same diagnosis and merged 
 `abfa045`), which hides the sliver in the viewer. FaceContact is a viewer-side contact, not game data (see "On main now"
 below). This PR leaves it as it is. Whether to keep it is the owner's choice.
 
+Measured without FaceContact (main d31db11):
+
 - It is the **upper** lip's centre, not the lower lip. About nine vertices of the upper-lip centre, driven by
   `FACIAL_C_LipUpper1/2`, end up at most 0.9 mm outside the knit.
-- The pout is not the trigger; an open jaw is. Face_JawOpen alone does it (0.95 mm), and so does Face_Surprise, which
-  opens the jaw, together with BlueSteel. Neither pose alone does it.
+- The pout is not the trigger; an open jaw is. Face_JawOpen alone does it (0.95 mm), and so does Face_Surprise (which
+  opens the jaw) together with Face_BlueSteel. Surprise alone and BlueSteel alone stay inside.
 - It is not specific to Chinals. The global emote Carrot Crusher at 1.47 s (Face_JawOpen 0.8) shows the same sliver at
   0.90 mm, although its carrot covers the mouth at that moment. Evil Jester's peak comes within 0.06 to 0.19 mm.
 
