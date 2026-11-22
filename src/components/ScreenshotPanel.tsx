@@ -67,6 +67,7 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
   const [stage, setStage] = useState({ width: 0, height: 0, maxSide: 4096 });
   const video = useVideoExport(context, animator, backdrop);
   const feature = useFeature("capture", video.running ? "Recording a video: open to see progress or cancel" : "Save a screenshot or an emote video");
+  const videoFeature = useFeature("video", "Record the emote as MP4, see-through MOV or WebM, or PNG frames");
   const change = (patch: Partial<Choices>) => setChoices(current => {
     const next = { ...current, ...patch };
     writeChoices(next);
@@ -148,6 +149,7 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
           <div role="tablist" aria-label="Capture type" className="grid grid-cols-2 gap-1.5">
             {([["image", "Image", CameraIcon], ["video", "Video", VideoIcon]] as const).map(([tab, label, Icon]) => (
               <button key={tab} type="button" role="tab" aria-selected={choices.tab === tab} onClick={() => change({ tab })}
+                {...(tab === "video" ? videoFeature : {})}
                 className="flex h-8 items-center justify-center gap-2 border border-line text-xs transition-colors hover:bg-ink-900 aria-selected:border-fg/60 aria-selected:bg-ink-900">
                 <Icon size={14} />{label}
               </button>

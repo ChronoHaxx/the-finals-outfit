@@ -2,8 +2,10 @@ import type { BackdropPaint } from "../lib/stage-lighting";
 import { encodePngAsync } from "../lib/png-encode";
 import { avcCodecs, colorCodes, muxMp4, type Mp4AudioTrack, type Mp4Sample } from "../lib/mp4-mux";
 import { muxWebm, opusHead, vp9Codec, type WebmAudioFrame, type WebmVideoFrame } from "../lib/webm-mux";
+import { muxMov } from "../lib/mov-mux";
+import { QtrleEncoder } from "../lib/qtrle-encode";
 import { ZipStoreWriter } from "../lib/zip-store";
-import { encodeWav } from "../lib/wav-encode";
+import { encodeWav, pcm16le } from "../lib/wav-encode";
 import { ViewCapture, type ScreenshotContext } from "./ViewerScreenshot";
 import type { RecordableClip, RigAnimator } from "./RigAnimator";
 
@@ -27,8 +29,13 @@ import type { RecordableClip, RigAnimator } from "./RigAnimator";
 //   IS the alpha (I420 frames, U and V flat), muxed as Matroska BlockAdditions that decoders read as the alpha plane.
 //   Keyframes are forced on both at the same frames; colour under fully transparent pixels is bled outward first
 //   (bleedColour), so lossy 4:2:0 coding does not pull black into the soft edges.
+// - MOV, transparent (22 Nov 2026): QuickTime Animation, 32-bit ARGB, every frame a keyframe, coded here in plain
+//   JavaScript (qtrle-encode.ts) from the same straight-alpha pixels as the PNGs, so it is exact; the sound as 16-bit
+//   PCM, interleaved frame by frame (mov-mux.ts). Premiere Pro, After Effects and DaVinci Resolve read it with its
+//   alpha. No browser encodes ProRes 4444, the codec editors would name first, but MOV is only the container. Big files
+//   (run-length coding saves the empty background, not the character), so the panel offers it on computers only.
 // - PNG sequence, transparent: every frame as a PNG with straight alpha, the sound as a WAV, in one stored zip. Works
-//   in every editor. (MOV with ProRes 4444 is what editors would like, but no browser can encode ProRes.)
+//   in every editor.
 // The sound is rendered offline from the emote's cues (EmoteSounds.renderOffline), the same rules as playback.
 
 export const FPS = 60;
@@ -36,7 +43,7 @@ const KEY_INTERVAL = FPS; // a keyframe every second: seekable, and a WebM clust
 const AUDIO_RATE = 48000;
 const IN_FLIGHT = 3; // frames drawn but not yet encoded or stored: bounds memory, keeps the GPU and encoders busy
 
-export type VideoFormat = "mp4" | "webm" | "png";
+export type VideoFormat = "mp4" | "webm" | "mov" | "png";
 export type VideoQuality = "draft" | "standard" | "best";
 
 /** Fine pixels per output pixel (supersample) and jittered samples per fine pixel, per quality. */
@@ -82,11 +89,11 @@ export interface VideoProgress { phase: "preparing" | "rendering" | "finishing";
 
 export interface VideoResult {
   blob: Blob;
-  extension: "mp4" | "webm" | "zip";
+  extension: "mp4" | "webm" | "mov" | "zip";
   frames: number;
   width: number;
   height: number;
-  sound: "aac" | "opus" | "wav" | null;
+  sound: "aac" | "opus" | "pcm" | "wav" | null;
   /** Fewest samples any frame averaged (below the quality's: the scene changed while drawing, some grain). */
   samples: number;
   clip: RecordableClip;
@@ -288,10 +295,11 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
 
   // Sound, rendered offline before any frame (it is quick, and a failure here should not cost a long render).
   const wantSound = options.sound && animator.sounds.hasSound(clip.source);
-  const audioCodec = format === "png" ? null : format === "webm" ? (support.opus ? "opus" : null)
+  const rawSound = format === "png" || format === "mov"; // WAV or PCM: no encoder needed
+  const audioCodec = rawSound ? null : format === "webm" ? (support.opus ? "opus" : null)
     : support.aac ? "mp4a.40.2" : support.opus ? "opus" : null;
   let sound: { buffer: AudioBuffer } | null = null;
-  if (wantSound && (format === "png" || audioCodec)) {
+  if (wantSound && (rawSound || audioCodec)) {
     sound = await animator.sounds.renderOffline(clip.source, { duration: plan.duration, clipLength: clip.duration,
       looping: clip.loop, sampleRate: AUDIO_RATE, signal });
   }
@@ -305,6 +313,8 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
   let stored = 0;
   let failure: unknown = null;
   const zip = format === "png" ? new ZipStoreWriter() : null;
+  const qtrle = format === "mov" ? new QtrleEncoder(width, height) : null;
+  const movFrames: Blob[] = []; // each frame its own Blob, so a long movie can sit in blob storage, not the JS heap
   const base = exportName(clip, stamp);
   let encoder: VideoEncoder | null = null;
   if (videoConfig) {
@@ -376,11 +386,15 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
             }
             const frame = new VideoFrame(pixels, { format: "RGBA", codedWidth: width, codedHeight: height, timestamp, duration });
             try { encoder.encode(frame, { keyFrame }); } finally { frame.close(); }
+          } else if (qtrle) {
+            const frame = new Blob([qtrle.encode(pixels) as BlobPart]); // copies out of the encoder's buffer
+            movFrames.push(frame);
+            stored += frame.size;
           } else if (zip && png) {
             zip.add(`${base}/frame_${String(index).padStart(5, "0")}.png`, await png);
             stored = zip.size;
           }
-          if (stored > options.maxBytes) throw new Error(`The file passed ${Math.round(options.maxBytes / 1e6)} MB, more than this device can safely hold. Pick a smaller size${format === "png" ? " or a video format" : ""}.`);
+          if (stored > options.maxBytes) throw new Error(`The file passed ${Math.round(options.maxBytes / 1e6)} MB, more than this device can safely hold. Pick a smaller size${format === "png" ? " or a video format" : format === "mov" ? ", or the PNG sequence (smaller)" : ""}.`);
           committed++;
           onProgress({ phase: "rendering", frame: committed, frames: plan.frames, bytes: stored });
         };
@@ -436,6 +450,12 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
       }
       zip!.add(`${base}/README.txt`, new TextEncoder().encode(readme(clip, plan.frames, width, height, !!sound, base)));
       blob = zip!.finish();
+    } else if (format === "mov") {
+      if (movFrames.length !== plan.frames) throw new Error(`The movie has ${movFrames.length} of ${plan.frames} frames`);
+      const pcm = sound ? pcm16le(Array.from({ length: sound.buffer.numberOfChannels }, (_, c) => sound!.buffer.getChannelData(c))) : null;
+      blob = muxMov({ width, height, fps: FPS, frames: movFrames },
+        pcm ? { sampleRate: AUDIO_RATE, channels: sound!.buffer.numberOfChannels, pcm } : null);
+      if (pcm) soundKind = "pcm";
     } else {
       // Encoder output order is decode order, which both containers keep (each sample carries its presentation time).
       const frames = videoSamples;

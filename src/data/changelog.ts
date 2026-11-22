@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-transparent-mov",
+    date: "2026-11-22",
+    title: "See-through MOV for video editors",
+    notes: [
+      "The Video tab under Capture can now save an emote as a MOV with a transparent background, the kind of file Premiere Pro, After Effects and DaVinci Resolve take with its transparency. It is QuickTime Animation, so every frame keeps every pixel exactly as rendered, and the emote's sound comes along uncompressed.",
+      "Lossless means big: about 35 MB for each second at 1080p, more when the character fills the frame, so it is offered on computers only. On a phone, the PNG sequence and the see-through WebM still work.",
+    ],
+    items: ["faster-builder"],
+  },
+  {
     id: "2026-11-22-builder-shows-you-around",
     date: "2026-11-22",
     title: "The builder shows you around",
