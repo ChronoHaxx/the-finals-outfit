@@ -36,6 +36,7 @@ Object.assign(process.env, { // .github/workflows/deploy.yml, production build
   VITE_MODELS_BASE: host("MODELS_BASE"),
   VITE_RECONSTRUCTION_BASE: host("RECONSTRUCTION_BASE"),
   VITE_SHARE_PREVIEW_BASE: host("SHARE_PREVIEW_BASE"),
+  VITE_SCENES_BASE: host("SCENES_BASE"), // main's scene backdrops (#57)
   VITE_ANIMATIONS_BASE: ANIM,
   VITE_CHINALS_ANIMATIONS_BASE: CHINALS,
   VITE_RECONSTRUCTION_ROUTES_FILE: "src/data/reconstruction-routes.json",

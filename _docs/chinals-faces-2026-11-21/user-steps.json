@@ -1,18 +1,18 @@
 {
   "app": "http://127.0.0.1:4357/the-finals-outfit/",
-  "at": "2026-11-22T12:39:15.113Z",
+  "at": "2026-11-22T12:47:25.847Z",
   "steps": {
     "s1": {
       "welcomeShown": true,
       "banner": true,
       "idle": "cn-outfit-idle",
       "head": "SK_Head_Face_01_Base",
-      "eyelidMaxDeg": 29.49,
-      "eyelidMinDeg": 0.42,
+      "eyelidMaxDeg": 36.9,
+      "eyelidMinDeg": 0.32,
       "faceFiles": [
         "7c9add72 200 faces-1/faces.json",
-        "7c9add72 200 faces-1/heads/SK_Head_Face_01_Base.json",
         "7c9add72 200 faces-1/curves/HM_Frontend_Outfit_L_Idle_01.json",
+        "7c9add72 200 faces-1/heads/SK_Head_Face_01_Base.json",
         "7c9add72 200 faces-1/poses/Head_Face_01_Base_PoseAsset.json"
       ]
     },
@@ -23,7 +23,7 @@
     "s3": {
       "played": {
         "id": "cn-emote-weaponmaster",
-        "reached": 5.84,
+        "reached": 5.89,
         "duration": 6,
         "playedToEnd": true,
         "thenPlaying": "cn-outfit-idle",
@@ -32,17 +32,17 @@
           "head": "SK_Head_Face_01_Base",
           "bones": 289,
           "enabled": true,
-          "maxDeg": 49.29,
+          "maxDeg": 49.18,
           "maxBone": "FACIAL_R_NasolabialBulge",
-          "FACIAL_L_EyelidUpperA": 8.41,
-          "FACIAL_R_EyelidUpperA": 7.83,
+          "FACIAL_L_EyelidUpperA": 5.25,
+          "FACIAL_R_EyelidUpperA": 4.77,
           "FACIAL_C_Jaw": 14.5,
-          "time": 3.24
+          "time": 3.22
         },
         "shot": {
-          "at": 3.24,
-          "ms": 127,
-          "after": "cn-emote-weaponmaster 3.37"
+          "at": 3.22,
+          "ms": 258,
+          "after": "cn-emote-weaponmaster 3.49"
         }
       },
       "soundFile": [
@@ -122,7 +122,7 @@
     "s6": {
       "global": {
         "id": "fox-chicken",
-        "reached": 7.6,
+        "reached": 7.54,
         "duration": 7.67,
         "playedToEnd": true,
         "thenPlaying": "outfit-idle",
@@ -131,16 +131,16 @@
           "head": "SK_Head_Face_01_Base",
           "bones": 289,
           "enabled": true,
-          "maxDeg": 39.37,
+          "maxDeg": 34.24,
           "maxBone": "FACIAL_L_EyelidUpperA",
-          "FACIAL_L_EyelidUpperA": 39.37,
-          "FACIAL_R_EyelidUpperA": 38.57,
-          "FACIAL_C_Jaw": 0.05,
-          "time": 2.12
+          "FACIAL_L_EyelidUpperA": 34.24,
+          "FACIAL_R_EyelidUpperA": 33.77,
+          "FACIAL_C_Jaw": 0.37,
+          "time": 6.48
         },
         "shot": {
-          "at": 2.61,
-          "ms": 177,
+          "at": 2.52,
+          "ms": 264,
           "after": "fox-chicken 2.79"
         }
       },

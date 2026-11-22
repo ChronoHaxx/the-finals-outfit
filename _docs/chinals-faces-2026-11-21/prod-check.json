@@ -12,7 +12,7 @@
     "footer": "Chinals emotes on your outfit (global cosmetics), with their props, sound and facial expressions. Effects are not shown yet.",
     "clickPlayed": {
       "clip": "cn-emote-weaponmaster",
-      "reached": 5.75,
+      "reached": 5.94,
       "audioRunning": true,
       "after": "cn-outfit-idle"
     },
@@ -23,8 +23,8 @@
         "200 faces-1/heads/SK_Head_Face_01_Base.json",
         "200 faces-1/poses/Head_Face_01_Base_PoseAsset.json",
         "200 faces-1/faces.json",
-        "200 faces-1/curves/HM_Frontend_Outfit_L_Idle_01.json",
         "200 faces-1/heads/SK_Head_Face_01_Base.json",
+        "200 faces-1/curves/HM_Frontend_Outfit_L_Idle_01.json",
         "200 faces-1/poses/Head_Face_01_Base_PoseAsset.json",
         "200 faces-1/curves/HM_Frontend_Emote_A_WeaponMaster_00.json"
       ],

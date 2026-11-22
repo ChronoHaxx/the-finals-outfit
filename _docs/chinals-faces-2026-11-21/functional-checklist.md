@@ -6,8 +6,9 @@ In Chinals mode the face now moves during the Chinals emotes and idle, as in glo
 7c9add72; this catches a face that stays still, a missing sound or prop, or wrong wording.
 
 - PR: https://github.com/ChronoHaxx/the-finals-outfit/pull/71 (Shocka feedback item 8)
-- Test this revision: branch `claude/chinals-faces-2026-11-21`, app code at fdfc3dd (the face contact; later commits
-  are docs only). The build below is that code with deploy.yml's production settings and the new Chinals host.
+- Test this revision: branch `claude/chinals-faces-2026-11-21`, app code at 4c88f9d (the face contact, with main
+  49b2cb6 merged in; later commits are docs only). The build below is that code with deploy.yml's production settings
+  and the new Chinals host.
 - Open: http://127.0.0.1:4357/the-finals-outfit/#/chinals in Chrome or Edge
 - Prerequisites: none beyond the build folder the agent made (`scripts/generated/chinals-faces-2026-11-21/prod/dist`)
 - Approximate hands-on time: 8 minutes
@@ -92,6 +93,22 @@ release (#67) had been merged in before it (6ff5372).
 - 6 PASS: global Fox Chicken to its end (7.6 of 7.67 s) with its sound and a moving face (eyelids 39°); back in
   Chinals the outfit is kept (beard and balaclava).
 - Readiness: agent checks PASS on fdfc3dd under the relayed waiver. The boxes above stay unticked.
+- Merge authorization: not given here.
+
+### Repeated after merging main 49b2cb6 (app code 4c88f9d)
+
+Main moved on while the fix was made (#43 mesh gate, #57 scene backdrops, #61 light markers, #72 patch notes, #73 site
+health); merged in as 4c88f9d. The conflicts were deploy.yml (the Chinals host 7c9add72 kept beside main's new
+SCENES_BASE), the patch notes (all three 22 Nov notes kept, this one on top) and the roadmap's review line.
+- Tested build: production build of 4c88f9d by `prod-check.mjs`, now with `VITE_SCENES_BASE` too (1d367244);
+  [user-steps.mjs](user-steps.mjs) as a visitor, 22 Nov ~12:47 UTC, one run. `prod-check.mjs` ok: no failed request, no
+  page error; Unrivaled Master played to 5.94 s with audio, then the idle.
+- 1 PASS (eyelids 36.9°). 2 PASS (wording exact). 3 PASS (played to 5.89 of 6 s with audio, 3 prop files, jaw 14.5°,
+  then the idle). 4 PASS (off 0°, on again jaw 14.5°). 5 PASS (beard jaw 14.5°; balaclava masked, jaw 7.3°, and the
+  full-size mouth crop shows closed knit). 6 PASS (Fox Chicken to 7.54 of 7.67 s with audio; outfit kept).
+- `npm test` 1013 pass, the 8 known fixture failures (game files the worktree lacks), 6 skipped; `npx tsc --noEmit`
+  clean; `npm run build` passes, its roadmap and public-text checks included.
+- Readiness: agent checks PASS on 4c88f9d under the relayed waiver. The boxes above stay unticked.
 - Merge authorization: not given here.
 
 A later patch invalidates affected checks. Keep results for the previous
