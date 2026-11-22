@@ -50,7 +50,8 @@ against the live host before staging), and `manifest.json` gains one line, `"fac
   host, Chinals mode does.
 - The Chinals banner said "Props are shown; effects, sound and facial expressions are not." It now says props, sound
   and facial expressions are shown, effects not. The host carries the sounds too (59209741's set).
-- Public text: the patch note `2026-11-21-chinals-faces`, the roadmap's review lines, and one sentence on the Chinals
+- Public text: the patch note `2026-11-22-chinals-faces` (first `2026-11-21-…`; re-dated 22 Nov when main's
+  `2026-11-22-in-game-outfits` landed first, so it stays the newest), the roadmap's review lines, and one sentence on the Chinals
   emotes item ("Their faces move as in global emotes.").
 
 ## Verification (agent)

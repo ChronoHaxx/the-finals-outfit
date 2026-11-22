@@ -14,13 +14,30 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
-    id: "2026-11-21-chinals-faces",
-    date: "2026-11-21",
+    id: "2026-11-22-chinals-faces",
+    date: "2026-11-22",
     title: "Faces in Chinals emotes",
     notes: [
       "In Chinals mode, faces now move during the emotes and the idle, as they do in global emotes: blinks, glances, smiles, surprise and anger, from each emote's own animation. Beards and balaclavas follow the face, and masks and helmets soften it where the game does.",
     ],
     items: ["chinals-emotes"],
+  },
+  {
+    id: "2026-11-22-in-game-outfits",
+    date: "2026-11-22",
+    title: "In-game outfits",
+    notes: [
+      "Outfits, first in the wardrobe, lists the game's own 352 outfits with their in-game icons. One tap puts a whole outfit on and keeps your face and skin.",
+      "An outfit you put on is not saved until you change something or press Save, so your saved outfits stay as they were. Pieces the catalog does not have yet, and effects the preview cannot show, are listed rather than left out.",
+      "150 cosmetics join the catalog, among them the practice-range mannequin, Bull’s Eye Barry, and its wooden twin, Bull’s Eye Barrel. They show their icons for now; 3D comes later.",
+      "42 more cosmetics render in 3D, among them the space pilot jackets, capes and skirts, the tiger pants and hoodie, the ballistic and demon LED masks, the carbon racing helmet and more hair. 15 cosmetics with a glitch pattern also render in 3D, without that effect, which the preview cannot show yet.",
+      "3,151 of the catalog's 3,482 cosmetics now have a first-pass 3D reconstruction. The share reads 90% because the catalog grew.",
+      "Earrings and Laugh Trigger now sit in place on every face, not only Face 01.",
+      "An emote picked while the outfit is still loading now plays to its end instead of going back to the idle after a second or two.",
+      "The preview does far less work each frame, so it runs more smoothly on slower computers such as laptops with built-in graphics, most of all with a face on.",
+      "Pick your player number, 10 to 99, beside Body type. Clothing that prints a number, such as jerseys and cargo pants, shows yours in its own lettering, and Own keeps each piece's printed number. The number is saved with the outfit and carried by share links.",
+    ],
+    items: ["in-game-outfits", "catalog", "red-items", "idle-emotes", "faster-builder", "first-pass-3d"],
   },
   {
     id: "2026-11-21-emote-speed-face",

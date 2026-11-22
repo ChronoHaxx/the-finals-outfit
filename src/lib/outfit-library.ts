@@ -90,7 +90,8 @@ export interface TabMemory { get(): string | null; set(id: string): void }
 
 export type SaveStatus = "saved" | "saving" | "off" | "error";
 
-/** An outfit on screen that is not (yet) a saved record: an opened share link, or a roll at the cap. */
+/** An outfit on screen that is not (yet) a saved record: an opened share link, one of the game's own outfits, or a roll
+ *  at the cap. */
 export interface Draft {
   name: string;
   slots: SlotMap;
@@ -98,7 +99,8 @@ export interface Draft {
   generated?: boolean;
   bodyType?: string;
   playerNumber?: number;
-  reason: "link" | "cap";
+  /** "link": an opened share link; "preset": one of the game's own outfits; "cap": made at the cap, so it could not be saved. */
+  reason: "link" | "preset" | "cap";
   /** Edited by hand while it could not be saved. Leaving it then needs a confirmation. */
   edited?: boolean;
 }
