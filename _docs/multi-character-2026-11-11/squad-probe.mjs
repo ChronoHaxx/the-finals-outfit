@@ -5,7 +5,7 @@
 // - Checks they load one at a time, the squad survives a reload, and Remove + Undo bring the same contestant back.
 // - Saves a wide shot and close-ups of both jerseys' left sleeves (45 vs the jersey's own 32), with the automation
 //   flag on (still pose, deterministic), a wide shot under a low sun from the side with the floor shadow on (every
-//   contestant's whole shadow inside the fitted shadow camera), and a wide shot as a visitor (idle playing) with each
+//   contestant's whole shadow inside the fitted shadow camera), the same under the Lobby look, and a wide shot as a visitor (idle playing) with each
 //   contestant's pelvis checked for motion.
 // Usage (Git Bash, worktree root, dev server: node _docs/multi-character-2026-11-11/serve-5186.mjs):
 //   node _docs/multi-character-2026-11-11/squad-probe.mjs <outdir>
@@ -103,6 +103,16 @@ async function closeUps(context) {
   await page.waitForTimeout(1500);
   await converged(page);
   await canvasShot(page, "shadows-low-side-sun.png");
+  // The other ready-made look: Lobby (navy backdrop, blue rims), replacing everything the sun step changed.
+  await page.evaluate(async () => {
+    const { useLightingStore } = await import("/src/lib/lighting-store.ts");
+    const { lobbyLook } = await import("/src/lib/stage-lighting.ts");
+    useLightingStore.getState().apply(lobbyLook());
+  });
+  await page.waitForTimeout(1500);
+  await converged(page);
+  log("lobby: members after the look change", (await members(page)).length);
+  await canvasShot(page, "squad-lobby.png");
   await page.close();
 }
 
