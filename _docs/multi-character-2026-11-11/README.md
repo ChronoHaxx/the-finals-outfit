@@ -38,7 +38,8 @@ later learning parts have not been asked yet.
   - They load one at a time, with "Loading contestant i of n" and that contestant's MB.
   - One frame driver steps every animator; the still view waits while any is moving.
   - The camera follows the group's centre.
-- 2.5 (07c7eae): shadows fitted to the group (`groupShadowFrustum` in `stage-lighting.ts`, three tests). How it works:
+- 2.5 (07c7eae): shadows fitted to the group (`groupShadowFrustum` in `stage-lighting.ts`, three tests). The study note
+  `shadow-fitting.md` covers texels to metres, why a tighter box is sharper, and the measured sizes. In short:
   - Each contestant is treated as a box: 1.4 m either side, 2.5 m tall.
   - Every box is projected into the sun's view. Across the beam that is x·cos b − z·sin b; along it, x·sin b + z·cos b.
   - The orthographic shadow camera is sized to cover all of them. Its far plane reaches the furthest floor-shadow tip
