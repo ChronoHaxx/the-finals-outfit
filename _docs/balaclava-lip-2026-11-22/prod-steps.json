@@ -1,0 +1,60 @@
+{
+  "app": "http://127.0.0.1:4358/the-finals-outfit/",
+  "chinals": "https://7c9add72.the-finals-outfit-chinals-assets.pages.dev/",
+  "at": "2026-11-22T13:38:53.410Z",
+  "steps": {
+    "s1": {
+      "wraps": 1
+    },
+    "s2": {
+      "balaclava": true,
+      "upperLipVertices": 363,
+      "outside": 0,
+      "worstMm": -0.62,
+      "masks": [
+        "BWA_FaceJoints_FaceMask"
+      ]
+    },
+    "s3": {
+      "off": {
+        "balaclava": true,
+        "upperLipVertices": 363,
+        "outside": 0,
+        "worstMm": -1.78,
+        "masks": [
+          "BWA_FaceJoints_FaceMask"
+        ]
+      },
+      "onAgain": {
+        "balaclava": true,
+        "upperLipVertices": 363,
+        "outside": 0,
+        "worstMm": -0.62,
+        "masks": [
+          "BWA_FaceJoints_FaceMask"
+        ]
+      }
+    },
+    "s4": {
+      "route": "http://127.0.0.1:4358/the-finals-outfit/#/",
+      "balaclava": true,
+      "upperLipVertices": 363,
+      "outside": 0,
+      "worstMm": -0.39,
+      "masks": [
+        "BWA_FaceJoints_FaceMask"
+      ]
+    },
+    "s5": {
+      "balaclava": true,
+      "upperLipVertices": 363,
+      "outside": 0,
+      "worstMm": -0.92,
+      "masks": [
+        "BWA_FaceJoints_FaceMask"
+      ]
+    }
+  },
+  "badResponses": [],
+  "errors": []
+}
