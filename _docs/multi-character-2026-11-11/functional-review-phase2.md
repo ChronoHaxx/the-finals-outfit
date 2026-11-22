@@ -90,8 +90,8 @@ Reply "1-5 pass" (using the actual step numbers), or for example "4 fails: Undo 
 - Frame time and memory (`squad-profile.json`, dev build):
   - busy JS per frame: 3.21 / 9.52 / 14.95 ms for 1 / 2 / 3 contestants;
   - JS heap after GC: 572 / 927 / 1283 MB.
-- `npx tsc -b --noEmit` clean. `npm test`: everything passes except the 8 tests that read model files, which this
-  worktree does not have extracted. Those 8 fail the same way on main.
+- `npx tsc -b --noEmit` clean. `npm test` on 2e7d11c: 1078 pass, 6 skipped. The 8 tests that read model files fail,
+  because this worktree does not have them extracted. Those 8 fail the same way on main.
 
 ## Recorded result
 
