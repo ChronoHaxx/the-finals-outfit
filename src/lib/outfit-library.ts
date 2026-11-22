@@ -46,6 +46,10 @@ export interface OutfitRecord {
    *  Absent (every outfit saved before 12 Nov 2026) means Masculine. Added without a schema bump: older tabs keep
    *  it as an unknown field. */
   bodyType?: string;
+  /** Camera views saved with the outfit (src/lib/camera-view.ts), kept exactly as written: entries this version cannot
+   *  read stay untouched, deletions are tombstones. Normally a list; any other value (some newer format) is kept and
+   *  never rewritten. Absent before 21 Nov 2026. Added without a schema bump: older tabs keep it as an unknown field. */
+  cameraViews?: unknown;
   /** The outfit's player number (src/lib/player-number.ts), kept exactly as written, including a value from a newer
    *  site. Absent (every outfit saved before 21 Nov 2026) means each piece prints its own number. Added without a
    *  schema bump, like bodyType. */
@@ -54,15 +58,18 @@ export interface OutfitRecord {
 }
 
 const KNOWN_FIELDS = ["v", "id", "rev", "writer", "name", "createdAt", "updatedAt", "slots", "labels",
-  "generated", "deletedAt", "bodyType", "playerNumber"] as const;
+  "generated", "deletedAt", "bodyType", "playerNumber", "cameraViews"] as const;
 
 /** What an outfit shows, as opposed to its bookkeeping. */
 export interface OutfitContent {
   name: string; slots: SlotMap; labels?: SlotMap; generated?: boolean; bodyType?: string; playerNumber?: number;
+  cameraViews?: unknown;
 }
 
 // Absent and "masculine" are the same body type; compare by meaning so the field's arrival is not an edit.
 const bodyTypeKey = (value: unknown) => typeof value === "string" && value ? value : "masculine";
+// No camera views and an empty list are the same; anything else compares by its exact stored form.
+const viewsKey = (value: unknown) => value === undefined ? "[]" : JSON.stringify(value);
 
 export interface JournalEntry { record: OutfitRecord; base?: number }
 
@@ -99,6 +106,7 @@ export interface Draft {
   generated?: boolean;
   bodyType?: string;
   playerNumber?: number;
+  cameraViews?: unknown;
   /** "link": an opened share link; "preset": one of the game's own outfits; "cap": made at the cap, so it could not be saved. */
   reason: "link" | "preset" | "cap";
   /** Edited by hand while it could not be saved. Leaving it then needs a confirmation. */
@@ -196,12 +204,13 @@ const sameMap = (a: SlotMap | undefined, b: SlotMap | undefined) => {
 export function sameContent(a: OutfitRecord, b: OutfitRecord): boolean {
   return a.name === b.name && sameMap(a.slots, b.slots) && sameMap(a.labels, b.labels)
     && !!a.generated === !!b.generated && a.deletedAt === b.deletedAt && bodyTypeKey(a.bodyType) === bodyTypeKey(b.bodyType)
-    && samePlayerNumber(a.playerNumber, b.playerNumber);
+    && samePlayerNumber(a.playerNumber, b.playerNumber) && viewsKey(a.cameraViews) === viewsKey(b.cameraViews);
 }
 
 /** The content fields of a record or draft, for a copy (a duplicate, a fork, a promoted draft). */
 const contentOf = (source: OutfitContent): OutfitContent => ({ name: source.name, slots: source.slots,
-  labels: source.labels, generated: source.generated, bodyType: source.bodyType, playerNumber: source.playerNumber });
+  labels: source.labels, generated: source.generated, bodyType: source.bodyType, playerNumber: source.playerNumber,
+  cameraViews: source.cameraViews });
 
 /** "Outfit" -> "Outfit 1", "Outfit 2"...; "Name (2)" style when `paren` is set. */
 export function uniqueName(stem: string, taken: Iterable<string>, opts: { numberFirst?: boolean; paren?: boolean } = {}): string {
@@ -421,6 +430,8 @@ export class OutfitLibrary {
     if (content.generated) record.generated = true;
     if (content.bodyType) record.bodyType = content.bodyType;
     if (storedPlayerNumber(content.playerNumber) !== null) record.playerNumber = content.playerNumber;
+    if (content.cameraViews !== undefined)
+      record.cameraViews = Array.isArray(content.cameraViews) ? [...content.cameraViews] : content.cameraViews;
     this.records.set(record.id, record);
     this.dirty.add(record.id);
     this.journal?.write(record.id, { record });
@@ -462,6 +473,18 @@ export class OutfitLibrary {
       if (!sameNumber) {
         if (storedPlayerNumber(playerNumber) === null) delete next.playerNumber; else next.playerNumber = playerNumber!;
       }
+      return next;
+    });
+  }
+
+  /** Replace the outfit's camera views (camera-view.ts builds the list). Saving a view is work worth keeping, so the
+   *  outfit stops being a roll that Randomise or Reset may replace in place. */
+  setCameraViews(id: string, cameraViews: unknown[]) {
+    const record = this.records.get(id);
+    if (!record || viewsKey(record.cameraViews) === viewsKey(cameraViews)) return;
+    this.touch(id, r => {
+      const next: OutfitRecord = { ...r, cameraViews };
+      delete next.generated;
       return next;
     });
   }
