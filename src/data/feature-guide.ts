@@ -38,6 +38,12 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
     title: "Build an outfit",
     items: [
       {
+        id: "in-game-outfits",
+        title: "In-game outfits",
+        text: "Outfits lists the game's own outfits with their in-game icons. Wear this outfit puts one on and keeps your face and skin. It is not saved until you change something or press Save, so your saved outfits stay as they were.",
+        where: "Outfits, under In game at the top of the item list",
+      },
+      {
         id: "items",
         title: "Items",
         text: "Pick cosmetics from the Items drawer beside the 3D view. Search a slot by name, or filter it by 3D status.",
@@ -142,8 +148,20 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
       {
         id: "lighting",
         title: "Lighting and backdrop",
-        text: "Start from Studio, Lobby or a sun look, then change each light's colour, brightness and direction, pick a solid or gradient backdrop, turn on a floor shadow and save your own looks.",
+        text: "Start from a ready-made look, such as Studio, Lobby, Season 12 menu, Dramatic or Nighttime, then change each light's colour, brightness and direction, pick a solid or gradient backdrop, turn on a floor shadow and save your own looks.",
         where: "The button named after the look, top right",
+      },
+      {
+        id: "light-markers",
+        title: "Show lights",
+        text: "See each light in the 3D view as a bulb, with a cone the way it shines. Drag a bulb to move its light: its Direction and Height sliders follow. The bulbs never appear in screenshots or share images, and H hides them.",
+        where: "Show lights in the 3D view, under Lights in the lighting panel",
+      },
+      {
+        id: "scenes",
+        title: "Scenes",
+        text: "Put the Season 12 menu stage or the tunnel from the Season 12 intro behind the character. While a scene shows, a drag turns the character and the camera stays still. Pick another backdrop or look to leave it.",
+        where: "Backdrop, in the lighting panel",
       },
       {
         id: "graphics",
@@ -168,6 +186,12 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
         title: "Screenshots",
         text: "Save a PNG or copy it to paste into a chat, on the backdrop or with a transparent background, at up to three times the view's size.",
         where: "Camera button, top right",
+      },
+      {
+        id: "emote-video",
+        title: "Emote video",
+        text: "Save the emote on screen as a 60 fps video, made in your own browser: an MP4 with sound, a see-through WebM, or a see-through PNG sequence for video editors.",
+        where: "Camera button, Video tab",
       },
     ],
   },

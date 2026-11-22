@@ -1,5 +1,7 @@
-// Client side of the mesh gate (workers/site). With VITE_MESH_BASE set, every .glb is downloaded from the site Worker
-// instead of its public host (gatedMeshPath: <base><host label>/<path>), and the Worker only serves a browser holding a
+// Client side of the mesh gate (workers/site). With VITE_MESH_BASE set, every cosmetic mesh (.glb on one of the
+// release's model hosts, meshHostOrigins) is downloaded from the site Worker instead of its public host (gatedMeshPath:
+// <base><host label>/<path>). Other .glb files, such as emote props and scene backdrops, keep their own hosts, because
+// the Worker stages only the model hosts. The Worker only serves a browser holding a
 // session cookie. The cookie comes from POST /api/session after a Cloudflare Turnstile check, which is invisible for
 // almost everyone: a small box appears only when Cloudflare wants a click.
 //
@@ -7,6 +9,7 @@
 // session it asked for expires. A 401 from the gate (missing, expired or spent session) asks for a new one once.
 
 import { gatedMeshPath } from "./asset-routing.mjs";
+import { meshHostOrigins } from "./assets";
 
 // Optional chaining: Node runs the asset-fetch tests without Vite, where import.meta.env does not exist.
 const MESH_BASE = import.meta.env?.VITE_MESH_BASE?.trim() ?? "";
@@ -23,10 +26,13 @@ declare global { interface Window { turnstile?: Turnstile } }
 /** A refusal the user can act on, worded for the loading/error UI rather than for a log. */
 export class MeshGateError extends Error {}
 
+let meshHosts: string[] | null = null;
+
 /** Where a mesh URL is downloaded from when the gate is on; null for anything that is not a gated mesh. */
 export function gatedUrl(url: string): string | null {
   if (!MESH_BASE) return null;
-  const path = gatedMeshPath(new URL(url, window.location.href).href);
+  meshHosts ??= meshHostOrigins();
+  const path = gatedMeshPath(new URL(url, window.location.href).href, meshHosts);
   return path ? new URL(path, new URL(MESH_BASE, window.location.href)).href : null;
 }
 

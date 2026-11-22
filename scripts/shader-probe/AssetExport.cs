@@ -14,13 +14,17 @@ using System.Security.Cryptography;
 // material baking or skin-influence reduction. Outputs are local ignored assets.
 internal static class AssetExport
 {
-    public static int Run(DefaultFileProvider provider, string requestsPath, string output, bool meshes = true)
+    // `level` (12 Nov 2026, scene backdrops): also accepts .umap packages, and records each export's outer, full path, class
+    // and template, which a level needs (components belong to actors through their outer; a blueprint instance's unchanged
+    // values live on its template), plus the package size. Without it every output is unchanged.
+    public static int Run(DefaultFileProvider provider, string requestsPath, string output, bool meshes = true, bool level = false)
     {
         var requests = JsonConvert.DeserializeObject<string[]>(File.ReadAllText(requestsPath))
             ?? throw new InvalidDataException("Expected asset names or package paths");
         var results = new List<object>();
         var outputNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var packages = provider.Files.Where(p => p.Key.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase))
+        var packages = provider.Files.Where(p => p.Key.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase)
+                || (level && p.Key.EndsWith(".umap", StringComparison.OrdinalIgnoreCase)))
             .DistinctBy(p => p.Key, StringComparer.OrdinalIgnoreCase).ToArray();
         var byName = packages.ToLookup(p => Path.GetFileNameWithoutExtension(p.Key), StringComparer.OrdinalIgnoreCase);
         var byPath = packages.ToDictionary(p => p.Key, p => p, StringComparer.OrdinalIgnoreCase);
@@ -58,13 +62,24 @@ internal static class AssetExport
                 var metadata = exports.Select(o => new
                 {
                     type = o.ExportType, o.Name, propertyCount = o.Properties.Count,
-                    properties = Properties(o),
+                    properties = level ? LevelProperties(o) : Properties(o),
                     importedBounds = o is USkeletalMesh sk ? (object)sk.ImportedBounds : null,
                 }).ToArray();
                 var propertiesFile = stem + ".properties.json";
-                File.WriteAllText(Path.Combine(output, propertiesFile), JsonConvert.SerializeObject(metadata, Formatting.Indented));
-                var hash = Convert.ToHexString(SHA256.HashData(file.Value.Read()));
-                results.Add(new { request, path = file.Key, sha256 = hash, meshFile, propertiesFile, exports = metadata.Select(m => new { m.type, m.Name, m.propertyCount }) });
+                if (level)
+                    File.WriteAllText(Path.Combine(output, propertiesFile), JsonConvert.SerializeObject(exports.Select(o => new
+                    {
+                        type = o.ExportType, o.Name, outer = o.Outer?.Name.Text, path = o.GetPathName(),
+                        @class = o.Class?.GetPathName(), template = o.Template?.GetPathName(),
+                        propertyCount = o.Properties.Count, properties = LevelProperties(o),
+                    }), Formatting.Indented));
+                else
+                    File.WriteAllText(Path.Combine(output, propertiesFile), JsonConvert.SerializeObject(metadata, Formatting.Indented));
+                var packageBytes = file.Value.Read();
+                var hash = Convert.ToHexString(SHA256.HashData(packageBytes));
+                if (level) results.Add(new { request, path = file.Key, sha256 = hash, bytes = packageBytes.Length, meshFile, propertiesFile,
+                    exports = metadata.Select(m => new { m.type, m.Name, m.propertyCount }) });
+                else results.Add(new { request, path = file.Key, sha256 = hash, meshFile, propertiesFile, exports = metadata.Select(m => new { m.type, m.Name, m.propertyCount }) });
                 Console.WriteLine($"ASSET {name}: {metadata.Sum(m => m.propertyCount)} properties, mesh={meshFile != null}");
             }
             catch (Exception error)
@@ -83,6 +98,21 @@ internal static class AssetExport
     internal static JObject Properties(UObject o) => new(o.Properties.Select(p =>
         new JProperty(p.ArrayIndex > 0 ? $"{p.Name.Text}[{p.ArrayIndex}]" : p.Name.Text,
             p.Tag == null ? JValue.CreateNull() : JToken.FromObject(p.Tag))));
+
+    // Level exports can carry one property name twice (an actor class and its subclass both declaring RootComponent, seen
+    // in MainMenuReforge): keep every value, the later ones as "Name#2", "Name#3".
+    private static JObject LevelProperties(UObject o)
+    {
+        var result = new JObject();
+        foreach (var p in o.Properties)
+        {
+            var name = p.ArrayIndex > 0 ? $"{p.Name.Text}[{p.ArrayIndex}]" : p.Name.Text;
+            var key = name;
+            for (int n = 2; result.ContainsKey(key); n++) key = $"{name}#{n}";
+            result[key] = p.Tag == null ? JValue.CreateNull() : JToken.FromObject(p.Tag);
+        }
+        return result;
+    }
 
     private static float[] V(FVector v) => [v.X, v.Y, v.Z];
     private static float[] V4(FVector4 v) => [v.X, v.Y, v.Z, v.W];

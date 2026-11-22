@@ -31,6 +31,15 @@ export function workflowEnv(text, name) {
   return values[0] ?? '';
 }
 
+/** Every `NAME_BASE` deploy.yml sets to a literal URL, by name, in file order. Read generically, so a host line added
+ *  later (scenes, Chinals clips, the next one) is expected without an edit here. The build's `VITE_*` lines only copy
+ *  these into the bundle (`VITE_X_BASE: ${{ env.X_BASE }}`, and `VITE_BASE` is the site path), so they are skipped. */
+export function workflowBases(text) {
+  const names = [...new Set([...text.matchAll(/^[ \t]+([A-Z][A-Z0-9_]*_BASE):/gm)].map(match => match[1]))]
+    .filter(name => !name.startsWith('VITE_'));
+  return Object.fromEntries(names.map(name => [name, workflowEnv(text, name)]).filter(([, value]) => value));
+}
+
 function httpsBase(name, value) {
   const url = new URL(value);
   assert(url.protocol === 'https:' && !url.username && !url.search && !url.hash, `${name} must be a plain https URL: ${value}`);
@@ -61,12 +70,18 @@ export function readDeployConfig({ root = REPO_ROOT,
     ...routed.map(host => ({ role: `reconstruction shard (${host.prefixes.length} routed prefixes)`, base: host.baseUrl })),
   ].filter(Boolean);
   const animationsBase = raw.animations ? httpsBase('ANIMATIONS_BASE', raw.animations) : null;
+  // Every base line, the five above included: each must be a plain https URL, is inlined by the build, and is a host
+  // the live app may name. Only the hosts above get a file probed; the rest are listed in the summary as named only.
+  const baseLines = Object.entries(workflowBases(workflow)).map(([name, value]) => ({ name, base: httpsBase(name, value), value }));
+  const probed = new Set([...hosts.map(host => host.base), animationsBase].filter(Boolean));
   // The strings the build inlines verbatim (vite's import.meta.env and the routes JSON): the live bundle must name each.
   const routedBases = routesJson.formatVersion === 1 ? routesJson.hosts.map(host => host.baseUrl) : Object.values(routesJson);
-  const bundleStrings = [raw.assets, raw.models, raw.reconstruction, raw.animations, raw.sharePreview, ...routedBases]
-    .filter(Boolean);
+  const bundleStrings = [...baseLines.map(line => line.value), ...routedBases].filter(Boolean);
+  const hostname = base => new URL(base).hostname;
   return { bases, hosts, animationsBase, sharePreviewBase: raw.sharePreview || null,
-    bundleStrings: [...new Set(bundleStrings)] };
+    bundleStrings: [...new Set(bundleStrings)],
+    expectedHostnames: [...new Set([...hosts.map(host => hostname(host.base)), ...baseLines.map(line => hostname(line.base))])],
+    namedOnly: baseLines.filter(line => !probed.has(line.base)).map(({ name, base }) => ({ name, base })) };
 }
 
 /** One file per host, in a stable order: the always-loaded files first, then every catalogue icon and model path,
@@ -147,8 +162,7 @@ export async function checkSiteHealth({ site = SITE_URL, config = readDeployConf
   const missing = config.bundleStrings.filter(value => !source.includes(value));
   assert.deepEqual(missing, [], `The live app was not built with main's deploy.yml hosts (missing ${missing.join(', ')}). ` +
     'The latest deploy may have failed or not finished.');
-  const expectedHosts = new Set([...config.hosts.map(host => new URL(host.base).hostname),
-    ...(config.animationsBase ? [new URL(config.animationsBase).hostname] : [])]);
+  const expectedHosts = new Set(config.expectedHostnames);
   const foreign = [...new Set([...source.matchAll(/https?:\/\/([a-z0-9.-]+\.(?:pages\.dev|netlify\.app))\b/gi)]
     .map(match => match[1].toLowerCase()))].filter(host => !expectedHosts.has(host));
   assert.deepEqual(foreign, [], `The live app names asset hosts deploy.yml does not: ${foreign.join(', ')}`);
@@ -179,7 +193,7 @@ export async function checkSiteHealth({ site = SITE_URL, config = readDeployConf
 
   return { checkedAt: new Date().toISOString(), site, bundles: scripts.map(url => url.pathname.split('/').pop()),
     catalogueFiles: preloads.length, hosts: samples, animationsBase: config.animationsBase, animation,
-    sharePreviewBase: config.sharePreviewBase, checks };
+    sharePreviewBase: config.sharePreviewBase, namedOnly: config.namedOnly ?? [], checks };
 }
 
 export function healthSummary(report) {
@@ -188,9 +202,11 @@ export function healthSummary(report) {
     `| ${host.role} | ${label(host.base)} | \`${host.path}\`${host.fromCatalogue ? '' : ' (deployment only)'} |`);
   if (report.animation) rows.push(`| animations | ${label(report.animationsBase)} | ` +
     `${report.animation.clips} clips, idle \`${report.animation.idle}\`, ${report.animation.props} props |`);
+  const namedOnly = (report.namedOnly ?? []).map(line => `\`${line.name}\` (${label(line.base)})`);
   return `## Site health: passed\n\nChecked ${report.checkedAt}: ${report.site}\n\n` +
     `- App: \`${report.bundles.join('`, `')}\` names every host in main's deploy.yml and no other asset host; ` +
     `${report.catalogueFiles} preloaded catalogue files respond.\n` +
+    (namedOnly.length ? `- Named by the app but not probed: ${namedOnly.join(', ')}.\n` : '') +
     `- ${report.checks.length} requests, all HTTP 200; assets allow cross-origin reads and are cached for at least a day.\n\n` +
     `| Host | Deployment | Sample |\n| --- | --- | --- |\n${rows.join('\n')}\n\n` +
     `HTTP availability and configuration only; this does not render the outfit.\n`;

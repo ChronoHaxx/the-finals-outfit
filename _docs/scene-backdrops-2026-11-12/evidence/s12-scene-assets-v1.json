@@ -1,0 +1,1435 @@
+{
+ "generated": "2026-11-12",
+ "source": "installed Steam build (S12, paks of 20-29 Oct 2026) read with scripts/shader-probe (assets/textures modes), usmap e5b29e28",
+ "mappingSha256": "E5B29E28AE760E6E420D2FBCA103278CD5F71A52256B5BFB5524E111F70F7CFF",
+ "parserVersion": "1.2.2.0",
+ "note": "Counts and sizes only; no geometry or pixels are kept in the repo.",
+ "meshes": [
+  {
+   "mesh": "assets-v1\\SM_BackgroundStage_S12_Circle",
+   "source": "Discovery/Content/Discovery/Maps/Frontend/Background/S12_Reforge/SM_BackgroundStage_S12_Circle.uasset",
+   "vertices": 130,
+   "triangles": 120,
+   "uvSets": 1,
+   "boundsMetres": [
+    7.55,
+    15.1,
+    0.0
+   ],
+   "materials": [
+    "MI_Frontend_FloorLED"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_BackgroundStage_S12_Circle_B",
+   "source": "Discovery/Content/Discovery/Maps/Frontend/Background/S12_Reforge/SM_BackgroundStage_S12_Circle_B.uasset",
+   "vertices": 130,
+   "triangles": 120,
+   "uvSets": 1,
+   "boundsMetres": [
+    7.55,
+    15.1,
+    0.0
+   ],
+   "materials": [
+    "MI_Frontend_FloorLED"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_BackgroundStage_S12_Scaffold",
+   "source": "Discovery/Content/Discovery/Maps/Frontend/Background/S12_Reforge/SM_BackgroundStage_S12_Scaffold.uasset",
+   "vertices": 864,
+   "triangles": 508,
+   "uvSets": 1,
+   "boundsMetres": [
+    2.2,
+    2.2,
+    20.0
+   ],
+   "materials": [
+    "MI_BackstageScaffold"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_CielingAdd_IntroPodium_01",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/SM_CielingAdd_IntroPodium_01.uasset",
+   "vertices": 3662,
+   "triangles": 2928,
+   "uvSets": 1,
+   "boundsMetres": [
+    12.2,
+    6.0,
+    2.54
+   ],
+   "materials": [
+    "MI_CielingAdd_IntroPodium_01_A"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_DDGIBox_IntroPodium_01",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/SM_DDGIBox_IntroPodium_01.uasset",
+   "vertices": 48,
+   "triangles": 24,
+   "uvSets": 1,
+   "boundsMetres": [
+    43.59,
+    20.46,
+    12.45
+   ],
+   "materials": [
+    "MI_Floor_IntroPodium_01"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_Glass_IntroPodium_01",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/SM_Glass_IntroPodium_01.uasset",
+   "vertices": 4,
+   "triangles": 2,
+   "uvSets": 2,
+   "boundsMetres": [
+    4.22,
+    0.0,
+    3.99
+   ],
+   "materials": [
+    "M_GlassIntroPodium_01"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_Intro_Platform_01_Fence_A",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium_01/Environment/Architecture/IntroPlatform_01/SM_Intro_Platform_01_Fence_A.uasset",
+   "vertices": 1576,
+   "triangles": 1192,
+   "uvSets": 2,
+   "boundsMetres": [
+    4.06,
+    0.11,
+    1.04
+   ],
+   "materials": [
+    "MI_Intro_Platform_01_A"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_Intro_Platform_01_Fence_B",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium_01/Environment/Architecture/IntroPlatform_01/SM_Intro_Platform_01_Fence_B.uasset",
+   "vertices": 1663,
+   "triangles": 1312,
+   "uvSets": 2,
+   "boundsMetres": [
+    3.3,
+    0.11,
+    1.04
+   ],
+   "materials": [
+    "MI_Intro_Platform_01_A"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_Intro_Platform_01_Floor_A",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium_01/Environment/Architecture/IntroPlatform_01/SM_Intro_Platform_01_Floor_A.uasset",
+   "vertices": 1044,
+   "triangles": 628,
+   "uvSets": 2,
+   "boundsMetres": [
+    4.0,
+    4.0,
+    0.55
+   ],
+   "materials": [
+    "MI_Intro_Platform_01_A",
+    "MI_THEFINALS_01_Labels_A"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_Intro_Platform_01_Floor_B",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium_01/Environment/Architecture/IntroPlatform_01/SM_Intro_Platform_01_Floor_B.uasset",
+   "vertices": 1072,
+   "triangles": 666,
+   "uvSets": 2,
+   "boundsMetres": [
+    4.0,
+    4.0,
+    0.55
+   ],
+   "materials": [
+    "MI_Intro_Platform_01_A",
+    "MI_THEFINALS_01_Labels_A"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_Intro_Platform_01_Stair_A",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium_01/Environment/Architecture/IntroPlatform_01/SM_Intro_Platform_01_Stair_A.uasset",
+   "vertices": 558,
+   "triangles": 496,
+   "uvSets": 2,
+   "boundsMetres": [
+    11.69,
+    14.18,
+    7.15
+   ],
+   "materials": [
+    "MI_Intro_Platform_01_A"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_Intro_Platform_01_Wall_A",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium_01/Environment/Architecture/IntroPlatform_01/SM_Intro_Platform_01_Wall_A.uasset",
+   "vertices": 3633,
+   "triangles": 3337,
+   "uvSets": 2,
+   "boundsMetres": [
+    9.75,
+    0.4,
+    5.5
+   ],
+   "materials": [
+    "MI_Intro_Platform_01_A",
+    "M_Master_LightBulb_01",
+    "MI_THEFINALS_01_Labels_A"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_LobbyRoom_IntroPodium_01",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/SM_LobbyRoom_IntroPodium_01.uasset",
+   "vertices": 108,
+   "triangles": 106,
+   "uvSets": 1,
+   "boundsMetres": [
+    16.79,
+    16.79,
+    7.0
+   ],
+   "materials": [
+    "MI_Floor_IntroPodium_01",
+    "MI_Wall_IntroPodium_01"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_ScreenIntroPodium_01",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/SM_ScreenIntroPodium_01.uasset",
+   "vertices": 160,
+   "triangles": 142,
+   "uvSets": 1,
+   "boundsMetres": [
+    0.11,
+    3.99,
+    2.95
+   ],
+   "materials": [
+    "MI_Wall_IntroPodium_01",
+    "MI_Screen_IntroPodium_01"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_TunnelEnd_IntroPodium_01",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/SM_TunnelEnd_IntroPodium_01.uasset",
+   "vertices": 396,
+   "triangles": 400,
+   "uvSets": 1,
+   "boundsMetres": [
+    4.4,
+    6.0,
+    6.96
+   ],
+   "materials": [
+    "MI_Floor_IntroPodium_01",
+    "MI_Drainage_IntroPodium_01",
+    "MI_IntroPodium_Emissive_01"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_TunnelSegment_IntroPodium_01",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/SM_TunnelSegment_IntroPodium_01.uasset",
+   "vertices": 904,
+   "triangles": 862,
+   "uvSets": 1,
+   "boundsMetres": [
+    4.18,
+    4.0,
+    5.57
+   ],
+   "materials": [
+    "MI_Floor_IntroPodium_01",
+    "MI_Wall_IntroPodium_01",
+    "MI_Drainage_IntroPodium_01",
+    "MI_Cieling_IntroPodium_01",
+    "MI_Panel_IntroPodium_01",
+    "MI_Wall_IntroPodium_01",
+    "MI_IntroPodium_Emissive_01"
+   ]
+  },
+  {
+   "mesh": "assets-v1\\SM_TunnelSegment_IntroPodium_01_B",
+   "source": "Discovery/Content/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/SM_TunnelSegment_IntroPodium_01_B.uasset",
+   "vertices": 390,
+   "triangles": 318,
+   "uvSets": 1,
+   "boundsMetres": [
+    4.18,
+    2.0,
+    5.57
+   ],
+   "materials": [
+    "MI_Floor_IntroPodium_01",
+    "MI_Wall_IntroPodium_01",
+    "MI_Drainage_IntroPodium_01",
+    "MI_Cieling_IntroPodium_01",
+    "MI_Panel_IntroPodium_01"
+   ]
+  },
+  {
+   "mesh": "assets-v2\\SM_Floor_Stage_S05",
+   "source": "Discovery/Content/Discovery/Maps/Frontend/Background/S05/SM_Floor_Stage_S05.uasset",
+   "vertices": 2159,
+   "triangles": 4104,
+   "uvSets": 1,
+   "boundsMetres": [
+    200.0,
+    200.0,
+    0.0
+   ],
+   "materials": [
+    "MI_FrontendStageFloor_S05"
+   ]
+  },
+  {
+   "mesh": "assets-v2\\SM_FrontendStage_Wall_01",
+   "source": "Discovery/Content/Discovery/Maps/Frontend/Background/SM_FrontendStage_Wall_01.uasset",
+   "vertices": 272,
+   "triangles": 260,
+   "uvSets": 1,
+   "boundsMetres": [
+    7.98,
+    15.96,
+    6.0
+   ],
+   "materials": [
+    "WorldGridMaterial"
+   ]
+  },
+  {
+   "mesh": "assets-v2\\SM_Frontend_S09_Floor_A",
+   "source": "Discovery/Content/Discovery/Maps/Frontend/Background/S09/SM_Frontend_S09_Floor_A.uasset",
+   "vertices": 4,
+   "triangles": 2,
+   "uvSets": 1,
+   "boundsMetres": [
+    56.0,
+    50.31,
+    0.0
+   ],
+   "materials": [
+    "MI_FrontendStageFloor_S09"
+   ]
+  }
+ ],
+ "materialInstances": [
+  {
+   "instance": "assets-v1\\MI_BackstageFloor_Reforge",
+   "parent": "Material'M_BackstageFloor'",
+   "textures": {},
+   "scalars": [
+    "UseRoughnessFalloff",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_BackstageScaffold",
+   "parent": "Material'M_BackstageFloor_Scaffold'",
+   "textures": {},
+   "scalars": [
+    "ColorMultiply",
+    "Metallic",
+    "RoughnessMultiply",
+    "OpacityElevationBlendFalloff",
+    "OpacityElevationBlendHeight",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_CielingAdd_IntroPodium_01_A",
+   "parent": "Material'M_Props_01'",
+   "textures": {
+    "CR": "Texture2D'T_Default_01_C'",
+    "NOH": "Texture2D'T_Default_01_NOH'",
+    "NOHBaked": "Texture2D'T_TrimDirectional_B_NOM'"
+   },
+   "scalars": [
+    "ColorMultiply",
+    "Roughness",
+    "Metalness",
+    "U Tile",
+    "V Tile",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Cieling_IntroPodium_01",
+   "parent": "Material'M_Props_01'",
+   "textures": {
+    "CR": "Texture2D'T_Concrete_Cast_01_CR'",
+    "NOH": "Texture2D'T_Concrete_Cast_01_NOH'"
+   },
+   "scalars": [
+    "ColorDesaturation",
+    "ColorMultiply",
+    "Tiling",
+    "Roughness",
+    "U Tile",
+    "V Tile",
+    "RefractionDepthBias",
+    "ActivateRoughnessOverlay"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_CollectionEventFloor_S12",
+   "parent": "Material'M_FrontendStageFloor_S09'",
+   "textures": {
+    "ColorTexture": "Texture2D'T_Metal_Painted_03_CR'",
+    "NormalTexture": "Texture2D'T_MetalTiles_01_NOH'"
+   },
+   "scalars": [
+    "ColorMultiply",
+    "EdgeMask_High",
+    "EdgeMask_Low",
+    "EnableFloorGradientRoughness",
+    "GradientRoughnessAmount",
+    "Metallic",
+    "Opacity",
+    "Roughness Multiply",
+    "RoughnessHigh",
+    "RoughnessLow",
+    "RoughnessTiling",
+    "Specular_Background",
+    "Tiling",
+    "Normal Strength",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_CollectionEvent_S12_Backdrop_01_A",
+   "parent": "Material'M_CollectionEvent_Lunar_Background_01'",
+   "textures": {
+    "Texture": "Texture2D'T_CollectionEvent_S12_Backdrop_01_A'"
+   },
+   "scalars": [
+    "EmissiveMultiplier",
+    "UseAlphaOpacity",
+    "VignettePosition",
+    "VignetteStrength",
+    "Opacity Amount",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_CollectionEvent_S12_Gradient",
+   "parent": "Material'M_Emissive_Trim'",
+   "textures": {
+    "Mask": "Texture2D'T_Lightbulb_01_C'"
+   },
+   "scalars": [
+    "EmissivePower",
+    "EmissiveStrength",
+    "Opaciy",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_CollectionEvent_S12_Logo",
+   "parent": "Material'M_CollectionEventWheel_Logo_Masked'",
+   "textures": {
+    "CollectionEventLogoTexture": "Texture2D'T_THEFINALS_01_Icon_A'"
+   },
+   "scalars": [
+    "EmissiveMultiplier",
+    "IconAngle",
+    "IconOffsetX",
+    "IconOffsetY",
+    "IconSize",
+    "OutlineThickness",
+    "StartTime",
+    "UseSecondaryColor",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_CollectionEvent_S12_Pumpkins",
+   "parent": "Material'M_Props_01'",
+   "textures": {
+    "CR": "Texture2D'T_Event_Pumpkin_01_A_CR'",
+    "NOH": "Texture2D'T_Event_Pumpkin_01_A_NOM'",
+    "Emissive": "Texture2D'T_MI_Pumpkin_01_A_Mask'"
+   },
+   "scalars": [
+    "ColorDesaturation",
+    "ColorMultiply",
+    "NormalIntensity",
+    "Roughness",
+    "ActivateAlphaMetallic_s",
+    "U Tile",
+    "V Tile",
+    "EmissiveMultiply",
+    "EmissivePower",
+    "EmissiveTiling",
+    "PulseSpeed",
+    "WetnessAmount",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Drainage_IntroPodium_01",
+   "parent": "Material'M_Props_01'",
+   "textures": {
+    "CR": "Texture2D'T_Mon_StoneTileTrim_01_CR'",
+    "NOH": "Texture2D'T_Mon_StoneTileTrim_01_NOH'"
+   },
+   "scalars": [
+    "ColorDesaturation",
+    "ColorMultiply",
+    "Tiling",
+    "NormalIntensity",
+    "Roughness",
+    "U Tile",
+    "V Tile",
+    "RefractionDepthBias",
+    "ActivateRoughnessOverlay"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FakeFog_03",
+   "parent": "Material'M_FakeFog_01'",
+   "textures": {
+    "CloudTextureSample": "Texture2D'T_FX_Noise_07'"
+   },
+   "scalars": [
+    "alpha multi",
+    "depth distance",
+    "emissive multiplyer",
+    "FadeDistance",
+    "fog start",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Floor_IntroPodium_01",
+   "parent": "Material'M_Props_01'",
+   "textures": {
+    "CR": "Texture2D'T_TileFloor_01_CR'",
+    "NOH": "Texture2D'T_TileFloor_01_NOH'"
+   },
+   "scalars": [
+    "ColorDesaturation",
+    "ColorMultiply",
+    "Tiling",
+    "NormalIntensity",
+    "Roughness",
+    "U Tile",
+    "V Tile",
+    "Specular",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Floor_IntroPodium_01_B",
+   "parent": "Material'M_FrontendStage_Floor'",
+   "textures": {},
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FogPlane_Background",
+   "parent": "Material'M_FogPlane_01'",
+   "textures": {},
+   "scalars": [
+    "AnimatedSmokeSpeed",
+    "EmissiveStrength",
+    "FadeDistance",
+    "OpacityBias",
+    "UseDistanceFromBottomFade",
+    "UseDistanceFromCenterFade",
+    "UseTopFadeFromCenterPosition",
+    "WindMaxSpeed",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_ALFAACTA",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_VAIIYA'",
+   "textures": {
+    "SponsorTexture": "Texture2D'T_Sponsors_ALFAACTA_01_Icon_A'"
+   },
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_ALFAACTA_02",
+   "parent": "Material'M_FrontEnd_SponsorLogoPlane_01'",
+   "textures": {
+    "SponsorLogo": "Texture2D'T_Sponsors_ALFAACTA_01_Icon_A'"
+   },
+   "scalars": [
+    "EmissiveMultiply",
+    "Amplitude",
+    "Aplitude X",
+    "Aplitude Y",
+    "Aplitude Z",
+    "SpeedWobble",
+    "Spinning Speed X",
+    "Spinning Speed Y",
+    "Spinning Speed Z",
+    "ParallaxAmount",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_CNS",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_VAIIYA'",
+   "textures": {
+    "SponsorTexture": "Texture2D'T_CNS_01_Icon_A'"
+   },
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_CNS_02",
+   "parent": "Material'M_FrontEnd_SponsorLogoPlane_01'",
+   "textures": {
+    "SponsorLogo": "Texture2D'T_CNS_01_Icon_A'"
+   },
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_DISSUN",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_VAIIYA'",
+   "textures": {
+    "SponsorTexture": "Texture2D'T_Sponsors_DISSUN_01_Logo_A'"
+   },
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_DISSUN_02",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_ALFAACTA_02'",
+   "textures": {
+    "SponsorLogo": "Texture2D'T_Sponsors_DISSUN_01_Logo_A'"
+   },
+   "scalars": [
+    "EmissiveMultiply",
+    "ParallaxAmount",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_ENGIMO",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_VAIIYA'",
+   "textures": {
+    "SponsorTexture": "Texture2D'T_Sponsors_ENGIMO_01_Logo_A'"
+   },
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_ENGIMO_02",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_ALFAACTA_02'",
+   "textures": {
+    "SponsorLogo": "Texture2D'T_Sponsors_ENGIMO_01_Logo_A'"
+   },
+   "scalars": [
+    "EmissiveMultiply",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_HOLTOW",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_VAIIYA'",
+   "textures": {
+    "SponsorTexture": "Texture2D'T_Sponsors_HOLTOW_01_Logo_A'"
+   },
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_HOLTOW_02",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_ALFAACTA_02'",
+   "textures": {
+    "SponsorLogo": "Texture2D'T_Sponsors_HOLTOW_01_Logo_A'"
+   },
+   "scalars": [
+    "EmissiveMultiply",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_ISEULT",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_VAIIYA'",
+   "textures": {
+    "SponsorTexture": "Texture2D'T_Sponsors_ISEULT_01_Logo_A'"
+   },
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_ISEULT_02",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_ALFAACTA_02'",
+   "textures": {
+    "SponsorLogo": "Texture2D'T_Sponsors_ISEULT_01_Logo_A'"
+   },
+   "scalars": [
+    "EmissiveMultiply",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_OSPUZE",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_VAIIYA'",
+   "textures": {
+    "SponsorTexture": "Texture2D'T_Sponsors_OSPUZE_01_Icon_A'"
+   },
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_OSPUZE_02",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_ALFAACTA_02'",
+   "textures": {
+    "SponsorLogo": "Texture2D'T_Sponsors_OSPUZE_01_Icon_A'"
+   },
+   "scalars": [
+    "EmissiveMultiply",
+    "ParallaxAmount",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_TRENTILA",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_VAIIYA'",
+   "textures": {
+    "SponsorTexture": "Texture2D'T_Sponsors_TRENTILA_01_Logo_A'"
+   },
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_TRENTILA_02",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_ALFAACTA_02'",
+   "textures": {
+    "SponsorLogo": "Texture2D'T_Sponsors_TRENTILA_01_Logo_A'"
+   },
+   "scalars": [
+    "EmissiveMultiply",
+    "ParallaxAmount",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_VAIIYA",
+   "parent": "Material'M_FrontEnd_SponsorTextPlane_01'",
+   "textures": {
+    "SponsorTexture": "Texture2D'T_Sponsors_VAIIYA_01_Logo_A'"
+   },
+   "scalars": [
+    "Opacity",
+    "Pixelamount",
+    "PixelEffectTiling",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_VAIIYA_02",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_ALFAACTA_02'",
+   "textures": {
+    "SponsorLogo": "Texture2D'T_Sponsors_VAIIYA_01_Logo_A'"
+   },
+   "scalars": [
+    "EmissiveMultiply",
+    "ParallaxAmount",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_VOLPE",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_VAIIYA'",
+   "textures": {
+    "SponsorTexture": "Texture2D'T_Sponsors_VOLPE_01_Logo_A'"
+   },
+   "scalars": [
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontEnd_SponsorText_VOLPE_02",
+   "parent": "MaterialInstanceConstant'MI_FrontEnd_SponsorText_ALFAACTA_02'",
+   "textures": {
+    "SponsorLogo": "Texture2D'T_Sponsors_VOLPE_01_Logo_A'"
+   },
+   "scalars": [
+    "EmissiveMultiply",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontendScreen_Main_S12",
+   "parent": "Material'M_FrontendScreen_Reforge'",
+   "textures": {},
+   "scalars": [
+    "EdgeMask",
+    "EdgeMaxStep",
+    "EdgeMinStep",
+    "Param_3",
+    "Param_4",
+    "SaturateEmissive",
+    "DistanceOpacity",
+    "HorizonFadeHeight",
+    "HorizonFadeWidth",
+    "OffsetU",
+    "OffsetV",
+    "Radius",
+    "RadiusDensity",
+    "PositionClose",
+    "PositionFar",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_FrontendScreen_RewardFlow_S12",
+   "parent": "Material'M_FrontendScreen_Reforge'",
+   "textures": {},
+   "scalars": [
+    "DistanceOpacity",
+    "HorizonFadeHeight",
+    "HorizonFadeWidth",
+    "OffsetU",
+    "OffsetV",
+    "Radius",
+    "RadiusDensity",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Frontend_FloorLED",
+   "parent": "Material'M_Frontend_FloorLED'",
+   "textures": {},
+   "scalars": [
+    "EmissiveIntensity",
+    "OpacityElevationBlendHeight",
+    "VignettePosition",
+    "VignetteStrength",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Frontend_HomeScreenGrid",
+   "parent": "Material'M_Frontend_BackgroundLightGrid'",
+   "textures": {},
+   "scalars": [
+    "BrightnessMultiplier",
+    "BorderFrame",
+    "GridThickness",
+    "LightOpacity",
+    "ShowGrid",
+    "ShowLights",
+    "TileMultiplier",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Frontend_HomeScreenLights",
+   "parent": "MaterialInstanceConstant'MI_Frontend_HomeScreenGrid'",
+   "textures": {},
+   "scalars": [
+    "BrightnessMultiplier",
+    "BorderFrame",
+    "GridIntensity",
+    "GridThickness",
+    "LightFlareDistortion",
+    "LightFlareStrength",
+    "LightOpacity",
+    "LightOpacityCenter",
+    "LightSharpness",
+    "Roundness",
+    "ShowGrid",
+    "ShowLights",
+    "SideLightsMask",
+    "TileMultiplier",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Frontend_TitleLED",
+   "parent": "Material'M_Frontend_TitleLED'",
+   "textures": {
+    "Mask": "Texture2D'T_THEFINALS_01_IconStroke_A'"
+   },
+   "scalars": [
+    "BrightnessMultiplier",
+    "LEDTiling",
+    "OpacityElevationBlendFalloff",
+    "OpacityElevationBlendHeight",
+    "VignettePosition",
+    "VignetteStrength",
+    "Bands",
+    "ChannelSplitAmount",
+    "ChannelSplitGlitchAmount",
+    "GlitchAmount",
+    "GlitchStrength",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_GlassIntroPodium_01_MPCColors",
+   "parent": "Material'M_GlassIntroPodium_01'",
+   "textures": {},
+   "scalars": [
+    "BackgroundEmissive",
+    "LogoEmissive",
+    "UseBackgroundColorFromMPC",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_IntroPodium_Emissive_01",
+   "parent": "Material'M_ExtractionPanel_EmissiveStrip_01'",
+   "textures": {},
+   "scalars": [
+    "EmissiveMultiplier",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Intro_Platform_01_A",
+   "parent": "Material'M_4MaterialsByUVOffset'",
+   "textures": {
+    "BaseTexture - CR": "Texture2D'T_Metal_Painted_01_A_CR'",
+    "BaseTexture - NOM": "Texture2D'T_Metal_Painted_01_A_NOM'",
+    "TrimTexture": "Texture2D'T_MetalTrimPainted_02_NOM'",
+    "OverlayTexture": "Texture2D'T_Metal_Rust_Overlay_02_A'",
+    "DetailNormal": "Texture2D'T_Detail_MetalPaint_02_NCH'"
+   },
+   "scalars": [
+    "BaseTextureTiling",
+    "NormalStrength",
+    "UV (0,0) - UseATKColor",
+    "UV (0,0) - Roughness",
+    "UV (0,0) UseTrimTexture",
+    "UV (0,0) OverlayColorStrength",
+    "UV (-1,0) - UseATKColor",
+    "UV (-1,0) - Metalness",
+    "UV (-1,0) - Roughness",
+    "UV (-1,0) UseTrimTexture",
+    "UV (1,0) - Metalness",
+    "UV (1,0) - Roughness",
+    "UV (1,0) UseTrimTexture",
+    "UV (1,0) OverlayColorStrength",
+    "UV (0,1) - Metalness",
+    "UV (0,1) - Roughness",
+    "UV (0,1) UseTrimTexture",
+    "UV (0,1) OverlayColorMultiplier",
+    "UV (0,1) OverlayColorStrength",
+    "UV (0,1) OverlayRoughnessMultiplier",
+    "UV (0,1) OverlayRoughnessStrength",
+    "UseUv1TrimTexture",
+    "ProjectionOffsetU",
+    "ProjectionOffsetV",
+    "ProjectionSize",
+    "ProjectionSplit",
+    "DetailColorIntensity",
+    "DetailNormalIntensity",
+    "U Tile",
+    "V Tile",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_LobbyScreen_IntroPodium_FX",
+   "parent": "Material'M_FrontendStage_Screen_FX'",
+   "textures": {
+    "Mask": "Texture2D'T_THEFINALS_01_Logo_A'"
+   },
+   "scalars": [
+    "emissive streght",
+    "glassDepth",
+    "pixilation",
+    "Tile Dots U",
+    "Tile Dots V",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_LobbyScreen_IntroPodium_FX_Blue",
+   "parent": "Material'M_FrontendStage_Screen_FX'",
+   "textures": {
+    "Mask": "Texture2D'T_THEFINALS_01_Logo_A'"
+   },
+   "scalars": [
+    "emissive streght",
+    "glassDepth",
+    "pixilation",
+    "Tile Dots U",
+    "Tile Dots V",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_MainStageBack",
+   "parent": "Material'M_BackstageFloor'",
+   "textures": {
+    "ColorTexture": "Texture2D'T_Metal_Painted_01_A_CR'",
+    "NormalTexture": "Texture2D'T_Spa_MetalTiles_01_NOH'"
+   },
+   "scalars": [
+    "ColorMultiply",
+    "GradientRoughnessAmount",
+    "GradientSpecularAmount",
+    "Metallic",
+    "RoughnessHigh",
+    "RoughnessLow",
+    "RoughnessTiling",
+    "Specular_Background",
+    "SpecularHigh",
+    "SpecularLow",
+    "Tiling",
+    "Normal Strength",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_MainStageFloor",
+   "parent": "Material'M_BackstageFloor'",
+   "textures": {
+    "ColorTexture": "Texture2D'MetalBareRough_01_CR'",
+    "NormalTexture": "Texture2D'T_MetalTiles_01_NOH'"
+   },
+   "scalars": [
+    "ColorMultiply",
+    "InvertRoughness",
+    "Metallic",
+    "Roughness Multiply",
+    "RoughnessHigh",
+    "RoughnessLow",
+    "RoughnessTiling",
+    "Tiling",
+    "Normal Strength",
+    "UseRoughnessFalloff",
+    "RoughnessFalloffDistance",
+    "RoughnessFalloffLinearity",
+    "RoughnessPostFalloff",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Panel_IntroPodium_01",
+   "parent": "Material'M_Props_01'",
+   "textures": {
+    "CR": "Texture2D'T_BitumentRoof_02_A_CR'",
+    "NOH": "Texture2D'T_BitumentRoof_02_A_NOH'"
+   },
+   "scalars": [
+    "ColorDesaturation",
+    "ColorMultiply",
+    "Tiling",
+    "NormalIntensity",
+    "Roughness",
+    "U Tile",
+    "V Tile",
+    "RefractionDepthBias",
+    "ActivateRoughnessOverlay"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Screen_IntroPodium_01",
+   "parent": "Material'M_Monitor_OutOfBounds'",
+   "textures": {
+    "MediaTexture": "Texture2D'T_Black_M'",
+    "LEDTexture": "Texture2D'T_MonitorScreen_Pixel_01'"
+   },
+   "scalars": [
+    "Emissive Multiplier Background",
+    "UseBackgroundColorFromMPC",
+    "LEDTiling",
+    "RefractionDepthBias"
+   ]
+  },
+  {
+   "instance": "assets-v1\\MI_Wall_IntroPodium_01",
+   "parent": "Material'M_Props_01'",
+   "textures": {
+    "CR": "Texture2D'T_TileFloor_03_A_CR'",
+    "NOH": "Texture2D'T_TileFloor_03_A_NOH'"
+   },
+   "scalars": [
+    "ColorDesaturation",
+    "ColorMultiply",
+    "Tiling",
+    "NormalIntensity",
+    "Roughness",
+    "U Tile",
+    "V Tile",
+    "WetnessAmount",
+    "RefractionDepthBias",
+    "ActivateRoughnessOverlay"
+   ]
+  },
+  {
+   "instance": "assets-v2\\MI_FrontendStageFloor_S_08",
+   "parent": "Material'M_FrontendStageFloor_S08'",
+   "textures": {},
+   "scalars": [
+    "EdgeMask",
+    "EdgeMask_High",
+    "EdgeMask_Low",
+    "FallofGradient",
+    "FallofOffset",
+    "Metallic",
+    "Opacity",
+    "RoughnessLow",
+    "Specular_Background",
+    "Specular_Foreground",
+    "RefractionDepthBias"
+   ]
+  }
+ ],
+ "textures": [
+  {
+   "texture": "/Game/Discovery/Effects/Textures/Noises/T_FX_Noise_07",
+   "format": "PF_DXT1",
+   "width": 512,
+   "height": 512,
+   "mips": 10,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 174776
+  },
+  {
+   "texture": "/Game/Discovery/Environment/Props/Event/Halloween/Event_Pumpkin_01/T_Event_Pumpkin_01_A_CR",
+   "format": "PF_BC7",
+   "width": 1024,
+   "height": 512,
+   "mips": 11,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 699088
+  },
+  {
+   "texture": "/Game/Discovery/Environment/Props/Event/Halloween/Event_Pumpkin_01/T_Event_Pumpkin_01_A_NOM",
+   "format": "PF_BC7",
+   "width": 1024,
+   "height": 512,
+   "mips": 11,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 699088
+  },
+  {
+   "texture": "/Game/Discovery/Environment/Props/Event/Halloween/Event_Pumpkin_01/T_MI_Pumpkin_01_A_Mask",
+   "format": "PF_BC7",
+   "width": 256,
+   "height": 128,
+   "mips": 9,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 43728
+  },
+  {
+   "texture": "/Game/Discovery/Lighting/Materials/Lightfixtures/T_Lightbulb_01_C",
+   "format": "PF_BC6H",
+   "width": 256,
+   "height": 256,
+   "mips": 9,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 87408
+  },
+  {
+   "texture": "/Game/Discovery/Maps/Frontend/Background/S12_Reforge/CollectionEvent/T_CollectionEvent_S12_Backdrop_01_A",
+   "format": "PF_BC7",
+   "width": 3840,
+   "height": 2160,
+   "mips": 1,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 8294400
+  },
+  {
+   "texture": "/Game/Discovery/MaterialLibrary/Character/LayeredMaterials/Textures/Masks/T_Black_M",
+   "format": "PF_BC4",
+   "width": 4,
+   "height": 4,
+   "mips": 3,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 24
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Debug/T_Default_01_C",
+   "format": "PF_DXT1",
+   "width": 4,
+   "height": 4,
+   "mips": 3,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 24
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Debug/T_Default_01_NOH",
+   "format": "PF_B8G8R8A8",
+   "width": 1,
+   "height": 1,
+   "mips": 1,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 4
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Detail/T_Detail_MetalPaint_02_NCH",
+   "format": "PF_BC7",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Detail/T_MonitorScreen_Pixel_01",
+   "format": "PF_DXT1",
+   "width": 64,
+   "height": 64,
+   "mips": 7,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 2744
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Sponsors/THEFINALS/Misc/T_THEFINALS_01_IconStroke_A",
+   "format": "PF_DXT1",
+   "width": 2048,
+   "height": 2048,
+   "mips": 12,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 2796216
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Sponsors/THEFINALS/T_THEFINALS_01_Icon_A",
+   "format": "PF_DXT5",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Sponsors/THEFINALS/T_THEFINALS_01_Logo_A",
+   "format": "PF_DXT5",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Concrete/T_Concrete_Cast_01_CR",
+   "format": "PF_DXT5",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Concrete/T_Concrete_Cast_01_NOH",
+   "format": "PF_BC7",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Metal/MetalBareRough_01_CR",
+   "format": "PF_DXT5",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Metal/T_Metal_Painted_01_A_CR",
+   "format": "PF_DXT5",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Metal/T_Metal_Painted_01_A_NOM",
+   "format": "PF_BC7",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Metal/T_Metal_Painted_03_CR",
+   "format": "PF_DXT5",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Metal/T_Metal_Rust_Overlay_02_A",
+   "format": "PF_DXT5",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Metal/T_MetalTiles_01_NOH",
+   "format": "PF_BC7",
+   "width": 2048,
+   "height": 2048,
+   "mips": 12,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 5592432
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Metal/T_Spa_MetalTiles_01_NOH",
+   "format": "PF_BC7",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Roof/T_BitumentRoof_02_A_CR",
+   "format": "PF_BC7",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Roof/T_BitumentRoof_02_A_NOH",
+   "format": "PF_BC7",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Tiles/T_TileFloor_01_CR",
+   "format": "PF_DXT5",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Tiles/T_TileFloor_01_NOH",
+   "format": "PF_BC7",
+   "width": 512,
+   "height": 512,
+   "mips": 10,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 349552
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Tiles/T_TileFloor_03_A_CR",
+   "format": "PF_DXT5",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Tileables/Tiles/T_TileFloor_03_A_NOH",
+   "format": "PF_BC7",
+   "width": 512,
+   "height": 512,
+   "mips": 10,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 349552
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Trims/Generic/T_TrimDirectional_B_NOM",
+   "format": "PF_BC7",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Trims/Metal/T_MetalTrimPainted_02_NOM",
+   "format": "PF_BC7",
+   "width": 1024,
+   "height": 1024,
+   "mips": 11,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 1398128
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Trims/Stone/T_Mon_StoneTileTrim_01_CR",
+   "format": "PF_DXT5",
+   "width": 2048,
+   "height": 1024,
+   "mips": 12,
+   "srgb": true,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 2796240
+  },
+  {
+   "texture": "/Game/Discovery/Textures/Trims/Stone/T_Mon_StoneTileTrim_01_NOH",
+   "format": "PF_BC7",
+   "width": 2048,
+   "height": 1024,
+   "mips": 12,
+   "srgb": false,
+   "virtualTexture": false,
+   "gpuBytesAllMips": 2796240
+  }
+ ]
+}
