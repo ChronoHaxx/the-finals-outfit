@@ -142,8 +142,14 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
       {
         id: "lighting",
         title: "Lighting and backdrop",
-        text: "Start from Studio, Lobby, Season 12 menu or a sun look, then change each light's colour, brightness and direction, pick a solid or gradient backdrop, turn on a floor shadow and save your own looks.",
+        text: "Start from a ready-made look, such as Studio, Lobby, Season 12 menu, Dramatic or Nighttime, then change each light's colour, brightness and direction, pick a solid or gradient backdrop, turn on a floor shadow and save your own looks.",
         where: "The button named after the look, top right",
+      },
+      {
+        id: "light-markers",
+        title: "Show lights",
+        text: "See each light in the 3D view as a bulb, with a cone the way it shines. Drag a bulb to move its light: its Direction and Height sliders follow. The bulbs never appear in screenshots or share images, and H hides them.",
+        where: "Show lights in the 3D view, under Lights in the lighting panel",
       },
       {
         id: "scenes",
