@@ -232,7 +232,19 @@ await pp.waitForFunction(() => window.__rigAnim.animator.state.loading === null 
 if (await dialog.isVisible()) await dialog.getByRole("button", { name: "Close emotes" }).click();
 const phoneTimeline = pp.getByRole("group", { name: /timeline$/ });
 const rangeVisible = await phoneTimeline.getByRole("button", { name: "Video range" }).isVisible();
-const trackWidth = (await phoneTimeline.locator("input[type=range]").boundingBox())?.width ?? 0;
+// The row's controls are main's (play, step back, the track, step forward, the time, loop, close: the Range button is
+// display:none here, so it is no flex item and takes no gap), and the track fills what they leave. Its width is then
+// main's for this phone, whatever that is: the track's classes moved to its wrapper unchanged (mx-1 min-w-0 flex-1).
+const layout = await phoneTimeline.evaluate(row => {
+  const style = getComputedStyle(row), px = v => parseFloat(v) || 0;
+  const inner = row.clientWidth - px(style.paddingLeft) - px(style.paddingRight);
+  const kids = [...row.children].filter(k => k.getClientRects().length);
+  const used = kids.reduce((sum, k) => { const m = getComputedStyle(k); return sum + k.getBoundingClientRect().width + px(m.marginLeft) + px(m.marginRight); }, 0)
+    + px(style.columnGap) * (kids.length - 1);
+  const input = row.querySelector("input[type=range]");
+  return { inner, used, items: kids.length, track: input.getBoundingClientRect().width, wrapper: input.parentElement.getBoundingClientRect().width };
+});
+const trackWidth = layout.track;
 await phoneTimeline.screenshot({ path: join(outDir, "6-phone-timeline.png") });
 await pp.locator('button[aria-label^="Capture"]').click();
 await pp.getByRole("tab", { name: "Video" }).click();
@@ -241,9 +253,11 @@ await pp.getByLabel("Video end (seconds)").fill("2.5"); await pp.getByLabel("Vid
 const phoneSummary = await pp.locator('[role=group][aria-label=Capture] span', { hasText: "frames at 60 fps" }).first().textContent();
 const phoneMarks = await phoneTimeline.getByRole("slider", { name: /^Video (start|end)$/ }).evaluateAll(els => els.filter(e => e.getClientRects().length).length);
 await pp.screenshot({ path: join(outDir, "6-phone-video-tab.png") });
-check(6, "on a phone the timeline keeps its scrub track: no Video range button", !rangeVisible && trackWidth > 100, `button visible ${rangeVisible} · track ${Math.round(trackWidth)} px`);
+check(6, "on a phone the timeline keeps main's scrub track: no Video range button, the track fills the rest of the row",
+  !rangeVisible && layout.items === 7 && Math.abs(layout.used - layout.inner) < 1 && Math.abs(layout.track - layout.wrapper) < 1,
+  `button visible ${rangeVisible} · ${layout.items} controls · track ${Math.round(trackWidth)} px of a ${Math.round(layout.inner)} px row, filling ${Math.round(layout.used)} px`);
 check(6, "on a phone typed times set the range, with no markers over the track", /Clip 1\.00–2\.50 s/.test(phoneSummary ?? "") && phoneMarks === 0, `${phoneSummary} · ${phoneMarks} markers shown`);
-report.steps[6] = { rangeVisible, trackWidth, phoneSummary, phoneMarks };
+report.steps[6] = { rangeVisible, layout, phoneSummary, phoneMarks };
 await phone.context.close();
 
 save();
