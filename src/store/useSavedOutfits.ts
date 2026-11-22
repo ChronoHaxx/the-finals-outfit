@@ -25,6 +25,7 @@ import {
   VIEW_CAP, VIEW_PARAM, hasDeletedView, liveViews, viewsWritable, withViewAdded, withViewDeleted, withViewRenamed, withViewRestored,
   type CameraView,
 } from "../lib/camera-view";
+import { PLAYER_NUMBER_PARAM, samePlayerNumber, storedPlayerNumber } from "../lib/player-number";
 import { startingOutfit, useBuildStore } from "./useBuildStore";
 
 export interface Toast {
@@ -78,7 +79,8 @@ export async function startSavedOutfits(options: StartOptions = {}): Promise<voi
   const lib = library;
   teardown.push(lib.subscribe(onLibraryChange));
   teardown.push(useBuildStore.subscribe((state, previous) => {
-    if (!applying && (state.build !== previous.build || state.bodyType !== previous.bodyType)) onHandEdit();
+    if (!applying && (state.build !== previous.build || state.bodyType !== previous.bodyType
+      || state.playerNumber !== previous.playerNumber)) onHandEdit();
   }));
   teardown.push(() => lib.close());
   if (typeof window !== "undefined" && typeof document !== "undefined") {
@@ -128,25 +130,28 @@ function own<T>(change: () => T): T {
 // An outfit's stored body type, as the build store holds it: absent (saved before body types) is Masculine.
 const storedBodyType = (bodyType: string | undefined) => bodyType || DEFAULT_BODY_TYPE;
 
-function show(slots: SlotMap, labels: Record<string, string> | undefined, bodyType: string | undefined) {
+function show(slots: SlotMap, labels: Record<string, string> | undefined, bodyType: string | undefined,
+  playerNumber: number | undefined) {
   const resolved = resolveSavedSlots(slots, labels);
   const state = useBuildStore.getState();
   const nextBodyType = storedBodyType(bodyType);
-  if (!sameBuild(state.build, resolved.build) || state.bodyType !== nextBodyType) {
+  // Absent (saved before player numbers) is null: each piece prints its own number, as the site always showed.
+  const nextNumber = storedPlayerNumber(playerNumber);
+  if (!sameBuild(state.build, resolved.build) || state.bodyType !== nextBodyType || state.playerNumber !== nextNumber) {
     applying = true;
-    try { state.load(resolved.build, nextBodyType); } finally { applying = false; }
+    try { state.load(resolved.build, nextBodyType, nextNumber); } finally { applying = false; }
   }
   useSavedOutfits.setState({ missing: resolved.missing });
 }
 
 function showRecord(record: OutfitRecord) {
   appliedSlots = record.slots;
-  show(record.slots, record.labels, record.bodyType);
+  show(record.slots, record.labels, record.bodyType, record.playerNumber);
 }
 
 function showDraft(draft: Draft) {
   appliedSlots = undefined;
-  show(draft.slots, draft.labels, draft.bodyType);
+  show(draft.slots, draft.labels, draft.bodyType, draft.playerNumber);
 }
 
 function publish() {
@@ -175,20 +180,21 @@ function onLibraryChange() {
 function onHandEdit() {
   const lib = library;
   if (!lib) return;
-  const { build, bodyType } = useBuildStore.getState();
+  const { build, bodyType, playerNumber } = useBuildStore.getState();
+  const number = playerNumber ?? undefined; // a record or draft field: absent for each piece's own
   const { slots, missing } = keepMissing(build, useSavedOutfits.getState().missing);
   const current = lib.getCurrent();
   if (useSavedOutfits.getState().toast?.kind === "roll") useSavedOutfits.setState({ toast: null });
   if (current?.kind === "record") {
     const record = lib.get(current.id)!;
-    own(() => lib.setContent(record.id, slots, labelsFor(slots, record.labels), false, bodyType));
+    own(() => lib.setContent(record.id, slots, labelsFor(slots, record.labels), false, bodyType, playerNumber));
     appliedSlots = lib.get(record.id)!.slots;
   } else if (current?.kind === "draft") {
-    promoteDraft({ ...current.draft, slots, labels: labelsFor(slots, current.draft.labels), generated: false, bodyType },
-      true);
+    promoteDraft({ ...current.draft, slots, labels: labelsFor(slots, current.draft.labels), generated: false, bodyType,
+      playerNumber: number }, true);
   } else {
     // Nothing on screen was chosen yet (should not happen after openFromUrl): keep the edit anyway.
-    promoteDraft({ name: "Outfit", slots, labels: labelsFor(slots), bodyType, reason: "cap" }, true);
+    promoteDraft({ name: "Outfit", slots, labels: labelsFor(slots), bodyType, playerNumber: number, reason: "cap" }, true);
   }
   useSavedOutfits.setState({ missing });
   publish();
@@ -198,19 +204,22 @@ const nextName = (lib: OutfitLibrary, stem: string) => uniqueName(stem, lib.live
 
 // New, Reset, Randomise and the first outfit keep the body type on screen: it is the user's choice, not the roll's.
 const currentBodyType = () => useBuildStore.getState().bodyType;
+// The player number too (absent from the record when each piece prints its own).
+const currentPlayerNumber = () => useBuildStore.getState().playerNumber ?? undefined;
 
 function createStarting(lib: OutfitLibrary): OutfitRecord {
   const slots = startingOutfit() as SlotMap;
   // Uncapped only in effect: called when there are no live outfits at all.
   return own(() => lib.create({ name: nextName(lib, "Outfit"), slots, labels: labelsFor(slots), generated: true,
-    bodyType: currentBodyType() }))!;
+    bodyType: currentBodyType(), playerNumber: currentPlayerNumber() }))!;
 }
 
 /** The draft becomes a saved outfit. At the cap it stays a draft (and says so). */
 function promoteDraft(draft: Draft, edited: boolean): boolean {
   const lib = library!;
   const record = own(() => lib.create({ name: uniqueName(draft.name, lib.liveNames()), slots: draft.slots,
-    labels: draft.labels, generated: draft.generated, bodyType: draft.bodyType, cameraViews: draft.cameraViews }));
+    labels: draft.labels, generated: draft.generated, bodyType: draft.bodyType, playerNumber: draft.playerNumber,
+    cameraViews: draft.cameraViews }));
   if (record) {
     own(() => lib.select(record.id));
     appliedSlots = record.slots;
@@ -237,7 +246,7 @@ function cleanUrl() {
   try {
     const url = new URL(window.location.href);
     let changed = false;
-    for (const key of ["outfit", "o", "look", BODY_TYPE_PARAM, VIEW_PARAM, ...POSE_KEYS])
+    for (const key of ["outfit", "o", "look", BODY_TYPE_PARAM, PLAYER_NUMBER_PARAM, VIEW_PARAM, ...POSE_KEYS])
       if (url.searchParams.has(key)) { url.searchParams.delete(key); changed = true; }
     if (changed) window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
     // Either builder route (lib/site-mode.ts): tidying a link away never leaves Chinals mode.
@@ -296,35 +305,95 @@ export function openFromUrl(href: string): LinkResult {
   const resolved = resolveSavedSlots(slots);
   // A link describes the exact look: without a body type it is Masculine, as every link made before body types was.
   const bodyType = storedBodyType(outfit.bodyType);
+  // Likewise the player number: a link without one shows each piece's own number.
+  const playerNumber = storedPlayerNumber(outfit.playerNumber);
   const result = { omitted: resolved.missing.length > 0, error: false };
   const lib = library;
   if (!lib) {
-    useBuildStore.getState().load(resolved.build, bodyType);
+    useBuildStore.getState().load(resolved.build, bodyType, playerNumber);
     return result;
   }
+  const opened = openUnsaved(lib, outfit.presetName?.trim() || "Shared outfit", resolved.slots, resolved.build, bodyType,
+    playerNumber, "link", "Open the link anyway?");
+  return opened.kind === "declined" ? { ...result, declined: true } : result;
+}
+
+type Opened = { kind: "same" } | { kind: "declined" } | { kind: "record"; record: OutfitRecord } | { kind: "draft"; draft: Draft };
+
+/**
+ * Show an outfit that is not saved yet: a share link, or one of the game's own outfits. It becomes a draft beside the
+ * saved outfits, so nothing saved changes until the user edits it or presses Save (which makes a NEW saved outfit).
+ * An outfit already on screen changes nothing; a saved outfit with exactly these pieces is shown instead of a draft.
+ * `slots` is what the draft keeps, `build` what it wears, `bodyType` the body it is worn on and `playerNumber` the number
+ * its garments print (stored form: null for each piece's own): the look is the pieces, the body and the number together,
+ * so the same pieces on another body or with another number are a different outfit. A link's address stays while its
+ * draft is on screen (a reload shows it again); anything else removes a previous link from the address bar, after the
+ * draft is in place, so the router's re-run finds the draft and leaves it alone.
+ */
+function openUnsaved(lib: OutfitLibrary, name: string, slots: SlotMap, build: Partial<Record<Slot, string>>,
+  bodyType: string, playerNumber: number | null, reason: "link" | "preset", ask: string): Opened {
   ensureCurrent(false);
   const current = lib.getCurrent();
   const state = useBuildStore.getState();
-  if (current && sameBuild(state.build, resolved.build) && state.bodyType === bodyType) {
-    if (current.kind === "record") cleanUrl(); // already this saved outfit (also the Roadmap round trip)
-    return result;
+  if (current && sameBuild(state.build, build) && state.bodyType === bodyType && state.playerNumber === playerNumber) {
+    if (current.kind === "record" && reason === "link") cleanUrl(); // already this saved outfit (also the Roadmap round trip)
+    return { kind: "same" };
   }
   if (current?.kind === "draft" && current.draft.edited && !confirmLeave(
-    `“${current.draft.name}” is not saved (you have ${lib.cap} saved outfits). Open the link anyway?`)) return { ...result, declined: true };
-  const match = lib.live().find(record => sameBuild(resolveSavedSlots(record.slots, record.labels).build, resolved.build)
-    && storedBodyType(record.bodyType) === bodyType);
+    `“${current.draft.name}” is not saved (you have ${lib.cap} saved outfits). ${ask}`)) return { kind: "declined" };
+  const match = lib.live().find(record => sameBuild(resolveSavedSlots(record.slots, record.labels).build, build)
+    && storedBodyType(record.bodyType) === bodyType && samePlayerNumber(record.playerNumber, playerNumber));
+  let opened: Opened;
   if (match) {
     own(() => lib.select(match.id));
     showRecord(match);
     cleanUrl();
+    opened = { kind: "record", record: match };
   } else {
-    const draft: Draft = { name: outfit.presetName?.trim() || "Shared outfit", slots: resolved.slots,
-      labels: labelsFor(resolved.slots), bodyType, reason: "link" };
+    const draft: Draft = { name, slots, labels: labelsFor(slots), bodyType, playerNumber: playerNumber ?? undefined, reason };
     own(() => lib.setDraft(draft));
     showDraft(draft);
+    if (reason !== "link") cleanUrl();
+    opened = { kind: "draft", draft };
   }
   publish();
-  return result;
+  return opened;
+}
+
+/**
+ * Put on one of the game's own outfits (src/lib/preset-outfits.ts) as an unsaved draft. `slots` is the whole outfit, built
+ * by presetSlots from the outfit on screen; it is resolved against today's catalogue once, and only what can be worn
+ * goes into the draft. The body type and player number on screen stay: an outfit dresses the contestant, it does not
+ * change their body, and in the game the number is a player setting, not part of an outfit.
+ * Undo goes back to what was on screen, but only while the draft is still the one on screen.
+ */
+export function openPreset(name: string, slots: SlotMap): "same" | "declined" | "draft" | "record" {
+  const resolved = resolveSavedSlots(slots);
+  const lib = library;
+  if (!lib) { useBuildStore.getState().load(resolved.build); return "draft"; } // load keeps the body type and number
+  const previous = lib.getCurrent();
+  const wearing = { ...resolved.build } as SlotMap;
+  const opened = openUnsaved(lib, name, wearing, resolved.build, currentBodyType(), useBuildStore.getState().playerNumber,
+    "preset", `Wear “${name}” anyway?`);
+  if (opened.kind === "record") toast(`Your saved outfit “${opened.record.name}” already has these pieces.`, "info");
+  if (opened.kind !== "draft") return opened.kind;
+  const draft = opened.draft;
+  const atCap = lib.liveCount() >= lib.cap;
+  toast(atCap ? `Wearing “${name}”, not saved: you have ${lib.cap} saved outfits.` : `Wearing “${name}”. Changing anything saves it.`, "roll", () => {
+    const now = lib.getCurrent();
+    if (now?.kind === "draft" && now.draft === draft) {
+      if (previous?.kind === "record" && lib.get(previous.id)?.deletedAt === undefined) {
+        own(() => lib.select(previous.id));
+        showRecord(lib.get(previous.id)!);
+      } else if (previous?.kind === "draft") {
+        own(() => lib.setDraft(previous.draft));
+        showDraft(previous.draft);
+      }
+    }
+    useSavedOutfits.setState({ toast: null });
+    publish();
+  });
+  return "draft";
 }
 
 // ------------------------------------------------------------------ actions
@@ -479,7 +548,7 @@ function replaceWithGenerated(build: Partial<Record<Slot, string>>, stem: string
     }
   };
   const created = own(() => lib.create({ name: nextName(lib, stem), slots, labels, generated: true,
-    bodyType: currentBodyType() }));
+    bodyType: currentBodyType(), playerNumber: currentPlayerNumber() }));
   if (created) {
     if (current?.kind === "draft") cleanUrl();
     own(() => lib.select(created.id));
@@ -493,7 +562,7 @@ function replaceWithGenerated(build: Partial<Record<Slot, string>>, stem: string
   } else {
     // At the cap: show it unsaved. The outfit you had stays exactly as it was.
     const draft: Draft = { name: stem === "Random" ? "Random outfit" : "New outfit", slots, labels, generated: true,
-      bodyType: currentBodyType(), reason: "cap" };
+      bodyType: currentBodyType(), playerNumber: currentPlayerNumber(), reason: "cap" };
     own(() => lib.setDraft(draft));
     showDraft(draft);
     toast(`${verb}, not saved: you have ${lib.cap} saved outfits.`, "roll", () => {

@@ -50,6 +50,15 @@ export function writeStored(store: StorageLike | null, change: (stored: Stored) 
   return stored;
 }
 
+/** Optional backdrop fields this version knows: absent from a look means "none", so a write removes them. Without this,
+ *  leaving a scene (a ready-made look, a colour) kept `scene` in storage and the scene came back on the next reload
+ *  (21 Nov 2026). Fields this version does not know are still kept, for the newer build that wrote them. */
+const OPTIONAL_BACKDROP_FIELDS = ["scene"] as const;
+function withoutDropped(merged: Record<string, unknown>, written: object, fields: readonly string[]): Record<string, unknown> {
+  for (const field of fields) if (!(field in written)) delete merged[field];
+  return merged;
+}
+
 /** A look written over what is stored: fields this version does not know are kept, at the top level, in the hemisphere,
  *  environment and backdrop, and in each light (matched by id). A light the viewer removed is removed. */
 export function mergedLook(stored: unknown, look: Look): Record<string, unknown> {
@@ -62,7 +71,7 @@ export function mergedLook(stored: unknown, look: Look): Record<string, unknown>
     ...top, ...look,
     hemisphere: part("hemisphere", look.hemisphere),
     environment: part("environment", look.environment),
-    backdrop: part("backdrop", look.backdrop),
+    backdrop: withoutDropped(part("backdrop", look.backdrop), look.backdrop, OPTIONAL_BACKDROP_FIELDS),
     lights: look.lights.map(l => ({ ...(storedLights.find(s => s.id === l.id) ?? {}), ...l })),
   };
 }

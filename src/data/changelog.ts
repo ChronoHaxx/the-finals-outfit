@@ -14,16 +14,77 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
-    id: "2026-11-21-camera-controls",
-    date: "2026-11-21",
+    id: "2026-11-22-camera-controls",
+    date: "2026-11-22",
     title: "Camera controls",
     notes: [
       "A new viewfinder button beside the screenshot button shows where the camera is and the point it looks at, in metres. Type any number to place the camera exactly, or nudge one with the arrow keys.",
       "Roll tilts the camera for an angled shot; Level straightens it again.",
       "Save views with an outfit and return to one in a click. Views saved with your other outfits are listed too. Like your outfits, they are kept in this browser.",
-      "Share links now open on the camera you were looking through, so someone else can pick up your shot and improve it. Untick Include camera view in the share panel to leave it out. The preview image is unchanged.",
+      "Share links now open on the camera you were looking through, so someone else can pick up your shot and improve it. Untick Include camera view in the share panel to leave it out. While a scene from the game is behind your outfit, the camera stays put and links leave it out. The preview image is unchanged.",
     ],
     items: ["share-randomise-report", "faster-builder"],
+  },
+  {
+    id: "2026-11-22-scene-backdrops",
+    date: "2026-11-22",
+    title: "Scenes from the game behind your outfit",
+    notes: [
+      "Two scenes from the game can now stand behind your outfit: the Season 12 menu stage, drawn live with its glowing lights, and the tunnel from the Season 12 intro. Pick one under Backdrop in the lighting panel, or choose the Season 12 menu look.",
+      "While a scene shows, the camera stays where it is: drag to turn the character, and scroll or pinch to zoom. Screenshots, videos and share images show the scene's colours rather than the scene itself.",
+    ],
+    items: ["lighting-backdrops"],
+  },
+  {
+    id: "2026-11-22-in-game-outfits",
+    date: "2026-11-22",
+    title: "In-game outfits",
+    notes: [
+      "Outfits, first in the wardrobe, lists the game's own 352 outfits with their in-game icons. One tap puts a whole outfit on and keeps your face and skin.",
+      "An outfit you put on is not saved until you change something or press Save, so your saved outfits stay as they were. Pieces the catalog does not have yet, and effects the preview cannot show, are listed rather than left out.",
+      "150 cosmetics join the catalog, among them the practice-range mannequin, Bull’s Eye Barry, and its wooden twin, Bull’s Eye Barrel. They show their icons for now; 3D comes later.",
+      "42 more cosmetics render in 3D, among them the space pilot jackets, capes and skirts, the tiger pants and hoodie, the ballistic and demon LED masks, the carbon racing helmet and more hair. 15 cosmetics with a glitch pattern also render in 3D, without that effect, which the preview cannot show yet.",
+      "3,151 of the catalog's 3,482 cosmetics now have a first-pass 3D reconstruction. The share reads 90% because the catalog grew.",
+      "Earrings and Laugh Trigger now sit in place on every face, not only Face 01.",
+      "An emote picked while the outfit is still loading now plays to its end instead of going back to the idle after a second or two.",
+      "The preview does far less work each frame, so it runs more smoothly on slower computers such as laptops with built-in graphics, most of all with a face on.",
+      "Pick your player number, 10 to 99, beside Body type. Clothing that prints a number, such as jerseys and cargo pants, shows yours in its own lettering, and Own keeps each piece's printed number. The number is saved with the outfit and carried by share links.",
+    ],
+    items: ["in-game-outfits", "catalog", "red-items", "idle-emotes", "faster-builder", "first-pass-3d"],
+  },
+  {
+    id: "2026-11-21-emote-speed-face",
+    date: "2026-11-21",
+    title: "Emote speed and a face switch",
+    notes: [
+      "Emotes have a speed slider, from a quarter speed to four times. Sound follows it, so every clap and footstep stays on its frame, and its pitch rises and falls with the speed. Pause, the frame slider, Loop and shared poses work the same at any speed. On a keyboard, < and > change it.",
+      "A Facial animation switch keeps the face still when you'd rather it didn't move. The speed and the switch are both remembered in this browser.",
+    ],
+    items: ["idle-emotes"],
+  },
+  {
+    id: "2026-11-21-season-1-2-emotes",
+    date: "2026-11-21",
+    title: "Season 1 and 2 emotes",
+    notes: [
+      "The emote picker now lists all 295 emotes in the game files. 66 were missing, most of them from Seasons 1 and 2, such as Make It Rain, Keyed Up and Applause Pause. They play with their props, sound and facial animation like the rest.",
+      "Eight of them were already under More with working-title names (Wave, Clap, Flex and others). They now show their game names and icons, and links to them still work.",
+      "In Chinals mode, five emotes that have no icon of their own in the game files now sit under Uncategorised, at the end of the list.",
+    ],
+    items: ["idle-emotes"],
+  },
+  {
+    id: "2026-11-15-faces-lighting-chinals",
+    date: "2026-11-15",
+    title: "Faces that move, your own lighting, Chinals emotes",
+    notes: [
+      "Faces now move in idles and emotes, from the game's own animation: blinks, glances, brows, jaw and expressions. Beards, balaclavas and scarves follow the face, and masks and helmets soften it where the game does.",
+      "A new Lighting panel. Start from Studio, Lobby or one of four sun looks, then change each light's colour, brightness and direction, add lights, pick a solid or gradient backdrop and turn on a floor shadow. Your own looks can be saved.",
+      "Pick a body type: Masculine or Androgynous. Saved outfits and share links keep it. Feminine follows once the Season 12 clothing has been refitted.",
+      "Chinals mode plays the 45 emotes of 终极角逐, THE FINALS as published in mainland China, on your outfit. Switch with Global | Chinals at the top. Emotes without an English name show the Chinese name with this site's unofficial translation.",
+      "Emote props sit where the game puts them: thrones, tables, brooms and turrets are no longer turned, buried or oversized. Emotes can also loop.",
+    ],
+    items: ["idle-emotes", "lighting-backdrops", "default-lighting", "light-heavy", "chinals-emotes", "emote-effects"],
   },
   {
     id: "2026-11-15-emote-sounds",

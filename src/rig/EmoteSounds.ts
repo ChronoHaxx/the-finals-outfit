@@ -31,6 +31,13 @@
 // lasts while a window of the group is active. A window that covers the whole pass therefore never ends its run: its
 // voice carries on across the wrap (the 16 s Disco/CPop tracks keep going over a 7 s dance). A window with a gap before
 // the clip ends (the instrument emotes) starts a new run, from the top of the track, each pass, in step with the strumming.
+//
+// Emote speed (21 Nov 2026, RigAnimator.setSpeed): the clock says how fast it runs (`rate`, clip seconds per second).
+// Sound follows it like tape: every voice plays at its own rate times the speed, so each cue still lands on its frame and
+// a sound lasts as long, in clip time, as at normal speed; pitch moves with the speed (no time-stretching in Web Audio's
+// buffer sources). Cue times, the look-ahead and the game's own fades (attack, window fade-out) are clip time, scaled to
+// the audio clock; the interface's short fades are not. A speed change is an interruption: every voice fades and the
+// emote rejoins at the new speed, mid-sound.
 
 export interface SoundVariant {
   wave: string;
@@ -57,11 +64,12 @@ export interface SoundsManifest {
   files: Record<string, { file: string; bytes: number; duration: number; channels: number }>;
   emotes: Record<string, SoundCue[]>;
 }
-/** The emote clip's clock, as RigAnimator sees it. */
-export interface SoundClock { time: number; duration: number; looping: boolean }
+/** The emote clip's clock, as RigAnimator sees it. `rate`: clip seconds per second, the emote speed (1 when absent). */
+export interface SoundClock { time: number; duration: number; looping: boolean; rate?: number }
 export interface SoundSettings { volume: number; muted: boolean }
 
-/** How far ahead cues are handed to the audio thread (covers a frame up to RigAnimator's 0.1 s step cap). */
+/** How far ahead cues are handed to the audio thread, in seconds of audio (covers a frame up to RigAnimator's 0.1 s step
+ *  cap); in clip time that is this times the emote speed. */
 export const LOOKAHEAD = 0.12;
 /** A long or looping voice further than this from the clock's position restarts in place (shorter ones may lead). */
 export const DRIFT = 0.25;
@@ -92,6 +100,19 @@ function writeSettings(settings: SoundSettings): void {
 const pick = (value: number | [number, number], random: () => number) =>
   Array.isArray(value) ? value[0] + (value[1] - value[0]) * random() : value;
 
+/** A repeatable random sequence in [0, 1) from a name (FNV-1a seed, mulberry32 steps): the video export's sound picks. */
+export function seededRandom(name: string): () => number {
+  let seed = 0x811c9dc5;
+  for (let i = 0; i < name.length; i++) seed = Math.imul(seed ^ name.charCodeAt(i), 0x01000193) >>> 0;
+  return () => {
+    seed = (seed + 0x6d2b79f5) >>> 0;
+    let t = seed;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 /** A decoded wave and where its real samples are (a decoder that keeps the AAC priming puts them `lead` in). */
 interface Wave { buffer: AudioBuffer; lead: number; length: number }
 
@@ -106,7 +127,9 @@ interface Voice {
   /** AudioContext time the voice starts (may be in the future: scheduled) and the wave position it starts at. */
   at: number;
   offset: number;
+  /** Wave seconds per clip second (the variant's pitch), and the emote speed it started at: it plays at their product. */
   rate: number;
+  speed: number;
   length: number;
   loop: boolean;
   /** A looping voice's run start, in session time (passes x clip length + clip time): its position is measured from it. */
@@ -137,6 +160,7 @@ export class EmoteSounds {
   private picks = new Map<string, { variant: SoundVariant; gain: number; rate: number }>();
   private pass = 0; // loop passes since the emote started (a pause or seek keeps it)
   private lastTime: number | null = null;
+  private speed = 1; // the emote speed the voices play at (clip seconds per second of audio)
   private listeners = new Set<() => void>();
   private unlockInstalled = false;
   private listening: AbortController | null = null; // the gesture and visibility listeners, removed by dispose()
@@ -331,17 +355,20 @@ export class EmoteSounds {
     // A voice started then would sound late by the device's start-up (0.7 s once in Chrome on Windows, 13 Nov 2026) and
     // be restarted by the drift rule, an audible skip. Wait for the clock; the cue then joins at its offset.
     if (!this.context || this.context.state !== "running" || this.context.currentTime === 0) { this.lastTime = null; return; }
+    const speed = clock.rate ?? 1;
+    if (speed !== this.speed) { this.cut(); this.speed = speed; } // the voices rejoin below at the new speed, mid-sound
     const t = clock.time, now = this.context.currentTime;
     if (this.lastTime !== null && t < this.lastTime - 1e-6) this.wrapped(clock.duration); // seeks pause first: a loop
     this.lastTime = t;
     this.cues.forEach((cue, i) => this.reconcile(cue, i, clock, now));
     // Attacks: hand the cues that begin within the look-ahead to the audio thread with their exact time.
+    const horizon = LOOKAHEAD * speed; // the look-ahead in clip time
     this.cues.forEach((cue, i) => {
       const ahead = cue.start - t;
-      if (ahead > 0 && ahead <= LOOKAHEAD) this.startVoice(cue, i, this.pass, now + ahead, clock, 0);
+      if (ahead > 0 && ahead <= horizon) this.startVoice(cue, i, this.pass, now + ahead / speed, clock, 0);
       // The next pass of a looping emote (a covering musical window carries its voice across instead: see wrapped()).
       const next = cue.start + clock.duration - t;
-      if (clock.looping && next > 0 && next <= LOOKAHEAD && !this.covers(cue, clock.duration)) this.startVoice(cue, i, this.pass + 1, now + next, clock, 0);
+      if (clock.looping && next > 0 && next <= horizon && !this.covers(cue, clock.duration)) this.startVoice(cue, i, this.pass + 1, now + next / speed, clock, 0);
     });
   }
 
@@ -363,13 +390,16 @@ export class EmoteSounds {
         voice.key = `${voice.index}:${this.pass}`;
         this.voices.set(voice.key, voice);
         this.record("adopt", voice, 0);
-      } else if (voice.cue.kind === "window") this.fade(voice, voice.cue.fadeOut ?? DEFAULT_FADE_OUT, "stop");
+      } else if (voice.cue.kind === "window") this.fade(voice, this.windowFade(voice.cue), "stop");
       else this.released.add(voice);
     }
     const older = (key: string) => Number(key.split(":")[1]) < this.pass;
     for (const key of [...this.finished]) if (older(key)) this.finished.delete(key);
     for (const key of [...this.picks.keys()]) if (older(key)) this.picks.delete(key);
   }
+
+  /** A window's fade-out on the audio clock: the game's (clip time) at the emote speed. */
+  private windowFade(cue: SoundCue): number { return (cue.fadeOut ?? DEFAULT_FADE_OUT) / this.speed; }
 
   private choice(cue: SoundCue, key: string) {
     let chosen = this.picks.get(key);
@@ -413,12 +443,12 @@ export class EmoteSounds {
       if (clock.time < cue.start) return;
       if (offset === null) {
         this.voices.delete(key);
-        if (cue.kind === "window") this.fade(voice, cue.fadeOut ?? DEFAULT_FADE_OUT, "stop");
+        if (cue.kind === "window") this.fade(voice, this.windowFade(cue), "stop");
         else this.released.add(voice); // a "once" past its length: ending by itself
         return;
       }
       // Audio may lead (the frame cap only ever puts the animation behind). A long or looping voice far out restarts.
-      const actual = voice.offset + (now - voice.at) * voice.rate;
+      const actual = voice.offset + (now - voice.at) * voice.rate * voice.speed;
       let diff = offset - actual;
       if (loop) diff = ((diff % length) + 1.5 * length) % length - 0.5 * length;
       const left = loop ? Infinity : (length - offset) / rate;
@@ -445,11 +475,11 @@ export class EmoteSounds {
     const context = this.context;
     const source = context.createBufferSource();
     source.buffer = wave.buffer;
-    source.playbackRate.value = rate;
+    source.playbackRate.value = rate * this.speed;
     if (variant.loop) { source.loop = true; source.loopStart = wave.lead; source.loopEnd = wave.lead + wave.length; }
     const node = context.createGain();
     // The fade-in: the cue's own attack, a short one when starting inside the sound, else none (the wave starts clean).
-    const fadeIn = cue.attack && offset < cue.attack * rate ? cue.attack : offset > 0 ? MID_FADE_IN : 0;
+    const fadeIn = cue.attack && offset < cue.attack * rate ? cue.attack / this.speed : offset > 0 ? MID_FADE_IN : 0;
     let envelope: Voice["envelope"];
     if (fadeIn) {
       node.gain.setValueAtTime(0, at);
@@ -460,7 +490,7 @@ export class EmoteSounds {
       envelope = [at, gain, at, gain];
     }
     source.connect(node).connect(this.master);
-    const voice: Voice = { key, index, cue, pass, wave: variant.wave, source, gain: node, at, offset, rate, length: wave.length,
+    const voice: Voice = { key, index, cue, pass, wave: variant.wave, source, gain: node, at, offset, rate, speed: this.speed, length: wave.length,
       loop: !!variant.loop, origin: origin ?? pass * clock.duration + cue.start, envelope, restartedAt: -Infinity };
     source.onended = () => {
       if (this.voices.get(voice.key) === voice) { this.voices.delete(voice.key); this.finished.add(voice.key); }
@@ -506,12 +536,90 @@ export class EmoteSounds {
   release(): void {
     const now = this.context?.currentTime ?? 0;
     for (const voice of this.voices.values()) {
-      if (voice.cue.kind === "window" || voice.at > now) this.fade(voice, voice.cue.fadeOut ?? DEFAULT_FADE_OUT, "stop");
+      if (voice.cue.kind === "window" || voice.at > now) this.fade(voice, this.windowFade(voice.cue), "stop");
       else this.released.add(voice);
     }
     this.voices.clear();
     this.finished.clear();
     this.lastTime = null;
+  }
+
+  /**
+   * Video export (21 Nov 2026): an emote's sounds for one pass from its start, rendered offline at the game's gains
+   * (not the viewer's volume or mute), by the same cue rules as playback: a window stops at its end with its fade, or
+   * at the clip's end for a one-shot emote (as at a natural end); a "once" sound rings out to the end of the recording;
+   * a musical loop starts at its window, from the top of its track; a window covering a looping clip's whole pass
+   * carries on (cut where the recording ends). Variant picks and random gain and pitch come from a seed made from the
+   * animation's name, so every export of an emote sounds the same. If the cues add up past full scale, the whole track
+   * is scaled down to just under it (one constant factor, not a limiter: the cues keep their game balance) rather than
+   * clipped. Null when the animation has no cues or this deployment ships no sounds.
+   */
+  async renderOffline(source: string | null | undefined, options: { duration: number; clipLength: number; looping: boolean;
+    sampleRate?: number; signal?: AbortSignal }): Promise<{ buffer: AudioBuffer; peak: number; scaled: number } | null> {
+    const manifest = await this.load();
+    const cues = (source && manifest?.formatVersion === 1 && manifest.emotes[source]) || [];
+    if (!cues.length || typeof OfflineAudioContext === "undefined") return null;
+    const sampleRate = options.sampleRate ?? 48000, { duration, clipLength, looping } = options;
+    const context = new OfflineAudioContext(2, Math.max(1, Math.round(duration * sampleRate)), sampleRate);
+    const random = seededRandom(source!);
+    const plans = cues.map(cue => {
+      const total = cue.variants.reduce((s, v) => s + v.weight, 0);
+      let r = random() * total, variant = cue.variants[cue.variants.length - 1];
+      for (const v of cue.variants) { if ((r -= v.weight) < 0) { variant = v; break; } }
+      return { cue, variant, gain: pick(variant.gain, random), rate: pick(variant.rate, random) };
+    });
+    const waves = new Map<string, Wave | null>();
+    await Promise.all([...new Set(plans.map(p => p.variant.wave))].map(async wave => {
+      const data = await this.fetchWave(wave);
+      this.bytes.delete(wave); // fetched for this render only (a live decode holds its own promise)
+      const info = manifest!.files[wave];
+      if (!data || !info) { waves.set(wave, null); return; }
+      try {
+        const buffer = await context.decodeAudioData(data.slice(0));
+        const extra = buffer.duration - info.duration;
+        waves.set(wave, { buffer, lead: extra > 0.005 ? Math.min(AAC_PRIMING, extra) : 0, length: info.duration });
+      } catch (error) { console.warn(`[sound] ${wave} did not decode`, error); waves.set(wave, null); }
+    }));
+    if (options.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+    let voices = 0;
+    for (const { cue, variant, gain, rate } of plans) {
+      const wave = waves.get(variant.wave);
+      if (!wave || cue.start >= duration) continue;
+      const node = context.createGain();
+      const buffer = context.createBufferSource();
+      buffer.buffer = wave.buffer;
+      buffer.playbackRate.value = rate;
+      if (variant.loop) { buffer.loop = true; buffer.loopStart = wave.lead; buffer.loopEnd = wave.lead + wave.length; }
+      if (cue.attack) {
+        node.gain.setValueAtTime(0, cue.start);
+        node.gain.linearRampToValueAtTime(gain, cue.start + cue.attack);
+      } else node.gain.value = gain;
+      buffer.connect(node).connect(context.destination);
+      buffer.start(cue.start, wave.lead);
+      if (cue.kind === "window" && !(looping && this.covers(cue, clipLength))) {
+        const stop = Math.min(cue.start + (cue.duration ?? 0), clipLength), fade = Math.max(DECLICK, cue.fadeOut ?? DEFAULT_FADE_OUT);
+        if (stop < duration) {
+          node.gain.setValueAtTime(cue.attack && stop < cue.start + cue.attack ? gain * (stop - cue.start) / cue.attack : gain, stop);
+          node.gain.linearRampToValueAtTime(0, stop + fade);
+          buffer.stop(stop + fade + 0.01);
+        }
+      }
+      voices++;
+    }
+    if (!voices) return null;
+    const rendered = await context.startRendering();
+    if (options.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+    let peak = 0;
+    for (let c = 0; c < rendered.numberOfChannels; c++) {
+      const data = rendered.getChannelData(c);
+      for (let i = 0; i < data.length; i++) peak = Math.max(peak, Math.abs(data[i]));
+    }
+    const scaled = peak > 1 ? 0.999 / peak : 1;
+    if (scaled !== 1) for (let c = 0; c < rendered.numberOfChannels; c++) {
+      const data = rendered.getChannelData(c);
+      for (let i = 0; i < data.length; i++) data[i] *= scaled;
+    }
+    return { buffer: rendered, peak, scaled };
   }
 
   private record(event: SoundLogEntry["event"], voice: Voice, clipTime: number | null): void {

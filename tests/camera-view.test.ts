@@ -95,7 +95,7 @@ test('a new share never inherits the view of the link it was opened from', () =>
 test('the mode switch drops the view (the router re-reads the address); the preview upload carries it last', () => {
   assert.equal(withoutView('?o=2.12a&emote=wave&view=0_1_2_0_1_0'), '?o=2.12a&emote=wave');
   assert.equal(withoutView('?view=0_1_2_0_1_0'), '');
-  assert.equal(uploadQuery('2.12a', null, 'a', tilted), 'o=2.12a&bt=a&view=0.621_1.42_3.1_0_0.95_0_-8');
+  assert.equal(uploadQuery('2.12a', null, 'a', undefined, tilted), 'o=2.12a&bt=a&view=0.621_1.42_3.1_0_0.95_0_-8');
   assert.equal(uploadQuery('2.12a', null), 'o=2.12a', 'without a view the upload is as before');
   assert.ok(isDefaultView({ position: [0.0004, 1, 3.6], target: [0, 0.9, 0], roll: 0 }));
 });

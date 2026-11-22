@@ -246,3 +246,22 @@ test("a malformed view is refused; the stored view wins over the link's; old ent
   const junk = await (await worker.fetch(new Request(`${BASE}/s/AAAAAAAAAAAA?o=2.12a&view=junk`), e)).text();
   assert.match(junk, /#\/\?o=2\.12a"\)/);
 });
+
+// The one deployed Worker carries both PR #60's player number and PR #59's camera view (21 Nov 2026): every optional
+// parameter together survives the upload, the stored entry and the page, in the order o, bt, pn, pose, view.
+test("body type, player number, pose and camera view travel together in one link", async () => {
+  const e = env();
+  const query = "o=2.12a&bt=a&pn=42&emote=wave&t=1.5&paused=1&view=0_1_2_0_1_0_5";
+  const response = await worker.fetch(new Request(`${BASE}/api/share?${query}`, { method: "POST", body: jpeg(1200, 630),
+    headers: { Origin: "https://chronohaxx.github.io", "Content-Type": "image/jpeg", "CF-Connecting-IP": "203.0.113.7" } }), e);
+  assert.equal(response.status, 201);
+  const { url } = await response.json() as { url: string };
+  assert.match(url, /\?o=2\.12a&bt=a&pn=42&emote=wave&t=1\.5&paused=1&view=0_1_2_0_1_0_5$/);
+  const id = /\/s\/(\w{12})/.exec(url)![1];
+  assert.deepEqual(e.SHARES.entries.get(`s:${id}`)!.metadata,
+    { o: "2.12a", bt: "a", pn: "42", emote: "wave", t: "1.5", paused: "1", view: "0_1_2_0_1_0_5" });
+  const page = await (await worker.fetch(new Request(url), e)).text();
+  assert.match(page, /#\/\?o=2\.12a&bt=a&pn=42&emote=wave&t=1\.5&paused=1&view=0_1_2_0_1_0_5"\)/);
+  const expired = await (await worker.fetch(new Request(`${BASE}/s/AAAAAAAAAAAA?${query}`), e)).text();
+  assert.match(expired, /#\/\?o=2\.12a&bt=a&pn=42&emote=wave&t=1\.5&paused=1&view=0_1_2_0_1_0_5"\)/);
+});

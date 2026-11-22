@@ -100,7 +100,9 @@ function CameraPanelBody() {
 
   return <>
     {locked && <p className="border-l-2 border-finals pl-2 text-xs leading-snug text-fg-muted">
-      The camera is fixed while a scene backdrop is shown, so it can’t be moved from here.
+      {handle
+        ? "The camera is fixed while a scene backdrop is shown, so it can’t be moved from here. Your view and roll come back when the scene is switched off."
+        : "The 3D view isn’t ready, so the camera can’t be moved yet."}
     </p>}
     <fieldset disabled={locked} className="flex min-w-0 flex-col gap-3 disabled:opacity-60">
       <Triple label="Camera" values={view.position} onCommit={(axis, value) => setAxis("position", axis, value)} />
@@ -155,7 +157,8 @@ function CameraPanelBody() {
           className="font-medium text-fg underline underline-offset-2">Undo</button>}
       </p>
       <span className="text-xs leading-snug text-fg-muted">
-        {views.length >= VIEW_CAP ? `${VIEW_CAP} views at most per outfit. ` : ""}{hint} Share links open on the camera you see.
+        {views.length >= VIEW_CAP ? `${VIEW_CAP} views at most per outfit. ` : ""}{hint} {locked
+          ? "Share links leave the camera out while it is fixed." : "Share links open on the camera you see."}
       </span>
     </div>
 

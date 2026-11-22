@@ -16,6 +16,8 @@
 //   tab's version is saved as a new outfit instead ("Name (2)").
 // - The number of live outfits is capped; creating past the cap is refused, never an eviction.
 
+import { samePlayerNumber, storedPlayerNumber } from "./player-number";
+
 export const SCHEMA_VERSION = 1;
 export const OUTFIT_CAP = 100;
 export const NAME_MAX = 40;
@@ -48,15 +50,20 @@ export interface OutfitRecord {
    *  read stay untouched, deletions are tombstones. Normally a list; any other value (some newer format) is kept and
    *  never rewritten. Absent before 21 Nov 2026. Added without a schema bump: older tabs keep it as an unknown field. */
   cameraViews?: unknown;
+  /** The outfit's player number (src/lib/player-number.ts), kept exactly as written, including a value from a newer
+   *  site. Absent (every outfit saved before 21 Nov 2026) means each piece prints its own number. Added without a
+   *  schema bump, like bodyType. */
+  playerNumber?: number;
   [field: string]: unknown;
 }
 
 const KNOWN_FIELDS = ["v", "id", "rev", "writer", "name", "createdAt", "updatedAt", "slots", "labels",
-  "generated", "deletedAt", "bodyType", "cameraViews"] as const;
+  "generated", "deletedAt", "bodyType", "playerNumber", "cameraViews"] as const;
 
 /** What an outfit shows, as opposed to its bookkeeping. */
 export interface OutfitContent {
-  name: string; slots: SlotMap; labels?: SlotMap; generated?: boolean; bodyType?: string; cameraViews?: unknown;
+  name: string; slots: SlotMap; labels?: SlotMap; generated?: boolean; bodyType?: string; playerNumber?: number;
+  cameraViews?: unknown;
 }
 
 // Absent and "masculine" are the same body type; compare by meaning so the field's arrival is not an edit.
@@ -90,15 +97,18 @@ export interface TabMemory { get(): string | null; set(id: string): void }
 
 export type SaveStatus = "saved" | "saving" | "off" | "error";
 
-/** An outfit on screen that is not (yet) a saved record: an opened share link, or a roll at the cap. */
+/** An outfit on screen that is not (yet) a saved record: an opened share link, one of the game's own outfits, or a roll
+ *  at the cap. */
 export interface Draft {
   name: string;
   slots: SlotMap;
   labels?: SlotMap;
   generated?: boolean;
   bodyType?: string;
+  playerNumber?: number;
   cameraViews?: unknown;
-  reason: "link" | "cap";
+  /** "link": an opened share link; "preset": one of the game's own outfits; "cap": made at the cap, so it could not be saved. */
+  reason: "link" | "preset" | "cap";
   /** Edited by hand while it could not be saved. Leaving it then needs a confirmation. */
   edited?: boolean;
 }
@@ -166,6 +176,7 @@ export function readRecord(raw: unknown): OutfitRecord | undefined {
   if (raw.generated !== true) delete record.generated;
   if (typeof raw.deletedAt !== "number") delete record.deletedAt;
   if (typeof raw.bodyType !== "string" || !raw.bodyType) delete record.bodyType;
+  if (storedPlayerNumber(raw.playerNumber) === null) delete record.playerNumber;
   return record;
 }
 
@@ -193,12 +204,13 @@ const sameMap = (a: SlotMap | undefined, b: SlotMap | undefined) => {
 export function sameContent(a: OutfitRecord, b: OutfitRecord): boolean {
   return a.name === b.name && sameMap(a.slots, b.slots) && sameMap(a.labels, b.labels)
     && !!a.generated === !!b.generated && a.deletedAt === b.deletedAt && bodyTypeKey(a.bodyType) === bodyTypeKey(b.bodyType)
-    && viewsKey(a.cameraViews) === viewsKey(b.cameraViews);
+    && samePlayerNumber(a.playerNumber, b.playerNumber) && viewsKey(a.cameraViews) === viewsKey(b.cameraViews);
 }
 
 /** The content fields of a record or draft, for a copy (a duplicate, a fork, a promoted draft). */
 const contentOf = (source: OutfitContent): OutfitContent => ({ name: source.name, slots: source.slots,
-  labels: source.labels, generated: source.generated, bodyType: source.bodyType, cameraViews: source.cameraViews });
+  labels: source.labels, generated: source.generated, bodyType: source.bodyType, playerNumber: source.playerNumber,
+  cameraViews: source.cameraViews });
 
 /** "Outfit" -> "Outfit 1", "Outfit 2"...; "Name (2)" style when `paren` is set. */
 export function uniqueName(stem: string, taken: Iterable<string>, opts: { numberFirst?: boolean; paren?: boolean } = {}): string {
@@ -417,6 +429,7 @@ export class OutfitLibrary {
     if (content.labels) record.labels = { ...content.labels };
     if (content.generated) record.generated = true;
     if (content.bodyType) record.bodyType = content.bodyType;
+    if (storedPlayerNumber(content.playerNumber) !== null) record.playerNumber = content.playerNumber;
     if (content.cameraViews !== undefined)
       record.cameraViews = Array.isArray(content.cameraViews) ? [...content.cameraViews] : content.cameraViews;
     this.records.set(record.id, record);
@@ -442,18 +455,24 @@ export class OutfitLibrary {
     this.touch(id, r => ({ ...r, name: clean }));
   }
 
-  /** Replace what the outfit shows. `bodyType` undefined keeps the outfit's own. */
-  setContent(id: string, slots: SlotMap, labels: SlotMap | undefined, generated: boolean, bodyType?: string) {
+  /** Replace what the outfit shows. `bodyType` undefined keeps the outfit's own; so does `playerNumber` undefined
+   *  (null clears it: each piece's own number). */
+  setContent(id: string, slots: SlotMap, labels: SlotMap | undefined, generated: boolean, bodyType?: string,
+    playerNumber?: number | null) {
     const record = this.records.get(id);
     if (!record) return;
     const sameBodyType = bodyType === undefined || bodyTypeKey(record.bodyType) === bodyTypeKey(bodyType);
+    const sameNumber = playerNumber === undefined || samePlayerNumber(record.playerNumber, playerNumber);
     if (sameMap(record.slots, slots) && sameMap(record.labels, labels) && !!record.generated === generated
-      && sameBodyType) return;
+      && sameBodyType && sameNumber) return;
     this.touch(id, r => {
       const next: OutfitRecord = { ...r, slots: { ...slots } };
       if (labels) next.labels = { ...labels }; else delete next.labels;
       if (generated) next.generated = true; else delete next.generated;
       if (!sameBodyType) next.bodyType = bodyType;
+      if (!sameNumber) {
+        if (storedPlayerNumber(playerNumber) === null) delete next.playerNumber; else next.playerNumber = playerNumber!;
+      }
       return next;
     });
   }

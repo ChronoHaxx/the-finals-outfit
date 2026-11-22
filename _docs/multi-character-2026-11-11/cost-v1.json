@@ -1,0 +1,300 @@
+{
+  "base": "http://127.0.0.1:5186",
+  "when": "2026-11-11T21:22:58.627Z",
+  "outfits": {
+    "empty": {},
+    "A": {
+      "face": "head-face-01-base",
+      "upperBody": "casual-basictshirt-cotton-black",
+      "lowerBody": "casual-loosejeans-denim-darkblue",
+      "feet": "casual-tallsneakers-canvas"
+    },
+    "B": {
+      "face": "head-face-01-base",
+      "upperBody": "streetwear-oversizedbomberjacket-nylon-redurban",
+      "lowerBody": "casual-loosejeans-denim-darkblue",
+      "feet": "casual-tallsneakers-canvas",
+      "hair": "hairs-highponytail-black"
+    },
+    "C": {
+      "face": "head-face-03-base",
+      "upperBody": "streetwear-oversizedbomberjacket-nylon-redurban",
+      "lowerBody": "casual-loosejeans-denim-darkblue",
+      "feet": "casual-tallsneakers-canvas",
+      "hair": "hairs-highponytail-black"
+    }
+  },
+  "loads": {
+    "shared_base": {
+      "files": 74,
+      "localMB": 31.6,
+      "hostedMB": 14.8,
+      "biggest": [
+        "5.2 MB models/reconstructed-assemblies-v1/supported-items.json",
+        "4.5 MB models/reconstructed-assemblies-v1/assets.json",
+        "2.7 MB models/reconstructed-meshes-v2/SK_Body_M.glb",
+        "1.2 MB models/reconstructed-assemblies-v1/head-wraps.json",
+        "0.3 MB models/body/SK_Body_M.glb",
+        "0.2 MB animations/manifest.json"
+      ]
+    },
+    "A_outfit_only": {
+      "files": 25,
+      "localMB": 6.2,
+      "hostedMB": 2.6,
+      "biggest": [
+        "0.9 MB models/heads/face-01.glb",
+        "0.8 MB models/reconstructed-meshes-v2/SK_Head_Face_01_Base.glb",
+        "0.4 MB models/reconstructed-details-v2/37bc38f99125ca76.rgba.gz.bin",
+        "0.3 MB models/reconstructed-details-v2/7faf1d4703704c02.rgba.gz.bin",
+        "0.1 MB models/reconstructed-details-v2/42aa28163266048c.rgba.gz.bin",
+        "0 MB items/face/head-face-01-base.webp"
+      ]
+    },
+    "B_outfit_only": {
+      "files": 25,
+      "localMB": 7,
+      "hostedMB": 2.8,
+      "biggest": [
+        "0.9 MB models/heads/face-01.glb",
+        "0.8 MB models/reconstructed-hair-attached-v3/meshes/SM_HighPonytail.glb",
+        "0.8 MB models/reconstructed-meshes-v2/SK_Head_Face_01_Base.glb",
+        "0.1 MB models/reconstructed-details-v2/42aa28163266048c.rgba.gz.bin",
+        "0 MB items/face/head-face-01-base.webp",
+        "0 MB items/hair/hairs-highponytail-black.webp"
+      ]
+    },
+    "C_outfit_only": {
+      "files": 25,
+      "localMB": 4.3,
+      "hostedMB": 2.8,
+      "biggest": [
+        "1.2 MB models/heads/face-03.glb",
+        "0.8 MB models/reconstructed-hair-attached-v3/meshes/SM_HighPonytail.glb",
+        "0.7 MB models/reconstructed-hair-attached-v3/meshes/SK_HighPonytail_Tail_M.glb",
+        "0 MB items/hair/hairs-highponytail-black.webp",
+        "0 MB items/upperBody/streetwear-oversizedbomberjacket-nylon-redurban.webp",
+        "0 MB items/lowerBody/casual-loosejeans-denim-darkblue.webp"
+      ]
+    },
+    "A_and_B_outfit_overlap": {
+      "files": 17,
+      "localMB": 5.5,
+      "hostedMB": 1.9,
+      "biggest": [
+        "0.9 MB models/heads/face-01.glb",
+        "0.8 MB models/reconstructed-meshes-v2/SK_Head_Face_01_Base.glb",
+        "0.1 MB models/reconstructed-details-v2/42aa28163266048c.rgba.gz.bin",
+        "0 MB items/face/head-face-01-base.webp",
+        "0 MB items/lowerBody/casual-loosejeans-denim-darkblue.webp",
+        "0 MB items/feet/casual-tallsneakers-canvas.webp"
+      ]
+    },
+    "B_and_C_outfit_overlap": {
+      "files": 11,
+      "localMB": 1.5,
+      "hostedMB": 0.9,
+      "biggest": [
+        "0.8 MB models/reconstructed-hair-attached-v3/meshes/SM_HighPonytail.glb",
+        "0 MB items/hair/hairs-highponytail-black.webp",
+        "0 MB items/lowerBody/casual-loosejeans-denim-darkblue.webp",
+        "0 MB items/feet/casual-tallsneakers-canvas.webp",
+        "0 MB items/upperBody/streetwear-oversizedbomberjacket-nylon-redurban.webp",
+        "0 MB models/reconstructed-assembly-v2/items/casual-loosejeans-denim-darkblue.json"
+      ]
+    },
+    "C_new_after_B": {
+      "files": 14,
+      "localMB": 2.9,
+      "hostedMB": 1.9,
+      "biggest": [
+        "1.2 MB models/heads/face-03.glb",
+        "0.7 MB models/reconstructed-hair-attached-v3/meshes/SK_HighPonytail_Tail_M.glb",
+        "0 MB items/face/head-face-03-base.webp",
+        "0 MB models/reconstructed-assembly-v2/items/head-face-03-base.json",
+        "0 MB models/reconstructed-face-batch01-v1/materials/skin-b9306c2abefc17a2f56a0166.json",
+        "0 MB models/reconstructed-face-batch01-v1/materials/skin-dd053d5740c3ffd716eafea3.json"
+      ]
+    }
+  },
+  "gpu": {
+    "empty": {
+      "meshes": 1,
+      "visibleMeshes": 1,
+      "skinned": 1,
+      "materialSlots": 1,
+      "materials": 1,
+      "distinctProgramKeys": 1,
+      "textures": 1,
+      "textureMB": {
+        "body": 5.3,
+        "items": 0,
+        "all": 5.3
+      },
+      "geometries": 1,
+      "geometryMB": {
+        "body": 19.9,
+        "items": 0,
+        "all": 19.9
+      },
+      "biggestTextures": [
+        "body:1024x1024:5.3MB:T_BaseBody_Male_Dark_Color"
+      ]
+    },
+    "A": {
+      "meshes": 11,
+      "visibleMeshes": 9,
+      "skinned": 11,
+      "materialSlots": 11,
+      "materials": 11,
+      "distinctProgramKeys": 9,
+      "textures": 60,
+      "textureMB": {
+        "body": 75,
+        "items": 141,
+        "all": 216
+      },
+      "geometries": 11,
+      "geometryMB": {
+        "body": 19.9,
+        "items": 31.3,
+        "all": 51.2
+      },
+      "biggestTextures": [
+        "body:2048x2048:21.3MB:recovered:0d95f92a9c486ff4",
+        "body:2048x2048:21.3MB:recovered:da4cd30b78d3e3a6",
+        "body:2048x2048:21.3MB:recovered:145debf9a1befb21",
+        "items:2048x2048:21.3MB:recovered:947d4c6515bdd2ff",
+        "items:2048x2048:21.3MB:recovered:726726f57e7fdb7f",
+        "body:1024x1024:5.3MB:recovered:14bbbb82bf523656",
+        "body:1024x1024:5.3MB:recovered:d882bc62b197dca3",
+        "items:1024x1024:5.3MB:recovered:d7f316e073c1a348"
+      ]
+    },
+    "B": {
+      "meshes": 13,
+      "visibleMeshes": 11,
+      "skinned": 13,
+      "materialSlots": 13,
+      "materials": 13,
+      "distinctProgramKeys": 10,
+      "textures": 67,
+      "textureMB": {
+        "body": 75,
+        "items": 220.4,
+        "all": 295.4
+      },
+      "geometries": 13,
+      "geometryMB": {
+        "body": 19.9,
+        "items": 35.3,
+        "all": 55.2
+      },
+      "biggestTextures": [
+        "body:2048x2048:21.3MB:recovered:0d95f92a9c486ff4",
+        "body:2048x2048:21.3MB:recovered:da4cd30b78d3e3a6",
+        "body:2048x2048:21.3MB:recovered:145debf9a1befb21",
+        "items:2048x2048:21.3MB:recovered:ca8dee56773944fc",
+        "items:2048x2048:21.3MB:recovered:c0c3325e86d6ca71",
+        "items:2048x2048:21.3MB:recovered:6e17009e8dbbc80b",
+        "items:2048x2048:21.3MB:recovered:3950d4955b94d715",
+        "items:2048x2048:21.3MB:recovered:03b53cc8c4df0cde"
+      ]
+    },
+    "C": {
+      "meshes": 13,
+      "visibleMeshes": 11,
+      "skinned": 13,
+      "materialSlots": 13,
+      "materials": 13,
+      "distinctProgramKeys": 10,
+      "textures": 67,
+      "textureMB": {
+        "body": 75,
+        "items": 220.4,
+        "all": 295.4
+      },
+      "geometries": 13,
+      "geometryMB": {
+        "body": 19.9,
+        "items": 35.3,
+        "all": 55.2
+      },
+      "biggestTextures": [
+        "body:2048x2048:21.3MB:recovered:37983fc902399cba",
+        "body:2048x2048:21.3MB:recovered:158d8bcdc168fe0f",
+        "body:2048x2048:21.3MB:recovered:9e5277f0d7b9fa1b",
+        "items:2048x2048:21.3MB:recovered:ca8dee56773944fc",
+        "items:2048x2048:21.3MB:recovered:c0c3325e86d6ca71",
+        "items:2048x2048:21.3MB:recovered:6e17009e8dbbc80b",
+        "items:2048x2048:21.3MB:recovered:3950d4955b94d715",
+        "items:2048x2048:21.3MB:recovered:03b53cc8c4df0cde"
+      ]
+    }
+  },
+  "frames": {
+    "empty": {
+      "still": {
+        "calls": 7,
+        "triangles": 82265,
+        "textures": 12,
+        "geometries": 15,
+        "programs": 11
+      }
+    },
+    "A": {
+      "still": {
+        "calls": 23,
+        "triangles": 135989,
+        "textures": 85,
+        "geometries": 23,
+        "programs": 32
+      }
+    },
+    "B": {
+      "still": {
+        "calls": 27,
+        "triangles": 228871,
+        "textures": 94,
+        "geometries": 25,
+        "programs": 35
+      },
+      "idle1": {
+        "draw": {
+          "calls": 63,
+          "triangles": 572169,
+          "textures": 104,
+          "geometries": 25,
+          "programs": 44
+        },
+        "time": {
+          "median": 11,
+          "p95": 13.2
+        }
+      },
+      "copies": 3,
+      "idle4": {
+        "draw": {
+          "calls": 228,
+          "triangles": 2288634,
+          "textures": 170,
+          "geometries": 25,
+          "programs": 49
+        },
+        "time": {
+          "median": 38.1,
+          "p95": 48
+        }
+      }
+    },
+    "C": {
+      "still": {
+        "calls": 27,
+        "triangles": 228871,
+        "textures": 94,
+        "geometries": 25,
+        "programs": 35
+      }
+    }
+  }
+}

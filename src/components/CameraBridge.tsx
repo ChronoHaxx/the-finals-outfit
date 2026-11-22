@@ -33,8 +33,9 @@ interface Controls {
 // Degrees. Module state, so a Canvas remount (Retry after a lost graphics context) keeps the tilt.
 let roll = 0;
 
+// The camera as drawn. While the controls are off no roll is applied, so it reads 0 (the held roll returns with them).
 const liveView = (camera: THREE.Camera, controls: Controls): CameraView => roundView({
-  position: camera.position.toArray() as Vec3, target: controls.target.toArray() as Vec3, roll,
+  position: camera.position.toArray() as Vec3, target: controls.target.toArray() as Vec3, roll: controls.enabled ? roll : 0,
 });
 
 /** Moves the camera to a view and holds it there. Its position and target go through the controls, so the orbit's
