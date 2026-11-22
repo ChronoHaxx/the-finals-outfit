@@ -98,6 +98,25 @@ Result on active `assets.json` 3f64b2e6 and skin-pairs f15a73a2:
 - **Skipped:** `SK_Goth_M`, because the definitions disagree about its class mesh.
 - **Reproducible:** two runs give byte-identical output.
 
+## 17 Nov container proof (coordinator condition, 22 Nov)
+
+`scripts/archetypes/prove-nov17.py` re-read every class package (and each Medium sibling) from today's containers,
+which were rewritten on 17 Nov. It used the 18 Oct run's own probe and mapping, and compared the package sha256 that
+both runs recorded. The proof per mesh is in `scripts/generated/archetypes/nov17-proof-v1/proof.json`.
+
+- **Light:** 156 of 173 meshes are byte-identical, including `SK_Body_L`.
+- **17 differ and are dropped:**
+  - `SK_Body_H`;
+  - `ShortSkirt`, `HighPonytail_Tail`, `TechJacketHarness`, `DiscoBotGloves`, `MessengerBag` and `SkiMask` (both L and
+    H);
+  - `DiscoJacket_H`, `SportyRobotHands_H`, `SpaceCombatTorso_L` and `BoilerSuitTorso_L`.
+- **Heavy is blocked as a whole.** Its body changed, and a Heavy class needs its body. Heavy waits for a fresh read of
+  `SK_Body_H`, which needs the 17 Nov usmap or a proof that the 12.00 read is exact.
+- **Light can go ahead.** It uses the proven Light meshes only. The builder still needs an option that takes the
+  proven list; the index outputs from before this proof (`preview-v1`, `apply-v1`) include the dropped meshes.
+- **Medium (for information):** 77 Medium siblings the live index serves also changed on 17 Nov. That is for the S12
+  refresh to handle.
+
 ## Checks (agent PASS under the standing waiver)
 
 The user waived manual checks on all PRs (22 Nov). These are the agent's checks; see the PR body for the run on the
