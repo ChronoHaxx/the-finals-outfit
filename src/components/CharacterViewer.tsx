@@ -919,8 +919,11 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
         const sourceKey = sourceItem ?? skinCandidate;
         // An item socketed onto the head component belongs to the head that is worn: the face is
         // staged before this loop, so a head swap has to re-stage it rather than be deduplicated.
+        // (22 Nov 2026) So does a rebuild of the same head: a hair whose scalp rules recolour the face changes the
+        // face's key, the rig re-equips the face, and unequipping the old head takes its socketed items with it
+        // (CharacterRig.unequip). The face's own key is part of this key, so those items are staged again.
         const key = sourceKey ? sourcePreviewKey(id!, sourceKey, skinParameters)
-          + (headSocketed ? `|head:${headComponent ?? "none"}` : "")
+          + (headSocketed ? `|head:${headComponent ?? "none"}|face:${prev.current.face ?? "none"}` : "")
           + (headWrapped ? `|wrap:${rig.sourceHeadComponentKey() ?? "none"}` : "") : underTint
           ? `${id}|${underTint}`
           : realUnder
