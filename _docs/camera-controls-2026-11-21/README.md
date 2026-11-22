@@ -67,4 +67,28 @@ only that unflushed view change is lost. It needs a downgrade and a crash togeth
 
 ## Evidence
 
-Filled in below after the checks ran.
+The build, test and real-app checks of 21 Nov are in PR #59's description.
+
+### Scene mode with PR #57 merged (22 Nov 2026)
+
+Build: this branch `22d086d` merged with #57's head `8e93a1c` (clean merge, scratch commit `71ff654`, not pushed),
+`tsc -b` and `vite build` PASS, served by `vite preview --base /` with the deploy hosts and #57's scenes host
+`1d367244`. Run in Playwright's Chromium (navigator.webdriver masked, so stored preferences behave as for a visitor).
+The camera was read from the renderer each frame through three.js's `__THREE_DEVTOOLS__` hook, added to the scratch
+`index.html` only; "tilt" below is the angle between the drawn camera and an upright camera looking at the same target.
+
+| Check | Result |
+|---|---|
+| Free camera before the scene: typed (1.2, 1, 3), roll 30, Save view | Camera at (1.2, 1, 3), tilt 30.00°; "View 1" saved and pressed |
+| Intro tunnel scene (plate) on | Camera exactly at the scene camera (0, 1, 3.6) → (0, 0.9, 0), fov 35, tilt 0.00° in 5 samples; picture level against the plate |
+| Camera panel in the scene | Note "The camera is fixed while a scene backdrop is shown…"; fields, Roll, Level, Reset camera, recall and Save view disabled; panel stays open on canvas presses |
+| Drag and wheel in the scene | Drag turned the character, camera unchanged; wheel narrowed fov 35 → 27.5 with no dolly; tilt 0 |
+| Share in the scene | Copied link `#/?o=…` has no `view`; no "Include camera view" option shown |
+| Leave the scene (Studio grey) | Back at (1.2, 1, 3), tilt 30.00°, fov 35; panel enabled, "View 1" pressed |
+| Fresh load of a `view=-1.5_1.2_2.5_0_1_0_-10` link with the tunnel scene stored | Scene camera, tilt 0, while the view waits; leaving the scene applies it: (-1.5, 1.2, 2.5) → (0, 1, 0), tilt 10.00°, Roll -10 |
+| Season 12 menu scene (stage canvas) with roll -10 held | Viewer camera at the scene camera, tilt 0; leaving restores (-1.5, 1.2, 2.5) with tilt 10 |
+| Console | 0 errors (three's Clock deprecation warning only) |
+
+Seen while checking, both wording only: in a scene the panel's Roll shows the roll that comes back afterwards (30°)
+while the picture is level, and the panel's footer still says share links open on the camera you see, though a
+scene's links leave the camera out.
