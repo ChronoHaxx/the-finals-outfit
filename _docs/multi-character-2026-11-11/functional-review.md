@@ -13,9 +13,9 @@ case becomes visible with the Scene page (Phase 2).
 
 - PR / originating issue: https://github.com/ChronoHaxx/the-finals-outfit/pull/66; design `_docs/multi-character-2026-11-11/README.md`
   (request of 11 Nov 2026, "Recommended MVP", Phase 1)
-- Test this revision: branch `claude/multi-character-2026-11-21` at its head (code as of 7e482c3, the merge of main
-  80ea734 with the emote speed slider and facial animation switch; later commits on it are documentation only unless
-  this line says otherwise)
+- Test this revision: branch `claude/multi-character-2026-11-21` at its head (code as of 3a5eebd, the merge of main
+  1081108: emote speed and facial animation switch, Season 1-2 emotes, the early-stop fix; later commits on it are
+  documentation only unless this line says otherwise)
 - Open: a local production build of the branch at http://127.0.0.1:5195/, next to the live site
   https://chronohaxx.github.io/the-finals-outfit/
 - Prerequisites: this worktree (its `node_modules` is present); Chrome or Edge; internet (models come from the live
@@ -73,6 +73,10 @@ Reply "1-4 pass" (using the actual step numbers), or e.g. "3 fails: the idle sta
   both equivalence probes against the `main-a2c6019` baselines show no difference; `npm test` 933 pass (same 8
   model-reading failures); production-like build: the speed slider runs the emote at 1.5x, and the facial animation
   switch stops the face (0 of 610 facial bones moving) and restarts it (289 moving, as before switching off).
+- After merging main 1081108 (3a5eebd; #69's early-stop fix lives in the first-motion step this PR moved into
+  `useAnimationBinding.ts`, so it was carried over there): both equivalence probes unchanged; `npm test` 938 pass;
+  #69's own probe on a production build: Valkyria and Applause Pause, picked 0.5 s after the emote button enables, play
+  to their end and then the idle (without the carried-over fix both snap to the idle within a second).
 
 ## Recorded result
 
