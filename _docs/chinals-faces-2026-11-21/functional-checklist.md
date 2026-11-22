@@ -6,8 +6,8 @@ In Chinals mode the face now moves during the Chinals emotes and idle, as in glo
 7c9add72; this catches a face that stays still, a missing sound or prop, or wrong wording.
 
 - PR: https://github.com/ChronoHaxx/the-finals-outfit/pull/71 (Shocka feedback item 8)
-- Test this revision: branch `claude/chinals-faces-2026-11-21`, app code at 4c88f9d (the face contact, with main
-  49b2cb6 merged in; later commits are docs only). The build below is that code with deploy.yml's production settings
+- Test this revision: branch `claude/chinals-faces-2026-11-21`, app code at 8f6a480 (the face contact, with main
+  6f81900 merged in; later commits are docs only). The build below is that code with deploy.yml's production settings
   and the new Chinals host.
 - Open: http://127.0.0.1:4357/the-finals-outfit/#/chinals in Chrome or Edge
 - Prerequisites: none beyond the build folder the agent made (`scripts/generated/chinals-faces-2026-11-21/prod/dist`)
@@ -109,6 +109,19 @@ SCENES_BASE), the patch notes (all three 22 Nov notes kept, this one on top) and
 - `npm test` 1013 pass, the 8 known fixture failures (game files the worktree lacks), 6 skipped; `npx tsc --noEmit`
   clean; `npm run build` passes, its roadmap and public-text checks included.
 - Readiness: agent checks PASS on 4c88f9d under the relayed waiver. The boxes above stay unticked.
+- Merge authorization: not given here.
+
+### Repeated after merging main 6f81900 (app code 8f6a480)
+
+#59 (camera controls) merged on main during that run; it changes the viewer the steps zoom with, so all six ran again.
+Conflicts: the patch notes (camera controls kept under this note) and the roadmap's review line.
+- Tested build: production build of 8f6a480 by `prod-check.mjs` (ok: no failed request, no page error; Unrivaled Master
+  to 5.92 s with audio); [user-steps.mjs](user-steps.mjs) as a visitor, 22 Nov ~12:53 UTC, one run.
+- 1 PASS (eyelids 37.0°). 2 PASS (wording exact). 3 PASS (5.99 of 6 s with audio, 3 prop files, jaw 14.5°, then the
+  idle). 4 PASS (off 0°, on again jaw 14.5°). 5 PASS (beard jaw 14.5°; balaclava masked, jaw 7.3°, mouth crop shows
+  closed knit). 6 PASS (Fox Chicken to 7.58 of 7.67 s with audio; outfit kept).
+- `npm test` 1029 pass, the same 8 known fixture failures, 6 skipped; tsc clean; `npm run build` passes.
+- Readiness: agent checks PASS on 8f6a480 under the relayed waiver. The boxes above stay unticked.
 - Merge authorization: not given here.
 
 A later patch invalidates affected checks. Keep results for the previous

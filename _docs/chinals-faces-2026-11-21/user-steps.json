@@ -1,14 +1,14 @@
 {
   "app": "http://127.0.0.1:4357/the-finals-outfit/",
-  "at": "2026-11-22T12:47:25.847Z",
+  "at": "2026-11-22T12:52:54.038Z",
   "steps": {
     "s1": {
       "welcomeShown": true,
       "banner": true,
       "idle": "cn-outfit-idle",
       "head": "SK_Head_Face_01_Base",
-      "eyelidMaxDeg": 36.9,
-      "eyelidMinDeg": 0.32,
+      "eyelidMaxDeg": 37.01,
+      "eyelidMinDeg": 0.05,
       "faceFiles": [
         "7c9add72 200 faces-1/faces.json",
         "7c9add72 200 faces-1/curves/HM_Frontend_Outfit_L_Idle_01.json",
@@ -23,7 +23,7 @@
     "s3": {
       "played": {
         "id": "cn-emote-weaponmaster",
-        "reached": 5.89,
+        "reached": 5.99,
         "duration": 6,
         "playedToEnd": true,
         "thenPlaying": "cn-outfit-idle",
@@ -32,17 +32,17 @@
           "head": "SK_Head_Face_01_Base",
           "bones": 289,
           "enabled": true,
-          "maxDeg": 49.18,
+          "maxDeg": 48.97,
           "maxBone": "FACIAL_R_NasolabialBulge",
-          "FACIAL_L_EyelidUpperA": 5.25,
-          "FACIAL_R_EyelidUpperA": 4.77,
-          "FACIAL_C_Jaw": 14.5,
-          "time": 3.22
+          "FACIAL_L_EyelidUpperA": 5.02,
+          "FACIAL_R_EyelidUpperA": 4.93,
+          "FACIAL_C_Jaw": 14.51,
+          "time": 3.19
         },
         "shot": {
-          "at": 3.22,
-          "ms": 258,
-          "after": "cn-emote-weaponmaster 3.49"
+          "at": 3.19,
+          "ms": 172,
+          "after": "cn-emote-weaponmaster 3.37"
         }
       },
       "soundFile": [
@@ -122,7 +122,7 @@
     "s6": {
       "global": {
         "id": "fox-chicken",
-        "reached": 7.54,
+        "reached": 7.58,
         "duration": 7.67,
         "playedToEnd": true,
         "thenPlaying": "outfit-idle",
@@ -131,17 +131,17 @@
           "head": "SK_Head_Face_01_Base",
           "bones": 289,
           "enabled": true,
-          "maxDeg": 34.24,
+          "maxDeg": 38.47,
           "maxBone": "FACIAL_L_EyelidUpperA",
-          "FACIAL_L_EyelidUpperA": 34.24,
-          "FACIAL_R_EyelidUpperA": 33.77,
-          "FACIAL_C_Jaw": 0.37,
-          "time": 6.48
+          "FACIAL_L_EyelidUpperA": 38.47,
+          "FACIAL_R_EyelidUpperA": 37.31,
+          "FACIAL_C_Jaw": 1.11,
+          "time": 5.16
         },
         "shot": {
-          "at": 2.52,
-          "ms": 264,
-          "after": "fox-chicken 2.79"
+          "at": 2.5,
+          "ms": 252,
+          "after": "fox-chicken 2.76"
         }
       },
       "globalSound": [
