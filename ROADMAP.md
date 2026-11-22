@@ -26,7 +26,7 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 # Roadmap
 
 Last reviewed: 2026-11-21
-Reviewed after patch note: 2026-11-21-season-1-2-emotes
+Reviewed after patch note: 2026-11-21-emote-speed-face
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -154,7 +154,7 @@ Clothing hides the body beneath it, hair swaps to its under-hat shape, and full-
 ### Idle animation and emotes
 <!-- id: idle-emotes -->
 
-The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and with its sound where it has one, and the equipped cosmetics follow the body. The face moves too: blinks, glances and expressions, with beards and scarves following. A timeline pauses an emote on any frame or loops it, and a share link keeps that pose. One click returns to the still pose.
+The character plays the game's outfit-screen idle by default. Every emote in the game files can be picked from its in-game icon and plays with its props, and with its sound where it has one, and the equipped cosmetics follow the body. The face moves too: blinks, glances and expressions, with beards and scarves following, and a switch keeps it still. A timeline pauses an emote on any frame, loops it or changes its speed, and a share link keeps that pose. One click returns to the still pose.
 
 ### Chinals emotes
 <!-- id: chinals-emotes -->
