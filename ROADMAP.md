@@ -26,7 +26,7 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 # Roadmap
 
 Last reviewed: 2026-11-22
-Reviewed after patch note: 2026-11-22-chinals-faces
+Reviewed after patch note: 2026-11-22-chinals-emote-sounds
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -164,7 +164,7 @@ The character plays the game's outfit-screen idle by default. Every emote in the
 ### Chinals emotes
 <!-- id: chinals-emotes -->
 
-A labelled Chinals mode plays the emotes of 终极角逐, THE FINALS as published in mainland China, on your outfit. Their faces move as in global emotes. Emotes without an English name show the Chinese name with this site's unofficial translation. Chinals cosmetics are not on the site.
+A labelled Chinals mode plays the emotes of 终极角逐, THE FINALS as published in mainland China, on your outfit, with their sound effects and music. Their faces move as in global emotes. Emotes without an English name show the Chinese name with this site's unofficial translation. Chinals cosmetics are not on the site.
 
 ### Share, randomise and report
 <!-- id: share-randomise-report -->

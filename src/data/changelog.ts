@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-chinals-emote-sounds",
+    date: "2026-11-22",
+    title: "Chinals emote sounds",
+    notes: [
+      "In Chinals mode, the emotes now play their own sound effects and music too, in time with the animation. 43 of the 45 have sound; the other two are silent in the game too. The speaker button and volume slider work as they do for the other emotes.",
+      "A few Chinals emote props now look right: two guns that came apart are whole again, guns that lay on the floor are held, and a prop shown too small is back to its full size.",
+    ],
+    items: ["chinals-emotes", "emote-effects"],
+  },
+  {
     id: "2026-11-22-chinals-faces",
     date: "2026-11-22",
     title: "Faces in Chinals emotes",
