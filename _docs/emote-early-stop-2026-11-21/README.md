@@ -69,6 +69,15 @@ Trace on the live site (`early-stop-trace.mjs`, page seconds; `__rigIdle` is the
 - Headless timing differs from a real browser (software rendering, slower outfit pass): the hand checks are in
   `functional-checklist.md`.
 
+## Agent run of the hand checks (22 Nov 2026, after the merge)
+
+The user waived the hand checks and merged PR #69 ("waive and merge 69"), then asked for the checks to be run by the
+agent. `agent-hand-checks.mjs` runs checklist steps 1-5 in a headed Chrome (GPU rendering and real frame timing, a
+fresh profile per window, visitor mode, sound muted) on the live site deployed from `96bf586`. For step 3 it uses main
+just before the merge (`4848a7f`), built locally. All 5 pass on the first window each. The before build lost
+Valkyria at 3.14/7.33 s the moment its outfit pass ended; the live site played it to 7.30/7.33 s across the end of
+its outfit pass, then the idle. The step-by-step results are under "Recorded result" in `functional-checklist.md`.
+
 ## Scripts (Git Bash, worktree root)
 
 ```bash
@@ -78,6 +87,7 @@ node _docs/emote-early-stop-2026-11-21/early-stop-trace.mjs "Valkyria"   # who c
 node _docs/emote-early-stop-2026-11-21/prod-build.mjs --anim=https://fd946744.the-finals-outfit-assets.pages.dev/   # PR #62's emotes
 SHOTS=1 RUNS=4 node _docs/emote-early-stop-2026-11-21/back-to-back-trace.mjs "Coop Caper" "Gimme Five"   # every clip switch, with stacks
 APP_URL=https://chronohaxx.github.io/the-finals-outfit/ node _docs/emote-early-stop-2026-11-21/early-stop-trace.mjs "Valkyria"   # the live site
+node _docs/emote-early-stop-2026-11-21/agent-hand-checks.mjs             # checklist steps 1-5, headed Chrome, live site vs 4848a7f (build it first, see the script)
 ```
 
 ## A later stop, reported once, not reproduced
