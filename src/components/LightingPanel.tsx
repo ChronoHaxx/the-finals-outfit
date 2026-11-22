@@ -19,6 +19,10 @@ import { SunIcon, TrashIcon } from "./Icons";
  * and "Show lights": bulbs and cones in the 3D view (LightMarkers.tsx). While they are shown, a press in the 3D view does
  * not close this panel, so its Direction and Height sliders can be watched following a dragged bulb; picking a bulb
  * opens that light's card here.
+ *
+ * 22 Nov 2026: a share link can bring its sender's lighting (lighting-store.ts `shared`). While it shows, the button says
+ * so, the panel opens on the same two choices as the notice bar (SharedLightingNotice.tsx), and Undo, which belongs to
+ * the viewer's own lighting, waits until they are back on it.
  */
 export function LightingPanel() {
   const look = useLightingStore(state => state.look);
@@ -26,7 +30,8 @@ export function LightingPanel() {
   const looks = useLightingStore(state => state.looks);
   const markers = useLightingStore(state => state.markers);
   const selected = useLightingStore(state => state.selected);
-  const { edit, apply, reset, undo, saveLook, deleteLook, setMarkers } = useLightingStore.getState();
+  const shared = useLightingStore(state => state.shared);
+  const { edit, apply, reset, undo, saveLook, deleteLook, setMarkers, keepShared, leaveShared } = useLightingStore.getState();
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [viewerHeight, setViewerHeight] = useState(0);
@@ -70,7 +75,7 @@ export function LightingPanel() {
         className="hud flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950">
         <SunIcon size={14} />
         <span className="sr-only">Lighting and backdrop: </span>
-        <span>{name}</span>
+        <span>{shared ? `Link · ${name}` : name}</span>
         <svg aria-hidden="true" width="9" height="9" viewBox="0 0 10 10" className={`transition-transform ${open ? "rotate-180" : ""}`}>
           <path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" />
         </svg>
@@ -79,6 +84,21 @@ export function LightingPanel() {
         <div id={panelId} role="group" aria-label="Lighting and backdrop"
           style={viewerHeight ? { maxHeight: viewerHeight - 56 } : undefined}
           className="absolute right-0 top-9 z-30 flex w-80 max-w-[calc(100vw-1.5rem)] flex-col gap-3 overflow-y-auto border border-line bg-ink-950 p-3 text-sm text-fg shadow-lg">
+
+          {shared && <div className="flex flex-col gap-2 border border-fg/30 bg-ink-900 p-2">
+            <span className="text-xs leading-snug">
+              This is the lighting from the link you opened. Your own lighting is kept until you choose. Changing anything
+              here keeps this lighting as yours, and Undo returns to yours.
+            </span>
+            <div className="flex gap-1.5">
+              <button type="button" onClick={keepShared} className="h-8 flex-1 bg-fg px-2 text-xs text-ink-950 hover:bg-white">
+                Keep this lighting
+              </button>
+              <button type="button" onClick={leaveShared} className="h-8 flex-1 border border-line px-2 text-xs hover:bg-ink-800">
+                Use my lighting
+              </button>
+            </div>
+          </div>}
 
           <Section title="Looks">
             <div className="flex flex-wrap gap-1.5">
@@ -225,7 +245,7 @@ export function LightingPanel() {
               className="h-8 flex-1 bg-fg px-2 text-xs text-ink-950 hover:bg-white disabled:cursor-not-allowed disabled:bg-fg/30">
               Reset to Studio
             </button>
-            {previous && (
+            {previous && !shared && (
               <button type="button" onClick={undo} title={`Back to: ${describeLook(previous)}`}
                 className="h-8 border border-line px-3 text-xs hover:bg-ink-900">
                 Undo

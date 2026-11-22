@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-shared-lighting",
+    date: "2026-11-22",
+    title: "Share links keep your lighting",
+    notes: [
+      "A share link now opens in the lighting you see: the look, every light, the backdrop and the scene. The preview image was already drawn in it, so now the outfit opens looking like its card. Untick Include lighting in the share panel to leave it out.",
+      "Opening someone's link shows their lighting without touching yours. A bar under the top menu offers Keep this lighting, which makes it yours and adds it to your saved looks, and Use my lighting, which brings yours back. Changing anything in the lighting panel keeps theirs as well, and Undo returns to yours.",
+    ],
+    items: ["share-randomise-report", "lighting-backdrops"],
+  },
+  {
     id: "2026-11-22-chinals-emote-sounds",
     date: "2026-11-22",
     title: "Chinals emote sounds",

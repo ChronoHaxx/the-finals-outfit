@@ -99,7 +99,7 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
       {
         id: "share-link",
         title: "Share links",
-        text: "Share outfit copies a link to the outfit, its body type and player number. It opens on the camera you see; untick Include camera view to leave that out. With an emote on screen, tick Include this frame to share that exact pose, paused or playing. Lighting is not part of the link: whoever opens it sees the lighting set in their own browser.",
+        text: "Share outfit copies a link to the outfit, its body type and player number. It opens on the camera you see; untick Include camera view to leave that out. With an emote on screen, tick Include this frame to share that exact pose, paused or playing. The link also opens in your lighting and backdrop; untick Include lighting to leave them out.",
         where: "Share outfit, at the foot of the outfit",
       },
       {
@@ -150,6 +150,12 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
         title: "Lighting and backdrop",
         text: "Start from a ready-made look, such as Studio, Lobby, Season 12 menu, Dramatic or Nighttime, then change each light's colour, brightness and direction, pick a solid or gradient backdrop, turn on a floor shadow and save your own looks.",
         where: "The button named after the look, top right",
+      },
+      {
+        id: "shared-lighting",
+        title: "Lighting from a link",
+        text: "A link someone shares opens in their lighting, while yours stays as it was. Keep this lighting makes it yours and adds it to your saved looks; Use my lighting brings yours back. Changing anything in the lighting panel keeps it too, and Undo returns to yours.",
+        where: "The bar under the top menu, or the top of the lighting panel",
       },
       {
         id: "light-markers",

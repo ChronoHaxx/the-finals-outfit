@@ -50,6 +50,9 @@ export interface StageLight {
   enabled: boolean;
   /** Sun only. */
   castShadow: boolean;
+  /** Values a newer build appended to this light in a share link (share-lighting.ts), kept as written so this build
+   *  writes them back into its links and storage. Absent: none. */
+  linkExtras?: string[];
 }
 export type EnvironmentKind = "softbox" | "room" | "none";
 export type ToneMappingChoice = "neutral" | "aces" | "agx";
@@ -75,6 +78,9 @@ export interface Look {
   floorShadow: boolean;
   floorShadowOpacity: number;
   backdrop: Backdrop;
+  /** Fields a newer build added to a share link (share-lighting.ts), kept as written so this build writes them back
+   *  into its links and storage, where that build finds them. Absent: none. */
+  linkExtras?: string[];
 }
 
 export const MAX_LIGHTS = 6;
@@ -337,7 +343,8 @@ export function nighttimeLook(): Look {
   };
 }
 
-/** Full looks replace everything. Ids are not stored anywhere (a look is matched by its data), so they may change. */
+/** Full looks replace everything. Their ids are what a share link names (share-lighting.ts: lt=lobby), so an id is
+ *  permanent: never rename or reuse one. A look is still matched by its data, not its id, everywhere else. */
 export const FULL_LOOKS: readonly { id: string; label: string; look: () => Look }[] = [
   { id: "studio", label: "Studio", look: () => studioLook() },
   { id: "lobby", label: "Lobby", look: lobbyLook },
@@ -526,6 +533,13 @@ const finite = (value: unknown): value is number => typeof value === "number" &&
 const clamp = (value: unknown, min: number, max: number, fallback: number) =>
   finite(value) ? THREE.MathUtils.clamp(value, min, max) : fallback;
 const obj = (value: unknown): Record<string, unknown> => (value && typeof value === "object" && !Array.isArray(value) ? value : {}) as Record<string, unknown>;
+// share-lighting.ts's grammars for what a newer build adds to a link (kept here so this file stays free of it).
+const LINK_FIELD = /^[A-Za-z][A-Za-z0-9_-]{0,199}$/, LINK_VALUE = /^[A-Za-z0-9-]{1,64}$/;
+/** A newer build's link additions, when there are any: `{ linkExtras }` to spread, or nothing. */
+function linkExtras(value: unknown, grammar: RegExp, max: number): { linkExtras?: string[] } {
+  const kept = Array.isArray(value) ? value.filter((v): v is string => typeof v === "string" && grammar.test(v)).slice(0, max) : [];
+  return kept.length ? { linkExtras: kept } : {};
+}
 
 function sanitizeLight(value: unknown, index: number, fallback: StageLight | undefined): StageLight | null {
   const v = obj(value);
@@ -543,6 +557,7 @@ function sanitizeLight(value: unknown, index: number, fallback: StageLight | und
     position,
     enabled: typeof v.enabled === "boolean" ? v.enabled : fallback?.enabled ?? true,
     castShadow: role === "sun" && (typeof v.castShadow === "boolean" ? v.castShadow : fallback?.castShadow ?? false),
+    ...linkExtras(v.linkExtras, LINK_VALUE, 8),
   };
 }
 
@@ -597,6 +612,7 @@ export function sanitizeLook(value: unknown): Look {
     floorShadow: v.floorShadow === true,
     floorShadowOpacity: clamp(v.floorShadowOpacity, 0.05, 1, base.floorShadowOpacity),
     backdrop: sanitizeBackdrop(v.backdrop, base.backdrop),
+    ...linkExtras(v.linkExtras, LINK_FIELD, 16),
   };
 }
 

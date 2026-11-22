@@ -17,6 +17,7 @@ import { MemoryBackend, openOutfitStorage, requestPersistentStorage, type Storag
 import { keepMissing, labelsFor, resolveSavedSlots, sameBuild, type MissingPiece } from "../lib/saved-outfit-pieces";
 import { readOutfitLink } from "../lib/share-url";
 import { POSE_KEYS } from "../lib/share-pose";
+import { LIGHTING_PARAM } from "../lib/share-lighting";
 import { builderHashMode, builderHashParams, builderPath } from "../lib/site-mode";
 import { migrateOutfit } from "../lib/outfit-slots";
 import type { Slot } from "../lib/slots";
@@ -240,13 +241,14 @@ function leavingDraft(): boolean {
 }
 
 /** Remove the share link from the address bar once it has done its job, so a reload shows the saved outfit. A link's
- *  pose (share-pose.ts) and camera view (camera-view.ts) go with it: the builder read them before this could run. */
+ *  pose (share-pose.ts), camera view (camera-view.ts) and lighting (share-lighting.ts) go with it: the builder read them
+ *  before this could run. */
 function cleanUrl() {
   if (typeof window === "undefined") return;
   try {
     const url = new URL(window.location.href);
     let changed = false;
-    for (const key of ["outfit", "o", "look", BODY_TYPE_PARAM, PLAYER_NUMBER_PARAM, VIEW_PARAM, ...POSE_KEYS])
+    for (const key of ["outfit", "o", "look", BODY_TYPE_PARAM, PLAYER_NUMBER_PARAM, VIEW_PARAM, LIGHTING_PARAM, ...POSE_KEYS])
       if (url.searchParams.has(key)) { url.searchParams.delete(key); changed = true; }
     if (changed) window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
     // Either builder route (lib/site-mode.ts): tidying a link away never leaves Chinals mode.
