@@ -32,13 +32,17 @@ The three proofs, rerun on `3f64b2e6`:
 |---|---|---|
 | raw arrays | `morph-only-proof.py` | 234 meshes still refused |
 | as the rig renders (tier 1) | `skin-by-name-proof.py` | 38 re-encoded, 36 weights, 4 normals(+weights), 6 morph set(+weights), 7 loader refuses, **143 surface differs** |
-| surface (new) | `surface-match-proof.py` | of the 143: **61 permuted** (same triangles, new vertex order), 16 reworked with the same UVs, 8 UV0 tile shifts only, **58 UVs changed** |
+| surface (new) | `surface-match-proof.py` (v3) | of the 143: **61 permuted** (same triangles, new vertex order; 1 of them also split a slot), 14 reworked with the same UVs, 6 UV0 tile shifts only, **59 UVs changed**, 3 moved too far to judge |
 
 `surface-match-proof.py` (new):
 - **Permuted**: every S12 vertex has a live twin with the same position and UVs (bit-equal after 1e-6 quantising), and
   the triangles match as multisets per material with the same winding. Then the S12 data is re-ordered into live order
   and the tier-1 checks run unchanged (normals, weights by joint name, morphs by name, extension binds, loader rules).
   A pure "permuted" mesh renders exactly like a morph-only swap.
+- **Material slots** are compared as (material, slot name): the index binds materials by slot name. Found by the first
+  smoke capture: S12 moved `SK_Military_CombatPants_M`'s cloth triangles into a new slot `CombatPants_Cloth` (same
+  MI), and the viewer threw "Missing source material slot". It is now "permuted+material slots" (not admissible), and
+  `build-preview-index.py` refuses any admitted GLB with a slot the index does not bind.
 - **Reworked**: geometry distance both ways (S12 → live surface and back, cm), and **texture fit**: at the closest live
   surface point, does live UV0 equal S12 UV0 within 2 texels (of a 2048 map)? A seam vertex lies on two islands at
   distance 0, so the best UV among triangles tied for closest counts. Modulo whole tiles is reported separately.
@@ -50,16 +54,19 @@ The three proofs, rerun on `3f64b2e6`:
 
 ## 3. Route stages and what they unlock (`refresh-route-census.py`, item rule of `build-preview-index.py`)
 
-Items with body-type meshes: 2,080 of 2,953 supported. S12 throughout now: **1,385**.
+Items with body-type meshes: 2,080 of 2,953 supported. S12 throughout now: **1,220**. Totals run the item rule to its
+fixpoint (`build-preview-index.settle`, shared by both tools): a morph-only mesh shared with an item that still shows a
+pre-S12 mesh stays held, which couples items. (A first census that counted items independently said 1,385 → 2,037;
+that is only an upper bound.)
 
 | Stage | Meshes | Route | S12 items (cumulative) |
 |---|---:|---|---:|
-| now | | | 1,385 |
-| A1 rest of tier 1 | 72 | GLB swap after the skin proof / review | 1,552 |
-| A2 permuted | 52 | GLB swap after the surface proof / review | 1,670 |
-| B reworked, same UVs / tile shifts | 22 | GLB swap + re-derived body mask + item masks | 1,739 |
-| C reworked, UVs changed | 58 | also the S12 textures (fresh read, needs proof) | 2,037 |
-| left | | 7 loader refusals, 51 body-type meshes with no S12 read | (43 items) |
+| now | | | 1,220 |
+| A1 rest of tier 1 | 72 | GLB swap after the skin proof / review | 1,324 |
+| A2 permuted | 52 | GLB swap after the surface proof / review | 1,440 |
+| B reworked, same UVs / tile shifts | 18 | GLB swap + re-derived body mask + item masks | 1,464 |
+| C reworked, UVs changed | 59 | also the S12 textures (fresh read, needs proof) | 1,782 |
+| left | | 7 loader refusals, 51 body-type meshes with no S12 read, the coupling they cause | 298 |
 
 Most-worn first inside each stage (items showing): A1 TrackSuitPants 14, HeistTorso 13, SkiPants 12, ShortDress 10,
 CombatVest 10; A2 SniperBoots 11, DoubleHolsterPants 10, CombatPants 7, TacticalBandolier 7, MarineBoots 6;
@@ -86,6 +93,10 @@ Held out of batch A, with the reason:
 
 `build-preview-index.py` gains `--admit-surface SURFACE_PROOF_JSON` (permuted admitted by proof; other surface classes
 only by name; reworked never). Tests added.
+
+Built (`index-batchA-v2`): 79 admitted by proof + 36 by review; **112 garments repointed** (83 admitted, 29 morph-only
+meshes the admissions release); 32 admitted meshes stay held by the item rule. **1,428 items S12 throughout (+208).**
+New morphs on admitted meshes (`shrink_under_vest`, `bandolier_squeeze`, `cloth_weights`) all default to 0.
 
 Review (as tier 1, `capture-review.mjs`, preview servers on free ports, never 5174):
 - Androgynous still pose: proof-admitted swaps must match live within the noise floor (any difference is a proof bug).

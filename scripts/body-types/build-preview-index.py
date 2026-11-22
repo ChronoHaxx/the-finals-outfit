@@ -82,6 +82,19 @@ def body_type_meshes(census_json, index_meshes):
     return {source for source, row in census.items() if BODY_TYPE_MORPHS & set(row.get('morphs', []))}
 
 
+def glb_slots(path):
+    """Source slot names of a GLB's materials (gzip-wrapped or plain). A file that is not a GLB has none."""
+    import gzip
+    import struct
+    b = Path(path).read_bytes()
+    if b[:2] == b'\x1f\x8b':
+        b = gzip.decompress(b)
+    if len(b) < 20 or struct.unpack('<I', b[:4])[0] != 0x46546C67:
+        return set()
+    doc = json.loads(b[20:20 + struct.unpack('<I', b[12:16])[0]])
+    return {(m.get('extras', {}).get('sourceSlot') or {}).get('MaterialSlotName') for m in doc.get('materials', [])} - {None}
+
+
 def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir, surface_json=None):
     """{source: admission} from skin-by-name-proof.py output (S12 item refresh tier 1, 12 Nov 2026).
 
@@ -127,12 +140,40 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
             raise SystemExit(f'{name}: the live mesh changed since the skin proof')
         if hashlib.sha256((Path(rebuilt_dir) / f'{name}.glb').read_bytes()).hexdigest() != r['s12Sha256']:
             raise SystemExit(f'{name}: the rebuild changed since the skin proof')
+        unbound = glb_slots(Path(rebuilt_dir) / f'{name}.glb') - {s.get('slot') for s in entry.get('slots', [])}
+        if unbound:
+            # The viewer binds materials by slot name and throws on a slot the index does not list (22 Nov 2026,
+            # SK_Military_CombatPants_M's new "CombatPants_Cloth").
+            raise SystemExit(f'{name}: the rebuild has material slots the index does not bind: {sorted(unbound)}')
         admitted[r['source']] = {'name': name, 'class': r['class'], 'by': 'proof' if r.get('admissible') else 'review',
                                  **({'proof': 'surface-match'} if r.get('surfaceProof') else {}),
                                  'liveSha256': r['liveSha256'], 's12Sha256': r['s12Sha256'],
                                  'morphsChanged': r.get('morphsChanged', {}),
                                  **{k: r[k] for k in ('morphsAdded', 'morphsRemoved') if k in r}}
     return admitted
+
+
+def settle(proven, kept, unchanged, users, body):
+    """The item rule to its fixpoint: (effective S12 set, held {source: reason}).
+
+    A proven mesh is held when an item that shows it also shows a mesh outside the effective set; a held mesh with
+    changed morphs leaves the effective set, which can hold others."""
+    effective = set(proven) | kept
+    while True:
+        held = {}
+        for source in sorted(proven - {body}):
+            # Only OTHER meshes count: once held, a mesh is itself pre-S12, and counting it would make every item that
+            # shows it "mixed" and name those as the reason (6 Nov 2026, loose jeans). The swap set is the same either
+            # way, since the effective set only shrinks; the recorded reasons are the root ones.
+            mixed = sorted({item for item, meshes in users.get(source, [])
+                            if any(m not in effective and m != body and m != source for m in meshes)})
+            if mixed:
+                held[source] = {'reason': 'an item that shows it also shows a mesh the preview keeps pre-S12',
+                                'items': mixed[:20], 'itemCount': len(mixed)}
+        settled = (proven - {s for s in held if s not in unchanged}) | kept
+        if settled == effective:
+            return effective, held
+        effective = settled
 
 
 def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None, census_json=None, changed_only=False,
@@ -178,22 +219,7 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     # "unchanged" (a morph-set change leaves morphsChanged empty, so the morph proof cannot speak for it).
     kept -= set(admitted)
     assert not set(admitted) & unchanged
-    effective = set(proven) | kept
-    while True:
-        held = {}
-        for source in sorted(proven - {body}):
-            # Only OTHER meshes count: once held, a mesh is itself pre-S12, and counting it would make every item that
-            # shows it "mixed" and name those as the reason (6 Nov 2026, loose jeans). The swap set is the same either
-            # way, since the effective set only shrinks; the recorded reasons are the root ones.
-            mixed = sorted({item for item, meshes in users.get(source, [])
-                            if any(m not in effective and m != body and m != source for m in meshes)})
-            if mixed:
-                held[source] = {'reason': 'an item that shows it also shows a mesh the preview keeps pre-S12',
-                                'items': mixed[:20], 'itemCount': len(mixed)}
-        settled = (proven - {s for s in held if s not in unchanged}) | kept
-        if settled == effective:
-            break
-        effective = settled
+    effective, held = settle(proven, kept, unchanged, users, body)
     for name, row in sorted(proof.items()):
         admission = admitted.get(row.get('source'))
         if (row.get('status') != 'morph-only' and not admission) or row['source'] in held:

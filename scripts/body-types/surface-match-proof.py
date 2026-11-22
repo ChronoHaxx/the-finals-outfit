@@ -433,25 +433,44 @@ def material_names(doc):
     return [m.get('name') for m in doc.get('materials', [])]
 
 
+def material_slots(doc):
+    """(material name, source slot name) per material: the index binds materials by slot name (assets.json slots)."""
+    return [(m.get('name'), (m.get('extras', {}).get('sourceSlot') or {}).get('MaterialSlotName'))
+            for m in doc.get('materials', [])]
+
+
 def judge(live_path, new_path, driver):
     lg, ng = skin.Glb(live_path), skin.Glb(new_path)
     if len(lg.doc['meshes']) != 1 or len(ng.doc['meshes']) != 1:
         return {'class': 'not a single-mesh GLB'}
     live, new = Pools(lg), Pools(ng)
     ml, mn = material_names(lg.doc), material_names(ng.doc)
+    sl, sn = material_slots(lg.doc), material_slots(ng.doc)
     out = {}
     if sorted(set(ml)) != sorted(set(mn)):
         out['materialsLive'], out['materialsS12'] = ml, mn
+    if sorted(set(sl), key=str) != sorted(set(sn), key=str):
+        # 22 Nov 2026: S12 split SK_Military_CombatPants_M's cloth section into a new slot "CombatPants_Cloth" (same MI);
+        # the index has no binding for it, so the viewer throws "Missing source material slot".
+        out['slotsLive'], out['slotsS12'] = sl, sn
     perm, reason = permutation(live, new, ml, mn)
     if perm is not None:
         result = mapped_compare(live, new, perm, driver)
-        if out:
+        if 'materialsLive' in out:
             result['class'] += '+material names'
+        if 'slotsLive' in out:
+            result['class'] += '+material slots'
+        elif permutation(live, new, sl, sn)[0] is None:
+            # Same slot names, but triangles moved between slots.
+            result['class'] += '+material slots'
+            out['slotsNote'] = 'triangles moved between slots'
         return {**out, **result}
     metrics = rework_metrics(live, new, ml, mn)
     cls = rework_class(metrics)
-    if out:
+    if 'materialsLive' in out:
         cls += '; material names differ'
+    if 'slotsLive' in out:
+        cls += '; material slots differ'
     return {**out, 'class': cls, 'notPermuted': reason, **metrics}
 
 

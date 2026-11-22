@@ -70,6 +70,16 @@ const servePlugin = {
   },
 };
 
+// The nearest node_modules upward: a junction in the worktree, or (22 Nov 2026, tier 2) none, in which case Node finds
+// the root checkout's, since worktrees are nested inside it. A junction is avoided where possible: removing a worktree
+// with one inside deleted shared files on 21 Nov.
+const nodeModules = (() => {
+  for (let dir = root; ; dir = path.dirname(dir)) {
+    if (existsSync(path.join(dir, "node_modules"))) return realpathSync(path.join(dir, "node_modules"));
+    if (path.dirname(dir) === dir) throw new Error("No node_modules above " + root);
+  }
+})();
+
 // The project's own vite.config.ts (catalog virtual module, routes define, React, Tailwind) plus this server's
 // middleware. configLoader "runner" evaluates the config in memory, where the default "bundle" loader would write a
 // temporary file under node_modules/.vite-temp.
@@ -79,7 +89,7 @@ const server = await createServer({
   plugins: [servePlugin],
   server: { port, strictPort: true, host: "127.0.0.1",
     // node_modules is a junction, so Vite sees package files (the UI font) at the release worktree's real path.
-    fs: { allow: [root, realpathSync(path.join(root, "node_modules"))] },
+    fs: { allow: [root, nodeModules] },
     // Vite full-reloads the page on any watched change, even a .py edit (6 Nov 2026: it killed a capture run mid-shot).
     watch: { ignored: ["**/_docs/**", "**/scripts/generated/**", "**/scripts/body-types/**", "**/*.py"] } },
 });

@@ -50,6 +50,27 @@ def s12_items(users_by_item, ok):
     return {item for item, meshes in users_by_item.items() if meshes <= ok}
 
 
+class Rule:
+    """build-preview-index.py's item rule (settle) over one index, for any set of admitted refused meshes."""
+
+    def __init__(self, morph, by_item_shaped, body):
+        self.body = body
+        self.morph_only = {r['source'] for r in morph.values() if r.get('status') == 'morph-only'}
+        self.unchanged = {r['source'] for r in morph.values() if r.get('status') == 'morph-only' and not r['morphsChanged']}
+        self.kept = {r['source'] for r in morph.values() if r.get('status') == 'refused' and not r['morphsChanged']
+                     and not any(bpi.GEOMETRY_PROBLEM.match(p) for p in r['problems'])}
+        self.users = {}
+        for item, meshes in by_item_shaped.items():
+            for m in meshes:
+                self.users.setdefault(m, []).append((item, meshes))
+        self.by_item = {i: m - {body} for i, m in by_item_shaped.items() if m - {body}}
+
+    def items(self, admitted):
+        effective, _ = bpi.settle(self.morph_only | set(admitted), self.kept - set(admitted), self.unchanged,
+                                  self.users, self.body)
+        return s12_items(self.by_item, effective)
+
+
 def main(active_json, morph_json, skin_json, surface_json, custom_json, census_json, out_json):
     out = Path(out_json)
     if out.exists():
@@ -80,24 +101,26 @@ def main(active_json, morph_json, skin_json, surface_json, custom_json, census_j
     for source, name in refused.items():
         rt, cls = route(skin.get(name, {'class': 'not judged'}), surface.get(name))
         rows[source] = {'name': name, 'route': rt, 'class': cls, 'itemsShowing': len(showing.get(source, ()))}
-    baseline = s12_items(by_item, s12)
-    stages, ok = [], set(s12)
+    # The item rule couples items: a morph-only mesh shared with an item that still shows a pre-S12 mesh is held, so
+    # stage totals come from the rule's fixpoint (build-preview-index.settle), not from per-item subsets.
+    shaped_items = {item: meshes & shaped for item, meshes in
+                    bpi.item_meshes(custom['definitions'], custom['catalog'], supported).items()}
+    rule = Rule(morph, shaped_items, body)
+    baseline = rule.items(set())
+    stages, admitted, prev = [], set(), {}
     for stage in STAGES:
-        ok |= {s for s, r in rows.items() if r['route'] == stage}
-        items = s12_items(by_item, ok)
-        stages.append({'stage': stage, 'meshes': sum(r['route'] == stage for r in rows.values()), 's12Items': len(items)})
-    # Unlocks alone on top of each cumulative stage (the stage before the mesh's own).
-    ok = set(s12)
-    prev = {}
-    for stage in STAGES:
-        prev[stage] = set(ok)
-        ok |= {s for s, r in rows.items() if r['route'] == stage}
+        prev[stage] = set(admitted)
+        admitted |= {s for s, r in rows.items() if r['route'] == stage}
+        stages.append({'stage': stage, 'meshes': sum(r['route'] == stage for r in rows.values()),
+                       's12Items': len(rule.items(admitted)),
+                       'upperBound': len(s12_items(by_item, s12 | admitted))})
+    # Unlocks of one mesh on top of the stages before its own, and on top of everything else (what holding it costs).
+    before = {stage: len(rule.items(prev[stage])) for stage in STAGES}
+    everything = len(rule.items(admitted))
     for source, r in rows.items():
-        base = prev.get(r['route'], ok)
-        before = s12_items({i: by_item[i] for i in showing.get(source, ())}, base)
-        after = s12_items({i: by_item[i] for i in showing.get(source, ())}, base | {source})
-        r['unlocksOnStage'] = len(after - before)
-        r['unlocksAlone'] = len(s12_items({i: by_item[i] for i in showing.get(source, ())}, s12 | {source}))
+        base = prev.get(r['route'], admitted)
+        r['unlocksOnStage'] = len(rule.items(base | {source})) - before.get(r['route'], everything)
+        r['costIfHeld'] = everything - len(rule.items(admitted - {source}))
     unknown = sorted({m for ms in by_item.values() for m in ms} - s12 - set(rows))
     ranked = sorted(rows.items(), key=lambda kv: (STAGES.index(kv[1]['route']) if kv[1]['route'] in STAGES else 9,
                                                    -kv[1]['itemsShowing'], -kv[1]['unlocksOnStage'], kv[1]['name']))

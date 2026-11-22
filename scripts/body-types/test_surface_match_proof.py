@@ -36,7 +36,9 @@ def grid(n=6, size=0.3):
     return pos, uv, np.array(idx, np.uint32)
 
 
-def write_glb(path, pos, uv, idx, weights=None, morph=None, nrm=None):
+def write_glb(path, pos, uv, idx, weights=None, morph=None, nrm=None, slots=None):
+    """slots: [(slot name, triangle count)] splits the triangles into primitives over one vertex pool, one material each
+    (all named MI_Test, as S12's cloth sections that reuse the garment's MI). Default: one slot "Test"."""
     n = len(pos)
     nrm = nrm if nrm is not None else np.tile(np.array([[0, 0, 1]], np.float32), (n, 1))
     tan = np.tile(np.array([[1, 0, 0, 1]], np.float32), (n, 1))
@@ -62,11 +64,17 @@ def write_glb(path, pos, uv, idx, weights=None, morph=None, nrm=None):
     nodes = [{'name': 'root', 'children': [1]}, {'name': 'pelvis', 'children': [2]}, {'name': 'spine'},
              {'name': 'mesh', 'mesh': 0, 'skin': 0}]
     ibm = add(np.tile(np.eye(4, dtype=np.float32).reshape(1, 16), (3, 1)), 5126, 'MAT4')
+    slots = slots or [('Test', len(idx) // 3)]
+    target = add(morph, 5126, 'VEC3')
+    prims, start = [], 0
+    for k, (_, count) in enumerate(slots):
+        part = idx[start * 3:(start + count) * 3]
+        start += count
+        prims.append({'attributes': attrs, 'indices': add(part.astype(np.uint32), 5125, 'SCALAR'), 'material': k,
+                      'targets': [{'POSITION': target}]})
     doc = {'asset': {'version': '2.0'}, 'scene': 0, 'scenes': [{'nodes': [0, 3]}], 'nodes': nodes,
-           'meshes': [{'primitives': [{'attributes': attrs, 'indices': add(idx.astype(np.uint32), 5125, 'SCALAR'),
-                                       'material': 0, 'targets': [{'POSITION': add(morph, 5126, 'VEC3')}]}],
-                       'extras': {'targetNames': ['medium_male']}}],
-           'materials': [{'name': 'MI_Test'}],
+           'meshes': [{'primitives': prims, 'extras': {'targetNames': ['medium_male']}}],
+           'materials': [{'name': 'MI_Test', 'extras': {'sourceSlot': {'MaterialSlotName': s}}} for s, _ in slots],
            'skins': [{'joints': [0, 1, 2], 'inverseBindMatrices': ibm}],
            'accessors': accessors, 'bufferViews': views}
     binary = b''.join(blobs)
@@ -135,6 +143,14 @@ class SurfaceMatch(unittest.TestCase):
         tris[0], tris[1] = [a[0], a[1], b[2]], [a[0], b[2], a[2]]
         r = self.judge(pos=self.pos, uv=self.uv, idx=tris.ravel())
         self.assertFalse(r['class'].startswith('permuted'), r)
+
+    def test_a_new_slot_with_the_same_material_is_not_a_plain_swap(self):
+        # SK_Military_CombatPants_M (22 Nov 2026): S12 moved its cloth triangles into a new slot that reuses the MI; the
+        # index binds by slot name, so the viewer threw "Missing source material slot: CombatPants_Cloth".
+        n = len(self.idx) // 3
+        r = self.judge(pos=self.pos, uv=self.uv, idx=self.idx, slots=[('Test', n - 4), ('Test_Cloth', 4)])
+        self.assertEqual(r['class'], 'permuted+material slots', r)
+        self.assertIn(['MI_Test', 'Test_Cloth'], [list(s) for s in r['slotsS12']])
 
     def test_a_moved_uv_island_is_uvs_changed(self):
         uv = self.uv.copy()
