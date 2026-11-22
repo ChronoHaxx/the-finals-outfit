@@ -130,6 +130,19 @@ garment-specific textures (shared material-library textures excluded). Biggest: 
 `SK_Casual_BasicTshirt_M` 43 / 58, `SK_Streetwear_Hoodie_M` 38 / 24. The read also needs the S12 item definitions
 (DA) for slot overrides such as `CombatPants_Cloth`.
 
+## 5b. Coordinator conditions (22 Nov, answering for the user)
+
+- **Package proof before apply (blocks batch A apply-ready):** a 6 Nov 12.00 read may be used only for a mesh whose
+  package is byte-identical between the 6 Nov read and today's 17 Nov containers. A package-bytes compare needs no
+  usmap. Any mesh that differs moves to the held set with the re-unwrapped garments. Record the proof per mesh in the
+  README. Same rule as w177 ("Use proven pre-update files"); tool precedent `prove-prepatch.py` (w177,
+  `prepatch-proof-v1.json`). Not done yet. First check that the read-01 export kept each mesh's raw `.uasset`/`.uexp`.
+- **Morph removals:** include all four (Racing_Helmet, Cleats, KnightGlovesSpikesL, PhantomMaskTranslucent), as a
+  separately droppable list.
+- **Tier-1 "batch 2":** taken over from the idle tier-1 session. Rebuild it on active `3f64b2e6`. First check whether
+  stage A1 here already covers its meshes.
+- Order: build A, then B. C waits for the 17 Nov usmap or a per-texture proof.
+
 ## 6. Hand-off
 
 Per batch: a merge patch pinned to the then-active index, a publish list (GLBs under `s12-bodytype-refresh-v1/meshes/`,
