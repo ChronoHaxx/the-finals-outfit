@@ -84,11 +84,15 @@ export function framePlan(clip: Pick<RecordableClip, "duration" | "loop">, fps =
   // A clip's length comes from its float32 key times (three), so a whole number of frames can land a hair under: 340/60 s
   // reads 5.6666665 s, 339.99999 frames. The end pose is still a frame (22 Nov 2026: 1e-6 dropped it).
   const frames = Math.max(1, clip.loop ? Math.round(exact) : Math.floor(exact + 1e-3) + 1);
+  // A thousandth of a frame, in clip seconds. Range ends snap to the clip's own frame time, a float32 from its file
+  // (0.033333335 s, not 1/30), so a range can be a hair longer than its whole number of video frames: the frame that
+  // starts the next pass must still count as its start, not show the range's end (22 Nov 2026).
+  const slack = 1e-3 * speed / fps;
   const time = (frame: number) => {
     const played = frame * speed / fps; // clip seconds since the range's start
-    if (!clip.loop && played >= total - 1e-3 * speed / fps) return to;
+    if (!clip.loop && played >= total - slack) return to;
     if (length <= 0) return from;
-    const pass = Math.floor(played / length + 1e-9);
+    const pass = Math.floor((played + slack) / length);
     return from + Math.max(0, played - pass * length);
   };
   return { frames, duration: frames / fps, from, to, loops, speed, time };

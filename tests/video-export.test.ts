@@ -58,6 +58,20 @@ test("frame plan with a range: the part, its loops and the emote speed, end pose
   // A looping clip records whole passes without the repeat, so the video loops seamlessly.
   const loop = framePlan({ duration: 4, loop: true }, 60, { from: 0.5, to: 1.5, loops: 2 });
   assert.deepEqual([loop.frames, loop.time(59), loop.time(60)], [120, 0.5 + 59 / 60, 0.5]);
+  // A range snapped to a clip's float32 frame time (0.033333335 s) is a hair longer than its video frames: each pass
+  // must still start on the range's start, not show its end one frame late (seen in the app, 22 Nov 2026).
+  const f32 = Math.fround(1 / 30), snapped = { from: 12 * f32, to: 60 * f32 };
+  const halves = framePlan({ duration: 4.333, loop: false }, 60, { ...snapped, loops: 2, speed: 0.5 });
+  assert.equal(halves.frames, 385);
+  assert.equal(halves.time(192), snapped.from, "the second pass starts at the start");
+  assert.ok(halves.time(191) < snapped.to && halves.time(191) > snapped.to - 0.01);
+  assert.equal(halves.time(384), snapped.to, "the end pose last");
+  for (const speed of [0.25, 1 / 3, 0.5, 2 / 3, 0.8, 1, 1.25, 1.5, 2, 3, 4]) {
+    const plan = framePlan({ duration: 4.333, loop: false }, 60, { ...snapped, loops: 3, speed });
+    const exact = 1.6 * 60 / speed, perPass = Math.round(exact);
+    if (Math.abs(exact - perPass) > 1e-6) continue; // 1.25x: a pass is 76.8 frames, so no frame falls on its start
+    for (let pass = 1; pass < 3; pass++) assert.ok(Math.abs(plan.time(pass * perPass) - snapped.from) < 1e-6, `pass ${pass} at ${speed}x`);
+  }
   // Out of bounds and odd input are clamped: a range past the end, zero or negative loops, a non-positive speed.
   const clamped = framePlan({ duration: 2, loop: false }, 60, { from: 1.5, to: 9, loops: 0, speed: -1 });
   assert.deepEqual([clamped.from, clamped.to, clamped.loops, clamped.speed, clamped.frames], [1.5, 2, 1, 1, 31]);

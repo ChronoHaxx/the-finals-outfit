@@ -207,7 +207,7 @@ await open();
 const field = page.getByLabel("Video start (seconds)");
 await field.click();
 await page.keyboard.press("i");
-await page.keyboard.press("Escape");
+await page.keyboard.press("Tab"); // leave the field (Escape would close the panel)
 const afterTyping = await fields();
 await close();
 await timeline.getByRole("button", { name: "Play" }).click();

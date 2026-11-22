@@ -71,8 +71,15 @@ segment = a_sound[cut:cut + b_sound.shape[0]]
 # Up to 1.55 s in (clip 1.95 s): a window cue still sounding at the range's end is stopped there, with a fade.
 n = min(len(segment), len(b_sound), int(round(1.55 * rate)))
 diff = int(np.abs(segment[:n].astype(int) - b_sound[:n].astype(int)).max())
-results["range_vs_whole_sound_max_diff"] = diff
-check("the range's sound equals the whole emote's from 0.40 s on, sample for sample", diff <= 1, f"largest difference {diff} of 32767")
+# Shifted a sample either way it must be far worse: the alignment is exact, not merely close.
+shifted = min(int(np.abs(segment[1:n, 0].astype(int) - b_sound[:n - 1, 0].astype(int)).max()),
+              int(np.abs(segment[:n - 1, 0].astype(int) - b_sound[1:n, 0].astype(int)).max()))
+results["range_vs_whole_sound_max_diff"] = {"aligned": diff, "one_sample_off": shifted}
+# The cue starts between samples, and the start time is computed differently in the two renders (0.5286 s, and
+# 0.5286 - 0.4 s), so Web Audio's sub-sample resampling rounds a few samples differently: a few units in 32,767
+# (below -60 dB), not a timing error.
+check("the range's sound is the whole emote's from 0.40 s on, aligned to the sample (rounding only)", diff <= 32 and shifted > 100 * max(1, diff),
+      f"largest difference {diff} of 32767 aligned; {shifted} a sample off")
 pass_samples = int(round(3.2 * rate))
 c_on1, c_on2 = onset(c_sound), onset(c_sound, pass_samples)
 expect1 = (a_on - cut) * 2 if a_on is not None else None
@@ -82,6 +89,15 @@ check("at half speed the sound lands at twice the offset, again 3.2 s later in t
 
 # Pictures.
 check("twice at half speed starts on the same frame as the range (both settle at 0.40 s)", np.array_equal(C[0], B[0]), "")
+def closest(img, candidates):
+    return min(candidates, key=lambda j: float(np.abs(img.astype(int) - B[j].astype(int)).mean()))
+
+
+# The second half-speed pass starts at frame 192 (1.6 s of clip at 0.5x is 192 frames): it must show the range's start,
+# not its end (a float32 frame time once made it show the end, 22 Nov 2026).
+seam = {i: closest(C[i], [0, 1, 95, 96]) for i in (190, 191, 192, 193, 194)}
+results["seam_closest_range_frames"] = seam
+check("the second pass starts on the range's first frame", seam[192] == 0 and seam[190] == 95 and seam[194] == 1, json.dumps(seam))
 mad = float(np.abs(A[24].astype(int) - B[0].astype(int)).mean())
 results["whole_at_0.4_vs_range_first_mad"] = mad
 grey = np.full(A[0].shape[:2] + (3,), 96, np.float32)
