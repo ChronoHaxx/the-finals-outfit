@@ -13,6 +13,9 @@ export const OutfitSchema = z.object({
   // A body type id (src/lib/body-type.ts). Any short string is accepted, so a value from a newer site never fails the
   // whole link; callers read it through body-type.ts, where an unknown value is Masculine. Absent = Masculine.
   bodyType: z.string().max(32).optional(),
+  // The player number (src/lib/player-number.ts). Any number is accepted, and anything else is dropped rather than
+  // failing the link; callers read it through player-number.ts. Absent = each piece prints its own number.
+  playerNumber: z.number().optional().catch(undefined),
 });
 export type Outfit = z.infer<typeof OutfitSchema>;
 
@@ -34,6 +37,7 @@ export function encodeOutfit(outfit: Outfit): string {
   if (outfit.dyes && Object.keys(outfit.dyes).length) compact.dyes = outfit.dyes;
   if (outfit.presetName) compact.presetName = outfit.presetName;
   if (outfit.bodyType) compact.bodyType = outfit.bodyType;
+  if (outfit.playerNumber !== undefined) compact.playerNumber = outfit.playerNumber;
   const b64 = btoa(JSON.stringify(compact));
   return "1." + b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }

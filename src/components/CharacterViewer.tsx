@@ -7,6 +7,7 @@ import { CharacterRig } from "../rig/CharacterRig";
 import { SURFACE_VIEWS } from "../rig/ReconstructedMaterial";
 import type { SourceOutfit } from "../rig/SourceAssembly";
 import { newOutfitPassState, runOutfitPass, type OutfitPassControl } from "../rig/OutfitPass";
+import { setPlayerNumber } from "../rig/PlayerNumber";
 import { DEV } from "../lib/viewer-dev-params";
 import MaterialTuner from "./MaterialTuner";
 import { StablePreview } from "./StablePreview";
@@ -359,6 +360,10 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   const build = useBuildStore((s) => s.build);
   // The outfit's body type (src/lib/body-type.ts): Masculine, or another the picker offers.
   const outfitBodyType = useBuildStore((s) => s.bodyType);
+  // The outfit's player number (lib/player-number.ts): every recovered material that prints one reads it live
+  // (rig/PlayerNumber.ts), so a change re-uploads two uniforms and reloads nothing.
+  const outfitPlayerNumber = useBuildStore((s) => s.playerNumber);
+  useEffect(() => { setPlayerNumber(outfitPlayerNumber); }, [outfitPlayerNumber]);
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
   // What the rig wore after its last committed outfit pass (rig/OutfitPass.ts), kept between passes.
   const outfitState = useRef(newOutfitPassState());
@@ -463,7 +468,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   }, [build, outfitBodyType, ready, rig, retryAttempt, beginOperation, endOperation]);
 
   const changePreviewOption = (name: "surface" | "isolate", value: string) => {
-    const url = new URL(buildShareUrl(window.location.href, { build, bodyType: outfitBodyType }));
+    const url = new URL(buildShareUrl(window.location.href, { build, bodyType: outfitBodyType, playerNumber: outfitPlayerNumber }));
     // A share link uses the global route; the reload stays in Chinals mode when that is on (lib/site-mode.ts).
     if (mode === "chinals") url.hash = url.hash.replace(/^#\/\?/, "#/chinals?");
     // Picker edits do not rewrite the address bar.
