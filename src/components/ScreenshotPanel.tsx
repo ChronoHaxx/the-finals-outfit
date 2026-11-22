@@ -8,6 +8,8 @@ import { CameraIcon, CopyIcon, VideoIcon } from "./Icons";
 import { useFeature } from "../lib/discovery";
 import { PanelSheet, PanelTrigger, usePanel } from "./ViewerPanel";
 import { CAPTURE_TILE, VideoTab, useVideoExport } from "./VideoCapture";
+import { formatClock, useTakes } from "./VideoTakes";
+import type { SiteMode } from "../lib/site-mode";
 
 // The output image: GPU memory is bounded by the capture's tile (CAPTURE_TILE), so this budget is for the image itself,
 // its read-back and its PNG encoding (a few bytes per pixel, several copies): ~25 MB per copy at the desktop cap, ~10
@@ -54,10 +56,11 @@ type Output = "save" | "copy";
  * unless kept), saved or copied to the clipboard (15 Nov), 2x supersampled (21 Nov); or the emote in front as a video
  * (21 Nov, VideoCapture.tsx). Lighting is the screen's (rig/ViewerScreenshot.ts). Built like the Lighting panel: a button
  * in the viewer's top row and a panel anchored to that row. A video keeps rendering with the panel closed; the button
- * then shows its progress.
+ * then shows its progress. A take (22 Nov, VideoTakes.tsx) records with the panel closed: the button shows REC and the
+ * time, with Stop beside it; stopping opens the panel on the new take.
  */
-export function ScreenshotPanel({ context, backdrop, ready, animator }: {
-  context: RefObject<ScreenshotContext | null>; backdrop: Backdrop; ready: boolean; animator: RigAnimator | null;
+export function ScreenshotPanel({ context, backdrop, ready, animator, mode = "global" }: {
+  context: RefObject<ScreenshotContext | null>; backdrop: Backdrop; ready: boolean; animator: RigAnimator | null; mode?: SiteMode;
 }) {
   const panel = usePanel();
   const open = panel.open;
@@ -66,13 +69,22 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
   const [status, setStatus] = useState("");
   const [stage, setStage] = useState({ width: 0, height: 0, maxSide: 4096 });
   const video = useVideoExport(context, animator, backdrop);
-  const feature = useFeature("capture", video.running ? "Recording a video: open to see progress or cancel" : "Save a screenshot or an emote video");
+  const takes = useTakes(animator, mode, () => panel.setOpen(true));
+  const recording = takes.recording;
+  const feature = useFeature("capture", recording ? "Recording a take: open to stop it" : video.running ? "Recording a video: open to see progress or cancel"
+    : "Save a screenshot or an emote video");
   const videoFeature = useFeature("video", "Record the emote as MP4, see-through MOV or WebM, or PNG frames");
   const change = (patch: Partial<Choices>) => setChoices(current => {
     const next = { ...current, ...patch };
     writeChoices(next);
     return next;
   });
+
+  // The takes list is read again whenever the panel opens (another tab may have recorded, rendered or discarded).
+  const refreshTakes = takes.refresh;
+  useEffect(() => { if (open) refreshTakes(); }, [open, refreshTakes]);
+  // Recording starts with the panel out of the way: the viewer is what gets recorded.
+  const recordTake = () => { void takes.record().then(started => { if (started) panel.setOpen(false); }); };
 
   // The sizes on offer follow the canvas as it is when the panel opens.
   useEffect(() => {
@@ -85,7 +97,7 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
   const sizes = screenshotSizes(stage.width, stage.height, MAX_PIXELS, stage.maxSide);
   // The remembered scale if it fits this stage, else the largest that does up to it.
   const size = sizes.find(s => s.scale === choices.scale) ?? [...sizes].reverse().find(s => s.scale <= choices.scale) ?? sizes[0];
-  const busy = !!running || video.running; // one capture at a time: both draw through the same renderer
+  const busy = !!running || video.running || !!recording; // one capture at a time: both draw through the same renderer
 
   // Render and encode the PNG. Waits a frame first so the status paints before the synchronous render holds the page.
   // (A playing emote is caught at the frame on screen: the render is synchronous, so no animation step runs inside it.)
@@ -141,10 +153,19 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
   return (
     // Not positioned itself: the panel anchors to the whole button row (CharacterViewer), as every viewer panel does.
     // While a video renders (it carries on with the panel closed) the button shows its progress.
-    <div ref={panel.root}>
-      <PanelTrigger panel={panel} {...feature} aria-label={video.running ? `Capture: recording video, ${percent}%` : "Capture"}
-        icon={video.running ? <span aria-hidden="true" className="size-2 rounded-full bg-finals motion-safe:animate-pulse" /> : <CameraIcon size={15} />}
-        name="Capture" detail={video.running ? <span className="tabular-nums">{percent}%</span> : undefined} />
+    <div ref={panel.root} className="flex gap-1">
+      <PanelTrigger panel={panel} {...feature}
+        aria-label={recording ? `Capture: recording a take, ${formatClock(recording.elapsed)}` : video.running ? `Capture: recording video, ${percent}%` : "Capture"}
+        icon={recording || video.running ? <span aria-hidden="true" className="size-2 rounded-full bg-finals motion-safe:animate-pulse" /> : <CameraIcon size={15} />}
+        name={recording ? "REC" : "Capture"} always={!!recording}
+        detail={recording ? <span className="tabular-nums">{formatClock(recording.elapsed)}</span>
+          : video.running ? <span className="tabular-nums">{percent}%</span> : undefined} />
+      {recording && (
+        <button type="button" onClick={() => void takes.stop()} aria-label="Stop recording the take" title="Stop recording the take"
+          className="hud flex h-8 items-center gap-1.5 bg-finals px-2.5 text-white transition-colors hover:brightness-110">
+          <span aria-hidden="true" className="size-2 bg-white" />Stop
+        </button>
+      )}
       <PanelSheet panel={panel} label="Capture" title="Capture" icon={<CameraIcon size={13} />}>
           <div role="tablist" aria-label="Capture type" className="grid grid-cols-2 gap-1.5">
             {([["image", "Image", CameraIcon], ["video", "Video", VideoIcon]] as const).map(([tab, label, Icon]) => (
@@ -160,7 +181,7 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
             {sceneById(backdrop.scene) && <span className="text-xs leading-snug text-fg-muted">
               MP4 is on the scene’s colours: the scene itself isn’t in videos yet.</span>}
             <VideoTab job={video} animator={animator} stage={stage} keepFloor={choices.keepFloor}
-              onKeepFloor={keepFloor => change({ keepFloor })} ready={ready && !running} />
+              onKeepFloor={keepFloor => change({ keepFloor })} ready={ready && !running} takes={takes} onRecordTake={recordTake} />
           </>) : (<>
             <div className="flex flex-col gap-1.5">
               <span className="hud text-fg-muted">Background</span>
@@ -219,7 +240,8 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
               </button>
             </div>
             <span role="status" aria-live="polite" className="min-h-4 text-xs leading-snug text-fg-muted">
-              {!ready ? "Waiting for the outfit to finish loading." : video.running ? "A video is rendering; screenshots wait for it." : status}
+              {!ready ? "Waiting for the outfit to finish loading." : video.running ? "A video is rendering; screenshots wait for it."
+                : recording ? "A take is recording; screenshots wait for it." : status}
             </span>
           </>)}
       </PanelSheet>

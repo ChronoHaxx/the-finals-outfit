@@ -54,7 +54,7 @@ export class TakeRecorder {
   }
 
   /** Start a take: its record is created first (refused when the takes are full of unrendered ones). */
-  static async begin(options: TakeRecorderOptions): Promise<{ recorder: TakeRecorder; evicted: TakeMeta[] } | { refused: CreateResult }> {
+  static async begin(options: TakeRecorderOptions): Promise<{ recorder: TakeRecorder; evicted: TakeMeta[] } | { refused: Extract<CreateResult, { ok: false }> }> {
     const clock = options.clock ?? Date.now, at = clock();
     const meta: TakeMeta = { id: (options.newId ?? newTakeId)(), version: TAKE_VERSION, name: options.name, createdAt: at, updatedAt: at,
       status: "recording", duration: 0, chunks: 0, clips: [], mode: options.mode, renderedAt: null };

@@ -255,6 +255,23 @@ export class ViewCapture {
     return this.gl.readRenderTargetPixelsAsync(this.output, 0, 0, this.width, this.height, into).then(() => into);
   }
 
+  /** A take's render (22 Nov 2026): move the capture's camera (the live one stays where the viewer left it). Position,
+   *  rotation and vertical field of view; the capture keeps its own aspect. */
+  setView(position: readonly number[], quaternion: readonly number[], fov: number): void {
+    this.view.position.set(position[0], position[1], position[2]);
+    this.view.quaternion.set(quaternion[0], quaternion[1], quaternion[2], quaternion[3]);
+    if (fov !== this.view.fov) { this.view.fov = fov; this.view.updateProjectionMatrix(); }
+    this.view.updateMatrixWorld(true);
+  }
+
+  /** A take's render: the backdrop changed (its look did). An opaque capture only; a transparent one has none. */
+  setBackdrop(paint: BackdropPaint): void {
+    if (!this.backdrop) return;
+    const pixels = paintBackdrop(this.width, this.height, paint);
+    (this.backdrop.image.data as Uint8Array).set(new Uint8Array(pixels.buffer, pixels.byteOffset, pixels.byteLength));
+    this.backdrop.needsUpdate = true;
+  }
+
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true;

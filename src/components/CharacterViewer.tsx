@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import * as THREE from "three";
 import { CharacterRig } from "../rig/CharacterRig";
 import { SURFACE_VIEWS } from "../rig/ReconstructedMaterial";
@@ -37,7 +37,9 @@ import type { HideUi } from "../lib/viewer-chrome";
 import { CollapseIcon, ExpandIcon, EyeOffIcon } from "./Icons";
 import { MeshGateError } from "../lib/mesh-gate";
 import { ScreenshotPanel } from "./ScreenshotPanel";
-import { captureSlot } from "../rig/VideoExport";
+import { captureSlot, type TakeStage } from "../rig/VideoExport";
+import { takeSlots } from "../rig/take-slots";
+import type { TakeProbe } from "../lib/take-recorder";
 import type { ScreenshotContext } from "../rig/ViewerScreenshot";
 import { LightingPanel, SunShortcut } from "./LightingPanel";
 import { CameraPanel } from "./CameraPanel";
@@ -103,8 +105,50 @@ const STABLE_PREVIEW = DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && 
 // turns off r3f's own draw.
 function CaptureDriver({ ownsDraw }: { ownsDraw: boolean }) {
   useFrame(() => captureSlot.current?.capture(), 0.5);
+  // A take recording (lib/take-recorder.ts) samples the frame here: after the orbit (-1), the roll, the animation and
+  // the contact shadow (0), so it sees what this frame draws.
+  useFrame(() => takeSlots.recorder?.sample(), 0.5);
   useFrame(({ gl, scene, camera }) => { if (ownsDraw) gl.render(scene, camera); }, 1);
   useFrame(() => captureSlot.current?.advance(), 2);
+  return null;
+}
+
+// Takes (22 Nov 2026): what the recorder samples each frame (the camera, the orbit's target, the character's turn and
+// the clips the mixer blends), and the stage a take's render drives (the turn, the drawn lights). `look` is what the
+// stage lights were last given: its layout effect runs in the same commit as theirs, so once it holds a take's look the
+// scene shows it.
+let lookOnStage: unknown = null;
+function TakeBridge({ animator, root, look }: { animator: RigAnimator | null; root: THREE.Object3D; look: unknown }) {
+  const camera = useThree((s) => s.camera);
+  const get = useThree((s) => s.get);
+  useLayoutEffect(() => { lookOnStage = look; }, [look]);
+  useEffect(() => {
+    if (!animator) return;
+    const probe: TakeProbe = () => {
+      if (!(camera instanceof THREE.PerspectiveCamera)) return null;
+      const target = (get().controls as { target?: THREE.Vector3 } | null)?.target;
+      return {
+        position: [camera.position.x, camera.position.y, camera.position.z],
+        quaternion: [camera.quaternion.x, camera.quaternion.y, camera.quaternion.z, camera.quaternion.w],
+        fov: camera.fov,
+        target: target ? [target.x, target.y, target.z] : [0, 0, 0],
+        yaw: root.rotation.y,
+        ...animator.takeSample(),
+      };
+    };
+    const stage: TakeStage = {
+      getYaw: () => root.rotation.y,
+      setYaw: (radians) => { root.rotation.y = radians; root.updateMatrixWorld(true); },
+      showLook: (next) => useLightingStore.getState().showTakeLook(next),
+      lookShown: (wanted) => lookOnStage === wanted,
+    };
+    takeSlots.probe = probe;
+    takeSlots.stage = stage;
+    return () => {
+      if (takeSlots.probe === probe) takeSlots.probe = null;
+      if (takeSlots.stage === stage) takeSlots.stage = null;
+    };
+  }, [animator, camera, get, root]);
   return null;
 }
 
@@ -152,6 +196,10 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   // The look (lighting-store.ts): lights, reflections, exposure, backdrop. The reviewed Studio look unless this viewer
   // changed it; always so when automated.
   const look = useLightingStore((s) => s.look);
+  // While a take renders (VideoExport.ts renderTake), its recorded lights, environment and exposure are drawn instead;
+  // the backdrop on screen (and a scene) stays the viewer's own. Never stored (lighting-store.ts takeLook).
+  const takeLook = useLightingStore((s) => s.takeLook);
+  const lit = takeLook ?? look;
   // "Show lights" (Lighting panel): a bulb and cone per light, draggable (LightMarkers.tsx). Hidden with the rest of the
   // UI (H), so a clean view for the system's own screenshot tool never shows them; the site's pictures never do.
   const showLightMarkers = useLightingStore((s) => s.markers);
@@ -343,12 +391,13 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
           // Tone mapping squeezes the scene's unbounded linear light into what a screen can show: Neutral keeps colours
           // closest to the material (the Studio look, for comparing items), ACES rolls highlights off filmically and
           // shifts hue a little (the Lobby look), AgX desaturates bright light more gently.
-          toneMapping: DEV.debugAlbedo ? THREE.NoToneMapping : TONE_MAPPING[look.toneMapping],
-          toneMappingExposure: look.exposure,
+          toneMapping: DEV.debugAlbedo ? THREE.NoToneMapping : TONE_MAPPING[lit.toneMapping],
+          toneMappingExposure: lit.exposure,
           outputColorSpace: THREE.SRGBColorSpace,
         }}
       >
-        <StageLights look={look} root={rig.root} />
+        <StageLights look={lit} root={rig.root} />
+        <TakeBridge animator={animator} root={rig.root} look={lit} />
         <primitive object={rig.root} />
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
         <ScreenshotBridge target={screenshotContext} />
@@ -409,7 +458,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
           <div>
             {/* Graphics quality (Auto by default). Left out in full screen, where the wider exit button needs the room. */}
             {!immersive?.immersive && <GraphicsMenu deviceDpr={deviceDpr} />}
-            <ScreenshotPanel context={screenshotContext} backdrop={backdrop} ready={ready && !busy} animator={animator} />
+            <ScreenshotPanel context={screenshotContext} backdrop={backdrop} ready={ready && !busy} animator={animator} mode={mode} />
             {/* Camera: position and target to read or type, roll, and views saved with the outfit. */}
             <CameraPanel />
             {/* Lighting and backdrop: one panel for the whole scene (the Studio/Lobby switch became two of its looks). */}

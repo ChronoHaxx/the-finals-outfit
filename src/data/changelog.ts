@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-video-takes",
+    date: "2026-11-22",
+    title: "Record what you do, then render it",
+    notes: [
+      "Capture, Video, Take: press Record a take and use the builder as you like. Orbit and zoom the camera, play emotes, pause and drag the timeline, change the lights. Stop, and the take is listed there, ready to render as MP4, see-through MOV or WebM, or PNG frames.",
+      "A take renders frame by frame at 60 fps with the quality you pick, so a slow computer never drops a frame from the video. Takes are saved in your browser as they record, stay there until you discard them, and keep their sound. A take renders with the outfit you are wearing when you render it.",
+    ],
+    items: ["faster-builder"],
+  },
+  {
     id: "2026-11-22-video-range",
     date: "2026-11-22",
     title: "Record part of an emote, looped or slowed",
