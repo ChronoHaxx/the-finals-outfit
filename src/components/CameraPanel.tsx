@@ -107,7 +107,9 @@ function CameraPanelBody() {
     <fieldset disabled={locked} className="flex min-w-0 flex-col gap-3 disabled:opacity-60">
       <Triple label="Camera" values={view.position} onCommit={(axis, value) => setAxis("position", axis, value)} />
       <Triple label="Looking at" values={view.target} onCommit={(axis, value) => setAxis("target", axis, value)} />
-      <label className="flex flex-col gap-1">
+      {/* A div, not a label: a label would name (and click) its first control, the Level button. The slider has its
+          own name. */}
+      <div className="flex flex-col gap-1">
         <span className="flex items-center justify-between gap-2">
           <span className="hud text-fg-muted">Roll</span>
           <span className="flex items-center gap-2">
@@ -120,7 +122,7 @@ function CameraPanelBody() {
           onChange={event => move(now => ({ ...now, roll: Number(event.target.value) }))}
           className="timeline-range h-6 w-full cursor-pointer"
           style={{ "--played": `${((view.roll + 180) / 360) * 100}%` } as CSSProperties} />
-      </label>
+      </div>
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs leading-snug text-fg-muted">Metres; y is up. The camera stays within {MAX_DISTANCE} m of where it looks.</span>
         <button type="button" onClick={() => move(() => DEFAULT_VIEW)} disabled={sameView(view, DEFAULT_VIEW)}

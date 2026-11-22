@@ -12,7 +12,7 @@ Shocka's feedback, item 3 (`_docs/feedback-shocka-2026-11/README.md`, held in th
 | Ask | Where | How |
 |---|---|---|
 | Links keep the camera | `src/lib/camera-view.ts`, `share-url.ts`, `ShareBuild.tsx`, `open-link.ts` | `view=x_y_z_tx_ty_tz[_roll]` rides last in the short (hash) and readable (query) links. Omitted when the camera is on the default framing. "Include camera view" in the share panel leaves it out. The 4-angle card is unchanged. |
-| Preview links keep it | `workers/share-preview` | The Worker validates, stores (KV metadata `view`) and returns the view like `bt` and the pose. Deployed 21 Nov 20:30 London, version `773a350e` (rollback `f9f734a6`); checks in the Worker README. If a Worker without it ever serves, preview links drop the view and the share panel says so. |
+| Preview links keep it | `workers/share-preview` | The Worker validates, stores (KV metadata `view`) and returns the view like `bt` and the pose. Deployed 21 Nov 20:30 London, version `773a350e` (rollback `f9f734a6`); live since 22:01 inside `efb3af6b`, which adds #60's `pn` (rollback `773a350e`). Checks in the Worker README. If a Worker without it ever serves, preview links drop the view and the share panel says so. |
 | Saved views | `camera-view.ts` (list rules), `outfit-library.ts` (`cameraViews` field), `useSavedOutfits.ts` (actions) | Up to 20 views per outfit, saved into the outfit record as you go (journal, then IndexedDB). Rename, delete with Undo (tombstone). Views of other saved outfits are listed for recall. |
 | Coordinates | `CameraPanel.tsx`, `CameraBridge.tsx` | A viewfinder button in the viewer's top row. Camera and Looking-at X/Y/Z follow the camera live; typing applies on Enter or leaving the field; arrows nudge 1 cm (Shift 10 cm); Escape reverts. |
 | Roll | `CameraBridge.tsx` | A slider (-180..180°, 0.5° steps) and Level. Applied after OrbitControls' update each frame, from scratch, so it never accumulates. |
@@ -91,4 +91,43 @@ The camera was read from the renderer each frame through three.js's `__THREE_DEV
 
 Seen while checking, both wording only: in a scene the panel's Roll shows the roll that comes back afterwards (30°)
 while the picture is level, and the panel's footer still says share links open on the camera you see, though a
-scene's links leave the camera out.
+scene's links leave the camera out. Both fixed in the merge below.
+
+### Merge with main `137c920` and the checklist under the waiver (22 Nov 2026)
+
+main gained #60 (player number), #62, #63, #65 (feature guide), #66, #67 and #57 (scenes). Merged as `59656eb`:
+
+- Links, the preview upload and link tidying carry `pn` and `view` together, in the live Worker's order
+  `o, bt, pn, pose, view`. Saved outfits keep both `playerNumber` and `cameraViews`.
+- `workers/share-preview/src` and `tests/share-preview-worker.test.ts` come from `claude/share-worker-pn-view-2026-11-21`
+  (`91a22dd`, the build deployed as `efb3af6b`); `git diff 91a22dd -- workers/share-preview/src` is empty, so main
+  matches the live Worker and no deploy is needed.
+- Patch note re-dated `2026-11-22-camera-controls` and placed first; the roadmap is reviewed after it. Feature guide:
+  a "Camera position and saved views" entry, and the share entry mentions the camera.
+- Camera panel: while a scene holds the camera, Roll reads 0 (the picture as drawn), the note says the view and roll
+  come back, and the footer says links leave the camera out.
+
+The checklist below (the PR's steps 1-6, run by the agent on a production build because the user waived manual checks
+on 22 Nov) found one defect: the Roll row was a `<label>`, which names and clicks its first control, the Level button.
+The button's accessible name was "Roll 20° 20°", and clicking the word Roll or the readout levelled the shot. The row is
+now a `div` (the slider has its own name).
+
+Run 22 Nov 2026 12:10-12:18 London, on the tree of `59656eb` plus the Roll-row fix: `tsc -b` PASS; `npm run build`
+with the deploy hosts PASS (roadmap and public-text checks; no local denylist); `check:catalog-split` PASS; `npm test`
+1017 pass, 8 fail, 6 skipped (the 8 are the known missing `public/models` and ski-blade GLB fixtures); the share,
+saved-outfit, camera, player-number, roadmap, guide and scene suites 126/126. Real app: `vite preview` of that build,
+Playwright Chromium, webdriver masked, storage cleared first, the preview Worker blocked so nothing was uploaded.
+
+| Step | Result |
+|---|---|
+| Welcome screen | Latest patch note is "Camera controls", 22 Nov |
+| 1. Orbit with the panel open | (0, 1, 3.6) → (-3.135, 1.795, 1.531) as the drag moves; panel stays open |
+| 2. Reset, type Y 1.65, Z 1.2, Looking at Y 1.55; Roll 20; orbit; Level | Head shot; picture tilts; tilt steady while orbiting; Level → 0 and upright. Clicking the Roll caption no longer levels; the button's name is "Level" |
+| 3. Save view, Reset camera, recall, rename, delete, Undo | Recall returns to (-0.786, 1.65, 0.906), roll 20, pressed; "Tilted head"; deleted with Undo; restored |
+| 4. Reload (navigation type `reload`) | "Tilted head" listed; recall gives the same view |
+| 5. Share → Short link; fresh browser context; untick | `#/?o=…&pn=42&view=-0.786_1.65_0.906_0_1.55_0_20`; the fresh context opens the same outfit, number 42, same camera and roll; unticking drops `view` |
+| 6. Randomise (new outfit) | "Views from other outfits (1)": "Tilted head · Outfit 1", recalls |
+| Tunnel scene with the roll-20 view held | Scene camera (0, 1, 3.6), Roll 0°, new note and footer; Save view, Reset camera, Level disabled. Leaving restores roll 20 and "Share links open on the camera you see." |
+| Console | One error: the blocked preview upload (intended). Warnings: three's texture-units false alarm, Clock deprecation, a shader `isnan` note |
+
+Not run: the phone layout, and an end-to-end preview-image share (it would store a real entry on the live Worker).
