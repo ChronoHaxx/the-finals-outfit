@@ -55,8 +55,39 @@ against the live host before staging), and `manifest.json` gains one line, `"fac
 
 ## Verification (agent)
 
-PENDING.
+All on the branch after merging main 96bf586 (code revision ee16736), 21-22 Nov 2026.
+
+- **Rig and curves:** `tools/compare-rigs.mjs` (above): 25/25 pose assets byte-identical, 32 heads within 0.0001 cm.
+- **Real app, local files** (`capture-chinals-faces.mjs` against `serve-preview.mjs` serving the staged host), then
+  **again against the hosted deployment 7c9add72** (every face file loaded from it, all 200). Looked at full size,
+  facial animation on and off at the same frame:
+  - Unrivaled Master 3.2 s: open "O" mouth, raised brows (off: neutral); Lucky Touch (Mahjong) 3.37 s: brows down,
+    eyes narrowed, lips pressed; Cute Cat 2.3 s: fear squint; Duanwu 2.37 s: jaw open; World Cup goalkeeper 2.13 s:
+    snarl; the Chinals idle blinks.
+  - Face 20 (another rig, eyelashes) smiles with teeth in Gacha 01 at 9.67 s.
+  - Full beard: follows the open jaw (wrap cage). Balaclava: the face mask damps the face; no lip pokes through.
+- **Production build** (`prod-check.mjs`, deploy.yml's production settings plus this host, `prod-check.json`): the
+  paused Unrivaled Master loads `faces.json`, the head, its pose asset and the clip's curves from 7c9add72; as a
+  visitor (automation masked) the banner reads "Props, sound and facial expressions are shown; effects are not.", the
+  picker footer "...with their props, sound and facial expressions. Effects are not shown yet.", and a real click plays
+  Unrivaled Master to 5.6 s with audio running and its sound file loaded, then returns to the Chinals idle. No request
+  to either host failed; no page error.
+- `npm test`: 946 pass, 8 fail, 5 skipped. The 8 are the known fixture tests that need game files the worktree lacks
+  (the ski-blade GLB, the socketed-static and base-body geometry checks), as on main. `npx tsc --noEmit` clean;
+  `npm run build` passes (its roadmap and public-text checks included).
+- Not covered by the agent: hearing the sound and judging the motion live in a real browser (user checks).
 
 ## Hosting
 
-PENDING the owner's yes.
+Uploaded 22 Nov 2026 on the owner's yes ("Yes, upload it").
+
+- New deployment of the Pages project `the-finals-outfit-chinals-assets`: **https://7c9add72.the-finals-outfit-chinals-assets.pages.dev/**
+  (alias `chinals-1121-faces`). 334 files staged, 82.7 MB; Cloudflare uploaded 146 new files (faces-1 and the
+  manifest) and reused the 187 it already held from 59209741.
+- `verify-hosted.mjs`: 333/333 served files byte-identical to the staged folder (`_headers` is configuration, not
+  served); `.glb` and `.json` carry CORS `*` and the immutable cache header; a missing path is 404.
+- `.github/workflows/deploy.yml` `CHINALS_ANIMATIONS_BASE` points at it. The live site changes only when this PR
+  merges. Rollback: 59209741 (no faces; PR #51's host), e7796a7c, dcb131a5 (still live on main until a PR merges).
+- **PR #51 conflict:** #51 sets the same line to 59209741. This host is a superset of it (every file at the same path),
+  so whichever PR merges second keeps 7c9add72. The changelog top and the roadmap review lines also conflict: keep
+  both patch notes, newest on top, and set "Reviewed after patch note" to the top entry's id.
