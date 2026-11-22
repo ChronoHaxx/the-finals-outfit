@@ -14,14 +14,24 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
-    id: "2026-11-21-chinals-emote-sounds",
-    date: "2026-11-21",
+    id: "2026-11-22-chinals-emote-sounds",
+    date: "2026-11-22",
     title: "Chinals emote sounds",
     notes: [
       "In Chinals mode, the emotes now play their own sound effects and music too, in time with the animation. 43 of the 45 have sound; the other two are silent in the game too. The speaker button and volume slider work as they do for the other emotes.",
       "A few Chinals emote props now look right: two guns that came apart are whole again, guns that lay on the floor are held, and a prop shown too small is back to its full size.",
     ],
     items: ["chinals-emotes", "emote-effects"],
+  },
+  {
+    id: "2026-11-21-emote-speed-face",
+    date: "2026-11-21",
+    title: "Emote speed and a face switch",
+    notes: [
+      "Emotes have a speed slider, from a quarter speed to four times. Sound follows it, so every clap and footstep stays on its frame, and its pitch rises and falls with the speed. Pause, the frame slider, Loop and shared poses work the same at any speed. On a keyboard, < and > change it.",
+      "A Facial animation switch keeps the face still when you'd rather it didn't move. The speed and the switch are both remembered in this browser.",
+    ],
+    items: ["idle-emotes"],
   },
   {
     id: "2026-11-21-season-1-2-emotes",
