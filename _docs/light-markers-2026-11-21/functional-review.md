@@ -6,7 +6,7 @@ The Lighting panel can show each light as a bulb and cone in the 3D view, you ca
 the panel's sliders following, the markers never reach a screenshot, and there are six more ready-made looks; this
 catches markers leaking into pictures, drags that turn the camera instead, and lost lighting settings.
 
-- PR: stacked on PR #57 (scene backdrops); link in the PR description.
+- PR: #61. It was stacked on PR #57 (scene backdrops), which merged on 22 Nov; it now targets main.
 - Test this revision: branch `claude/lighting-markers-presets-2026-11-21`, commit given in the PR's latest comment.
 - Open: the dev viewer at `http://127.0.0.1:5261/?reconstructed=1` (commands below), in Chrome or Edge on a computer.
 - Prerequisites: the repo's `node_modules` (this worktree links an existing install); internet (assets come from the
@@ -21,7 +21,7 @@ catches markers leaking into pictures, drags that turn the camera instead, and l
 Git Bash, in the worktree `E:\Coding\the-finals-outfit\.claude\worktrees\elated-stonebraker-5f34bd`:
 
 ```bash
-VITE_ASSETS_BASE=https://f4a8e069.the-finals-outfit-assets.pages.dev/ VITE_MODELS_BASE=https://a029b249.the-finals-outfit-assets.pages.dev/ VITE_RECONSTRUCTION_BASE=https://c062af24.the-finals-outfit-assets.pages.dev/ VITE_ANIMATIONS_BASE=https://fd946744.the-finals-outfit-assets.pages.dev/ VITE_SCENES_BASE=https://1d367244.the-finals-outfit-assets.pages.dev/ VITE_RECONSTRUCTION_ROUTES_FILE=src/data/reconstruction-routes.json npx vite --host 127.0.0.1 --port 5261 --strictPort
+VITE_ASSETS_BASE=https://2cbead71.the-finals-outfit-assets.pages.dev/ VITE_MODELS_BASE=https://a029b249.the-finals-outfit-assets.pages.dev/ VITE_RECONSTRUCTION_BASE=https://a70ffa7f.the-finals-outfit-assets.pages.dev/ VITE_ANIMATIONS_BASE=https://fd946744.the-finals-outfit-assets.pages.dev/ VITE_SCENES_BASE=https://1d367244.the-finals-outfit-assets.pages.dev/ VITE_RECONSTRUCTION_ROUTES_FILE=src/data/reconstruction-routes.json npx vite --host 127.0.0.1 --port 5261 --strictPort
 ```
 
 Open `http://127.0.0.1:5261/?reconstructed=1`, click **Enter builder**, and close the Items drawer (the ITEMS tab at its
@@ -72,7 +72,17 @@ Do not assume a step passed because a merge is requested.
   review (`781c52a`). On that production build: steps 1-6 pass again, 24 of 24, 0 page errors. The key frames were
   judged by eye: the drag, the PNG with no bulbs, H, and the menu-scene drag. Typecheck, build and the public-text
   and roadmap checks pass; unit tests 980 pass, with the same 8 GLB-fixture failures.
-- Readiness: ready, once #57 is on main (this PR is stacked on it).
+- Re-run on main's new capture (#63, main `70b6a4d`), 22 Nov 2026 01:00 London: the supersampled PNG and the video
+  export use a camera copy with the marker layer off. Checklist 25 of 25, including an idle MP4 whose frames show no
+  bulbs; unit tests 993 pass, with the same 8 GLB-fixture failures.
+- Re-run after #57 merged, 22 Nov 2026 12:02 London. This branch's own five commits were rebased onto main `137c920`
+  (#57 merged, after the 12 Nov release #67: preset outfits, 150 more items, new icon and reconstruction hosts), with
+  no conflicts. Production build with `deploy.yml`'s hosts (assets `2cbead71`, reconstruction `a70ffa7f`): build,
+  typecheck, public-text and roadmap checks pass, and the catalog split check is OK. Unit tests 1010 pass, with the
+  same 8 GLB-fixture failures. Checklist 25 of 25, 0 page errors. Judged by eye: the bulbs and the Sun's label on
+  screen; no bulbs in the saved 2880 × 1688 PNG or in a frame of the MP4; the Season 12 menu look's four bulbs on the
+  stage; and after a reload, Custom, Show lights and the dragged sun all kept.
+- Readiness: ready. #57 is on main (`137c920`) and this PR targets main.
 - Merge authorization: "if pass, merge it" (22 Nov). #57 merges first, under the user's merge-on-pass direction
   (relayed by the coordinator).
 
