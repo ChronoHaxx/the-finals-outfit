@@ -4,7 +4,8 @@ import * as THREE from "three";
 import {
   BACKDROP_PRESETS, DEFAULT_LOOK, DEFAULT_SUN_ELEVATION, KEY_POSITION, LOBBY_BACKDROP, MAX_LIGHTS, REVIEWED_SHADOW_FRUSTUM,
   STUDIO_BACKDROP, STUDIO_RIG, SUN_HEIGHT_MAX, SUN_HEIGHT_MIN, backdropCss, backdropIsDark, describeLook, fullLookName,
-  lightAngles, lobbyLook, movedLight, newLight, positionFrom, rotated, sanitizeLook, shadowFrustum, snapFollow, studioLook,
+  groupShadowFrustum, lightAngles, lobbyLook, movedLight, newLight, positionFrom, rotated, sanitizeLook, shadowFrustum, snapFollow,
+  studioLook,
 } from "../src/lib/stage-lighting";
 
 // The viewer's scene settings (11-12 Nov 2026). The default must be the reviewed rig exactly; a chosen sun must keep the
@@ -99,6 +100,61 @@ test("the reviewed frustum would cut a low sun's shadow short (why it grows)", (
   const tip = new THREE.Vector3(-light.x, 0, -light.z).normalize().multiplyScalar(2.5 / Math.tan(THREE.MathUtils.degToRad(10)));
   assert.deepEqual(inShadowMap(light, new THREE.Vector3(), { ...REVIEWED_SHADOW_FRUSTUM }, [new THREE.Vector3(0, 2.5, 0), tip]),
     [false, false]);
+});
+
+// Squads (22 Nov 2026, multi-character Phase 2): one shadow camera fitted to a group.
+test("a group of one gets the one character's frustum, aimed at where it stands", () => {
+  for (const [bearing, elevation] of [[32, DEFAULT_SUN_ELEVATION], [-120, 25], [90, 70]]) {
+    const sun = positionFrom(bearing, elevation, KEY_DISTANCE);
+    for (const spot of [{ x: 0, z: 0 }, { x: -1, z: 0.4 }]) {
+      const fit = groupShadowFrustum(sun, [spot]), single = shadowFrustum(elevation, KEY_DISTANCE, false);
+      // (The group reads the sun's height back from its position: equal up to the last bit.)
+      for (const key of Object.keys(single) as (keyof typeof single)[])
+        assert.ok(Math.abs(fit.frustum[key] - single[key]) < 1e-9, `${key} at ${bearing}°/${elevation}°`);
+      assert.deepEqual(fit.centre, [spot.x, spot.z]);
+    }
+  }
+  assert.deepEqual(groupShadowFrustum(KEY_POSITION, [{ x: 0, z: 0 }]).frustum, { ...REVIEWED_SHADOW_FRUSTUM }, "the reviewed rig unchanged");
+});
+
+test("every contestant of a group, and its floor shadow's tip, is inside the fitted shadow map for any sun", () => {
+  let seed = 7;
+  const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let trial = 0; trial < 60; trial++) {
+    const spots = Array.from({ length: 2 + (trial % 3) }, () => ({ x: (random() - 0.5) * 4, z: (random() - 0.5) * 3 }));
+    for (const elevation of [SUN_HEIGHT_MIN, 25, 52, 85]) {
+      const bearing = random() * 360 - 180, distance = [KEY_DISTANCE, 7, 9][trial % 3];
+      const sun = positionFrom(bearing, elevation, distance);
+      const { frustum, centre } = groupShadowFrustum(sun, spots);
+      const target = new THREE.Vector3(centre[0], 0, centre[1]);
+      const light = target.clone().add(new THREE.Vector3(...sun));
+      const toLight = new THREE.Vector3(sun[0], 0, sun[2]).normalize();
+      const side = new THREE.Vector3(-toLight.z, 0, toLight.x);
+      const e = THREE.MathUtils.degToRad(elevation);
+      const points: THREE.Vector3[] = [];
+      for (const spot of spots) for (const along of [-1, 0, 1]) for (const height of [0, 1, 2.5]) for (const across of [-1.2, 0, 1.2]) {
+        const caster = toLight.clone().multiplyScalar(along).addScaledVector(side, across).setY(height).add(new THREE.Vector3(spot.x, 0, spot.z));
+        points.push(caster, caster.clone().addScaledVector(toLight, -height / Math.tan(e)).setY(0));
+      }
+      const inside = inShadowMap(light, target, frustum, points);
+      assert.ok(inside.every(Boolean), `trial ${trial}, sun ${bearing.toFixed(0)}°/${elevation}°: ${inside.filter(v => !v).length} points outside`);
+      const reviewed = REVIEWED_SHADOW_FRUSTUM.bias * (REVIEWED_SHADOW_FRUSTUM.far - REVIEWED_SHADOW_FRUSTUM.near);
+      assert.ok(Math.abs(frustum.bias * (frustum.far - frustum.near) - reviewed) < 1e-12, "bias stays 3.9 mm of depth");
+    }
+  }
+});
+
+test("a group's shadow map is only as wide as the group: two side by side widen it by their spacing", () => {
+  const sun = positionFrom(0, 40, KEY_DISTANCE); // sun straight ahead: x runs across the beam
+  const single = shadowFrustum(40, KEY_DISTANCE, false); // fitted (not the reviewed height)
+  const pair = groupShadowFrustum(sun, [{ x: -0.5, z: 0 }, { x: 0.5, z: 0 }]).frustum;
+  assert.ok(Math.abs((pair.right - pair.left) - (single.right - single.left + 1)) < 1e-9, "1 m wider");
+  assert.ok(Math.abs(pair.top - single.top) < 1e-9 && Math.abs(pair.bottom - single.bottom) < 1e-9, "no taller");
+  // One behind the other along the beam: as wide as one, taller by the depth step seen from the sun.
+  const file = groupShadowFrustum(sun, [{ x: 0, z: -0.5 }, { x: 0, z: 0.5 }]).frustum;
+  assert.ok(Math.abs((file.right - file.left) - (single.right - single.left)) < 1e-9, "no wider");
+  const e = THREE.MathUtils.degToRad(40);
+  assert.ok(Math.abs((file.top - file.bottom) - (single.top - single.bottom + Math.sin(e))) < 1e-9, "taller by 1 m · sin e");
 });
 
 test("following snaps the body to a 0.25 m grid within ±3 m", () => {

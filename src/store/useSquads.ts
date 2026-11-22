@@ -20,13 +20,13 @@ export function setSquadPreview(on: boolean) {
   try { if (on) window.localStorage.setItem(FLAG_KEY, "1"); else window.localStorage.removeItem(FLAG_KEY); } catch { /* stays as it was */ }
 }
 
-/** Fixed spots on the floor for Phase 2 (no editor yet): the middle, then left and right, 1 m apart (the still pose's
- *  hands clear each other by about 10 cm), facing the camera. A newcomer takes the first spot no live contestant stands
- *  within 0.3 m of. */
-export const SQUAD_SPOTS: readonly Place[] = [{ x: 0, z: 0, yaw: 0 }, { x: -1, z: 0, yaw: 0 }, { x: 1, z: 0, yaw: 0 }];
+/** Fixed spots on the floor for Phase 2 (no editor yet): the middle, then left and right, 1.2 m apart, facing the
+ *  camera (the still pose holds the hands about 0.5 m out: 1 m apart they touched). A newcomer takes the first spot no
+ *  live contestant stands within 0.3 m of. */
+export const SQUAD_SPOTS: readonly Place[] = [{ x: 0, z: 0, yaw: 0 }, { x: -1.2, z: 0, yaw: 0 }, { x: 1.2, z: 0, yaw: 0 }];
 export function nextSpot(taken: readonly Place[]): Place {
   const free = SQUAD_SPOTS.find(spot => taken.every(place => Math.hypot(place.x - spot.x, place.z - spot.z) > 0.3));
-  return { ...(free ?? { x: 2, z: 0, yaw: 0 }) };
+  return { ...(free ?? { x: 2.4, z: 0, yaw: 0 }) };
 }
 
 interface SquadsState { snapshot: SquadSnapshot | null }

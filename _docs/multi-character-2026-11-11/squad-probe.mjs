@@ -4,8 +4,9 @@
 //   T-shirt outfit (through the page's store, as the button does).
 // - Checks they load one at a time, the squad survives a reload, and Remove + Undo bring the same contestant back.
 // - Saves a wide shot and close-ups of both jerseys' left sleeves (45 vs the jersey's own 32), with the automation
-//   flag on (still pose, deterministic), and a wide shot as a visitor (idle playing) with each contestant's pelvis
-//   checked for motion.
+//   flag on (still pose, deterministic), a wide shot under a low sun from the side with the floor shadow on (every
+//   contestant's whole shadow inside the fitted shadow camera), and a wide shot as a visitor (idle playing) with each
+//   contestant's pelvis checked for motion.
 // Usage (Git Bash, worktree root, dev server: node _docs/multi-character-2026-11-11/serve-5186.mjs):
 //   node _docs/multi-character-2026-11-11/squad-probe.mjs <outdir>
 import { chromium } from "playwright-core";
@@ -86,6 +87,22 @@ async function closeUps(context) {
     await converged(page);
     await canvasShot(page, `${name}.png`);
   }
+  await page.goto(`${BASE}/?reconstructed=1#/squad`, { waitUntil: "load", timeout: 300000 });
+  await idle(page);
+  await page.evaluate(async () => {
+    const { useLightingStore } = await import("/src/lib/lighting-store.ts");
+    const { positionFrom } = await import("/src/lib/stage-lighting.ts");
+    useLightingStore.getState().edit(look => {
+      look.floorShadow = true;
+      look.floorShadowOpacity = 0.5;
+      const sun = look.lights.find(l => l.role === "sun");
+      Object.assign(sun, { position: positionFrom(80, 18, 7.63), castShadow: true, enabled: true });
+      return look;
+    });
+  });
+  await page.waitForTimeout(1500);
+  await converged(page);
+  await canvasShot(page, "shadows-low-side-sun.png");
   await page.close();
 }
 

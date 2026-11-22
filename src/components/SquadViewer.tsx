@@ -45,9 +45,9 @@ const SOURCE_BODY_URL = DEV.reconstructed && DEV.sourceMeshes && DEV.sourceAssem
 const NAIL_MASK_URL = modelUrl("models/decals/_shared/nailmask.webp");
 const FACE_BODY_HIDE_URL = modelUrl("models/decals/_shared/bodyhide-face.webp");
 const STABLE_PREVIEW = DEV.reconstructed && DEV.temporal && !DEV.debugAlbedo && DEV.surfaceView === "lit";
-// The default view holds three contestants 0.9 m apart, head to toe (Phase 3 brings Frame all and camera presets).
+// The default view holds three contestants 1.2 m apart, head to toe, hands included (Phase 3 brings Frame all).
 // The builder's dev ?cam=px,py,pz,tx,ty,tz frames this view too (captures, probes).
-const CAMERA_POSITION: [number, number, number] = DEV.cam ? [DEV.cam[0], DEV.cam[1], DEV.cam[2]] : [0, 1.05, 4.6];
+const CAMERA_POSITION: [number, number, number] = DEV.cam ? [DEV.cam[0], DEV.cam[1], DEV.cam[2]] : [0, 1.05, 5.2];
 const CAMERA_TARGET: [number, number, number] = DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.95, 0];
 
 /** What the squad page shows of one contestant while it loads. */
@@ -217,6 +217,10 @@ export default function SquadViewer({ contestants, onStatus }: {
     all[id]?.loading === status.loading && all[id]?.error === status.error && all[id]?.settled === status.settled
       ? all : { ...all, [id]: status }), []);
   const allSettled = contestants.every(c => statuses[c.id]?.settled);
+  // Where each contestant stands: the sun's shadow camera and the contact shadow are fitted to these (ViewerStage.tsx).
+  const spotsKey = contestants.map(c => `${c.place.x},${c.place.z}`).join(";");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const spots = useMemo(() => contestants.map(c => ({ x: c.place.x, z: c.place.z })), [spotsKey]);
   const centre = useMemo<[number, number]>(() => {
     if (!contestants.length) return [0, 0];
     const mean = (pick: (c: ContestantRecord) => number) => contestants.reduce((sum, c) => sum + pick(c), 0) / contestants.length;
@@ -256,7 +260,7 @@ export default function SquadViewer({ contestants, onStatus }: {
         gl={{ alpha: true, antialias: false, toneMapping: DEV.debugAlbedo ? THREE.NoToneMapping : TONE_MAPPING[look.toneMapping],
           toneMappingExposure: look.exposure, outputColorSpace: THREE.SRGBColorSpace }}
       >
-        <StageLights look={look} root={group} />
+        <StageLights look={look} root={group} spots={spots} />
         <primitive object={group}>
           {contestants.map((contestant, index) => (
             <SquadMember key={contestant.id} contestant={contestant} clipFiles={clipFiles} driven={driven} onStatus={report}

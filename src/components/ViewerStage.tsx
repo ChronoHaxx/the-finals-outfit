@@ -7,8 +7,8 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { STAGE_FLOOR } from "../rig/ViewerScreenshot";
 import {
-  STUDIO_RIG, lightAngles, shadowFrustum, snapFollow, sunCasts, type EnvironmentKind, type Look, type StageLight,
-  type ToneMappingChoice,
+  STUDIO_RIG, groupShadowFrustum, lightAngles, shadowFrustum, snapFollow, sunCasts, type EnvironmentKind, type Look,
+  type StageLight, type ToneMappingChoice,
 } from "../lib/stage-lighting";
 
 // Coarse quality tier: phones get smaller shadow maps / cheaper grounding.
@@ -96,15 +96,24 @@ const isInside = (object: THREE.Object3D, root: THREE.Object3D) => {
 // travels keeps its whole shadow (a grid, not every frame: each step restarts the still view).
 // Off or not casting: no shadow at all. A sun at intensity 0 would still shade the floor and pay for its shadow pass
 // (the shadow test ignores intensity), so switching it off also switches castShadow off (a recompile, as for a toggle).
-function SunLight({ light: sun, follow, root }: { light: StageLight; follow: boolean; root: THREE.Object3D }) {
+// A squad (spots: where each contestant stands) gets one shadow camera fitted to the whole group instead
+// (groupShadowFrustum), aimed at the group's middle; it is refitted only when the group or the sun changes, never per
+// frame, since a refit restarts the still view. The builder passes no spots: everything above, unchanged.
+function SunLight({ light: sun, follow, root, spots }: {
+  light: StageLight; follow: boolean; root: THREE.Object3D; spots?: readonly { x: number; z: number }[];
+}) {
   const ref = useRef<THREE.DirectionalLight>(null);
   const mapSize = IS_TOUCH ? 1024 : 2048;
   const casts = sun.enabled && sun.castShadow;
   const { height: elevation, distance } = lightAngles(sun.position);
+  const [sx, sy, sz] = sun.position;
+  const spotsKey = spots ? spots.map(s => `${s.x},${s.z}`).join(";") : null;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const group = useMemo(() => spots ? groupShadowFrustum([sx, sy, sz], spots) : null, [spotsKey, sx, sy, sz]);
   useEffect(() => {
     const light = ref.current;
     if (!light) return;
-    const frustum = shadowFrustum(elevation, distance, follow);
+    const frustum = group ? group.frustum : shadowFrustum(elevation, distance, follow);
     const cam = light.shadow.camera;
     cam.left = frustum.left;
     cam.right = frustum.right;
@@ -115,18 +124,18 @@ function SunLight({ light: sun, follow, root }: { light: StageLight; follow: boo
     cam.updateProjectionMatrix();
     // Depth in an orthographic shadow map is a fraction of far - near: the bias is rescaled to the same distance.
     light.shadow.bias = frustum.bias;
-  }, [elevation, distance, follow, casts]);
+  }, [elevation, distance, follow, casts, group]);
   const pelvis = useRef<THREE.Object3D | null>(null);
   const [at, setAt] = useState<[number, number]>([0, 0]);
   useFrame(() => {
-    if (!follow) return;
+    if (!follow || group) return;
     if (!pelvis.current || !isInside(pelvis.current, root)) pelvis.current = root.getObjectByName("pelvis") ?? null;
     if (!pelvis.current) return;
     const world = pelvis.current.getWorldPosition(new THREE.Vector3());
     const [x, z] = snapFollow(world.x, world.z);
     if (x !== at[0] || z !== at[1]) setAt([x, z]);
   });
-  const [x, z] = follow ? at : [0, 0];
+  const [x, z] = group ? group.centre : follow ? at : [0, 0];
   useEffect(() => {
     const light = ref.current;
     if (!light) return;
@@ -180,22 +189,32 @@ function FloorShadow({ opacity }: { opacity: number }) {
 // action in the panel; dragging a colour or switching a light off and on does not.
 // The sky/ground fill takes colour, groundColor and intensity as props, not constructor args: r3f rebuilds an object
 // whose args change, which a colour-picker drag would do on every move.
-export function StageLights({ look, root }: { look: Look; root: THREE.Object3D }) {
+/** `spots`: a squad's floor positions; the sun's shadow camera and the contact shadow then cover the whole group. */
+export function StageLights({ look, root, spots }: { look: Look; root: THREE.Object3D; spots?: readonly { x: number; z: number }[] }) {
   const casting = sunCasts(look);
   const floor = look.floorShadow && casting;
+  // The contact shadow: a 3 m square at the origin for one character; for a squad, 1.5 m round every contestant (the
+  // margin one character has). It stays centred on the origin and grows symmetrically: drei's ContactShadows blurs by
+  // drawing a plane that is not a child of its shadow camera, so moving the component off the origin slides the blurred
+  // shadow sideways by the offset on every blur pass (seen 22 Nov: two contestants' shadows landed 2 m to one side).
+  const contact = useMemo(() => {
+    if (!spots?.length) return { position: [0, 0, 0] as [number, number, number], scale: 3 as number | [number, number] };
+    const reachX = Math.max(...spots.map(s => Math.abs(s.x))), reachZ = Math.max(...spots.map(s => Math.abs(s.z)));
+    return { position: [0, 0, 0] as [number, number, number], scale: [2 * reachX + 3, 2 * reachZ + 3] as [number, number] };
+  }, [spots]);
   return (
     <>
       <StudioEnvironment kind={look.environment.kind} intensity={look.environment.intensity} rotation={look.environment.rotation} />
       <hemisphereLight color={look.hemisphere.sky} groundColor={look.hemisphere.ground} intensity={look.hemisphere.intensity} />
       {look.lights.map(light => light.role === "sun"
-        ? <SunLight key={light.id} light={light} follow={floor} root={root} />
+        ? <SunLight key={light.id} light={light} follow={floor} root={root} spots={spots} />
         : <directionalLight key={light.id} position={light.position} color={light.color}
             intensity={light.enabled ? light.intensity : 0} />)}
       {look.contactShadow && <ContactShadows
         userData={STAGE_FLOOR}
-        position={[0, 0, 0]}
+        position={contact.position}
         opacity={0.35}
-        scale={3}
+        scale={contact.scale}
         blur={2.5}
         far={1.6}
         resolution={IS_TOUCH ? 128 : 256}
