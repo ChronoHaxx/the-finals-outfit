@@ -4,6 +4,7 @@ import type { CharacterRig } from "../rig/CharacterRig";
 import type { RigAnimator } from "../rig/RigAnimator";
 import { zipSync, type Zippable } from "three/examples/jsm/libs/fflate.module.js";
 import { exportOutfit, type ExportPose } from "../rig/OutfitExport";
+import { holdUpright } from "./SceneMode";
 import { collectSourceFiles } from "../rig/OutfitSourceExport";
 import { useBuildStore } from "../store/useBuildStore";
 
@@ -28,6 +29,8 @@ export default function OutfitExportPanel({ rig, context, busy, animator }: {
     setStatus("Preparing…");
     // The bake and the copy take many frames: hold the still pose (the one the export has always written) meanwhile.
     animator?.holdStill(true);
+    // A character turned in a scene (turntable mode) is exported facing forward, as it always was.
+    const releaseUpright = holdUpright();
     try {
       const result = await exportOutfit(rig.root, ctx.gl, ctx.camera, { textureSize, pose, onProgress: setStatus });
       const warnings = [...result.warnings];
@@ -59,6 +62,7 @@ export default function OutfitExportPanel({ rig, context, busy, animator }: {
       setStatus(`Export failed: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       animator?.holdStill(false);
+      releaseUpright();
       setRunning(false);
     }
   };

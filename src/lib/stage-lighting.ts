@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { STUDIO_LIGHTING_V2, STUDIO_RIG_V1, STUDIO_RIG_V2 } from "../rig/StudioLighting";
+import { SCENE_ID, sceneById } from "./scenes";
 
 /**
  * The viewer's scene: lights, reflections, exposure and backdrop, all the viewer's to change (11-12 Nov 2026, the user's
@@ -60,6 +61,8 @@ export interface Backdrop {
   /** CSS radial-gradient shape and the middle stop's position, kept so the presets reproduce their exact CSS. */
   ellipse: string;
   middleStop: number;
+  /** An in-game scene shown instead of the gradient (scenes.ts); the stops stay as its fallback. Absent: none. */
+  scene?: string;
 }
 export interface Look {
   version: 2;
@@ -195,10 +198,18 @@ export function lobbyLook(): Look {
 
 export const DEFAULT_LOOK: Readonly<Look> = Object.freeze(studioLook());
 
+/** The Lobby lights in front of the Season 12 menu stage (scenes.ts): the game's menu lights its character with blue
+ *  side light, which the Lobby look's rims already give. */
+export function menuS12Look(): Look {
+  const scene = sceneById("s12-menu");
+  return { ...lobbyLook(), backdrop: scene ? { ...scene.fallback, scene: scene.id } : { ...LOBBY_BACKDROP } };
+}
+
 /** Full looks replace everything. */
 export const FULL_LOOKS: readonly { id: string; label: string; look: () => Look }[] = [
   { id: "studio", label: "Studio", look: () => studioLook() },
   { id: "lobby", label: "Lobby", look: lobbyLook },
+  { id: "menu-s12", label: "Season 12 menu", look: menuS12Look },
 ];
 /** Sun looks move the sun (and turn its shadow and the floor shadow on) over whatever look is in use. */
 export const SUN_LOOKS: readonly { id: string; label: string; bearing: number; height: number }[] = [
@@ -345,6 +356,9 @@ function sanitizeBackdrop(value: unknown, fallback: Backdrop): Backdrop {
     outer: isHex(v.outer) ? v.outer.toLowerCase() : fallback.outer,
     ellipse: typeof v.ellipse === "string" && /^ellipse [\d.% ]+at [\d.% ]+$/.test(v.ellipse) ? v.ellipse : fallback.ellipse,
     middleStop: clamp(v.middleStop, 1, 99, fallback.middleStop),
+    // Kept even when this build does not know the scene (a newer season, or a newer build's id): the gradient shows
+    // instead, and the choice is still there for a build that knows it. Absent stays absent (the default compares equal).
+    ...(typeof v.scene === "string" && SCENE_ID.test(v.scene) ? { scene: v.scene } : {}),
   };
 }
 
@@ -431,8 +445,9 @@ export function describeLook(look: Look): string {
     `${on} light${on === 1 ? "" : "s"}`,
     ...(sun ? [`sun ${Math.round(lightAngles(sun.position).bearing)}° / ${Math.round(lightAngles(sun.position).height)}°`] : []),
     ...(look.floorShadow && sunCasts(look) ? ["floor shadow"] : []),
-    BACKDROP_PRESETS.find(p => JSON.stringify(p.backdrop) === JSON.stringify(look.backdrop))?.label
-      ?? (isSolid(look.backdrop) ? look.backdrop.inner : "custom backdrop"),
+    look.backdrop.scene ? sceneById(look.backdrop.scene)?.label ?? "a scene from a newer version"
+      : BACKDROP_PRESETS.find(p => JSON.stringify(p.backdrop) === JSON.stringify(look.backdrop))?.label
+        ?? (isSolid(look.backdrop) ? look.backdrop.inner : "custom backdrop"),
   ];
   return parts.join(" · ");
 }

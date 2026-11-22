@@ -26,6 +26,8 @@ import { modelUrl } from "../lib/assets";
 import { buildShareUrl } from "../lib/share-url";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { setPreviewScene } from "../lib/viewer-handle";
+import { sceneById } from "../lib/scenes";
+import { SceneBackdrop, SceneTurntable, withUpright } from "./SceneMode";
 import { SLOTS } from "../lib/slots";
 import { getDownloadProgress, subscribeDownloadProgress } from "../lib/load-progress";
 import { AUTOMATED } from "../lib/automation";
@@ -116,7 +118,9 @@ function PreviewBridge({ root, backdrop, active, animator }: {
   useEffect(() => {
     if (!active) return;
     setPreviewScene({ gl, scene, root, backdrop: { inner, middle, outer },
-      stillPose: animator ? draw => animator.withStillPose(draw) : undefined });
+      stillPose: animator ? draw => animator.withStillPose(draw) : undefined,
+      // In a scene the character may be turned (turntable mode); the card's views are placed at world angles.
+      upright: withUpright });
     return () => setPreviewScene(null);
   }, [gl, scene, root, inner, middle, outer, active, animator]);
   return null;
@@ -351,7 +355,10 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   const look = useLightingStore((s) => s.look);
   const backdrop = look.backdrop;
   // Light chrome (corner marks, loading text) on a dark backdrop, dark chrome on a light one.
-  const darkBackdrop = backdropIsDark(backdrop);
+  // An in-game scene behind the character (scenes.ts), when the look has one this build knows; null otherwise (an
+  // unknown id shows the look's colours). While one is shown the camera stays put and a drag turns the character.
+  const scene = sceneById(backdrop.scene);
+  const darkBackdrop = scene ? scene.dark : backdropIsDark(backdrop);
   // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden). Chinals mode
   // (lib/site-mode.ts) plays its own clip set: a mode switch replaces the animator, the character stays loaded.
   const animator = useRigAnimator(mode === "chinals" ? chinalsAnimationsBase() : animationsBaseUrl());
@@ -501,6 +508,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
       className="relative h-full w-full"
       style={{ background: backdropCss(backdrop) }}
     >
+      {scene && <SceneBackdrop scene={scene} />}
       {/* The key remounts the Canvas only for Retry after a lost graphics context. The look's tone mapping and exposure
           change live: r3f re-applies the gl props below on a re-render, and the still-view accumulator rebuilds its
           output pass for a new tone mapping and restarts its history. */}
@@ -540,7 +548,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
         <ScreenshotBridge target={screenshotContext} />
         <PreviewBridge root={rig.root} backdrop={backdrop} active={ready && !busy} animator={animator} />
-        {animator && <AnimationFrameDriver animator={animator} />}
+        {animator && <AnimationFrameDriver animator={animator} yaw={() => rig.root.rotation.y} />}
         {STABLE_PREVIEW && <StablePreview isMoving={animationMoving} aa={antiAliasing} statusRef={temporalStatus} />}
         <CaptureDriver ownsDraw={!STABLE_PREVIEW} />
         <AutoGraphics status={temporalStatus} active={ready && !busy} deviceDpr={deviceDpr} />
@@ -552,7 +560,9 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
           minDistance={0.05}
           maxDistance={10}
           makeDefault
+          enabled={!scene}
         />
+        {scene && <SceneTurntable scene={scene} root={rig.root} />}
       </Canvas>
       {contextLost && <div className="absolute inset-0 z-20">
         <ViewerUnavailable lost onRetry={() => { setContextLost(false); setCanvasGeneration((n) => n + 1); }} />

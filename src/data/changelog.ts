@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-scene-backdrops",
+    date: "2026-11-22",
+    title: "Scenes from the game behind your outfit",
+    notes: [
+      "Two scenes from the game can now stand behind your outfit: the Season 12 menu stage, drawn live with its glowing lights, and the tunnel from the Season 12 intro. Pick one under Backdrop in the lighting panel, or choose the Season 12 menu look.",
+      "While a scene shows, the camera stays where it is: drag to turn the character, and scroll or pinch to zoom. Screenshots, videos and share images show the scene's colours rather than the scene itself.",
+    ],
+    items: ["lighting-backdrops"],
+  },
+  {
     id: "2026-11-22-in-game-outfits",
     date: "2026-11-22",
     title: "In-game outfits",
