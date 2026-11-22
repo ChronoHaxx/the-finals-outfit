@@ -337,3 +337,61 @@ test("a looping emote wraps on the scaled clock and stays in front", async () =>
   assert.equal(animator.state.current, "wave");
   assert.ok(Math.abs(animator.timeline()!.time - 0.5) < 1e-6, `wrapped to 0.5 s (${animator.timeline()!.time})`);
 });
+
+// The startup race (21 Nov 2026, _docs/emote-early-stop-2026-11-21): the emote button works from the body's load, but
+// the default idle starts once the outfit has loaded. An emote the viewer picked in between must stay in front: the
+// idle goes under it (playUnder), to come back when the emote ends, as if the viewer had waited for the outfit.
+test("the default idle started during the viewer's emote goes under it: the emote plays to its end, then the idle", async () => {
+  stubFetch();
+  const { body, pelvis } = rig();
+  const animator = new RigAnimator(manifest, "clips/");
+  await animator.play(body, "wave");
+  step(animator, 0.4);
+  assert.equal(await animator.playUnder(body, "idle"), true);
+  assert.equal(animator.state.current, "wave", "the emote stays in front");
+  assert.equal(animator.state.idle, "idle", "the idle runs under it");
+  step(animator, 0.2);
+  assert.ok(Math.abs(angle(pelvis.quaternion) - 90) < 0.05, `only the emote shows, got ${angle(pelvis.quaternion)}`);
+  assert.ok(Math.abs(animator.timeline()!.time - 0.6) < 1e-6, "its clock ran on");
+  step(animator, 0.45); // past its end (1 s), into the crossfade
+  assert.equal(animator.state.current, "idle", "it ended into the idle");
+  step(animator, 0.4);
+  assert.ok(Math.abs(angle(pelvis.quaternion) - 30) < 0.05, `on the idle, got ${angle(pelvis.quaternion)}`);
+  assert.equal(animator.state.moving, true);
+});
+
+test("an emote still downloading is not superseded by the idle started under it", async () => {
+  stubFetch({ "wave.json": 30 });
+  const { body } = rig();
+  const animator = new RigAnimator(manifest, "clips/");
+  const picked = animator.play(body, "wave");
+  const under = animator.playUnder(body, "idle"); // the idle's file lands first
+  await picked;
+  assert.equal(animator.state.current, "wave", "the viewer's emote played");
+  assert.equal(await under, true);
+  assert.equal(animator.state.current, "wave");
+  assert.equal(animator.state.idle, "idle");
+  step(animator, 1.4);
+  assert.equal(animator.state.current, "idle");
+});
+
+test("playUnder with nothing up plays the idle; after the viewer's stop, or with an idle already running, it does nothing", async () => {
+  stubFetch();
+  const { body, pelvis } = rig();
+  const plain = new RigAnimator(manifest, "clips/");
+  assert.equal(await plain.playUnder(body, "idle"), true);
+  assert.equal(plain.state.current, "idle");
+  assert.equal(await plain.playUnder(body, "idle"), false, "an idle already runs");
+  plain.reset();
+
+  stubFetch({ "idle.json": 20 });
+  const stopped = new RigAnimator(manifest, "clips/");
+  await stopped.play(body, "wave");
+  step(stopped, 0.2);
+  const under = stopped.playUnder(body, "idle");
+  stopped.stop(); // the viewer stops while the idle downloads
+  step(stopped, 0.5);
+  assert.equal(await under, false);
+  assert.equal(stopped.state.active, false, "back to the still pose");
+  assert.ok(Math.abs(angle(pelvis.quaternion) - 10) < 0.05);
+});

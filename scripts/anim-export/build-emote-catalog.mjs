@@ -12,20 +12,40 @@
 // Usage (Git Bash or PowerShell, worktree root):
 //   node scripts/anim-export/build-emote-catalog.mjs --research scripts/generated/anim-export/research \
 //     --icons scripts/generated/anim-export/research/emote-icons-2 --out scripts/generated/anim-export/emotes-1
+//
+// Additions to a published set (21 Nov 2026, the Season 1-2 emotes): --inventory <emote-inventory.json> (from
+// build-emote-inventory.mjs, both item families) --live <the published manifest.json> --base none. Items the live
+// manifest already lists are left out; an item whose animation the live set shows as an "unlisted" clip takes that
+// clip's id (ids are part of share links, ?emote=wave); an id that a different live clip already uses takes the
+// display name's instead (TapDance plays NamaKick_00, but the live tap-dance clip is TapDance_00). With
+// --hold-placeholders, items whose display name is still their id (not yet in the string table: unreleased) are held
+// and listed in held.json.
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import sharp from "sharp";
 
-const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, arg, i, all) =>
+const flags = new Set(process.argv.slice(2).filter(a => a.startsWith("--") && ["--hold-placeholders"].includes(a)));
+const args = Object.fromEntries(process.argv.slice(2).filter(a => !flags.has(a)).reduce((pairs, arg, i, all) =>
   arg.startsWith("--") ? [...pairs, [arg.slice(2), all[i + 1]]] : pairs, []));
 for (const required of ["research", "icons", "out"]) if (!args[required]) throw new Error(`--${required} is required`);
 const research = resolve(args.research), icons = resolve(args.icons), out = resolve(args.out);
-const baseClips = JSON.parse(readFileSync(resolve(args.base ?? "scripts/anim-export/clips.json"), "utf8"));
+const baseClips = args.base === "none" ? { defaultIdle: null, clips: [] }
+  : JSON.parse(readFileSync(resolve(args.base ?? "scripts/anim-export/clips.json"), "utf8"));
 if (existsSync(out)) throw new Error(`Output ${out} already exists; choose a new directory (runs are kept)`);
 
 const walk = dir => readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)]);
-const inventory = JSON.parse(readFileSync(join(research, "emote-inventory.json"), "utf8"));
-const sequenceFiles = new Map(walk(join(research, "json-emote-seqs")).map(f => [basename(f, ".json").toLowerCase(), f]));
+const fullInventory = JSON.parse(readFileSync(resolve(args.inventory ?? join(research, "emote-inventory.json")), "utf8"));
+const live = args.live ? JSON.parse(readFileSync(resolve(args.live), "utf8")) : null;
+const liveIds = new Map((live?.clips ?? []).map(c => [c.id, c]));
+const listed = new Set((live?.clips ?? []).map(c => c.emote?.gameId).filter(Boolean));
+const unlistedBySource = new Map((live?.clips ?? []).filter(c => c.kind === "emote" && (!c.emote || c.emote.unlisted)).map(c => [c.source.toLowerCase(), c.id]));
+const held = [];
+const inventory = fullInventory.filter(e => {
+  if (listed.has(e.id)) return false;
+  if (flags.has("--hold-placeholders") && e.name === e.id) { held.push({ id: e.id, sequence: e.sequence, season: e.season, reason: "display name is still the item id (not in the string table yet)" }); return false; }
+  return true;
+});
+const sequenceFiles = new Map(walk(resolve(args.seqs ?? join(research, "json-emote-seqs"))).map(f => [basename(f, ".json").toLowerCase(), f]));
 const iconFiles = new Map(walk(icons).map(f => [basename(f, ".png").toLowerCase(), f]));
 
 const kebab = id => id.replace(/([a-z0-9])([A-Z])/g, "$1-$2").replace(/([A-Z])([A-Z][a-z])/g, "$1-$2").replace(/_/g, "-").toLowerCase();
@@ -104,7 +124,12 @@ for (const e of [...inventory].sort((a, b) => a.id.localeCompare(b.id))) {
   const actors = of("prop");
   const props = actors.filter(a => !effectActor(a)), fx = [...new Set([...of("fx"), ...actors.filter(effectActor)])];
   const itemProps = seq.notifies.filter(n => n.kind === "itemProp").map(n => ({ prop: n.asset, item: n.item }));
-  const id = kebab(e.id);
+  let id = unlistedBySource.get(e.sequence.toLowerCase()) ?? kebab(e.id);
+  if (liveIds.has(id) && liveIds.get(id).source.toLowerCase() !== e.sequence.toLowerCase()) {
+    const byName = e.name ? kebab(e.name.replace(/[^A-Za-z0-9 ]/g, "").replace(/ (\w)/g, (_, c) => c.toUpperCase())) : null;
+    if (!byName || liveIds.has(byName)) throw new Error(`${e.id}: clip id ${id} is a different live clip, and no free id from the name`);
+    id = byName;
+  }
   // The 36 flag emotes share one display name with a placeholder the game fills with the country ("Flag Wave: {0}");
   // the country is the item id's suffix (CountryFlag_IvoryCoast, FlagJapan).
   const filled = e.name?.includes("{0}") ? e.name.replace("{0}", spaced(e.id.replace(/^(CountryFlag_?|Flag)/, ""))) : e.name;
@@ -136,6 +161,7 @@ writeFileSync(join(out, "clips.json"), JSON.stringify(config, null, 2));
 const anims = [...new Set(ordered.map(c => c.source))];
 writeFileSync(join(out, "requests.json"), JSON.stringify({ skeleton: "_3P_MasterSkeleton", meshes: ["SK_Body_M"], anims }, null, 2));
 writeFileSync(join(out, "emote-catalog.json"), JSON.stringify(catalog, null, 2));
+if (held.length) writeFileSync(join(out, "held.json"), JSON.stringify(held, null, 2));
 
 const count = pred => catalog.filter(pred).length;
 console.log(`${catalog.length} emotes, ${new Set(catalog.map(c => c.sequence)).size} animations, ${thumbs.size} thumbnails`);
