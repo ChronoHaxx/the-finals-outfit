@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { DeformationRig } from "./DeformationRig";
-import { EmoteProps, type AttachBone, type ComponentSpace } from "./EmoteProps";
+import { archetypeTranslationScale, EmoteProps, type AttachBone, type ComponentSpace } from "./EmoteProps";
 import { FaceAnimator, type FaceSample } from "./FaceAnimator";
 import type { FaceWrapPart } from "./FaceWrap";
 import { EmoteSounds } from "./EmoteSounds";
@@ -220,7 +220,10 @@ export function initialClip(options: { anim: string | null; defaultIdle: string;
   return options.defaultIdle;
 }
 
-function buildClip(data: ClipData, name: string): THREE.AnimationClip {
+// `translationScale` (22 Nov 2026, archetypes): the clips are authored on the Medium skeleton; on a Light or Heavy body
+// their bone translations (the pelvis, the prop bone) scale with the class skeleton, as Unreal's scaled translation
+// retargeting carries a Medium animation onto a scaled skeleton. Rotations are unchanged, as the class skeletons' are.
+function buildClip(data: ClipData, name: string, translationScale = 1): THREE.AnimationClip {
   if (data.formatVersion !== 1) throw new Error(`Unsupported clip format ${data.formatVersion}`);
   const tracks: THREE.KeyframeTrack[] = [];
   const times = (keys: number[]) => Float32Array.from(keys, k => k * data.frameTime);
@@ -234,7 +237,8 @@ function buildClip(data: ClipData, name: string): THREE.AnimationClip {
     tracks.push(new THREE.QuaternionKeyframeTrack(`${bone}.quaternion`, times(keys), values));
   }
   for (const [bone, keys, ints] of data.p)
-    tracks.push(new THREE.VectorKeyframeTrack(`${bone}.position`, times(keys), Float32Array.from(ints, v => v / data.pScale)));
+    tracks.push(new THREE.VectorKeyframeTrack(`${bone}.position`, times(keys),
+      Float32Array.from(ints, v => v / data.pScale * translationScale)));
   return new THREE.AnimationClip(name, -1, tracks);
 }
 
@@ -258,6 +262,7 @@ export class RigAnimator {
   private stopping = false;
   private request = 0; // latest play/stop wins when clip downloads overlap
   private disposed = false;
+  private translationScale = 1; // the bound body's class skeleton scale (buildClip)
   private listeners = new Set<() => void>();
   private poseListeners = new Set<() => void>(); // the held frame moved (seek, scrub, step): no state change
   // The emote in front was paused, scrubbed or stepped by the viewer: it stays on its last frame instead of returning
@@ -593,7 +598,7 @@ export class RigAnimator {
         const clock = propClock(json);
         if (clock) this.propClocks.set(id, clock);
         if (json.frameTime > 0) this.frameTimes.set(id, json.frameTime);
-        return buildClip(json, id);
+        return buildClip(json, id, this.translationScale);
       });
       pending.catch(() => this.clips.delete(id));
       this.clips.set(id, pending);
@@ -606,6 +611,9 @@ export class RigAnimator {
     if (this.mixer && this.root === root) return this.mixer;
     this.reset();
     this.root = root;
+    // A body of another class (rig/Archetype.ts) needs its clips rebuilt with that class's translation scale.
+    const scale = archetypeTranslationScale(root);
+    if (scale !== this.translationScale) { this.translationScale = scale; this.clips.clear(); }
     // Prop attach bones first: the mixer resolves each track's target node by name once, when an action binds.
     this.props.attach(root);
     this.mixer = new THREE.AnimationMixer(root);

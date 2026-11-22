@@ -12,6 +12,7 @@ import { enableSourceSkinning } from "./SourceMesh";
 import { rebindSourceSkeleton, type SourceBoneAttachment } from "./SourceSkeleton";
 import { fittingMorphNames, SourceFitting } from "./SourceFitting";
 import { bodyTypeOffsetMatrix, type BodyTypePreview } from "./BodyTypePreview";
+import { scaleSkeletonTranslations, sourceBindBasis, type RigArchetype } from "./Archetype";
 import { multiplySourceMatrices, type SourceMatrix } from "./SourceTransform";
 import { LEGACY_EQUIVALENT_HEAD_BASELINE, type SourceRigPart, type SourceSkinPair, type SourceSkinPart } from "./SourceAssembly";
 import { applyHeadWrap, bindHeadWrap, headWrapInputs, type HeadWrapBinding, type HeadWrapData } from "./HeadWrap";
@@ -246,6 +247,12 @@ export class CharacterRig {
   // Both stay undefined — the preview exactly as it was — until the viewer gates the context on.
   private bodyTypeMorph: string | undefined;
   private bodyTypeSockets: Record<string, SourceMatrix> | undefined;
+  private bodyTypeContext: BodyTypePreview | undefined;
+  // (22 Nov 2026, archetypes; Archetype.ts) The class the body was loaded for, undefined for Medium. On a class body the
+  // driver's bone translations are scaled, `bodyRestInverses` holds that class's rests and `mediumRestInverses` the
+  // Medium ones the index's sockets and frames were recorded on; on Medium both are the same map.
+  private archetype: RigArchetype | undefined;
+  private mediumRestInverses = new Map<string, THREE.Matrix4>();
   // Mesh UUID -> material copies made by the dev inspector. Values stay attached to their mesh
   // and are therefore released by disposeObject3D() with the scene; this map only prevents a
   // second copy on every toggle and is cleared when that scene leaves the rig.
@@ -349,18 +356,55 @@ export class CharacterRig {
    *  the cage carries it — and its socket offsets compose into the attachment sockets the
    *  asset moves. Undefined restores the no-body-type preview exactly. */
   setBodyTypePreview(preview: BodyTypePreview | undefined): void {
-    this.bodyTypeMorph = preview?.mediumMorph;
-    this.bodyTypeSockets = preview
-      ? Object.fromEntries(Object.entries(preview.socketOffsets)
+    this.bodyTypeContext = preview;
+    const context = this.bodyTypeClass(preview, this.archetype);
+    this.bodyTypeMorph = context?.morph;
+    this.bodyTypeSockets = context
+      ? Object.fromEntries(Object.entries(context.socketOffsets)
         .map(([socket, offset]) => [socket, bodyTypeOffsetMatrix(offset)]))
       : undefined;
     this.reapplySourceFitting();
+  }
+
+  // The morph and socket offsets a body type activates for one class: its Medium values, or its Light/Heavy class
+  // (22 Nov 2026). A body type without that class (Androgynous is Medium-only) activates nothing there; the outfit pass
+  // never asks for one (lib/archetype.ts bodyTypeSupportsArchetype).
+  private bodyTypeClass(preview: BodyTypePreview | undefined, archetype: RigArchetype | undefined) {
+    if (!preview) return undefined;
+    if (!archetype) return { morph: preview.mediumMorph, socketOffsets: preview.socketOffsets };
+    return preview[archetype.id];
+  }
+
+  /** (22 Nov 2026) The class the body was loaded for, undefined for Medium (Archetype.ts). */
+  archetypeOf(): RigArchetype | undefined {
+    return this.archetype;
+  }
+
+  // The rests a source skin binds to (Archetype.ts sourceBindBasis). On Medium, the driver's rests, exactly as always.
+  // On a class body, the rest its own inverse binds were authored in: its class's (a SK_*_L on Light) or Medium's (the
+  // shared head, a hair with no class mesh), which carries it rigidly with each bone as the game's leader pose does.
+  // The rests the index's sockets and frames were recorded on: the Medium body's. On Medium those are the driver's own
+  // rests, exactly as always; on a class body a socket rides its moved bone with its Medium relative transform.
+  private socketRestInverses(): ReadonlyMap<string, THREE.Matrix4> {
+    return this.archetype ? this.mediumRestInverses : this.bodyRestInverses;
+  }
+
+  private sourceRestInverses(mesh: THREE.SkinnedMesh, label: string): ReadonlyMap<string, THREE.Matrix4> {
+    if (!this.archetype) return this.bodyRestInverses;
+    return sourceBindBasis(mesh.skeleton, mesh.bindMatrix, this.bodyRestInverses, this.mediumRestInverses, label) === "class"
+      ? this.bodyRestInverses : this.mediumRestInverses;
   }
 
   // The fitting morphs plus the gated body-type morph, one set everywhere morphs are applied.
   private sourceMorphNames(): ReadonlySet<string> {
     return this.bodyTypeMorph === undefined ? this.sourceFittingNames
       : new Set([...this.sourceFittingNames, this.bodyTypeMorph]);
+  }
+
+  // The same set for a body being loaded for `archetype` (the class picks the body type's morph).
+  private morphNamesFor(archetype: RigArchetype | undefined): ReadonlySet<string> {
+    const morph = this.bodyTypeClass(this.bodyTypeContext, archetype)?.morph;
+    return morph === undefined ? this.sourceFittingNames : new Set([...this.sourceFittingNames, morph]);
   }
 
   private reapplySourceFitting(): void {
@@ -535,8 +579,12 @@ export class CharacterRig {
 
   private bodyLoadVersion = 0;
 
-  async loadBody(url: string, sourceMeshUrl?: string): Promise<void> {
+  /** `archetype` (22 Nov 2026, Archetype.ts): build the body for a Light or Heavy class. `sourceMeshUrl` must then be
+   *  that class's body, and the driver's bone translations are scaled by the class's skeleton scale. */
+  async loadBody(url: string, sourceMeshUrl?: string, archetype?: RigArchetype): Promise<void> {
     const version = ++this.bodyLoadVersion;
+    if (archetype && (!sourceMeshUrl || new URL(sourceMeshUrl, window.location.href).href !== new URL(archetype.bodyUrl, window.location.href).href))
+      throw new Error(`A ${archetype.id} body needs its own source body`);
     const loaded = await Promise.allSettled([this.loader.loadAsync(url),
       ...(sourceMeshUrl ? [this.loader.loadAsync(sourceMeshUrl)] : [])]);
     const release = (scene: THREE.Object3D) => {
@@ -553,7 +601,9 @@ export class CharacterRig {
     const gltf = (loaded[0] as PromiseFulfilledResult<Awaited<ReturnType<GLTFLoader["loadAsync"]>>>).value;
     const source = loaded[1]?.status === "fulfilled" ? loaded[1].value : undefined;
     const body = gltf.scene.getObjectsByProperty("isSkinnedMesh", true)[0] as THREE.SkinnedMesh | undefined;
-    const bones = new Map<string, THREE.Bone>(), inverses = new Map<string, THREE.Matrix4>();
+    const bones = new Map<string, THREE.Bone>();
+    let inverses = new Map<string, THREE.Matrix4>();
+    const mediumInverses = inverses;
     const basePose = new Map<string, THREE.Euler>();
     const driver = body?.skeleton;
     try {
@@ -564,6 +614,13 @@ export class CharacterRig {
         inverses.set(bone.name, bone.matrixWorld.clone().invert());
         if (bone.name in CharacterRig.IDLE_POSE) basePose.set(bone.name, bone.rotation.clone());
       }
+      if (archetype) {
+        // The class skeleton is the Medium one with every bone translation scaled (Archetype.ts). The Medium rests are
+        // kept: the index records every socket and frame on the Medium body, and Medium-authored skins bind to them.
+        scaleSkeletonTranslations(driver.bones, archetype.skeletonScale);
+        gltf.scene.updateMatrixWorld(true);
+        inverses = new Map(driver.bones.map(bone => [bone.name, bone.matrixWorld.clone().invert()]));
+      }
       if (source) {
         // Preserve the existing skin material and animation driver while adding
         // the source geometry, full skin weights and authored fitting morphs.
@@ -573,6 +630,9 @@ export class CharacterRig {
         const fresh = candidates[0];
         if ((fresh.material as THREE.Material).name !== body.material.name)
           throw new Error("Source body material slot mismatch");
+        // A class body must be authored on its own class skeleton: anything else would sit at the wrong height.
+        if (archetype && sourceBindBasis(fresh.skeleton, fresh.bindMatrix, inverses, mediumInverses, sourceMeshUrl!) !== "class")
+          throw new Error(`Source body is not bound to the ${archetype.id} skeleton`);
         const { skeleton, attachments } = rebindSourceSkeleton(fresh.skeleton, bones, inverses);
         for (const { parent, root } of attachments) parent.add(root);
         body.geometry.dispose();
@@ -583,12 +643,14 @@ export class CharacterRig {
         body.bind(skeleton, fresh.bindMatrix);
         body.userData.sourceBody = true;
         body.userData.sourceBodyUrl = sourceMeshUrl;
+        // The body the index's rests were recorded on (attachment sockets check it): the Medium one on every class.
+        body.userData.mediumSourceBodyUrl = archetype?.mediumBodyUrl ?? sourceMeshUrl;
         body.frustumCulled = false;
         // The source colour attribute encodes masks; the legacy skin material
         // expects white vertex colours. Preserve the data without tinting skin.
         body.material.vertexColors = false;
         enableSourceSkinning(body);
-        this.sourceFitting.apply(body, this.sourceMorphNames());
+        this.sourceFitting.apply(body, this.morphNamesFor(archetype));
       }
     } catch (error) {
       release(gltf.scene);
@@ -600,9 +662,16 @@ export class CharacterRig {
     this.skeleton = driver!;
     this.bonesByName = bones;
     this.bodyRestInverses = inverses;
+    this.mediumRestInverses = mediumInverses;
+    if (this.archetype !== archetype) {
+      this.archetype = archetype;
+      this.setBodyTypePreview(this.bodyTypeContext); // the class picks the body type's morph and socket offsets
+    }
     this.basePose = basePose;
     this.setPose(this.pose);
     this.bodyScene = gltf.scene;
+    // The class skeleton scale, for the animator's clip translations and the prop bones (rig/Archetype.ts).
+    gltf.scene.userData.archetypeSkeletonScale = archetype?.skeletonScale ?? 1;
     this.enableShadows(gltf.scene);
     this.root.add(gltf.scene);
     this.bodyMaterials = this.collectStandardMaterials(gltf.scene);
@@ -1017,11 +1086,11 @@ export class CharacterRig {
   private resolveSourceAttachment(attachment: NonNullable<SourceRigPart['attachment']>):
     { bone: THREE.Bone; restInverse: THREE.Matrix4; socket: SourceSocketRest; headComponent?: string } {
     const body = this.bodyScene?.getObjectsByProperty('isSkinnedMesh', true).find(o => o.userData.sourceBody);
-    if (!body || new URL(body.userData.sourceBodyUrl, window.location.href).href !== attachment.bodyUrl)
+    if (!body || new URL(body.userData.mediumSourceBodyUrl ?? body.userData.sourceBodyUrl, window.location.href).href !== attachment.bodyUrl)
       throw new Error('Source attachment does not match the active body');
     const frame = attachment.frame;
     if (!frame) {
-      const bone = this.bonesByName.get(attachment.socket), restInverse = this.bodyRestInverses.get(attachment.socket);
+      const bone = this.bonesByName.get(attachment.socket), restInverse = this.socketRestInverses().get(attachment.socket);
       if (!bone || !restInverse) throw new Error('Source attachment does not match the active body');
       return { bone, restInverse, socket: this.offsetSocketRest(attachment.socket, bodySocketRest(attachment)) };
     }
@@ -1032,7 +1101,7 @@ export class CharacterRig {
     if (!component) throw new Error(`No active source head component carries socket ${attachment.socket}`);
     let live: { bone: THREE.Bone; restInverse: THREE.Matrix4 } | undefined;
     if (component.bodyBone) {
-      const bone = this.bonesByName.get(component.bone), restInverse = this.bodyRestInverses.get(component.bone);
+      const bone = this.bonesByName.get(component.bone), restInverse = this.socketRestInverses().get(component.bone);
       if (bone && restInverse && (!head || head.bones.get(component.bone)?.bone === bone)) live = { bone, restInverse };
       else if (bone && restInverse) throw new Error(`Source attachment socket bone is not the head component's: ${component.bone}`);
     } else {
@@ -1152,7 +1221,8 @@ export class CharacterRig {
             material.userData.sourceMaterial = binding.source;
           }
           if (!part.attachment) {
-            const { skeleton, attachments: branches } = rebindSourceSkeleton(mesh.skeleton, this.bonesByName, this.bodyRestInverses);
+            const { skeleton, attachments: branches } = rebindSourceSkeleton(mesh.skeleton, this.bonesByName,
+              this.sourceRestInverses(mesh, part.sourceMesh));
             attachments.push(...branches);
             skeletons.add(skeleton);
             mesh.bind(skeleton, mesh.bindMatrix);
@@ -1384,7 +1454,7 @@ export class CharacterRig {
         }
         let frame = frames.get(mesh.skeleton);
         if (!frame) {
-          frame = rebindSourceSkeleton(mesh.skeleton, this.bonesByName, this.bodyRestInverses);
+          frame = rebindSourceSkeleton(mesh.skeleton, this.bonesByName, this.sourceRestInverses(mesh, pair.head.sourceMesh));
           frames.set(mesh.skeleton, frame);
           attachments.push(...frame.attachments);
           skeletons.add(frame.skeleton);
@@ -2613,6 +2683,8 @@ export class CharacterRig {
     this.skeleton = null;
     this.bonesByName.clear();
     this.bodyRestInverses.clear();
+    this.mediumRestInverses.clear();
+    this.archetype = undefined;
     this.inspectorMaterialOverrides.clear();
   }
 }

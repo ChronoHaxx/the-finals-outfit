@@ -3,6 +3,7 @@
 import { fetchAsset } from "../lib/asset-fetch";
 import { isRigidSourceRest, multiplySourceMatrices, sourceIdentityDeviation, sourceLocalMatrix,
   type SourceVector } from "./SourceTransform";
+import { ARCHETYPE_TAGS, type ArchetypeId } from "../lib/archetype";
 
 interface SoftPath { AssetPathName: string; SubPathString?: string }
 interface Override {
@@ -363,8 +364,10 @@ export class MissingSourceDefinitionError extends Error {
   }
 }
 
+/** `archetype` (22 Nov 2026): the contestant class the outfit is resolved for; its Customization.Archetype.* tag selects
+ *  each part's class mesh exactly as the game's TagOverrides author it. Medium unless given. */
 export async function loadSourceOutfit(ids: string[], baseUrl: string,
-  extraContextTags: string[] = [], options: SourceResolveOptions = {}): Promise<SourceOutfit> {
+  extraContextTags: string[] = [], options: SourceResolveOptions = {}, archetype: ArchetypeId = "medium"): Promise<SourceOutfit> {
   const catalog = await readJson(`${baseUrl}/catalog.json`) as { formatVersion: number; items: string[] };
   if (catalog.formatVersion !== 1 || !Array.isArray(catalog.items)) {
     pending.delete(`${baseUrl}/catalog.json`);
@@ -385,10 +388,10 @@ export async function loadSourceOutfit(ids: string[], baseUrl: string,
     }
     return record;
   }));
-  // The current rig is the medium body in the third-person frontend. The body-type context
-  // tag joins here when that preview is gated on (BodyTypePreview.ts); without it the context
-  // is exactly what it was.
-  return resolveSourceOutfit(definitions, ["Customization.Archetype.Medium", ...extraContextTags], options);
+  // The rig's class (Medium unless the archetype picker chose another) in the third-person frontend. The body-type
+  // context tag joins here when that preview is gated on (BodyTypePreview.ts); without it the context is exactly what
+  // it was.
+  return resolveSourceOutfit(definitions, [ARCHETYPE_TAGS[archetype], ...extraContextTags], options);
 }
 
 /** (12 Nov 2026, facial animation) The face mask an item applies: its definition's FaceAnimationWeights bone
@@ -495,6 +498,11 @@ export interface AssemblyAssets {
    *  today — such a part refuses the item exactly as before. */
   glitchOverlayParts?: string;
   glitchOverlayMeshes?: string[];
+  /** (22 Nov 2026, archetypes) The Light and Heavy classes this index can build (rig/Archetype.ts): each names its
+   *  class body's source mesh (an entry of `meshes`, with the Medium body's slots), the skeleton scale the index
+   *  builder proved, and the class body's bounds origin for its skin material. The class meshes items resolve to on
+   *  that class are ordinary `meshes` entries. Absent — on every index before archetypes — the site offers Medium only. */
+  archetypes?: Partial<Record<"light" | "heavy", { body: string; skeletonScale: number; boundsOrigin: [number, number, number] }>>;
 }
 
 /** One component's socket rests as the index records them; `bodyBone` is decided while resolving. */
@@ -685,8 +693,14 @@ export function omittedSourceHead(item: SourceOutfit["items"][string], head: Pic
   return scalp ? { sourceMesh: head.sourceMesh, rules: [...part.rules], hair: scalp } : undefined;
 }
 
+/** The class body a skin pair's Medium body becomes on a Light or Heavy outfit (22 Nov 2026): the face's body part
+ *  authors the swap (Customization.Archetype.* → SK_Body_L/H), and the index records the class body with the Medium
+ *  body's slots, so the pair keeps its own body materials on the class body. */
+export interface SkinPairClassBody { mediumBody: string; body: string; url: string; boundsOrigin: [number, number, number] }
+
 export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"][string], baseUrl: string,
-  parameters: SourceMaterialParameters[] = [], hair?: SourceHairSelection): Promise<SourceSkinPair | undefined> {
+  parameters: SourceMaterialParameters[] = [], hair?: SourceHairSelection,
+  classBody?: SkinPairClassBody): Promise<SourceSkinPair | undefined> {
   const index = await readJson(`${baseUrl}/skin-pairs.json`) as {
     // The index describes the source, never a transient outfit state: an omission is added here.
     formatVersion: number; items: Record<string, { head: SourceSkinPart; body: SourceSkinPart; source: string;
@@ -718,8 +732,11 @@ export async function loadSourceSkinPair(id: string, item: SourceOutfit["items"]
     pairParts = split.parts.length;
   }
   if (pair.source !== item.source || pairParts !== 2) throw new Error("Source skin pair definition changed");
-  const resolve = (part: SourceSkinPart, isHead: boolean): SourceSkinPart => {
-    const actual = item.parts.find(p => p.sourceIndex === part.sourceIndex);
+  const resolve = (indexed: SourceSkinPart, isHead: boolean): SourceSkinPart => {
+    const actual = item.parts.find(p => p.sourceIndex === indexed.sourceIndex);
+    // On a class outfit the face's body part resolves to the class body, which takes the Medium body's place.
+    const part = !isHead && classBody && indexed.sourceMesh === classBody.mediumBody && actual?.skeletalMesh === classBody.body
+      ? { ...indexed, sourceMesh: classBody.body, url: classBody.url, boundsOrigin: classBody.boundsOrigin } : indexed;
     const emptied = isHead && !!omitted;
     // An omitted head keeps every other requirement; only the mesh it resolves to differs, and
     // that is the authored source mesh the empty replacement removed.

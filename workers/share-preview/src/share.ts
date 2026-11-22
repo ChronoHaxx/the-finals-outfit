@@ -68,6 +68,28 @@ export function storedBodyType(metadata: Record<string, unknown> | null | undefi
   return typeof bodyType === "string" && BODY_TYPE.test(bodyType) ? bodyType : undefined;
 }
 
+// The outfit's archetype (22 Nov 2026), in the app's grammar (src/lib/archetype.ts): ar=<a short lowercase code>,
+// absent for Medium. Stored and carried like the body type; the app decides what a code means.
+const ARCHETYPE = /^[a-z]{1,2}$/;
+
+/** The archetype code in these parameters: undefined when there is none, null when it is malformed. */
+export function readArchetype(params: URLSearchParams): string | null | undefined {
+  const archetype = params.get("ar");
+  return archetype === null ? undefined : ARCHETYPE.test(archetype) ? archetype : null;
+}
+
+/** The archetype's parameter, to follow the body type in a link ("" for Medium). Validated values need no escaping. */
+export const archetypeQuery = (archetype: string | undefined) => archetype ? `&ar=${archetype}` : "";
+
+/** KV metadata beside the outfit code (absent for Medium, as for every entry made before archetypes). */
+export const archetypeMetadata = (archetype: string | undefined): Record<string, string> => archetype ? { ar: archetype } : {};
+
+/** The archetype stored with an entry (entries made before archetypes have none: Medium). */
+export function storedArchetype(metadata: Record<string, unknown> | null | undefined): string | undefined {
+  const archetype = metadata?.ar;
+  return typeof archetype === "string" && ARCHETYPE.test(archetype) ? archetype : undefined;
+}
+
 // The outfit's player number (21 Nov 2026), in the app's grammar (src/lib/player-number.ts): pn=<10..99>, absent when
 // each piece shows its own number. Stored and carried like the body type; the app decides what it renders.
 const PLAYER_NUMBER = /^[1-9][0-9]$/;
@@ -176,14 +198,15 @@ export function newId(): string {
 
 const escape = (text: string) => text.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
 const appLink = (env: Env, code: string | null, pose?: Pose, bodyType?: string, playerNumber?: string, view?: string,
-  lighting?: string) =>
-  `${env.APP_URL}${code ? `#/?o=${code}${bodyTypeQuery(bodyType)}${playerNumberQuery(playerNumber)}${poseQuery(pose)}${viewQuery(view)}${lightingQuery(lighting)}` : ""}`;
+  lighting?: string, archetype?: string) =>
+  `${env.APP_URL}${code ? `#/?o=${code}${bodyTypeQuery(bodyType)}${archetypeQuery(archetype)}${playerNumberQuery(playerNumber)}${poseQuery(pose)}${viewQuery(view)}${lightingQuery(lighting)}` : ""}`;
 
 export function previewPage(env: Env, self: string, image: string | null, code: string | null, pose?: Pose,
-  bodyType?: string, playerNumber?: string, view?: string, lighting?: string): string {
-  // A pose, a body type, a player number, a camera view and the lighting belong to an outfit.
-  if (!code) { pose = undefined; bodyType = undefined; playerNumber = undefined; view = undefined; lighting = undefined; }
-  const app = appLink(env, code, pose, bodyType, playerNumber, view, lighting);
+  bodyType?: string, playerNumber?: string, view?: string, lighting?: string, archetype?: string): string {
+  // A pose, a body type, a player number, a camera view, the lighting and the archetype belong to an outfit.
+  if (!code) { pose = undefined; bodyType = undefined; playerNumber = undefined; view = undefined; lighting = undefined;
+    archetype = undefined; }
+  const app = appLink(env, code, pose, bodyType, playerNumber, view, lighting, archetype);
   const title = code ? "THE FINALS outfit" : "the-finals-outfit";
   const posed = pose ? `, ${pose.paused ? "frozen" : "caught"} ${pose.t} s into an emote` : "";
   const meta = [

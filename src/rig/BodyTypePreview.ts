@@ -54,6 +54,17 @@ export interface BodyTypePreview {
   mediumMorph?: string;
   /** The sockets the asset offsets, keyed by their exact source names. */
   socketOffsets: Partial<Record<BodyTypeSocket, BodyTypeSocketOffset>>;
+  /** (22 Nov 2026, archetypes) The Light and Heavy classes the asset supports, each with the morph it activates
+   *  (ActivatesLightMorphTargets / ActivatesHeavyMorphTargets) and its socket offsets (SocketOffsetLight /
+   *  SocketOffsetsHeavy, the asset's own spellings). Absent for a class the asset's SupportedArchetypes excludes. */
+  light?: BodyTypeClass;
+  heavy?: BodyTypeClass;
+}
+
+/** One Light or Heavy class of a body type, exactly as its DA_BodyType asset authors it. */
+export interface BodyTypeClass {
+  morph: string;
+  socketOffsets: Partial<Record<BodyTypeSocket, BodyTypeSocketOffset>>;
 }
 
 const IDENTITY_HEAD_SOCKET: BodyTypeSocketOffset = {
@@ -89,6 +100,28 @@ export const BODY_TYPE_PREVIEWS = {
       hat_attachment: IDENTITY_HEAD_SOCKET,
       eyewear_attachment: IDENTITY_HEAD_SOCKET,
     },
+    // ActivatesLightMorphTargets [light_male], AttachmentSocketData.SocketOffsetLight.
+    light: {
+      morph: "light_male",
+      socketOffsets: {
+        clavicle_attachment: { translation: [0.26684353, 0.9551667, -0.121406026], rotation: [-0.013957218, 5.7978563e-05, -3.4826364e-05, 0.9999026], scale: [1, 1, 1] },
+        pet_attachment: { translation: [-2.2703445, 0.5910535, -1.166999], rotation: [-1.149848e-06, -0.06572317, -3.4401324e-07, 0.9978379], scale: [1, 1, 1] },
+        upperback_attachment: { translation: [1.4164559e-08, 1.3030745, -2.8201683], rotation: [0, 2.0816682e-17, 0, 1], scale: [1, 1, 1] },
+        hat_attachment: { translation: [5.3290705e-15, 2.7144378e-07, -2.6470013], rotation: [0, 2.7755576e-17, 0, 1], scale: [1, 1, 1] },
+        eyewear_attachment: { translation: [4.440892e-16, -2.3896239, -0.89493066], rotation: [0, 2.7755576e-17, 0, 1], scale: [1, 1, 1] },
+      },
+    },
+    // ActivatesHeavyMorphTargets [heavy_male], AttachmentSocketData.SocketOffsetsHeavy.
+    heavy: {
+      morph: "heavy_male",
+      socketOffsets: {
+        clavicle_attachment: { translation: [1.1952089, 3.7154605, -0.77633905], rotation: [0.047942154, 1.7378999e-07, -1.1967923e-07, 0.9988501], scale: [1, 1, 1] },
+        pet_attachment: { translation: [1.939927, -0.4368576, 4.3298883], rotation: [-1.1444738e-06, -0.05051445, -3.6149015e-07, 0.9987233], scale: [1, 1, 1] },
+        upperback_attachment: { translation: [-8.540969e-09, -6.201804, 2.0844722], rotation: [0, 2.0816682e-17, 0, 1], scale: [1, 1, 1] },
+        hat_attachment: { translation: [0, -2.0063233e-07, 1.956479], rotation: [0, 2.7755576e-17, 0, 1], scale: [1, 1, 1] },
+        eyewear_attachment: { translation: [0, 1.7662435, 0.6614704], rotation: [0, 2.7755576e-17, 0, 1], scale: [1, 1, 1] },
+      },
+    },
   },
   // DA_BodyType_Feminine: BodyTypeId EBodyType::Feminine (the enum default, so the asset does not serialize it),
   // ActivatesMediumMorphTargets [medium_female], ActivatesCustomizationTag Customization.BodyType.Feminine,
@@ -115,10 +148,34 @@ export const BODY_TYPE_PREVIEWS = {
       hat_attachment: IDENTITY_HEAD_SOCKET,
       eyewear_attachment: IDENTITY_HEAD_SOCKET,
     },
+    // ActivatesLightMorphTargets [light_female], AttachmentSocketData.SocketOffsetLight.
+    light: {
+      morph: "light_female",
+      socketOffsets: {
+        clavicle_attachment: { translation: [1.1825608e-08, 0.14260186, 0.005566344], rotation: [0.019505935, 6.2128855e-08, -4.022793e-08, 0.99980974], scale: [1, 1, 1] },
+        pet_attachment: { translation: [-2.2461119, 0.591052, -1.8093995], rotation: [-1.1568976e-06, -0.08690938, -3.1950478e-07, 0.99621624], scale: [1, 1, 1] },
+        upperback_attachment: { translation: [-1.9366944e-09, 1.6985413, -2.8201683], rotation: [0, 2.0816682e-17, 0, 1], scale: [1, 1, 1] },
+        hat_attachment: { translation: [5.3290705e-15, 2.7144378e-07, -2.6470013], rotation: [0, 2.7755576e-17, 0, 1], scale: [1, 1, 1] },
+        eyewear_attachment: { translation: [4.440892e-16, -2.3896239, -0.89493066], rotation: [0, 2.7755576e-17, 0, 1], scale: [1, 1, 1] },
+      },
+    },
+    // ActivatesHeavyMorphTargets [heavy_female], AttachmentSocketData.SocketOffsetsHeavy.
+    heavy: {
+      morph: "heavy_female",
+      socketOffsets: {
+        clavicle_attachment: { translation: [0.5379715, 3.1792862, -0.025981905], rotation: [0.066022865, 3.9376548e-07, -2.8181026e-07, 0.9978181], scale: [1, 1, 1] },
+        pet_attachment: { translation: [1.5506563, -0.43686172, 2.361607], rotation: [-1.1444738e-06, -0.05051445, -3.6149015e-07, 0.9987233], scale: [1, 1, 1] },
+        upperback_attachment: { translation: [-2.087905e-09, -4.923991, 2.0844724], rotation: [0, 2.0816682e-17, 0, 1], scale: [1, 1, 1] },
+        hat_attachment: { translation: [0, -2.0063233e-07, 1.956479], rotation: [0, 2.7755576e-17, 0, 1], scale: [1, 1, 1] },
+        eyewear_attachment: { translation: [0, 1.7662435, 0.6614704], rotation: [0, 2.7755576e-17, 0, 1], scale: [1, 1, 1] },
+      },
+    },
   },
   // DA_BodyType_Androgynous (new in Season 12): BodyTypeId EBodyType::Androgynous, SupportedArchetypes [Medium],
   // ActivatesCustomizationTag Customization.BodyType.Androgynous. It authors no ActivatesMediumMorphTargets and no
-  // SocketOffsetsMedium, so it applies no morph and moves no socket for Medium.
+  // SocketOffsetsMedium, so it applies no morph and moves no socket for Medium. It does author Light and Heavy morphs
+  // and offsets (light_female, heavy_female), but SupportedArchetypes [Medium] means the game never applies them, so
+  // they are not carried here.
   androgynous: {
     tag: "Customization.BodyType.Androgynous",
     socketOffsets: {},

@@ -4,7 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import * as THREE from "three";
 import { CharacterRig } from "../rig/CharacterRig";
 import { SURFACE_VIEWS } from "../rig/ReconstructedMaterial";
-import type { SourceOutfit } from "../rig/SourceAssembly";
+import { loadSourceAssemblyAssets, type SourceOutfit } from "../rig/SourceAssembly";
+import { indexClass, type RigArchetype } from "../rig/Archetype";
+import { ARCHETYPE_LABELS, archetypeOf, archetypePreviewEnabled, type ArchetypeId } from "../lib/archetype";
 import { newOutfitPassState, runOutfitPass, type OutfitPassControl } from "../rig/OutfitPass";
 import { setPlayerNumber } from "../rig/PlayerNumber";
 import { DEV } from "../lib/viewer-dev-params";
@@ -46,6 +48,8 @@ import { backdropCss, backdropIsDark } from "../lib/stage-lighting";
 import { IS_TOUCH, SHADOWS, StageLights, TONE_MAPPING } from "./ViewerStage";
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
+// (22 Nov 2026) The archetype picker is a preview behind a flag (lib/archetype.ts); with it off every outfit is Medium.
+const ARCHETYPES = archetypePreviewEnabled();
 const NAIL_MASK_URL = modelUrl("models/decals/_shared/nailmask.webp");
 
 // Browser harness contract (visual-diff and shader-probe checks): `__rigIdle` is false while
@@ -190,9 +194,21 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   // (rig/PlayerNumber.ts), so a change re-uploads two uniforms and reloads nothing.
   const outfitPlayerNumber = useBuildStore((s) => s.playerNumber);
   useEffect(() => { setPlayerNumber(outfitPlayerNumber); }, [outfitPlayerNumber]);
+  // The outfit's archetype (lib/archetype.ts) as stored, and the class the body is built for: the stored one while the
+  // archetype preview is on, else Medium. A class the index cannot build falls back to Medium with a notice.
+  const outfitArchetype = useBuildStore((s) => s.archetype);
+  const requestedArchetype: ArchetypeId = ARCHETYPES ? archetypeOf(outfitArchetype) : "medium";
+  const [bodyArchetype, setBodyArchetype] = useState<ArchetypeId>("medium");
+  // Selected items the class cannot build yet (rig/OutfitPass.ts classUnavailableItems), and a class the index lacks.
+  const [classNotice, setClassNotice] = useState<string | null>(null);
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
   // What the rig wore after its last committed outfit pass (rig/OutfitPass.ts), kept between passes.
   const outfitState = useRef(newOutfitPassState());
+  // Cancels for the outfit passes still running. A body change (a new class, 22 Nov 2026) cancels them before the rig
+  // disposes the body they are dressing: their own cleanup runs only on the commit where `ready` drops, and a pass that
+  // resumes before it would equip onto no skeleton and commit stale keys into `outfitState`. Seen once when a hot
+  // reload re-ran the body effect mid-pass; a picker click flushes that commit too soon to show it (8/8 clean).
+  const livePasses = useRef(new Set<() => void>());
   const [hasRecoveredPreview, setHasRecoveredPreview] = useState(false);
   // One owner for "the preview is still changing". Every body/outfit pass takes a new id and
   // only the latest id may clear it, so a superseded pass can never end a newer one.
@@ -244,9 +260,26 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
     // Busy until the outfit pass that a successful load starts takes over this operation.
     const operationId = beginOperation();
     rig.setPose(DEV.pose ?? "idle"); // applied to the skeleton once the body loads
-    rig
-      .loadBody(BODY_URL, DEV.reconstructed && DEV.sourceMeshes && DEV.sourceAssembly && DEV.sourceFitting
-        ? modelUrl("models/reconstructed-meshes-v2/SK_Body_M.glb") : undefined)
+    const sourceBodies = DEV.reconstructed && DEV.sourceMeshes && DEV.sourceAssembly && DEV.sourceFitting;
+    // (22 Nov 2026) A Light or Heavy body: its class record in the index (rig/Archetype.ts). Without source bodies, or
+    // with an index that has no such class, the body stays Medium and says so.
+    const classOf = async (): Promise<RigArchetype | undefined> => {
+      if (requestedArchetype === "medium") return undefined;
+      const assetsUrl = modelUrl("models/reconstructed-assemblies-v1");
+      const found = sourceBodies ? indexClass(await loadSourceAssemblyAssets(assetsUrl), requestedArchetype,
+        path => new URL(path, new URL(assetsUrl + "/", window.location.href)).href)?.rig : undefined;
+      if (!found && !cancelled)
+        setClassNotice(`${ARCHETYPE_LABELS[requestedArchetype]} contestants aren’t available here yet; showing Medium.`);
+      return found;
+    };
+    setClassNotice(null);
+    classOf()
+      .then(archetype => {
+        if (cancelled) return;
+        setBodyArchetype(archetype?.id ?? "medium");
+        return rig.loadBody(BODY_URL, archetype ? archetype.bodyUrl
+          : sourceBodies ? modelUrl("models/reconstructed-meshes-v2/SK_Body_M.glb") : undefined, archetype);
+      })
       .then(() => !cancelled && setReady(true))
       .catch((e) => {
         console.error(e);
@@ -257,11 +290,13 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
       });
     return () => {
       cancelled = true;
+      for (const cancel of livePasses.current) cancel();
+      livePasses.current.clear();
       rig.dispose();
       setReady(false);
       outfitState.current.prev = {};
     };
-  }, [rig, beginOperation, endOperation]);
+  }, [rig, requestedArchetype, beginOperation, endOperation]);
 
   // Diff the serializable `build` -> rig equip/unequip whenever it changes (rig/OutfitPass.ts).
   useEffect(() => {
@@ -271,30 +306,37 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
     setMissingFittingData(false);
     let cancelled = false;
     const controller = new AbortController();
+    const cancel = () => { cancelled = true; controller.abort(); };
+    livePasses.current.add(cancel);
     const prepared: OutfitPassControl["prepared"] = {};
     runOutfitPass(rig, build, outfitBodyType, outfitState.current,
       { cancelled: () => cancelled, signal: controller.signal, prepared },
       { setError, setMissingFittingData, setHasRecoveredPreview,
-        onAssembly: assembly => { rigHarness().__sourceAssembly = assembly; } }).catch((e) => {
+        onAssembly: assembly => { rigHarness().__sourceAssembly = assembly; },
+        setClassUnavailable: (archetype, names) => setClassNotice(names.length
+          ? `Not on ${ARCHETYPE_LABELS[archetype]} yet: ${names.join(", ")}. Their ${ARCHETYPE_LABELS[archetype]} meshes aren’t extracted yet, so they’re left off; your outfit keeps them.`
+          : null) }).catch((e) => {
       // Anything the pass's own per-step handlers did not anticipate: surface it so Retry works.
       if (cancelled) return;
       console.error(e);
       setError("Couldn’t update the preview.");
     }).finally(() => {
+      livePasses.current.delete(cancel);
       prepared.current?.release();
       // Idle only once the whole pass, including body hides, has settled. A cancelled pass
       // leaves the busy state to the pass that superseded it.
       if (!cancelled) endOperation(operationId);
     });
     return () => {
-      cancelled = true;
-      controller.abort();
+      cancel();
+      livePasses.current.delete(cancel);
       prepared.current?.release();
     };
   }, [build, outfitBodyType, ready, rig, retryAttempt, beginOperation, endOperation]);
 
   const changePreviewOption = (name: "surface" | "isolate", value: string) => {
-    const url = new URL(buildShareUrl(window.location.href, { build, bodyType: outfitBodyType, playerNumber: outfitPlayerNumber }));
+    const url = new URL(buildShareUrl(window.location.href, { build, bodyType: outfitBodyType, playerNumber: outfitPlayerNumber,
+      archetype: outfitArchetype }));
     // A share link uses the global route; the reload stays in Chinals mode when that is on (lib/site-mode.ts).
     if (mode === "chinals") url.hash = url.hash.replace(/^#\/\?/, "#/chinals?");
     // Picker edits do not rewrite the address bar.
@@ -434,7 +476,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
           {!AUTOMATED && ready && !showBusy && !error && (
             <span aria-hidden="true" className={`flex h-8 animate-fade items-center gap-2 border-l-2 border-finals bg-ink-950/85 pl-2.5 pr-3 ${timelineShown ? "max-lg:hidden" : ""}`}>
               <span className="hud text-fg-dim">Contestant</span>
-              <span className="hud text-fg">Medium · {equippedCount} {equippedCount === 1 ? "piece" : "pieces"}</span>
+              <span className="hud text-fg">{ARCHETYPE_LABELS[bodyArchetype]} · {equippedCount} {equippedCount === 1 ? "piece" : "pieces"}</span>
             </span>
           )}
           {error && (
@@ -446,6 +488,11 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
                   else changePreviewOption("isolate", DEV.isolate ? "1" : "0");
                 }}>Retry preview</button>}
             </div>
+          )}
+          {classNotice && !error && (
+            <p role="status" data-class-notice="" className="pointer-events-auto w-full border-l-2 border-fg-dim bg-ink-950/90 px-3 py-2 text-sm text-fg-muted">
+              {classNotice}
+            </p>
           )}
           {animator && ready && <EmoteTimeline animator={animator} />}
         </div>

@@ -39,6 +39,11 @@ import { createGltfLoader } from "./loaders";
 // (item-specific spawns, such as the country on a flag).
 
 export interface AttachBone { name: string; parent: string; position: number[]; quaternion: number[] }
+
+/** (22 Nov 2026) The skeleton scale a body scene was built with: 1 on Medium, the class's on Light or Heavy
+ *  (CharacterRig.loadBody records it on the body scene). */
+export const archetypeTranslationScale = (root: THREE.Object3D): number =>
+  typeof root.userData.archetypeSkeletonScale === "number" ? root.userData.archetypeSkeletonScale : 1;
 export interface ComponentSpace { under: string; quaternion: number[] }
 
 interface SocketInfo { bone: string; translation: number[]; rotation: number[]; scale: number[] }
@@ -260,7 +265,9 @@ export class EmoteProps {
       if (!parent) continue;
       const node = new THREE.Object3D();
       node.name = bone.name;
-      node.position.fromArray(bone.position);
+      // On a Light or Heavy body (rig/Archetype.ts) the attach bones' rest offsets scale with the skeleton, as the clips'
+      // translations do (RigAnimator buildClip).
+      node.position.fromArray(bone.position).multiplyScalar(archetypeTranslationScale(root));
       node.quaternion.fromArray(bone.quaternion);
       parent.add(node);
       this.added.push(node);

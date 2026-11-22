@@ -8,6 +8,7 @@ import { formatView, shareableView, subscribeCamera, type CameraView } from "../
 import { formatPoseTime, poseKey, type PoseCapture } from "../lib/share-pose";
 import { getPoseCapture, subscribePose } from "../lib/viewer-handle";
 import { bodyTypeShareCode } from "../lib/body-type";
+import { archetypeShareCode } from "../lib/archetype";
 import { playerNumberShareCode } from "../lib/player-number";
 import { CloseIcon, ShareIcon } from "./Icons";
 
@@ -30,8 +31,8 @@ async function copyText(text: Promise<string>): Promise<string> {
 // The cache identity of a preview: the outfit code, the body type, the player number, the exact frame its card shows,
 // the camera the link opens on and the lighting it opens with.
 const previewKey = (code: string | null, pose: PoseCapture | null, bodyType: string | undefined,
-  playerNumber: string | undefined, view: CameraView | null, lighting: string | null) =>
-  code === null ? "" : uploadQuery(code, pose, bodyType, playerNumber, view, lighting);
+  playerNumber: string | undefined, view: CameraView | null, lighting: string | null, archetype: string | undefined) =>
+  code === null ? "" : uploadQuery(code, pose, bodyType, playerNumber, view, lighting, archetype);
 const noSubscription = () => () => {};
 const viewKey = (view: CameraView | null) => view ? formatView(view) : "";
 /** "0.62, 1.42, 3.1 · roll −8°" */
@@ -55,8 +56,10 @@ export default function ShareBuild() {
   const build = useBuildStore(s => s.build);
   const bodyType = useBuildStore(s => s.bodyType);
   const playerNumber = useBuildStore(s => s.playerNumber);
-  const look = { build, bodyType, playerNumber };
+  const archetype = useBuildStore(s => s.archetype);
+  const look = { build, bodyType, playerNumber, archetype };
   const bt = bodyTypeShareCode(bodyType);
+  const ar = archetypeShareCode(archetype);
   const pn = playerNumberShareCode(playerNumber);
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
@@ -84,7 +87,7 @@ export default function ShareBuild() {
   // Derive from the current selection so an already-open copy box never goes stale.
   const short = buildShareUrl(window.location.href, look, "short", pose, view, lighting);
   const code = shortCode(short);
-  const link = style === "preview" ? (preview && preview.key === previewKey(code, pose, bt, pn, view, lighting) ? preview.url : short)
+  const link = style === "preview" ? (preview && preview.key === previewKey(code, pose, bt, pn, view, lighting, ar) ? preview.url : short)
     : buildShareUrl(window.location.href, look, style, pose, view, lighting);
   const poseMoved = withPose && livePose !== poseKey(copiedPose);
   const viewMoved = withView && open && liveView !== viewKey(copiedView);
@@ -116,8 +119,8 @@ export default function ShareBuild() {
     else if (!sharePreviewAvailable()) result = Promise.resolve({ url: shortNow, note: "Outfit still loading · plain link copied" });
     else {
       setMessage("Making preview…");
-      result = previewLink(codeNow, now, bt, pn, viewNow, lightingNow, lit.code).then(url => {
-        setPreview({ key: previewKey(codeNow, now, bt, pn, viewNow, lightingNow), url });
+      result = previewLink(codeNow, now, bt, pn, viewNow, lightingNow, lit.code, ar).then(url => {
+        setPreview({ key: previewKey(codeNow, now, bt, pn, viewNow, lightingNow, ar), url });
         // A share Worker from before camera views (or before shared lighting) opens the right outfit on the default
         // framing (or in the viewer's own lighting): say what it left out.
         const dropped = [viewNow && !previewKeptView(url) ? "the camera" : "",
