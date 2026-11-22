@@ -113,6 +113,9 @@ export function useAnimationBinding({ animator, rig, ready, busy, primary }: {
     if (pose && !animator.info(pose.clip)) console.warn(`[animation] the link's pose names an unknown clip "${pose.clip}"`);
     const posed = pose && animator.info(pose.clip) ? pose : null;
     if (!posed && started.current) return;
+    // The emote button works from the body's load, before the outfit has: a clip the viewer picked meanwhile is their
+    // latest choice and stays in front (21 Nov 2026: the idle used to replace it here once the outfit finished).
+    const viewerFirst = !started.current && (animator.state.active || animator.state.loading !== null);
     started.current = true;
     const params = new URLSearchParams(window.location.search);
     const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
@@ -120,6 +123,11 @@ export function useAnimationBinding({ animator, rig, ready, busy, primary }: {
       reducedMotion, savedStill: savedStill() });
     const root = rig.animationRoot();
     if (!root) return;
+    if (viewerFirst) {
+      // The idle the viewer would be animating with goes under it, so their emote ends into it as if they had waited.
+      if (id && animator.info(id)?.loop) animator.playUnder(root, id).catch(error => console.error(error));
+      return;
+    }
     if (posed) {
       prepare(root);
       // The idle runs under an emote when the viewer would be animating anyway, so it comes back when the emote ends.

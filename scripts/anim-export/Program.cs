@@ -14,7 +14,7 @@ using System.Security.Cryptography;
 // containers exactly like scripts/shader-probe (same mapping and key handling), never writes near them,
 // and never touches the running game.
 if (args.Length > 0 && args[0] == "api") return Api.Run(args[1..]);
-if (args.Length is < 6 or > 7 || args[0] is not ("export" or "list" or "json" or "texture" or "mesh" or "sound"))
+if (args.Length is < 6 or > 7 || args[0] is not ("export" or "list" or "json" or "texture" or "mesh" or "sound" or "imports"))
 {
     Console.Error.WriteLine("Usage: AnimExport export <paks> <usmap> <oodle.dll> <empty-output-directory> <requests.json> [FModel-AppSettings.json]");
     Console.Error.WriteLine("       AnimExport list <paks> <usmap> <oodle.dll> <regex> <FModel-AppSettings.json>  (prints matching package paths)");
@@ -26,11 +26,13 @@ if (args.Length is < 6 or > 7 || args[0] is not ("export" or "list" or "json" or
     Console.Error.WriteLine("            (each package's first Texture2D decoded to PNG, at most 2000 packages)");
     Console.Error.WriteLine("       AnimExport sound <paks> <usmap> <oodle.dll> <empty-output-directory> <@paths.txt|regex> <FModel-AppSettings.json>");
     Console.Error.WriteLine("            (each package's first SoundWave as its cooked audio bytes, <name>.<format>, e.g. .binka/.ogg/.opus)");
+    Console.Error.WriteLine("       AnimExport imports <paks> <usmap> <oodle.dll> <empty-output-directory> <@paths.txt|regex> <FModel-AppSettings.json>");
+    Console.Error.WriteLine("            (each package's name map and resolved imports as <name>.json; needs no type mapping)");
     Console.Error.WriteLine("       AnimExport api <Type|find:Method>...");
     return 2;
 }
 bool listOnly = args[0] == "list", jsonOnly = args[0] == "json", textureOnly = args[0] == "texture", meshOnly = args[0] == "mesh",
-    soundOnly = args[0] == "sound";
+    soundOnly = args[0] == "sound", importsOnly = args[0] == "imports";
 args = args[1..];
 if (listOnly) args = [args[0], args[1], args[2], Path.Combine(Path.GetTempPath(), "anim-export-list-" + Guid.NewGuid().ToString("N")), args[3], args[4]];
 var input = Path.GetFullPath(args[0]).TrimEnd(Path.DirectorySeparatorChar);
@@ -74,7 +76,7 @@ if (listOnly)
     Directory.Delete(output); // the empty placeholder directory created above; nothing was written into it
     return 0;
 }
-if (jsonOnly || textureOnly || meshOnly || soundOnly)
+if (jsonOnly || textureOnly || meshOnly || soundOnly || importsOnly)
 {
     var selector = args[4];
     IEnumerable<string> paths = selector.StartsWith('@')
@@ -111,6 +113,32 @@ if (jsonOnly || textureOnly || meshOnly || soundOnly)
                 var ext = "png";
                 File.WriteAllBytes(target, CUE4Parse_Conversion.Textures.TextureEncoder.Encode(bitmap, CUE4Parse_Conversion.Options.ETextureFormat.Png, false, out ext, 100));
             }
+            else if (importsOnly)
+            {
+                // A package's name map and imports, which need no type mapping: an unversioned package keeps its FName
+                // values (enum values such as EItemRarity::Epic, gameplay tags, socket names) in the name map, and its
+                // imports name the assets it references. Used when a patch changes a class's layout and the property
+                // JSON reads defaults (21 Nov 2026: CharacterInGameEmoteDataAsset after the 17 Nov update).
+                string[] names = package switch
+                {
+                    CUE4Parse.UE4.Assets.IoPackage io => io.NameMap.Select(n => n.Name).ToArray(),
+                    CUE4Parse.UE4.Assets.Package legacy => legacy.NameMap.Select(n => n.Name).ToArray(),
+                    _ => [],
+                };
+                var imports = new List<string>();
+                if (package is CUE4Parse.UE4.Assets.IoPackage ioPackage)
+                {
+                    foreach (var index in ioPackage.ImportMap)
+                        try { var resolved = ioPackage.ResolveObjectIndex(index); if (resolved is not null) imports.Add(resolved.GetPathName(true)); }
+                        catch (Exception) { /* an import from a package not in these containers */ }
+                    foreach (var imported in ioPackage.ImportedPackages.Value)
+                        if (imported is not null) imports.Add("package:" + imported.Name);
+                }
+                else if (package is CUE4Parse.UE4.Assets.Package legacyPackage)
+                    for (var i = 0; i < legacyPackage.ImportMap.Length; i++)
+                        imports.Add(legacyPackage.ResolvePackageIndex(new CUE4Parse.UE4.Objects.UObject.FPackageIndex(legacyPackage, -i - 1))?.GetPathName(true) ?? legacyPackage.ImportMap[i].ObjectName.Text);
+                File.WriteAllText(target, JsonConvert.SerializeObject(new { names, imports = imports.Distinct() }, Formatting.Indented));
+            }
             else File.WriteAllText(target, JsonConvert.SerializeObject(package.GetExports(), Formatting.Indented));
             written++;
         }
@@ -120,7 +148,7 @@ if (jsonOnly || textureOnly || meshOnly || soundOnly)
             Console.Error.WriteLine($"{path}: {e.GetType().Name}: {e.Message.Split('\n')[0]}");
         }
     }
-    Console.WriteLine($"Wrote {written} {(textureOnly ? "PNG" : meshOnly ? "mesh" : soundOnly ? "sound" : "package JSON")} files ({failed} failed) to {output}");
+    Console.WriteLine($"Wrote {written} {(textureOnly ? "PNG" : meshOnly ? "mesh" : soundOnly ? "sound" : importsOnly ? "imports JSON" : "package JSON")} files ({failed} failed) to {output}");
     return 0;
 }
 File.WriteAllText(Path.Combine(output, "source-run.json"), JsonConvert.SerializeObject(new

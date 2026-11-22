@@ -1,0 +1,126 @@
+{
+  "app": "http://127.0.0.1:4355/the-finals-outfit/",
+  "at": "2026-11-21T22:15:29.572Z",
+  "steps": {
+    "s1": {
+      "welcomeShown": true,
+      "idle": "outfit-idle",
+      "idleTimes": [
+        0.01,
+        1.11
+      ],
+      "idleAdvancing": true
+    },
+    "s2": {
+      "tab": "EMOTES 295",
+      "footer": "The game's emote animations on your outfit, with their props, sound and facial expressions. Effects are not shown yet.",
+      "lastSections": [
+        "Season 3 · 19",
+        "Season 2 · 16",
+        "Season 1 · 41"
+      ],
+      "icons": {
+        "Season 2": {
+          "tiles": 16,
+          "imgs": 16,
+          "loaded": 16,
+          "noIcon": [],
+          "some": [
+            "Door Breacher · Not shown: effects",
+            "Gimme Five",
+            "Keyed Up · Not shown: effects",
+            "Stardust Send-off · Not shown: props (Anime Dress Base, Anime Dress Hand, Anime Dress Hand Charge) and effects",
+            "Brief Breather",
+            "Chalk and Talk"
+          ]
+        },
+        "Season 1": {
+          "tiles": 41,
+          "imgs": 41,
+          "loaded": 41,
+          "noIcon": [],
+          "some": [
+            "Bamboozle 'Em",
+            "Beam Bye-bye · Not shown: prop (Beamed Up)",
+            "Coop Caper",
+            "Hot-Handed · Not shown: prop (Hand Flames)",
+            "Lasso Legend",
+            "Lovey-Dovey · Not shown: props (Squad Intros Lovey Dovey Left, Squad Intros Lovey Dovey Right)"
+          ]
+        }
+      }
+    },
+    "s3": {
+      "speedControl": true,
+      "faceToggle": true,
+      "coop": {
+        "id": "fox-chicken",
+        "reached": 7.63,
+        "duration": 7.67,
+        "playedToEnd": true,
+        "thenPlaying": "outfit-idle",
+        "audioRunning": true
+      },
+      "five": {
+        "id": "high-five",
+        "reached": 5.65,
+        "duration": 5.67,
+        "playedToEnd": true,
+        "thenPlaying": "outfit-idle",
+        "audioRunning": true
+      },
+      "soundFiles": [
+        "200 sounds-2/Emotes_FrontEnd_FoxChicken_01.m4a",
+        "200 sounds-2/Emotes_FrontEnd_HighFive_01.m4a"
+      ],
+      "propFiles": [
+        "200 props-10/props.json",
+        "200 props-10/BP_Emote_FoxChicken_Prop.glb",
+        "200 props-10/BP_Emote_HighFive_Prop.glb"
+      ]
+    },
+    "s4": {
+      "searchResults": [
+        "What's Up?"
+      ],
+      "wave": {
+        "id": "wave",
+        "reached": 4.61,
+        "duration": 4.67,
+        "playedToEnd": true,
+        "thenPlaying": "outfit-idle",
+        "audioRunning": true
+      },
+      "unlisted": [
+        "Tap dance"
+      ]
+    },
+    "s5": {
+      "url": "http://127.0.0.1:4355/the-finals-outfit/#/chinals",
+      "lastSections": [
+        "Chinals emotes · 40",
+        "Uncategorised · 5"
+      ],
+      "uncategorised": [
+        "Gacha_01",
+        "太空植物学家 · Space Botanist (unofficial translation)",
+        "小画家表情 · Little Painter emote (unofficial translation)",
+        "心动协议左 · Heartbeat Protocol, left (unofficial translation)",
+        "警察异头动作 · police emote, working title (unofficial translation)"
+      ],
+      "note": "No icon of their own in the game files.",
+      "played": {
+        "id": "cn-emote-gacha-01",
+        "reached": 13.11,
+        "duration": 13.33,
+        "playedToEnd": true,
+        "thenPlaying": "cn-outfit-idle",
+        "audioRunning": false
+      }
+    }
+  },
+  "badResponses": [],
+  "errors": [],
+  "earlyStops": [],
+  "ok": true
+}

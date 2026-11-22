@@ -17,7 +17,8 @@ import { savedFace, savedSpeed, setFacialAnimation } from "../lib/emote-playback
 //
 // The outfit-screen idle plays by default once the first outfit has loaded (the user's call, 5 Nov). It stays still
 // when the viewer last chose the still pose (remembered in this browser), when the system asks for reduced motion, and
-// in automated browsers: the visual-diff, probe and audit harnesses compare still-pose captures.
+// in automated browsers: the visual-diff, probe and audit harnesses compare still-pose captures. An emote the viewer
+// picks while the outfit is still loading stays in front: the idle then starts under it (RigAnimator.playUnder).
 //
 // URL switches for captures and reviews: ?anim=<clip id> starts that clip once the outfit has loaded, and
 // &animTime=<seconds> then holds it at that time, paused (a deterministic mid-motion frame); ?anim=0 opens still;
