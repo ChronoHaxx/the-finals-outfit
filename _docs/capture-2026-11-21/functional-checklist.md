@@ -54,9 +54,27 @@ numbers), or e.g. "3 fails: the WebM has a grey background in OBS".
 
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given
+The owner handed the steps to the agent on 22 Nov 2026: "do the checks for me, if pass, merge it". So the agent ran
+them, and the boxes above stay unticked: they are the owner's. Script `user-steps.mjs`, analysis `analyse-steps.py`
+(details in `README.md`, "22 Nov").
+
+- Tested revision/build: the merge of main into this branch (057b959) plus the end-frame fix, committed as the
+  commit after 057b959 on this branch. Dev viewer (`dev.sh`, production asset hosts), headless Chrome 158 on the
+  RTX 3080.
+- Agent run at: 22 Nov 2026, 00:34–00:38 (run `steps-0122c`, in the session scratchpad).
+- Results:
+  - Steps 1–6 pass.
+  - Step 7 passes on an emulated phone (390×844, touch, DPR 3): a 720p MP4 of the idle, 1400 frames in 32 s.
+  - The analysis passes 14 of 14 checks.
+- What the agent could not do (substituted):
+  - Step 2: sync was measured, not heard. The source whoosh starts 0 samples from where it should, and its
+    cross-correlation lands 0.02 ms from the cue.
+  - Step 3: Chrome's own `<video>` decode and ffmpeg stand in for OBS.
+  - Step 4: an ffmpeg 60 fps image-sequence import stands in for Premiere/Resolve.
+  - Step 7: a desktop GPU in phone emulation stands in for a real phone.
+- Found and fixed during the run:
+  - One-shot videos dropped their end pose (340 frames, not 341, for a 340/60 s clip). The float32 clip length fell
+    under the frame rounding's 1e-6 tolerance; fixed in `framePlan`, with a unit test.
+- Explicitly waived checks: none. The owner delegated the steps; see the substitutions above.
+- Readiness: ready.
+- Merge authorization: the owner, 22 Nov 2026, on the condition the checks pass ("if pass, merge it").

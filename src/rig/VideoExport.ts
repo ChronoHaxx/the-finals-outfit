@@ -49,7 +49,9 @@ export const QUALITY: Record<VideoQuality, { supersample: number; samples: numbe
 /** The frames a clip records: a one-shot from its first frame to its last, a loop one pass without its repeat. */
 export function framePlan(clip: Pick<RecordableClip, "duration" | "loop">, fps = FPS): { frames: number; duration: number; time: (frame: number) => number } {
   const exact = clip.duration * fps;
-  const frames = Math.max(1, clip.loop ? Math.round(exact) : Math.floor(exact + 1e-6) + 1);
+  // A clip's length comes from its float32 key times (three), so a whole number of frames can land a hair under: 340/60 s
+  // reads 5.6666665 s, 339.99999 frames. The end pose is still a frame (22 Nov 2026: 1e-6 dropped it).
+  const frames = Math.max(1, clip.loop ? Math.round(exact) : Math.floor(exact + 1e-3) + 1);
   return { frames, duration: frames / fps, time: frame => Math.min(frame / fps, clip.duration) };
 }
 

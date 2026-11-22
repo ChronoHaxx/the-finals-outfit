@@ -26,6 +26,10 @@ test("frame plan: a one-shot records its first to last frame; a loop one pass wi
   assert.ok(Math.abs(odd.time(252) - 4.2) < 1e-9);
   assert.equal(odd.duration, 253 / 60);
   assert.equal(framePlan({ duration: 0, loop: false }).frames, 1, "never empty");
+  // A float32 clip length a hair under a whole number of frames (three's 340/60 s) keeps its end pose.
+  const float32 = framePlan({ duration: Math.fround(340 / 60), loop: false });
+  assert.equal(float32.frames, 341);
+  assert.equal(float32.time(340), Math.fround(340 / 60));
 });
 
 test("video sizes keep the stage's shape at even sizes within the budget", () => {

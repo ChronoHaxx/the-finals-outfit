@@ -68,3 +68,64 @@ Harness: `capture-test.mjs` (headless Chrome 158 with the RTX 3080, webdriver fl
   importing the PNG sequence into an editor; OBS.
 - Dev setup note: the root checkout's `node_modules` lacks `@fontsource-variable/saira`, so this worktree's
   `node_modules` junction points at `scripts/generated/release-2026-11-12/node_modules`, as other worktrees do.
+
+## 22 Nov 2026: merge of main, the checklist run by the agent
+
+The owner asked the agent to run the checklist and merge if it passed. Main had moved six PRs. Two of them touch the
+same code as this branch:
+- #58 keeps the emote speed as the emote action's own time scale.
+- #69 adds `playUnder`.
+
+**Merge (057b959).**
+- No textual conflicts.
+- Recording only switches the mixer's pause and never sets the action's own time scale. `endRecording()` seeks back,
+  and `seek()` restores that scale, so a 2× emote stays at 2× afterwards. Step 6 checks this.
+- Videos always record at normal speed (clip time = frame/60), whatever the speed control says.
+- `dev.sh` now uses the current animations host (fd946744).
+- `tsc -b` is clean and `npm run build` passes.
+- `npm test`: 972 tests, 959 pass, 8 fail (the usual worktree GLB fixtures), 5 skipped.
+
+**Fix found by the run.** A one-shot video dropped its end pose. The clip length is float32 in three: 340/60 s reads
+5.6666665 s, which is 339.99999 frames, and the 1e-6 tolerance floored that to 340 frames instead of 341.
+`framePlan` now allows 1e-3 frames, and a unit test covers it.
+
+**Run `steps-0122c`** (`user-steps.mjs`, then `analyse-steps.py`). Emote: "Bring The Action", 5.667 s, one whoosh
+cue at 1.304 s.
+1. Screenshot.
+   - 1× and 2× PNGs save in 427 and 552 ms. Transparent and Copy work (1.9 MB PNG read back from the clipboard).
+   - The 1× PNG beside a screen grab of the same paused view, both at 3×: the same detail, with smoother edges on
+     the head outline, soles and laces. The 2× PNG is clearly crisper.
+   - A 1:1 crop where the 2×'s tiles meet shows no seam.
+2. MP4, 1080p Standard.
+   - 1068×1080 H.264 High, 60 fps, 341 frames, AAC. 9.7 s to make, 8.7 MB.
+   - The progress counted frames, and the live view moved.
+   - Sync: the source whoosh (fetched from the live sound host) starts 98.23 ms into its file at the same gain and
+     threshold. In the MP4 it starts at exactly the predicted sample (0 off). Cross-correlation puts it at 1.30398 s
+     for a 1.304 s cue.
+3. WebM, transparent, 1080p.
+   - VP9 alpha_mode 1, Opus, 341 frames, 6.6 MB.
+   - Chrome's `<video>` and ffmpeg both decode the transparency: 82% of frame 170 is fully clear.
+   - VP9's alpha is lossy: 3,545 background pixels have alpha 1–7, and 2,901 of those are 1/255. Over magenta,
+     looked at full size, there is no haze and no fringe.
+4. PNG sequence, 720p.
+   - 341 numbered RGBA PNGs, a WAV and a README; `testzip` clean; 43.5 MB.
+   - The WAV is 272,800 samples, exactly 341/60 s.
+   - ffmpeg imports the frames as a 60 fps image sequence with the WAV: both 5.683 s.
+   - The WAV's sound sits 1 sample (0.02 ms) from the MP4's.
+5. Cancel.
+   - With the panel closed, the button read "Capture: recording video, 15%".
+   - Cancel → "Cancelled. Nothing was saved.", with no download.
+   - The emote went back to 1.571 s and played on.
+6. Ordinary use.
+   - Pause holds, scrub and Next frame move, and Play runs.
+   - 2× plays 1.63 s of clip in 0.8 s.
+   - A recording at 2× is 341 frames (normal speed), the same emote comes back paused at scale 2, and Play then runs
+     it at 2×.
+   - Another emote plays, the camera orbits, and the view keeps moving.
+7. Phone (emulated: 390×844, touch, DPR 3).
+   - Record sits on screen (y 618–654).
+   - Sizes offered: 480p, 720p and 1080p.
+   - A 720p MP4 of the idle (23.33 s, 1400 frames) took 31.6 s.
+
+Page errors: one 403 per page load, the same request as in the 21 Nov runs before the merge. The dev-only
+"Recovered shader" box covers the panel's Image tab on a phone in the dev viewer; production doesn't show it.
