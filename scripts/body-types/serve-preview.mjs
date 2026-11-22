@@ -45,8 +45,13 @@ const previewRoutes = previewDir ? new Map([
 ]) : new Map();
 for (const file of previewRoutes.values()) if (!existsSync(file)) throw new Error(`Missing preview file ${file}`);
 
+// --overlay <dir> (tier 2, 22 Nov 2026): a folder laid out like public/ (this worktree's own, ignored public/). A
+// /models/ request is answered from it when the file exists there, so preview indexes and derived masks built in a
+// worktree are served without writing the root checkout's public/.
+const overlayDir = option("--overlay") ? path.resolve(option("--overlay")) : undefined;
+if (overlayDir && !existsSync(path.join(overlayDir, "models"))) throw new Error(`--overlay needs ${overlayDir}/models`);
 const inMemory = [["/models/", publicDir], ["/src/data/", root]];
-const types = { ".json": "application/json", ".glb": "model/gltf-binary" };
+const types = { ".json": "application/json", ".glb": "model/gltf-binary", ".png": "image/png" };
 const servePlugin = {
   name: "body-type-preview-serving",
   configureServer(server) {
@@ -54,6 +59,12 @@ const servePlugin = {
       const [pathname, query = ""] = (req.url ?? "").split("?");
       if ((req.method !== "GET" && req.method !== "HEAD") || /(^|&)import(=|&|$)/.test(query)) return next();
       let file = previewRoutes.get(pathname);
+      if (!file && overlayDir && pathname.startsWith("/models/")) {
+        try {
+          const candidate = path.join(overlayDir, decodeURIComponent(pathname));
+          if (candidate.startsWith(overlayDir + path.sep) && existsSync(candidate)) file = candidate;
+        } catch { /* not an overlay path */ }
+      }
       if (!file) {
         const base = inMemory.find(([prefix]) => pathname.startsWith(prefix))?.[1];
         if (!base || !pathname.endsWith(".json")) return next();

@@ -95,7 +95,8 @@ def glb_slots(path):
     return {(m.get('extras', {}).get('sourceSlot') or {}).get('MaterialSlotName') for m in doc.get('materials', [])} - {None}
 
 
-def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir, surface_json=None):
+def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir, surface_json=None,
+                    admit_rework=None):
     """{source: admission} from skin-by-name-proof.py output (S12 item refresh tier 1, 12 Nov 2026).
 
     Every admissible ("re-encoded") mesh is admitted, or only those named in admit_only. A mesh of any other tier-1
@@ -107,9 +108,11 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
     permuted mesh with tier-1 kinds (permuted+weights, ...) only by name after review. A reworked surface never is:
     its geometry-derived data (body mask, item masks) would be stale."""
     if not admit_json:
-        if admit_only or admit_reviewed or surface_json:
-            raise SystemExit('--admit-only/--admit-reviewed/--admit-surface need --admit SKIN_PROOF_JSON')
+        if admit_only or admit_reviewed or surface_json or admit_rework:
+            raise SystemExit('--admit-only/--admit-reviewed/--admit-surface/--admit-rework need --admit SKIN_PROOF_JSON')
         return {}
+    if admit_rework and not surface_json:
+        raise SystemExit('--admit-rework needs --admit-surface SURFACE_PROOF_JSON')
     skin = json.loads(Path(admit_json).read_text(encoding='utf-8'))['meshes']
     surface = json.loads(Path(surface_json).read_text(encoding='utf-8'))['meshes'] if surface_json else {}
     for name, r in surface.items():
@@ -121,7 +124,21 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
         if r['class'].startswith('permuted'):
             # The surface proof's verdict replaces "surface differs"; the rest of the row (hashes, source) is the same.
             skin[name] = {**s, **{k: v for k, v in r.items() if k not in ('notPermuted',)}, 'surfaceProof': True}
-    reviewed = set(admit_reviewed or [])
+    for name in sorted(admit_rework or []):
+        # A reworked surface whose live textures still fit (surface proof "same UVs") and that carries NO geometry-derived
+        # data: no per-mesh body mask and no item mask naming it. Then only the GLB changes, as for a permuted mesh, and
+        # the change is reviewed by eye. Anything with a mask needs the masks re-derived first (batch B).
+        r = surface.get(name)
+        if r is None or not r['class'].startswith('reworked: same UVs'):
+            raise SystemExit(f'{name}: --admit-rework needs a surface-proof "reworked: same UVs" row, not '
+                             f'{r["class"] if r else "none"}')
+        entry = assets['meshes'][r['source']]
+        if any(entry.get(k) for k in ('bodyMaskUrl', 'bodyMaskUvTiles')) or r['source'] in json.dumps(
+                assets.get('itemBodyMasks', {})):
+            raise SystemExit(f'{name}: it carries a body mask or an item mask; re-derive them before admitting it')
+        skin[name] = {**skin[name], **{k: v for k, v in r.items() if k not in ('notPermuted',)}, 'surfaceProof': True,
+                      'class': r['class'], 'admissible': False}
+    reviewed = set(admit_reviewed or []) | set(admit_rework or [])
     names = (set(admit_only) if admit_only is not None
              else {n for n, r in skin.items() if r.get('admissible')}) | reviewed
     admitted = {}
@@ -129,7 +146,8 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
         r = skin.get(name)
         if r is None:
             raise SystemExit(f'{name}: not in the skin proof')
-        if r['class'] in ('surface differs', 'loader refuses') or r['class'].startswith('reworked'):
+        if r['class'] in ('surface differs', 'loader refuses') or (r['class'].startswith('reworked')
+                                                                  and name not in set(admit_rework or [])):
             raise SystemExit(f'{name}: {r["class"]}; it is not a GLB swap')
         if not r.get('admissible') and name not in reviewed:
             raise SystemExit(f'{name} is "{r["class"]}": admit it only by name after review (--admit-reviewed)')
@@ -177,7 +195,7 @@ def settle(proven, kept, unchanged, users, body):
 
 
 def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None, census_json=None, changed_only=False,
-         admit_json=None, admit_only=None, admit_reviewed=None, surface_json=None):
+         admit_json=None, admit_only=None, admit_reviewed=None, surface_json=None, admit_rework=None):
     out = Path(out_json)
     if out.exists():
         raise SystemExit(f'Preserve existing {out}')
@@ -187,7 +205,7 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     served_from = active.parent
     swapped, held = {}, {}
     admitted = admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir,
-                               surface_json)
+                               surface_json, admit_rework)
     proven = {row['source'] for row in proof.values() if row.get('status') == 'morph-only'} | set(admitted)
     body = assets.get('attachmentBody', {}).get('source')
     # Item consistency (review-v1 short dress, 6 Nov 2026): a Season 12 undershirt under the dress's pre-S12 shell grew
@@ -276,7 +294,8 @@ if __name__ == '__main__':
         argv.remove('--changed-only')
     options = {}
     for flag, key, split in (('--admit', 'admit_json', False), ('--admit-only', 'admit_only', True),
-                             ('--admit-reviewed', 'admit_reviewed', True), ('--admit-surface', 'surface_json', False)):
+                             ('--admit-reviewed', 'admit_reviewed', True), ('--admit-surface', 'surface_json', False),
+                             ('--admit-rework', 'admit_rework', True)):
         if flag in argv:
             i = argv.index(flag)
             options[key] = argv[i + 1].split(',') if split else argv[i + 1]

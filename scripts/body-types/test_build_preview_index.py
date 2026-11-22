@@ -30,7 +30,7 @@ def mesh_ref(name):
 
 class ItemRule(unittest.TestCase):
     def build(self, items, proof, morphs, changed_only=False, census=True, admit=None, admit_only=None,
-              admit_reviewed=None, surface=None):
+              admit_reviewed=None, surface=None, admit_rework=None, masked=()):
         """items: {item: [mesh names]}; proof: {mesh: (status, morphsChanged, problems)}; morphs: {mesh: [names]};
         admit: {mesh: (skin-proof class, admissible)} written as a skin-by-name proof (tier 1, 12 Nov 2026);
         surface: {mesh: surface-proof class} written as a surface-match proof (tier 2, 22 Nov 2026), for meshes whose
@@ -43,6 +43,8 @@ class ItemRule(unittest.TestCase):
         assets = {'meshes': {(BODY if m == 'SK_Body_M' else path(m)): {'url': f'../live/{m}.glb', 'sha256': 'live'}
                              for m in meshes},
                   'attachmentBody': {'source': BODY, 'url': '../live/SK_Body_M.glb', 'sha256': 'live'}}
+        for m in masked:
+            assets['meshes'][path(m)]['bodyMaskUrl'] = f'../coverage/{m}.bodymask.png'
         (active / 'assets.json').write_text(json.dumps(assets), encoding='utf-8')
         (active / 'supported-items.json').write_text(json.dumps({'items': sorted(items)}), encoding='utf-8')
         custom = {'catalog': {item: f'DA_{item}' for item in items},
@@ -87,7 +89,7 @@ class ItemRule(unittest.TestCase):
         tool.main(str(active / 'assets.json'), str(tmp / 'proof.json'), str(rebuilt), str(out),
                   str(tmp / 'customization.json'), str(tmp / 'census.json') if census else None, changed_only,
                   admit_json=str(skin_proof) if skin_proof else None, admit_only=admit_only, admit_reviewed=admit_reviewed,
-                  surface_json=str(surface_proof) if surface_proof else None)
+                  surface_json=str(surface_proof) if surface_proof else None, admit_rework=admit_rework)
         return json.loads(out.read_text(encoding='utf-8'))['s12BodyTypePreview']
 
     CHANGED = {'medium_female': {'maxCm': 3.0, 'verticesChanged': 10}}
@@ -245,15 +247,41 @@ class ItemRule(unittest.TestCase):
         morphs = {'Boots': self.SHAPED}
         original = tool.admitted_meshes
 
-        def stale(admit_json, admit_only, admit_reviewed, proof_, assets, served, rebuilt, surface_json=None):
+        def stale(admit_json, admit_only, admit_reviewed, proof_, assets, served, rebuilt, surface_json=None, *rest):
             s = json.loads(Path(surface_json).read_text(encoding='utf-8'))
             s['meshes']['Boots']['s12Sha256'] = '0' * 64
             Path(surface_json).write_text(json.dumps(s), encoding='utf-8')
-            return original(admit_json, admit_only, admit_reviewed, proof_, assets, served, rebuilt, surface_json)
+            return original(admit_json, admit_only, admit_reviewed, proof_, assets, served, rebuilt, surface_json, *rest)
         tool.admitted_meshes = stale
         self.addCleanup(setattr, tool, 'admitted_meshes', original)
         with self.assertRaises(SystemExit):
             self.build(items, proof, morphs, admit={'Boots': ('surface differs', False)}, surface={'Boots': 'permuted'})
+
+    SAME_UVS = 'reworked: same UVs, geometry within 1 mm'
+
+    def test_a_reworked_mesh_without_masks_is_admitted_only_by_name(self):
+        items = {'mask': ['SkiMask']}
+        proof = {'SkiMask': ('refused', {}, self.REORDERED)}
+        morphs = {'SkiMask': self.SHAPED}
+        admit = {'SkiMask': ('surface differs', False)}
+        self.assertEqual(self.build(items, proof, morphs, admit=admit, surface={'SkiMask': self.SAME_UVS})['swapped'], {})
+        meta = self.build(items, proof, morphs, admit=admit, surface={'SkiMask': self.SAME_UVS}, admit_rework=['SkiMask'])
+        self.assertEqual(meta['admitted'][path('SkiMask')], {**meta['admitted'][path('SkiMask')],
+                                                             'class': self.SAME_UVS, 'by': 'review'})
+        self.assertIn(path('SkiMask'), meta['swapped'])
+
+    def test_a_reworked_mesh_with_a_body_mask_or_new_uvs_is_refused(self):
+        items = {'socks': ['Socks']}
+        proof = {'Socks': ('refused', {}, self.REORDERED)}
+        morphs = {'Socks': self.SHAPED}
+        admit = {'Socks': ('surface differs', False)}
+        with self.assertRaises(SystemExit):     # its body mask was projected from the old geometry
+            self.build(items, proof, morphs, admit=admit, surface={'Socks': self.SAME_UVS}, admit_rework=['Socks'],
+                       masked=['Socks'])
+        for cls in ('reworked: UVs changed, geometry within 1 mm', 'reworked: UV0 tile shifts only, geometry within 1 mm',
+                    'permuted+weights'):
+            with self.assertRaises(SystemExit):
+                self.build(items, proof, morphs, admit=admit, surface={'Socks': cls}, admit_rework=['Socks'])
 
     def test_a_census_from_another_index_is_refused(self):
         tmp = Path(tempfile.mkdtemp())
