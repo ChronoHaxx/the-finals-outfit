@@ -340,6 +340,24 @@ test('an in-game outfit keeps the body type on screen, and a saved copy on anoth
   assert.equal(outfits().find(r => r.id === masculine.id)?.bodyType ?? 'masculine', 'masculine', 'the first copy is untouched');
 });
 
+test('an in-game outfit keeps the player number on screen, and a saved copy with another number is not "the same outfit"', async () => {
+  await visit();
+  openFromUrl(SITE);
+  wear(BARRY);
+  assert.equal(saveDraft(), true);
+  const ownNumbers = currentRecord()!;
+  newOutfit();
+  useBuildStore.getState().setPlayerNumber(77);
+  assert.equal(wear(BARRY), 'draft', 'the copy with each piece\'s own number is not selected for number 77');
+  assert.equal(useBuildStore.getState().playerNumber, 77, 'putting an outfit on does not change the number');
+  assert.equal((current() as { kind: 'draft'; draft: { playerNumber?: number } }).draft.playerNumber, 77);
+  equip(GLASSES); // the edit saves the outfit with its number
+  assert.equal(currentRecord()?.playerNumber, 77);
+  assert.equal(outfits().find(r => r.id === ownNumbers.id)?.playerNumber, undefined, 'the first copy is untouched');
+  assert.equal(wear(BARREL), 'draft');
+  assert.equal(useBuildStore.getState().playerNumber, 77, 'still 77 after another outfit');
+});
+
 test('an in-game outfit over an unedited shared link replaces it, and Undo brings the link back', async () => {
   await visit();
   openFromUrl(SITE);

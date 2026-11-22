@@ -2,6 +2,7 @@ import { renderSharePreview } from "../rig/SharePreviewRender";
 import { getPreviewScene } from "./viewer-handle";
 import { poseParams, type PoseCapture } from "./share-pose";
 import { BODY_TYPE_PARAM } from "./body-type";
+import { PLAYER_NUMBER_PARAM } from "./player-number";
 
 // Share links with a preview image. The app is static and its outfit lives in the URL fragment, which link
 // crawlers never see, so the preview Worker (workers/share-preview) hosts a small page per shared outfit that
@@ -22,21 +23,23 @@ export function shortCode(shortUrl: string): string | null {
   return hash.startsWith("#/?") ? new URLSearchParams(hash.slice(3)).get("o") : null;
 }
 
-/** The upload's query: the outfit code, the body type's share code (body-type.ts; none for Masculine), then the
- *  pose's parameters (share-pose.ts grammar). */
-export function uploadQuery(code: string, pose: PoseCapture | null, bodyType?: string): string {
+/** The upload's query: the outfit code, the body type's share code (body-type.ts; none for Masculine), the player
+ *  number's (player-number.ts; none for each piece's own), then the pose's parameters (share-pose.ts grammar). */
+export function uploadQuery(code: string, pose: PoseCapture | null, bodyType?: string, playerNumber?: string): string {
   const params = new URLSearchParams({ o: code });
   if (bodyType) params.set(BODY_TYPE_PARAM, bodyType);
+  if (playerNumber) params.set(PLAYER_NUMBER_PARAM, playerNumber);
   for (const [key, value] of pose ? poseParams(pose) : []) params.set(key, value);
   return params.toString();
 }
 
-async function create(code: string, pose: PoseCapture | null, bodyType: string | undefined): Promise<string> {
+async function create(code: string, pose: PoseCapture | null, bodyType: string | undefined,
+  playerNumber: string | undefined): Promise<string> {
   const scene = getPreviewScene();
   if (!scene) throw new Error("The viewer is not ready");
   // Runs synchronously up to its first await, so the frame drawn is the one on screen when the click arrived.
   const image = await renderSharePreview(scene, pose);
-  const response = await fetch(`${SHARE_PREVIEW_BASE}/api/share?${uploadQuery(code, pose, bodyType)}`, {
+  const response = await fetch(`${SHARE_PREVIEW_BASE}/api/share?${uploadQuery(code, pose, bodyType, playerNumber)}`, {
     method: "POST", headers: { "Content-Type": "image/jpeg" }, body: image });
   const body = await response.json().catch(() => ({})) as { url?: unknown; error?: unknown };
   if (!response.ok || typeof body.url !== "string" || !body.url.startsWith(`${SHARE_PREVIEW_BASE}/s/`))
@@ -47,17 +50,23 @@ async function create(code: string, pose: PoseCapture | null, bodyType: string |
   // That link would be wrong, not just plainer, so refuse it: the caller copies the plain link instead.
   if (bodyType && new URL(body.url).searchParams.get(BODY_TYPE_PARAM) !== bodyType)
     throw new Error("The share Worker dropped the body type");
+  // Likewise a Worker from before player numbers would open the outfit with each piece's own number under a card that
+  // shows the chosen one: refuse it too.
+  if (playerNumber && new URL(body.url).searchParams.get(PLAYER_NUMBER_PARAM) !== playerNumber)
+    throw new Error("The share Worker dropped the player number");
   return body.url;
 }
 
 /** A link whose card shows the outfit (and the pose, when one is given). Rejects (and forgets the attempt) when the
  *  render or the upload fails. Call it in the same task as reading the pose, before any frame can move it.
- *  `bodyType` is the body type's share code (body-type.ts bodyTypeShareCode): undefined for Masculine. */
-export function previewLink(code: string, pose: PoseCapture | null = null, bodyType?: string): Promise<string> {
-  const key = uploadQuery(code, pose, bodyType);
+ *  `bodyType` is the body type's share code (body-type.ts bodyTypeShareCode): undefined for Masculine.
+ *  `playerNumber` is the number's share code (player-number.ts playerNumberShareCode): undefined for each piece's own. */
+export function previewLink(code: string, pose: PoseCapture | null = null, bodyType?: string,
+  playerNumber?: string): Promise<string> {
+  const key = uploadQuery(code, pose, bodyType, playerNumber);
   let link = links.get(key);
   if (!link) {
-    link = create(code, pose, bodyType);
+    link = create(code, pose, bodyType, playerNumber);
     links.set(key, link);
     link.catch(() => links.delete(key));
   }
