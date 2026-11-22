@@ -11,23 +11,31 @@
 //   (Git Bash or PowerShell, worktree root)
 import { build, preview } from "vite";
 import { chromium } from "playwright-core";
-import { copyFileSync, mkdirSync, rmSync, writeFileSync, existsSync } from "node:fs";
+import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
 
 const arg = (name, fallback) => process.argv.find(a => a.startsWith(`--${name}=`))?.slice(name.length + 3) ?? fallback;
-const ANIM = "https://fd946744.the-finals-outfit-assets.pages.dev/"; // deploy.yml ANIMATIONS_BASE
-const CHINALS = arg("chinals", "https://7c9add72.the-finals-outfit-chinals-assets.pages.dev/");
-if (!CHINALS.endsWith("/")) throw new Error("--chinals=<host URL ending in />");
 const root = process.cwd();
+// The hosts come from deploy.yml itself (22 Nov: the copies first written here went stale when main's release #67 moved
+// the asset and reconstruction hosts, and the new code then refused the old reconstruction's skin pairs).
+const deploy = readFileSync(path.join(root, ".github/workflows/deploy.yml"), "utf8");
+const host = name => {
+  const value = new RegExp("^\\s+" + name + ":\\s*(https://[^\\s'\"]+)", "m").exec(deploy)?.[1];
+  if (!value) throw new Error(`deploy.yml has no ${name}`);
+  return value;
+};
+const ANIM = host("ANIMATIONS_BASE");
+const CHINALS = arg("chinals", host("CHINALS_ANIMATIONS_BASE"));
+if (!CHINALS.endsWith("/")) throw new Error("--chinals=<host URL ending in />");
 const here = path.join(root, "_docs/chinals-faces-2026-11-21");
 const scratch = path.join(root, "scripts/generated/chinals-faces-2026-11-21/prod");
 const outDir = path.join(scratch, "dist"), publicDir = path.join(scratch, "public");
 Object.assign(process.env, { // .github/workflows/deploy.yml, production build
   VITE_BASE: "/the-finals-outfit/",
-  VITE_ASSETS_BASE: "https://f4a8e069.the-finals-outfit-assets.pages.dev/",
-  VITE_MODELS_BASE: "https://a029b249.the-finals-outfit-assets.pages.dev/",
-  VITE_RECONSTRUCTION_BASE: "https://c062af24.the-finals-outfit-assets.pages.dev/",
-  VITE_SHARE_PREVIEW_BASE: "https://the-finals-outfit-share.chronohaxx.workers.dev",
+  VITE_ASSETS_BASE: host("ASSETS_BASE"),
+  VITE_MODELS_BASE: host("MODELS_BASE"),
+  VITE_RECONSTRUCTION_BASE: host("RECONSTRUCTION_BASE"),
+  VITE_SHARE_PREVIEW_BASE: host("SHARE_PREVIEW_BASE"),
   VITE_ANIMATIONS_BASE: ANIM,
   VITE_CHINALS_ANIMATIONS_BASE: CHINALS,
   VITE_RECONSTRUCTION_ROUTES_FILE: "src/data/reconstruction-routes.json",

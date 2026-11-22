@@ -43,7 +43,8 @@ Everything was read offline from the Chinals client's paks (UE 5.3) with `chinal
 The rest of the deployment is 59209741's set unchanged (set-3, props-3, sounds-1; checked 188/188 byte-identical
 against the live host before staging), and `manifest.json` gains one line, `"faces": "faces-1/faces.json"`.
 
-**Runtime:** no code change: `FaceAnimator` already drives whatever faces index the manifest names.
+**Runtime:** `FaceAnimator` already drives whatever faces index the manifest names. One code change came out of the
+agent run of the checklist: the face contact for head-wrapped parts (below, "Balaclava lip clip").
 - The emote picker's footer is the one Shocka read. It said "Effects and facial expressions are not shown yet" in both
   modes. This branch first fixed it, but PR #58 (emote speed and the face switch) merged the same fix to main first,
   so the branch takes main's: the footer names facial expressions whenever the set ships a faces index. With this
@@ -56,7 +57,8 @@ against the live host before staging), and `manifest.json` gains one line, `"fac
 
 ## Verification (agent)
 
-All on the branch after merging main 96bf586 (code revision ee16736), 21-22 Nov 2026.
+All on the branch after merging main 96bf586 (code revision ee16736), 21-22 Nov 2026. The face contact (below) was
+checked again after main's 12 Nov release (#67) was merged in: see "Balaclava lip clip" and the checklist's retest.
 
 - **Rig and curves:** `tools/compare-rigs.mjs` (above): 25/25 pose assets byte-identical, 32 heads within 0.0001 cm.
 - **Real app, local files** (`capture-chinals-faces.mjs` against `serve-preview.mjs` serving the staged host), then
@@ -66,7 +68,8 @@ All on the branch after merging main 96bf586 (code revision ee16736), 21-22 Nov 
     eyes narrowed, lips pressed; Cute Cat 2.3 s: fear squint; Duanwu 2.37 s: jaw open; World Cup goalkeeper 2.13 s:
     snarl; the Chinals idle blinks.
   - Face 20 (another rig, eyelashes) smiles with teeth in Gacha 01 at 9.67 s.
-  - Full beard: follows the open jaw (wrap cage). Balaclava: the face mask damps the face; no lip pokes through.
+  - Full beard: follows the open jaw (wrap cage). Balaclava: the face mask damps the face, and no lip showed in that
+    capture. The checklist run later found the upper lip through it at Unrivaled Master's 3.2 s: "Balaclava lip clip".
 - **Production build** (`prod-check.mjs`, deploy.yml's production settings plus this host, `prod-check.json`): the
   paused Unrivaled Master loads `faces.json`, the head, its pose asset and the clip's curves from 7c9add72; as a
   visitor (automation masked) the banner reads "Props, sound and facial expressions are shown; effects are not.", the
@@ -77,6 +80,62 @@ All on the branch after merging main 96bf586 (code revision ee16736), 21-22 Nov 
   (the ski-blade GLB, the socketed-static and base-body geometry checks), as on main. `npx tsc --noEmit` clean;
   `npm run build` passes (its roadmap and public-text checks included).
 - Not covered by the agent: hearing the sound and judging the motion live in a real browser (user checks).
+
+## Balaclava lip clip (checklist step 5) and the face contact
+
+The agent run of the checklist (22 Nov) failed step 5: in Unrivaled Master at 3.2 s, the upper lip showed through Balaclava
+Cotton Black (`functional-checklist.md`, "Recorded result"). The owner chose to fix it before merging.
+
+**Cause** (`tools/probe-balaclava.mjs`, dev preview, depth of the head's mouth vertices through the knit):
+- At rest the knit sits only 1.6 mm above Face 01's lips.
+- At 3.2 s Face_Surprise and Face_BlueSteel (the pout) are both at 1.0. Either alone leaves 0.6 mm and 1.6 mm of knit;
+  together the upper lip comes 0.6 mm through. The balaclava's face mask (`BWA_FaceJoints_FaceMask`, lips and jaw at
+  half motion) is applied; without it the lip would come 4.5 mm through.
+- The balaclava follows the face on the face's wrap cage (`FaceWrap.ts`): 439 vertices for the whole head, a handful
+  around the mouth. With the cage held still the lip comes 2.4 mm through; following it recovers most of that, but the
+  cage cannot follow a bulge between its vertices.
+- Global emotes rarely send both: most global clips misspell the surprise curve (`Face_Suprise`), so that pose never
+  fires there, and the global pouts checked did not clip (Trophy, Jade Rabbit with surprise at 0.38, Spin Service;
+  `balaclava-pout.mjs`). Among the Chinals clips, which spell it right, both peak together only in Unrivaled Master
+  (1.0), World Cup Backheel (0.62 at 4.83 s) and Cute Cat (0.49 at 5.93 s).
+
+**The game most likely shows it too.** `tools/probe-ue-wrap.mjs` replaces the viewer's wrap with Unreal's cloth
+mesh-to-mesh formula (position = sum of b_i (X_i + h N_i) over the proxy triangle, N_i its smooth vertex normals), as a
+delta on the same rest wrap. The lip still comes 0.53 mm through (viewer: 0.58 mm). The data and the mechanism are the
+game's, so the fix below is the viewer's own addition, not something read from the game.
+
+**The fix: a one-sided face contact** (`FaceContact` in `src/rig/FaceWrap.ts`, applied by `FaceAnimator` after each
+re-wrap on the moved cage):
+- At rest, each head vertex that a wrapped part covers is bound to the nearest point of the part triangle above it. A
+  vertex counts as covered when that triangle is within 5 mm and faces the same way as the head.
+- While the face moves, those head vertices move with the head's own skinning by its FACIAL bones, all eight
+  influences, through the same `FaceCage` maths as the wrap cage.
+- Where a head vertex comes closer to the part than min(its rest gap, 1 mm), the triangle's corners are pushed out
+  along their normals to restore that gap. The face may push a part out; it never pulls it in. Over an opening mouth
+  the knit still spans the gap as the cage carries it, and a still face changes nothing (still renders and links
+  unchanged).
+- The head's vertices test the part's triangles, not the other way round: the part is low-poly where the face is dense.
+  A first version bound each part vertex to the face beneath it; it only reduced the clip to 0.39 mm, because the lip
+  bulges between the knit's vertices.
+
+**Checks** (dev preview, `capture-contact.mjs` at full size, contact off and on at the same frame):
+- Unrivaled Master at 3.2 s, front and 40 degrees: the lip patch is gone, and the knit's outline looks unchanged.
+  The nearest lip vertex now stays 0.68 mm under the knit, where it was 0.58 mm through.
+- Unrivaled Master at 3.3 s, Backheel at 4.83 s, Cute Cat at 5.93 s, and the global Spin Service (`kawaii`) at its full
+  pout: clean, eye holes included.
+- Full Beard at 3.2 s, front and side: no visible difference with the contact on or off. Mouth Scarf Base Black: the
+  contact binds nothing (the scarf hangs more than 5 mm off the face) and no skin shows.
+- `tools/probe-contact.mjs` scans every 0.1 s of Unrivaled Master. Its depth metric still flags skin at the knit's eye
+  holes and the neck rim, the same with the contact on and off. That skin shows by design at the holes, or comes from
+  the body's own skinning at the rim (the neck already reads up to 5 mm out with the face still). The front-of-face count
+  falls from 112 vertices to 63 with the contact on; the remaining 63 are at the lower rim of the right eye hole, and
+  the captures show no skin through the knit there.
+- Cost, on this desktop: binding takes 65 ms once per part, head and fitting (Balaclava Cotton Black: 8,239 head
+  vertices held), then 0.48 ms per frame while the face moves. Full Beard: 3,682 held, 0.28 ms per frame. Nothing runs
+  while no clip plays.
+- `tests/rig/face-animator.test.ts`: the contact holds a face patch under a part 1.6 mm above it, and does nothing at
+  rest. A lip moving 3 mm out pushes the part to 1 mm above it; moving 3 mm in, the part stays. A part the cage pulls to
+  0.5 mm goes back to 1 mm.
 
 ## Hosting
 
