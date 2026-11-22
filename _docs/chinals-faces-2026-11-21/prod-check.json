@@ -12,7 +12,7 @@
     "footer": "Chinals emotes on your outfit (global cosmetics), with their props, sound and facial expressions. Effects are not shown yet.",
     "clickPlayed": {
       "clip": "cn-emote-weaponmaster",
-      "reached": 5.6,
+      "reached": 5.75,
       "audioRunning": true,
       "after": "cn-outfit-idle"
     },

@@ -6,8 +6,8 @@ In Chinals mode the face now moves during the Chinals emotes and idle, as in glo
 7c9add72; this catches a face that stays still, a missing sound or prop, or wrong wording.
 
 - PR: https://github.com/ChronoHaxx/the-finals-outfit/pull/71 (Shocka feedback item 8)
-- Test this revision: branch `claude/chinals-faces-2026-11-21`, app code at ee16736 (later commits are docs only). The
-  build below is that code with deploy.yml's production settings and the new Chinals host.
+- Test this revision: branch `claude/chinals-faces-2026-11-21`, app code at fdfc3dd (the face contact; later commits
+  are docs only). The build below is that code with deploy.yml's production settings and the new Chinals host.
 - Open: http://127.0.0.1:4357/the-finals-outfit/#/chinals in Chrome or Edge
 - Prerequisites: none beyond the build folder the agent made (`scripts/generated/chinals-faces-2026-11-21/prod/dist`)
 - Approximate hands-on time: 8 minutes
@@ -51,6 +51,8 @@ Reply "1-6 pass", or e.g. "3 fails: no sound."
 
 ## Recorded result
 
+### First agent run (app code ee16736)
+
 - Waiver: relayed by the coordinator session on 22 Nov (not seen first-hand here): the owner, 22 Nov 00:08, "i trust u
   as u can do the same checks better than me". The boxes stay unticked; the agent ran steps 1-6 in their place.
 - Tested build: production build of app code ee16736 (head 2614475; later commits docs only), Chinals host 7c9add72,
@@ -67,6 +69,29 @@ Reply "1-6 pass", or e.g. "3 fails: no sound."
   The face mask holds the lips at 0.5 as the game's asset says; cause in the cage wrap or mask not investigated.
 - 6 PASS: Global Coop Caper to its end with sound and face; back in Chinals the outfit is kept.
 - Readiness: **not ready** (step 5) unless the owner accepts the balaclava clip as a known issue or a fix lands.
+- Merge authorization: not given here.
+
+### Retest after the face contact (app code fdfc3dd)
+
+The owner chose "Fix it first" (22 Nov). The fix is the face contact (README.md, "Balaclava lip clip"); main's 12 Nov
+release (#67) had been merged in before it (6ff5372).
+- Tested build: production build of app code fdfc3dd, built by `prod-check.mjs` with deploy.yml's hosts as they now are
+  (assets 2cbead71, models a029b249, reconstruction a70ffa7f, animations fd946744, Chinals 7c9add72);
+  [user-steps.mjs](user-steps.mjs) as a visitor (automation masked), 22 Nov ~12:35 UTC, one run. Steps 1-6 rerun, as
+  the contact changes the face's motion code and #67 changed much of the app.
+- `prod-check.mjs`: ok, no failed request, no page error. Its first run here logged "Skin pair requires its preserved
+  fitted body": the script still built with the hosts from before #67 (reconstruction c062af24). It now reads them from
+  deploy.yml.
+- 1 PASS: Chinals banner and idle; upper eyelids reach 29° (a blink).
+- 2 PASS: banner and footer wording exactly as above.
+- 3 PASS: sound (WeaponMaster sound file loaded, audio running), props (3 files), surprise face (jaw 14.5°), played to
+  5.84 of 6 s, then the Chinals idle.
+- 4 PASS: face off = every face bone at rest (0°); on again restores the same pose (jaw 14.5°).
+- 5 PASS: Full Beard follows the jaw (wrapped, jaw 14.5°). Balaclava Cotton Black at 3.2 s: the face mask halves the
+  face (jaw 7.3°), and the full-size crop of the mouth shows closed knit, where the first run showed the lip.
+- 6 PASS: global Fox Chicken to its end (7.6 of 7.67 s) with its sound and a moving face (eyelids 39°); back in
+  Chinals the outfit is kept (beard and balaclava).
+- Readiness: agent checks PASS on fdfc3dd under the relayed waiver. The boxes above stay unticked.
 - Merge authorization: not given here.
 
 A later patch invalidates affected checks. Keep results for the previous
