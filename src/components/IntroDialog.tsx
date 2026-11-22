@@ -9,9 +9,11 @@ import { REVIEW_COLOURS, REVIEW_MEANINGS, REVIEW_STYLES } from "../lib/reconstru
 import { readOutfitLink } from "../lib/share-url";
 import { AUTOMATED } from "../lib/automation";
 import { useIntroStore } from "../store/useIntroStore";
-import { useGuideStore } from "../store/useGuideStore";
+import { useTour } from "../lib/discovery";
+import { TOUR_TEXT } from "../data/feature-guide";
 import PatchNotes from "./PatchNotes";
-import { ArrowIcon, CloseIcon, GuideIcon } from "./Icons";
+import { startTour } from "./Discovery";
+import { ArrowIcon, CloseIcon, ViewfinderIcon } from "./Icons";
 
 const SEEN_KEY = "tfo:patch-notes-seen";
 // Storage can be missing or throw (private windows, blocked site data); the dialog then simply
@@ -45,7 +47,7 @@ export default function IntroDialog() {
 
 function IntroContent({ fresh }: { fresh: number }) {
   const hide = useIntroStore(s => s.hide);
-  const showGuide = useGuideStore(s => s.show);
+  const tour = useTour();
   const dialog = useRef<HTMLDialogElement>(null);
   const cta = useRef<HTMLButtonElement>(null);
   const [closing, setClosing] = useState(false);
@@ -62,7 +64,7 @@ function IntroContent({ fresh }: { fresh: number }) {
     return () => element.close();
   }, []);
 
-  // `then` runs once this dialog has gone, so a dialog it opens (the guide) is never stacked under this one's close.
+  // `then` runs once this dialog has gone, so what it starts (the tour) runs on the builder, not under this dialog.
   const close = (then?: () => void) => {
     if (closing) return;
     writeSeen(LATEST_CHANGELOG_ID);
@@ -125,9 +127,10 @@ function IntroContent({ fresh }: { fresh: number }) {
                 {shared ? "View shared outfit" : "Enter builder"}
                 <ArrowIcon size={20} className="transition-transform duration-200 group-hover:translate-x-1" />
               </button>
-              <button type="button" onClick={() => close(showGuide)}
+              {/* The tour frames the builder's controls one by one, on the real page; it resumes where it was left. */}
+              <button type="button" onClick={() => close(() => startTour("resume"))}
                 className="hud flex h-14 items-center gap-2 border border-ink-600 px-4 text-fg transition-colors hover:border-fg hover:bg-ink-900">
-                <GuideIcon size={15} />What you can do
+                <ViewfinderIcon size={15} />{tour.status === "paused" ? TOUR_TEXT.resume : tour.status === "done" ? TOUR_TEXT.replay : TOUR_TEXT.start}
               </button>
               <span className="hud hidden text-fg-dim sm:block">or press Esc</span>
             </div>

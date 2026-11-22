@@ -79,6 +79,22 @@ export function useDrawerOpen(): [boolean, (open: boolean) => void] {
   return [open, setOpen];
 }
 
+/**
+ * Asks the builder to open the items drawer (the tour, or "Show me", pointing at a control inside it). The builder owns
+ * the drawer's state; this only asks. Nothing happens on a page without a drawer.
+ */
+const drawerRequests = new Set<() => void>();
+export function requestDrawerOpen(): void { drawerRequests.forEach(open => open()); }
+export function useDrawerRequests(open: () => void): void {
+  const latest = useRef(open);
+  latest.current = open;
+  useEffect(() => {
+    const listener = () => latest.current();
+    drawerRequests.add(listener);
+    return () => { drawerRequests.delete(listener); };
+  }, []);
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Hide the UI (H).
 

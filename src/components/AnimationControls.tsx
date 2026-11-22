@@ -10,6 +10,9 @@ import { EmotePicker, missingSummary } from "./EmotePicker";
 import { EmoteSoundControl } from "./EmoteSoundControl";
 import { EmoteSpeedControl } from "./EmoteSpeedControl";
 import { savedFace, savedSpeed, setFacialAnimation } from "../lib/emote-playback";
+import { useFeature } from "../lib/discovery";
+import { EmoteIcon, PauseIcon, PlayIcon } from "./Icons";
+import { VIEWER_BUTTON } from "./ViewerPanel";
 
 // Showcase animation UI (5 Nov 2026): Animate / Static toggle, pause, and the emote picker (EmotePicker.tsx: every
 // emote with its icon, plus outfit-screen reactions and idles). Hidden unless the deployment publishes a clip manifest
@@ -127,7 +130,11 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
   const controls = useRef<HTMLDivElement>(null);
   const closePicker = () => { setPicking(false); trigger.current?.focus({ preventScroll: true }); };
   const disabled = !ready;
-  const button = "hud flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950 disabled:opacity-50";
+  const button = VIEWER_BUTTON;
+  const emotesFeature = useFeature("emotes", "Play an emote");
+  const animateFeature = useFeature("animate", "Play the outfit-screen idle, or return to the still pose");
+  // An emote has its own timeline along the bottom, with its own pause: the column keeps one only for the idle.
+  const timelineShown = !!animator.timeline();
   const loadingLabel = state.loading ? animator.info(state.loading)?.label : null;
   const emote = state.current && state.current !== state.idle ? animator.info(state.current) : undefined;
   const emoteIcon = emote ? animator.iconUrl(emote) : null;
@@ -140,28 +147,28 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
     <div ref={controls} className="flex min-h-0 shrink! flex-col items-end gap-1.5 *:shrink-0">
       <div className="flex gap-1.5">
         {emote && animator.sounds.hasSound(emote.source) && <EmoteSoundControl sounds={animator.sounds} />}
-        {state.active && (
+        {state.active && !timelineShown && (
           <button type="button" className={button} disabled={disabled}
             aria-pressed={state.paused} title={state.paused ? "Resume the animation" : "Freeze this frame"}
             onClick={() => animator.setPaused(!state.paused)}>
-            <span aria-hidden="true">{state.paused ? "▶" : "❚❚"}</span>
+            {state.paused ? <PlayIcon size={11} /> : <PauseIcon size={11} />}
             {state.paused ? "Resume" : "Pause"}
           </button>
         )}
-        <button type="button" className={button} disabled={disabled}
+        {/* A toggle keeps its name and shows its state in the square, like Facial animation and Sway below. */}
+        <button type="button" className={button} disabled={disabled} {...animateFeature}
           aria-pressed={state.active}
-          title={state.active ? "Return to the still pose" : "Play the outfit-screen idle"}
           onClick={() => state.active ? stop() : play(animator.manifest.defaultIdle)}>
           <span aria-hidden="true" className={`size-2.5 ${state.active ? "bg-finals" : "border border-fg/60"}`} />
-          {state.active ? "Animated" : "Animate"}
+          Animate
         </button>
       </div>
-      <button ref={trigger} type="button" className={`${button} max-w-44`} disabled={disabled}
-        aria-expanded={picking} aria-haspopup="dialog" title="Play an emote"
+      <button ref={trigger} type="button" className={`${button} max-w-44`} disabled={disabled} {...emotesFeature}
+        aria-expanded={picking} aria-haspopup="dialog"
         onClick={() => picking ? closePicker() : setPicking(true)}>
         {emoteIcon
-          ? <img src={emoteIcon} alt="" width={20} height={20} className="-ml-1.5 size-5 object-cover" />
-          : <span aria-hidden="true" className="text-[11px] leading-none">☺</span>}
+          ? <img src={emoteIcon} alt="" width={20} height={20} className="-ml-1 size-5 object-cover" />
+          : <EmoteIcon size={14} />}
         <span className="truncate">{emote ? emote.label : "Emotes"}</span>
       </button>
       {picking && <EmotePicker animator={animator} state={state} onPlay={play} onClose={closePicker}
@@ -184,7 +191,7 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
           title="Approximate sway for tails, ponytails, skirt panels and charms: generic spring bones, not the game's own physics. Long coats and capes stay rigid (the game simulates them as cloth)."
           onClick={() => animator.setSway(!state.sway)}>
           <span aria-hidden="true" className={`size-2 ${state.sway ? "bg-fg-muted" : "border border-fg/50"}`} />
-          Sway · approx.
+          Sway
         </button>
       )}
       {(loadingLabel || state.error) && (

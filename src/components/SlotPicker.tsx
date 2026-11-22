@@ -1,4 +1,5 @@
 import { memo, useDeferredValue, useMemo, useRef, useState } from "react";
+import { useFeature } from "../lib/discovery";
 import { SLOTS, SLOT_LABELS, type Slot } from "../lib/slots";
 import { getBrowseItem, getBrowseItemsBySlot as getItemsBySlot } from "../lib/browse-catalog";
 import { derivedFromCatalog } from "../lib/catalog";
@@ -51,12 +52,14 @@ function SlotRail({ view, onSelect, onOutfits }: { view: View; onSelect: (slot: 
   const build = useBuildStore((s) => s.build);
   const { counts, rail } = wardrobe();
   const outfits = view.kind === "outfits";
-  return <nav aria-label="Cosmetic slots"
+  const railFeature = useFeature("items");
+  const outfitsFeature = useFeature("in-game-outfits");
+  return <nav aria-label="Cosmetic slots" {...railFeature}
     className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-4 overflow-x-auto overscroll-x-contain border-y border-line bg-ink-950 px-3 [scrollbar-width:none] lg:static lg:block lg:h-auto lg:w-52 lg:overflow-y-auto lg:border-y-0 lg:border-r lg:bg-ink-900 lg:px-0 lg:pb-3">
     {/* The game's own outfits come first: one tap dresses the whole character. */}
     <div className="flex shrink-0 items-center gap-1.5 lg:block">
       <p aria-hidden="true" className="hud pr-0.5 text-[9px] text-fg-dim lg:px-4 lg:pb-1.5 lg:pt-4 lg:text-[10px]">In game</p>
-      <button type="button" onClick={onOutfits} aria-current={outfits ? "true" : undefined} className={railButton(outfits)}>
+      <button type="button" onClick={onOutfits} aria-current={outfits ? "true" : undefined} className={railButton(outfits)} {...outfitsFeature}>
         {outfits && <span aria-hidden="true" className="absolute inset-y-1 left-0 hidden w-[3px] bg-finals lg:block" />}
         <span aria-hidden="true" className="hidden size-6 shrink-0 place-items-center lg:grid"><HangerIcon size={15} /></span>
         <span className="whitespace-nowrap">Outfits</span>

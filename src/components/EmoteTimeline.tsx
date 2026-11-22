@@ -3,9 +3,8 @@ import type { RigAnimator } from "../rig/RigAnimator";
 import { frameAt } from "../lib/share-pose";
 import { setEmoteSpeed, stepSpeed } from "../lib/emote-playback";
 import { setEmoteLoop, useAnimatorState } from "./AnimationControls";
-import { useHint } from "../lib/hints";
-import { GUIDE_HINTS } from "../data/feature-guide";
-import { HintTag } from "./HintTag";
+import { useFeature } from "../lib/discovery";
+import { nudge } from "./Discovery";
 import { CloseIcon, FrameStepIcon, LoopIcon, PauseIcon, PlayIcon } from "./Icons";
 
 // The emote timeline (10 Nov 2026): people use the viewer as a pose reference, so an emote can be paused, dragged
@@ -27,8 +26,9 @@ import { CloseIcon, FrameStepIcon, LoopIcon, PauseIcon, PlayIcon } from "./Icons
 // Speed (21 Nov 2026): the slider sits with the animation controls (EmoteSpeedControl.tsx); here < and > step it, as
 // Shift+, and Shift+. do in video players. The frame counter and the slider are clip time, the same at any speed.
 //
-// Share a paused frame (21 Nov 2026): regular visitors had not found it, so the first pause shows a one-time tip above
-// the bar (lib/hints.ts). Playing again before it goes only hides it; it goes for good once closed or left on screen.
+// Share a paused frame (21 Nov 2026): regular visitors had not found it, so the first pause shows a one-time nudge above
+// the bar; and the first emote, with a keyboard, says which keys step and speed it (22 Nov). Both are the discovery
+// layer's nudges (Discovery.tsx, words in src/data/feature-guide.ts), each shown once in this browser.
 
 /** Keys typed into a field are the field's. Sliders, buttons and boxes do not take , or . themselves. */
 function typing(target: EventTarget | null): boolean {
@@ -47,7 +47,13 @@ export function EmoteTimeline({ animator }: { animator: RigAnimator }) {
   const [, redraw] = useState(0);
   const range = useRef<HTMLInputElement>(null);
   const settle = useRef(0);
-  const [shareTip] = useHint("pause-share");
+  const feature = useFeature("timeline");
+  // One-time nudges, at the moment each is useful: a pause (share this frame), a first emote with a keyboard (the keys).
+  useEffect(() => {
+    if (!visible) return;
+    if (state.paused) nudge("pause-share");
+    else if (window.matchMedia("(pointer: fine)").matches) nudge("emote-keys");
+  }, [visible, state.paused]);
 
   // Follow the clock once per animation frame while shown: playing moves it every frame; a drag, step or seek moves it
   // while paused. Only a change of the shown millisecond re-renders.
@@ -115,10 +121,7 @@ export function EmoteTimeline({ animator }: { animator: RigAnimator }) {
   const button = "grid size-8 shrink-0 place-items-center text-fg transition-colors hover:bg-ink-800 disabled:opacity-40 pointer-coarse:size-10";
 
   return (<>
-    {paused && shareTip && <HintTag id="pause-share" autoHideMs={10_000} className="max-w-sm">
-      {GUIDE_HINTS["pause-share"]}
-    </HintTag>}
-    <div role="group" aria-label={`${label} timeline`}
+    <div role="group" aria-label={`${label} timeline`} {...feature}
       className="pointer-events-auto flex h-10 w-full min-w-0 items-center gap-0.5 border-l-2 border-finals bg-ink-950/85 px-1 pointer-coarse:h-12">
       <button type="button" className={button} onClick={() => animator.setPaused(!paused)}
         aria-label={paused ? "Play" : "Pause"} title={paused ? "Play" : "Pause on this frame"}>

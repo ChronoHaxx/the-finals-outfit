@@ -17,6 +17,7 @@ import { randomiseOutfit, resetOutfit } from "../store/useSavedOutfits";
 import { hideBroken } from "../lib/hide-broken";
 import { BODY_TYPE_LABELS, shownBodyType, VISITOR_BODY_TYPES } from "../lib/body-type";
 import PlayerNumberControl from "./PlayerNumberControl";
+import { useFeature } from "../lib/discovery";
 
 const ghost = "flex h-8 items-center gap-1.5 px-2 hud text-fg-muted transition-colors hover:text-fg";
 
@@ -30,6 +31,7 @@ export default function OutfitBar() {
   const { workedOn, state } = useReconstructionProgress();
   const [locked, setLocked] = useState<ReadonlySet<Slot>>(new Set());
   const [includeUntouched, setIncludeUntouched] = useState(false);
+  const randomiseFeature = useFeature("randomise", "Random outfit (rules-based); locked pieces are kept");
 
   const equipped = SLOTS.map((slot) => ({
     slot,
@@ -142,7 +144,7 @@ export default function OutfitBar() {
       <OutfitNotices />
 
       <div className="flex items-center gap-2.5 sm:gap-3">
-        <button type="button" onClick={randomize} title="Random outfit (rules-based); locked pieces are kept"
+        <button type="button" onClick={randomize} {...randomiseFeature}
           className="flex h-11 shrink-0 items-center gap-2 whitespace-nowrap border border-ink-600 px-3 text-[17px] sm:px-4 font-bold uppercase tracking-[0.02em] [font-stretch:70%] transition-colors hover:border-fg hover:bg-ink-800">
           <DiceIcon size={16} />Randomise
         </button>

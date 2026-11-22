@@ -1,11 +1,14 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Vector2 } from "three";
 import {
   AA_INFO, ANTI_ALIASING, autoMeasuring, effectiveTier, HITCH, judgeWindow, percentile, renderDpr, RESOLUTION_SCALES, TIER_INFO,
   TIERS, useGraphicsStore, WARMUP_FRAMES, WINDOW_FRAMES, type AntiAliasing, type GraphicsChoice, type ResolutionChoice,
 } from "../lib/graphics-quality";
 import { scriptSpeedMs } from "../lib/script-speed";
+import { useFeature } from "../lib/discovery";
+import { GaugeIcon } from "./Icons";
+import { PanelSheet, PanelTrigger, usePanel } from "./ViewerPanel";
 
 /** What the Auto measurer and the FPS counter read from the still-view accumulator (StableFrameAccumulator.status). */
 export interface TemporalStatus {
@@ -170,22 +173,10 @@ export function GraphicsMenu({ deviceDpr }: { deviceDpr: number }) {
   const resolution = useGraphicsStore(state => state.resolution);
   const showFps = useGraphicsStore(state => state.showFps);
   const { setChoice, setAa, setResolution, setShowFps } = useGraphicsStore.getState();
-  const [open, setOpen] = useState(false);
-  const [viewer, setViewer] = useState({ width: 0, height: 0 });
-  const root = useRef<HTMLDivElement>(null);
-  const button = useRef<HTMLButtonElement>(null);
-  const panelId = useId();
-
-  useEffect(() => {
-    if (!open) return;
-    const element = root.current?.closest("[data-viewer]");
-    if (element) setViewer({ width: element.clientWidth, height: element.clientHeight });
-    const outside = (event: PointerEvent) => { if (!root.current?.contains(event.target as Node)) setOpen(false); };
-    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); button.current?.focus(); } };
-    document.addEventListener("pointerdown", outside);
-    document.addEventListener("keydown", escape);
-    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
-  }, [open]);
+  const panel = usePanel();
+  const viewer = panel.viewer;
+  const panelId = panel.panelId;
+  const feature = useFeature("graphics", "Graphics settings");
 
   const pixels = (dpr: number) => viewer.width ? ` · ${Math.round(viewer.width * dpr)}×${Math.round(viewer.height * dpr)}` : "";
   const autoDetail = auto.cpuBound ? "kept, because this device is limited by its processor, not graphics" : TIER_INFO[auto.tier].detail;
@@ -196,23 +187,12 @@ export function GraphicsMenu({ deviceDpr }: { deviceDpr: number }) {
 
   return (
     // Not positioned itself: the panel anchors to the whole button row (CharacterViewer), so on a phone, where this
-    // button sits mid-row, it still opens within the screen.
-    <div ref={root}>
-      <button ref={button} type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} aria-controls={panelId}
-        className="hud flex h-8 items-center gap-2 bg-ink-950/80 px-3 text-fg transition-colors hover:bg-ink-950"
-        title="Graphics settings">
-        <span>Graphics</span>
-        {/* The summary lives in the panel too: on a narrow stage (a phone, or beside the items drawer) the top row needs
-            the room (12 Nov: hide-UI and screenshot buttons). The viewer's overlay frame is the size container. */}
-        <span className="hidden whitespace-nowrap text-fg-muted @lg:inline">{summary}</span>
-        <svg aria-hidden="true" width="9" height="9" viewBox="0 0 10 10" className={`transition-transform ${open ? "rotate-180" : ""}`}>
-          <path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        </svg>
-      </button>
-      {open && (
-        <div id={panelId} role="group" aria-label="Graphics settings"
-          style={viewer.height ? { maxHeight: viewer.height - 56 } : undefined}
-          className="absolute right-0 top-9 z-30 flex w-72 max-w-[calc(100vw-1.5rem)] flex-col gap-3 overflow-y-auto border border-line bg-ink-950 p-3 text-sm text-fg shadow-lg">
+    // button sits mid-row, it still opens within the screen. The summary lives in the panel too: on a narrow stage (a
+    // phone, or beside the items drawer) the top row needs the room, so it shows only on a wide one.
+    <div ref={panel.root}>
+      <PanelTrigger panel={panel} {...feature} aria-label="Graphics" icon={<GaugeIcon size={15} />} name="Graphics"
+        detail={<span className="hidden whitespace-nowrap text-fg-muted @3xl:inline">{summary}</span>} />
+      <PanelSheet panel={panel} label="Graphics settings" title="Graphics" icon={<GaugeIcon size={13} />} width="w-72">
           <label className="flex flex-col gap-1">
             <span className="hud text-fg-muted">Quality</span>
             <select aria-label="Graphics quality" value={choice} onChange={event => setChoice(event.target.value as GraphicsChoice)}
@@ -253,8 +233,7 @@ export function GraphicsMenu({ deviceDpr }: { deviceDpr: number }) {
             <input type="checkbox" checked={showFps} onChange={event => setShowFps(event.target.checked)} className="size-4 accent-[var(--color-fg)]" />
             <span>Show FPS counter</span>
           </label>
-        </div>
-      )}
+      </PanelSheet>
     </div>
   );
 }

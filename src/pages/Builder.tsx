@@ -13,7 +13,7 @@ import { setUrlCleaner } from "../store/useSavedOutfits";
 import { openLink } from "../store/open-link";
 import { useBuildStore } from "../store/useBuildStore";
 import { useImmersiveMode } from "../lib/immersive-mode";
-import { useChromeLayout, useDrawerOpen, useHideUi } from "../lib/viewer-chrome";
+import { useChromeLayout, useDrawerOpen, useDrawerRequests, useHideUi } from "../lib/viewer-chrome";
 import { SLOTS } from "../lib/slots";
 import { probeWebGL2 } from "../lib/webgl-support";
 import { ViewerUnavailable } from "../components/ViewerUnavailable";
@@ -34,6 +34,8 @@ export default function Builder() {
   // remembered in this browser.
   const layout = useChromeLayout();
   const [drawerOpen, setDrawerOpen] = useDrawerOpen();
+  // The tour and the Guide's "Show me" open the drawer when the control they point at is inside it.
+  useDrawerRequests(() => setDrawerOpen(true));
   const pieces = useBuildStore(s => SLOTS.filter(slot => s.build[slot]).length);
 
   const [omittedItems, setOmittedItems] = useState(false);
@@ -144,7 +146,7 @@ export default function Builder() {
       {/* The way back, said once when the UI goes (and to screen readers). Not part of any capture: it is page text. */}
       <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-[max(2rem,env(safe-area-inset-bottom))] z-50 flex justify-center">
         {hideUi.hint && <span className="hud animate-hint bg-ink-950/85 px-3.5 py-2.5 text-fg motion-reduce:animate-none">
-          {window.matchMedia("(hover: none)").matches ? "Double-tap to show UI" : "Press H to show UI"}
+          {window.matchMedia("(hover: none)").matches ? "Double-tap to show controls" : "Press H to show controls"}
         </span>}
       </div>
     </div>

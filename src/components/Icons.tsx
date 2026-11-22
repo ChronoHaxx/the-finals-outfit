@@ -191,11 +191,37 @@ export function VideoIcon({ className, size = 16 }: IconProps) {
   </svg>;
 }
 
-/** A question mark in a ring: the "What you can do" guide (21 Nov 2026). */
+/** A question mark in a ring: the Guide (21 Nov 2026). */
 export function GuideIcon({ className, size = 16 }: IconProps) {
   return <svg {...base(size, className)}>
     <circle cx="8" cy="8" r="6.3" />
     <path d="M6.2 6.3a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.4" />
     <path d="M8 11.4v.1" strokeWidth={2} />
+  </svg>;
+}
+
+// The viewer's panels each have their own mark (22 Nov 2026). The viewfinder frames something (the tour, "Show me"), so
+// the Camera panel took the axes it moves along instead, and Capture keeps the camera body.
+/** Three axes from one point: the Camera panel (position, target, roll). */
+export function AxesIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <path d="M6 10V2.8M4.5 4.3 6 2.8l1.5 1.5M6 10h7.2M11.7 8.5l1.5 1.5-1.5 1.5M6 10l-3.4 3.4" />
+  </svg>;
+}
+
+/** A dial: the Graphics menu (quality and speed). */
+export function GaugeIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <path d="M2.7 11.8a5.6 5.6 0 1 1 10.6 0" />
+    <path d="m8 9.6 2.8-3.4" />
+    <circle cx="8" cy="9.8" r="0.6" />
+  </svg>;
+}
+
+/** A figure with an arm up: Emotes. */
+export function EmoteIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <circle cx="7.6" cy="3.1" r="1.5" />
+    <path d="M7.6 5.4v4.2m0 0-2.4 3.9m2.4-3.9 2.6 3.9M3.8 6.9 7.6 6.2l3.6-2.6" />
   </svg>;
 }
