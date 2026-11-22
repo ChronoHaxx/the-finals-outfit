@@ -99,7 +99,7 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
       {
         id: "share-link",
         title: "Share links",
-        text: "Share outfit copies a link to the outfit, its body type and player number. With an emote on screen, tick Include this frame to share that exact pose, paused or playing. Lighting is not part of the link: whoever opens it sees the lighting set in their own browser.",
+        text: "Share outfit copies a link to the outfit, its body type and player number. It opens on the camera you see; untick Include camera view to leave that out. With an emote on screen, tick Include this frame to share that exact pose, paused or playing. Lighting is not part of the link: whoever opens it sees the lighting set in their own browser.",
         where: "Share outfit, at the foot of the outfit",
       },
       {
@@ -192,6 +192,12 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
         title: "Emote video",
         text: "Save the emote on screen as a 60 fps video, made in your own browser: an MP4 with sound, a see-through WebM, or a see-through PNG sequence for video editors.",
         where: "Camera button, Video tab",
+      },
+      {
+        id: "camera-views",
+        title: "Camera position and saved views",
+        text: "See where the camera is and the point it looks at, in metres, and type a number to place it exactly. Roll tilts the shot and Level straightens it. Save views with the outfit and come back to one in a click.",
+        where: "Viewfinder button, top right",
       },
     ],
   },
