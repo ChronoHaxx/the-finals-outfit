@@ -83,12 +83,23 @@ Reply "1-4 pass" (using the actual step numbers), or e.g. "3 fails: the idle sta
 
 ## Recorded result
 
-- Tested revision/build: none yet
-- User reported at: pending
-- Passed / failed / untested step numbers: 1-4 untested
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given
+- Tested revision/build: 5cd9819 (code as of e4d7233), production-like build (`serve-like-deploy.mjs`, 5195), headless
+  Chrome as a visitor (navigator.webdriver masked), 22 Nov 2026, by the agent on the owner's instruction below
+- User reported at: not a user run; the owner handed the checks to the agent (22 Nov 2026)
+- Passed / failed / untested step numbers: 1-4 passed (agent run). 1: default outfit (Face 01 Base, SPECTATOR STANDARD,
+  BUCKLE-UP JEANS, CANVAS SHOES), the outfit idle playing, no banner. 2: High Ponytail Black, CASE-CLOSED FEDORA,
+  Glasses Metal, Coat Leather Black, Face 03 Base, hat removed: each worn as picked, no banner; still renders of the
+  outfit with and without the hat are identical to the live site front and back, the full ponytail back once the hat
+  is off. 3: Valkyria's Embrace played, paused (time held), timeline dragged frame 45 → 168 while paused, played on,
+  closed back to the idle; Animated → Animate, after reload still (button Animate); Animate, after reload the idle
+  plays. 4: paused at 2.273 s (frame 68), short link with "Include this frame" ticked
+  (`&emote=ace-pilot&t=2.273&paused=1`, clipboard matches); the new tab opens the same 7 pieces paused at 2.273 s, the
+  same pose on screen. Only console error: the share panel's preview-card request to the share Worker is refused by
+  CORS from 127.0.0.1 (the Worker answers the live origin; the share panel is not in this PR).
+- Explicitly waived checks, if any: all four handed to the agent. The owner, 22 Nov 2026: "do the cheks for me, if
+  pass merge" (verbatim). Steps 1-4 are run by the agent on that instruction; they are agent results, not user ticks.
+- Readiness: ready (steps 1-4 passed in the agent's run; CI build, tests and share-link compatibility green)
+- Merge authorization: given on condition that steps 1-4 pass (same message)
 
 A later patch invalidates affected checks. Keep results for the previous revision and record the retest; do not
 silently carry ticks to a new build.
