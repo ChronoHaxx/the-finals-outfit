@@ -73,5 +73,11 @@ If something fails, stop at that step and report its number and what happened.
   - 6 PASS: Own clears the box and brings back 32.
   - Console: one expected error. The share panel's preview upload from 127.0.0.1 is refused by the live Worker's
     origin check (CORS) before anything is stored, and the panel falls back to the short link.
-  - NOT RUN: Safari, Firefox and phones; a preview-card upload from the published site (needs the Worker deploy).
-- Readiness: agent PASS under the standing waiver.
+  - The final consolidated run (`--skip-build` on the same build) passed all 13 scripted checks.
+  - Share Worker `b3c57e95` is live (rollback `c75c6189`). Read-only live checks pass: `pn=7` and `pn=0` are kept,
+    `07`, `00` and `100` are dropped, `lt` is unchanged, and the 20 Oct link still works. Details are in
+    `workers/share-preview/README.md`.
+  - NOT RUN: Safari, Firefox and phones; a preview-card upload from the published site (only the published origin can
+    upload).
+- Readiness: agent PASS under the standing waiver. Merge authorization: the coordinator, for the user ("Merge on pass
+  as briefed").
