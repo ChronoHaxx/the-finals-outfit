@@ -44,7 +44,7 @@ export interface Mp4AudioTrack {
 
 const MOVIE_TIMESCALE = 1000;
 
-class Bytes {
+export class Bytes {
   private parts: Uint8Array[] = [];
   length = 0;
   push(part: Uint8Array) { this.parts.push(part); this.length += part.length; return this; }
@@ -65,18 +65,18 @@ class Bytes {
   }
 }
 
-function box(type: string, ...children: (Uint8Array | Bytes)[]): Uint8Array {
+export function box(type: string, ...children: (Uint8Array | Bytes)[]): Uint8Array {
   const body = new Bytes();
   for (const child of children) body.push(child instanceof Bytes ? child.bytes() : child);
   if (body.length + 8 > 0xffffffff) throw new Error("MP4 box too large");
   return new Bytes().u32(body.length + 8).ascii(type).push(body.bytes()).bytes();
 }
-function fullBox(type: string, version: number, flags: number, ...children: (Uint8Array | Bytes)[]): Uint8Array {
+export function fullBox(type: string, version: number, flags: number, ...children: (Uint8Array | Bytes)[]): Uint8Array {
   return box(type, new Bytes().u8(version).u24(flags), ...children);
 }
 
 const MATRIX = [0x00010000, 0, 0, 0, 0x00010000, 0, 0, 0, 0x40000000];
-function matrix(b: Bytes) { for (const v of MATRIX) b.u32(v); return b; }
+export function matrix(b: Bytes) { for (const v of MATRIX) b.u32(v); return b; }
 
 // Colour codes (ISO/IEC 23091-2) for the WebCodecs VideoColorSpace names.
 const PRIMARIES: Record<string, number> = { bt709: 1, bt470bg: 5, smpte170m: 6, bt2020: 9, smpte432: 12 };

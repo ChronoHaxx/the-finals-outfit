@@ -24,7 +24,7 @@ function readChoices(): VideoChoices {
   try {
     const s = JSON.parse(localStorage.getItem(KEY) ?? "{}") as Partial<VideoChoices>;
     return {
-      format: s.format === "mp4" || s.format === "webm" || s.format === "png" ? s.format : DEFAULTS.format,
+      format: s.format === "mp4" || s.format === "webm" || s.format === "mov" || s.format === "png" ? s.format : DEFAULTS.format,
       quality: s.quality === "draft" || s.quality === "standard" || s.quality === "best" ? s.quality : DEFAULTS.quality,
       height: typeof s.height === "number" && Number.isFinite(s.height) ? s.height : DEFAULTS.height,
       sound: typeof s.sound === "boolean" ? s.sound : DEFAULTS.sound,
@@ -74,7 +74,7 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
         link.download = name;
         link.click();
         window.setTimeout(() => URL.revokeObjectURL(url), 5 * 60_000);
-        const soundNote = result.sound === "aac" || result.sound === "opus" ? ", with sound" : result.sound === "wav" ? ", sound as WAV" : "";
+        const soundNote = result.sound === "aac" || result.sound === "opus" || result.sound === "pcm" ? ", with sound" : result.sound === "wav" ? ", sound as WAV" : "";
         const grain = result.samples < QUALITY[quality].samples ? " Some frames kept changing while drawn: a little grain." : "";
         setStatus(`Saved ${name}: ${result.width} × ${result.height}, ${result.frames} frames${soundNote}, ${megabytes(result.blob.size)}.${grain}`);
       } catch (error) {
@@ -94,9 +94,12 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
 
 const FORMATS: { id: VideoFormat; label: string; detail: string }[] = [
   { id: "mp4", label: "MP4", detail: "On the backdrop, with sound. Plays anywhere: Discord, phones, every video editor." },
+  { id: "mov", label: "MOV, transparent (lossless)", detail: "QuickTime Animation with alpha, every pixel exact, sound as PCM. For Premiere Pro, After Effects and DaVinci Resolve. Big: about 35 MB a second at 1080p." },
   { id: "webm", label: "WebM, transparent", detail: "See-through VP9, with sound. Browsers and OBS show the transparency; Premiere and Resolve ignore it." },
-  { id: "png", label: "PNG sequence, transparent", detail: "Every frame as a see-through PNG, plus the sound as WAV, in a .zip. Any editor imports it; the biggest download." },
+  { id: "png", label: "PNG sequence, transparent", detail: "Every frame as a see-through PNG, plus the sound as WAV, in a .zip. Any editor imports it as an image sequence." },
 ];
+/** Formats written here in JavaScript, with no browser encoder behind them (so their sound needs none either). */
+const ownEncoder = (format: VideoFormat) => format === "png" || format === "mov";
 
 /** The Video tab's form. */
 export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }: {
@@ -113,11 +116,11 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
 
   const sizes = videoSizes(stage.width, stage.height, MAX_VIDEO_PIXELS, stage.maxSide);
   const size = sizes.find(s => s.height === choices.height) ?? [...sizes].reverse().find(s => s.height <= choices.height) ?? sizes[0];
-  const available = (format: VideoFormat) => format === "png" || (support ? support[format] : false);
+  const available = (format: VideoFormat) => format === "png" || (format === "mov" ? !PHONE : support ? support[format] : false);
   const format = available(choices.format) ? choices.format : support ? (available("mp4") ? "mp4" : "png") : choices.format;
   const plan = clip ? framePlan(clip) : null;
   const hasSound = !!clip && !!animator?.sounds.hasSound(clip.source);
-  const soundPossible = format === "png" || (format === "webm" ? !!support?.opus : !!(support?.aac || support?.opus));
+  const soundPossible = ownEncoder(format) || (format === "webm" ? !!support?.opus : !!(support?.aac || support?.opus));
   const transparent = format !== "mp4";
   const running = job.running, progress = job.progress;
   const disabled = !ready || running || !clip || !size || !support || !available(format);
@@ -138,12 +141,13 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
               className="flex flex-col items-start gap-0.5 border border-line px-2.5 py-1.5 text-left transition-colors hover:bg-ink-900 disabled:cursor-not-allowed disabled:opacity-40 aria-checked:border-fg/60 aria-checked:bg-ink-900">
               <span className="text-xs font-semibold">{f.label}</span>
               <span className="text-[11px] leading-snug text-fg-muted">
-                {usable || !support ? f.detail : f.id === "webm" ? "This browser can’t encode VP9 video: use Chrome or Edge." : "This browser can’t encode video here: use the PNG sequence."}
+                {usable || (!support && !ownEncoder(f.id)) ? f.detail
+                  : f.id === "mov" ? "On a computer only: the files are too big for a phone. The PNG sequence works here."
+                  : f.id === "webm" ? "This browser can’t encode VP9 video: use Chrome or Edge." : "This browser can’t encode video here: use the PNG sequence."}
               </span>
             </button>
           );
         })}
-        <span className="text-[11px] leading-snug text-fg-muted">No MOV: browsers can’t encode ProRes, so the PNG sequence is the transparent format editors take.</span>
       </div>
       {transparent && (
         <label className="flex cursor-pointer items-start gap-2">
