@@ -20,7 +20,7 @@ row. This change makes the interface point at its own controls instead.
   at a time, in tour order. A control loses its corner once its callout has been up for 0.7 s, the tour has stopped on
   it, "Show me" has framed it, or it has been used. The corner is a background image, so it changes no layout.
 - **The tour.** Started from the welcome screen ("Take the tour") or the Guide. It has nine stops: Items, In-game
-  outfits, Saved outfits, Share outfit, Emotes, Lighting, Capture, Camera, Hide controls. Viewfinder brackets (the
+  outfits, Saved outfits, Share outfit, Emotes, Lighting, Capture, Camera, Hide UI. Viewfinder brackets (the
   viewer's own corner marks) glide from control to control and dim the rest. A card beside each control gives its name
   and one line, with Back / Next / Finish, ← / →, and Esc to stop. Nothing is blocked: the dim takes no pointer events.
   Stopping keeps the stop, and the Guide and welcome screen then offer "Resume the tour · Stop 4 of 9". Finishing offers
@@ -50,8 +50,9 @@ row. This change makes the interface point at its own controls instead.
   - "Sway · approx." became "Sway"; the caveat stays in its tooltip.
   - The emote button's "☺" glyph and the Sun's "☀" became icons.
   - The column's Pause shows only for the idle, because an emote has its own on the timeline.
-  - "Hide UI" became "Hide controls" everywhere.
   - Over-long help lines in the panels are trimmed to one line.
+  - The player number joined the guide (its Own toggle needs saying), with the 0–99 range main shipped the same
+    evening.
 
 ## Where things live
 
@@ -86,9 +87,12 @@ remembered view preference, the same as pressing its tab.
   fix it: open ground only, and `(any-hover: hover)`.
 - **Focus callouts and nudges.** A focus callout (keyboard focus left on Emotes after Esc closed the picker) used to
   outrank a nudge and hide it; both can now show.
-- **Native tooltips.** `title` is kept only for automated browsers (`useFeature(id, title)`), because shader-probe
-  scripts find the Lighting button with `getByTitle("Lighting and backdrop")`. Visitors get the callout instead of a
-  second, native tooltip. Panel accessible names are unchanged for the same scripts.
+- **Native tooltips and names stay.** The project's harness scripts drive the app as a visitor and find controls by
+  their `title`, for example `[title="Play an emote"]` (31 uses) and `[title="Lighting and backdrop"]` (21), and by
+  `aria-label="Hide UI"`. So every title and accessible name is kept as it was. The first build kept titles only for
+  automated browsers and renamed Hide UI to "Hide controls"; both were reverted before merging. While a callout shows,
+  it sets aside the titles on its control and inside it, and gives them back after (unless the control set a new one
+  meanwhile), so there is never a double tooltip.
 - **The release check script.** `scripts/check-production.mjs` fails on main's own build too (it rejects the
   reconstruction shard host): not this change.
 
