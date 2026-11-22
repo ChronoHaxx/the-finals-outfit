@@ -129,8 +129,12 @@ clock (item 5 below).
 ## Hosting (published 15 Nov 2026, on the owner's "Yes, upload it")
 
 **Host:** `https://59209741.the-finals-outfit-chinals-assets.pages.dev/` (alias `chinals-1115-sounds`), a new immutable
-deployment of the Chinals Pages project. `deploy.yml`'s `CHINALS_ANIMATIONS_BASE` points at it on this branch, so
-merging turns the Chinals sounds on.
+deployment of the Chinals Pages project. `deploy.yml`'s `CHINALS_ANIMATIONS_BASE` pointed at it on this branch.
+
+**22 Nov 2026: superseded by `7c9add72`.** PR #71 (Chinals faces) merged first, with host `7c9add72`: this set (every
+file at its path) plus `faces-1/`. So the Chinals sounds and props-3 went live with #71 at 12:56 UTC. This branch then
+took main's host line and carries only the patch note, the roadmap lines and these docs. The rollback below still holds.
+Before 7c9add72, roll back to 59209741 itself.
 
 - **Built on props-3, not props-2** (the owner's choice): between staging and upload, draft PR #49 had published the
   fixed props as `e7796a7c`. An animations host is a full snapshot, so the upload is e7796a7c's set plus `sounds-1/`.

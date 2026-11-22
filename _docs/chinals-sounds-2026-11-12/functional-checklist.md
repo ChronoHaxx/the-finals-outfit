@@ -6,9 +6,11 @@ The Chinals emotes play their own in-game sounds in time with the motion, and sw
 never leaves a sound playing or doubles one.
 
 - **PR / originating issue:** PR #51 on branch `claude/chinals-emote-sounds-2026-11-12`. Against main it changes only
-  the Chinals host line, this record, the patch note and the roadmap review: the sound code came to main with PR #47.
-- **Test this revision:** `c7956a2` on `claude/chinals-emote-sounds-2026-11-12` (or any later docs-only commit), with
-  both published hosts: Chinals `https://59209741.the-finals-outfit-chinals-assets.pages.dev/` (props-3 + sounds) and
+  this record, the patch note and the roadmap (review line and the sound sentence): the sound code came to main with
+  PR #47, and since PR #71 (22 Nov) main serves Chinals host 7c9add72, a superset of this PR's 59209741 (props-3,
+  sounds-1, plus faces-1), so this PR no longer changes the host line.
+- **Test this revision:** `67985ce` on `claude/chinals-emote-sounds-2026-11-12` (or any later docs-only commit), with
+  both published hosts: Chinals `https://7c9add72.the-finals-outfit-chinals-assets.pages.dev/` (live since PR #71) and
   global `https://fd946744.the-finals-outfit-assets.pages.dev/` (live since PR #62, all 295 emotes).
 - **Open:** http://127.0.0.1:5192/#/chinals from the local preview below.
 - **Prerequisites:** headphones or speakers; desktop Chrome, Edge or Firefox.
@@ -37,7 +39,7 @@ mkdir -p scripts/generated/chinals-sounds-2026-11-12/empty-set
 ```
 
 ```bash
-VITE_CHINALS_ANIMATIONS_BASE=https://59209741.the-finals-outfit-chinals-assets.pages.dev/ node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=scripts/generated/chinals-sounds-2026-11-12/empty-set --proxy=https://fd946744.the-finals-outfit-assets.pages.dev/ --port=5192
+VITE_CHINALS_ANIMATIONS_BASE=https://7c9add72.the-finals-outfit-chinals-assets.pages.dev/ node _docs/chinals-mode-2026-11-12/serve-preview.mjs --set=scripts/generated/chinals-sounds-2026-11-12/empty-set --proxy=https://fd946744.the-finals-outfit-assets.pages.dev/ --port=5192
 ```
 
 The empty folder plus `--proxy` serves the live global set. The first load can take over 30 seconds. Stop it with
@@ -66,9 +68,27 @@ the music cuts off without a fade".
 
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given
+- Waiver: manual user checks waived on every PR, relayed by the coordinator session on 22 Nov (not seen first-hand
+  here): the owner, 22 Nov 00:08, "i trust u as u can do the same checks better than me". The boxes stay unticked; the
+  agent ran steps 1-7 in their place.
+- Tested revision/build: production build of 67985ce (main abfa045, with PR #71, merged in) with deploy.yml's hosts
+  (assets 2cbead71, models a029b249, reconstruction a70ffa7f, animations fd946744, Chinals 7c9add72, scenes 1d367244),
+  built by `_docs/chinals-faces-2026-11-21/prod-check.mjs` (its Chinals smoke check: ok, no failed request, no page
+  error) and served by `vite preview` at /the-finals-outfit/. [check-chinals-sounds.mjs](check-chinals-sounds.mjs)
+  as a visitor (automation masked), headless Chrome, 22 Nov ~13:35 UTC: 14/14 PASS, [check-chrome-prod.json](check-chrome-prod.json).
+  The script now also checks steps 1 and 7, and takes `--global=<host>` for a production build.
+- 1 PASS: the intro's latest patch note is "Chinals emote sounds" (above "Faces in Chinals emotes").
+- 2 PASS: Ovation, one voice within 0.7 ms of its cue.
+- 3 PASS: Drink Up, Brother!, both TakeAway layers start together at the clip start (within 4 ms).
+- 4 PASS: Floating Greeting, one voice at its cue, stopped near its window end (10.21 s); no restarts.
+- 5 PASS: Gacha_01, no Sound button and no voice.
+- 6 PASS: three Global <-> Chinals round trips (Valkyria's Embrace from fd946744 sounds-2, Ovation from 7c9add72
+  sounds-1): each mode played its own sound; at most one audio device open (made - closed = 1).
+- 7 PASS: muted during Ovation, still muted after a reload with no voice started; the speaker button unmuted it and
+  Ovation's sound started mid-clap.
+- Also: decoded AAC lengths within 2 ms of the source; no console errors or audio warnings. `npm test` 1031 pass, the
+  8 known fixture failures (game files this worktree lacks), 6 skipped; tsc clean; `npm run build` passes.
+- Not covered by the agent: hearing the sound (the script measures voice timing, not what a person hears); Firefox,
+  Safari, phones.
+- Readiness: agent checks PASS on 67985ce under the relayed waiver.
+- Merge authorization: not given in this session; the coordinator merges on the owner's instruction to it.

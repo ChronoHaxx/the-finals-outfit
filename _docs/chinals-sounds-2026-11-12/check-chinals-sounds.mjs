@@ -4,9 +4,12 @@
 // sound (MetaSound with and without a sync group, SoundCue, SoundWave, a two-layer mixer cue), a silent emote, the
 // first-click unlock, and switching Global <-> Chinals without leaving audio devices behind (RigAnimator.dispose).
 //
-//   node _docs/chinals-sounds-2026-11-12/check-chinals-sounds.mjs [--base=http://127.0.0.1:5190] [--chinals=<host URL>] [--headed]
-// (Git Bash or PowerShell, worktree root; serve-preview.mjs running with --chinals). Writes check-chrome.json beside
-// this file, and a screenshot to --shot=<png> when given.
+//   node _docs/chinals-sounds-2026-11-12/check-chinals-sounds.mjs [--base=http://127.0.0.1:5190] [--chinals=<host URL>]
+//     [--global=<host URL>] [--out=<file>] [--headed]
+// (Git Bash or PowerShell, worktree root; serve-preview.mjs running with --chinals, or a production build served by
+// `vite preview`, with --base=<its URL without the trailing slash>). Writes check-chrome.json (or --out) beside this
+// file, and a screenshot to --shot=<png> when given. 22 Nov 2026: also checklist step 1 (the intro's newest patch note)
+// and step 7 (mute survives a reload).
 import { chromium } from "playwright-core";
 import { writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -18,6 +21,8 @@ const shot = arg("shot");
 // Where the app's Chinals set lives: the preview's /chinals-animations/ (default), or a published host's URL when the app
 // was started with VITE_CHINALS_ANIMATIONS_BASE set to it.
 const CHINALS = arg("chinals") ?? "/chinals-animations/";
+// Where the global set lives: the preview's /animations/ (default), or the published global host in a production build.
+const GLOBAL = arg("global") ?? "/animations/";
 const chinalsSounds = `${CHINALS.replace(/\/?$/, "/")}sounds-1/sounds.json`;
 const DEFAULT = { face: "head-face-01-base", upperBody: "casual-basictshirt-cotton-black",
   lowerBody: "casual-loosejeans-denim-darkblue", feet: "casual-tallsneakers-canvas" };
@@ -49,7 +54,14 @@ const sounds = "window.__rigAnim.animator.sounds";
 // 0. Chinals mode from its address. The intro dialog's button is the first gesture.
 const soundsLoaded = page.waitForResponse(r => r.url().endsWith(chinalsSounds), { timeout: 240000 }).catch(() => null);
 await page.goto(`${BASE}/?reconstructed=1&outfit=${outfit}#/chinals`, { waitUntil: "load", timeout: 240000 });
-await page.getByRole("button", { name: /Enter builder|View shared outfit/ }).first().click({ timeout: 60000 }).catch(() => {});
+// Checklist step 1: the intro opens on the newest patch note, "Chinals emote sounds".
+const enter = page.getByRole("button", { name: /Enter builder|View shared outfit/ }).first();
+await enter.waitFor({ timeout: 60000 }).catch(() => {});
+const intro = await page.getByRole("dialog").first().innerText().catch(() => "");
+const where = title => intro.toLowerCase().indexOf(title.toLowerCase()); // the intro shows titles in capitals
+check("step 1: the intro's newest patch note is Chinals emote sounds", where("Chinals emote sounds") >= 0
+  && (where("Faces in Chinals emotes") < 0 || where("Chinals emote sounds") < where("Faces in Chinals emotes")), intro.slice(intro.search(/PATCH NOTES/i), intro.search(/PATCH NOTES/i) + 160));
+await enter.click({ timeout: 60000 }).catch(() => {});
 await page.waitForFunction(() => window.__rigAnim?.animator?.manifest?.edition === "chinals" && window.__rigIdle === true, null, { timeout: 240000 });
 // The emote picker loads the props and sounds manifests when it opens (EmotePicker: animator.loadProps()).
 const trigger = page.getByRole("button", { name: /Play an emote|Emotes/ }).first();
@@ -206,8 +218,36 @@ for (let i = 0; i < 3; i++) {
   switches.push({ globalUrl: globalUrl.replace(BASE, ""), globalStarted, chinalsStarted, contexts: await page.evaluate(() => ({ ...window.__audioContexts })) });
 }
 const last = switches.at(-1).contexts;
-check("mode switches: each mode plays its own sounds", switches.every(s => s.globalStarted && s.chinalsStarted && s.globalUrl.startsWith("/animations/")), switches);
+check("mode switches: each mode plays its own sounds", switches.every(s => s.globalStarted && s.chinalsStarted && s.globalUrl.startsWith(GLOBAL)), switches);
 check("mode switches: at most one audio device open (made - closed <= 1)", last.made - last.closed <= 1, switches.map(s => s.contexts));
+
+// Checklist step 7: mute survives a reload. Mute during Ovation, reload, play it again: muted and silent; the speaker
+// button brings the sound back mid-clap.
+const soundButton = page.getByRole("button", { name: "Sound", exact: true });
+await playEmote("Ovation", "cn-emote-applaud");
+await page.keyboard.press("Escape").catch(() => {});
+await soundButton.click();
+const mutedNow = await page.evaluate(`${sounds}.settings.muted`);
+await page.reload({ waitUntil: "load", timeout: 240000 });
+await page.getByRole("button", { name: /Enter builder|View shared outfit/ }).first().click({ timeout: 15000 }).catch(() => {});
+await page.waitForFunction(() => window.__rigAnim?.animator?.manifest?.edition === "chinals" && window.__rigIdle === true, null, { timeout: 240000 });
+await page.mouse.click(5, 940); // a plain gesture, as a visitor's first click
+let n7 = await logLength();
+await playEmote("Ovation", "cn-emote-applaud");
+await page.keyboard.press("Escape").catch(() => {});
+await page.waitForTimeout(1500);
+const afterReload = { muted: await page.evaluate(`${sounds}.settings.muted`),
+  pressed: await soundButton.getAttribute("aria-pressed").catch(() => null),
+  started: (await logSince(n7)).filter(e => e.event === "start" || e.event === "schedule").length };
+n7 = await logLength();
+await soundButton.click();
+await page.waitForTimeout(1500);
+const unmuted = { muted: await page.evaluate(`${sounds}.settings.muted`),
+  started: (await logSince(n7)).filter(e => e.event === "start" || e.event === "schedule").length,
+  playing: await page.evaluate(() => window.__rigAnim.state().current) };
+check("step 7: mute survives a reload; the speaker brings the sound back mid-clap",
+  mutedNow && afterReload.muted && afterReload.started === 0 && !unmuted.muted && unmuted.started > 0 && unmuted.playing === "cn-emote-applaud",
+  { mutedNow, afterReload, unmuted });
 
 check("no console errors or audio warnings", errors.length === 0, errors);
 writeFileSync(resolve(dirname(fileURLToPath(import.meta.url)), arg("out") ?? "check-chrome.json"), JSON.stringify({ chinals: CHINALS, ...report }, null, 1));
