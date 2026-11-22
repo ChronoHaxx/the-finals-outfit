@@ -357,6 +357,7 @@ interface SceneCharacter {
 | Gizmo blur / never converging | drawn through the accumulator | overlay scene after the still view |
 | Shader compile hitches | tinted legacy materials compile one program each (`CharacterRig.ts:2176`, `tintUid`) | reconstructed ones share programs; load characters sequentially; `compileAsync` |
 | Harness contracts | `__rigRoot`/`__rigIdle` are single-character | keep them meaning the builder's one character; scene gets `__scene` |
+| One player number for everyone | `rig/PlayerNumber.ts` (#60, merged 22 Nov) keeps one module-level chosen number and applies it to every registered material | Phase 2: each character's outfit copy carries its own number; key the registry by character (pass the character's choice into `playerNumberUniform`) so setting one contestant's number leaves the others alone |
 
 ## Phased plan
 
