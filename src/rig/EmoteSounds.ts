@@ -567,25 +567,8 @@ export class EmoteSounds {
     if (!cues.length || typeof OfflineAudioContext === "undefined") return null;
     const sampleRate = options.sampleRate ?? 48000, { duration, clipLength, looping } = options;
     const context = new OfflineAudioContext(2, Math.max(1, Math.round(duration * sampleRate)), sampleRate);
-    const random = seededRandom(source!);
-    const plans = cues.map(cue => {
-      const total = cue.variants.reduce((s, v) => s + v.weight, 0);
-      let r = random() * total, variant = cue.variants[cue.variants.length - 1];
-      for (const v of cue.variants) { if ((r -= v.weight) < 0) { variant = v; break; } }
-      return { cue, variant, gain: pick(variant.gain, random), rate: pick(variant.rate, random) };
-    });
-    const waves = new Map<string, Wave | null>();
-    await Promise.all([...new Set(plans.map(p => p.variant.wave))].map(async wave => {
-      const data = await this.fetchWave(wave);
-      this.bytes.delete(wave); // fetched for this render only (a live decode holds its own promise)
-      const info = manifest!.files[wave];
-      if (!data || !info) { waves.set(wave, null); return; }
-      try {
-        const buffer = await context.decodeAudioData(data.slice(0));
-        const extra = buffer.duration - info.duration;
-        waves.set(wave, { buffer, lead: extra > 0.005 ? Math.min(AAC_PRIMING, extra) : 0, length: info.duration });
-      } catch (error) { console.warn(`[sound] ${wave} did not decode`, error); waves.set(wave, null); }
-    }));
+    const plans = this.offlinePlans(cues, source!);
+    const waves = await this.offlineWaves(context, manifest!, plans, new Map());
     if (options.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
     const from = Math.max(0, Math.min(options.range?.from ?? 0, clipLength));
     const to = Math.max(from, Math.min(options.range?.to ?? clipLength, clipLength));
@@ -596,52 +579,151 @@ export class EmoteSounds {
     for (let pass = 0; pass < loops; pass++) {
       const base = pass * (to - from) / speed; // where this pass starts in the recording
       if (base >= duration) break;
-      for (const { cue, variant, gain, rate } of plans) {
-        const wave = waves.get(variant.wave);
-        if (!wave || cue.start >= to) continue;
-        // A musical window over a looping clip's whole pass carries on across passes: started once, never cut.
-        const carried = looping && whole && this.covers(cue, clipLength);
-        if (carried && pass > 0) continue;
-        const end = cue.kind === "window" ? cue.start + (cue.duration ?? 0) : Infinity;
-        let when = base + (cue.start - from) / speed, offset = 0; // recording seconds; wave seconds into the sound
-        if (cue.start < from) { // already sounding at the range's start: join it where it would be
-          if (end <= from) continue;
-          offset = (from - cue.start) * rate;
-          if (variant.loop) offset %= wave.length;
-          else if (offset >= wave.length) continue;
-          when = base;
-        }
-        if (when >= duration) continue;
-        const node = context.createGain();
-        const buffer = context.createBufferSource();
-        buffer.buffer = wave.buffer;
-        buffer.playbackRate.value = rate * speed;
-        if (variant.loop) { buffer.loop = true; buffer.loopStart = wave.lead; buffer.loopEnd = wave.lead + wave.length; }
-        if (cue.attack && !offset) {
-          node.gain.setValueAtTime(0, when);
-          node.gain.linearRampToValueAtTime(gain, when + cue.attack / speed);
-        } else if (offset) {
-          node.gain.setValueAtTime(0, when);
-          node.gain.linearRampToValueAtTime(gain, when + MID_FADE_IN);
-        } else node.gain.value = gain;
-        buffer.connect(node).connect(context.destination);
-        buffer.start(when, wave.lead + offset);
-        if (cue.kind === "window" && !carried) {
-          const stopClip = Math.min(end, to), stop = base + (stopClip - from) / speed;
-          const fade = Math.max(DECLICK, (cue.fadeOut ?? DEFAULT_FADE_OUT) / speed);
-          if (stop < duration) {
-            const attackEnd = cue.attack && !offset ? cue.start + cue.attack : -Infinity;
-            node.gain.setValueAtTime(stopClip < attackEnd ? gain * (stopClip - cue.start) / cue.attack! : gain, stop);
-            node.gain.linearRampToValueAtTime(0, stop + fade);
-            buffer.stop(stop + fade + 0.01);
-          }
-        }
-        voices++;
+      voices += this.schedulePass(context, plans, waves, { base, from, to, speed, duration, clipLength, carry: looping && whole,
+        first: pass === 0, cutAt: Infinity });
+    }
+    return voices ? this.finishOffline(context, options.signal) : null;
+  }
+
+  /**
+   * A take's sound (22 Nov 2026, lib/video-take.ts): the front emote's segments, each placed at its take time and
+   * played from its clip time at its speed, by the same cue rules as renderOffline. A segment the viewer interrupted
+   * (a pause, a seek, another emote) cuts what still sounds at its end with playback's short fade; one that reached a
+   * one-shot's end ends as the game does (windows fade, "once" sounds ring out). Picks are seeded per emote and per play
+   * of it, so a take renders the same every time. Null when no segment has sound.
+   */
+  async renderSegments(segments: readonly { source: string | null | undefined; from: number; at: number; end: number; speed: number;
+    loop: boolean; natural: boolean; clipLength: number }[], options: { duration: number; sampleRate?: number; signal?: AbortSignal })
+    : Promise<{ buffer: AudioBuffer; peak: number; scaled: number } | null> {
+    const manifest = await this.load();
+    if (manifest?.formatVersion !== 1 || typeof OfflineAudioContext === "undefined") return null;
+    const sampleRate = options.sampleRate ?? 48000, duration = options.duration;
+    const context = new OfflineAudioContext(2, Math.max(1, Math.round(duration * sampleRate)), sampleRate);
+    const decoded = new Map<string, Promise<Wave | null>>();
+    const plays = new Map<string, number>();
+    let voices = 0;
+    for (const segment of segments) {
+      const cues = (segment.source && manifest.emotes[segment.source]) || [];
+      const length = segment.clipLength;
+      if (!cues.length || !(length > 0) || !(segment.speed > 0) || segment.at >= duration) continue;
+      const play = plays.get(segment.source!) ?? 0;
+      plays.set(segment.source!, play + 1);
+      const plans = this.offlinePlans(cues, play ? `${segment.source}#${play}` : segment.source!);
+      const waves = await this.offlineWaves(context, manifest, plans, decoded);
+      if (options.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+      const cutAt = segment.natural ? Infinity : segment.end;
+      let base = segment.at, from = Math.min(Math.max(0, segment.from), length), first = true;
+      while (base < duration && base < segment.end) {
+        voices += this.schedulePass(context, plans, waves, { base, from, to: length, speed: segment.speed, duration, clipLength: length,
+          carry: segment.loop, first, cutAt });
+        if (!segment.loop) break;
+        base += (length - from) / segment.speed;
+        from = 0;
+        first = false;
       }
     }
-    if (!voices) return null;
+    return voices ? this.finishOffline(context, options.signal) : null;
+  }
+
+  /** A variant, gain and rate for each cue, from a seed (the same every export). */
+  private offlinePlans(cues: readonly SoundCue[], seed: string) {
+    const random = seededRandom(seed);
+    return cues.map(cue => {
+      const total = cue.variants.reduce((s, v) => s + v.weight, 0);
+      let r = random() * total, variant = cue.variants[cue.variants.length - 1];
+      for (const v of cue.variants) { if ((r -= v.weight) < 0) { variant = v; break; } }
+      return { cue, variant, gain: pick(variant.gain, random), rate: pick(variant.rate, random) };
+    });
+  }
+
+  /** The plans' waves, decoded on `context` (`decoded` shares them between several emotes of one render). */
+  private async offlineWaves(context: BaseAudioContext, manifest: SoundsManifest, plans: readonly { variant: SoundVariant }[],
+    decoded: Map<string, Promise<Wave | null>>): Promise<Map<string, Wave | null>> {
+    const names = [...new Set(plans.map(p => p.variant.wave))];
+    for (const wave of names) {
+      if (decoded.has(wave)) continue;
+      decoded.set(wave, (async () => {
+        const data = await this.fetchWave(wave);
+        this.bytes.delete(wave); // fetched for this render only (a live decode holds its own promise)
+        const info = manifest.files[wave];
+        if (!data || !info) return null;
+        try {
+          const buffer = await context.decodeAudioData(data.slice(0));
+          const extra = buffer.duration - info.duration;
+          return { buffer, lead: extra > 0.005 ? Math.min(AAC_PRIMING, extra) : 0, length: info.duration };
+        } catch (error) { console.warn(`[sound] ${wave} did not decode`, error); return null; }
+      })());
+    }
+    return new Map(await Promise.all(names.map(async wave => [wave, await decoded.get(wave)!] as const)));
+  }
+
+  /**
+   * One pass of a clip on an offline context: clip seconds `from` to `to`, placed at recording second `base`, at `speed`.
+   * A cue already sounding at `from` joins mid-sound (a short fade-in, no click); a window stops at `to` at the latest
+   * with its fade; a "once" sound rings on. `carry`: a musical window covering the whole looping clip starts once, in
+   * the `first` pass, and is never stopped by a pass's end. `cutAt` (recording seconds): everything still sounding then
+   * fades out with playback's cut. Returns the voices scheduled.
+   */
+  private schedulePass(context: OfflineAudioContext, plans: readonly { cue: SoundCue; variant: SoundVariant; gain: number; rate: number }[],
+    waves: Map<string, Wave | null>, pass: { base: number; from: number; to: number; speed: number; duration: number; clipLength: number;
+      carry: boolean; first: boolean; cutAt: number }): number {
+    const { base, from, to, speed, duration, clipLength, cutAt } = pass;
+    let voices = 0;
+    for (const { cue, variant, gain, rate } of plans) {
+      const wave = waves.get(variant.wave);
+      if (!wave || cue.start >= to) continue;
+      const carried = pass.carry && this.covers(cue, clipLength);
+      if (carried && !pass.first) continue;
+      const end = cue.kind === "window" ? cue.start + (cue.duration ?? 0) : Infinity;
+      let when = base + (cue.start - from) / speed, offset = 0; // recording seconds; wave seconds into the sound
+      if (cue.start < from) { // already sounding at the pass's start: join it where it would be
+        if (end <= from) continue;
+        offset = (from - cue.start) * rate;
+        if (variant.loop) offset %= wave.length;
+        else if (offset >= wave.length) continue;
+        when = base;
+      }
+      if (when >= duration || when >= cutAt) continue;
+      const node = context.createGain();
+      const buffer = context.createBufferSource();
+      buffer.buffer = wave.buffer;
+      buffer.playbackRate.value = rate * speed;
+      if (variant.loop) { buffer.loop = true; buffer.loopStart = wave.lead; buffer.loopEnd = wave.lead + wave.length; }
+      const ramp = cue.attack && !offset ? cue.attack / speed : offset ? MID_FADE_IN : 0;
+      if (ramp) {
+        node.gain.setValueAtTime(0, when);
+        node.gain.linearRampToValueAtTime(gain, when + ramp);
+      } else node.gain.value = gain;
+      buffer.connect(node).connect(context.destination);
+      buffer.start(when, wave.lead + offset);
+      // Its own end: a window stops at its end, or the pass's (a one-shot's natural end), with its fade.
+      let stop = Infinity, level = gain, fade = 0;
+      if (cue.kind === "window" && !carried) {
+        const stopClip = Math.min(end, to);
+        stop = base + (stopClip - from) / speed;
+        fade = Math.max(DECLICK, (cue.fadeOut ?? DEFAULT_FADE_OUT) / speed);
+        const attackEnd = cue.attack && !offset ? cue.start + cue.attack : -Infinity;
+        level = stopClip < attackEnd ? gain * (stopClip - cue.start) / cue.attack! : gain;
+      }
+      if (cutAt < stop) { // the viewer interrupted it first
+        stop = cutAt;
+        fade = CUT_FADE;
+        level = ramp && cutAt < when + ramp ? gain * (cutAt - when) / ramp : gain;
+      }
+      if (stop < duration) {
+        node.gain.setValueAtTime(level, stop);
+        node.gain.linearRampToValueAtTime(0, stop + fade);
+        buffer.stop(stop + fade + 0.01);
+      }
+      voices++;
+    }
+    return voices;
+  }
+
+  /** Render, and scale the whole track down if the cues add up past full scale (one constant factor, not a limiter). */
+  private async finishOffline(context: OfflineAudioContext, signal?: AbortSignal): Promise<{ buffer: AudioBuffer; peak: number; scaled: number }> {
     const rendered = await context.startRendering();
-    if (options.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+    if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
     let peak = 0;
     for (let c = 0; c < rendered.numberOfChannels; c++) {
       const data = rendered.getChannelData(c);
