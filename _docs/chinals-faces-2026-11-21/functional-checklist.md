@@ -5,7 +5,7 @@
 In Chinals mode the face now moves during the Chinals emotes and idle, as in global emotes, from the new Chinals host
 7c9add72; this catches a face that stays still, a missing sound or prop, or wrong wording.
 
-- PR: (link added when the PR opens)
+- PR: https://github.com/ChronoHaxx/the-finals-outfit/pull/71 (Shocka feedback item 8)
 - Test this revision: branch `claude/chinals-faces-2026-11-21`, app code at ee16736 (later commits are docs only). The
   build below is that code with deploy.yml's production settings and the new Chinals host.
 - Open: http://127.0.0.1:4357/the-finals-outfit/#/chinals in Chrome or Edge
