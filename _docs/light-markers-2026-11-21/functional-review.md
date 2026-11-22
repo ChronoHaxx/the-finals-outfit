@@ -67,8 +67,14 @@ Do not assume a step passed because a merge is requested.
 - Agent run under the waiver, 22 Nov 2026 00:31 London: steps **1-6 pass** (details under "Agent results, 22 Nov").
   Untested: real touch, Safari, Firefox.
 - Explicitly waived checks: steps 1-6 as user checks (run by the agent instead).
+- Re-run on the final revision, 22 Nov 2026 00:47 London. This branch was rebased onto #57 `7fe370d` (main `1545566`
+  with the feature guide #65 and multi-character #66 merged in) and given its patch note, guide entry and roadmap
+  review (`781c52a`). On that production build: steps 1-6 pass again, 24 of 24, 0 page errors. The key frames were
+  judged by eye: the drag, the PNG with no bulbs, H, and the menu-scene drag. Typecheck, build and the public-text
+  and roadmap checks pass; unit tests 980 pass, with the same 8 GLB-fixture failures.
 - Readiness: ready, once #57 is on main (this PR is stacked on it).
-- Merge authorization: "if pass, merge it" (22 Nov). #57 merges first.
+- Merge authorization: "if pass, merge it" (22 Nov). #57 merges first, under the user's merge-on-pass direction
+  (relayed by the coordinator).
 
 A later patch invalidates affected checks. Keep results for the previous revision and record the retest.
 
