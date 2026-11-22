@@ -15,15 +15,26 @@ The check catches four failures:
 - a default view that changed.
 
 - **PR / origin:** ChronoHaxx/the-finals-outfit#57, from this branch into `main`. On 21 Nov it was rebased onto main,
-  which already has #40, #46, #47, #48 and #55. The design is in `README.md` section 8.
+  which already has #40, #46, #47, #48 and #55. On 22 Nov main was merged in at `e04075e` (multi-character Phase 1
+  #66, player number #60, all emotes #62, emote early-stop #69, emote speed #58). The design is in `README.md`
+  section 8.
 - **Test this revision:** branch `claude/scene-backdrops-p2-2026-11-15`, app code at
-  `09f0f73567c332a85a2480f22e8516ff3440629b`. Later commits on the branch that touch only `_docs/` leave it the same.
+  `3e3db00b9aa2fb637604b8e4f258688682934dbf` (the merge of main). Later commits on the branch that touch only `_docs/`
+  leave it the same.
 - **Open:** http://127.0.0.1:5243 in Chrome, served from the worktree below.
 - **Prerequisites:**
   - The scene files stream from their pinned host, `scenes-1` (`1d367244`), as the models stream from theirs. You need
     an internet connection; no account is needed.
 - **Approximate hands-on time:** 10 minutes.
 - **Agent checks:** PASS.
+  - **22 Nov, after merging main at `e04075e`:**
+    - One conflict, the viewer's imports. Typecheck and production build pass.
+    - Full suite: 963 pass, scene tests included. The same 8 fail on the absent extracted GLBs.
+    - In the dev browser pane:
+      - the tunnel loads from `1d367244` with the character standing on the walkway;
+      - a drag turns the character while the tunnel stays still;
+      - Studio brings it back facing forward and stores no scene;
+      - after a reload the scene stays gone.
   - **21 Nov, after the rebase, the scenes host pin, merging main at 0951e1b (#54, #56) and the scene-storage fix:**
     - Typecheck and production build pass.
     - Scene tests: 9 of 9 pass.
@@ -53,7 +64,7 @@ Otherwise, in **PowerShell**, run these commands. The asset hosts are the deploy
 
 ```powershell
 cd E:\Coding\the-finals-outfit\.claude\worktrees\trusting-davinci-1693fd
-$env:VITE_ASSETS_BASE = "https://f4a8e069.the-finals-outfit-assets.pages.dev/"; $env:VITE_MODELS_BASE = "https://a029b249.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_BASE = "https://c062af24.the-finals-outfit-assets.pages.dev/"; $env:VITE_ANIMATIONS_BASE = "https://17ec92c3.the-finals-outfit-assets.pages.dev/"; $env:VITE_CHINALS_ANIMATIONS_BASE = "https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/"; $env:VITE_SCENES_BASE = "https://1d367244.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_ROUTES_FILE = "src/data/reconstruction-routes.json"
+$env:VITE_ASSETS_BASE = "https://f4a8e069.the-finals-outfit-assets.pages.dev/"; $env:VITE_MODELS_BASE = "https://a029b249.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_BASE = "https://c062af24.the-finals-outfit-assets.pages.dev/"; $env:VITE_ANIMATIONS_BASE = "https://fd946744.the-finals-outfit-assets.pages.dev/"; $env:VITE_CHINALS_ANIMATIONS_BASE = "https://dcb131a5.the-finals-outfit-chinals-assets.pages.dev/"; $env:VITE_SCENES_BASE = "https://1d367244.the-finals-outfit-assets.pages.dev/"; $env:VITE_RECONSTRUCTION_ROUTES_FILE = "src/data/reconstruction-routes.json"
 npx vite --host 127.0.0.1 --port 5243 --strictPort
 ```
 
