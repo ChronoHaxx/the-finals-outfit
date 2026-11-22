@@ -31,9 +31,10 @@ import type { RecordableClip, RigAnimator } from "./RigAnimator";
 //   (bleedColour), so lossy 4:2:0 coding does not pull black into the soft edges.
 // - MOV, transparent (22 Nov 2026): QuickTime Animation, 32-bit ARGB, every frame a keyframe, coded here in plain
 //   JavaScript (qtrle-encode.ts) from the same straight-alpha pixels as the PNGs, so it is exact; the sound as 16-bit
-//   PCM, interleaved frame by frame (mov-mux.ts). Premiere Pro, After Effects and DaVinci Resolve read it with its
-//   alpha. No browser encodes ProRes 4444, the codec editors would name first, but MOV is only the container. Big files
-//   (run-length coding saves the empty background, not the character), so the panel offers it on computers only.
+//   PCM, interleaved frame by frame (mov-mux.ts). Adobe's native .mov list has keyframe-only Animation, and Resolve's
+//   codec list has Animation; ffmpeg decodes it exactly (_docs/mov-export-2026-11-22). No browser encodes ProRes 4444,
+//   the codec editors would name first, but MOV is only the container. Big files (run-length coding saves the empty
+//   background, not the character), so the panel offers it on computers only.
 // - PNG sequence, transparent: every frame as a PNG with straight alpha, the sound as a WAV, in one stored zip. Works
 //   in every editor.
 // The sound is rendered offline from the emote's cues (EmoteSounds.renderOffline), the same rules as playback.

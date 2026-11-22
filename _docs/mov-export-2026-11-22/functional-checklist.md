@@ -46,4 +46,15 @@ Open http://localhost:5196/the-finals-outfit/ and wait for the outfit to load. S
 
 ## Recorded result
 
-(filled in after the run on the final revision)
+- Tested revision/build: commit 8e42568, a production build with deploy.yml's hosts (`build-preview.ps1`), headless
+  Chrome on the RTX 3080, run `run-final`, 22 Nov 2026 about 22:50–22:53 (local time).
+- **Agent PASS under the owner's standing waiver** (22 Nov 2026: "for all sessions and subsession ... where possible
+  please waive manual checks, i trust u as u can do the same checks better than me"). This is not a user PASS.
+  - Steps 1-6 pass: 13 of 13 UI checks and 10 of 10 file checks.
+  - Every MOV frame equals its PNG, and the sound equals the WAV.
+  - The numbers are in `README.md`, "Agent evidence".
+- Not covered by the agent: opening the file in Premiere Pro, After Effects or Resolve. Their support rests on their
+  documentation; the owner's optional check is at the end of `README.md`. Real phones, Firefox and Safari were not
+  run either.
+- Changes after 8e42568 are comments and docs only; no step needs repeating.
+- Merge authorization: merge on pass, under the coordinator's standing rule (CI green, merge state CLEAN).

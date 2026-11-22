@@ -98,7 +98,7 @@ const FORMATS: { id: VideoFormat; label: string; detail: string }[] = [
   { id: "webm", label: "WebM, transparent", detail: "See-through VP9, with sound. Browsers and OBS show the transparency; Premiere and Resolve ignore it." },
   { id: "png", label: "PNG sequence, transparent", detail: "Every frame as a see-through PNG, plus the sound as WAV, in a .zip. Any editor imports it as an image sequence." },
 ];
-/** Formats with no browser encoder behind them: written here in JavaScript. MOV's files are too big for a phone. */
+/** Formats written here in JavaScript, with no browser encoder behind them (so their sound needs none either). */
 const ownEncoder = (format: VideoFormat) => format === "png" || format === "mov";
 
 /** The Video tab's form. */
