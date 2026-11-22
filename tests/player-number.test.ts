@@ -118,6 +118,28 @@ test('live materials follow the viewer\'s number; null puts each piece\'s own ba
   assert.equal(playerNumberPieces(), 0);
 });
 
+test('each owner prints its own number: a squad contestant\'s choice leaves the builder and the others alone', () => {
+  setPlayerNumber(null);
+  const red = {}, blue = {};
+  const builder = playerNumberUniform(new THREE.MeshPhysicalMaterial(), 32, 'jersey');
+  const redJersey = new THREE.MeshPhysicalMaterial(), blueJersey = new THREE.MeshPhysicalMaterial();
+  const r = playerNumberUniform(redJersey, 32, 'jersey', red), b = playerNumberUniform(blueJersey, 32, 'jersey', blue);
+  setPlayerNumber(45, red);
+  assert.deepEqual(r.value.toArray(), playerNumberLanes(45));
+  assert.deepEqual(b.value.toArray(), playerNumberLanes(32), 'the other contestant keeps its own');
+  assert.deepEqual(builder.value.toArray(), playerNumberLanes(32), 'the builder keeps its own');
+  const blueVersion = blueJersey.version;
+  setPlayerNumber(68);
+  assert.deepEqual(builder.value.toArray(), playerNumberLanes(68));
+  assert.deepEqual(r.value.toArray(), playerNumberLanes(45), 'the builder\'s choice does not reach a contestant');
+  assert.equal(blueJersey.version, blueVersion, 'untouched materials are not marked for update');
+  const later = playerNumberUniform(new THREE.MeshPhysicalMaterial(), 14, 'cargos', red);
+  assert.deepEqual(later.value.toArray(), playerNumberLanes(45), 'a piece loaded later takes its owner\'s choice');
+  assert.equal(playerNumberPieces(red), 2);
+  assert.equal(playerNumberPieces(), 1, 'the builder\'s hint counts its own pieces only');
+  setPlayerNumber(null);
+});
+
 // ------------------------------------------------------------------ the value and its link code
 
 test('what a stored value means, and its link code', () => {

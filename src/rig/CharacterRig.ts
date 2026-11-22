@@ -268,6 +268,9 @@ export class CharacterRig {
       sheen?: boolean;
       albedoDebug?: boolean;
       faceBodyHideUrl?: string;
+      // playerNumberOwner: whose player number this rig's garments print (PlayerNumber.ts). The builder leaves it unset;
+      // a squad passes one key per contestant so each prints its own outfit's number.
+      playerNumberOwner?: object;
     } = {},
   ) {
     this.root = root;
@@ -725,7 +728,7 @@ export class CharacterRig {
     let reconstructed: Awaited<ReturnType<typeof loadReconstructedMaterial>> | undefined;
     if (item.material?.reconstructed) {
       try {
-        reconstructed = await loadReconstructedMaterial(item.material.reconstructed.url, item.material.reconstructed.view);
+        reconstructed = await loadReconstructedMaterial(item.material.reconstructed.url, item.material.reconstructed.view, this.opts.playerNumberOwner);
       } catch (error) {
         disposeObject3D(gltf.scene);
         if (signal?.aborted) return;
@@ -1101,7 +1104,7 @@ export class CharacterRig {
         });
       }),
       ...requests.map(async (url) => {
-        materials.set(url, await loadReconstructedMaterial(url, item.sourceSurfaceView));
+        materials.set(url, await loadReconstructedMaterial(url, item.sourceSurfaceView, this.opts.playerNumberOwner));
       }),
     ]);
     for (const part of parts) {
@@ -1237,7 +1240,7 @@ export class CharacterRig {
       recovered?.dispose();
       if (stagedBodyMaterial) disposeMaterial(stagedBodyMaterial);
     };
-    const [loaded] = await Promise.allSettled([loadReconstructedMaterial(bindings[0].url, item.sourceSurfaceView)]);
+    const [loaded] = await Promise.allSettled([loadReconstructedMaterial(bindings[0].url, item.sourceSurfaceView, this.opts.playerNumberOwner)]);
     if (loaded.status === "fulfilled") recovered = loaded.value;
     if (signal?.aborted || version !== this.bodyLoadVersion) { release(); return; }
     if (loaded.status === "rejected") { release(); throw loaded.reason; }
@@ -1313,7 +1316,7 @@ export class CharacterRig {
         roots.set(key, gltf.scene);
         gltf.scene.getObjectsByProperty("isSkinnedMesh", true).forEach(m => skeletons.add((m as THREE.SkinnedMesh).skeleton));
       }),
-      ...urls.map(async url => recovered.set(url, await loadReconstructedMaterial(url, item.sourceSurfaceView))),
+      ...urls.map(async url => recovered.set(url, await loadReconstructedMaterial(url, item.sourceSurfaceView, this.opts.playerNumberOwner))),
     ]);
     let stagedBodyMaterial: THREE.Material | undefined;
     const release = () => {

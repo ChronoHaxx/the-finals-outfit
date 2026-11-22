@@ -4,7 +4,7 @@ import { VerifiedByteCache } from "../lib/verified-bytes";
 import { HAIR_LIGHTING_GLSL } from './HairLighting';
 import { installSampledAlphaHash } from './AlphaHashSampling';
 import { STUDIO_LIGHTING_V2 } from './StudioLighting';
-import { findPlayerNumberSites, PLAYER_NUMBER_UNIFORM, playerNumberUniform, rewritePlayerNumberGlsl } from './PlayerNumber';
+import { findPlayerNumberSites, PLAYER_NUMBER_UNIFORM, playerNumberUniform, rewritePlayerNumberGlsl, type PlayerNumberOwner } from './PlayerNumber';
 import {
   RECOVERED_SAMPLER_TARGET, assemblePackedLayers, planReconstructedSamplers, rewriteSamplerGlsl,
   samplerPlanReport, samplerUniformBindings,
@@ -403,7 +403,8 @@ function replaceChunk(source: string, name: string, replacement: string): string
   return source.replace(marker, replacement);
 }
 
-export async function loadReconstructedMaterial(url: string, view: SurfaceView = "lit") {
+/** `numberOwner`: whose player number the material prints (PlayerNumber.ts; undefined: the builder's character). */
+export async function loadReconstructedMaterial(url: string, view: SurfaceView = "lit", numberOwner?: PlayerNumberOwner) {
   const base = new URL(url, window.location.href).href;
   const manifest: Manifest = await (await checkedFetch(base)).json();
   if (manifest.formatVersion !== 1) throw new Error("Unsupported recovered material format");
@@ -623,7 +624,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     material.onBeforeRender = (renderer, _scene, camera) => updateHologramView(renderer, rect, height, camera);
     material.customProgramCacheKey = () =>
       `recovered-hologram-v1:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${needsUv1}:${viewFields.join(",")}`;
-    const number = numberProgram ? playerNumberUniform(material, numberProgram.authored, manifest.itemId) : undefined;
+    const number = numberProgram ? playerNumberUniform(material, numberProgram.authored, manifest.itemId, numberOwner) : undefined;
     material.onBeforeCompile = (shader) => {
       for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
       if (number) shader.uniforms[PLAYER_NUMBER_UNIFORM] = number;
@@ -781,7 +782,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         material.customProgramCacheKey = () => `recovered-v13:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}:${maskedClip}:${parametric}:${genericFaceSign}${hairMetallic ? ":hair-metallic" : ""}${worldFaceSign ? ":world-face-sign" : ""}${worldCameraBasis.length ? ":world-camera-basis" : ""}${hueKeeping ? ":hue-keeping" : ""}${vertexOffset ? `:offset:${vertexOffset}` : ""}${thin ? `:thin:${thinPass ?? "single"}` : ""}${DEV_CLOTH_SKY && manifest.viewDependentCloth ? ":dev-cloth-sky" : ""}${DEV_CLOTH_SSS !== null && manifest.viewDependentCloth && !hair ? `:dev-cloth-sss:${DEV_CLOTH_SSS}` : ""}${manifest.subsurfaceShading && !hair && STUDIO_LIGHTING_V2 ? ":subsurface" : ""}${hair && DEV_HAIR_UE_SCATTER ? ":dev-hair-ue-scatter" : ""}${hair && DEV_HAIR_NO_SHADOW ? ":dev-hair-no-shadow" : ""}${hair && DEV_HAIR_AO_ONE ? ":dev-hair-ao-one" : ""}`;
         if (hueKeeping) material.userData.emissiveExposurePolicy = 'hue-keeping preview exposure: peak channel scaled to 1 (signoffs-2026-10-29.json)';
         if (numberProgram) material.userData.playerNumberAuthored = numberProgram.authored;
-        const number = numberProgram ? playerNumberUniform(material, numberProgram.authored, manifest.itemId) : undefined;
+        const number = numberProgram ? playerNumberUniform(material, numberProgram.authored, manifest.itemId, numberOwner) : undefined;
         material.onBeforeCompile = (shader) => {
           // Decision #19: alpha-hashed coverage converges in the stable-frame accumulator (inert without alphaHash).
           installSampledAlphaHash(shader, material);
@@ -1024,7 +1025,7 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           shadow.userData.recoveredCoverage = true;
           shadow.userData.recoveredSamplers = planReport;
           shadow.customProgramCacheKey = () => `recovered-coverage-v3:${manifest.coverageShaderSha256}:${plan.cacheKey}:${needsUv1}:${hair}:${maskedClip}${hairMetallic ? ":hair-metallic" : ""}${coverageLocal ? ":local" : ""}${vertexOffset ? `:offset:${vertexOffset}` : ""}`;
-          const number = coverageNumber ? playerNumberUniform(shadow, coverageNumber.authored, manifest.itemId) : undefined;
+          const number = coverageNumber ? playerNumberUniform(shadow, coverageNumber.authored, manifest.itemId, numberOwner) : undefined;
           shadow.onBeforeCompile = shader => {
             // Shadow maps redraw for every accumulator sample, so the shadow's coverage converges the same way.
             installSampledAlphaHash(shader, shadow);

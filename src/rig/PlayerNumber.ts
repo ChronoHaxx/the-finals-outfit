@@ -118,21 +118,31 @@ export function rewritePlayerNumberGlsl(glsl: string, program: PlayerNumberProgr
 
 // ------------------------------------------------------------------ live materials
 
-// Every recovered material that prints a number, with the number its program was built with. The viewer's choice
-// (null: each piece's own) is applied to all of them; a material leaves when it is disposed.
-interface Entry { material: THREE.Material; uniform: { value: THREE.Vector2 }; authored: number; piece: string }
+// Every recovered material that prints a number, with the number its program was built with. Its owner's choice
+// (null: each piece's own) is applied to it; a material leaves when it is disposed.
+//
+// Owners (22 Nov 2026, multi-character Phase 2): the builder's one character is the default owner (undefined). A
+// squad gives each contestant its own owner key (CharacterRig's `playerNumberOwner`), so each contestant prints the
+// number its own outfit copy carries; setting one owner's number leaves every other owner's materials alone.
+export type PlayerNumberOwner = object | undefined;
+interface Entry { material: THREE.Material; uniform: { value: THREE.Vector2 }; authored: number; piece: string; owner: PlayerNumberOwner }
 const entries = new Set<Entry>();
 const listeners = new Set<() => void>();
 let chosen: number | null = null;
+const chosenBy = new WeakMap<object, number | null>();
+
+const choiceOf = (owner: PlayerNumberOwner) => owner ? chosenBy.get(owner) ?? null : chosen;
 
 function apply(entry: Entry) {
-  const [tens, ones] = playerNumberLanes(chosen ?? entry.authored);
+  const [tens, ones] = playerNumberLanes(choiceOf(entry.owner) ?? entry.authored);
   entry.uniform.value.set(tens, ones);
 }
 
-/** The uniform a material's program reads (bind it as `uRecoveredPlayerNumber` in onBeforeCompile). */
-export function playerNumberUniform(material: THREE.Material, authored: number, piece: string): { value: THREE.Vector2 } {
-  const entry: Entry = { material, uniform: { value: new THREE.Vector2() }, authored, piece };
+/** The uniform a material's program reads (bind it as `uRecoveredPlayerNumber` in onBeforeCompile). `owner`: whose
+ *  number it prints (undefined: the builder's character). */
+export function playerNumberUniform(material: THREE.Material, authored: number, piece: string,
+  owner?: PlayerNumberOwner): { value: THREE.Vector2 } {
+  const entry: Entry = { material, uniform: { value: new THREE.Vector2() }, authored, piece, owner };
   apply(entry);
   entries.add(entry);
   material.addEventListener("dispose", () => {
@@ -143,21 +153,22 @@ export function playerNumberUniform(material: THREE.Material, authored: number, 
   return entry.uniform;
 }
 
-/** Print this number on every piece that prints one (null: each piece's own). A value this site cannot print is
+/** Print this number on every piece of this owner that prints one (null: each piece's own). A value this site cannot print is
  *  treated as null. Changing it marks the materials for update, which also restarts the still-view accumulation. */
-export function setPlayerNumber(value: unknown) {
+export function setPlayerNumber(value: unknown, owner?: PlayerNumberOwner) {
   const next = shownPlayerNumber(value);
-  if (next === chosen) return;
-  chosen = next;
+  if (next === choiceOf(owner)) return;
+  if (owner) chosenBy.set(owner, next); else chosen = next;
   for (const entry of entries) {
+    if (entry.owner !== owner) continue;
     apply(entry);
     entry.material.needsUpdate = true; // same program cache key: no recompile, uniforms re-uploaded
   }
 }
 
-/** How many recovered materials (by item id) on screen print a number, for the UI's hint. */
-export function playerNumberPieces(): number {
-  return new Set([...entries].map(entry => entry.piece)).size;
+/** How many recovered materials (by item id) on screen print a number for this owner, for the UI's hint. */
+export function playerNumberPieces(owner?: PlayerNumberOwner): number {
+  return new Set([...entries].filter(entry => entry.owner === owner).map(entry => entry.piece)).size;
 }
 
 export function subscribePlayerNumberPieces(listener: () => void): () => void {
