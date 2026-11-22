@@ -488,6 +488,13 @@ export interface AssemblyAssets {
    *  dropEffectOnMeshPart): the part renders its mesh and only the effect is dropped. Absent — on every index
    *  today — such a part refuses the item exactly as before. */
   meshPartEffects?: string;
+  /** (w175) "drop" CNS Glitch overlay parts (decision 5, signoffs-2026-11-11.json: CNS Glitch items drawn without
+   *  the glitch effect, as purple): a part whose mesh is listed in `glitchOverlayMeshes` renders nothing, provided
+   *  the item keeps at least one other real part. The list is evidence (w175-cns-glitch/glitch-overlay-v1.json):
+   *  meshes whose every slot binds an M_CNS_Glitch material in every item that uses them. Absent — on every index
+   *  today — such a part refuses the item exactly as before. */
+  glitchOverlayParts?: string;
+  glitchOverlayMeshes?: string[];
 }
 
 /** One component's socket rests as the index records them; `bodyBone` is decided while resolving. */
@@ -800,6 +807,8 @@ export interface SourceResolveGates {
   /** "drop" the effect on a mesh part (w120, signed off 4 Nov 2026 dropEffectOnMeshPart): a part with a real
    *  static or skeletal mesh and an effect renders its mesh; every other refusal of the part stands. */
   meshPartEffects?: boolean;
+  /** (w175, decision 5) The CNS Glitch overlay meshes whose parts render nothing; absent when the gate is off. */
+  glitchOverlayMeshes?: ReadonlySet<string>;
 }
 
 /** Whether an index (or a capture-only dev switch) selects the gated mirrored attachment scale.
@@ -842,17 +851,30 @@ export function meshPartEffectsGate(value: string | undefined): boolean {
   return true;
 }
 
+/** (w175, decision 5) The CNS Glitch overlay meshes an index selects: "drop" with a non-empty list of mesh paths.
+ *  Absent stays off (and a list without the gate is ignored); any other spelling, or the gate without a valid list,
+ *  is refused rather than guessed. */
+export function glitchOverlayPartsGate(value: string | undefined, meshes: unknown): ReadonlySet<string> | undefined {
+  if (value === undefined) return undefined;
+  if (value !== "drop") throw new Error(`Unknown glitch overlay parts: ${value}`);
+  if (!Array.isArray(meshes) || !meshes.length || meshes.some(m => typeof m !== "string" || !m.startsWith("/Game/")))
+    throw new Error("Invalid glitch overlay meshes");
+  return new Set(meshes as string[]);
+}
+
 /** The resolve gates an index's assets select, with an optional capture-only override per field
  *  (a dev URL switch wins over the index for that capture only). */
 export function assemblyResolveGates(assets: AssemblyAssets,
   override: { attachmentMirroredScale?: string; mergedPartTransforms?: string;
     facialHairForeignOverlays?: string; activatedEffectParts?: string; meshPartEffects?: string } = {}): SourceResolveGates {
+  const glitchOverlayMeshes = glitchOverlayPartsGate(assets.glitchOverlayParts, assets.glitchOverlayMeshes);
   return {
     attachmentMirroredScale: attachmentMirroredScaleGate(override.attachmentMirroredScale ?? assets.attachmentMirroredScale),
     mergedPartTransforms: mergedPartTransformsGate(override.mergedPartTransforms ?? assets.mergedPartTransforms),
     facialHairForeignOverlays: facialHairForeignOverlaysGate(override.facialHairForeignOverlays ?? assets.facialHairForeignOverlays),
     activatedEffectParts: activatedEffectPartsGate(override.activatedEffectParts ?? assets.activatedEffectParts),
     meshPartEffects: meshPartEffectsGate(override.meshPartEffects ?? assets.meshPartEffects),
+    ...(glitchOverlayMeshes ? { glitchOverlayMeshes } : {}),
   };
 }
 
@@ -879,7 +901,9 @@ export async function loadSourceAssemblyAssets(baseUrl: string): Promise<Assembl
     || (assets.attachmentMirroredScale !== undefined && typeof assets.attachmentMirroredScale !== "string")
     || (assets.mergedPartTransforms !== undefined && typeof assets.mergedPartTransforms !== "string")
     || (assets.facialHairForeignOverlays !== undefined && typeof assets.facialHairForeignOverlays !== "string")
-    || (assets.activatedEffectParts !== undefined && typeof assets.activatedEffectParts !== "string")) {
+    || (assets.activatedEffectParts !== undefined && typeof assets.activatedEffectParts !== "string")
+    || (assets.glitchOverlayParts !== undefined && typeof assets.glitchOverlayParts !== "string")
+    || (assets.glitchOverlayMeshes !== undefined && !Array.isArray(assets.glitchOverlayMeshes))) {
     pending.delete(`${baseUrl}/assets.json`);
     throw new Error("Invalid source assembly assets");
   }
@@ -1004,6 +1028,18 @@ function activatedEffectSourcePart(part: ResolvedPart): boolean {
     !p.bIsHeadMesh && !p.bAttachToHeadMesh;
 }
 
+/** (w175, decision 5) A CNS Glitch overlay part: its mesh is on the index's evidenced glitch-overlay list, and it has
+ *  no effect, unresolved rule, live logic, wrap, optional mesh or head role (as activatedEffectSourcePart). The gated
+ *  "drop" route renders nothing for it. */
+function glitchOverlaySourcePart(part: ResolvedPart, meshes: ReadonlySet<string> | undefined): boolean {
+  if (!meshes) return false;
+  const p = part.definition, wrap = p.WrapDeformation, mesh = part.skeletalMesh || part.staticMesh;
+  return !!mesh && meshes.has(mesh) && !part.effect && !path(p.Effect) && !part.unresolved.length &&
+    onlyInertLogicModules(p) && !path(p.OptionalAttachmentMesh) && !path(p.OptionalHeadWrapMesh) &&
+    !(wrap?.bIsWrapDeformed || wrap?.bIsWrapDeformedByHeadComponent || path(wrap?.OptionalWrapDeformerMesh)) &&
+    !p.bIsHeadMesh && !p.bAttachToHeadMesh;
+}
+
 /** (w113, 2 Nov 2026) The parts a source skin pair is made of. An item of exactly two parts is unchanged. Under the
  *  signed-off activated-effect drop (dropActivatedEffectParts, the same gate and predicate resolveSourceRigParts
  *  drops by), a part whose only renderable is an activated effect renders nothing and is not part of the pair (the
@@ -1049,8 +1085,13 @@ export function resolveSourceRigParts(item: SourceOutfit["items"][string], asset
   // render — an item left with no real mesh part is refused exactly as before.
   const dropped = gates.activatedEffectParts === true && base.length > 1
     ? base.filter(activatedEffectSourcePart) : [];
-  const parts = dropped.length && dropped.length < base.length
+  const afterEffects = dropped.length && dropped.length < base.length
     ? base.filter(part => !dropped.includes(part)) : base;
+  // Gated (w175, decision 5): a CNS Glitch overlay part renders nothing, provided another part is kept.
+  const glitch = afterEffects.length > 1
+    ? afterEffects.filter(part => glitchOverlaySourcePart(part, gates.glitchOverlayMeshes)) : [];
+  const parts = glitch.length && glitch.length < afterEffects.length
+    ? afterEffects.filter(part => !glitch.includes(part)) : afterEffects;
   return parts.map(part => {
     const p = part.definition;
     const attached = !!part.staticMesh && !part.skeletalMesh && !!p.bIsAttached;

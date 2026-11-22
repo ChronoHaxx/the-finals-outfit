@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from "node:fs";
 import { Agent, request as httpsRequest } from "node:https";
-import { collectAssetRefs } from "./lib/asset-refs.mjs";
+import { catalogAssetSources, collectAssetRefs } from "./lib/asset-refs.mjs";
 import { RECONSTRUCTION_ROOTS } from "./lib/reconstruction-assets.mjs";
 import { catalogHostGroups } from "./lib/catalog-host-groups.mjs";
 import { isMeshPath } from "../src/lib/asset-routing.mjs";
@@ -67,7 +67,7 @@ if (itemsResult.success && sponsorsResult.success) {
   // Shared with stage-assets.mjs on purpose — see scripts/lib/asset-refs.mjs. When the
   // two derived their own lists, both missed the same six schema fields and the
   // validator vouched for an upload that was 6,245 files short.
-  const referenced = collectAssetRefs(items) as Set<string>;
+  const referenced = collectAssetRefs(catalogAssetSources(items, ROOT)) as Set<string>;
 
   for (const item of items) {
     if (item.sponsor && !sponsorIds.has(item.sponsor)) {
@@ -214,9 +214,10 @@ if (itemsResult.success && sponsorsResult.success) {
         }
 
         // The manifest is only as trustworthy as the upload it claims to describe, so
-        // confirm a random handful really are served before believing the rest.
+        // confirm a random handful really are served before believing the rest. Only paths the manifest lists: an
+        // unlisted one is already reported above, and its 404 would wrongly read as the manifest lying.
         const sample = [...new Set([
-          ...paths.sort(() => Math.random() - 0.5).slice(0, 12),
+          ...paths.filter(p => hosted!.has(p.replace(/^\/+/, ""))).sort(() => Math.random() - 0.5).slice(0, 12),
           ...reconstructionRoots,
           ...reconstructionPaths.filter(p => /\.(glsl|bin)$/.test(p)).sort(() => Math.random() - 0.5).slice(0, 8),
         ])];
