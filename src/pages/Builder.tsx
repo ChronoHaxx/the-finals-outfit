@@ -146,7 +146,7 @@ export default function Builder() {
       {/* The way back, said once when the UI goes (and to screen readers). Not part of any capture: it is page text. */}
       <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-[max(2rem,env(safe-area-inset-bottom))] z-50 flex justify-center">
         {hideUi.hint && <span className="hud animate-hint bg-ink-950/85 px-3.5 py-2.5 text-fg motion-reduce:animate-none">
-          {window.matchMedia("(hover: none)").matches ? "Double-tap to show controls" : "Press H to show controls"}
+          {window.matchMedia("(hover: none)").matches ? "Double-tap to show UI" : "Press H to show UI"}
         </span>}
       </div>
     </div>

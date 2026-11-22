@@ -61,12 +61,12 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
 }) {
   const panel = usePanel();
   const open = panel.open;
-  const feature = useFeature("capture");
   const [choices, setChoices] = useState(readChoices);
   const [running, setRunning] = useState<Output | null>(null);
   const [status, setStatus] = useState("");
   const [stage, setStage] = useState({ width: 0, height: 0, maxSide: 4096 });
   const video = useVideoExport(context, animator, backdrop);
+  const feature = useFeature("capture", video.running ? "Recording a video: open to see progress or cancel" : "Save a screenshot or an emote video");
   const change = (patch: Partial<Choices>) => setChoices(current => {
     const next = { ...current, ...patch };
     writeChoices(next);

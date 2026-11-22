@@ -405,6 +405,15 @@ function FeatureCallout({ target, onHover }: { target: Target; onHover?: (over: 
     const timer = window.setTimeout(() => markSeen(target.id), SEEN_MS);
     return () => window.clearTimeout(timer);
   }, [target.id]);
+  // While the callout shows, the control's native tooltip steps aside (it would say the same, a second later), and comes
+  // back after. Restored only if nothing set a new one meanwhile (a control whose tooltip follows its state).
+  useLayoutEffect(() => {
+    const control = target.element.closest<HTMLElement>("[data-feature]") ?? target.element;
+    const aside = [control, ...control.querySelectorAll<HTMLElement>("[title]")]
+      .flatMap(element => { const title = element.getAttribute("title"); return title === null ? [] : [{ element, title }]; });
+    aside.forEach(({ element }) => element.removeAttribute("title"));
+    return () => aside.forEach(({ element, title }) => { if (!element.hasAttribute("title")) element.setAttribute("title", title); });
+  }, [target]);
   // A focused control is described by its callout, as a tooltip is (and only while it shows).
   useEffect(() => {
     if (target.source !== "focus" || target.element.hasAttribute("aria-describedby")) return;

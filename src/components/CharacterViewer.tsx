@@ -400,7 +400,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
               </button>
             )}
             {hideUi && (
-              <button type="button" onClick={hideUi.hide} aria-label="Hide controls" {...hideFeature}
+              <button type="button" onClick={hideUi.hide} aria-label="Hide UI" {...hideFeature}
                 className="hud flex h-8 w-8 items-center justify-center bg-ink-950/80 text-fg transition-colors hover:bg-ink-950">
                 <EyeOffIcon size={15} />
               </button>

@@ -167,13 +167,13 @@ export const useMarked = () => useSyncExternalStore(subscribe, markedSnapshot, m
 
 /**
  * Puts a control on the map: spread the result on the element. `data-feature` lets the discovery layer find it (for its
- * callout, the tour and "Show me"); `data-fresh` draws the red corner while it is one of the few not tried yet. The
- * native tooltip is left to automated browsers, whose scripts find some controls by it: for a visitor, the callout
- * says the same with the shortcut, and a native tooltip on top of it would say it twice.
+ * callout, the tour and "Show me"); `data-fresh` draws the red corner while it is one of the few not tried yet. `title`
+ * is the control's native tooltip, kept as it always was (test scripts find controls by it); the callout sets it aside
+ * only while it is showing, so the two never say the same thing at once.
  */
 export function useFeature(id: FeatureId, title?: string): { "data-feature": string; "data-fresh"?: ""; title?: string } {
   const fresh = useSyncExternalStore(subscribe, () => markedSnapshot().has(id), () => false);
-  return { "data-feature": id, ...(fresh ? { "data-fresh": "" as const } : {}), ...(AUTOMATED && title ? { title } : {}) };
+  return { "data-feature": id, ...(fresh ? { "data-fresh": "" as const } : {}), ...(title ? { title } : {}) };
 }
 
 /** Whether a control is still worth an eager callout (never pressed here). */

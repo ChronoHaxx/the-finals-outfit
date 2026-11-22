@@ -132,7 +132,7 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
   const disabled = !ready;
   const button = VIEWER_BUTTON;
   const emotesFeature = useFeature("emotes", "Play an emote");
-  const animateFeature = useFeature("animate", "Play the outfit-screen idle, or return to the still pose");
+  const animateFeature = useFeature("animate", state.active ? "Return to the still pose" : "Play the outfit-screen idle");
   // An emote has its own timeline along the bottom, with its own pause: the column keeps one only for the idle.
   const timelineShown = !!animator.timeline();
   const loadingLabel = state.loading ? animator.info(state.loading)?.label : null;

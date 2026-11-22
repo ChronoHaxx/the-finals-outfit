@@ -65,8 +65,9 @@ const row = await page.evaluate(() => [...document.querySelectorAll("[data-viewe
 check(1, "top row: instant actions, then the four panels", row.join(",").startsWith("full-screen,hide-ui,graphics,capture,camera,lighting"), row.join(","));
 const fresh = await page.evaluate(() => [...document.querySelectorAll("[data-fresh]")].map(e => e.dataset.feature));
 check(1, "at most three red corners", fresh.length > 0 && new Set(fresh).size <= 3, fresh.join(","));
-const titles = await page.evaluate(() => document.querySelectorAll("[data-feature][title]").length);
-check(1, "no native tooltip doubles a callout", titles === 0, String(titles));
+const titles = await page.evaluate(() => ["Lighting and backdrop", "Play an emote", "Save a screenshot or an emote video", "Graphics settings"]
+  .filter(title => document.querySelector(`button[title="${title}"]`)));
+check(1, "the native tooltips test scripts use are all still there", titles.length === 4, titles.join(", "));
 const before = { keys: await otherKeys(page), outfits: await outfitCount(page) };
 
 // 2. Approach callout.
@@ -76,10 +77,13 @@ await page.mouse.move(capture.x + capture.width / 2, capture.y + capture.height 
 await page.waitForTimeout(500);
 let callout = await page.evaluate(() => document.getElementById("discovery-callout")?.textContent ?? "");
 check(2, "a callout comes up 18 px from Capture, before touching it", /Capture/.test(callout) && /PNG/.test(callout), callout);
+check(2, "while it shows, Capture's native tooltip steps aside (no double tooltip)",
+  !(await page.evaluate(() => document.querySelector("[data-feature=capture]").hasAttribute("title"))));
 await shot(page, "2-approach-capture");
 await page.mouse.move(capture.x - 200, capture.y + 400, { steps: 4 });
 await page.waitForTimeout(500);
-check(2, "and goes when the pointer leaves", !(await page.evaluate(() => !!document.getElementById("discovery-callout"))));
+check(2, "and goes when the pointer leaves, giving the tooltip back", await page.evaluate(() => !document.getElementById("discovery-callout")
+  && document.querySelector("[data-feature=capture]").getAttribute("title") === "Save a screenshot or an emote video"));
 await page.locator("[data-feature=capture]").click();
 await page.waitForTimeout(400);
 const header = await page.evaluate(() => document.querySelector("[role=group][aria-label=Capture] .hud")?.textContent);
@@ -144,7 +148,7 @@ for (let i = 0; i < 12; i++) {
   await page.keyboard.press(i === 5 ? "Enter" : "ArrowRight");
   await page.waitForTimeout(800);
 }
-check(4, "nine stops, in order", names.join(",") === "Items,In-game outfits,Saved outfits,Share outfit,Emotes,Lighting,Capture,Camera,Hide controls", names.join(","));
+check(4, "nine stops, in order", names.join(",") === "Items,In-game outfits,Saved outfits,Share outfit,Emotes,Lighting,Capture,Camera,Hide UI", names.join(","));
 check(4, "finishing records it as done", (await stored(page)).tour?.status === "done");
 await page.locator("[data-feature=guide]").click();
 await page.waitForTimeout(400);

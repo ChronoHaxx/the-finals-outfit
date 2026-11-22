@@ -46,6 +46,7 @@ export const FEATURES = [
   { id: "items", group: "build", name: "Items", hint: "Pick a slot, then a piece to put it on.", noMark: true },
   { id: "in-game-outfits", group: "build", name: "In-game outfits", hint: "Wear one of the game's own outfits in one go." },
   { id: "saved-outfits", group: "build", name: "Saved outfits", hint: "Switch, rename or duplicate outfits. Every change saves itself." },
+  { id: "player-number", group: "build", name: "Number", hint: "Wear a number from 0 to 99 on every piece that prints one. Own keeps theirs.", noMark: true },
   { id: "randomise", group: "build", name: "Randomise", hint: "Roll a whole outfit. Lock a piece to keep it through every roll." },
   { id: "share", group: "build", name: "Share outfit", hint: "Copy a link with the outfit, your camera, lighting and pose.", noMark: true },
   // Pose
@@ -60,7 +61,7 @@ export const FEATURES = [
   // Shoot
   { id: "camera", group: "shoot", name: "Camera", hint: "Place the camera exactly, roll it, and save views." },
   { id: "capture", group: "shoot", name: "Capture", hint: "Save a PNG up to three times the view's size, or an emote as video." },
-  { id: "hide-ui", group: "shoot", name: "Hide controls", hint: "Leave only the character on screen for a clean shot.", keys: ["H"] },
+  { id: "hide-ui", group: "shoot", name: "Hide UI", hint: "Leave only the character on screen for a clean shot.", keys: ["H"] },
   { id: "full-screen", group: "shoot", name: "Full screen", hint: "Fill the whole screen with the character. Esc leaves." },
   { id: "graphics", group: "shoot", name: "Graphics", hint: "Set quality, anti-aliasing and resolution, or show the frame rate." },
 ] as const satisfies readonly Feature[];
@@ -109,10 +110,10 @@ export const POINTER_SHORTCUTS: readonly GuideShortcut[] = [
   { keys: ["Drag"], action: "Turn the camera" },
   { keys: ["Right-drag"], action: "Move the camera" },
   { keys: ["Scroll"], action: "Zoom" },
-  { keys: ["H"], action: "Hide or show the controls" },
+  { keys: ["H"], action: "Hide or show the UI" },
   { keys: [",", "."], action: "Step an emote back or on a frame" },
   { keys: ["<", ">"], action: "Slow an emote down or speed it up" },
-  { keys: ["Esc"], action: "Close a panel, show the controls or leave full screen" },
+  { keys: ["Esc"], action: "Close a panel, show the UI or leave full screen" },
   { keys: ["?"], action: "Open or close the guide" },
 ];
 
@@ -121,7 +122,7 @@ export const TOUCH_SHORTCUTS: readonly GuideShortcut[] = [
   { keys: ["Drag"], action: "Turn the camera" },
   { keys: ["Pinch"], action: "Zoom" },
   { keys: ["Two-finger drag"], action: "Move the camera" },
-  { keys: ["Double-tap"], action: "Show the controls again" },
+  { keys: ["Double-tap"], action: "Show the UI again" },
 ];
 
 /** Every visitor-facing string with where it lives, for the public-text check. */
