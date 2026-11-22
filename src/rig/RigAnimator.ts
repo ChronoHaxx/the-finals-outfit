@@ -6,6 +6,7 @@ import type { FaceWrapPart } from "./FaceWrap";
 import { EmoteSounds } from "./EmoteSounds";
 import { SpringBones } from "./SpringBones";
 import { frameAt, type PoseCapture, type SharePose } from "../lib/share-pose";
+import { clampSpeed } from "../lib/emote-playback";
 
 // Showcase animation playback (5 Nov 2026). Plays the game's own front-end clips (outfit-screen idles, slot
 // reactions, emotes) on the body's driver skeleton. Every cosmetic follows for free: each one is skinned (or
@@ -29,6 +30,11 @@ import { frameAt, type PoseCapture, type SharePose } from "../lib/share-pose";
 // pause is a hold: the clip in front alone at its time, fades and the clips under it stopped, so a paused frame is
 // exactly (clip, time) and a share link can reproduce it. An emote the viewer has paused, scrubbed or stepped is
 // "inspected": at its end it stays on the last frame, paused, as a video player does, instead of returning to the idle.
+//
+// Speed (21 Nov 2026, lib/emote-playback.ts): 0.25x to 4x, as the emote action's own timeScale. Not the mixer's, which
+// is the pause switch above, and not the idle's: the idle and every crossfade keep real time (three times fades on the
+// mixer's clock). A seek's preroll runs at normal speed, so a held frame, chains included, is the same at any speed and
+// a link's paused pose opens identically for everyone. The sounds follow the scaled clock (EmoteSounds.ts).
 //
 // Faces (12 Nov 2026, FaceAnimator.ts): after the clip and the deformation rig, the clips' Face_* curves pose the worn
 // head's FACIAL_* bones through the head's own pose asset, as the game's head AnimBlueprint does.
@@ -106,7 +112,7 @@ export interface AnimationManifest {
   componentSpace?: ComponentSpace;
 }
 
-interface ClipData {
+export interface ClipData {
   formatVersion: 1;
   id: string;
   frameTime: number;
@@ -151,6 +157,10 @@ export interface AnimatorState {
   sway: boolean;
   /** Emotes and reactions repeat from their first frame instead of returning to the idle (the timeline's Loop). */
   loopEmote: boolean;
+  /** The emote speed: a time scale on emotes and reactions (the idle keeps normal speed). */
+  speed: number;
+  /** The facial animation is switched on (the viewer's switch; it may still have nothing to play: see FaceAnimator). */
+  face: boolean;
   idle: string | null;
   current: string | null; // the clip in front: an emote while it plays, else the idle
   loading: string | null;
@@ -214,11 +224,15 @@ function buildClip(data: ClipData, name: string): THREE.AnimationClip {
   return new THREE.AnimationClip(name, -1, tracks);
 }
 
+/** Clip files by URL. Each animator keeps its own unless it is given one to share (multi-character design, 11 Nov 2026:
+ *  characters playing the same animation then download and parse it once). The data is read-only; buildClip copies. */
+export type ClipFileCache = Map<string, Promise<ClipData>>;
+
 export class RigAnimator {
+  private readonly clipFiles: ClipFileCache;
   private mixer: THREE.AnimationMixer | null = null;
   private root: THREE.Object3D | null = null;
   private clips = new Map<string, Promise<THREE.AnimationClip>>(); // by clip id: its name is the id the state reports
-  private files = new Map<string, Promise<ClipData>>(); // by file: emotes that share an animation download it once
   private propClocks = new Map<string, (time: number) => number>(); // by clip id, for clips with a prop clock
   private frameTimes = new Map<string, number>(); // by clip id: seconds per frame, from its file
   private idleAction: THREE.AnimationAction | null = null;
@@ -244,7 +258,8 @@ export class RigAnimator {
   private still = new Map<THREE.Object3D, [THREE.Vector3, THREE.Quaternion, THREE.Vector3]>();
   private holding = false;
   private held: PoseRecord | null = null;
-  private snapshot: AnimatorState = { active: false, moving: false, paused: false, sway: true, loopEmote: false, idle: null, current: null, loading: null, error: null };
+  private snapshot: AnimatorState = { active: false, moving: false, paused: false, sway: true, loopEmote: false, speed: 1, face: true,
+    idle: null, current: null, loading: null, error: null };
   /** Rebuilt by the viewer once an outfit pass settles (the chains change with the outfit); reset before unpinning. */
   readonly springs = new SpringBones();
   /** The body's ported deformation rig (null for a body without the helper joints); built when the mixer binds. */
@@ -253,7 +268,7 @@ export class RigAnimator {
   deformEnabled: boolean;
   /** The props emotes spawn (none when the manifest names no props file). */
   readonly props: EmoteProps;
-  /** The worn head's facial animation (inert when the manifest names no faces index, or with ?face=0). */
+  /** The worn head's facial animation (inert when the manifest names no faces index, or while switched off). */
   readonly face: FaceAnimator;
   /** The worn head's skinned sections, head-wrapped parts and the worn items' face masks, set by the viewer. */
   private faceSource: (() => FaceSource) | null = null;
@@ -261,13 +276,17 @@ export class RigAnimator {
   readonly sounds: EmoteSounds;
 
   constructor(readonly manifest: AnimationManifest, private readonly clipBase: string,
-    options: { sway?: boolean; deform?: boolean; loopEmote?: boolean; propsUrl?: string | null; facesUrl?: string | null;
-      face?: boolean; soundsUrl?: string | null } = {}) {
+    options: { sway?: boolean; deform?: boolean; loopEmote?: boolean; speed?: number; propsUrl?: string | null; facesUrl?: string | null;
+      face?: boolean; soundsUrl?: string | null; clipFiles?: ClipFileCache } = {}) {
+    this.clipFiles = options.clipFiles ?? new Map();
     this.snapshot.sway = options.sway ?? true;
     this.snapshot.loopEmote = options.loopEmote ?? false;
+    this.snapshot.speed = clampSpeed(options.speed ?? 1);
+    this.snapshot.face = options.face ?? true;
     this.deformEnabled = options.deform ?? true;
     this.props = new EmoteProps(options.propsUrl ?? null, manifest.attachBones ?? [], manifest.componentSpace ?? null);
-    this.face = new FaceAnimator(options.face === false ? null : options.facesUrl ?? null);
+    // Off, it still knows the faces index, so the viewer can switch it on later (it fetches nothing until then).
+    this.face = new FaceAnimator(options.facesUrl ?? null, { enabled: this.snapshot.face });
     // A head's poses arriving while a frame is held: the next update poses it; the still view must draw that frame again.
     this.face.onReady = () => { if (this.snapshot.paused) this.poseListeners.forEach(listener => listener()); };
     this.sounds = new EmoteSounds(options.soundsUrl ?? null);
@@ -285,11 +304,33 @@ export class RigAnimator {
     return this.face.bind(source?.meshes ?? [], source?.wraps ?? [], source?.masks ?? []);
   }
 
-  /** Turn the facial animation on or off (?face=0 compares); off puts the face back to rest. */
+  /** Turn the facial animation on or off (the viewer's switch; ?face=0 opens with it off). Off puts the face back to rest
+   *  and fetches nothing more. On binds the worn head (its bones are at rest while the face is off) and fetches the face
+   *  curves of the clips in play; a held frame is drawn again once they are ready. Publishing redraws a held frame now. */
   setFace(on: boolean): void {
+    if (on === this.snapshot.face) return;
     this.face.setEnabled(on);
-    if (on) this.runFace();
-    if (this.snapshot.paused) this.poseListeners.forEach(listener => listener()); // the held frame changed
+    this.publish({ face: on });
+    if (!on) return;
+    const sources = [this.emoteAction, this.idleAction].map(action => action ? this.info(action.getClip().name)?.source : undefined);
+    void Promise.all([this.bindFace(), ...sources.map(source => this.face.prepareClip(source))]).then(() => {
+      if (!this.face.enabled || this.disposed) return; // switched off again meanwhile
+      this.runFace();
+      if (this.snapshot.paused) this.poseListeners.forEach(listener => listener());
+    });
+  }
+
+  /** The emote speed, 0.25x to 4x (see the top of this file). A held frame stays where it is. */
+  setSpeed(speed: number): void {
+    const next = clampSpeed(speed);
+    if (next === this.snapshot.speed) return;
+    this.emoteAction?.setEffectiveTimeScale(next);
+    this.publish({ speed: next });
+  }
+
+  /** An action's own time scale: the emote speed for the emote in front, normal for the idle. */
+  private scaleFor(action: THREE.AnimationAction): number {
+    return action === this.emoteAction ? this.snapshot.speed : 1;
   }
 
   /** Pose the face from the clips the mixer is actually running (a stopped action keeps its last weight: skip it). */
@@ -449,14 +490,15 @@ export class RigAnimator {
     if (!pending) {
       const info = this.info(id);
       if (!info) return Promise.reject(new Error(`Unknown clip ${id}`));
-      let data = this.files.get(info.file);
+      const href = this.clipBase + info.file;
+      let data = this.clipFiles.get(href);
       if (!data) {
-        data = fetch(this.clipBase + info.file).then(async response => {
+        const download = fetch(href).then(async response => {
           if (!response.ok) throw new Error(`Clip ${id} request failed (${response.status})`);
           return await response.json() as ClipData;
         });
-        data.catch(() => this.files.delete(info.file)); // a failed download may be retried
-        this.files.set(info.file, data);
+        download.catch(() => { if (this.clipFiles.get(href) === download) this.clipFiles.delete(href); }); // a failed download may be retried
+        this.clipFiles.set(href, data = download);
       }
       // Each id gets its own AnimationClip (cheap: the tracks are rebuilt from the shared data), so the playing
       // clip's name is always the emote that was picked, not whichever emote first downloaded the file.
@@ -561,7 +603,7 @@ export class RigAnimator {
     const action = mixer.clipAction(clip);
     this.fading.delete(action); // picked again while it faded out: it is the incoming action now
     action.enabled = true;
-    action.setEffectiveTimeScale(1).setEffectiveWeight(1);
+    action.setEffectiveTimeScale(info.loop ? 1 : this.snapshot.speed).setEffectiveWeight(1);
     this.stopping = false;
     if (info.loop) {
       action.setLoop(THREE.LoopRepeat, Infinity);
@@ -591,6 +633,37 @@ export class RigAnimator {
     }
     mixer.timeScale = 1;
     this.publish({ loading: null, paused: false });
+  }
+
+  /** Start an idle without taking the front (21 Nov 2026): the viewer's first motion once the outfit has loaded, when
+   *  the viewer already picked an emote while it was loading (AnimationControls). The emote stays in front and the
+   *  idle runs under it, as play() leaves an idle under an emote, so the emote comes back to it when it ends. Takes no
+   *  new request, so an emote still downloading is not superseded; it waits for that one to land. With nothing up any
+   *  more (the emote ended, or failed to load) it plays as play() would. Does nothing (resolves false) when an idle
+   *  already runs or the viewer stopped or closed their emote meanwhile. */
+  async playUnder(root: THREE.Object3D, id: string): Promise<boolean> {
+    if (!this.info(id)?.loop) throw new Error(`Not an idle: ${id}`);
+    const request = this.request;
+    const clip = await this.clip(id);
+    while (this.snapshot.loading !== null) { // the viewer's pick still downloading: look again once it lands or fails
+      if (this.disposed) return false;
+      await new Promise<void>(resolve => { const off = this.subscribe(() => { off(); resolve(); }); });
+    }
+    if (this.disposed || this.idleAction) return false;
+    if (this.emoteAction && !this.stopping && this.mixer && this.root === root) {
+      const action = this.mixer.clipAction(clip);
+      this.fading.delete(action);
+      action.setEffectiveTimeScale(1).setEffectiveWeight(1); // as play() sets an idle (normal speed)
+      action.setLoop(THREE.LoopRepeat, Infinity);
+      action.reset().play();
+      action.enabled = false; // no weight until the emote ends into it (returnFromEmote)
+      this.idleAction = action;
+      this.publish({});
+      return true;
+    }
+    if (request !== this.request) return false; // stopped or closed meanwhile: the viewer's choice
+    await this.play(root, id);
+    return this.snapshot.idle === id;
   }
 
   /** Fade back to the static pose. */
@@ -663,6 +736,7 @@ export class RigAnimator {
     const target = Math.max(0, Math.min(seconds, action.getClip().duration));
     const lead = preroll && this.snapshot.sway && this.springs.count ? Math.min(1.5, target) : 0;
     this.seeking = true;
+    action.setEffectiveTimeScale(1); // the preroll plays at normal speed: the held frame is the same at any speed
     try {
       action.time = target - lead;
       action.paused = false;
@@ -682,6 +756,7 @@ export class RigAnimator {
       this.runDeform();
       this.runFace();
     } finally {
+      action.setEffectiveTimeScale(this.scaleFor(action));
       this.seeking = false;
     }
     this.props.update(action === this.emoteAction ? action.time : null);
@@ -755,11 +830,12 @@ export class RigAnimator {
     this.face.unbind();
   }
 
-  /** The emote's clock for its sounds, advancing only while it plays (paused, held by a seek or scrubbed: silent). */
+  /** The emote's clock for its sounds, advancing only while it plays (paused, held by a seek or scrubbed: silent), and
+   *  how fast: the emote speed. */
   private updateSounds(): void {
     const emote = this.emoteAction;
     const clock = emote && !this.stopping
-      ? { time: emote.time, duration: emote.getClip().duration, looping: emote.loop === THREE.LoopRepeat } : null;
+      ? { time: emote.time, duration: emote.getClip().duration, looping: emote.loop === THREE.LoopRepeat, rate: this.snapshot.speed } : null;
     this.sounds.update(clock, !!clock && this.snapshot.moving && this.mixer!.timeScale > 0 && !this.scrubbing);
   }
 
