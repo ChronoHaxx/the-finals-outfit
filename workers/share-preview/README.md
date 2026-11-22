@@ -178,6 +178,20 @@ Live checks after the deploy, all read-only (nothing stored):
 - The root redirects (302).
 - An upload with `lt=Lobby` gets 400 `bad lighting`; a foreign origin gets 403.
 
+## Redeploying for one-digit player numbers (22 Nov 2026)
+
+The app's player number now goes from 0 to 99 (`_docs/player-number-2026-11-22/README.md`). The Worker's `pn`
+allow-list changes from `^[1-9][0-9]$` to `^(?:[0-9]|[1-9][0-9])$`: one canonical spelling per number, no leading
+zero, so `pn=7` and `pn=0` are kept and `pn=07`, `pn=00` and `pn=100` are still refused (400 `bad player number`) or
+dropped from a link. Nothing else changes; 10–99 behave exactly as before.
+
+Deploy order does not matter for correctness, but deploy first. A Worker without this change refuses an upload with a
+one-digit `pn`, and the app then copies the plain short link, which carries the number.
+
+**Status: pending the coordinator's approval** (plan and rollback sent 22 Nov). From commit `8962e71`:
+`npx --yes wrangler@4.131.1 deploy`, replacing `c75c6189-f6af-4769-89f0-01a588f36ac8` (PR #76's lighting, with `pn`
+and `view`). To restore it: `npx --yes wrangler@4.131.1 rollback c75c6189-f6af-4769-89f0-01a588f36ac8`.
+
 ## Live deployment (20 Oct 2026)
 
 - Worker `the-finals-outfit-share` at https://the-finals-outfit-share.chronohaxx.workers.dev (account subdomain renamed from the
