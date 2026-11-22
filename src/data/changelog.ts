@@ -24,12 +24,21 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
       "42 more cosmetics render in 3D, among them the space pilot jackets, capes and skirts, the tiger pants and hoodie, the ballistic and demon LED masks, the carbon racing helmet and more hair. 15 cosmetics with a glitch pattern also render in 3D, without that effect, which the preview cannot show yet.",
       "3,151 of the catalog's 3,482 cosmetics now have a first-pass 3D reconstruction. The share reads 90% because the catalog grew.",
       "Earrings and Laugh Trigger now sit in place on every face, not only Face 01.",
-      "Emotes have a speed slider, from a quarter speed to four times. Sound follows the speed, so every clap and footstep stays on its frame. Pause, the frame slider and Loop work at any speed, and < and > change it on a keyboard. A Facial animation button beside Sway keeps the face at rest. Both are remembered in this browser.",
       "An emote picked while the outfit is still loading now plays to its end instead of going back to the idle after a second or two.",
       "The preview does far less work each frame, so it runs more smoothly on slower computers such as laptops with built-in graphics, most of all with a face on.",
       "Pick your player number, 10 to 99, beside Body type. Clothing that prints a number, such as jerseys and cargo pants, shows yours in its own lettering, and Own keeps each piece's printed number. The number is saved with the outfit and carried by share links.",
     ],
     items: ["in-game-outfits", "catalog", "red-items", "idle-emotes", "faster-builder", "first-pass-3d"],
+  },
+  {
+    id: "2026-11-21-emote-speed-face",
+    date: "2026-11-21",
+    title: "Emote speed and a face switch",
+    notes: [
+      "Emotes have a speed slider, from a quarter speed to four times. Sound follows it, so every clap and footstep stays on its frame, and its pitch rises and falls with the speed. Pause, the frame slider, Loop and shared poses work the same at any speed. On a keyboard, < and > change it.",
+      "A Facial animation switch keeps the face still when you'd rather it didn't move. The speed and the switch are both remembered in this browser.",
+    ],
+    items: ["idle-emotes"],
   },
   {
     id: "2026-11-21-season-1-2-emotes",

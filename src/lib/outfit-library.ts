@@ -90,7 +90,8 @@ export interface TabMemory { get(): string | null; set(id: string): void }
 
 export type SaveStatus = "saved" | "saving" | "off" | "error";
 
-/** An outfit on screen that is not (yet) a saved record: an opened share link, or a roll at the cap. */
+/** An outfit on screen that is not (yet) a saved record: an opened share link, one of the game's own outfits, or a roll
+ *  at the cap. */
 export interface Draft {
   name: string;
   slots: SlotMap;

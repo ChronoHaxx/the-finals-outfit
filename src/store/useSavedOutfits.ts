@@ -320,17 +320,17 @@ type Opened = { kind: "same" } | { kind: "declined" } | { kind: "record"; record
  * saved outfits, so nothing saved changes until the user edits it or presses Save (which makes a NEW saved outfit).
  * An outfit already on screen changes nothing; a saved outfit with exactly these pieces is shown instead of a draft.
  * `slots` is what the draft keeps, `build` what it wears, `bodyType` the body it is worn on and `playerNumber` the number
- * it prints (null: each piece's own): the look is all of these together, so the same pieces on another body or with
- * another number are a different outfit. A link's address stays while its draft
- * is on screen (a reload shows it again); anything else removes a previous link from the address bar, after the draft
- * is in place, so the router's re-run finds the draft and leaves it alone.
+ * its garments print (stored form: null for each piece's own): the look is the pieces, the body and the number together,
+ * so the same pieces on another body or with another number are a different outfit. A link's address stays while its
+ * draft is on screen (a reload shows it again); anything else removes a previous link from the address bar, after the
+ * draft is in place, so the router's re-run finds the draft and leaves it alone.
  */
 function openUnsaved(lib: OutfitLibrary, name: string, slots: SlotMap, build: Partial<Record<Slot, string>>,
   bodyType: string, playerNumber: number | null, reason: "link" | "preset", ask: string): Opened {
   ensureCurrent(false);
   const current = lib.getCurrent();
   const state = useBuildStore.getState();
-  if (current && sameBuild(state.build, build) && state.bodyType === bodyType && samePlayerNumber(state.playerNumber, playerNumber)) {
+  if (current && sameBuild(state.build, build) && state.bodyType === bodyType && state.playerNumber === playerNumber) {
     if (current.kind === "record" && reason === "link") cleanUrl(); // already this saved outfit (also the Roadmap round trip)
     return { kind: "same" };
   }
@@ -359,7 +359,7 @@ function openUnsaved(lib: OutfitLibrary, name: string, slots: SlotMap, build: Pa
  * Put on one of the game's own outfits (src/lib/preset-outfits.ts) as an unsaved draft. `slots` is the whole outfit, built
  * by presetSlots from the outfit on screen; it is resolved against today's catalogue once, and only what can be worn
  * goes into the draft. The body type and player number on screen stay: an outfit dresses the contestant, it does not
- * change their body or the number they picked.
+ * change their body, and in the game the number is a player setting, not part of an outfit.
  * Undo goes back to what was on screen, but only while the draft is still the one on screen.
  */
 export function openPreset(name: string, slots: SlotMap): "same" | "declined" | "draft" | "record" {
@@ -368,8 +368,8 @@ export function openPreset(name: string, slots: SlotMap): "same" | "declined" | 
   if (!lib) { useBuildStore.getState().load(resolved.build); return "draft"; } // load keeps the body type and number
   const previous = lib.getCurrent();
   const wearing = { ...resolved.build } as SlotMap;
-  const opened = openUnsaved(lib, name, wearing, resolved.build, currentBodyType(),
-    storedPlayerNumber(useBuildStore.getState().playerNumber), "preset", `Wear “${name}” anyway?`);
+  const opened = openUnsaved(lib, name, wearing, resolved.build, currentBodyType(), useBuildStore.getState().playerNumber,
+    "preset", `Wear “${name}” anyway?`);
   if (opened.kind === "record") toast(`Your saved outfit “${opened.record.name}” already has these pieces.`, "info");
   if (opened.kind !== "draft") return opened.kind;
   const draft = opened.draft;
