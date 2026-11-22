@@ -25,8 +25,8 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 
 # Roadmap
 
-Last reviewed: 2026-11-21
-Reviewed after patch note: 2026-11-21-emote-speed-face
+Last reviewed: 2026-11-22
+Reviewed after patch note: 2026-11-22-in-game-outfits
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 
@@ -131,10 +131,15 @@ A guide for reproducing a reported problem and checking a fix, so others can hel
 
 {total} cosmetics through Season {latestSeason}, under their THE FINALS Wiki names, with colour variants listed separately. Some cosmetics from earlier seasons were left out when the catalog was first built; adding them is in progress. Outfit links keep working as the catalog grows.
 
+### The game's own outfits
+<!-- id: in-game-outfits -->
+
+The game's preset outfits are listed with their in-game icons, and one tap puts a whole outfit on without changing your saved outfits. Pieces the catalog does not have yet, and effects the preview cannot show, are listed rather than left out.
+
 ### A first-pass 3D preview on Medium
 <!-- id: first-pass-3d -->
 
-Meshes and materials are rebuilt from the game's own files for {blue} items so far. Recovered materials include layered fabrics, glass and gems, fur, hair, eyes and faces, makeup and glowing LED pieces.
+Meshes and materials are rebuilt from the game's own files for {blue} items so far. Recovered materials include layered fabrics, glass and gems, fur, hair, eyes and faces, makeup and glowing LED pieces. Numbers printed on clothing show the player number you pick.
 
 ### Default lighting
 <!-- id: default-lighting -->
@@ -169,4 +174,4 @@ Share links come with a four-angle preview image. Randomise builds a rules-based
 ### A faster builder that works on phones
 <!-- id: faster-builder -->
 
-The builder was redesigned around the 3D preview, which fills the window with the items in a drawer beside it, or in a sheet under it on phones. Outfits download faster, with a loading readout. Your outfits are saved in your browser as you work, a full-screen view or the H key shows only the character, screenshots save or copy as PNG with the backdrop or a transparent background, and graphics settings trade quality for speed.
+The builder was redesigned around the 3D preview, which fills the window with the items in a drawer beside it, or in a sheet under it on phones. Outfits download faster, with a loading readout. Your outfits are saved in your browser as you work, a full-screen view or the H key shows only the character, screenshots save or copy as PNG with the backdrop or a transparent background, and graphics settings trade quality for speed. The preview does far less work each frame, so slower computers run it more smoothly.
