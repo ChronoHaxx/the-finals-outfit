@@ -4,10 +4,11 @@
 should "make it more clear what features the website have". He had missed mobile support, outfits saved in the
 browser and sharing a paused emote frame.
 
-**Baseline:** main `0951e1b` (21 Nov). The guide describes only what is on main. These open PRs are not described:
-#53 (patch notes and roadmap), #57 (scene backdrops), #58 (emote speed and face switch), #59 (camera views and share),
-#61 (light markers and presets), #62 (missing emotes), #63 (sharper screenshots and video export) and #64
-(performance). Patch notes and `ROADMAP.md` are untouched.
+**Baseline:** main `0951e1b` (21 Nov), rebased on 22 Nov onto main `96bf586`. The guide describes only what is on
+main. #58 (emote speed and face switch), #60 (player number) and #62 (Season 1-2 emotes) merged before this PR and
+are described (rows marked 22 Nov below). These open PRs are not: #57 (scene backdrops), #59 (camera views and share),
+#61 (light markers and presets), #63 (sharper screenshots and video export) and #45 (preset outfits). #53, #64 and #69
+have no new control to describe. Patch notes and `ROADMAP.md` are untouched.
 
 ## Finding: share links do not carry the lighting
 
@@ -28,14 +29,16 @@ links).
 |---|---|---|
 | Items drawer beside the view; a sheet under it on a phone held upright; search and 3D-status filter | Items tab at the stage edge | `build/items`, `phone/phone-layout` |
 | Body types: Masculine, Androgynous (saved and shared) | Body type, under the outfit name | `build/body-type` |
+| Player number 10–99, or Own (saved and shared; #60, 22 Nov) | Number, beside Body type | `build/player-number` |
 | Randomise (rules-based), lock pieces, Include red; a hand-made outfit is kept | Foot of the outfit | `build/randomise` |
 | Report issue (whole outfit or one piece), prefilled GitHub issue | Next to Reset | `build/report` |
 | Saved outfits: autosave, up to 100, rename, duplicate, delete with undo | The outfit name | `saved/saved-outfits` |
 | Remembered per browser: lighting and looks, emote sound and loop, graphics, drawer | — | `saved/remembered` |
-| Share link: outfit + body type, "Include this frame" (pose, paused or playing), link styles | Share outfit | `share/share-link` |
+| Share link: outfit + body type + player number, "Include this frame" (pose, paused or playing), link styles | Share outfit | `share/share-link` |
 | Link with preview image (four angles) | Link style, in the share panel | `share/share-preview` (only where the preview host is set) |
-| Emotes from in-game icons, props, sound (mute, volume), facial animation; search, Complete only | Emotes, right column | `emotes/emotes` |
+| Emotes from in-game icons, grouped by season from Season 1 (#62), props, sound (mute, volume), facial animation; search, Complete only | Emotes, right column | `emotes/emotes` |
 | Timeline: pause, scrub, step `,` `.`, Loop, close | Bottom of the view while an emote plays | `emotes/timeline` |
+| Emote speed ¼×–4× (`<` `>`), Facial animation switch, both remembered; not in links (#58, 22 Nov) | Right column while an emote plays | `emotes/speed-face` |
 | Idle and still pose (Animate), Sway | Right column | `emotes/idle` |
 | Lighting panel: looks (Studio, Lobby, sun looks, your own), lights, backdrop, ground shadows, exposure | The button named after the look | `look/lighting` |
 | Graphics: Auto, quality, anti-aliasing, resolution, FPS counter | Graphics, top right | `look/graphics` |

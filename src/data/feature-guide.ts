@@ -50,6 +50,12 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
         where: "Body type, under the outfit name",
       },
       {
+        id: "player-number",
+        title: "Player number",
+        text: "Type a number from 10 to 99 to wear it on every piece that prints one in game. Own shows each piece's number as in its icon. Saved outfits and share links keep it.",
+        where: "Number, beside Body type",
+      },
+      {
         id: "randomise",
         title: "Randomise and lock",
         text: "Roll a random outfit whose pieces fit together. The lock on a piece keeps it through every roll. An outfit you made yourself is kept: the roll starts a new one.",
@@ -87,7 +93,7 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
       {
         id: "share-link",
         title: "Share links",
-        text: "Share outfit copies a link to the outfit and its body type. With an emote on screen, tick Include this frame to share that exact pose, paused or playing. Lighting is not part of the link: whoever opens it sees the lighting set in their own browser.",
+        text: "Share outfit copies a link to the outfit, its body type and player number. With an emote on screen, tick Include this frame to share that exact pose, paused or playing. Lighting is not part of the link: whoever opens it sees the lighting set in their own browser.",
         where: "Share outfit, at the foot of the outfit",
       },
       {
@@ -106,7 +112,7 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
       {
         id: "emotes",
         title: "Emotes",
-        text: "Play any emote from its in-game icon, with its props, and its sound and facial animation where the game has them. Search by name. The speaker button mutes the sound.",
+        text: "Play any emote from its in-game icon, grouped by season from Season 1, with its props, and its sound and facial animation where the game has them. Search by name. The speaker button mutes the sound.",
         where: "Emotes, on the right of the view",
       },
       {
@@ -114,6 +120,12 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
         title: "Timeline",
         text: "Pause on any frame, drag through the emote or step one frame at a time, and turn on Loop to repeat it.",
         where: "Along the bottom while an emote plays",
+      },
+      {
+        id: "speed-face",
+        title: "Speed and face",
+        text: "Slow an emote down to a quarter of its speed or speed it up to four times. Turn off Facial animation to keep the face at rest. Both are remembered.",
+        where: "Speed and Facial animation, on the right while an emote plays",
       },
       {
         id: "idle",
@@ -203,6 +215,7 @@ export const POINTER_SHORTCUTS: readonly GuideShortcut[] = [
   { keys: ["Scroll"], action: "Zoom" },
   { keys: ["H"], action: "Hide or show the controls" },
   { keys: [",", "."], action: "Previous or next frame of an emote" },
+  { keys: ["<", ">"], action: "Slower or faster emote" },
   { keys: ["Esc"], action: "Close a panel, bring the controls back or leave full screen" },
   { keys: ["?"], action: "Open or close this guide" },
 ];

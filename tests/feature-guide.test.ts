@@ -47,7 +47,7 @@ test("the guide never says a share link carries the lighting", () => {
 
 test("the shortcut lists name the keys the builder handles", () => {
   const keys = POINTER_SHORTCUTS.flatMap(shortcut => shortcut.keys);
-  for (const key of ["H", "Esc", ",", ".", "?"]) assert.ok(keys.includes(key), key);
+  for (const key of ["H", "Esc", ",", ".", "<", ">", "?"]) assert.ok(keys.includes(key), key);
   assert.ok(TOUCH_SHORTCUTS.some(shortcut => shortcut.keys.includes("Double-tap")));
 });
 
