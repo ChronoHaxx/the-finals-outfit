@@ -38,6 +38,12 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
     title: "Build an outfit",
     items: [
       {
+        id: "in-game-outfits",
+        title: "In-game outfits",
+        text: "Outfits lists the game's own outfits with their in-game icons. Wear this outfit puts one on and keeps your face and skin. It is not saved until you change something or press Save, so your saved outfits stay as they were.",
+        where: "Outfits, under In game at the top of the item list",
+      },
+      {
         id: "items",
         title: "Items",
         text: "Pick cosmetics from the Items drawer beside the 3D view. Search a slot by name, or filter it by 3D status.",
@@ -174,6 +180,12 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
         title: "Screenshots",
         text: "Save a PNG or copy it to paste into a chat, on the backdrop or with a transparent background, at up to three times the view's size.",
         where: "Camera button, top right",
+      },
+      {
+        id: "emote-video",
+        title: "Emote video",
+        text: "Save the emote on screen as a 60 fps video, made in your own browser: an MP4 with sound, a see-through WebM, or a see-through PNG sequence for video editors.",
+        where: "Camera button, Video tab",
       },
     ],
   },
