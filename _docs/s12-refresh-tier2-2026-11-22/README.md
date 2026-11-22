@@ -91,6 +91,22 @@ sideleft, waist; `anim=outfit-idle&animTime=6`), the Flex emote on the five outf
 - o03: the S12 tech crop top folds slightly differently under the raised arms and stays clean
   (`zoom/o03-flex-shoulders.png`).
 
+### Batch B: per-mesh body masks regenerated (`run-masks.py`, `batchB-mask-compare.json`)
+
+Each mask was regenerated from the live mesh and from the S12 mesh with `build-companion-masks.mjs`, and compared
+with the published mask (texels set):
+- Regenerating from the live mesh reproduces the published mask exactly (0 texels differ) for all 9 that produced a
+  mask, so the generator is a valid reference.
+- **S12 regeneration matches the live mask exactly for 8:** FrogShoes, AnubisMaskRegular, DiscoBotGloves, Cleats,
+  SuitJacket, TechPants, DoubleHolsterPants, EmpressShoes. These can keep their published masks.
+- `SK_Samurai_ClothTop_M`: 1 texel more hidden out of 550,436. Negligible, but it is a different file, so either
+  admit it with the S12 mask or keep the published one and record why.
+- `SK_Space_PioneerTechConsole_M` (published 0 texels) and `SK_Robots_CordBelt_M` (255 texels): the generator
+  wrote no mask in either run. Investigate before admitting.
+- Still to do: item masks (`run-item-masks.py`). SuitJacket's item mask is a w161 part-hide mask, a different
+  system, and stays held. The builder also needs a path that admits a reworked or mask-stale mesh whose masks are
+  proven unchanged.
+
 ### Found and fixed during the review
 
 - **Material slot**: the first smoke shot threw "Missing source material slot: CombatPants_Cloth" (S12 moved the
