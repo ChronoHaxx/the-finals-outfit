@@ -1,0 +1,44 @@
+{
+ "1": {
+  "frames": 1320,
+  "msPerFrame": 3.23,
+  "busyMsPerFrame": 3.21,
+  "moving": [
+   true
+  ],
+  "geometries": 26,
+  "textures": 106,
+  "programs": 44,
+  "jsHeapMB": 572.2
+ },
+ "2": {
+  "frames": 455,
+  "msPerFrame": 9.6,
+  "busyMsPerFrame": 9.52,
+  "moving": [
+   true,
+   true
+  ],
+  "geometries": 36,
+  "textures": 195,
+  "programs": 53,
+  "jsHeapMB": 927.2
+ },
+ "3": {
+  "frames": 296,
+  "msPerFrame": 14.98,
+  "busyMsPerFrame": 14.95,
+  "moving": [
+   true,
+   true,
+   true
+  ],
+  "geometries": 47,
+  "textures": 283,
+  "programs": 57,
+  "jsHeapMB": 1283.1
+ },
+ "base": "http://127.0.0.1:5186",
+ "when": "2026-11-22T18:19:14.325Z",
+ "window": 4000
+}

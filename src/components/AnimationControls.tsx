@@ -2,7 +2,7 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import type { CharacterRig } from "../rig/CharacterRig";
-import { loadAnimationManifest, RigAnimator } from "../rig/RigAnimator";
+import { loadAnimationManifest, RigAnimator, type ClipFileCache } from "../rig/RigAnimator";
 import { AUTOMATED } from "../lib/automation";
 import { frameClock, clockFrozen } from "../lib/frame-clock";
 import { useAnimationBinding, useAnimatorState } from "./useAnimationBinding";
@@ -53,8 +53,9 @@ export function setEmoteLoop(animator: RigAnimator, on: boolean): void {
 /** The animator for a clip set, once its manifest has loaded (null: no clips published there, or still loading).
  *  A new base (Chinals mode, lib/site-mode.ts) disposes the old animator and loads the other set; in between this is
  *  null at once, in the same render, so nothing drives the body with the old set under the new mode. The controls
- *  unmount and mount again, so the new set starts from its own idle (or a link's pose). */
-export function useRigAnimator(base: string): RigAnimator | null {
+ *  unmount and mount again, so the new set starts from its own idle (or a link's pose). `clipFiles`: a clip download
+ *  cache shared between several characters' animators (a squad); keep it the same object for the hook's lifetime. */
+export function useRigAnimator(base: string, clipFiles?: ClipFileCache): RigAnimator | null {
   const [loaded, setLoaded] = useState<{ base: string; animator: RigAnimator } | null>(null);
   useEffect(() => {
     let cancelled = false, created: RigAnimator | null = null;
@@ -66,12 +67,12 @@ export function useRigAnimator(base: string): RigAnimator | null {
           speed: AUTOMATED ? 1 : savedSpeed(), propsUrl: loaded.propsUrl, facesUrl: loaded.facesUrl,
           face: params.get("face") !== "0" && (AUTOMATED || savedFace()),
           // Automated browsers get no sounds at all (no audio device, no downloads): captures stay silent and deterministic.
-          soundsUrl: AUTOMATED ? null : loaded.soundsUrl });
+          soundsUrl: AUTOMATED ? null : loaded.soundsUrl, clipFiles });
       setLoaded({ base, animator: created });
     }).catch(error => console.warn("[animation] manifest unavailable", error));
     // dispose(), not reset(): a clip still downloading must not bind the body to a discarded animator when it lands.
     return () => { cancelled = true; created?.dispose(); };
-  }, [base]);
+  }, [base, clipFiles]);
   return loaded?.base === base ? loaded.animator : null;
 }
 
@@ -91,19 +92,27 @@ export function AnimationFrameDriver({ animator, yaw }: { animator: RigAnimator;
   const lastAzimuth = useRef<number | null>(null);
   useFrame(({ camera, controls }, delta) => {
     if (clockFrozen()) return;
-    const target = (controls as unknown as { target?: THREE.Vector3 } | null)?.target;
-    const azimuth = Math.atan2(camera.position.x - (target?.x ?? 0), camera.position.z - (target?.z ?? 0)) - (yaw?.() ?? 0);
-    const last = lastAzimuth.current;
-    lastAzimuth.current = azimuth;
-    // (A video export records through its own fixed camera: orbiting meanwhile turns nothing.)
-    if (last !== null && animator.state.sway && animator.state.moving && !animator.recording) {
-      const change = Math.atan2(Math.sin(azimuth - last), Math.cos(azimuth - last)); // wrapped to (-pi, pi]
-      if (Math.abs(change) < TELEPORT) animator.springs.turn(THREE.MathUtils.clamp(change, -MAX_TURN, MAX_TURN));
-    }
-    animator.update(frameClock.fixed ?? delta);
+    stepAnimator(animator, camera, controls, yaw?.() ?? 0, lastAzimuth, delta);
     frameClock.steps++;
   });
   return null;
+}
+
+/** One character's frame: the camera's turn round it swings its springs, then its mixer advances. `yaw`: the
+ *  character's own turn about the vertical axis; `lastAzimuth`: this character's memory between frames. A frame
+ *  driver calls it for each of its characters, then counts one frame (frameClock.steps). */
+export function stepAnimator(animator: RigAnimator, camera: THREE.Camera, controls: unknown, yaw: number,
+  lastAzimuth: { current: number | null }, delta: number): void {
+  const target = (controls as { target?: THREE.Vector3 } | null)?.target;
+  const azimuth = Math.atan2(camera.position.x - (target?.x ?? 0), camera.position.z - (target?.z ?? 0)) - yaw;
+  const last = lastAzimuth.current;
+  lastAzimuth.current = azimuth;
+  // (A video export records through its own fixed camera: orbiting meanwhile turns nothing.)
+  if (last !== null && animator.state.sway && animator.state.moving && !animator.recording) {
+    const change = Math.atan2(Math.sin(azimuth - last), Math.cos(azimuth - last)); // wrapped to (-pi, pi]
+    if (Math.abs(change) < TELEPORT) animator.springs.turn(THREE.MathUtils.clamp(change, -MAX_TURN, MAX_TURN));
+  }
+  animator.update(frameClock.fixed ?? delta);
 }
 
 /** Overlay controls, plus the rig-side bookkeeping (bone pins for legacy statics) that follows the animator. */

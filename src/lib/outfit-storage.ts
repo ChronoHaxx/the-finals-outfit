@@ -6,15 +6,37 @@
 // `window.localStorage`).
 import { readRecord, type Channel, type Journal, type OutfitBackend, type TabMemory } from "./outfit-library";
 
-const DB_NAME = "finals-outfit";
 const DB_VERSION = 1;
-const OUTFITS = "outfits";
 const META = "meta";
-const LS_OUTFIT = "finals-outfit:outfit:";
-const LS_META = "finals-outfit:meta";
-const LS_JOURNAL = "finals-outfit:journal:";
-const TAB_KEY = "finals-outfit:tab-current";
-const CHANNEL = "finals-outfit";
+
+/** Where one kind of record lives: its IndexedDB database and every browser-storage key, all under one root. Saved
+ *  outfits use `finals-outfit`; squads (lib/squad-library.ts, 22 Nov 2026) the disjoint `finals-squad`. The roots must
+ *  never nest: the localStorage backend, the journal and the storage-event listener find their records by key prefix,
+ *  so a squad key under `finals-outfit:outfit:` would be read back as an outfit. Each kind also has its own database,
+ *  not a second object store in the other's (that would need a version bump another open tab can block). */
+export interface StorageNames {
+  /** IndexedDB database name, and its object store for records. */
+  db: string;
+  store: string;
+  /** localStorage: record key prefix, meta key, journal key prefix; sessionStorage: this tab's current record. */
+  records: string;
+  meta: string;
+  journal: string;
+  tab: string;
+  /** BroadcastChannel name. */
+  channel: string;
+  /** For console messages. */
+  label: string;
+  /** A stored record's id and last edit, for adopting localStorage copies into IndexedDB (newest copy wins). */
+  stamp(raw: unknown): { id: string; updatedAt: number } | undefined;
+}
+
+/** Saved outfits: the names they have always had. */
+export const OUTFIT_STORAGE: StorageNames = {
+  db: "finals-outfit", store: "outfits", records: "finals-outfit:outfit:", meta: "finals-outfit:meta",
+  journal: "finals-outfit:journal:", tab: "finals-outfit:tab-current", channel: "finals-outfit", label: "saved outfits",
+  stamp: readRecord,
+};
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === "object" && !Array.isArray(value);
@@ -52,14 +74,14 @@ function keysWithPrefix(storage: Storage, prefix: string): string[] {
 
 // ------------------------------------------------------------------ IndexedDB
 
-function openDatabase(factory: IDBFactory, timeoutMs: number): Promise<IDBDatabase> {
+function openDatabase(factory: IDBFactory, timeoutMs: number, names: StorageNames): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     let settled = false;
     // open() can hang for good: another tab holding an older version, or browser bugs.
     const timer = setTimeout(() => { settled = true; reject(new Error("IndexedDB did not open in time")); }, timeoutMs);
     let request: IDBOpenDBRequest;
     try {
-      request = factory.open(DB_NAME, DB_VERSION);
+      request = factory.open(names.db, DB_VERSION);
     } catch (error) {
       clearTimeout(timer);
       reject(error);
@@ -67,7 +89,7 @@ function openDatabase(factory: IDBFactory, timeoutMs: number): Promise<IDBDataba
     }
     request.onupgradeneeded = () => {
       const db = request.result;
-      if (!db.objectStoreNames.contains(OUTFITS)) db.createObjectStore(OUTFITS, { keyPath: "id" });
+      if (!db.objectStoreNames.contains(names.store)) db.createObjectStore(names.store, { keyPath: "id" });
       if (!db.objectStoreNames.contains(META)) db.createObjectStore(META);
     };
     request.onsuccess = () => {
@@ -107,15 +129,16 @@ class IndexedDbBackend implements OutfitBackend {
   readonly persistent = true;
   private db?: IDBDatabase;
 
-  constructor(private readonly factory: IDBFactory, private readonly timeoutMs: number) {}
+  constructor(private readonly factory: IDBFactory, private readonly timeoutMs: number,
+    private readonly names: StorageNames = OUTFIT_STORAGE) {}
 
   async connect(): Promise<void> {
     let db: IDBDatabase;
     try {
-      db = await openDatabase(this.factory, this.timeoutMs);
+      db = await openDatabase(this.factory, this.timeoutMs, this.names);
     } catch (error) {
       if (error instanceof Error && /in time/.test(error.message)) throw error;
-      db = await openDatabase(this.factory, this.timeoutMs); // Safari's first open can fail once
+      db = await openDatabase(this.factory, this.timeoutMs, this.names); // Safari's first open can fail once
     }
     // A newer version of the site in another tab wants to upgrade: let it, and reopen on next use.
     db.onversionchange = () => { db.close(); if (this.db === db) this.db = undefined; };
@@ -134,14 +157,14 @@ class IndexedDbBackend implements OutfitBackend {
 
   async readAll(): Promise<unknown[]> {
     const db = await this.database();
-    return result(db.transaction(OUTFITS, "readonly").objectStore(OUTFITS).getAll());
+    return result(db.transaction(this.names.store, "readonly").objectStore(this.names.store).getAll());
   }
 
   async update(id: string, fn: (stored: unknown) => unknown): Promise<void> {
     const db = await this.database();
-    const tx = db.transaction(OUTFITS, "readwrite");
+    const tx = db.transaction(this.names.store, "readwrite");
     const done = committed(tx);
-    const store = tx.objectStore(OUTFITS);
+    const store = tx.objectStore(this.names.store);
     const get = store.get(id);
     let failure: unknown;
     // fn stays synchronous: awaiting anything else here would let the transaction commit early.
@@ -184,24 +207,24 @@ class IndexedDbBackend implements OutfitBackend {
 export class LocalStorageBackend implements OutfitBackend {
   readonly kind = "localstorage" as const;
   readonly persistent = true;
-  constructor(private readonly storage: Storage) {}
+  constructor(private readonly storage: Storage, private readonly names: StorageNames = OUTFIT_STORAGE) {}
 
   async readAll(): Promise<unknown[]> {
-    return keysWithPrefix(this.storage, LS_OUTFIT).map(key => parse(this.storage.getItem(key)));
+    return keysWithPrefix(this.storage, this.names.records).map(key => parse(this.storage.getItem(key)));
   }
 
   async update(id: string, fn: (stored: unknown) => unknown): Promise<void> {
-    const key = LS_OUTFIT + id;
+    const key = this.names.records + id;
     const next = fn(parse(this.storage.getItem(key)));
     if (next !== undefined) this.storage.setItem(key, JSON.stringify(next));
   }
 
   async readMeta(): Promise<unknown> {
-    return parse(this.storage.getItem(LS_META));
+    return parse(this.storage.getItem(this.names.meta));
   }
 
   async updateMeta(fn: (stored: unknown) => unknown): Promise<void> {
-    this.storage.setItem(LS_META, JSON.stringify(fn(parse(this.storage.getItem(LS_META)))));
+    this.storage.setItem(this.names.meta, JSON.stringify(fn(parse(this.storage.getItem(this.names.meta)))));
   }
 }
 
@@ -235,40 +258,41 @@ export class MemoryBackend implements OutfitBackend {
 
 // ------------------------------------------------------------------ journal, tab memory, channel
 
-export function storageJournal(storage: Storage): Journal {
+/** The synchronous journal; `prefix` is the kind's journal key prefix (saved outfits' by default). */
+export function storageJournal(storage: Storage, prefix = OUTFIT_STORAGE.journal): Journal {
   return {
     write(id, entry) {
-      try { storage.setItem(LS_JOURNAL + id, JSON.stringify(entry)); } catch { /* the backend write still runs */ }
+      try { storage.setItem(prefix + id, JSON.stringify(entry)); } catch { /* the backend write still runs */ }
     },
     settle(id, rev) {
       try {
-        const entry = parse(storage.getItem(LS_JOURNAL + id));
+        const entry = parse(storage.getItem(prefix + id));
         const journaled = isObject(entry) && isObject(entry.record) ? entry.record.rev : undefined;
-        if (typeof journaled !== "number" || journaled <= rev) storage.removeItem(LS_JOURNAL + id);
+        if (typeof journaled !== "number" || journaled <= rev) storage.removeItem(prefix + id);
       } catch { /* an unsettled entry is replayed harmlessly: it matches what is stored */ }
     },
     readAll() {
-      try { return keysWithPrefix(storage, LS_JOURNAL).map(key => parse(storage.getItem(key))); } catch { return []; }
+      try { return keysWithPrefix(storage, prefix).map(key => parse(storage.getItem(key))); } catch { return []; }
     },
   };
 }
 
-function tabMemory(storage: Storage | undefined): TabMemory | undefined {
+function tabMemory(storage: Storage | undefined, key: string): TabMemory | undefined {
   if (!storageWorks(storage)) return undefined;
   return {
-    get() { try { return storage.getItem(TAB_KEY); } catch { return null; } },
-    set(id) { try { storage.setItem(TAB_KEY, id); } catch { /* falls back to the shared last-used outfit */ } },
+    get() { try { return storage.getItem(key); } catch { return null; } },
+    set(id) { try { storage.setItem(key, id); } catch { /* falls back to the shared last-used record */ } },
   };
 }
 
-function browserChannel(): Channel {
+function browserChannel(names: StorageNames): Channel {
   let channel: BroadcastChannel | undefined;
-  try { channel = new BroadcastChannel(CHANNEL); } catch { /* old browser: the storage event still covers localStorage */ }
+  try { channel = new BroadcastChannel(names.channel); } catch { /* old browser: the storage event still covers localStorage */ }
   return {
     post() { try { channel?.postMessage("changed"); } catch { /* closed */ } },
     listen(onChange) {
       const message = () => onChange();
-      const storage = (event: StorageEvent) => { if (event.key?.startsWith(LS_OUTFIT)) onChange(); };
+      const storage = (event: StorageEvent) => { if (event.key?.startsWith(names.records)) onChange(); };
       channel?.addEventListener("message", message);
       window.addEventListener("storage", storage);
       return () => {
@@ -306,35 +330,40 @@ function browserEnvironment(): StorageEnvironment {
 
 /** Never rejects. Falls back IndexedDB -> localStorage -> memory. */
 export async function openOutfitStorage(env: StorageEnvironment = browserEnvironment()): Promise<OpenedStorage> {
+  return openRecordStorage(OUTFIT_STORAGE, env);
+}
+
+/** The same for any kind of record under its own names (squads: lib/squad-storage.ts). Never rejects. */
+export async function openRecordStorage(names: StorageNames, env: StorageEnvironment = browserEnvironment()): Promise<OpenedStorage> {
   const local = storageWorks(env.localStorage) ? env.localStorage : undefined;
   const extras = {
-    journal: local ? storageJournal(local) : undefined,
-    tab: tabMemory(env.sessionStorage),
-    channel: typeof window === "undefined" ? undefined : browserChannel(),
+    journal: local ? storageJournal(local, names.journal) : undefined,
+    tab: tabMemory(env.sessionStorage, names.tab),
+    channel: typeof window === "undefined" ? undefined : browserChannel(names),
   };
   if (env.indexedDB) {
     try {
-      const backend = new IndexedDbBackend(env.indexedDB, env.timeoutMs ?? 3000);
+      const backend = new IndexedDbBackend(env.indexedDB, env.timeoutMs ?? 3000, names);
       await backend.connect();
-      if (local) await adoptLocalStorageOutfits(local, backend);
+      if (local) await adoptLocalStorageRecords(local, backend, names);
       return { backend, ...extras };
     } catch (error) {
-      console.warn("[saved outfits] IndexedDB unavailable, trying localStorage", error);
+      console.warn(`[${names.label}] IndexedDB unavailable, trying localStorage`, error);
     }
   }
-  if (local) return { backend: new LocalStorageBackend(local), ...extras };
-  console.warn("[saved outfits] no browser storage: saving is off");
+  if (local) return { backend: new LocalStorageBackend(local, names), ...extras };
+  console.warn(`[${names.label}] no browser storage: saving is off`);
   return { backend: new MemoryBackend(false), ...extras };
 }
 
-/** Outfits saved while IndexedDB was unavailable move into it, newest copy of each outfit winning. */
-async function adoptLocalStorageOutfits(storage: Storage, backend: OutfitBackend) {
-  for (const key of keysWithPrefix(storage, LS_OUTFIT)) {
+/** Records saved while IndexedDB was unavailable move into it, newest copy of each record winning. */
+async function adoptLocalStorageRecords(storage: Storage, backend: OutfitBackend, names: StorageNames) {
+  for (const key of keysWithPrefix(storage, names.records)) {
     const raw = parse(storage.getItem(key));
-    const incoming = readRecord(raw);
+    const incoming = names.stamp(raw);
     if (!incoming) continue;
     await backend.update(incoming.id, stored => {
-      const existing = readRecord(stored);
+      const existing = names.stamp(stored);
       return !existing || incoming.updatedAt > existing.updatedAt ? raw : undefined;
     });
     // Only after the transaction committed.

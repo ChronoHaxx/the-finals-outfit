@@ -1,0 +1,107 @@
+{
+  "1 without the flag: closed page": true,
+  "1 ?preview=on: squad and counter": [
+    "No squad yet",
+    "Contestants · 0 / 3"
+  ],
+  "1 flag kept after reopening #/squad": true,
+  "2 add the builder's outfit (45)": {
+    "mostLoadingAtOnce": 1,
+    "overlay": "Loading contestant 1 of 1…"
+  },
+  "2 add it again after Own": {
+    "mostLoadingAtOnce": 1,
+    "overlay": "Loading contestant 1 of 2…"
+  },
+  "2 names": [
+    "Shared outfit",
+    "Shared outfit"
+  ],
+  "3 saved outfits before / after New outfit": [
+    [
+      "Shared outfit",
+      "Outfit 1"
+    ],
+    [
+      "Shared outfit",
+      "Outfit 2",
+      "Outfit 1"
+    ]
+  ],
+  "3 add the saved outfit": {
+    "mostLoadingAtOnce": 1,
+    "overlay": "Loading contestant 1 of 3…"
+  },
+  "3 names, counter": [
+    [
+      "Shared outfit",
+      "Shared outfit",
+      "Outfit 2"
+    ],
+    "Contestants · 3 / 3"
+  ],
+  "3 at the cap: buttons disabled, message": [
+    true,
+    true,
+    true
+  ],
+  "3 idle playing (two frames 0.7 s apart differ)": true,
+  "4 saved outfits unchanged by the squad page": true,
+  "5 after reload": [
+    "Squad 1",
+    [
+      "Shared outfit",
+      "Shared outfit",
+      "Outfit 2"
+    ]
+  ],
+  "5 after Remove": [
+    "Shared outfit",
+    "Shared outfit"
+  ],
+  "5 after Undo": [
+    "Shared outfit",
+    "Shared outfit",
+    "Outfit 2"
+  ],
+  "5 after Delete squad: shown squad, counter, squads": [
+    "No squad yet",
+    "Contestants · 0 / 3",
+    [
+      "No squad yet"
+    ]
+  ],
+  "5 after Undo: squad, names, squads": [
+    "Squad 1",
+    [
+      "Shared outfit",
+      "Shared outfit",
+      "Outfit 2"
+    ],
+    [
+      "Squad 1"
+    ]
+  ],
+  "5 New squad: name, counter": [
+    "Squad 2",
+    "Contestants · 0 / 3"
+  ],
+  "5 back to the first squad": [
+    "Squad 1",
+    3
+  ],
+  "6 builder outfit and saved outfits after the squad visit": [
+    "Saved outfits: Outfit 2",
+    true
+  ],
+  "6 desktop page errors": [],
+  "7 coarse pointer": true,
+  "7 phone: counter, rows shown, note, cap message": [
+    "Contestants · 3 / 3",
+    2,
+    true,
+    true
+  ],
+  "7 phone: JS heap (MB) with two shown": 865,
+  "7 phone page errors": []
+}

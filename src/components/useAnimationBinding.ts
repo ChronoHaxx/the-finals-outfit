@@ -22,7 +22,7 @@ import { frameClock } from "../lib/frame-clock";
 // Per-viewer convenience: "still" after the viewer stops the idle, removed when they start it again. Storage can be
 // missing or blocked (private windows, previews): every access is guarded and the default then applies.
 const MOTION_KEY = "finals-outfit.motion";
-function savedStill(): boolean {
+export function savedStill(): boolean {
   try { return window.localStorage.getItem(MOTION_KEY) === "still"; } catch { return false; }
 }
 function saveMotion(still: boolean): void {

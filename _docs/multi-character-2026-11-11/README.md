@@ -4,14 +4,64 @@ The request (11 Nov): "maybe the whole add more characters blender/3d editor mod
 one scene, each with its own outfit, emote and pose, plus an editor mode: select a character, move and rotate it with
 a gizmo, set each one's emote and time, frame the camera. Group shots and dioramas.
 
-Design first. Phase 1 (groundwork that changes nothing on screen, plus two fixes) is implemented; see Progress.
+Design first. Phase 1 (groundwork that changes nothing on screen, plus two fixes) is merged (PR #66). Phase 2 (the
+squad page, behind a flag) is implemented; see Progress.
 
 **Decision (11 Nov 2026, the user): "Recommended MVP".** Read as the MVP below with its stated defaults: a separate
 Scene page, 3 characters on desktop / 2 on phones, characters hold a copy of their outfit, floor-only gizmo, links
 and Save image before the Worker card. Decision 7, for Phase 1's learning parts (1.4, 1.5): "You build them". The
 later learning parts have not been asked yet.
 
-**Progress (branch `claude/multi-character-2026-11-21`, rebased on main a2c6019, draft PR; the first
+**Phase 2 decisions (22 Nov 2026, the user):**
+- Page name: "Squad (#/squad) (Recommended)". The code says squad too (`SquadRecord`, `finals-squad:` storage):
+  PR #57 already uses "scene" for the in-game backdrops.
+- Shadow frustum fitting (learning part 4): "You build it". I built it, and the mechanism is explained under Progress.
+
+**Progress, Phase 2 (branch `claude/multi-character-phase2-2026-11-22`, main 5fcc4ee merged in):**
+- 2.1 (af26dc0): `src/lib/squad-library.ts`, the squad library. It uses the saved-outfits storage core with its own
+  names (`outfit-storage.ts` takes them as a parameter). `tests/squad-library.test.ts` covers the loss paths:
+  - a tab killed mid-drag;
+  - two tabs (contestants merge one by one, the same contestant forks);
+  - copies that ignore later outfit edits;
+  - an item gone from the catalogue;
+  - newer-schema records and unknown fields;
+  - tombstones and undo, caps;
+  - storage roots kept apart from saved outfits.
+- 2.2 (58eb016, dc10f21): the player number is per owner (`PlayerNumber.ts`). Each contestant prints its own; the
+  builder's number is the default owner's.
+- 2.3a (d2525b1): the lit stage moved verbatim to `src/components/ViewerStage.tsx`.
+- 2.3b (7eeb071): the page itself, `src/pages/Squad.tsx` + `src/components/SquadViewer.tsx` + `src/store/useSquads.ts`.
+  - The flag: on in development; elsewhere `#/squad?preview=on` turns it on (it sticks) and `?preview=off` turns it
+    off.
+  - Up to 3 contestants (phones show 2 and keep the third), on fixed spots 1.2 m apart.
+  - Each contestant is a copy of the builder's outfit or a saved outfit. It has its own rig, outfit pass and animator.
+  - They load one at a time, with "Loading contestant i of n" and that contestant's MB.
+  - One frame driver steps every animator; the still view waits while any is moving.
+  - The camera follows the group's centre.
+- 2.5 (07c7eae): shadows fitted to the group (`groupShadowFrustum` in `stage-lighting.ts`, three tests). The study note
+  `shadow-fitting.md` covers texels to metres, why a tighter box is sharper, and the measured sizes. In short:
+  - Each contestant is treated as a box: 1.4 m either side, 2.5 m tall.
+  - Every box is projected into the sun's view. Across the beam that is x·cos b − z·sin b; along it, x·sin b + z·cos b.
+  - The orthographic shadow camera is sized to cover all of them. Its far plane reaches the furthest floor-shadow tip
+    (the head's shadow lands h·cos e / sin e beyond the feet).
+  - With one contestant this equals today's frustum exactly.
+  - The contact shadow stays centred at the origin and is scaled symmetrically to cover the group (see Risks: drei's
+    blur plane).
+- e162c4b: frame time and memory with 1, 2 and 3 real contestants (`squad-profile.json`):
+  - busy JS per frame: 3.21 / 9.52 / 14.95 ms;
+  - JS heap after GC: 572 / 927 / 1283 MB.
+- 2e7d11c: a defect found by the production checklist run. Deleting the only squad made a replacement empty "Squad 1",
+  and Undo then listed two. Now nothing is made until the first Add or New, and opening the page writes nothing
+  (`tests/use-squads.test.ts`, which fails 3/3 on the old code).
+- Checks: see `functional-review-phase2.md`.
+  - Builder unchanged against main 5fcc4ee (both equivalence probes).
+  - The squad probe in development, both looks.
+  - The production checklist run, agent PASS under the standing waiver.
+- Theme switch without a canvas remount: already done on main by #57.
+- Emote-prop templates and the per-contestant emote/pose come with the editor (Phase 3). `ContestantRecord.pose` is
+  stored but not yet set.
+
+**Progress, Phase 1 (branch `claude/multi-character-2026-11-21`, PR #66 merged 22 Nov as e04075e; the first
 branch `claude/multi-character-design-2026-11-11` is kept as a backup):**
 - Phase 0 on desktop: done (measurements, CPU profile, turned-character check, Fable review).
 - Phase 1: done. Every step passed the still probe (14 scripted edits) and, from 1.2, the posed probe (3 paused pose
@@ -25,8 +75,8 @@ branch `claude/multi-character-design-2026-11-11` is kept as a backup):**
   - 1.5 (214991e): head statics socketed from rest frames; also fixed an earring swapped in mid-emote landing on the
     head bone (real app, legacy mode: 7.4 cm off; `head-static-swap.mjs --legacy`).
 - The cap stays at 3: four characters still cost about 17 ms of JS a frame before any GPU time.
-- Next: Phase 2 (two characters on `#/scene` behind a flag). Open: the cel family's turn non-invariance (before
-  Phase 3).
+- Next: Phase 3 (the editor). Still open before it: the cel family's turn non-invariance, and a real phone's memory
+  with two contestants (see Risks).
 
 ## TLDR
 
@@ -307,6 +357,17 @@ interface SceneCharacter {
 }
 ```
 
+**As built (Phase 2, `src/lib/squad-library.ts`):** the names are squad, not scene, and contestants are separate
+records rather than an array inside the squad:
+- `SquadRecord { kind: "squad", name, camera? }`;
+- `ContestantRecord { kind: "contestant", squad, slots, labels?, bodyType?, playerNumber?, from?, place, pose? }`;
+- both kinds have their own id, rev, timestamps and tombstone.
+
+Merging contestant by contestant therefore needs no special code: two tabs editing different contestants write
+different records. A conflict on one contestant keeps both, as an extra contestant. A conflict on the squad itself
+keeps a copy of the squad with copies of its contestants. A deletion never beats an edit. The storage root is
+`finals-squad:` (IndexedDB `finals-squad`), disjoint from `finals-outfit:` as planned below.
+
 - **No migration of anything existing.** Scenes live in their own IndexedDB database (not a new object store in
   `finals-outfit`, which would need a version bump that another open tab can block) under a **disjoint key root**,
   `finals-scene:` for the journal, localStorage fallback, tab key and BroadcastChannel. The outfit storage scans
@@ -351,13 +412,16 @@ interface SceneCharacter {
 | Statics misplaced on a turned character | `CharacterRig.ts:832-842` mixes a detached mesh matrix with a placed, posed bone | Socket from rest matrices in rig space; a test equips every head-static kind under a turned placement (and mid-emote) and compares rig-space matrices with an equip at the origin. **Done in 1.5** (`tests/rig/head-static-placement.test.ts`) |
 | GPU memory on phones | linear per character; context loss already handled by remounting | Cap per device class, load characters one at a time, measure in Phase 0, reload sequentially after a context loss |
 | Frame time | CPU: `Skeleton.update` per `render()` call and per-mesh bone walks in the still-view capture (profiled) | update skeletons once per frame; capture each bone once; re-profile before raising the cap. **Done in 1.4**: four characters 62.9 → 17.3 ms of JS a frame; the cap stays 3 |
-| Shadows cut off | fixed ±1.4 m frustum at the origin | fit the key light's frustum and the contact-shadow plane to the group's bounds on release, not mid-drag (a refit resets the still view) |
+| Shadows cut off | fixed ±1.4 m frustum at the origin | fit the key light's frustum and the contact-shadow plane to the group's bounds on release, not mid-drag (a refit resets the still view). **Done in 2.5** for the fixed spots; the editor must refit on release only |
+| Contact shadow slides away | drei's `ContactShadows` renders into a blur plane that is not moved with its shadow camera, so placing the component off the origin draws the blurred shadow beside the characters (seen: a blob 2 m to the side) | keep it at the origin and scale it symmetrically to cover the group (`ViewerStage.tsx`); revisit if the group can wander far from the origin in Phase 3 |
+| Memory per contestant | measured: about 355 MB of JS heap each (572 / 927 / 1283 MB for 1 / 2 / 3, desktop; an emulated phone build showed 865 MB with two) | the phone cap of 2 is unproven: measure on a real phone before the page leaves the flag; option B (shared body and texture cache) if it fails |
+| In-game backdrops missing on the squad page | the squad page draws the look's backdrop colours but not #57's 3D scenes (Season 12 menu and others) | a look with a scene shows its fallback colours there; add the scene in Phase 3 if wanted |
 | Springs flung | world-space spring simulation | reset springs on any non-drag placement change (load, undo, snap) |
 | Cel items turned | a world-fixed term in the cel family (measured) | identify the pin before Phase 3; until then a turned cel contestant may shade darker |
 | Gizmo blur / never converging | drawn through the accumulator | overlay scene after the still view |
 | Shader compile hitches | tinted legacy materials compile one program each (`CharacterRig.ts:2176`, `tintUid`) | reconstructed ones share programs; load characters sequentially; `compileAsync` |
 | Harness contracts | `__rigRoot`/`__rigIdle` are single-character | keep them meaning the builder's one character; scene gets `__scene` |
-| One player number for everyone | `rig/PlayerNumber.ts` (#60, merged 22 Nov) keeps one module-level chosen number and applies it to every registered material | Phase 2: each character's outfit copy carries its own number; key the registry by character (pass the character's choice into `playerNumberUniform`) so setting one contestant's number leaves the others alone |
+| One player number for everyone | `rig/PlayerNumber.ts` (#60, merged 22 Nov) keeps one module-level chosen number and applies it to every registered material | Phase 2: each character's outfit copy carries its own number; key the registry by character (pass the character's choice into `playerNumberUniform`) so setting one contestant's number leaves the others alone. **Done in 2.2** (registry keyed by owner; 45 beside 32 seen in the real app) |
 
 ## Phased plan
 
@@ -378,6 +442,7 @@ interface SceneCharacter {
    shared loader, sequential loading with per-character progress, `isMoving` over all animators, theme switch
    without a canvas remount, shadow frustum fitting on release. The scene library with its loss tests lands here
    too, before any editor work. Checks: frame time and memory with 2 and the cap, both themes, the loss tests.
+   **Done** as the squad page `#/squad` (see Progress); the theme switch without a remount came with #57.
 3. **Editor.** `BuildTarget` for the picker and outfit bar (needed from the first scene-character edit), overlay
    scene, floor gizmo, capsule picking, selection list, camera presets and frame all/selected (from posed points
    or the capsules, never skinned bounding boxes), transport, Save image from the still view's target, phone

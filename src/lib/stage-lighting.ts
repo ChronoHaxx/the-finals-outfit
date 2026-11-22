@@ -496,6 +496,53 @@ export function shadowFrustum(elevation: number, distance: number, follow: boole
   };
 }
 
+/**
+ * The sun's shadow camera for a group standing at `spots` (floor x, z: a squad, multi-character Phase 2), and the floor
+ * point the light aims at: the middle of the group's footprint. One spot (or every spot on one point): exactly the one
+ * character's frustum above, aimed at that point.
+ *
+ * Several: the same geometry, per character. The shadow camera looks down the beam with three's lookAt, so its x axis
+ * runs across the beam, (cos b, 0, -sin b) for a sun at bearing b, and its y axis tilts with the sun's height e: a
+ * point h high standing d metres towards the light (horizontally) lands h·cos e - d·sin e up the picture. Each
+ * character, offset from the aim point by (a across, d towards the light), keeps the single character's slack all
+ * round: the box spans every character's own box. Depth grows the same way: the furthest shadow tip on the floor
+ * belongs to the character furthest from the light, and the nearest caster point bounds `near`.
+ *
+ * Texel density: the shadow map keeps its size, so the box's width decides how sharp the shadows are. Two characters
+ * 1 m apart, side by side to the light, widen it from 2.8 m to 3.8 m (about 1.9 mm a texel at 2048); the box never
+ * grows beyond what the group needs, and is refitted only when the group changes (a refit restarts the still view).
+ */
+export function groupShadowFrustum(sun: readonly number[], spots: readonly { x: number; z: number }[]):
+  { frustum: ShadowFrustum; centre: [number, number] } {
+  const xs = spots.map(s => s.x), zs = spots.map(s => s.z);
+  const centre: [number, number] = spots.length
+    ? [(Math.min(...xs) + Math.max(...xs)) / 2 + 0, (Math.min(...zs) + Math.max(...zs)) / 2 + 0] : [0, 0];
+  const { bearing, height, distance } = lightAngles(sun);
+  const offsets = spots.map(s => [s.x - centre[0], s.z - centre[1]] as const);
+  if (offsets.every(([x, z]) => Math.hypot(x, z) < 1e-6)) return { frustum: shadowFrustum(height, distance, false), centre };
+  const e = THREE.MathUtils.degToRad(THREE.MathUtils.clamp(height, SUN_HEIGHT_MIN, 89));
+  const b = THREE.MathUtils.degToRad(bearing);
+  const across = offsets.map(([x, z]) => x * Math.cos(b) - z * Math.sin(b));
+  const toward = offsets.map(([x, z]) => x * Math.sin(b) + z * Math.cos(b));
+  const [aMin, aMax, dMin, dMax] = [Math.min(...across), Math.max(...across), Math.min(...toward), Math.max(...toward)];
+  const width = REVIEWED_SHADOW_FRUSTUM.right;
+  const far = Math.max(REVIEWED_SHADOW_FRUSTUM.far,
+    distance + CASTER_HEIGHT * Math.cos(e) ** 2 / Math.sin(e) + (CASTER_REACH - dMin) * Math.cos(e) + 1);
+  const nearest = distance - CASTER_HEIGHT * Math.sin(e) - (dMax + CASTER_REACH) * Math.cos(e);
+  const near = Math.max(0.05, Math.min(REVIEWED_SHADOW_FRUSTUM.near, nearest - 0.5));
+  const reviewedDepth = REVIEWED_SHADOW_FRUSTUM.far - REVIEWED_SHADOW_FRUSTUM.near;
+  return {
+    frustum: {
+      left: aMin - width, right: aMax + width,
+      top: CASTER_HEIGHT * Math.cos(e) + (CASTER_REACH - dMin) * Math.sin(e) + MARGIN,
+      bottom: -((dMax + CASTER_REACH) * Math.sin(e) + MARGIN),
+      near, far,
+      bias: REVIEWED_SHADOW_FRUSTUM.bias * reviewedDepth / (far - near),
+    },
+    centre,
+  };
+}
+
 /** The body's floor position, snapped to the FOLLOW_SNAP grid and kept within ±3 m (as the share card frames it). */
 export function snapFollow(x: number, z: number): [number, number] {
   const snap = (v: number) => Number.isFinite(v) ? Math.round(THREE.MathUtils.clamp(v, -3, 3) / FOLLOW_SNAP) * FOLLOW_SNAP : 0;
