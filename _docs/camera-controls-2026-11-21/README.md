@@ -144,7 +144,7 @@ in a scene the drag would have let the roll back onto the scene camera. `CameraB
 no tool holds the pointer (`anyPointerClaimed()` in `lib/pointer-claims.ts`), so a drag keeps whatever state the camera
 had before it.
 
-Checked 22 Nov 12:22-12:30 London on a production build of this merge (Playwright, Worker blocked): Studio, Show
+Checked 22 Nov 12:22-12:24 London on a production build of this merge (Playwright, Worker blocked): Studio, Show
 lights, camera at (0, 1, 6) with Roll 20°, camera panel open. Dragging the rim bulb moved the light; mid-drag the panel
 read Roll 20°, no note, footer "open on the camera you see", camera unchanged, picture still tilted. In the tunnel scene
 the same drag kept Roll 0°, the note, the scene camera (0, 1, 3.6) and a level picture; leaving the scene restored
