@@ -161,7 +161,7 @@ Deploy order does not matter for correctness. A Worker without this change drops
 outfit in the viewer's own lighting, and the share panel says "preview links can't keep the lighting yet (Short link
 can)". Short and readable links keep the lighting without the Worker.
 
-**Deployed 22 Nov 2026, 18:14 London**, before PR #76 merged, from branch `claude/share-lighting-look-2026-11-22` at
+**Deployed 22 Nov 2026, 18:08 London**, before PR #76 merged (18:11, `f1d2162`), from branch `claude/share-lighting-look-2026-11-22` at
 `39d8eb3`: version `c75c6189-f6af-4769-89f0-01a588f36ac8`, replacing `efb3af6b-f785-41d7-a70c-9769458b6764` (PR #60's
 `pn` with PR #59's `view`). Approval: the coordinator session approved it for the user (the user's standing instruction
 of 22 Nov to keep merging and approving the routine steps they always approve; every earlier share-Worker deploy had

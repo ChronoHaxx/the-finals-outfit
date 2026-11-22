@@ -59,5 +59,7 @@ a link that overwrites the recipient's own lighting or saved looks.
   address); fixed before the commit, covered by `tests/shared-lighting-store.test.ts`, and step 5 rerun on the fixed build.
 - User reported at: not required (waiver)
 - Explicitly waived checks: all user checks, by the user's standing instruction of 22 Nov
-- Readiness: agent-verified; live Worker deploy and its read-only checks follow the merge
+- Readiness: agent-verified. The share Worker went live first (version `c75c6189`, 18:08 London, on the coordinator's
+  approval for the user; ten read-only live checks pass, rollback `efb3af6b`), then PR #76 merged as `f1d2162` (18:11)
+  with CI green
 - Merge authorization: the task brief (merge on pass, CI green, CLEAN)
