@@ -14,8 +14,12 @@ that prints off-centre, smeared or not at all, and a number that is lost or chan
   http://127.0.0.1:4361/the-finals-outfit/ (deploy.yml's hosts; models from the live asset hosts).
 - Prerequisites: none beyond the worktree's `node_modules` and Chrome.
 - Approximate hands-on time: 6 minutes.
-- Agent checks: see Recorded result. Typecheck, `npm test` (1091 pass, 0 fail, 2 skipped), and the census (294 of 294,
-  behaviour checked) pass.
+- Agent checks: see Recorded result. All pass:
+  - typecheck;
+  - `npm test` (1091 pass, 0 fail, 2 skipped);
+  - the census (294 of 294, behaviour checked);
+  - live identity (294 of 294 served programs byte-identical);
+  - the assembly trace (294 programs, 339 sites).
 - User checks: waived by the owner for all PRs (22 Nov). The agent ran them; agent results do not tick the boxes.
 
 ## Get it running

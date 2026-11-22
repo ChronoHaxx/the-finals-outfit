@@ -58,6 +58,24 @@ atlas = (right - left) * sel + left          then sample the ten-cell digit stri
 - The picker takes 0–99 (Own stays the default). Saved outfits already kept any number. Links write `pn=0`–`pn=99`
   with no leading zero, and `07`, `100` and `-1` are refused. The share Worker's allow-list is the same.
 
+## Provenance: the programs the live site serves (22 Nov)
+
+The coordinator asked for proof that the lanes come from the shipped programs, not from the June dump, which is a
+different build.
+- **Live identity** (`node _docs/player-number-2026-11-22/live-identity.mjs`, read-only GETs): the live index on
+  a70ffa7f names each material by its shard URL. All 3,725 keys resolve to the same paths as the local index. All 294
+  numbered programs (manifest and GLSL) served today are byte-identical to the copies the census checked.
+- **Assembly trace** (`node --import tsx scripts/check-player-number-provenance.mjs --reports <list> --root <repo>`):
+  - For each of the 294 programs it finds the SM5 assembly the program was sliced from, matched by
+    `assemblySha256` among the local shader-probe exports.
+  - It follows every rewritten site's data flow through that assembly. The checked chain: clamp max/min, ×2, ×0.1,
+    the tens/ones adds, round_ni, add_sat, the right-cell subtraction, and k's mul/add.
+  - It checks each operand against that export's own binding report (`// cb3[i].c = <preshader expression>`).
+  - Result: 294 of 294 programs and 339 of 339 sites read exactly the DecalNumber lanes lo, hi, tens, ones and single,
+    with k = single × −0.05 + 0.1. None differ.
+  - Negative control: expecting hi where lo is read flags all 294.
+- The June dump was used only for the option's class and strings (the Off question), as evidence.
+
 ## Evidence
 
 - Census reports: run the command above (writes nothing without `--out`).
