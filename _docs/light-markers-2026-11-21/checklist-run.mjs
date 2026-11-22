@@ -160,11 +160,23 @@ check(3, "the Colour picker recolours the light", (await lights()).find(l => l.i
 
 // 4. Never in a picture: Save PNG while the bulbs show; then H and H again.
 await setPanel(false);
-await page.locator('button[title="Save a screenshot (PNG)"]').click();
+// The camera button (its title since the capture panel gained video, 22 Nov 2026).
+const CAPTURE = 'button[title="Save a screenshot or an emote video"]';
+await page.locator(CAPTURE).click();
 await page.waitForTimeout(400);
-const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Save PNG" }).click()]);
+const [download] = await Promise.all([page.waitForEvent("download", { timeout: 180000 }), page.getByRole("button", { name: "Save PNG" }).click()]);
 await download.saveAs(join(outDir, "step4-saved.png"));
-await page.locator('button[title="Save a screenshot (PNG)"]').click();
+// The capture panel's video (#63) draws through the same capture camera: record the idle as an MP4 while the bulbs
+// show; frames are pulled out with ffmpeg afterwards and judged by eye.
+await page.getByRole("tab", { name: "Video" }).click();
+await page.waitForTimeout(300);
+const sizes = await page.getByLabel("Video size").locator("option").allTextContents();
+await page.getByLabel("Video size").selectOption({ label: sizes[sizes.length - 1] });
+const [video] = await Promise.all([page.waitForEvent("download", { timeout: 900000 }), page.getByRole("button", { name: "Record video" }).click()]);
+await video.saveAs(join(outDir, `step4-video${video.suggestedFilename().replace(/^.*(\.[a-z0-9]+)$/i, "$1")}`));
+check(4, "a video was recorded with the bulbs showing (judge its frames by looking)", true, `${video.suggestedFilename()} · size ${sizes[sizes.length - 1]}`);
+await page.getByRole("tab", { name: "Image" }).click();
+await page.locator(CAPTURE).click();
 await page.waitForTimeout(400);
 await shot("step4-before-h");
 await page.keyboard.press("h");

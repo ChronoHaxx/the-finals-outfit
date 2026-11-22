@@ -189,7 +189,7 @@ if (only.has("markers")) {
 if (only.has("captures")) {
   // The PNG screenshot, on the backdrop and transparent, while the selected bulb's red ring shows on screen.
   for (const transparent of [false, true]) {
-    await page.locator('button[title="Save a screenshot (PNG)"]').click();
+    await page.locator('button[title="Save a screenshot or an emote video"]').click();
     if (transparent) await page.getByRole("radio", { name: "Transparent" }).click();
     const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Save PNG" }).click()]);
     const file = join(outDir, `screenshot-${transparent ? "transparent" : "backdrop"}.png`);
@@ -197,7 +197,7 @@ if (only.has("captures")) {
     check(`screenshot (${transparent ? "transparent" : "backdrop"}) has no marker`, ringPixels(readFileSync(file)) === 0,
       `${ringPixels(readFileSync(file))} ring px`);
     if (transparent) await page.getByRole("radio", { name: "Backdrop" }).click();
-    await page.locator('button[title="Save a screenshot (PNG)"]').click();
+    await page.locator('button[title="Save a screenshot or an emote video"]').click();
   }
   // The share card (a JPEG), drawn by the same module the Share button uses; decoded and counted in the page.
   const card = await page.evaluate(async () => {
