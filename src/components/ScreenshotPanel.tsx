@@ -3,6 +3,7 @@ import { captureView, isBlank, screenshotSizes, SCREENSHOT_SUPERSAMPLE, type Scr
 import type { RigAnimator } from "../rig/RigAnimator";
 import { encodePngAsync } from "../lib/png-encode";
 import { backdropCss, backdropPaint, type Backdrop } from "../lib/stage-lighting";
+import { sceneById } from "../lib/scenes";
 import { CameraIcon, CopyIcon, VideoIcon } from "./Icons";
 import { CAPTURE_TILE, VideoTab, useVideoExport } from "./VideoCapture";
 
@@ -163,10 +164,13 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
               </button>
             ))}
           </div>
-          {choices.tab === "video" ? (
+          {choices.tab === "video" ? (<>
+            {/* An in-game scene (scenes.ts) is drawn outside this canvas, so an MP4 gets the scene's colours instead. */}
+            {sceneById(backdrop.scene) && <span className="text-xs leading-snug text-fg-muted">
+              MP4 is on the scene’s colours: the scene itself isn’t in videos yet.</span>}
             <VideoTab job={video} animator={animator} stage={stage} keepFloor={choices.keepFloor}
               onKeepFloor={keepFloor => change({ keepFloor })} ready={ready && !running} />
-          ) : (<>
+          </>) : (<>
             <div className="flex flex-col gap-1.5">
               <span className="hud text-fg-muted">Background</span>
               <div role="radiogroup" aria-label="Background" className="grid grid-cols-2 gap-1.5">
@@ -180,9 +184,12 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
                   </button>
                 ))}
               </div>
+              {/* An in-game scene (scenes.ts) is drawn outside this canvas, so the PNG gets the scene's colours instead. */}
               <span className="text-xs leading-snug text-fg-muted">{choices.transparent
                 ? "PNG with alpha, no backdrop or floor: lay it over anything. Same lighting as on screen."
-                : "As on screen, with the backdrop."}</span>
+                : sceneById(backdrop.scene)
+                  ? "On the scene’s colours: the scene itself isn’t in screenshots yet."
+                  : "As on screen, with the backdrop."}</span>
             </div>
             {choices.transparent && (
               <label className="flex cursor-pointer items-start gap-2">

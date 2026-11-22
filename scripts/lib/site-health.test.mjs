@@ -2,11 +2,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { ALWAYS_LOADED, REPO_ROOT, SITE_URL, checkSiteHealth, readDeployConfig, sampleAssets, workflowEnv }
-  from './site-health.mjs';
+import { ALWAYS_LOADED, REPO_ROOT, SITE_URL, checkSiteHealth, healthSummary, readDeployConfig, sampleAssets, workflowBases,
+  workflowEnv } from './site-health.mjs';
 import { joinBase, modelBase } from '../../src/lib/asset-routing.mjs';
 
 const host = label => `https://${label}.the-finals-outfit-assets.pages.dev/`;
+// Chinals clips live in their own Pages project, so their host differs from the others by more than the deployment.
+const CHINALS = 'https://chin.the-finals-outfit-chinals-assets.pages.dev/';
 const WORKFLOW = `
 jobs:
   build:
@@ -16,10 +18,14 @@ jobs:
       RECONSTRUCTION_BASE: ${host('control')}  # comment
       SHARE_PREVIEW_BASE: https://share.example.workers.dev
       ANIMATIONS_BASE: '${host('anim')}'
+      CHINALS_ANIMATIONS_BASE: ${CHINALS}
+      SCENES_BASE: ${host('scenes')}
       RECONSTRUCTION_ROUTES_FILE: routes.json
     steps:
       - env:
+          VITE_BASE: /\${{ github.event.repository.name }}/
           VITE_ASSETS_BASE: \${{ env.ASSETS_BASE }}
+          VITE_SCENES_BASE: \${{ env.SCENES_BASE }}
 `;
 // leaf2 serves nothing the catalogue names, so its probe falls back to the deployment manifest.
 const ROUTES = { formatVersion: 1, hosts: [{ baseUrl: host('leaf'), prefixes: ['models/reconstructed-family-a-v1/'] },
@@ -31,7 +37,7 @@ const ITEMS = [
 const config = (workflow = WORKFLOW, routes = ROUTES) => readDeployConfig({ workflow, readFile: () => JSON.stringify(routes) });
 
 const ALL = [host('icons'), host('models'), host('control'), host('leaf'), host('leaf2'), host('anim'),
-  'https://share.example.workers.dev'];
+  'https://share.example.workers.dev', CHINALS, host('scenes')];
 
 // A fake live site and asset hosts; `change` edits a response by URL substring.
 function site({ bundle, change = {} } = {}) {
@@ -76,8 +82,41 @@ test('reads the hosts from the deploy workflow and the routes file', () => {
   assert.throws(() => config(WORKFLOW.replace(host('icons'), 'http://insecure.example/')), /plain https URL/);
 });
 
+test('every *_BASE line is an expected host, including lines added later, with no edit to the check', async () => {
+  // The live check failed from 15 Nov 2026: the app named the Chinals clip host (then the scenes host), which the
+  // check did not read, because it read five named base lines only.
+  assert.deepEqual(Object.keys(workflowBases(WORKFLOW)), ['ASSETS_BASE', 'MODELS_BASE', 'RECONSTRUCTION_BASE',
+    'SHARE_PREVIEW_BASE', 'ANIMATIONS_BASE', 'CHINALS_ANIMATIONS_BASE', 'SCENES_BASE'], 'VITE_* copies are skipped');
+  const cfg = config();
+  assert.deepEqual(cfg.namedOnly, [{ name: 'SHARE_PREVIEW_BASE', base: 'https://share.example.workers.dev/' },
+    { name: 'CHINALS_ANIMATIONS_BASE', base: CHINALS }, { name: 'SCENES_BASE', base: host('scenes') }]);
+  for (const base of [CHINALS, host('scenes')]) {
+    assert(cfg.expectedHostnames.includes(new URL(base).hostname));
+    assert(cfg.bundleStrings.includes(base));
+  }
+  const report = await check(site());
+  assert.deepEqual(report.namedOnly.map(line => line.name), ['SHARE_PREVIEW_BASE', 'CHINALS_ANIMATIONS_BASE', 'SCENES_BASE']);
+  assert.match(healthSummary(report), /not probed: `SHARE_PREVIEW_BASE`.*`CHINALS_ANIMATIONS_BASE` \(`chin`\), `SCENES_BASE` \(`scenes`\)/);
+
+  // A base line nobody has written yet: expected once deploy.yml has it, required in the bundle, foreign without it.
+  const future = config(WORKFLOW.replace('      RECONSTRUCTION_ROUTES_FILE', `      FUTURE_BASE: ${host('future')}\n      RECONSTRUCTION_ROUTES_FILE`));
+  const withFuture = `const hosts = ${JSON.stringify([...ALL, host('future')])};`;
+  await check(site({ bundle: withFuture }), future);
+  await assert.rejects(check(site(), future), /not built with main's deploy.yml hosts \(missing .*future/);
+  await assert.rejects(check(site({ bundle: withFuture })), /names asset hosts deploy.yml does not: future\./);
+
+  // Any base line, known or new, must still be a literal plain https URL.
+  assert.throws(() => config(`${WORKFLOW}      FUTURE_BASE: \${{ vars.FUTURE }}\n`), /FUTURE_BASE is an expression/);
+  assert.throws(() => config(WORKFLOW.replace(host('scenes'), 'http://scenes.example/')), /SCENES_BASE must be a plain https URL/);
+});
+
 test('the real deploy.yml and routes file parse, and every host gets a file the app requests', () => {
   const cfg = readDeployConfig();
+  const workflow = readFileSync(resolve(REPO_ROOT, '.github/workflows/deploy.yml'), 'utf8');
+  for (const [name, value] of Object.entries(workflowBases(workflow))) {
+    assert(cfg.bundleStrings.includes(value), `${name} is not required in the live bundle`);
+    assert(cfg.expectedHostnames.includes(new URL(value).hostname), `${name}'s host is not expected`);
+  }
   const items = JSON.parse(readFileSync(resolve(REPO_ROOT, 'src/data/items.json'), 'utf8'));
   assert(cfg.hosts.length >= 2 && cfg.hosts.every(h => h.base.startsWith('https://') && h.base.endsWith('/')));
   for (const sample of sampleAssets(items, cfg)) {

@@ -22,7 +22,7 @@ storage.setItem("finals-outfit.lighting", JSON.stringify({
 }));
 
 const { useLightingStore, LIGHTING_KEY, MAX_LOOKS, mergedLook } = await import("../src/lib/lighting-store");
-const { DEFAULT_LOOK, KEY_POSITION, lightAngles, lobbyLook, rotated, sanitizeLook, studioLook } = await import("../src/lib/stage-lighting");
+const { DEFAULT_LOOK, KEY_POSITION, lightAngles, lightTowards, lobbyLook, rotated, sanitizeLook, studioLook } = await import("../src/lib/stage-lighting");
 const stored = () => JSON.parse(storage.getItem(LIGHTING_KEY)!);
 const store = () => useLightingStore.getState();
 
@@ -100,6 +100,39 @@ test("another tab's look survives this tab deleting one; deleting removes only t
   assert.ok(!ids.includes("old") && ids.includes("other-tab"));
   assert.equal(ids.filter((id: string | undefined) => id === undefined).length, 1, "the id-less look is still there");
   assert.deepEqual(store().looks.at(-1)!.look, lobbyLook(), "this tab now shows it");
+});
+
+test("Show lights is remembered beside the look, never in it; it touches no saved look (21 Nov 2026)", () => {
+  const looksBefore = JSON.stringify(stored().looks);
+  store().select("sun");
+  store().setMarkers(true);
+  assert.equal(stored().markers, true);
+  assert.equal(JSON.stringify(stored().looks), looksBefore, "saved looks untouched");
+  assert.equal("markers" in stored().current, false, "not part of the look, so never saved, shared or applied with one");
+  store().refresh(); // as a reload reads it
+  assert.equal(store().markers, true, "remembered across a reload");
+  store().setMarkers(false);
+  assert.equal(store().selected, null, "hiding the lights forgets the picked one");
+  assert.equal(stored().markers, false);
+  // A marker drag is an ordinary look edit: written like a slider's, and the preference and unknown fields stay.
+  store().setMarkers(true);
+  store().edit(look => ({ ...look, lights: look.lights.map(l => l.role === "sun" ? lightTowards(l, [-1, 1, 1]) : l) }));
+  store().flush();
+  assert.ok(Math.abs(lightAngles(stored().current.lights[0].position).bearing - -45) < 1e-6);
+  assert.deepEqual([stored().markers, stored().futureTop, JSON.stringify(stored().looks)], [true, true, looksBefore]);
+});
+
+test("leaving a scene for a look without one stays left after a reload; an unknown backdrop field stays (21 Nov 2026)", async () => {
+  const { menuS12Look, warmLook } = await import("../src/lib/stage-lighting");
+  store().apply(menuS12Look());
+  assert.equal(stored().current.backdrop.scene, "s12-menu");
+  const data = stored(); data.current.backdrop.future = "kept"; storage.setItem(LIGHTING_KEY, JSON.stringify(data));
+  store().apply(warmLook());
+  assert.equal("scene" in stored().current.backdrop, false, "the scene is gone from storage too");
+  assert.equal(stored().current.backdrop.future, "kept", "a field this version does not know survives");
+  store().refresh(); // as a reload reads it
+  assert.equal(store().look.backdrop.scene, undefined);
+  assert.deepEqual(store().look, warmLook());
 });
 
 test("blocked storage loses nothing in the session and throws nowhere", () => {

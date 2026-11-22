@@ -6,6 +6,7 @@ import {
   lightAngles, movedLight, newLight, sunCasts, sunOf, type Backdrop, type EnvironmentKind, type StageLight,
   type ToneMappingChoice,
 } from "../lib/stage-lighting";
+import { SCENES, sceneById } from "../lib/scenes";
 import { SunIcon, TrashIcon } from "./Icons";
 
 /**
@@ -13,12 +14,19 @@ import { SunIcon, TrashIcon } from "./Icons";
  * the reviewed default; Lobby; sun looks; saved looks), the backdrop, each light, the sky/ground fill and reflections,
  * the ground shadows, exposure and tone mapping, Reset and Undo. Everything is remembered in this browser as it changes
  * (lighting-store.ts). Built like the Graphics menu: a button in the viewer's top row and a panel anchored to that row.
+ *
+ * 21 Nov 2026 (community request): more ready-made looks (Season 12 menu, Dramatic, Cool, Warm, Fullbright, Nighttime)
+ * and "Show lights": bulbs and cones in the 3D view (LightMarkers.tsx). While they are shown, a press in the 3D view does
+ * not close this panel, so its Direction and Height sliders can be watched following a dragged bulb; picking a bulb
+ * opens that light's card here.
  */
 export function LightingPanel() {
   const look = useLightingStore(state => state.look);
   const previous = useLightingStore(state => state.previous);
   const looks = useLightingStore(state => state.looks);
-  const { edit, apply, reset, undo, saveLook, deleteLook } = useLightingStore.getState();
+  const markers = useLightingStore(state => state.markers);
+  const selected = useLightingStore(state => state.selected);
+  const { edit, apply, reset, undo, saveLook, deleteLook, setMarkers } = useLightingStore.getState();
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [viewerHeight, setViewerHeight] = useState(0);
@@ -30,7 +38,13 @@ export function LightingPanel() {
     if (!open) { setConfirmDelete(null); return; }
     const viewer = root.current?.closest("[data-viewer]");
     if (viewer) setViewerHeight(viewer.clientHeight);
-    const outside = (event: PointerEvent) => { if (!root.current?.contains(event.target as Node)) setOpen(false); };
+    const outside = (event: PointerEvent) => {
+      const target = event.target;
+      if (root.current?.contains(target as Node)) return;
+      // With the lights shown, working in the 3D view (dragging a bulb, turning round to find one) keeps the panel open.
+      if (useLightingStore.getState().markers && target instanceof Element && target.closest("[data-viewer] canvas")) return;
+      setOpen(false);
+    };
     const escape = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); button.current?.focus(); } };
     document.addEventListener("pointerdown", outside);
     document.addEventListener("keydown", escape);
@@ -93,8 +107,13 @@ export function LightingPanel() {
           </Section>
 
           <Section title="Lights">
+            <Check label="Show lights in the 3D view" checked={markers} onChange={setMarkers}
+              hint={look.lights.length
+                ? "A bulb for each light, a cone the way it shines. Drag a bulb to move its light. Never in screenshots, share images or exports."
+                : "This look has no lights: add one below."} />
             {look.lights.map(light => (
-              <LightCard key={light.id} light={light} onChange={change => editLight(light.id, change)}
+              <LightCard key={light.id} light={light} selected={markers && selected === light.id}
+                onChange={change => editLight(light.id, change)}
                 onRemove={light.role === "sun" ? undefined
                   : () => apply({ ...structuredClone(look), lights: look.lights.filter(l => l.id !== light.id) })} />
             ))}
@@ -246,13 +265,20 @@ export function SunShortcut() {
   );
 }
 
-function LightCard({ light, onChange, onRemove }: {
-  light: StageLight; onChange(change: (light: StageLight) => StageLight): void; onRemove?: () => void;
+function LightCard({ light, selected, onChange, onRemove }: {
+  light: StageLight; selected: boolean; onChange(change: (light: StageLight) => StageLight): void; onRemove?: () => void;
 }) {
   const { bearing, height } = lightAngles(light.position);
   const isSun = light.role === "sun";
+  const card = useRef<HTMLDetailsElement>(null);
+  // Picked in the 3D view: open this card and bring it into view.
+  useEffect(() => {
+    if (!selected || !card.current) return;
+    card.current.open = true;
+    card.current.scrollIntoView?.({ block: "nearest" });
+  }, [selected]);
   return (
-    <details open={isSun} className="border border-line">
+    <details ref={card} open={isSun} className={`border ${selected ? "border-finals" : "border-line"}`}>
       <summary className="flex cursor-pointer list-none items-center gap-2 px-2 py-1.5 hover:bg-ink-900">
         <span aria-hidden="true" className="size-3 shrink-0 border border-fg/40"
           style={{ background: light.enabled ? light.color : "transparent" }} />
@@ -288,32 +314,53 @@ function LightCard({ light, onChange, onRemove }: {
 function BackdropEditor({ backdrop, onChange }: { backdrop: Backdrop; onChange(backdrop: Backdrop): void }) {
   const solid = isSolid(backdrop);
   const css = backdropCss(backdrop);
+  const scene = backdrop.scene ?? null;
+  const known = sceneById(scene);
+  // The colours without the scene: picking a colour leaves the scene.
+  const colours = (next: Backdrop): Backdrop => { const { scene: _scene, ...rest } = next; return rest; };
   return (
     <>
+      {/* In-game scenes (scenes.ts). A scene replaces the colours; its own colours stay as the fallback. */}
+      <div role="radiogroup" aria-label="Scenes" className="flex flex-wrap gap-1.5">
+        {SCENES.map(s => (
+          <button key={s.id} type="button" role="radio" aria-checked={scene === s.id}
+            onClick={() => scene !== s.id && onChange({ ...s.fallback, scene: s.id })}
+            className={`h-8 border px-2 text-xs transition-colors ${scene === s.id ? "border-fg bg-fg text-ink-950" : "border-line hover:bg-ink-900"}`}
+            style={scene === s.id ? undefined : { background: backdropCss(s.fallback) }}>
+            {s.label}
+          </button>
+        ))}
+      </div>
+      {scene && <span className="text-xs leading-snug text-fg-muted">
+        {known ? "In a scene the camera stays put, as in the game: drag (or use the arrow keys) to turn the character; scroll or pinch to zoom. Pick a colour below to leave the scene."
+          : "This look uses a scene from a newer version of the site; its colours show here. Pick a scene or a colour to replace it."}
+      </span>}
       <div role="radiogroup" aria-label="Backdrop presets" className="flex flex-wrap gap-1.5">
         {BACKDROP_PRESETS.map(preset => {
-          const checked = backdropCss(preset.backdrop) === css;
+          const checked = !scene && backdropCss(preset.backdrop) === css;
           return (
             <button key={preset.id} type="button" role="radio" aria-checked={checked} title={preset.label}
-              aria-label={preset.label} onClick={() => onChange({ ...preset.backdrop })}
+              aria-label={preset.label} onClick={() => onChange(colours({ ...preset.backdrop }))}
               className={`size-7 border transition-shadow ${checked ? "border-fg ring-1 ring-fg" : "border-line hover:border-fg/50"}`}
               style={{ background: backdropCss(preset.backdrop) }} />
           );
         })}
       </div>
-      <div className="flex gap-1.5" role="radiogroup" aria-label="Backdrop style">
-        <Chip pressed={solid} onClick={() => !solid && onChange({ ...backdrop, inner: backdrop.middle, outer: backdrop.middle })}>Solid</Chip>
-        <Chip pressed={!solid} onClick={() => solid && onChange({ ...backdrop, inner: shade(backdrop.middle, 0.12), outer: shade(backdrop.middle, -0.18) })}>Gradient</Chip>
-      </div>
-      <div className="flex gap-3">
-        {solid
-          ? <ColorField label="Colour" value={backdrop.middle} onChange={color => onChange({ ...backdrop, inner: color, middle: color, outer: color })} />
-          : <>
-              <ColorField label="Centre" value={backdrop.inner} onChange={inner => onChange({ ...backdrop, inner })} />
-              <ColorField label="Middle" value={backdrop.middle} onChange={middle => onChange({ ...backdrop, middle })} />
-              <ColorField label="Edge" value={backdrop.outer} onChange={outer => onChange({ ...backdrop, outer })} />
-            </>}
-      </div>
+      {!scene && <>
+        <div className="flex gap-1.5" role="radiogroup" aria-label="Backdrop style">
+          <Chip pressed={solid} onClick={() => !solid && onChange({ ...backdrop, inner: backdrop.middle, outer: backdrop.middle })}>Solid</Chip>
+          <Chip pressed={!solid} onClick={() => solid && onChange({ ...backdrop, inner: shade(backdrop.middle, 0.12), outer: shade(backdrop.middle, -0.18) })}>Gradient</Chip>
+        </div>
+        <div className="flex gap-3">
+          {solid
+            ? <ColorField label="Colour" value={backdrop.middle} onChange={color => onChange({ ...backdrop, inner: color, middle: color, outer: color })} />
+            : <>
+                <ColorField label="Centre" value={backdrop.inner} onChange={inner => onChange({ ...backdrop, inner })} />
+                <ColorField label="Middle" value={backdrop.middle} onChange={middle => onChange({ ...backdrop, middle })} />
+                <ColorField label="Edge" value={backdrop.outer} onChange={outer => onChange({ ...backdrop, outer })} />
+              </>}
+        </div>
+      </>}
       <span className="text-xs leading-snug text-fg-muted">Behind the character only (it lights nothing). Share images use it too.</span>
     </>
   );

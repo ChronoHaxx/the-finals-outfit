@@ -21,19 +21,31 @@
 // Assets are served with a one-year immutable cache, so a URL's contents must never
 // change once anyone has fetched it.
 
-import { joinBase, modelUrlFor, parseReconstructionRoutes } from "./asset-routing.mjs";
+import { joinBase, meshOrigins, modelUrlFor, parseReconstructionRoutes, type AssetBases } from "./asset-routing.mjs";
 
-const reconstructionRoutes = parseReconstructionRoutes(import.meta.env.VITE_RECONSTRUCTION_ROUTES);
+// Optional chaining: Node runs tests that import this (through mesh-gate.ts) without Vite, where import.meta.env does
+// not exist. Vite still replaces each read with its value, so the large routes string is inlined once, here.
+const reconstructionRoutes = parseReconstructionRoutes(import.meta.env?.VITE_RECONSTRUCTION_ROUTES);
+const assetsBase = () => import.meta.env?.VITE_ASSETS_BASE || import.meta.env?.BASE_URL || "/";
 
 export function assetUrl(path: string): string {
-  return joinBase(import.meta.env.VITE_ASSETS_BASE || import.meta.env.BASE_URL, path);
+  return joinBase(assetsBase(), path);
+}
+
+function modelBases(): AssetBases {
+  return {
+    assetsBase: assetsBase(),
+    modelsBase: import.meta.env?.VITE_MODELS_BASE,
+    reconstructionBase: import.meta.env?.VITE_RECONSTRUCTION_BASE,
+    reconstructionRoutes,
+  };
 }
 
 export function modelUrl(path: string): string {
-  return modelUrlFor(path, {
-    assetsBase: import.meta.env.VITE_ASSETS_BASE || import.meta.env.BASE_URL,
-    modelsBase: import.meta.env.VITE_MODELS_BASE,
-    reconstructionBase: import.meta.env.VITE_RECONSTRUCTION_BASE,
-    reconstructionRoutes,
-  });
+  return modelUrlFor(path, modelBases());
+}
+
+/** The hosts whose meshes the mesh gate serves (asset-routing.mjs meshOrigins); every other .glb keeps its host. */
+export function meshHostOrigins(): string[] {
+  return meshOrigins(modelBases());
 }

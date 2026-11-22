@@ -1,0 +1,2370 @@
+{
+ "read": "12 Nov 2026, installed S12 paks (CL1439418), usmap e5b29e28, ShaderProbe level mode",
+ "packages": [
+  {
+   "path": "Discovery/Maps/MainMenuReforge.umap",
+   "bytes": 93128,
+   "sha256": "6AE74F901E147013ED42C9B668B7F1C05B0E2D5369CC23C849855DB002ABD337",
+   "exports": 341
+  },
+  {
+   "path": "Discovery/Maps/Frontend/Sponsors/MainMenu_S12_None.umap",
+   "bytes": 16531,
+   "sha256": "DE9C06826DE52B1E1BD0A52B0EA62C11FC204C39C8507B1451B64B58A51D2D41",
+   "exports": 48
+  },
+  {
+   "path": "Discovery/Maps/Frontend/CharacterSelection_Environment_Reforge.umap",
+   "bytes": 29410,
+   "sha256": "8C0B9CA638FEC2782F168C1BBE41B1B72887C86FA3F6E05165E8777F8E17884A",
+   "exports": 127
+  },
+  {
+   "path": "Discovery/Maps/Frontend/CharacterSelection_Lighting.umap",
+   "bytes": 23809,
+   "sha256": "54417255F3410EAFB117D2E2F0D8B75A0C87021D73AB49BB583828F6EE5BA134",
+   "exports": 81
+  },
+  {
+   "path": "Discovery/Maps/Frontend/MainMenu_BackstageEnvironment_Reforge.umap",
+   "bytes": 72016,
+   "sha256": "E4C78D2F31192FD971935CAD169F6B485BCC3A8C55D62B0811E2CE923F45D8C4",
+   "exports": 279
+  },
+  {
+   "path": "Discovery/Maps/General/G_IntroPodium_01.umap",
+   "bytes": 198349,
+   "sha256": "3059F57CB44AF11D283D3436572B7333B50C7D4B74DF850FD3AE2FB5AF6AC9CA",
+   "exports": 826
+  },
+  {
+   "path": "Discovery/Maps/Frontend/Background/S12_Reforge/BP_BackgroundStage_S12.uasset",
+   "bytes": 6519,
+   "sha256": "E72AC889AFA0DCE12FAECD114F5D6D16EE82BC0F2A03712E269568AE1F781C85",
+   "exports": 17
+  },
+  {
+   "path": "Discovery/Maps/Frontend/BP_FrontendCameraConfiguration.uasset",
+   "bytes": 1855,
+   "sha256": "A7CE7BBDB9384F8D5E76A2E95F085AF5E35E585D07B5018A9CCDCFC7B9C597E1",
+   "exports": 8
+  },
+  {
+   "path": "Discovery/Maps/General/IntroPodium_01/Environment/Architecture/IntroPlatform_01/BP_Intro_Platform_01_Floor_A.uasset",
+   "bytes": 2456,
+   "sha256": "2F3A922A100FAB5655F52C97C094AAD21B8ABB7E4823703A38E43F5E36328408",
+   "exports": 6
+  },
+  {
+   "path": "Discovery/Maps/General/IntroPodium_01/Environment/Architecture/IntroPlatform_01/BP_Intro_Platform_01_Floor_B.uasset",
+   "bytes": 2461,
+   "sha256": "1D6F89E691E386E2B17EF3317603B88CD49E084F9CCC7F4AAB14BEFD7B1513A4",
+   "exports": 6
+  },
+  {
+   "path": "Discovery/Maps/MainMenuReforge_BuiltData.uasset",
+   "bytes": 262516,
+   "sha256": "5AA33BC9A87B4F9FFFA2EC69E8D62D51570DA8DD035F0C8F4EA225551FB65FF1",
+   "exports": 1
+  },
+  {
+   "path": "Discovery/Maps/General/G_IntroPodium_01_BuiltData.uasset",
+   "bytes": 372,
+   "sha256": "B8F5FE48F6E56E6665CD1994072AD3246E059E9246EF9C76631A465878B65031",
+   "exports": 1
+  },
+  {
+   "path": "Discovery/Maps/Frontend/CharacterSelection_Lighting_BuiltData.uasset",
+   "bytes": 524708,
+   "sha256": "D973976556F58D2C5CE8B29F955E3F47B5EF360CE9D543F3768FC7B1B4CEC0F0",
+   "exports": 1
+  },
+  {
+   "path": "Discovery/Maps/Frontend/MainMenu_BackstageEnvironment_Reforge_BuiltData.uasset",
+   "bytes": 1835532,
+   "sha256": "A747B8EF7C7D5B226B77C4D9EC933E94061B6889899EA9FA52E234AAD39123DB",
+   "exports": 1
+  },
+  {
+   "path": "Discovery/Maps/Frontend/CharacterSelection_Environment_BuiltData.uasset",
+   "bytes": 396,
+   "sha256": "2981598EEA751457A8EE916492161F9B045845E1CFA2B7064F2EBB07A9912150",
+   "exports": 1
+  }
+ ],
+ "menu": {
+  "levels": [
+   "MainMenu_S12_None",
+   "CharacterSelection_Environment_Reforge",
+   "CharacterSelection_Lighting",
+   "MainMenuReforge"
+  ],
+  "meshComponents": 40,
+  "visible": 39,
+  "instancedUnsupported": 0,
+  "visibleMeshes": [
+   {
+    "actor": "StaticMeshActor_1",
+    "mesh": "SM_Frontend_S09_Floor_A",
+    "pos": [
+     -13.52,
+     -0.0,
+     -0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_MainStageFloor"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_0",
+    "mesh": "SM_Floor_Stage_S05",
+    "pos": [
+     0.0,
+     -199.75,
+     -0.2
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_FrontendStageFloor_S_08"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_1",
+    "mesh": "SM_Floor_Stage_S05",
+    "pos": [
+     0.0,
+     0.0,
+     -0.2
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_FrontendStageFloor_S_08"
+    ]
+   },
+   {
+    "actor": "BP_BackgroundStage_HomeScene_C_0",
+    "mesh": "SM_FrontendStage_Wall_01",
+    "pos": [
+     1.38,
+     -0.0,
+     0.11
+    ],
+    "scale": [
+     2.0,
+     2.0,
+     2.0
+    ],
+    "materials": [
+     "MI_FrontendScreen_Main_S12"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_3",
+    "mesh": "Plane",
+    "pos": [
+     3.54,
+     -0.01,
+     2.72
+    ],
+    "scale": [
+     5.5,
+     19.75,
+     1.0
+    ],
+    "materials": [
+     "MI_FakeFog_03"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_8",
+    "mesh": "SM_MotionGraphics_Mesh_02",
+    "pos": [
+     4.37,
+     1.33,
+     -25.96
+    ],
+    "scale": [
+     0.32,
+     0.32,
+     0.32
+    ],
+    "materials": []
+   },
+   {
+    "actor": "StaticMeshActor_5",
+    "mesh": "SM_MotionGraphics_Mesh_01",
+    "pos": [
+     4.66,
+     -0.08,
+     -29.29
+    ],
+    "scale": [
+     0.32,
+     0.32,
+     0.32
+    ],
+    "materials": []
+   },
+   {
+    "actor": "StaticMeshActor_5",
+    "mesh": "SM_BackgroundStage_S12_Circle",
+    "pos": [
+     4.75,
+     0.25,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "BP_CinematicWeapon_C_1",
+    "mesh": "SM_AssaultRifle_01_Barrel_A",
+    "pos": [
+     6.45,
+     1.14,
+     6.35
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_Default_A_AssaultRifle_01_Barrel_A"
+    ]
+   },
+   {
+    "actor": "BP_CinematicWeapon_C_1",
+    "mesh": "SM_AssaultRifle_01_DustCover_A",
+    "pos": [
+     6.45,
+     1.14,
+     6.35
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_Default_A_AssaultRifle_01_DustCover_A"
+    ]
+   },
+   {
+    "actor": "BP_CinematicWeapon_C_1",
+    "mesh": "SM_AssaultRifle_01_Grip_A",
+    "pos": [
+     6.45,
+     1.14,
+     6.35
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "BP_CinematicWeapon_C_1",
+    "mesh": "SM_AssaultRifle_01_Handguard_A",
+    "pos": [
+     6.45,
+     1.14,
+     6.35
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_Default_A_AssaultRifle_01_HandGuard_A"
+    ]
+   },
+   {
+    "actor": "BP_CinematicWeapon_C_1",
+    "mesh": "SM_AssaultRifle_01_Logos_A",
+    "pos": [
+     6.45,
+     1.14,
+     6.35
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "BP_CinematicWeapon_C_1",
+    "mesh": "SM_AssaultRifle_01_Mag_A",
+    "pos": [
+     6.45,
+     1.14,
+     6.35
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_Default_A_AssaultRifle_01_Mag_A"
+    ]
+   },
+   {
+    "actor": "BP_CinematicWeapon_C_1",
+    "mesh": "SM_AssaultRifle_01_Mag_A",
+    "pos": [
+     6.45,
+     1.14,
+     6.35
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_Default_A_AssaultRifle_01_Mag_A"
+    ]
+   },
+   {
+    "actor": "BP_CinematicWeapon_C_1",
+    "mesh": "SM_AssaultRifle_01_Sticker_A",
+    "pos": [
+     6.45,
+     1.14,
+     6.35
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "BP_CinematicWeapon_C_1",
+    "mesh": "SM_AssaultRifle_01_Stock_A",
+    "pos": [
+     6.45,
+     1.14,
+     6.35
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_Default_A_AssaultRifle_01_Stock_A"
+    ]
+   },
+   {
+    "actor": "BP_FrontendItemActor_2",
+    "mesh": "SM_ItemCard",
+    "pos": [
+     6.48,
+     -68.88,
+     2.25
+    ],
+    "scale": [
+     1.5,
+     1.5,
+     1.64
+    ],
+    "materials": [
+     "MI_CardPlate"
+    ]
+   },
+   {
+    "actor": "BP_FrontendItemActor_2",
+    "mesh": "SM_ItemCard",
+    "pos": [
+     6.48,
+     -68.88,
+     2.25
+    ],
+    "scale": [
+     1.5,
+     1.5,
+     1.64
+    ],
+    "materials": [
+     "MI_CardPlate_Back"
+    ]
+   },
+   {
+    "actor": "BP_FrontendItemActor_2",
+    "mesh": "Plane",
+    "pos": [
+     6.48,
+     -68.88,
+     2.27
+    ],
+    "scale": [
+     0.16,
+     0.17,
+     0.16
+    ],
+    "materials": []
+   },
+   {
+    "actor": "BP_FrontendItemActor_2",
+    "mesh": "SM_PlayerCardMeshPreview",
+    "pos": [
+     6.48,
+     -68.88,
+     2.26
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "BP_FrontendItemActor_2",
+    "mesh": "SM_SprayPreview_01_A",
+    "pos": [
+     6.48,
+     -68.88,
+     2.26
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "BP_ContestantIconCaptureActor_C_3",
+    "mesh": "SM_Cube",
+    "pos": [
+     11.53,
+     0.2,
+     -3.29
+    ],
+    "scale": [
+     10.0,
+     10.0,
+     5.89
+    ],
+    "materials": [
+     "M_CaptureBackground"
+    ]
+   },
+   {
+    "actor": "BP_ContestantIconCaptureActor_C_0",
+    "mesh": "SM_Cube",
+    "pos": [
+     14.07,
+     39.89,
+     -4.3
+    ],
+    "scale": [
+     10.0,
+     10.0,
+     5.89
+    ],
+    "materials": [
+     "M_CaptureBackground"
+    ]
+   },
+   {
+    "actor": "BP_BackgroundStage_HomeScene_C_0",
+    "mesh": "Plane",
+    "pos": [
+     16.33,
+     -0.0,
+     2.96
+    ],
+    "scale": [
+     20.0,
+     10.0,
+     0.5
+    ],
+    "materials": [
+     "MI_FogPlane_Background"
+    ]
+   },
+   {
+    "actor": "BP_Frontend_BackgroundFrame_01_C_0",
+    "mesh": "SM_BackgroundStage_S12_Scaffold",
+    "pos": [
+     17.25,
+     10.54,
+     -0.2
+    ],
+    "scale": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "materials": [
+     "MI_BackstageScaffold"
+    ]
+   },
+   {
+    "actor": "BP_Frontend_BackgroundFrame_01_C_0",
+    "mesh": "SM_BackgroundStage_S12_Scaffold",
+    "pos": [
+     17.25,
+     9.65,
+     -0.2
+    ],
+    "scale": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "materials": [
+     "MI_BackstageScaffold"
+    ]
+   },
+   {
+    "actor": "BP_Frontend_BackgroundFrame_01_C_0",
+    "mesh": "SM_BackgroundStage_S12_Scaffold",
+    "pos": [
+     17.25,
+     10.54,
+     19.8
+    ],
+    "scale": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "materials": [
+     "MI_BackstageScaffold"
+    ]
+   },
+   {
+    "actor": "BP_Frontend_BackgroundFrame_01_C_0",
+    "mesh": "SM_BackgroundStage_S12_Scaffold",
+    "pos": [
+     17.25,
+     9.65,
+     19.8
+    ],
+    "scale": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "materials": [
+     "MI_BackstageScaffold"
+    ]
+   },
+   {
+    "actor": "BP_Frontend_BackgroundFrame_01_C_1",
+    "mesh": "SM_BackgroundStage_S12_Scaffold",
+    "pos": [
+     17.25,
+     -10.54,
+     -0.2
+    ],
+    "scale": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "materials": [
+     "MI_BackstageScaffold"
+    ]
+   },
+   {
+    "actor": "BP_Frontend_BackgroundFrame_01_C_1",
+    "mesh": "SM_BackgroundStage_S12_Scaffold",
+    "pos": [
+     17.25,
+     -9.65,
+     -0.2
+    ],
+    "scale": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "materials": [
+     "MI_BackstageScaffold"
+    ]
+   },
+   {
+    "actor": "BP_Frontend_BackgroundFrame_01_C_1",
+    "mesh": "SM_BackgroundStage_S12_Scaffold",
+    "pos": [
+     17.25,
+     -10.54,
+     19.8
+    ],
+    "scale": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "materials": [
+     "MI_BackstageScaffold"
+    ]
+   },
+   {
+    "actor": "BP_Frontend_BackgroundFrame_01_C_1",
+    "mesh": "SM_BackgroundStage_S12_Scaffold",
+    "pos": [
+     17.25,
+     -9.65,
+     19.8
+    ],
+    "scale": [
+     0.5,
+     0.5,
+     0.5
+    ],
+    "materials": [
+     "MI_BackstageScaffold"
+    ]
+   },
+   {
+    "actor": "BP_BackgroundStage_HomeScene_C_0",
+    "mesh": "Plane",
+    "pos": [
+     17.87,
+     0.0,
+     5.8
+    ],
+    "scale": [
+     24.0,
+     24.0,
+     1.0
+    ],
+    "materials": [
+     "MI_Frontend_TitleLED"
+    ]
+   },
+   {
+    "actor": "BP_BackgroundStage_HomeScene_C_0",
+    "mesh": "Plane",
+    "pos": [
+     18.11,
+     0.0,
+     4.82
+    ],
+    "scale": [
+     22.0,
+     22.0,
+     0.76
+    ],
+    "materials": [
+     "MI_Frontend_HomeScreenLights"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_0",
+    "mesh": "SM_Frontend_S09_Floor_A",
+    "pos": [
+     18.15,
+     0.0,
+     1.93
+    ],
+    "scale": [
+     0.56,
+     0.56,
+     0.56
+    ],
+    "materials": [
+     "MI_MainStageBack"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_1",
+    "mesh": "SM_Frontend_S09_Floor_A",
+    "pos": [
+     19.53,
+     11.52,
+     1.93
+    ],
+    "scale": [
+     0.56,
+     0.06,
+     0.56
+    ],
+    "materials": [
+     "MI_MainStageBack"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_4",
+    "mesh": "SM_Frontend_S09_Floor_A",
+    "pos": [
+     19.53,
+     -11.56,
+     1.93
+    ],
+    "scale": [
+     0.56,
+     0.06,
+     0.56
+    ],
+    "materials": [
+     "MI_MainStageBack"
+    ]
+   },
+   {
+    "actor": "BP_BackgroundStage_HomeScene_C_0",
+    "mesh": "Plane",
+    "pos": [
+     20.24,
+     -0.05,
+     4.75
+    ],
+    "scale": [
+     20.0,
+     20.0,
+     0.75
+    ],
+    "materials": [
+     "MI_Frontend_HomeScreenGrid"
+    ]
+   }
+  ],
+  "lights": 47,
+  "characterLights": [
+   {
+    "actor": "DirectionalLight_2",
+    "type": "DirectionalLightComponent",
+    "pos": [
+     5.01,
+     0.04,
+     -7.5
+    ],
+    "Intensity": 0.0
+   },
+   {
+    "actor": "BP_Frontend_ExtraplayerLights_01_C_0",
+    "type": "PointLightComponent",
+    "pos": [
+     6.23,
+     -0.95,
+     1.4
+    ],
+    "Intensity": 50.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 249,
+     "G": 243,
+     "R": 237,
+     "A": 255,
+     "Hex": "EDF3F9"
+    },
+    "AttenuationRadius": 150.0
+   },
+   {
+    "actor": "BP_Frontend_ExtraplayerLights_01_C_0",
+    "type": "PointLightComponent",
+    "pos": [
+     6.23,
+     0.95,
+     1.4
+    ],
+    "Intensity": 50.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 249,
+     "G": 243,
+     "R": 237,
+     "A": 255,
+     "Hex": "EDF3F9"
+    },
+    "AttenuationRadius": 754.0037
+   },
+   {
+    "actor": "BP_Frontend_ExtraplayerLights_01_C_0",
+    "type": "RectLightComponent",
+    "pos": [
+     4.77,
+     2.1,
+     2.52
+    ],
+    "Intensity": 25.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 249,
+     "G": 243,
+     "R": 237,
+     "A": 255,
+     "Hex": "EDF3F9"
+    },
+    "AttenuationRadius": 175.0
+   },
+   {
+    "actor": "BP_Frontend_ExtraplayerLights_01_C_0",
+    "type": "RectLightComponent",
+    "pos": [
+     4.77,
+     -1.94,
+     2.52
+    ],
+    "Intensity": 25.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 249,
+     "G": 243,
+     "R": 237,
+     "A": 255,
+     "Hex": "EDF3F9"
+    },
+    "AttenuationRadius": 175.0
+   },
+   {
+    "actor": "BP_FrontendProjectedLight_C_2",
+    "type": "SpotLightComponent",
+    "pos": [
+     4.37,
+     -3.11,
+     -6.58
+    ],
+    "Intensity": 50.0,
+    "IntensityUnits": "ELightUnits::Lumens"
+   },
+   {
+    "actor": "BP_FrontendProjectedLight_C_3",
+    "type": "SpotLightComponent",
+    "pos": [
+     3.9,
+     3.88,
+     -6.31
+    ],
+    "Intensity": 35.0,
+    "IntensityUnits": "ELightUnits::Lumens"
+   },
+   {
+    "actor": "BP_FrontendProjectedLight_C_6",
+    "type": "SpotLightComponent",
+    "pos": [
+     4.37,
+     -3.4,
+     1.42
+    ],
+    "Intensity": 50.0,
+    "IntensityUnits": "ELightUnits::Lumens"
+   },
+   {
+    "actor": "BP_FrontendProjectedLight_C_7",
+    "type": "SpotLightComponent",
+    "pos": [
+     3.9,
+     3.59,
+     1.69
+    ],
+    "Intensity": 35.0,
+    "IntensityUnits": "ELightUnits::Lumens"
+   },
+   {
+    "actor": "keylight_16",
+    "type": "SpotLightComponent",
+    "pos": [
+     3.28,
+     -1.29,
+     3.28
+    ],
+    "Intensity": 45.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "Temperature": 5600.0,
+    "bUseTemperature": true,
+    "AttenuationRadius": 288.6217
+   },
+   {
+    "actor": "LeftProjector_B",
+    "type": "SpotLightComponent",
+    "pos": [
+     3.9,
+     3.88,
+     -6.31
+    ],
+    "Intensity": 150.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 255,
+     "G": 0,
+     "R": 0,
+     "A": 255,
+     "Hex": "0000FF"
+    }
+   },
+   {
+    "actor": "LeftProjector_G",
+    "type": "SpotLightComponent",
+    "pos": [
+     3.9,
+     3.88,
+     -6.31
+    ],
+    "Intensity": 120.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 0,
+     "G": 255,
+     "R": 0,
+     "A": 255,
+     "Hex": "00FF00"
+    }
+   },
+   {
+    "actor": "LeftProjector_R",
+    "type": "SpotLightComponent",
+    "pos": [
+     3.9,
+     3.88,
+     -6.31
+    ],
+    "Intensity": 100.0,
+    "IntensityUnits": "ELightUnits::Lumens"
+   },
+   {
+    "actor": "redfill2_20",
+    "type": "SpotLightComponent",
+    "pos": [
+     3.39,
+     0.73,
+     1.72
+    ],
+    "Intensity": 0.03,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 255,
+     "G": 222,
+     "R": 202,
+     "A": 255,
+     "Hex": "CADEFF"
+    },
+    "AttenuationRadius": 298.8833
+   },
+   {
+    "actor": "redfill_18",
+    "type": "SpotLightComponent",
+    "pos": [
+     3.85,
+     1.15,
+     1.35
+    ],
+    "Intensity": 10.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "AttenuationRadius": 223.19498
+   },
+   {
+    "actor": "redkeyfill_21",
+    "type": "SpotLightComponent",
+    "pos": [
+     2.51,
+     -0.01,
+     0.44
+    ],
+    "Intensity": 10.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 255,
+     "G": 218,
+     "R": 218,
+     "A": 255,
+     "Hex": "DADAFF"
+    },
+    "AttenuationRadius": 350.0
+   },
+   {
+    "actor": "RightProjector_B",
+    "type": "SpotLightComponent",
+    "pos": [
+     4.37,
+     -3.11,
+     -6.58
+    ],
+    "Intensity": 180.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 255,
+     "G": 0,
+     "R": 0,
+     "A": 255,
+     "Hex": "0000FF"
+    }
+   },
+   {
+    "actor": "RightProjector_G",
+    "type": "SpotLightComponent",
+    "pos": [
+     4.37,
+     -3.11,
+     -6.58
+    ],
+    "Intensity": 180.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 0,
+     "G": 255,
+     "R": 0,
+     "A": 255,
+     "Hex": "00FF00"
+    }
+   },
+   {
+    "actor": "RightProjector_R",
+    "type": "SpotLightComponent",
+    "pos": [
+     4.37,
+     -3.11,
+     -6.58
+    ],
+    "Intensity": 180.0,
+    "IntensityUnits": "ELightUnits::Lumens"
+   },
+   {
+    "actor": "Rim2_0",
+    "type": "SpotLightComponent",
+    "pos": [
+     5.92,
+     1.41,
+     2.19
+    ],
+    "Intensity": 0.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 255,
+     "G": 183,
+     "R": 124,
+     "A": 255,
+     "Hex": "7CB7FF"
+    },
+    "AttenuationRadius": 540.6187
+   },
+   {
+    "actor": "Rim2_17",
+    "type": "SpotLightComponent",
+    "pos": [
+     6.96,
+     2.33,
+     2.01
+    ],
+    "Intensity": 60.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 255,
+     "G": 203,
+     "R": 167,
+     "A": 255,
+     "Hex": "A7CBFF"
+    },
+    "AttenuationRadius": 540.6187
+   },
+   {
+    "actor": "Rim2_22",
+    "type": "SpotLightComponent",
+    "pos": [
+     4.82,
+     -0.82,
+     1.97
+    ],
+    "Intensity": 70.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 255,
+     "G": 203,
+     "R": 167,
+     "A": 255,
+     "Hex": "A7CBFF"
+    },
+    "AttenuationRadius": 540.6187
+   },
+   {
+    "actor": "Rim3_19",
+    "type": "SpotLightComponent",
+    "pos": [
+     4.06,
+     -1.37,
+     1.59
+    ],
+    "Intensity": 0.05,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 255,
+     "G": 237,
+     "R": 228,
+     "A": 255,
+     "Hex": "E4EDFF"
+    },
+    "AttenuationRadius": 540.6187
+   },
+   {
+    "actor": "SpotLight_23",
+    "type": "SpotLightComponent",
+    "pos": [
+     6.31,
+     -3.9,
+     1.42
+    ],
+    "Intensity": 300.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 255,
+     "G": 123,
+     "R": 0,
+     "A": 255,
+     "Hex": "007BFF"
+    }
+   },
+   {
+    "actor": "SpotLight_24",
+    "type": "SpotLightComponent",
+    "pos": [
+     5.85,
+     3.32,
+     1.69
+    ],
+    "Intensity": 350.0,
+    "IntensityUnits": "ELightUnits::Lumens",
+    "LightColor": {
+     "B": 255,
+     "G": 123,
+     "R": 0,
+     "A": 255,
+     "Hex": "007BFF"
+    }
+   }
+  ],
+  "cameras": [
+   {
+    "level": "MainMenu_S12_None",
+    "actor": "CameraLocationBackstage_0",
+    "pos": [
+     0.4,
+     0.0,
+     0.79
+    ],
+    "CurrentFocalLength": 38.0,
+    "CurrentAperture": 5.0
+   },
+   {
+    "level": "MainMenu_S12_None",
+    "actor": "CameraLocationPlay_0",
+    "pos": [
+     0.65,
+     0.0,
+     0.79
+    ],
+    "CurrentFocalLength": 38.0,
+    "CurrentAperture": 4.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_ArchetypePreviewActor_C_3",
+    "pos": [
+     4.97,
+     -34.58,
+     1.68
+    ]
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_ArchetypePreviewActor_C_4",
+    "pos": [
+     4.94,
+     -32.88,
+     1.68
+    ]
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_ContestantIconCaptureActor_C_0",
+    "pos": [
+     12.79,
+     40.37,
+     -4.29
+    ]
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_ContestantIconCaptureActor_C_3",
+    "pos": [
+     10.25,
+     0.69,
+     -3.28
+    ]
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_FirstPersonPreview_C_1",
+    "pos": [
+     4.6,
+     -64.4,
+     1.68
+    ]
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_FrontendCameraConfiguration_C_0",
+    "pos": [
+     5.61,
+     1.64,
+     1.35
+    ],
+    "CurrentFocalLength": 55.0,
+    "CurrentAperture": 64.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_FrontendCameraConfiguration_C_1",
+    "pos": [
+     5.61,
+     1.64,
+     1.35
+    ],
+    "CurrentFocalLength": 200.0,
+    "CurrentAperture": 16.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_FrontendCameraConfiguration_C_3",
+    "pos": [
+     5.6,
+     1.0,
+     1.35
+    ],
+    "CurrentFocalLength": 200.0,
+    "CurrentAperture": 16.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_FrontendCameraConfiguration_C_31",
+    "pos": [
+     5.2,
+     -68.36,
+     2.54
+    ],
+    "CurrentFocalLength": 50.0,
+    "CurrentAperture": 64.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_FrontendCameraConfiguration_C_32",
+    "pos": [
+     5.53,
+     -68.45,
+     2.13
+    ],
+    "CurrentFocalLength": 200.0,
+    "CurrentAperture": 16.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_FrontendCameraConfiguration_C_33",
+    "pos": [
+     5.6,
+     -69.0,
+     2.17
+    ],
+    "CurrentFocalLength": 200.0,
+    "CurrentAperture": 16.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_FrontendCameraConfiguration_C_34",
+    "pos": [
+     5.61,
+     -68.36,
+     2.17
+    ],
+    "CurrentFocalLength": 200.0,
+    "CurrentAperture": 16.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "BP_FrontendCameraConfiguration_C_4",
+    "pos": [
+     5.61,
+     1.64,
+     1.35
+    ],
+    "CurrentFocalLength": 200.0,
+    "CurrentAperture": 16.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationBattlePass_2",
+    "pos": [
+     0.4,
+     -70.0,
+     0.79
+    ],
+    "CurrentFocalLength": 38.0,
+    "CurrentAperture": 4.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationCustomizationHeadWear_0",
+    "pos": [
+     0.4,
+     -70.0,
+     0.79
+    ],
+    "CurrentFocalLength": 38.0,
+    "CurrentAperture": 4.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems",
+    "pos": [
+     5.5,
+     1.5,
+     1.27
+    ],
+    "CurrentFocalLength": 45.0,
+    "CurrentAperture": 8.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems_0",
+    "pos": [
+     5.5,
+     1.5,
+     1.27
+    ],
+    "CurrentFocalLength": 45.0,
+    "CurrentAperture": 8.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems_1",
+    "pos": [
+     6.28,
+     1.1,
+     1.21
+    ],
+    "CurrentFocalLength": 45.0,
+    "CurrentAperture": 64.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems_2",
+    "pos": [
+     6.18,
+     1.11,
+     1.23
+    ],
+    "CurrentFocalLength": 45.0,
+    "CurrentAperture": 64.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems_3",
+    "pos": [
+     5.67,
+     -68.54,
+     2.15
+    ],
+    "CurrentFocalLength": 42.0,
+    "CurrentAperture": 22.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems_35",
+    "pos": [
+     5.56,
+     -68.52,
+     2.09
+    ],
+    "CurrentFocalLength": 42.0,
+    "CurrentAperture": 22.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems_36",
+    "pos": [
+     5.5,
+     -68.5,
+     2.09
+    ],
+    "CurrentFocalLength": 45.0,
+    "CurrentAperture": 8.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems_37",
+    "pos": [
+     6.28,
+     -68.9,
+     2.03
+    ],
+    "CurrentFocalLength": 45.0,
+    "CurrentAperture": 64.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems_38",
+    "pos": [
+     6.18,
+     -68.89,
+     2.05
+    ],
+    "CurrentFocalLength": 45.0,
+    "CurrentAperture": 64.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems_39",
+    "pos": [
+     5.5,
+     -68.5,
+     2.12
+    ],
+    "CurrentFocalLength": 45.0,
+    "CurrentAperture": 8.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationItems_4",
+    "pos": [
+     5.5,
+     1.5,
+     1.27
+    ],
+    "CurrentFocalLength": 45.0,
+    "CurrentAperture": 8.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationPlay_0",
+    "pos": [
+     11.18,
+     -225.62,
+     0.35
+    ],
+    "CurrentFocalLength": 16.0,
+    "CurrentAperture": 4.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationPlay_1",
+    "pos": [
+     11.18,
+     -225.62,
+     0.35
+    ],
+    "CurrentFocalLength": 16.0,
+    "CurrentAperture": 4.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationPlay_2",
+    "pos": [
+     0.4,
+     0.0,
+     0.79
+    ],
+    "CurrentFocalLength": 38.0,
+    "CurrentAperture": 4.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationPlay_3",
+    "pos": [
+     2.93,
+     0.0,
+     1.1
+    ],
+    "CurrentFocalLength": 38.0,
+    "CurrentAperture": 4.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationSettings_3",
+    "pos": [
+     -1.24,
+     0.7,
+     0.69
+    ],
+    "CurrentFocalLength": 65.0,
+    "CurrentAperture": 5.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationStart_4",
+    "pos": [
+     2.93,
+     0.0,
+     1.1
+    ],
+    "CurrentFocalLength": 38.0,
+    "CurrentAperture": 4.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationStore_5",
+    "pos": [
+     0.4,
+     -70.0,
+     0.79
+    ],
+    "CurrentFocalLength": 38.0,
+    "CurrentAperture": 4.0
+   },
+   {
+    "level": "MainMenuReforge",
+    "actor": "CameraLocationStoreOffer_4",
+    "pos": [
+     0.4,
+     -70.0,
+     0.79
+    ],
+    "CurrentFocalLength": 38.0,
+    "CurrentAperture": 4.0
+   }
+  ],
+  "characterSpots": [
+   {
+    "actor": "FrontendCharacter_0",
+    "type": "BP_FrontendCharacter_C",
+    "root": "CollisionCylinder",
+    "pos": [
+     4.21,
+     0.0,
+     0.9
+    ]
+   },
+   {
+    "actor": "BP_FrontendSquadMember_C_0",
+    "type": "BP_FrontendCreateContestantDummy_C",
+    "root": "CollisionCylinder",
+    "pos": [
+     5.0,
+     1.0,
+     0.9
+    ]
+   },
+   {
+    "actor": "BP_FrontendSquadMember_C_1",
+    "type": "BP_FrontendCreateContestantDummy_C",
+    "root": "CollisionCylinder",
+    "pos": [
+     5.0,
+     -1.0,
+     0.9
+    ]
+   },
+   {
+    "actor": "BP_FrontendSquadMember_C_2",
+    "type": "BP_FrontendSquadMember_C",
+    "root": "CollisionCylinder",
+    "pos": [
+     6.0,
+     -2.0,
+     0.9
+    ]
+   },
+   {
+    "actor": "BP_FrontendSquadMember_C_3",
+    "type": "BP_FrontendSquadMember_C",
+    "root": "CollisionCylinder",
+    "pos": [
+     5.0,
+     1.0,
+     0.9
+    ]
+   },
+   {
+    "actor": "BP_FrontendSquadMember_C_4",
+    "type": "BP_FrontendSquadMember_C",
+    "root": "CollisionCylinder",
+    "pos": [
+     5.0,
+     -1.0,
+     0.9
+    ]
+   },
+   {
+    "actor": "BP_FrontendSquadMember_C_5",
+    "type": "BP_FrontendSquadMember_C",
+    "root": "CollisionCylinder",
+    "pos": [
+     6.0,
+     2.0,
+     0.9
+    ]
+   }
+  ]
+ },
+ "tunnel": {
+  "levels": [
+   "G_IntroPodium_01"
+  ],
+  "meshComponents": 86,
+  "visible": 37,
+  "instancedUnsupported": 0,
+  "visibleMeshes": [
+   {
+    "actor": "SM_DDGIBox_IntroPodium_01_1",
+    "mesh": "SM_DDGIBox_IntroPodium_01",
+    "pos": [
+     -20.0,
+     0.0,
+     -110.0
+    ],
+    "scale": [
+     5.0,
+     7.0,
+     8.0
+    ],
+    "materials": [
+     "M_Backdrop_Screen"
+    ]
+   },
+   {
+    "actor": "BP_ContestantIconCaptureActor_C_1",
+    "mesh": "SM_Cube",
+    "pos": [
+     -11.19,
+     -4.63,
+     3.19
+    ],
+    "scale": [
+     10.0,
+     10.0,
+     5.89
+    ],
+    "materials": [
+     "M_CaptureBackground"
+    ]
+   },
+   {
+    "actor": "SM_DDGIBox_IntroPodium_01_0",
+    "mesh": "SM_DDGIBox_IntroPodium_01",
+    "pos": [
+     -6.67,
+     0.31,
+     -25.89
+    ],
+    "scale": [
+     1.0,
+     2.0,
+     2.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "StaticMeshActor_77",
+    "mesh": "Plane",
+    "pos": [
+     -1.76,
+     0.0,
+     2.9
+    ],
+    "scale": [
+     10.0,
+     5.0,
+     10.0
+    ],
+    "materials": [
+     "MI_WinnerScreen_Insignia_Translucent"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_70",
+    "mesh": "Plane",
+    "pos": [
+     -1.75,
+     0.0,
+     2.9
+    ],
+    "scale": [
+     10.0,
+     5.0,
+     10.0
+    ],
+    "materials": [
+     "M_WinnerScreen_Insignia_Masked"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_3",
+    "mesh": "Plane",
+    "pos": [
+     -0.69,
+     -0.0,
+     -58.89
+    ],
+    "scale": [
+     67.9,
+     10.45,
+     2.4
+    ],
+    "materials": [
+     "M_Tournament_ModeBackdrop"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_4",
+    "mesh": "Plane",
+    "pos": [
+     -0.66,
+     0.0,
+     -60.21
+    ],
+    "scale": [
+     36.81,
+     8.19,
+     2.1
+    ],
+    "materials": [
+     "M_Tournament_ModeBackdrop"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_9",
+    "mesh": "Plane",
+    "pos": [
+     -0.6,
+     -0.0,
+     -60.69
+    ],
+    "scale": [
+     20.63,
+     6.82,
+     1.5
+    ],
+    "materials": [
+     "M_Tournament_ModeBackdrop"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_10",
+    "mesh": "Plane",
+    "pos": [
+     -0.42,
+     -0.0,
+     -62.01
+    ],
+    "scale": [
+     9.61,
+     4.1,
+     1.0
+    ],
+    "materials": [
+     "M_Tournament_ModeBackdrop"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_1",
+    "mesh": "SM_OutroPodium_01_A",
+    "pos": [
+     0.0,
+     0.0,
+     -4.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_OutroPodium_01_Screen_Off",
+     "MI_OutroPodium_01_Screen_Off",
+     "MI_OutroPodium_01_Screen_Off"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_87",
+    "mesh": "SM_Plane",
+    "pos": [
+     0.2,
+     0.61,
+     2.23
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "G_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "SM_DDGIBox_IntroPodium_01_2",
+    "mesh": "SM_DDGIBox_IntroPodium_01",
+    "pos": [
+     0.75,
+     0.25,
+     -2.04
+    ],
+    "scale": [
+     1.75,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "StaticMeshActor_5",
+    "mesh": "SM_tournament_pyramid_prefinals",
+    "pos": [
+     1.0,
+     0.0,
+     -62.42
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "StaticMeshActor_6",
+    "mesh": "SM_tournament_pyramid_prequalifier",
+    "pos": [
+     1.0,
+     -0.0,
+     -60.75
+    ],
+    "scale": [
+     2.4,
+     2.4,
+     2.4
+    ],
+    "materials": []
+   },
+   {
+    "actor": "StaticMeshActor_7",
+    "mesh": "SM_tournament_pyramid_prequarterfinal",
+    "pos": [
+     1.0,
+     -0.0,
+     -60.75
+    ],
+    "scale": [
+     2.1,
+     2.1,
+     2.1
+    ],
+    "materials": []
+   },
+   {
+    "actor": "StaticMeshActor_8",
+    "mesh": "SM_tournament_pyramid_presemifinal",
+    "pos": [
+     1.0,
+     -0.0,
+     -60.75
+    ],
+    "scale": [
+     1.5,
+     1.5,
+     1.5
+    ],
+    "materials": []
+   },
+   {
+    "actor": "BP_FrontendStage_Backdrop_2",
+    "mesh": "SM_FrontendStage_Wall_01",
+    "pos": [
+     4.04,
+     -0.0,
+     -0.3
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "G_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "BP_FrontendStage_Backdrop_2",
+    "mesh": "SM_FrontendStage_Floor",
+    "pos": [
+     4.04,
+     0.0,
+     -0.01
+    ],
+    "scale": [
+     1.2,
+     1.2,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "SM_LobbyRoom_IntroPodium_01_5",
+    "mesh": "SM_LobbyRoom_IntroPodium_01",
+    "pos": [
+     6.38,
+     -1.99,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.35,
+     1.0
+    ],
+    "materials": [
+     "MI_Floor_IntroPodium_01_B",
+     "MI_Floor_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "SM_TunnelSegment_IntroPodium_01_0",
+    "mesh": "SM_TunnelSegment_IntroPodium_01",
+    "pos": [
+     6.38,
+     -2.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_Wall_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "SM_ScreenIntroPodium_8",
+    "mesh": "SM_ScreenIntroPodium_01",
+    "pos": [
+     8.0,
+     -1.79,
+     0.12
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "G_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "SM_TunnelSegment_IntroPodium_4",
+    "mesh": "SM_TunnelSegment_IntroPodium_01",
+    "pos": [
+     8.12,
+     -2.0,
+     -0.01
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "Back_Wall",
+    "mesh": "Cube",
+    "pos": [
+     10.0,
+     0.0,
+     -20.0
+    ],
+    "scale": [
+     0.01,
+     20.48,
+     5.12
+    ],
+    "materials": [
+     "MI_Grid_WorldAligned_Black"
+    ]
+   },
+   {
+    "actor": "SM_TunnelSegment_IntroPodium_1",
+    "mesh": "SM_TunnelSegment_IntroPodium_01",
+    "pos": [
+     10.38,
+     -2.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "SM_ScreenIntroPodium_7",
+    "mesh": "SM_ScreenIntroPodium_01",
+    "pos": [
+     12.0,
+     1.96,
+     0.12
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "G_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "SM_ScreenIntroPodium_9",
+    "mesh": "SM_ScreenIntroPodium_01",
+    "pos": [
+     12.12,
+     -1.79,
+     0.12
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "G_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "SM_TunnelSegment_IntroPodium_2",
+    "mesh": "SM_TunnelSegment_IntroPodium_01",
+    "pos": [
+     14.38,
+     -2.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "SM_ScreenIntroPodium_6",
+    "mesh": "SM_ScreenIntroPodium_01",
+    "pos": [
+     16.12,
+     1.96,
+     0.12
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "G_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "SM_ScreenIntroPodium_10",
+    "mesh": "SM_ScreenIntroPodium_01",
+    "pos": [
+     16.25,
+     -1.79,
+     0.12
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "G_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "SM_CielingAdd_IntroPodium_01_12",
+    "mesh": "SM_CielingAdd_IntroPodium_01",
+    "pos": [
+     16.81,
+     0.24,
+     3.5
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "SM_TunnelSegment_IntroPodium_01_B_4",
+    "mesh": "SM_TunnelSegment_IntroPodium_01_B",
+    "pos": [
+     18.38,
+     -2.0,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "MI_Wall_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "SM_ScreenIntroPodium_01_5",
+    "mesh": "SM_ScreenIntroPodium_01",
+    "pos": [
+     20.25,
+     1.96,
+     0.12
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "G_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_11",
+    "mesh": "Cube",
+    "pos": [
+     23.54,
+     0.1,
+     1.99
+    ],
+    "scale": [
+     5.65,
+     3.91,
+     3.9
+    ],
+    "materials": [
+     "M_TunnelRun_End_Effect"
+    ]
+   },
+   {
+    "actor": "StaticMeshActor_0",
+    "mesh": "SM_Plane",
+    "pos": [
+     25.78,
+     0.18,
+     2.25
+    ],
+    "scale": [
+     4.3,
+     2.83,
+     1.0
+    ],
+    "materials": [
+     "M_Light_RT_Emissive_Inst_20b"
+    ]
+   },
+   {
+    "actor": "SM_Glass_IntroPodium_01_11",
+    "mesh": "SM_Glass_IntroPodium_01",
+    "pos": [
+     26.38,
+     -1.75,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": [
+     "G_IntroPodium_01"
+    ]
+   },
+   {
+    "actor": "SM_TunnelSegment_IntroPodium_3",
+    "mesh": "SM_TunnelEnd_IntroPodium_01",
+    "pos": [
+     26.38,
+     2.18,
+     0.0
+    ],
+    "scale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "materials": []
+   },
+   {
+    "actor": "StaticMeshActor_2",
+    "mesh": "Plane",
+    "pos": [
+     59.75,
+     -0.75,
+     -64.0
+    ],
+    "scale": [
+     123.0,
+     123.0,
+     123.0
+    ],
+    "materials": [
+     "M_TournamentStage_Floor"
+    ]
+   }
+  ],
+  "lights": 87,
+  "characterLights": [],
+  "cameras": [
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "BP_ContestantIconCaptureActor_C_0",
+    "pos": [
+     -16.48,
+     3.65,
+     3.2
+    ]
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "BP_ContestantIconCaptureActor_C_1",
+    "pos": [
+     -12.47,
+     -4.15,
+     3.2
+    ]
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "CameraActor_0",
+    "pos": [
+     22.31,
+     -13.39,
+     14.07
+    ]
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "CineCameraActor_0",
+    "pos": [
+     11.96,
+     0.28,
+     2.46
+    ],
+    "CurrentFocalLength": 60.0,
+    "Filmback": {
+     "SensorWidth": 37.719,
+     "SensorHeight": 25.146,
+     "SensorAspectRatio": 1.5000001
+    }
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "CineCameraActor_1",
+    "pos": [
+     3.35,
+     -0.55,
+     0.4
+    ],
+    "CurrentFocalLength": 30.0,
+    "CurrentAperture": 0.6
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "CineCameraActor_2",
+    "pos": [
+     4.13,
+     -0.05,
+     1.11
+    ],
+    "CurrentFocalLength": 11.0,
+    "CurrentAperture": 0.6
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "CineCameraActor_3",
+    "pos": [
+     -2.51,
+     1.45,
+     0.9
+    ],
+    "CurrentFocalLength": 30.0,
+    "CurrentAperture": 0.7
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "SquadStageCamera",
+    "pos": [
+     2.0,
+     0.0,
+     0.85
+    ],
+    "CurrentFocalLength": 140.00003,
+    "CurrentAperture": 4.0
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "SquadStageCamera2",
+    "pos": [
+     5.19,
+     -0.14,
+     -1.38
+    ]
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "SquadStageCamera3",
+    "pos": [
+     9.43,
+     0.88,
+     0.34
+    ]
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "SquadStageCamera_0",
+    "pos": [
+     1.87,
+     1.1,
+     1.43
+    ],
+    "CurrentFocalLength": 140.0,
+    "CurrentAperture": 1.2,
+    "Filmback": {
+     "SensorWidth": 100.0,
+     "SensorHeight": 75.0,
+     "SensorAspectRatio": 1.3333334
+    }
+   },
+   {
+    "level": "G_IntroPodium_01",
+    "actor": "SquadStageCamera_1",
+    "pos": [
+     3.06,
+     0.04,
+     1.13
+    ],
+    "CurrentFocalLength": 140.00003,
+    "CurrentAperture": 4.0
+   }
+  ],
+  "characterSpots": []
+ }
+}

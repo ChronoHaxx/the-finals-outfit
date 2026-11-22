@@ -24,6 +24,47 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     items: ["chinals-emotes", "emote-effects"],
   },
   {
+    id: "2026-11-22-chinals-faces",
+    date: "2026-11-22",
+    title: "Faces in Chinals emotes",
+    notes: [
+      "In Chinals mode, faces now move during the emotes and the idle, as they do in global emotes: blinks, glances, smiles, surprise and anger, from each emote's own animation. Beards and balaclavas follow the face, and masks and helmets soften it where the game does.",
+    ],
+    items: ["chinals-emotes"],
+  },
+  {
+    id: "2026-11-22-camera-controls",
+    date: "2026-11-22",
+    title: "Camera controls",
+    notes: [
+      "A new viewfinder button beside the camera button shows where the camera is and the point it looks at, in metres. Type any number to place the camera exactly, or nudge one with the arrow keys.",
+      "Roll tilts the camera for an angled shot; Level straightens it again.",
+      "Save views with an outfit and return to one in a click. Views saved with your other outfits are listed too. Like your outfits, they are kept in this browser.",
+      "Share links now open on the camera you were looking through, so someone else can pick up your shot and improve it. Untick Include camera view in the share panel to leave it out. While a scene from the game is behind your outfit, the camera stays put and links leave it out. The preview image is unchanged.",
+    ],
+    items: ["share-randomise-report", "faster-builder"],
+  },
+  {
+    id: "2026-11-22-light-markers-looks",
+    date: "2026-11-22",
+    title: "See the lights, drag them, five more looks",
+    notes: [
+      "Tick Show lights in the 3D view, in the lighting panel, to see each light as a bulb where it sits, with a cone the way it shines. Drag a bulb to move its light: the light's Direction and Height sliders follow. The bulbs never appear in screenshots or share images, and H hides them.",
+      "Five more ready-made looks: Dramatic, Cool, Warm, Fullbright and Nighttime. The Season 12 menu look now lights the character the way the menu does: a warm key from above, strong blue light and a white back light from behind on the left, and a weak fill from below.",
+    ],
+    items: ["lighting-backdrops"],
+  },
+  {
+    id: "2026-11-22-scene-backdrops",
+    date: "2026-11-22",
+    title: "Scenes from the game behind your outfit",
+    notes: [
+      "Two scenes from the game can now stand behind your outfit: the Season 12 menu stage, drawn live with its glowing lights, and the tunnel from the Season 12 intro. Pick one under Backdrop in the lighting panel, or choose the Season 12 menu look.",
+      "While a scene shows, the camera stays where it is: drag to turn the character, and scroll or pinch to zoom. Screenshots, videos and share images show the scene's colours rather than the scene itself.",
+    ],
+    items: ["lighting-backdrops"],
+  },
+  {
     id: "2026-11-22-in-game-outfits",
     date: "2026-11-22",
     title: "In-game outfits",
@@ -37,6 +78,8 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
       "An emote picked while the outfit is still loading now plays to its end instead of going back to the idle after a second or two.",
       "The preview does far less work each frame, so it runs more smoothly on slower computers such as laptops with built-in graphics, most of all with a face on.",
       "Pick your player number, 10 to 99, beside Body type. Clothing that prints a number, such as jerseys and cargo pants, shows yours in its own lettering, and Own keeps each piece's printed number. The number is saved with the outfit and carried by share links.",
+      "Screenshots are now drawn at twice their size and scaled down, for crisper detail. The camera button's new Video tab saves the emote on screen as a 60 fps video, made in your own browser: an MP4 with sound, a see-through WebM, or a see-through PNG sequence for video editors.",
+      "A What you can do guide lists everything the builder does and where each control is. Open it from the welcome screen, the Guide button in the top bar, or the ? key.",
     ],
     items: ["in-game-outfits", "catalog", "red-items", "idle-emotes", "faster-builder", "first-pass-3d"],
   },

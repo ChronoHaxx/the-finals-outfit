@@ -26,6 +26,9 @@ import { modelUrl } from "../lib/assets";
 import { buildShareUrl } from "../lib/share-url";
 import { DEVELOPER_CATALOG } from "../lib/catalog-mode";
 import { setPreviewScene } from "../lib/viewer-handle";
+import { sceneById } from "../lib/scenes";
+import { SceneBackdrop, SceneTurntable, withUpright } from "./SceneMode";
+import { LightMarkers } from "./LightMarkers";
 import { SLOTS } from "../lib/slots";
 import { getDownloadProgress, subscribeDownloadProgress } from "../lib/load-progress";
 import { AUTOMATED } from "../lib/automation";
@@ -37,6 +40,8 @@ import { ScreenshotPanel } from "./ScreenshotPanel";
 import { captureSlot } from "../rig/VideoExport";
 import { STAGE_FLOOR, type ScreenshotContext } from "../rig/ViewerScreenshot";
 import { LightingPanel, SunShortcut } from "./LightingPanel";
+import { CameraPanel } from "./CameraPanel";
+import { CameraBridge } from "./CameraBridge";
 import { useLightingStore } from "../lib/lighting-store";
 import {
   STUDIO_RIG, backdropCss, backdropIsDark, lightAngles, shadowFrustum, snapFollow, sunCasts, type EnvironmentKind,
@@ -116,7 +121,9 @@ function PreviewBridge({ root, backdrop, active, animator }: {
   useEffect(() => {
     if (!active) return;
     setPreviewScene({ gl, scene, root, backdrop: { inner, middle, outer },
-      stillPose: animator ? draw => animator.withStillPose(draw) : undefined });
+      stillPose: animator ? draw => animator.withStillPose(draw) : undefined,
+      // In a scene the character may be turned (turntable mode); the card's views are placed at world angles.
+      upright: withUpright });
     return () => setPreviewScene(null);
   }, [gl, scene, root, inner, middle, outer, active, animator]);
   return null;
@@ -349,9 +356,15 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   // The look (lighting-store.ts): lights, reflections, exposure, backdrop. The reviewed Studio look unless this viewer
   // changed it; always so when automated.
   const look = useLightingStore((s) => s.look);
+  // "Show lights" (Lighting panel): a bulb and cone per light, draggable (LightMarkers.tsx). Hidden with the rest of the
+  // UI (H), so a clean view for the system's own screenshot tool never shows them; the site's pictures never do.
+  const showLightMarkers = useLightingStore((s) => s.markers);
   const backdrop = look.backdrop;
   // Light chrome (corner marks, loading text) on a dark backdrop, dark chrome on a light one.
-  const darkBackdrop = backdropIsDark(backdrop);
+  // An in-game scene behind the character (scenes.ts), when the look has one this build knows; null otherwise (an
+  // unknown id shows the look's colours). While one is shown the camera stays put and a drag turns the character.
+  const scene = sceneById(backdrop.scene);
+  const darkBackdrop = scene ? scene.dark : backdropIsDark(backdrop);
   // Showcase animation: null unless this deployment publishes clips (the controls then stay hidden). Chinals mode
   // (lib/site-mode.ts) plays its own clip set: a mode switch replaces the animator, the character stays loaded.
   const animator = useRigAnimator(mode === "chinals" ? chinalsAnimationsBase() : animationsBaseUrl());
@@ -501,6 +514,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
       className="relative h-full w-full"
       style={{ background: backdropCss(backdrop) }}
     >
+      {scene && <SceneBackdrop scene={scene} />}
       {/* The key remounts the Canvas only for Retry after a lost graphics context. The look's tone mapping and exposure
           change live: r3f re-applies the gl props below on a re-render, and the still-view accumulator rebuilds its
           output pass for a new tone mapping and restarts its history. */}
@@ -540,11 +554,14 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
         {DEVELOPER_CATALOG && <ExportBridge target={exportContext} />}
         <ScreenshotBridge target={screenshotContext} />
         <PreviewBridge root={rig.root} backdrop={backdrop} active={ready && !busy} animator={animator} />
-        {animator && <AnimationFrameDriver animator={animator} />}
+        {animator && <AnimationFrameDriver animator={animator} yaw={() => rig.root.rotation.y} />}
         {STABLE_PREVIEW && <StablePreview isMoving={animationMoving} aa={antiAliasing} statusRef={temporalStatus} />}
         <CaptureDriver ownsDraw={!STABLE_PREVIEW} />
         <AutoGraphics status={temporalStatus} active={ready && !busy} deviceDpr={deviceDpr} />
         {showFps && <FpsMeter status={temporalStatus} />}
+        {/* The camera for the camera panel and share links, and its roll. It uses the default controls below; its frame
+            step runs after theirs by priority, whatever the order here. */}
+        <CameraBridge />
         <OrbitControls
           target={DEV.cam ? [DEV.cam[3], DEV.cam[4], DEV.cam[5]] : [0, 0.9, 0]}
           enablePan
@@ -552,7 +569,10 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
           minDistance={0.05}
           maxDistance={10}
           makeDefault
+          enabled={!scene}
         />
+        {scene && <SceneTurntable scene={scene} root={rig.root} />}
+        {showLightMarkers && !uiHidden && <LightMarkers dark={darkBackdrop} />}
       </Canvas>
       {contextLost && <div className="absolute inset-0 z-20">
         <ViewerUnavailable lost onRetry={() => { setContextLost(false); setCanvasGeneration((n) => n + 1); }} />
@@ -586,6 +606,8 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
             </button>
           )}
           <ScreenshotPanel context={screenshotContext} backdrop={backdrop} ready={ready && !busy} animator={animator} />
+          {/* Camera: position and target to read or type, roll, and views saved with the outfit. */}
+          <CameraPanel />
           {/* Lighting and backdrop: one panel for the whole scene (the Studio/Lobby switch became two of its looks). */}
           <LightingPanel />
         </div>

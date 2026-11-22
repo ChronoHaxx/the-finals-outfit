@@ -13,5 +13,7 @@ export declare function compactReconstructionRoutes(value?: unknown): { formatVe
 export declare function modelBase(path: string, bases: AssetBases): string;
 export declare function modelUrlFor(path: string, bases: AssetBases): string;
 export declare function isMeshPath(path: string): boolean;
-/** "<host label>/<path>" for an https mesh URL on a public host, else null. */
-export declare function gatedMeshPath(url: string): string | null;
+/** "<host label>/<path>" for an https mesh URL on a public host (one of `origins`, when given), else null. */
+export declare function gatedMeshPath(url: string, origins?: readonly string[]): string | null;
+/** The origins a release's cosmetic meshes come from: the only hosts the mesh gate stages. */
+export declare function meshOrigins(bases: AssetBases): string[];

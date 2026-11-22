@@ -42,8 +42,14 @@ jobs:
       # Chinals mode (src/lib/site-mode.ts): the Chinals emote set, on its own Cloudflare Pages project
       # the-finals-outfit-chinals-assets so it can be withdrawn in one step. Blank turns the mode off: no toggle, and a
       # Chinals link says the mode isn't available while its outfit still opens. 15 Nov: set-3 + props-3 (e7796a7c's
-      # set, PR #49) + sounds-1 (the Chinals emote sounds). Earlier: e7796a7c (props-3), dcb131a5 (props-2).
-      CHINALS_ANIMATIONS_BASE: https://59209741.the-finals-outfit-chinals-assets.pages.dev/
+      # set, PR #49) + sounds-1 (the Chinals emote sounds). 21 Nov: + faces-1 (the Chinals emotes' own face curves on
+      # the global face rig, _docs/chinals-faces-2026-11-21): a superset of 59209741 (every file kept at its path).
+      # Earlier: 59209741 (no faces), e7796a7c (props-3), dcb131a5 (props-2).
+      CHINALS_ANIMATIONS_BASE: https://7c9add72.the-finals-outfit-chinals-assets.pages.dev/
+      # In-game scene backdrops (src/lib/scenes.ts, 21 Nov 2026): scenes-1 = the Season 12 menu stage's "A" stroke mask
+      # and the relit intro-tunnel plate (_docs/scene-backdrops-2026-11-12). Blank: each scene shows its fallback
+      # colours instead (the stage's texture fails into its error boundary; the plate does not paint).
+      SCENES_BASE: https://1d367244.the-finals-outfit-assets.pages.dev/
       # UI preview: another branch built into a sub-path of this same site, e.g.
       # https://chronohaxx.github.io/the-finals-outfit/new-ui-test/. Blank turns it off.
       # Off since the redesign it previewed became the root app; old preview links fall
@@ -85,6 +91,7 @@ jobs:
           VITE_SHARE_PREVIEW_BASE: ${{ env.SHARE_PREVIEW_BASE }}
           VITE_ANIMATIONS_BASE: ${{ env.ANIMATIONS_BASE }}
           VITE_CHINALS_ANIMATIONS_BASE: ${{ env.CHINALS_ANIMATIONS_BASE }}
+          VITE_SCENES_BASE: ${{ env.SCENES_BASE }}
           VITE_RECONSTRUCTION_ROUTES_FILE: ${{ env.RECONSTRUCTION_ROUTES_FILE }}
           # Terms public text must never contain (src/lib/public-text.ts). Only the build reads it, and it
           # never prints a term. No VITE_ prefix, so it never reaches the app bundle. Empty when the secret
@@ -115,6 +122,7 @@ jobs:
           VITE_SHARE_PREVIEW_BASE: ${{ env.SHARE_PREVIEW_BASE }}
           VITE_ANIMATIONS_BASE: ${{ env.ANIMATIONS_BASE }}
           VITE_CHINALS_ANIMATIONS_BASE: ${{ env.CHINALS_ANIMATIONS_BASE }}
+          VITE_SCENES_BASE: ${{ env.SCENES_BASE }}
           # The production routes file, by absolute path, so the preview checkout uses the same hosts.
           VITE_RECONSTRUCTION_ROUTES_FILE: ${{ github.workspace }}/${{ env.RECONSTRUCTION_ROUTES_FILE }}
         run: |

@@ -149,7 +149,7 @@ The default Studio light was rebuilt from measurements against the in-game icons
 ### Lighting and backdrops
 <!-- id: lighting-backdrops -->
 
-A Lighting panel offers ready-made looks, Studio and Lobby among them, and lets you change each light's colour, brightness and direction, add lights, choose a solid or gradient backdrop and turn on a floor shadow. Your own looks can be saved.
+A Lighting panel offers ready-made looks, Studio and Lobby among them, and lets you change each light's colour, brightness and direction, add lights, choose a solid or gradient backdrop and turn on a floor shadow. Your own looks can be saved, and each light can be shown in the 3D view and dragged into place. Two scenes from the game, the Season 12 menu stage and the tunnel from the Season 12 intro, can stand behind the character.
 
 ### Outfits that fit together
 <!-- id: outfit-fitting -->
@@ -164,14 +164,14 @@ The character plays the game's outfit-screen idle by default. Every emote in the
 ### Chinals emotes
 <!-- id: chinals-emotes -->
 
-A labelled Chinals mode plays the emotes of 终极角逐, THE FINALS as published in mainland China, on your outfit, with their sound effects and music. Emotes without an English name show the Chinese name with this site's unofficial translation. Chinals cosmetics are not on the site.
+A labelled Chinals mode plays the emotes of 终极角逐, THE FINALS as published in mainland China, on your outfit, with their sound effects and music. Their faces move as in global emotes. Emotes without an English name show the Chinese name with this site's unofficial translation. Chinals cosmetics are not on the site.
 
 ### Share, randomise and report
 <!-- id: share-randomise-report -->
 
-Share links come with a four-angle preview image. Randomise builds a rules-based outfit and keeps locked pieces. Report issue opens a prefilled GitHub issue for you to review and send.
+Share links come with a four-angle preview image and open on the camera you were looking through. Randomise builds a rules-based outfit and keeps locked pieces. Report issue opens a prefilled GitHub issue for you to review and send.
 
 ### A faster builder that works on phones
 <!-- id: faster-builder -->
 
-The builder was redesigned around the 3D preview, which fills the window with the items in a drawer beside it, or in a sheet under it on phones. Outfits download faster, with a loading readout. Your outfits are saved in your browser as you work, a full-screen view or the H key shows only the character, screenshots save or copy as PNG with the backdrop or a transparent background, and graphics settings trade quality for speed. The preview does far less work each frame, so slower computers run it more smoothly.
+The builder was redesigned around the 3D preview, which fills the window with the items in a drawer beside it, or in a sheet under it on phones. Outfits download faster, with a loading readout. Your outfits are saved in your browser as you work, a full-screen view or the H key shows only the character, screenshots save or copy as PNG with the backdrop or a transparent background, an emote can be saved as a video, the camera can be placed by numbers, tilted and saved as views with an outfit, a What you can do guide lists every feature, and graphics settings trade quality for speed. The preview does far less work each frame, so slower computers run it more smoothly.

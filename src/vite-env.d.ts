@@ -18,6 +18,8 @@ interface ImportMetaEnv {
   readonly VITE_ANIMATIONS_BASE?: string;
   // The Chinals emote set (src/lib/site-mode.ts). Unset or blank keeps Chinals mode off.
   readonly VITE_CHINALS_ANIMATIONS_BASE?: string;
+  // In-game scene backdrops (src/lib/scenes.ts). Unset falls back to scenes/ next to the app.
+  readonly VITE_SCENES_BASE?: string;
 }
 
 // Emitted by the catalog-assets plugin in vite.config.ts: one URL per catalog JSON file.

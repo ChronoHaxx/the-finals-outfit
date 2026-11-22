@@ -165,6 +165,14 @@ export function CameraIcon({ className, size = 16 }: IconProps) {
   </svg>;
 }
 
+// Camera panel (21 Nov 2026): viewfinder corners around the point the camera looks at, as the viewer's own corner marks.
+export function ViewfinderIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <path d="M2.5 5.5v-3h3M10.5 2.5h3v3M13.5 10.5v3h-3M5.5 13.5h-3v-3" />
+    <circle cx="8" cy="8" r="1.6" />
+  </svg>;
+}
+
 /** A speaker: with sound waves, or crossed out when `muted`. */
 export function SpeakerIcon({ className, size = 14, muted }: IconProps & { muted?: boolean }) {
   return <svg {...base(size, className)}>
