@@ -124,6 +124,12 @@ misread silently. Route:
    its size/format match; a material instance when every parameter except the changed textures equals the live JSON.
 Hold C until one of those holds.
 
+Read scope (`batchC-read-scope-v1.json`, 22 Nov): 73 meshes (UVs changed, UV sets differ, UV1 changed, tile shifts,
+the combat pants' new slot, 3 moved too far to judge), shown by 358 items, drawing 344 material instances and 715
+garment-specific textures (shared material-library textures excluded). Biggest: `SK_Shirt_M` 47 items / 9 textures,
+`SK_Casual_BasicTshirt_M` 43 / 58, `SK_Streetwear_Hoodie_M` 38 / 24. The read also needs the S12 item definitions
+(DA) for slot overrides such as `CombatPants_Cloth`.
+
 ## 6. Hand-off
 
 Per batch: a merge patch pinned to the then-active index, a publish list (GLBs under `s12-bodytype-refresh-v1/meshes/`,
