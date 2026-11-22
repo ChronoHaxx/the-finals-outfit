@@ -48,7 +48,10 @@ The three proofs, rerun on `3f64b2e6`:
   distance 0, so the best UV among triangles tied for closest counts. Modulo whole tiles is reported separately.
   - "same UVs": ≥ 99.5% of S12 vertices fit → live textures still map; only geometry-derived data needs a re-run.
   - "UV0 tile shifts only": fits modulo whole UV tiles. Textures sample the same texels under wrap, but a material that
-    reads the tile index (a tile discard) would differ; checked per program before admission.
+    reads the tile index would differ. **Checked 22 Nov: many do.** `floor(uv0.x)` routes prints and layers by tile in
+    MI_Socks_Quarter_Wool_*, five PufferVest variants and the Halloween BikerJacketHoodie. A tile-shifted S12 mesh under
+    a pre-S12 program shows the wrong print/layer there, so tile-shift meshes go with batch C (S12 materials) unless
+    every program that can draw them ignores the tile.
   - "UVs changed": S12 re-unwrapped some islands, so S12 re-authored the textures too (e.g. `SK_Shirt_M`: positions
     identical, 11% of UV0 moved; `SK_Pants_M`: 1.6%).
 

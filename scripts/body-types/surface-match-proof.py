@@ -421,6 +421,13 @@ def rework_class(m):
         return 'reworked: geometry moved too far to judge UVs'
     geometry = m['s12ToLiveCm']['p99'] > FIT_CM or m['liveToS12Cm']['p99'] > FIT_CM
     tail = ', geometry moved' if geometry else ', geometry within 1 mm'
+    # Every UV set both files carry must fit, not only UV0: UV1 drives the layered material's detail and noise
+    # (22 Nov 2026: S12 re-laid UV1 on CrystalHeadband and PopBraceletSet with UV0 untouched).
+    others = [m[k] for k in sorted(m) if k.startswith('uv') and k[2:].isdigit() and k != 'uv0']
+    if any(o['fitShare'] < FIT_SHARE for o in others):
+        return ('reworked: UV1+ changed' if uv0['fitShare'] >= FIT_SHARE else 'reworked: UVs changed') + tail
+    if m['uvSetsLive'] != m['uvSetsS12']:
+        return 'reworked: UV sets differ' + tail
     if uv0['fitShare'] >= FIT_SHARE:
         return 'reworked: same UVs' + tail
     if uv0['fitShareModTile'] >= FIT_SHARE:

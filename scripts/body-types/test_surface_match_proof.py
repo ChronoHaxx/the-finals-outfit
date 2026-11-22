@@ -36,7 +36,7 @@ def grid(n=6, size=0.3):
     return pos, uv, np.array(idx, np.uint32)
 
 
-def write_glb(path, pos, uv, idx, weights=None, morph=None, nrm=None, slots=None):
+def write_glb(path, pos, uv, idx, weights=None, morph=None, nrm=None, slots=None, uv1=None):
     """slots: [(slot name, triangle count)] splits the triangles into primitives over one vertex pool, one material each
     (all named MI_Test, as S12's cloth sections that reuse the garment's MI). Default: one slot "Test"."""
     n = len(pos)
@@ -61,7 +61,9 @@ def write_glb(path, pos, uv, idx, weights=None, morph=None, nrm=None, slots=None
     attrs = {'POSITION': add(pos, 5126, 'VEC3'), 'NORMAL': add(nrm, 5126, 'VEC3'), 'TANGENT': add(tan, 5126, 'VEC4'),
              'TEXCOORD_0': add(uv, 5126, 'VEC2'), 'JOINTS_0': add(J, 5121, 'VEC4'),
              'WEIGHTS_0': add(weights, 5121, 'VEC4', normalized=True)}
-    nodes = [{'name': 'root', 'children': [1]}, {'name': 'pelvis', 'children': [2]}, {'name': 'spine'},
+    if uv1 is not None:
+        attrs['TEXCOORD_1'] = add(uv1, 5126, 'VEC2')
+    nodes =[{'name': 'root', 'children': [1]}, {'name': 'pelvis', 'children': [2]}, {'name': 'spine'},
              {'name': 'mesh', 'mesh': 0, 'skin': 0}]
     ibm = add(np.tile(np.eye(4, dtype=np.float32).reshape(1, 16), (3, 1)), 5126, 'MAT4')
     slots = slots or [('Test', len(idx) // 3)]
@@ -188,6 +190,16 @@ class SurfaceMatch(unittest.TestCase):
         p2 = p2.copy()
         p2[:, 2] += 0.0001                             # 0.1 mm: not permuted, but the same surface and UVs
         r = self.judge(pos=p2, uv=uv2, idx=idx2)
+        self.assertTrue(r['class'].startswith('reworked: same UVs'), r)
+
+    def test_a_relaid_uv1_with_the_same_uv0_is_not_same_uvs(self):
+        # CrystalHeadband / PopBraceletSet (22 Nov 2026): S12 re-laid UV1 only; UV1 feeds the layered detail and noise.
+        write_glb(self.dir / 'live.glb', self.pos, self.uv, self.idx, uv1=self.uv)
+        pos = self.pos.copy()
+        pos[:, 2] += 0.0001                            # not permuted, so the rework metrics run
+        r = self.judge(pos=pos, uv=self.uv, idx=self.idx, uv1=(self.uv * 0.5).astype(np.float32))
+        self.assertTrue(r['class'].startswith('reworked: UV1+ changed'), r)
+        r = self.judge(pos=pos, uv=self.uv, idx=self.idx, uv1=self.uv)
         self.assertTrue(r['class'].startswith('reworked: same UVs'), r)
 
     def test_geometry_moved_far_cannot_be_judged(self):
