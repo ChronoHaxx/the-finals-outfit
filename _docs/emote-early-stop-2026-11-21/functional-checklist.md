@@ -20,7 +20,9 @@ plays to its end and then eases into the idle, instead of snapping back to the i
   `npm test` 928 pass, 8 known failures (gitignored model files); headless Chrome as a visitor on a local production
   build: main's source snaps back at 1.42/7.33 s, the fix plays to the end then returns to the idle; late click and
   automated paths unchanged.
-- User checks: **PENDING**. Agent results do not check the boxes below.
+- User checks: **waived by the user** on 22 Nov 2026 ("waive and merge 69" before the merge; "do the checks for me, i
+  trust u, waive manual checks" after it). The agent ran steps 1-5 instead ("Recorded result" below); the boxes stay
+  unticked because no user ran them.
 
 ## Get it running
 
@@ -63,9 +65,24 @@ If something fails, stop at that step and report its number and what happened. R
 
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not yet given
+- Tested revision/build: agent run of steps 1-5, 22 Nov 2026 00:15 UTC, after the merge. Steps 1, 2, 4 and 5 on the
+  live site (the GitHub Pages deploy of main `96bf586`, which contains the merge `1081108`; its bundle
+  `index-HMAlJ4F6.js` has `playUnder`). Step 3 on main just before the merge (`4848a7f`, same animations host
+  `fd946744`), built locally. Script `agent-hand-checks.mjs`: headed Chrome (GPU rendering, real frame timing), a
+  fresh profile per window as a private window has, visitor mode, sound muted, real clicks on the visitor's buttons.
+  Results and screenshots in `scripts/generated/emote-early-stop-2026-11-21/hand-checks/` (not kept in git).
+- Agent results (page seconds; not user results):
+  - 1 PASS: Emotes clickable at 2.23 s, "Loading outfit…" shown from 2.41 s, the outfit finished at 10.20 s.
+  - 2 PASS: Valkyria clicked at 3.51 s with the outfit still loading; it played to 7.30/7.33 s, then the outfit idle.
+  - 3 PASS (the bug shows before the fix): Valkyria clicked at 1.48 s while loading; the outfit finished at 5.22 s and
+    the idle replaced Valkyria at 5.37 s, with Valkyria at 3.14/7.33 s.
+  - 4 PASS: Valkyria, replaced 2.08 s in by Gimme Five, which started from 0.03 s, played to 5.59/5.67 s, then the
+    idle. Coop Caper closed with X: the idle 67 ms after the click.
+  - 5 PASS: Animated turned to Animate and the still pose. After the reload the button still read Animate; Valkyria
+    clicked while loading played to 7.24/7.33 s, then the still pose, unchanged 5 s later with the outfit loaded.
+  - Each quick click landed while the outfit was loading on the first window; no throttling was needed.
+- User reported at: no user run (waived, above).
+- Passed / failed / untested step numbers: user: none run, 1-5 waived; agent: 1-5 pass.
+- Explicitly waived checks, if any: 1-5, by the user on 22 Nov 2026.
+- Readiness: merged as PR #69 (`1081108`, 22 Nov 2026 00:02 UTC), live since the deploy of `96bf586` (00:07 UTC).
+- Merge authorization: the user, 22 Nov 2026, "waive and merge 69" (recorded on PR #69).

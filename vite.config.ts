@@ -8,7 +8,8 @@ import { DEVELOPER_CATALOG_PATH } from "./src/lib/catalog-mode";
 import { CATALOG_FILES, shippedCatalogJson, type CatalogFileKey } from "./src/lib/catalog-files";
 import { parseReconstructionRoutes } from "./src/lib/asset-routing.mjs";
 import { loadRoadmap } from "./src/lib/roadmap";
-import { parseDenylist } from "./src/lib/public-text";
+import { lintPublicText, parseDenylist } from "./src/lib/public-text";
+import { featureGuideStrings } from "./src/data/feature-guide";
 
 const CATALOG_MODULE = "virtual:catalog-assets";
 const ROADMAP_MODULE = "virtual:roadmap";
@@ -36,6 +37,19 @@ function roadmap(): Plugin {
       if (!module) return;
       server.moduleGraph.invalidateModule(module);
       return [module];
+    },
+  };
+}
+
+// The "What you can do" guide (src/data/feature-guide.ts) is public text as well: the same rules and private denylist
+// as the roadmap and the patch notes, checked when a build or the dev server starts.
+function featureGuideText(): Plugin {
+  return {
+    name: "feature-guide-text",
+    buildStart() {
+      const privateTerms = parseDenylist(process.env.PUBLIC_TEXT_DENYLIST);
+      const problems = featureGuideStrings().flatMap(({ text, where }) => lintPublicText(text, where, privateTerms));
+      if (problems.length) this.error(["Public text problems:", ...problems].join("\n"));
     },
   };
 }
@@ -110,7 +124,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: env.VITE_BASE ?? "/",
     define: reconstructionRoutesDefine(env),
-    plugins: [react(), tailwindcss(), catalogAssets(), roadmap(), {
+    plugins: [react(), tailwindcss(), catalogAssets(), roadmap(), featureGuideText(), {
       name: "developer-catalog-entry",
       enforce: "post",
       generateBundle(_options, bundle) {

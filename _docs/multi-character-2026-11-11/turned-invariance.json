@@ -1,0 +1,71 @@
+{
+  "base": "http://127.0.0.1:5186",
+  "when": "2026-11-11T23:40:00.202Z",
+  "outfits": {
+    "street": {
+      "face": "head-face-01-base",
+      "upperBody": "streetwear-oversizedbomberjacket-nylon-redurban",
+      "lowerBody": "casual-loosejeans-denim-darkblue",
+      "feet": "casual-tallsneakers-canvas",
+      "hair": "hairs-highponytail-black"
+    },
+    "cel": {
+      "face": "head-face-01-base",
+      "upperBody": "cute-animearchertop",
+      "lowerBody": "cute-animearcherskirt",
+      "feet": "samurai-getashoes-cotton-animearcher",
+      "hair": "hairs-highponytail-black"
+    }
+  },
+  "captures": [
+    {
+      "outfit": "street",
+      "deg": 0,
+      "envSign": 1,
+      "file": "turn-street-0.png"
+    },
+    {
+      "outfit": "street",
+      "deg": 90,
+      "envSign": -1,
+      "file": "turn-street-90-minus.png"
+    },
+    {
+      "outfit": "street",
+      "deg": 90,
+      "envSign": 1,
+      "file": "turn-street-90-plus.png"
+    },
+    {
+      "outfit": "street",
+      "deg": 180,
+      "envSign": 1,
+      "file": "turn-street-180.png"
+    },
+    {
+      "outfit": "cel",
+      "deg": 0,
+      "envSign": 1,
+      "file": "turn-cel-0.png"
+    },
+    {
+      "outfit": "cel",
+      "deg": 90,
+      "envSign": -1,
+      "file": "turn-cel-90-minus.png"
+    },
+    {
+      "outfit": "cel",
+      "deg": 90,
+      "envSign": 1,
+      "file": "turn-cel-90-plus.png"
+    },
+    {
+      "outfit": "cel",
+      "deg": 180,
+      "envSign": 1,
+      "file": "turn-cel-180.png"
+    }
+  ],
+  "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 3080 (0x00002206) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+}
