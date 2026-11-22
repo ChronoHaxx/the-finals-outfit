@@ -54,7 +54,8 @@ The check catches four failures:
     - phone size;
     - persistence across a reload.
   - Not covered: real touch input, a real phone's memory, the feel.
-- **User checks:** **PENDING**. Agent results do not check the boxes below.
+- **User checks:** **WAIVED** by the user on 22 Nov 2026 (quoted under "Recorded result"). The agent ran steps 1-7
+  on a production build instead: **agent PASS under the waiver**, not a user PASS.
 
 ## Get it running
 
@@ -118,9 +119,33 @@ it), or for example "4 fails: the shoes float above the tiles."
 
 ## Recorded result
 
-- Tested revision/build: pending
-- User reported at: pending
-- Passed / failed / untested step numbers: pending
-- Explicitly waived checks, if any: none
-- Readiness: pending
-- Merge authorization: not given
+- Tested revision/build: app code `7fe370d` (this branch with main `1545566` merged in, plus the patch note, guide
+  entry and roadmap review), in a production build with `deploy.yml`'s asset hosts (scenes from `1d367244`), served by
+  `vite preview --base /the-finals-outfit/`. The build also carried #61 (light markers), which is stacked on this branch
+  and merges right after it.
+- User reported at: none. The user waived the hands-on checks on 22 Nov 2026, about 00:08 London, for all PRs:
+  "for all sessions and subsession especially ones that are still open and waiting for me, where possible please waive
+  manual checks, i trust u as u can do the same checks better than me". Their merge-on-pass direction (about 00:15)
+  covers the merge. The coordinator noted that `scenes-1` was uploaded and pinned on the user's own "Yes, upload and
+  pin" (21 Nov), so this merge switches to an approved host and needs no new upload.
+- Agent run under the waiver, 22 Nov 2026 00:48 London, by the light-markers session (`checklist-run.mjs` in this
+  folder; headless Chrome as a visitor; every screenshot judged by eye). Steps **1-7 pass**:
+  1. The builder opens on Studio, and a drag orbits the camera to a side view.
+  2. The blue stage replaces the gradient, with the glowing LED A, the grid of round lights, haze and a faint floor
+     reflection. The character is framed the same with the drawer open and closed. The camera button's panel says "the
+     scene itself isn't in screenshots yet".
+  3. Drags turn the character while the stage stays still. The wheel zooms in, and back out to the starting framing.
+     The arrow keys turn him a step at a time.
+  4. The tunnel: indigo LED walls, THE FINALS at the far end, a glossy tiled walkway with the shoes standing on it. A
+     one-notch zoom keeps them on the same tiles.
+  5. Picking Studio removes the scene, puts the turn back to 0 and restores the camera to where it was before the
+     scene. In this run that was step 1's side view, because the camera had been orbited there first. Dragging orbits
+     again. After a reload, Studio stays and no scene is stored.
+  6. After a reload the menu stage comes back, with its blue gradient showing while the character loads.
+  7. On a 390 x 844 phone view (CDP touch, not a real finger), a one-finger drag turns the character in both scenes,
+     and a two-finger pinch on the 3D view zooms. A pinch with one finger on the controls column over the view (Pause,
+     Facial animation) turns him instead. That is the existing phone layout and Studio behaves the same.
+- Explicitly waived checks: steps 1-7 as user checks (run by the agent instead). Not covered: real touch on a real
+  phone, a real phone's memory with the second canvas, Safari and Firefox.
+- Readiness: ready.
+- Merge authorization: the user's merge-on-pass direction (22 Nov), relayed by the coordinator.
