@@ -1,0 +1,21 @@
+street turn-street-90-minus.png {
+  pixels: 376568,
+  meanAbs: 0.98,
+  over16pct: 0.81,
+  max: 42.666666666666664
+}
+street turn-street-90-plus.png { pixels: 376568, meanAbs: 0, over16pct: 0, max: 9.666666666666666 }
+street turn-street-180.png { pixels: 376568, meanAbs: 0, over16pct: 0, max: 11.333333333333334 }
+cel turn-cel-90-minus.png {
+  pixels: 376795,
+  meanAbs: 2.75,
+  over16pct: 7.25,
+  max: 80.66666666666667
+}
+cel turn-cel-90-plus.png { pixels: 376788, meanAbs: 2.68, over16pct: 6.53, max: 88 }
+cel turn-cel-180.png {
+  pixels: 376831,
+  meanAbs: 4.78,
+  over16pct: 11.24,
+  max: 88.66666666666667
+}

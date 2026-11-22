@@ -4,6 +4,7 @@ import { VerifiedByteCache } from "../lib/verified-bytes";
 import { HAIR_LIGHTING_GLSL } from './HairLighting';
 import { installSampledAlphaHash } from './AlphaHashSampling';
 import { STUDIO_LIGHTING_V2 } from './StudioLighting';
+import { findPlayerNumberSites, PLAYER_NUMBER_UNIFORM, playerNumberUniform, rewritePlayerNumberGlsl } from './PlayerNumber';
 import {
   RECOVERED_SAMPLER_TARGET, assemblePackedLayers, planReconstructedSamplers, rewriteSamplerGlsl,
   samplerPlanReport, samplerUniformBindings,
@@ -233,13 +234,19 @@ function validateHologram(manifest: Manifest): string[] {
 // gl_FragCoord, rectMin = (vx, H - vy - vh), invSize = 1 / (vw, vh), for the current viewport (vx, vy, vw, vh) in
 // physical pixels and the bound render target's (or drawing buffer's) height H. rect = (rectMin, invSize); the
 // reciprocal is taken here, once per draw, as UE does on the CPU, so the shader sees the float32-rounded 1 / size.
+// A camera drawing one tile of a larger image (setViewOffset: the supersampled screenshot and video, 21 Nov 2026) gets
+// the whole image's rectangle, so screen positions run across the tiles as in one draw.
 const hologramViewport = new THREE.Vector4();
-function updateHologramView(renderer: THREE.WebGLRenderer, rect: THREE.Vector4, height: { value: number }) {
+function updateHologramView(renderer: THREE.WebGLRenderer, rect: THREE.Vector4, height: { value: number }, camera?: THREE.Camera) {
   renderer.getCurrentViewport(hologramViewport);
   const target = renderer.getRenderTarget();
   const H = target ? Math.max(1, target.height >> renderer.getActiveMipmapLevel()) : renderer.getContext().drawingBufferHeight;
   const { x, y, z: w, w: h } = hologramViewport;
-  rect.set(x, H - y - h, 1 / w, 1 / h);
+  const view = (camera as THREE.PerspectiveCamera | undefined)?.view;
+  if (view?.enabled && view.width > 0 && view.height > 0) {
+    const sx = w / view.width, sy = h / view.height;
+    rect.set(x - view.offsetX * sx, H - y - h - view.offsetY * sy, 1 / (view.fullWidth * sx), 1 / (view.fullHeight * sy));
+  } else rect.set(x, H - y - h, 1 / w, 1 / h);
   height.value = H;
 }
 
@@ -562,6 +569,13 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     { target: RECOVERED_SAMPLER_TARGET, deduplicate: true });
   recoveredShader = rewriteSamplerGlsl(recoveredShader, plan);
   if (coverageShader) coverageShader = rewriteSamplerGlsl(coverageShader, plan, { allowMissingDeclarations: true });
+  // The player number (PlayerNumber.ts): a program that prints the item's authored two-digit number reads the two atlas
+  // lanes from a uniform instead, so the viewer's number reaches it through the game's own arithmetic. A program that
+  // prints none, or a one-digit or round number the route cannot change, is left exactly as authored.
+  const numberProgram = findPlayerNumberSites(recoveredShader);
+  if (numberProgram) recoveredShader = rewritePlayerNumberGlsl(recoveredShader, numberProgram);
+  const coverageNumber = coverageShader ? findPlayerNumberSites(coverageShader) : undefined;
+  if (coverageShader && coverageNumber) coverageShader = rewritePlayerNumberGlsl(coverageShader, coverageNumber);
   const planReport = samplerPlanReport(plan);
 
   const loaded = await Promise.allSettled(plan.resources.map((resource) =>
@@ -606,11 +620,13 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
     }
     // The view rectangle of the draw being made (updateHologramView); three calls this right before each draw.
     const rect = new THREE.Vector4(0, 0, 1, 1), height = { value: 1 };
-    material.onBeforeRender = (renderer) => updateHologramView(renderer, rect, height);
+    material.onBeforeRender = (renderer, _scene, camera) => updateHologramView(renderer, rect, height, camera);
     material.customProgramCacheKey = () =>
       `recovered-hologram-v1:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${needsUv1}:${viewFields.join(",")}`;
+    const number = numberProgram ? playerNumberUniform(material, numberProgram.authored, manifest.itemId) : undefined;
     material.onBeforeCompile = (shader) => {
       for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
+      if (number) shader.uniforms[PLAYER_NUMBER_UNIFORM] = number;
       shader.uniforms.uRecoveredViewRect = { value: rect };
       shader.uniforms.uRecoveredTargetHeight = height;
       shader.vertexShader = "varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n" + shader.vertexShader;
@@ -764,10 +780,13 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
         }
         material.customProgramCacheKey = () => `recovered-v13:${manifest.shaderSha256}:${plan.cacheKey}:${view}:${mesh.geometry.hasAttribute("tangent")}:${needsUv1}:${!!skinOptions?.preserveAlpha}:${worldSurface}:${manifest.normalSpace}:${neckFade}:${glass}:${maskedClip}:${parametric}:${genericFaceSign}${hairMetallic ? ":hair-metallic" : ""}${worldFaceSign ? ":world-face-sign" : ""}${worldCameraBasis.length ? ":world-camera-basis" : ""}${hueKeeping ? ":hue-keeping" : ""}${vertexOffset ? `:offset:${vertexOffset}` : ""}${thin ? `:thin:${thinPass ?? "single"}` : ""}${DEV_CLOTH_SKY && manifest.viewDependentCloth ? ":dev-cloth-sky" : ""}${DEV_CLOTH_SSS !== null && manifest.viewDependentCloth && !hair ? `:dev-cloth-sss:${DEV_CLOTH_SSS}` : ""}${manifest.subsurfaceShading && !hair && STUDIO_LIGHTING_V2 ? ":subsurface" : ""}${hair && DEV_HAIR_UE_SCATTER ? ":dev-hair-ue-scatter" : ""}${hair && DEV_HAIR_NO_SHADOW ? ":dev-hair-no-shadow" : ""}${hair && DEV_HAIR_AO_ONE ? ":dev-hair-ao-one" : ""}`;
         if (hueKeeping) material.userData.emissiveExposurePolicy = 'hue-keeping preview exposure: peak channel scaled to 1 (signoffs-2026-10-29.json)';
+        if (numberProgram) material.userData.playerNumberAuthored = numberProgram.authored;
+        const number = numberProgram ? playerNumberUniform(material, numberProgram.authored, manifest.itemId) : undefined;
         material.onBeforeCompile = (shader) => {
           // Decision #19: alpha-hashed coverage converges in the stable-frame accumulator (inert without alphaHash).
           installSampledAlphaHash(shader, material);
           for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
+          if (number) shader.uniforms[PLAYER_NUMBER_UNIFORM] = number;
           shader.vertexShader = "varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n" + shader.vertexShader;
           // These channels are material masks, not diffuse vertex colours.
           if (hair || hairMetallic || staticColor) shader.vertexShader = 'attribute vec4 color;\nvarying vec4 vRecoveredColor;\n' + shader.vertexShader;
@@ -1005,11 +1024,13 @@ export async function loadReconstructedMaterial(url: string, view: SurfaceView =
           shadow.userData.recoveredCoverage = true;
           shadow.userData.recoveredSamplers = planReport;
           shadow.customProgramCacheKey = () => `recovered-coverage-v3:${manifest.coverageShaderSha256}:${plan.cacheKey}:${needsUv1}:${hair}:${maskedClip}${hairMetallic ? ":hair-metallic" : ""}${coverageLocal ? ":local" : ""}${vertexOffset ? `:offset:${vertexOffset}` : ""}`;
+          const number = coverageNumber ? playerNumberUniform(shadow, coverageNumber.authored, manifest.itemId) : undefined;
           shadow.onBeforeCompile = shader => {
             // Shadow maps redraw for every accumulator sample, so the shadow's coverage converges the same way.
             installSampledAlphaHash(shader, shadow);
             // Same plan, same uniform mapping as the surface pass.
             for (const binding of uniformBindings) shader.uniforms[binding.name] = { value: textures.get(binding.resource) };
+            if (number) shader.uniforms[PLAYER_NUMBER_UNIFORM] = number;
             shader.vertexShader = 'varying vec2 vRecoveredUv0;\nvarying vec2 vRecoveredUv1;\n' + shader.vertexShader;
             // The metallic kind's coverage may read the vertex colour, so the shadow pass always supplies it.
             if (hairMetallic) shader.vertexShader = 'attribute vec4 color;\nvarying vec4 vRecoveredColor;\n' + shader.vertexShader;

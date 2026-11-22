@@ -278,5 +278,65 @@
   "halloween-demonmask-canvas": {
     "status": "polish",
     "note": "Mesh and the worn face shadow reconstructed (M_Face FaceShadowMask as a companion head decal, 11 Nov 2026): the skin around the eyes goes black inside the ragged eye holes, as in the icon. Faces 01/05/21 reviewed (w163-demonmask/review-v2, zoom-eyes.png)."
+  },
+  "casual-longhoodie-cottonsmooth-cns": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "fancydress-helmetmask-brass-cnspurple": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "military-sniperboots-leather-cnsglitch": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "samurai-facemask-base-cnspurple": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "samurai-swatvestsamurai-polyester-cnsglitch": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "streetwear-puffervest-nylon-glitch": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "streetwear-slingbag-canvas-cnsglitch": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "streetwear-sneakersuntied-base-glitch": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "streetwear-techjoggers-nylon-cnsglitch": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "streetwear-tighttechpants-nylon-glitch": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "streetwear-tracksuitpants-nylon-cnsglitch": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "streetwear-tracksuittorso-nylon-cnsglitch": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "streetwear-wristband-cotton-cns": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the item renders without its CNS Glitch overlay part (M_CNS_Glitch, a translucent glitch grid with an RGB split that the icon shows over the garment). The garment, mask or accessory underneath is reconstructed and matches the icon's shape, logos and colours. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/ (glitch-overlay-v1.json, review-v1-c1..c3)."
+  },
+  "fancydress-helmetmask-brass-cns": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the mask renders without its CNS Glitch overlay part (the cyan glitch grid the icon shows). The mask underneath is reconstructed and matches the icon's shape and dark finish. The glitch slot's material is unset in our export, so the glitch binding is shown by the icon and the shared glitch mesh. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/promote/ (review-v1, ../cns-sibling-icons.jpg)."
+  },
+  "samurai-facemask-base-cns": {
+    "status": "issue",
+    "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the mask renders without its CNS Glitch overlay part (the cyan glitch grid the icon shows). The mask underneath is reconstructed and matches the icon's shape and dark finish. The glitch slot's material is unset in our export, so the glitch binding is shown by the icon and the shared glitch mesh. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/promote/ (review-v1, ../cns-sibling-icons.jpg)."
   }
 }

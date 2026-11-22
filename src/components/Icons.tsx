@@ -175,3 +175,19 @@ export function SpeakerIcon({ className, size = 14, muted }: IconProps & { muted
     </>}
   </svg>;
 }
+
+export function VideoIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <rect x="1.8" y="4" width="9" height="8" rx="1.3" />
+    <path d="m10.8 7 3.4-2v6l-3.4-2" />
+  </svg>;
+}
+
+/** A question mark in a ring: the "What you can do" guide (21 Nov 2026). */
+export function GuideIcon({ className, size = 16 }: IconProps) {
+  return <svg {...base(size, className)}>
+    <circle cx="8" cy="8" r="6.3" />
+    <path d="M6.2 6.3a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.4" />
+    <path d="M8 11.4v.1" strokeWidth={2} />
+  </svg>;
+}

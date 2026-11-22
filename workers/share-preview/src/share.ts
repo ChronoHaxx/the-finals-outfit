@@ -68,6 +68,29 @@ export function storedBodyType(metadata: Record<string, unknown> | null | undefi
   return typeof bodyType === "string" && BODY_TYPE.test(bodyType) ? bodyType : undefined;
 }
 
+// The outfit's player number (21 Nov 2026), in the app's grammar (src/lib/player-number.ts): pn=<10..99>, absent when
+// each piece shows its own number. Stored and carried like the body type; the app decides what it renders.
+const PLAYER_NUMBER = /^[1-9][0-9]$/;
+
+/** The player number in these parameters: undefined when there is none, null when it is malformed. */
+export function readPlayerNumber(params: URLSearchParams): string | null | undefined {
+  const value = params.get("pn");
+  return value === null ? undefined : PLAYER_NUMBER.test(value) ? value : null;
+}
+
+/** The player number's parameter, to follow the body type in a link ("" without one). Validated values need no escaping. */
+export const playerNumberQuery = (playerNumber: string | undefined) => playerNumber ? `&pn=${playerNumber}` : "";
+
+/** KV metadata beside the outfit code (absent without a number, as for every entry made before player numbers). */
+export const playerNumberMetadata = (playerNumber: string | undefined): Record<string, string> =>
+  playerNumber ? { pn: playerNumber } : {};
+
+/** The player number stored with an entry (entries made before player numbers have none). */
+export function storedPlayerNumber(metadata: Record<string, unknown> | null | undefined): string | undefined {
+  const value = metadata?.pn;
+  return typeof value === "string" && PLAYER_NUMBER.test(value) ? value : undefined;
+}
+
 /** Width and height of a JPEG from its first SOF marker, or null when the bytes are not a well-formed JPEG. */
 export function jpegSize(bytes: Uint8Array): { width: number; height: number } | null {
   if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8 || bytes[2] !== 0xff) return null;
@@ -100,13 +123,14 @@ export function newId(): string {
 }
 
 const escape = (text: string) => text.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
-const appLink = (env: Env, code: string | null, pose?: Pose, bodyType?: string) =>
-  `${env.APP_URL}${code ? `#/?o=${code}${bodyTypeQuery(bodyType)}${poseQuery(pose)}` : ""}`;
+const appLink = (env: Env, code: string | null, pose?: Pose, bodyType?: string, playerNumber?: string) =>
+  `${env.APP_URL}${code ? `#/?o=${code}${bodyTypeQuery(bodyType)}${playerNumberQuery(playerNumber)}${poseQuery(pose)}` : ""}`;
 
 export function previewPage(env: Env, self: string, image: string | null, code: string | null, pose?: Pose,
-  bodyType?: string): string {
-  if (!code) { pose = undefined; bodyType = undefined; } // a pose and a body type belong to an outfit
-  const app = appLink(env, code, pose, bodyType);
+  bodyType?: string, playerNumber?: string): string {
+  // A pose, a body type and a player number belong to an outfit.
+  if (!code) { pose = undefined; bodyType = undefined; playerNumber = undefined; }
+  const app = appLink(env, code, pose, bodyType, playerNumber);
   const title = code ? "THE FINALS outfit" : "the-finals-outfit";
   const posed = pose ? `, ${pose.paused ? "frozen" : "caught"} ${pose.t} s into an emote` : "";
   const meta = [

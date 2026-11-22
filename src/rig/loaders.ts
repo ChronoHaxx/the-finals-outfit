@@ -32,3 +32,10 @@ export function createGltfLoader(): GLTFLoader {
   };
   return loader;
 }
+
+let shared: GLTFLoader | null = null;
+/** One loader for every rig on the page (multi-character design, 11 Nov 2026): two characters requesting the same
+ *  mesh at once share one download through its in-flight map, which is per loader. Each parse still gets its own copy. */
+export function sharedGltfLoader(): GLTFLoader {
+  return shared ??= createGltfLoader();
+}

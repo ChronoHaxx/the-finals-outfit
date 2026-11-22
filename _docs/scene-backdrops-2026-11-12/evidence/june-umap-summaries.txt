@@ -1,0 +1,370 @@
+# June 2026 FModel dump (exported 14-15 Jun), umap summaries from tools/umap_summary.py. OLDER than S12: see README.
+
+=== General/G_IntroPodium_01.json
+exports: 899
+    146 SceneComponent
+     88 StaticMeshComponent
+     72 WidgetComponent
+     59 SpotLightComponent
+     36 DiscoveryStaticMeshComponent
+     34 StaticMeshActor
+     31 DefaultLevelSequenceInstanceData
+     31 LevelSequenceActor
+     31 LevelSequenceBurnInOptions
+     31 MovieSceneBindingOverrides
+     30 PointLightComponent
+     27 NiagaraComponent
+     25 NiagaraActor
+     16 BP_TournamentFlowTeam_C
+     16 EmbarkWidgetComponent
+     14 SpotLight
+     12 BP_Fan_Torch_01_B_C
+     12 DiscoveryPickupableFakeCollisionComponent
+     12 DiscoveryPowerSystemComponent
+     12 EmbarkFracturedDestructionListenerComponent
+     12 Kyo_Brazier_SpotAudioComponent_C
+     11 DiscoveryIntroPodiumSpotlightActor
+     10 BoxComponent
+      8 ChildActorComponent
+      8 CineCameraActor
+      8 CineCameraComponent
+      6 Actor
+      6 Model
+      5 BodySetup
+      5 BrushComponent
+      5 MaterialInstanceDynamic
+      5 PostProcessVolume
+      4 BoxReflectionCapture
+      4 BoxReflectionCaptureComponent
+      4 BP_TournamentGroupLabels_C
+      4 SkeletalMeshComponent
+      3 CameraComponent
+      3 DDGIVolume
+      3 DDGIVolumeComponent
+      3 SceneCaptureComponent2D
+      2 BP_FrontendProjectedLight_C
+      2 CardCaptureAnimPropManagerComponent
+      2 CharacterCustomizationComponent
+      2 DrawSphereComponent
+      2 EmbarkPostProcessLensFlareConfigLoaderActor
+      2 G_IntroPodium_01_C
+      2 PlanarReflection
+      2 PlanarReflectionComponent
+      2 PointLight
+      2 RectLightComponent
+      2 VisualInventoryAssociationComponent
+      1 BlueprintGeneratedClass
+      1 BookMark
+      1 BP_CircularDisplayLights_C
+      1 BP_ContestantCaptureActor_C
+      1 BP_ContestantPlayerCardCaptureActor_C
+      1 BP_DecalBranding_C
+      1 BP_IntroPodiumColorActor_C
+      1 BP_PresentationStage_Screen_C
+      1 BP_SquadCelebrationParent_C
+static meshes (distinct): 14 instances: 34
+     8 /Game/Discovery/Environment/Props/Locations/Bernal/Ber_Rubblepile_01/SM_Ber_Rubblepile_01
+     8 /Game/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_Fantasy_01/SM_IntroPodium_Fantasy_01_Tunnel_A
+     4 /Engine/BasicShapes/Plane
+     3 /Game/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/SM_DDGIBox_IntroPodium_01
+     2 /Game/Discovery/Lighting/SM_Plane
+     1 /Engine/BasicShapes/Cube
+     1 /Game/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/SM_LobbyRoom_IntroPodium_01
+     1 /Game/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_Fantasy_01/SM_IntroPodium_Fantasy_01_TunnelEnd_A
+     1 /Game/Discovery/Maps/General/OutroPodium/Props/OutroPodium_01/SM_OutroPodium_01_A
+     1 /Game/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_Fantasy_01/SM_IntroPodiumPortal_01
+     1 /Game/Discovery/Maps/Frontend/Background/TournamentPresentation/SM_tournament_pyramid_prefinals
+     1 /Game/Discovery/Maps/Frontend/Background/TournamentPresentation/SM_tournament_pyramid_prequalifier
+     1 /Game/Discovery/Maps/Frontend/Background/TournamentPresentation/SM_tournament_pyramid_prequarterfinal
+     1 /Game/Discovery/Maps/Frontend/Background/TournamentPresentation/SM_tournament_pyramid_presemifinal
+override materials (distinct): 10
+     6 /Game/Discovery/Environment/Props/Locations/Bernal/Ber_Rubblepile_01/Resources/MI_Ber_Pot_02_B
+     3 /Game/Discovery/Maps/General/OutroPodium/Props/OutroPodium_01/MI_OutroPodium_01_Screen_Off
+     3 /Game/Discovery/Maps/General/G_IntroPodium_01
+     1 /Game/Discovery/MaterialLibrary/Blockout/WorldAligned/MI_Grid_WorldAligned_Black
+     1 /Game/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/MI_Floor_IntroPodium_01_B
+     1 /Game/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_01/MI_Floor_IntroPodium_01
+     1 /Game/Discovery/Lighting/Materials/M_Light_RT_Emissive_Inst_20b
+     1 /Game/Discovery/Maps/General/IntroPodium/Environment/Architecture/IntroPodium_Fantasy_01/MI_IntroPodium_Fantasy_StoneWall_02
+     1 /Game/Discovery/Maps/Frontend/Background/TournamentPresentation/M_Backdrop_Screen
+     1 /Game/Discovery/Maps/Frontend/Background/M_TournamentStage_Floor
+lights: 91
+
+=== MainMenuReforge.json
+exports: 365
+     56 SceneComponent
+     41 BP_FrontendCameraConfiguration_C
+     41 CineCameraComponent
+     41 FrontendCameraOffsetComponent
+     23 LevelStreamingDynamic
+     15 StaticMeshComponent
+     12 LevelStreamingAlwaysLoaded
+     10 EmbarkStaticMeshComponent
+     10 SkeletalMeshComponent
+      9 SpotLight
+      9 SpotLightComponent
+      8 ChildActorComponent
+      6 FrontendCameraLookAtActorComponent
+      5 CameraComponent
+      5 CharacterCustomizationComponent
+      5 SceneCaptureComponent2D
+      5 VisualInventoryAssociationComponent
+      3 Actor
+      3 MaterialInstanceDynamic
+      3 RectLightComponent
+      3 StaticMeshActor
+      2 BookMark
+      2 BP_ArchetypePreviewActor_C
+      2 CardCaptureAnimPropManagerComponent
+      2 DiscoverySpawnEffectDissolveComponent
+      2 DrawSphereComponent
+      2 EmbarkSkeletalMeshComponent
+      2 EmbarkWidgetComponent
+      2 MainMenuReforge_C
+      2 Model
+      2 NiagaraActor
+      2 NiagaraComponent
+      1 AnimPropManagerComponent
+      1 BlueprintGeneratedClass
+      1 BodySetup
+      1 BoxComponent
+      1 BP_CinematicWeapon_C
+      1 BP_ContestantCaptureActor_C
+      1 BP_ContestantPlayerCardCaptureActor_C
+      1 BP_FirstPersonPreview_C
+      1 BP_FrontendItemActor_C
+      1 BP_FrontendSceneManager_C
+      1 BP_FrontendWindActor_C
+      1 BP_ItemPivotActor_C
+      1 BrushComponent
+      1 DiscoveryFirstPersonAnimStateUpdaterComponent
+      1 EmbarkWorldSettings
+      1 FrontendSublevelStreamer
+      1 FrontendVisualOverridesComponent
+      1 FrontendWindComponent
+      1 Level
+      1 NavigationSystemModuleConfig
+      1 PlanarReflection
+      1 PlanarReflectionComponent
+      1 PostProcessVolume
+      1 SkyLight
+      1 SkyLightComponent
+      1 SphereReflectionCapture
+      1 SphereReflectionCaptureComponent
+      1 SponsorVisualsComponent
+static meshes (distinct): 11 instances: 12
+     2 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Base/SM_AssaultRifle_01_Mag_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Base/SM_AssaultRifle_01_Barrel_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Base/SM_AssaultRifle_01_DustCover_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Base/SM_AssaultRifle_01_Grip_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Base/SM_AssaultRifle_01_Handguard_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Base/SM_AssaultRifle_01_Logos_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Base/SM_AssaultRifle_01_Sticker_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Base/SM_AssaultRifle_01_Stock_A
+     1 /Game/Discovery/Maps/Frontend/Background/S05/SM_Floor_Stage_S05
+     1 /Game/Discovery/Maps/Frontend/MotionGraphics/SM_MotionGraphics_Mesh_01
+     1 /Game/Discovery/Maps/Frontend/MotionGraphics/SM_MotionGraphics_Mesh_02
+override materials (distinct): 7
+     3 /Game/Discovery/Maps/MainMenuReforge
+     2 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Skins/Default/MI_Default_A_AssaultRifle_01_Mag_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Skins/Default/MI_Default_A_AssaultRifle_01_Barrel_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Skins/Default/MI_Default_A_AssaultRifle_01_DustCover_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Skins/Default/MI_Default_A_AssaultRifle_01_HandGuard_A
+     1 /Game/Discovery/Items/Firearms/AssaultRifles/AssaultRifle_01/Skins/Default/MI_Default_A_AssaultRifle_01_Stock_A
+     1 /Game/Discovery/Maps/Frontend/Background/S08/MI_FrontendStageFloor_S_08
+lights: 13
+
+=== Frontend/CharacterSelection_Environment.json
+exports: 68
+      6 SpotLight
+      6 SpotLightComponent
+      4 SceneComponent
+      4 StaticMeshComponent
+      4 VisualInventoryAssociationComponent
+      3 RectLightComponent
+      2 AnimPropManagerComponent
+      2 BP_FrontEndCharacterAudioComponent_C
+      2 BP_FrontendCreateContestantDummy_C
+      2 CapsuleComponent
+      2 CharacterCustomizationComponent
+      2 CharacterMovementComponent
+      2 CharacterSelection_Environment_C
+      2 CharacterVisualSyncComponent
+      2 DiscoverySpawnEffectDissolveComponent
+      2 EmbarkSkeletalMeshComponent
+      2 EmoticonManagerComponent
+      2 MaterialManagerComponent
+      2 StaticMeshActor
+      2 WidgetComponent
+      1 BlueprintGeneratedClass
+      1 BP_FrontendSetupActor_C
+      1 BP_PresentationStage_Screen_C
+      1 BP_PresentationStage_SponsorLightsAndColors_C
+      1 BP_PresentationStageManager_C
+      1 EmbarkWorldSettings
+      1 ExponentialHeightFog
+      1 ExponentialHeightFogComponent
+      1 Level
+      1 Model
+      1 NavigationSystemModuleConfig
+      1 PresentationScreenStaticMeshComponent
+      1 World
+static meshes (distinct): 3 instances: 3
+     1 /Game/Discovery/Maps/Frontend/Background/S04/SM_Floor_Stage_S04
+     1 /Game/Discovery/Maps/Frontend/Background/S05/SM_Floor_Stage_S05
+     1 /Engine/BasicShapes/Cube
+override materials (distinct): 2
+     1 /Game/Discovery/Maps/Frontend/Background/S08/MI_FrontendStageFloor_S_08
+     1 /Engine/BasicShapes/BasicShapeMaterial
+lights: 9
+
+=== Frontend/CharacterSelection_Lighting.json
+exports: 53
+      8 SpotLightComponent
+      6 SpotLight
+      5 NiagaraComponent
+      4 SceneComponent
+      2 BP_FrontendProjectedLight_C
+      2 CharacterSelection_Lighting_C
+      2 DrawSphereComponent
+      2 Model
+      2 NiagaraActor
+      2 PointLightComponent
+      2 RectLightComponent
+      1 BlueprintGeneratedClass
+      1 BodySetup
+      1 BP_FrontEnd_EmissiveIntensity_C
+      1 BP_Frontend_ExtraplayerLights_01_C
+      1 BP_SeasonalFrontendFX_C
+      1 BrushComponent
+      1 DirectionalLight
+      1 DirectionalLightComponent
+      1 EmbarkPostProcessLensFlareConfigLoaderActor
+      1 EmbarkWorldSettings
+      1 Level
+      1 NavigationSystemModuleConfig
+      1 PostProcessVolume
+      1 SphereReflectionCapture
+      1 SphereReflectionCaptureComponent
+      1 World
+static meshes (distinct): 0 instances: 0
+override materials (distinct): 0
+lights: 13
+
+=== Frontend/MainMenu_BackstageEnvironment_Reforge.json
+exports: 43
+      6 SceneComponent
+      5 SpotLightComponent
+      4 SpotLight
+      1 AnimPropManagerComponent
+      1 BP_FrontendCameraConfiguration_C
+      1 BP_FrontendCharacter_C
+      1 BP_FrontEndCharacterAudioComponent_C
+      1 BP_FrontendProjectedLight_C
+      1 BP_PresentationStageScreen_Backstage_Reforge_C
+      1 CapsuleComponent
+      1 CharacterCustomizationComponent
+      1 CharacterMovementComponent
+      1 CharacterSoundEffectManagerComponent
+      1 CharacterVisualSyncComponent
+      1 CineCameraComponent
+      1 DiscoverySpawnEffectDissolveComponent
+      1 EmbarkSkeletalMeshComponent
+      1 EmbarkWorldSettings
+      1 EmoticonManagerComponent
+      1 FrontendCameraOffsetComponent
+      1 FrontendStageRoot
+      1 Level
+      1 MaterialManagerComponent
+      1 Model
+      1 NavigationSystemModuleConfig
+      1 PresentationScreenStaticMeshComponent
+      1 StaticMeshActor
+      1 StaticMeshComponent
+      1 VisualInventoryAssociationComponent
+      1 WidgetComponent
+      1 World
+static meshes (distinct): 1 instances: 1
+     1 /Game/Discovery/Maps/Frontend/Background/S09/SM_Frontend_S09_Floor_A
+override materials (distinct): 1
+     1 /Game/Discovery/Maps/Frontend/Backstage_Reforge/MI_BackstageFloor_Reforge
+lights: 5
+
+=== Frontend/Sponsors/MainMenu_S10_None.json
+exports: 15
+      5 StaticMeshActor
+      5 StaticMeshComponent
+      1 EmbarkWorldSettings
+      1 Level
+      1 Model
+      1 NavigationSystemModuleConfig
+      1 World
+static meshes (distinct): 4 instances: 5
+     2 /Game/Discovery/Maps/Frontend/Background/S06/SM_Frontend_S06_SpotlightBeam_B
+     1 /Game/Discovery/Maps/Frontend/Background/S07/SM_Frontend_Background_S07
+     1 /Game/Discovery/Maps/Frontend/Background/S10/SM_Frontend_S10_Billboard_A
+     1 /Game/Discovery/Maps/Frontend/Background/S09/SM_Frontend_S09_Floor_A
+override materials (distinct): 4
+     2 /Game/Discovery/Maps/Frontend/Background/S08/MI_FrontendScreen_S08_None
+     2 /Game/Discovery/Maps/Frontend/Background/S10/MI_FrontEnd_S10_SpotlightBeam_01_A
+     1 /Game/Discovery/Maps/Frontend/Background/S10/MI_FrontEnd_Billboards_S10_None
+     1 /Game/Discovery/Maps/Frontend/Background/S10/MI_FrontendStageFloor_S10
+lights: 0
+
+=== Frontend/MainMenu_ClubScene.json
+exports: 85
+     33 StaticMeshActor
+     33 StaticMeshComponent
+      2 DrawSphereComponent
+      2 SpotLight
+      2 SpotLightComponent
+      1 BP_FrontendCameraConfiguration_C
+      1 CineCameraComponent
+      1 EmbarkWorldSettings
+      1 FrontendCameraOffsetComponent
+      1 Level
+      1 Model
+      1 NavigationSystemModuleConfig
+      1 NiagaraActor
+      1 NiagaraComponent
+      1 SceneComponent
+      1 SphereReflectionCapture
+      1 SphereReflectionCaptureComponent
+      1 World
+static meshes (distinct): 5 instances: 33
+    10 /Game/Discovery/Maps/General/OutroPodium/Props/Outro_CoinStacks_01/SM_Outro_CoinStacks_01_C
+     9 /Game/Discovery/Maps/General/OutroPodium/Props/Outro_CoinStacks_01/SM_Outro_CoinStacks_01_B
+     8 /Game/Discovery/Maps/General/OutroPodium/Props/Outro_CoinStacks_01/SM_Outro_CoinStacks_01_D
+     5 /Game/Discovery/Maps/General/OutroPodium/Props/Outro_CoinStacks_01/SM_Outro_CoinStacks_01_A
+     1 /Game/Discovery/Maps/Frontend/Background/SM_FrontendStage_Wall_01
+override materials (distinct): 1
+     1 /Game/Discovery/Maps/Frontend/Background/M_FrontendStage_ClubScene
+lights: 2
+
+=== BuiltData (lighting build data)
+General/G_IntroPodium_01_BuiltData.uasset 349 bytes
+[
+  {
+    "Type": "MapBuildDataRegistry",
+    "Name": "G_IntroPodium_01_BuiltData",
+    "Flags": "RF_Public | RF_Standalone | RF_WasLoaded | RF_LoadCompleted",
+    "Class": "UScriptClass'MapBuildDataRegistry'",
+    "Package": "/Game/Discovery/Maps/General/G_IntroPodium_01_BuiltData"
+  }
+]MainMenu_BuiltData.uasset 262485 bytes
+[
+  {
+    "Type": "MapBuildDataRegistry",
+    "Name": "MainMenu_BuiltData",
+    "Flags": "RF_Public | RF_Standalone | RF_WasLoaded | RF_LoadCompleted",
+    "Class": "UScriptClass'MapBuildDataRegistry'",
+    "Package": "/Game/Discovery/Maps/MainMenu_BuiltData",
+    "ReflectionCaptureBuildData": {
+      "8D70A24F4F656C2003307AB435568111": {
+        "CubemapSize": 64,
+        "AverageBrightness": 0.29760742,
+        "Brightness": 0.0
+      }
+    }
+  }
+]

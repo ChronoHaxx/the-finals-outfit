@@ -6,6 +6,7 @@ import {
   lightAngles, movedLight, newLight, sunCasts, sunOf, type Backdrop, type EnvironmentKind, type StageLight,
   type ToneMappingChoice,
 } from "../lib/stage-lighting";
+import { SCENES, sceneById } from "../lib/scenes";
 import { SunIcon, TrashIcon } from "./Icons";
 
 /**
@@ -288,32 +289,53 @@ function LightCard({ light, onChange, onRemove }: {
 function BackdropEditor({ backdrop, onChange }: { backdrop: Backdrop; onChange(backdrop: Backdrop): void }) {
   const solid = isSolid(backdrop);
   const css = backdropCss(backdrop);
+  const scene = backdrop.scene ?? null;
+  const known = sceneById(scene);
+  // The colours without the scene: picking a colour leaves the scene.
+  const colours = (next: Backdrop): Backdrop => { const { scene: _scene, ...rest } = next; return rest; };
   return (
     <>
+      {/* In-game scenes (scenes.ts). A scene replaces the colours; its own colours stay as the fallback. */}
+      <div role="radiogroup" aria-label="Scenes" className="flex flex-wrap gap-1.5">
+        {SCENES.map(s => (
+          <button key={s.id} type="button" role="radio" aria-checked={scene === s.id}
+            onClick={() => scene !== s.id && onChange({ ...s.fallback, scene: s.id })}
+            className={`h-8 border px-2 text-xs transition-colors ${scene === s.id ? "border-fg bg-fg text-ink-950" : "border-line hover:bg-ink-900"}`}
+            style={scene === s.id ? undefined : { background: backdropCss(s.fallback) }}>
+            {s.label}
+          </button>
+        ))}
+      </div>
+      {scene && <span className="text-xs leading-snug text-fg-muted">
+        {known ? "In a scene the camera stays put, as in the game: drag (or use the arrow keys) to turn the character; scroll or pinch to zoom. Pick a colour below to leave the scene."
+          : "This look uses a scene from a newer version of the site; its colours show here. Pick a scene or a colour to replace it."}
+      </span>}
       <div role="radiogroup" aria-label="Backdrop presets" className="flex flex-wrap gap-1.5">
         {BACKDROP_PRESETS.map(preset => {
-          const checked = backdropCss(preset.backdrop) === css;
+          const checked = !scene && backdropCss(preset.backdrop) === css;
           return (
             <button key={preset.id} type="button" role="radio" aria-checked={checked} title={preset.label}
-              aria-label={preset.label} onClick={() => onChange({ ...preset.backdrop })}
+              aria-label={preset.label} onClick={() => onChange(colours({ ...preset.backdrop }))}
               className={`size-7 border transition-shadow ${checked ? "border-fg ring-1 ring-fg" : "border-line hover:border-fg/50"}`}
               style={{ background: backdropCss(preset.backdrop) }} />
           );
         })}
       </div>
-      <div className="flex gap-1.5" role="radiogroup" aria-label="Backdrop style">
-        <Chip pressed={solid} onClick={() => !solid && onChange({ ...backdrop, inner: backdrop.middle, outer: backdrop.middle })}>Solid</Chip>
-        <Chip pressed={!solid} onClick={() => solid && onChange({ ...backdrop, inner: shade(backdrop.middle, 0.12), outer: shade(backdrop.middle, -0.18) })}>Gradient</Chip>
-      </div>
-      <div className="flex gap-3">
-        {solid
-          ? <ColorField label="Colour" value={backdrop.middle} onChange={color => onChange({ ...backdrop, inner: color, middle: color, outer: color })} />
-          : <>
-              <ColorField label="Centre" value={backdrop.inner} onChange={inner => onChange({ ...backdrop, inner })} />
-              <ColorField label="Middle" value={backdrop.middle} onChange={middle => onChange({ ...backdrop, middle })} />
-              <ColorField label="Edge" value={backdrop.outer} onChange={outer => onChange({ ...backdrop, outer })} />
-            </>}
-      </div>
+      {!scene && <>
+        <div className="flex gap-1.5" role="radiogroup" aria-label="Backdrop style">
+          <Chip pressed={solid} onClick={() => !solid && onChange({ ...backdrop, inner: backdrop.middle, outer: backdrop.middle })}>Solid</Chip>
+          <Chip pressed={!solid} onClick={() => solid && onChange({ ...backdrop, inner: shade(backdrop.middle, 0.12), outer: shade(backdrop.middle, -0.18) })}>Gradient</Chip>
+        </div>
+        <div className="flex gap-3">
+          {solid
+            ? <ColorField label="Colour" value={backdrop.middle} onChange={color => onChange({ ...backdrop, inner: color, middle: color, outer: color })} />
+            : <>
+                <ColorField label="Centre" value={backdrop.inner} onChange={inner => onChange({ ...backdrop, inner })} />
+                <ColorField label="Middle" value={backdrop.middle} onChange={middle => onChange({ ...backdrop, middle })} />
+                <ColorField label="Edge" value={backdrop.outer} onChange={outer => onChange({ ...backdrop, outer })} />
+              </>}
+        </div>
+      </>}
       <span className="text-xs leading-snug text-fg-muted">Behind the character only (it lights nothing). Share images use it too.</span>
     </>
   );
