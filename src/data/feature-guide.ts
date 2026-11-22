@@ -58,7 +58,7 @@ export const FEATURE_GUIDE: readonly GuideSection[] = [
       {
         id: "player-number",
         title: "Player number",
-        text: "Type a number from 10 to 99 to wear it on every piece that prints one in game. Own shows each piece's number as in its icon. Saved outfits and share links keep it.",
+        text: "Type a number from 0 to 99 to wear it on every piece that prints one in game; a one-digit number prints centred, as in game. Own shows each piece's number as in its icon. Saved outfits and share links keep it.",
         where: "Number, beside Body type",
       },
       {
