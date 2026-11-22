@@ -82,17 +82,32 @@ def body_type_meshes(census_json, index_meshes):
     return {source for source, row in census.items() if BODY_TYPE_MORPHS & set(row.get('morphs', []))}
 
 
-def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir):
+def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir, surface_json=None):
     """{source: admission} from skin-by-name-proof.py output (S12 item refresh tier 1, 12 Nov 2026).
 
     Every admissible ("re-encoded") mesh is admitted, or only those named in admit_only. A mesh of any other tier-1
     class (weights, normals, morph set, extension bones) is admitted only when named in admit_reviewed, after a review;
-    a surface or loader refusal never is. The live GLB and the rebuild must still be the files the skin proof judged."""
+    a surface or loader refusal never is. The live GLB and the rebuild must still be the files the skin proof judged.
+
+    With surface_json (surface-match-proof.py output, tier 2, 22 Nov 2026), a "surface differs" mesh the surface proof
+    judged "permuted" (the same triangles in another vertex order, nothing else changed) is admissible too, and a
+    permuted mesh with tier-1 kinds (permuted+weights, ...) only by name after review. A reworked surface never is:
+    its geometry-derived data (body mask, item masks) would be stale."""
     if not admit_json:
-        if admit_only or admit_reviewed:
-            raise SystemExit('--admit-only/--admit-reviewed need --admit SKIN_PROOF_JSON')
+        if admit_only or admit_reviewed or surface_json:
+            raise SystemExit('--admit-only/--admit-reviewed/--admit-surface need --admit SKIN_PROOF_JSON')
         return {}
     skin = json.loads(Path(admit_json).read_text(encoding='utf-8'))['meshes']
+    surface = json.loads(Path(surface_json).read_text(encoding='utf-8'))['meshes'] if surface_json else {}
+    for name, r in surface.items():
+        s = skin.get(name)
+        if s is None or s['class'] != 'surface differs':
+            raise SystemExit(f'{name}: the surface proof judged it, but the skin proof does not call it "surface differs"')
+        if s['liveSha256'] != r['liveSha256'] or s['s12Sha256'] != r['s12Sha256'] or s['source'] != r['source']:
+            raise SystemExit(f'{name}: the surface proof and the skin proof judged different files')
+        if r['class'].startswith('permuted'):
+            # The surface proof's verdict replaces "surface differs"; the rest of the row (hashes, source) is the same.
+            skin[name] = {**s, **{k: v for k, v in r.items() if k not in ('notPermuted',)}, 'surfaceProof': True}
     reviewed = set(admit_reviewed or [])
     names = (set(admit_only) if admit_only is not None
              else {n for n, r in skin.items() if r.get('admissible')}) | reviewed
@@ -101,8 +116,8 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
         r = skin.get(name)
         if r is None:
             raise SystemExit(f'{name}: not in the skin proof')
-        if r['class'] in ('surface differs', 'loader refuses'):
-            raise SystemExit(f'{name}: {r["class"]}; it is not a tier-1 swap')
+        if r['class'] in ('surface differs', 'loader refuses') or r['class'].startswith('reworked'):
+            raise SystemExit(f'{name}: {r["class"]}; it is not a GLB swap')
         if not r.get('admissible') and name not in reviewed:
             raise SystemExit(f'{name} is "{r["class"]}": admit it only by name after review (--admit-reviewed)')
         if proof.get(name, {}).get('status') != 'refused' or proof[name]['source'] != r['source']:
@@ -113,6 +128,7 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
         if hashlib.sha256((Path(rebuilt_dir) / f'{name}.glb').read_bytes()).hexdigest() != r['s12Sha256']:
             raise SystemExit(f'{name}: the rebuild changed since the skin proof')
         admitted[r['source']] = {'name': name, 'class': r['class'], 'by': 'proof' if r.get('admissible') else 'review',
+                                 **({'proof': 'surface-match'} if r.get('surfaceProof') else {}),
                                  'liveSha256': r['liveSha256'], 's12Sha256': r['s12Sha256'],
                                  'morphsChanged': r.get('morphsChanged', {}),
                                  **{k: r[k] for k in ('morphsAdded', 'morphsRemoved') if k in r}}
@@ -120,7 +136,7 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
 
 
 def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None, census_json=None, changed_only=False,
-         admit_json=None, admit_only=None, admit_reviewed=None):
+         admit_json=None, admit_only=None, admit_reviewed=None, surface_json=None):
     out = Path(out_json)
     if out.exists():
         raise SystemExit(f'Preserve existing {out}')
@@ -129,7 +145,8 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     proof = json.loads(Path(proof_json).read_text(encoding='utf-8'))
     served_from = active.parent
     swapped, held = {}, {}
-    admitted = admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir)
+    admitted = admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir,
+                               surface_json)
     proven = {row['source'] for row in proof.values() if row.get('status') == 'morph-only'} | set(admitted)
     body = assets.get('attachmentBody', {}).get('source')
     # Item consistency (review-v1 short dress, 6 Nov 2026): a Season 12 undershirt under the dress's pre-S12 shell grew
@@ -211,6 +228,7 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
         'changedOnly': changed_only,
         **({'admitted': admitted, 'skinProofSha256': hashlib.sha256(Path(admit_json).read_bytes()).hexdigest()}
            if admit_json else {}),
+        **({'surfaceProofSha256': hashlib.sha256(Path(surface_json).read_bytes()).hexdigest()} if surface_json else {}),
         'swapped': swapped, 'held': held,
         'keptUnchanged': sorted(kept),
         'effective': sorted(effective)}
@@ -232,7 +250,7 @@ if __name__ == '__main__':
         argv.remove('--changed-only')
     options = {}
     for flag, key, split in (('--admit', 'admit_json', False), ('--admit-only', 'admit_only', True),
-                             ('--admit-reviewed', 'admit_reviewed', True)):
+                             ('--admit-reviewed', 'admit_reviewed', True), ('--admit-surface', 'surface_json', False)):
         if flag in argv:
             i = argv.index(flag)
             options[key] = argv[i + 1].split(',') if split else argv[i + 1]
