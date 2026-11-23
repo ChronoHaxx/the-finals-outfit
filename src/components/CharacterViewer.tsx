@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import * as THREE from "three";
 import { CharacterRig } from "../rig/CharacterRig";
 import { SURFACE_VIEWS } from "../rig/ReconstructedMaterial";
@@ -115,13 +115,15 @@ function CaptureDriver({ ownsDraw }: { ownsDraw: boolean }) {
 
 // Takes (22 Nov 2026): what the recorder samples each frame (the camera, the orbit's target, the character's turn and
 // the clips the mixer blends), and the stage a take's render drives (the turn, the drawn lights). `look` is what the
-// stage lights were last given: its layout effect runs in the same commit as theirs, so once it holds a take's look the
-// scene shows it.
+// stage lights were last given. It is recorded in a passive effect, after the stage's own (TakeBridge comes after
+// StageLights, and React runs a commit's passive effects in tree order): the reflections' environment is set in
+// StudioEnvironment's passive effects, so a layout effect here said "shown" a frame before it was (22 Nov 2026: one of
+// two renders of a take differed on the frame after a look change).
 let lookOnStage: unknown = null;
 function TakeBridge({ animator, root, look }: { animator: RigAnimator | null; root: THREE.Object3D; look: unknown }) {
   const camera = useThree((s) => s.camera);
   const get = useThree((s) => s.get);
-  useLayoutEffect(() => { lookOnStage = look; }, [look]);
+  useEffect(() => { lookOnStage = look; }, [look]);
   useEffect(() => {
     if (!animator) return;
     const probe: TakeProbe = () => {
