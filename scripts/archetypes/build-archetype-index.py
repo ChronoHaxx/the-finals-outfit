@@ -25,8 +25,12 @@ The class bodies (SK_Body_L/H) take the same proofs plus a skeleton proof: every
 Medium's and every rotation equal. Their skin-material bounds origin is the class scale of the Medium body's (a pure
 scale moves the bounds centre by exactly that factor).
 
+With --proven (scripts/archetypes/prove-nov17.py's proof.json), a sixth proof: the class mesh's package is byte-identical
+in today's game containers (rewritten 17 Nov 2026), since the staged meshes were read before that update.
+
 Usage (Git Bash, from the worktree root):
-  python scripts/archetypes/build-archetype-index.py --out scripts/generated/archetypes/preview-v1
+  python scripts/archetypes/build-archetype-index.py --out scripts/generated/archetypes/preview-v2 \\
+      --proven scripts/generated/archetypes/nov17-proof-v1/proof.json
 """
 import argparse, gzip, hashlib, json, os, struct, sys
 from pathlib import Path
@@ -170,7 +174,17 @@ def main():
     # apply fills from publish-list.tsv and the host serves; its name must start "reconstructed-" for the routes).
     # Without it the index points at the staged files themselves, which only a local preview server serves.
     ap.add_argument("--publish-dir")
+    # --proven <proof.json from prove-nov17.py>: also require each class mesh's package to be byte-identical in today's
+    # containers (the coordinator's rule for pre-update data, 22 Nov). A mesh the proof refused or never read is refused.
+    ap.add_argument("--proven")
     args = ap.parse_args()
+    current = None
+    if args.proven:
+        proof17 = json.loads(Path(args.proven).read_text(encoding="utf-8"))
+        if proof17.get("policy") != "archetypes-nov17-proof-v1":
+            sys.exit(f"{args.proven} is not a prove-nov17.py result")
+        current = {"proven": set(proof17["proven"]), "refused": proof17["refused"], "packages": proof17["packages"],
+                   "file": args.proven, "sha256": sha256(args.proven), "containers": proof17["today"]["containersNewest"]}
     if args.publish_dir and not args.publish_dir.startswith("reconstructed-"):
         sys.exit("--publish-dir must start with reconstructed- (models/reconstructed-* is what the host routes)")
     models = Path(args.models).resolve()
@@ -180,6 +194,7 @@ def main():
     assets = json.loads((index_dir / "assets.json").read_text(encoding="utf-8"))
     skin_pairs = json.loads((index_dir / "skin-pairs.json").read_text(encoding="utf-8"))
     report = {"activeSha256": sha256(index_dir / "assets.json"), "skinPairsSha256": sha256(index_dir / "skin-pairs.json"),
+              "currentProof": {k: current[k] for k in ("file", "sha256", "containers")} if current else None,
               "classes": {}, "meshes": {}, "refused": {}}
 
     # The Archetype mesh swaps the definitions author: Medium skeletal mesh -> class mesh.
@@ -235,6 +250,13 @@ def main():
             if not ok:
                 report["refused"][target] = proof["problems"]
                 continue
+            if current is not None:
+                package = "Discovery/Content/" + target.split(".")[0][len("/Game/"):] + ".uasset"
+                proof["containers17Nov"] = current["packages"].get(package)
+                if target not in current["proven"]:
+                    report["refused"][target] = [f"not current in the 17 Nov containers: "
+                                                 f"{current['refused'].get(target, 'no proof row')}"]
+                    continue
             new = {k: v for k, v in entry.items() if k not in ("url", "sha256")}
             hosted = models / args.publish_dir / "meshes" / file.name if args.publish_dir else file
             proof["publish"] = str(hosted.relative_to(models)).replace(os.sep, "/")

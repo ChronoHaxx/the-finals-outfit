@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import * as THREE from "three";
 import { readFileSync } from "node:fs";
 import { BODY_TYPE_PREVIEWS, type BodyTypePreview } from "../../src/rig/BodyTypePreview.ts";
-import { bindDistance, indexClass, scaleSkeletonTranslations, sourceBindBasis } from "../../src/rig/Archetype.ts";
+import { bindDistance, indexClass, mediumAsClassRests, scaleSkeletonTranslations, sourceBindBasis } from "../../src/rig/Archetype.ts";
 import type { AssemblyAssets } from "../../src/rig/SourceAssembly.ts";
 
 // The rig's side of Light and Heavy contestants (22 Nov 2026, rig/Archetype.ts): the class values come from the Season 12
@@ -95,6 +95,33 @@ test("each skin binds in the rest it was authored in: its own class, or Medium; 
   // A mesh whose node moved (its bind matrix) is judged where it actually binds.
   const shifted = new THREE.Matrix4().makeTranslation(0, 0.2, 0);
   assert.throws(() => sourceBindBasis(skinAt(medium, 1), shifted, light, medium, "moved"), /bound to no body rest/);
+});
+
+// The game shows a Medium-authored part (the shared head) on a class as the Medium part scaled by the class: measured
+// 23 Nov 2026, the head's neck rim meets SK_Body_L/H to 0.1 cm that way and misses by 1.5-2 cm if only carried.
+test("a Medium-authored skin on a class is the Medium skin scaled by the class at rest, and rides the class bones", () => {
+  const driver = driverChain();
+  const medium = restsOf(driver);
+  scaleSkeletonTranslations(driver, 0.85);
+  driver[0].updateMatrixWorld(true);
+  const asClass = mediumAsClassRests(medium, 0.85);
+  const vertex = new THREE.Vector3(0.12, 1.55, 0.08); // a point on the neck, bound to several bones
+  for (const bone of driver) {
+    // At the class rest every skinning matrix is the same uniform scale about the origin.
+    const skinning = bone.matrixWorld.clone().multiply(asClass.get(bone.name)!);
+    const moved = vertex.clone().applyMatrix4(skinning);
+    assert.ok(moved.distanceTo(vertex.clone().multiplyScalar(0.85)) < 1e-9, bone.name);
+  }
+  // In motion it follows the class bones: turning the neck turns the scaled point about the class neck joint.
+  const neck = driver.find(b => b.name === "neck_01")!;
+  neck.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), 0.4));
+  driver[0].updateMatrixWorld(true);
+  const pivot = new THREE.Vector3().setFromMatrixPosition(neck.matrixWorld);
+  const turned = vertex.clone().applyMatrix4(neck.matrixWorld.clone().multiply(asClass.get("neck_01")!));
+  assert.ok(Math.abs(turned.distanceTo(pivot) - vertex.clone().multiplyScalar(0.85).distanceTo(pivot)) < 1e-9,
+    "a rigid turn about the class joint");
+  // Telling which rest a skin was authored in still uses the unscaled Medium rests.
+  assert.equal(sourceBindBasis(skinAt(medium, 1), new THREE.Matrix4(), restsOf(driver), medium, "SK_Head"), "medium");
 });
 
 const BODY_M = "/Game/Discovery/Characters/Body/SK_Body_M.SK_Body_M";

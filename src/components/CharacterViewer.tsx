@@ -314,7 +314,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
       { setError, setMissingFittingData, setHasRecoveredPreview,
         onAssembly: assembly => { rigHarness().__sourceAssembly = assembly; },
         setClassUnavailable: (archetype, names) => setClassNotice(names.length
-          ? `Not on ${ARCHETYPE_LABELS[archetype]} yet: ${names.join(", ")}. Their ${ARCHETYPE_LABELS[archetype]} meshes aren’t extracted yet, so they’re left off; your outfit keeps them.`
+          ? `Not on ${ARCHETYPE_LABELS[archetype]} yet: ${names.join(", ")}. Their ${ARCHETYPE_LABELS[archetype]} versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.`
           : null) }).catch((e) => {
       // Anything the pass's own per-step handlers did not anticipate: surface it so Retry works.
       if (cancelled) return;

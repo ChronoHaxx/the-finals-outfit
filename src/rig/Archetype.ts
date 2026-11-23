@@ -3,19 +3,25 @@
 // What the game does (survey 6 Nov 2026, re-checked 22 Nov 2026 in _docs/archetypes-2026-11-22/README.md):
 // - Each class has its own body and skeleton. SK_Body_L/H's skeletons are the Medium one with every bone translation
 //   scaled (x0.85 / x1.15) and every rotation unchanged; their bind meshes are the Medium bind mesh scaled the same way.
-// - The skeleton drives every mesh the class resolves to. In Unreal a mesh follows the body through the leader pose:
-//   each follower skins with its OWN reference pose's inverse against the leader's component-space bones. So a mesh
-//   authored on the Light skeleton (a garment's SK_*_L) sits exactly where it was authored, while a mesh authored on
-//   the Medium skeleton (the shared head, a hair with no class mesh, a head-wrapped beard) is carried by each bone's
-//   move from its Medium rest: on Light it translates with the shorter skeleton and keeps its full size. That is why a
-//   Light contestant has a full-size head on a smaller body.
-// - Sockets live on the one mesh-merge target skeleton (SK_CharacterMeshMergeTarget_Skeleton), relative to their bone,
-//   so on Light a socket keeps its relative transform and rides its (moved) bone; the body type then adds its
-//   SocketOffsetLight / SocketOffsetsHeavy (BodyTypePreview.ts).
+// - A mesh authored on the class skeleton (a garment's SK_*_L) sits exactly where it was authored.
+// - A mesh authored on the Medium skeleton (the shared head, a hair or beard with no class mesh) is the Medium mesh
+//   SCALED by the class scale, morphs included, then carried by the class bones. Measured 23 Nov 2026 on
+//   SK_Head_Face_01_Base against SK_Body_L/H (_docs/archetypes-2026-11-22/README.md, "The head is scaled"):
+//   - scaled, the head's neck rim meets the class body to 0.10 cm (Light) / 0.14 cm (Heavy) median, as tightly as it
+//     meets the Medium body (0.12 cm);
+//   - left full size and only carried by each bone's move (a plain leader pose), it misses by 1.5 / 2.1 cm, and the
+//     viewer showed that gap as a translucent shell off the shoulders;
+//   - the head's own light_male / heavy_male morphs are authored for the scaled head.
+//   The engine mechanism is not read (the head is its own non-merged component, bIsHeadMesh); the geometry is.
+// - Sockets live on the one mesh-merge target skeleton (SK_CharacterMeshMergeTarget_Skeleton), relative to their bone.
+//   On a class a socket's frame scales with the class too: the body type's head socket offsets are symmetric only in a
+//   frame scaled by the class (hat: 0.85 x -2.647 = -2.25 cm on Light, 1.15 x 1.956 = +2.25 cm on Heavy; eyewear
+//   likewise to 1e-4). So a socket keeps its Medium relative transform scaled by the class, rides its (moved) bone, and
+//   the body type adds its SocketOffsetLight / SocketOffsetsHeavy inside that frame (BodyTypePreview.ts).
 //
 // This module reproduces that: the rig scales its driver skeleton's bone translations, and binds every mesh in the rest
-// its own inverse binds were authored in (sourceBindBasis below). The Medium path is untouched: with no archetype the rig
-// binds exactly as it always has.
+// its own inverse binds were authored in (sourceBindBasis below), a Medium one through mediumAsClassRests. The Medium
+// path is untouched: with no archetype the rig binds exactly as it always has.
 
 import * as THREE from "three";
 import type { ArchetypeId } from "../lib/archetype";
@@ -97,9 +103,19 @@ const BIND_TOLERANCE = 5e-3;
 
 export type BindBasis = "class" | "medium";
 
+/** The rests a Medium-authored skin or socket binds to on a class: each Medium rest inverse with the class scale on its
+ *  left (S x M_b^-1). On the class rest that is the class rest inverse times a uniform world scale (L_b^-1 x S, as
+ *  rotations are equal and L_b's position is s times M_b's), so at rest the part is the Medium part scaled by the
+ *  class about the origin, and in motion it rides the class bones. Extension bones and attachments parented through
+ *  these inherit the scale. */
+export function mediumAsClassRests(mediumRests: ReadonlyMap<string, THREE.Matrix4>, scale: number): Map<string, THREE.Matrix4> {
+  const scaling = new THREE.Matrix4().makeScale(scale, scale, scale);
+  return new Map([...mediumRests].map(([name, inverse]) => [name, scaling.clone().multiply(inverse)]));
+}
+
 /** Which rest a mesh's skin was authored in, on a class driver: its own class's ("class", a SK_*_L on Light) or the
- *  Medium one ("medium": the shared head, a hair with no class mesh). Anything else is refused: binding it would move
- *  it by an amount no game rule gives. */
+ *  Medium one ("medium": the shared head, a hair with no class mesh; bound through mediumAsClassRests). Anything else
+ *  is refused: binding it would move it by an amount no game rule gives. */
 export function sourceBindBasis(skeleton: THREE.Skeleton, bindMatrix: THREE.Matrix4,
   classRests: ReadonlyMap<string, THREE.Matrix4>, mediumRests: ReadonlyMap<string, THREE.Matrix4>, label: string): BindBasis {
   const own = bindDistance(skeleton, bindMatrix, classRests), medium = bindDistance(skeleton, bindMatrix, mediumRests);

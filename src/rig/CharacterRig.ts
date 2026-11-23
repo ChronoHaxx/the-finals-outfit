@@ -12,7 +12,7 @@ import { enableSourceSkinning } from "./SourceMesh";
 import { rebindSourceSkeleton, type SourceBoneAttachment } from "./SourceSkeleton";
 import { fittingMorphNames, SourceFitting } from "./SourceFitting";
 import { bodyTypeOffsetMatrix, type BodyTypePreview } from "./BodyTypePreview";
-import { scaleSkeletonTranslations, sourceBindBasis, type RigArchetype } from "./Archetype";
+import { mediumAsClassRests, scaleSkeletonTranslations, sourceBindBasis, type RigArchetype } from "./Archetype";
 import { multiplySourceMatrices, type SourceMatrix } from "./SourceTransform";
 import { LEGACY_EQUIVALENT_HEAD_BASELINE, type SourceRigPart, type SourceSkinPair, type SourceSkinPart } from "./SourceAssembly";
 import { applyHeadWrap, bindHeadWrap, headWrapInputs, type HeadWrapBinding, type HeadWrapData } from "./HeadWrap";
@@ -249,10 +249,13 @@ export class CharacterRig {
   private bodyTypeSockets: Record<string, SourceMatrix> | undefined;
   private bodyTypeContext: BodyTypePreview | undefined;
   // (22 Nov 2026, archetypes; Archetype.ts) The class the body was loaded for, undefined for Medium. On a class body the
-  // driver's bone translations are scaled, `bodyRestInverses` holds that class's rests and `mediumRestInverses` the
-  // Medium ones the index's sockets and frames were recorded on; on Medium both are the same map.
+  // driver's bone translations are scaled, `bodyRestInverses` holds that class's rests, `mediumRestInverses` the
+  // Medium ones (to tell which rest a skin was authored in), and `mediumAsClassInverses` what a Medium-authored skin or
+  // socket binds to there: the Medium rests with the class scale (Archetype.ts mediumAsClassRests). On Medium all three
+  // are the same map.
   private archetype: RigArchetype | undefined;
   private mediumRestInverses = new Map<string, THREE.Matrix4>();
+  private mediumAsClassInverses = new Map<string, THREE.Matrix4>();
   // Mesh UUID -> material copies made by the dev inspector. Values stay attached to their mesh
   // and are therefore released by disposeObject3D() with the scene; this map only prevents a
   // second copy on every toggle and is cleared when that scene leaves the rig.
@@ -381,18 +384,19 @@ export class CharacterRig {
   }
 
   // The rests a source skin binds to (Archetype.ts sourceBindBasis). On Medium, the driver's rests, exactly as always.
-  // On a class body, the rest its own inverse binds were authored in: its class's (a SK_*_L on Light) or Medium's (the
-  // shared head, a hair with no class mesh), which carries it rigidly with each bone as the game's leader pose does.
+  // On a class body, the rest its own inverse binds were authored in: its class's (a SK_*_L on Light) as authored, or
+  // Medium's (the shared head, a hair with no class mesh) scaled by the class, as the game shows it (Archetype.ts).
   // The rests the index's sockets and frames were recorded on: the Medium body's. On Medium those are the driver's own
-  // rests, exactly as always; on a class body a socket rides its moved bone with its Medium relative transform.
+  // rests, exactly as always; on a class body a socket rides its moved bone with its Medium relative transform scaled
+  // by the class, and what hangs from it scales with it.
   private socketRestInverses(): ReadonlyMap<string, THREE.Matrix4> {
-    return this.archetype ? this.mediumRestInverses : this.bodyRestInverses;
+    return this.archetype ? this.mediumAsClassInverses : this.bodyRestInverses;
   }
 
   private sourceRestInverses(mesh: THREE.SkinnedMesh, label: string): ReadonlyMap<string, THREE.Matrix4> {
     if (!this.archetype) return this.bodyRestInverses;
     return sourceBindBasis(mesh.skeleton, mesh.bindMatrix, this.bodyRestInverses, this.mediumRestInverses, label) === "class"
-      ? this.bodyRestInverses : this.mediumRestInverses;
+      ? this.bodyRestInverses : this.mediumAsClassInverses;
   }
 
   // The fitting morphs plus the gated body-type morph, one set everywhere morphs are applied.
@@ -663,6 +667,7 @@ export class CharacterRig {
     this.bonesByName = bones;
     this.bodyRestInverses = inverses;
     this.mediumRestInverses = mediumInverses;
+    this.mediumAsClassInverses = archetype ? mediumAsClassRests(mediumInverses, archetype.skeletonScale) : inverses;
     if (this.archetype !== archetype) {
       this.archetype = archetype;
       this.setBodyTypePreview(this.bodyTypeContext); // the class picks the body type's morph and socket offsets
@@ -1090,9 +1095,15 @@ export class CharacterRig {
       throw new Error('Source attachment does not match the active body');
     const frame = attachment.frame;
     if (!frame) {
-      const bone = this.bonesByName.get(attachment.socket), restInverse = this.socketRestInverses().get(attachment.socket);
+      // A body socket (on the merge-target skeleton). On a class (Archetype.ts) it keeps its Medium relative transform
+      // unscaled and rides its moved bone; what hangs from it is scaled by the class, inside which the body type's
+      // class offset composes: socket rest x S(s) x offset x part. That is the only composition the DA offsets fit
+      // (eyewear: 0.85 x -2.390 = -2.031 cm on Light, 1.15 x 1.766 = +2.031 on Heavy, i.e. -/+0.15 of the socket's
+      // own distance, which lands the scaled glasses on the scaled eyes).
+      const bone = this.bonesByName.get(attachment.socket);
+      const restInverse = (this.archetype ? this.mediumRestInverses : this.bodyRestInverses).get(attachment.socket);
       if (!bone || !restInverse) throw new Error('Source attachment does not match the active body');
-      return { bone, restInverse, socket: this.offsetSocketRest(attachment.socket, bodySocketRest(attachment)) };
+      return { bone, restInverse, socket: this.offsetSocketRest(attachment.socket, this.classSocketRest(bodySocketRest(attachment))) };
     }
     const head = frame.kind === 'head-component' ? this.sourceHead : null;
     const component = frame.kind === 'head-component'
@@ -1100,8 +1111,13 @@ export class CharacterRig {
       : frame.component;
     if (!component) throw new Error(`No active source head component carries socket ${attachment.socket}`);
     let live: { bone: THREE.Bone; restInverse: THREE.Matrix4 } | undefined;
+    // A socket of the body's own (merge-target) skeleton composes as a body bone does above; a socket of a scaled
+    // Medium-authored component (the head, an optional mesh) scales with that component, its position included.
+    const bodySocket = frame.kind === 'body-socket';
     if (component.bodyBone) {
-      const bone = this.bonesByName.get(component.bone), restInverse = this.socketRestInverses().get(component.bone);
+      const bone = this.bonesByName.get(component.bone);
+      const restInverse = (bodySocket ? (this.archetype ? this.mediumRestInverses : this.bodyRestInverses)
+        : this.socketRestInverses()).get(component.bone);
       if (bone && restInverse && (!head || head.bones.get(component.bone)?.bone === bone)) live = { bone, restInverse };
       else if (bone && restInverse) throw new Error(`Source attachment socket bone is not the head component's: ${component.bone}`);
     } else {
@@ -1116,8 +1132,9 @@ export class CharacterRig {
       }
     }
     if (!live) throw new Error(`Source attachment socket bone is missing: ${component.bone}`);
+    const socketRest: SourceSocketRest = { rest: component.rest, restScale: component.restScale };
     return { bone: live.bone, restInverse: live.restInverse,
-      socket: this.offsetSocketRest(attachment.socket, { rest: component.rest, restScale: component.restScale }),
+      socket: this.offsetSocketRest(attachment.socket, bodySocket ? this.classSocketRest(socketRest) : socketRest),
       ...(head ? { headComponent: `${head.id}|${head.sourceMesh}` } : {}) };
   }
 
@@ -1125,6 +1142,15 @@ export class CharacterRig {
   // authors the offset as the socket's relative transform for that body type (DA_BodyType_
   // AttachmentSocketsBasePosition composed with SocketOffsetsMedium). A socket the asset does not
   // name — and every socket while the gate is off — keeps its preserved rest unchanged.
+  // A body socket's rest on a class: the class scale composed on its right, recorded as a rest scale so the attached
+  // part's frame stays rigid and its vertices take the scale (SourceAttachment.ts sourceAttachmentFrame).
+  private classSocketRest(rest: SourceSocketRest): SourceSocketRest {
+    const scale = this.archetype?.skeletonScale;
+    if (scale === undefined) return rest;
+    return { rest: multiplySourceMatrices(rest.rest, new THREE.Matrix4().makeScale(scale, scale, scale).toArray()),
+      restScale: [rest.restScale[0] * scale, rest.restScale[1] * scale, rest.restScale[2] * scale] };
+  }
+
   private offsetSocketRest(socket: string, rest: SourceSocketRest): SourceSocketRest {
     const offset = this.bodyTypeSockets?.[socket];
     return offset === undefined ? rest
@@ -2684,6 +2710,7 @@ export class CharacterRig {
     this.bonesByName.clear();
     this.bodyRestInverses.clear();
     this.mediumRestInverses.clear();
+    this.mediumAsClassInverses.clear();
     this.archetype = undefined;
     this.inspectorMaterialOverrides.clear();
   }

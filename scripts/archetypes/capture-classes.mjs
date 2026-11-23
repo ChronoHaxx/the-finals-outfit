@@ -26,6 +26,9 @@ const OUTFITS = {
   space: { face: "head-face-07-base", headwear: "streetwear-beanie-cotton-blackwhite", upperBody: "space-spacetopvest-plastic",
     lowerBody: "space-spacesuitpants-nylon", feet: "space-pioneershoes-nylon-arenasecurity", hands: "space-spacecombatgloves-metal" },
   bare: { face: "head-face-01-base", lowerBody: "casual-basicshorts-cotton-pink" },
+  // The short skirt's Light mesh changed in the 17 Nov update (nov17 proof): on Light it is left off and named.
+  skirt: { face: "head-face-03-base", upperBody: "streetwear-hoodie-cotton-pink", lowerBody: "casual-shortskirt-cotton-black",
+    feet: "streetwear-shoes-rubber-graywhite" },
 };
 const ALL_CAMERAS = { full: "0,1.0,4.8,0,1.0,0", side: "4.8,1.0,0,0,1.0,0", back: "0,1.0,-4.8,0,1.0,0",
   torso: "0,1.3,2.2,0,1.3,0", head: "0,1.65,1.1,0,1.65,0", headside: "1.1,1.65,0,0,1.65,0" };

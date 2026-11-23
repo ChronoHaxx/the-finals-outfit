@@ -6,6 +6,14 @@ is left off on that class and named, and the outfit keeps it.
 
 Branch `claude/jovial-fermat-65dc6d`. Behind a flag until the class meshes are hosted (see "Flag" below).
 
+**Where it stands (23 Nov):**
+- **Light** is buildable on 78 meshes, each proven against the live build and against today's (17 Nov) game files.
+  They are in the preview index only (`scripts/generated/archetypes/preview-v2`); nothing is written to
+  `public/models`.
+- **Heavy** is blocked: `SK_Body_H` changed in the 17 Nov update. A Heavy class needs its body, so the builder leaves
+  Heavy out of the index whole, and the picker never offers it. Heavy waits for a fresh read of `SK_Body_H`.
+- **The runtime supports both classes.** The Heavy captures from before the proof (`captures-v1`) show it working.
+
 ## How the game builds a class
 
 Everything below was read from the game's data or measured on the extracted meshes.
@@ -25,12 +33,33 @@ Everything below was read from the game's data or measured on the extracted mesh
   - Against 1.15 x `medium_male`, `heavy_male` is off by a median of 4.7 cm (up to 21 cm).
 
   So a pure-scale fallback is not faithful for any garment, and none is used.
-- **Heads stay full size.** No head has a class override. Unreal's leader pose skins every follower with its own
-  ref-pose inverse against the leader's bones, so a Medium-authored mesh rides the class skeleton rigidly, at full size.
-  This applies to the head, and to hair or hats with no class mesh. A class-authored mesh fits exactly.
-- **Sockets.** Sockets live only on `SK_CharacterMeshMergeTarget_Skeleton`. A socket keeps its Medium relative
-  transform and rides its (moved) bone. The body type DA's `SocketOffsetLight` / `SocketOffsetsHeavy` compose on the
-  right.
+- **The head is scaled with the class (corrected 23 Nov; the 22 Nov runtime had it wrong).** No head has a class mesh:
+  the head is its own, non-merged component (`bIsHeadMesh`, `bCanBeMerged` false). On a class it is the Medium head
+  scaled by the class scale, morphs included, carried by the class bones.
+  - **Measured** on `SK_Head_Face_01_Base`, from the neck rim (the 356 head vertices lying on the Medium body) to the
+    class body, both with their morphs:
+
+    | Model | Light, median (max) | Heavy, median (max) |
+    | --- | --- | --- |
+    | Head scaled, morphs scaled with it | 0.10 cm (0.62) | 0.14 cm (1.37) |
+    | Head full size, carried by each bone's move (plain leader pose) | 1.54 cm (3.19) | 2.12 cm (3.30) |
+    | Control: the head on the Medium body | 0.12 cm (0.48) | |
+
+  - The head's own `light_male` / `heavy_male` morphs (up to 1.9 / 4.4 cm, all on the neck rim) are authored for
+    the scaled head.
+  - **The DA socket offsets agree.** The head socket offsets are symmetric only in a frame scaled by the class. Hat:
+    0.85 x −2.647 = −2.25 cm (Light) and 1.15 x 1.956 = +2.25 cm (Heavy). Eyewear: 2.031 / 0.761 cm, matching to
+    1e-4. So sockets scale with the class too.
+  - **Not read:** the engine mechanism. The raw class skeletons have unit bone scales, and a component scale on a
+    leader-posed head would not give this geometry. The rule is the measured geometry.
+  - **What the 22 Nov runtime showed:** it kept the head full size. That showed on Light as a translucent shell (the
+    head's faded neck rim) standing off the shoulders, and a step under the chin. Fixed by binding Medium-authored
+    skins and sockets to `S(s) x MediumRest⁻¹` (`mediumAsClassRests`); see the before/after shot in the PR.
+  - **The same rule applies to** hair and beards with no class mesh, and statics on sockets (hats, glasses, static
+    hair). They fit the head they were authored on, so they scale with it.
+- **Sockets.** Sockets live only on `SK_CharacterMeshMergeTarget_Skeleton`. On a class a socket keeps its Medium
+  relative transform scaled by the class and rides its (moved) bone. The body type DA's `SocketOffsetLight` /
+  `SocketOffsetsHeavy` compose on the right, inside that scaled frame.
 - **Animation.** Clip translation tracks (pelvis, weapon_root) and the prop attach-bone rests scale by the class
   skeleton scale ("AnimationScaled" retargeting).
 - **Body types.**
@@ -57,10 +86,11 @@ Everything below was read from the game's data or measured on the extracted mesh
   axes are reoriented (Blender), so whole matrices never match.
   - Measured: a mesh's own rest is at most 0.45 mm away; any other class's rest is at least 2.8 cm away. The tolerance
     is 5 mm.
-  - Class-authored meshes bind to the class rests, Medium-authored ones to the Medium rests.
+  - Class-authored meshes bind to the class rests. Medium-authored ones bind to the Medium rests scaled by the class
+    (`mediumAsClassRests`); detection still compares against the unscaled Medium rests.
   - Anything else is refused, with a named error.
-- **Notice.** "Not on Light yet: … Their Light meshes aren't extracted yet, so they're left off; your outfit keeps
-  them." The saved outfit and the share link still hold every item.
+- **Notice.** "Not on Light yet: … Their Light versions aren't in the viewer yet, so they're left off; your outfit
+  keeps them." The saved outfit and the share link still hold every item.
 - **Saving and links.**
   - `archetype` is a known field of saved outfits. An absent value means Medium, and writers keep fields they don't
     know.
@@ -71,7 +101,9 @@ Everything below was read from the game's data or measured on the extracted mesh
   on in dev. The picker shows only the classes the index carries (`assets.json` `archetypes`). So production shows
   nothing new until the index apply lands, even with the flag on.
 
-## The index: 86 Light and 87 Heavy meshes, proven
+## The index proofs (first pass, before the 17 Nov proof)
+
+This first pass found 86 Light and 87 Heavy meshes. The 17 Nov proof below cuts that to 78 Light and no Heavy.
 
 `scripts/archetypes/build-archetype-index.py` reads the active index and the staged extraction. It adds a class mesh
 only when all of these hold:
@@ -90,8 +122,9 @@ Result on active `assets.json` 3f64b2e6 and skin-pairs f15a73a2:
 - **Added:** 86 Light and 87 Heavy, including `SK_Body_L` and `SK_Body_H`. That is 173 GLBs, 176.6 MB uncompressed.
   58 items gain the matching `_L` / `_H` mask entries. Every original entry is unchanged: a check confirms the change
   is nested-additive.
-- **Buildable items:** about 1,049 Light and 1,018 Heavy items have no class swap or only proven ones
-  (`scripts/generated/archetypes/preview-v1/available-items-approx.json`). Statics and heads need none.
+- **Buildable items (first pass):** about 1,049 Light and 1,018 Heavy items had no class swap or only proven ones
+  (`scripts/generated/archetypes/preview-v1/available-items-approx.json`). Statics and heads need none. The 17 Nov
+  proof removes the items that use one of the 8 dropped Light meshes.
 - **Refused, 11 meshes, with a reason each** (in `report.json`). Each is a reshaped class mesh that needs its own masks:
   - indices or UVs differ: `HeadPhonesAntennaPart_L`, `NRSuit_L`, `Racing_Gloves_L/H`, `AstroPilotGloves_H`;
   - vertex count differs: `AmmoBackpack_L/H`, `PoetShirtWithVest_L/H`, `CordBracelet_L`, `PioneerUpper_H`.
@@ -112,8 +145,10 @@ both runs recorded. The proof per mesh is in `scripts/generated/archetypes/nov17
   - `DiscoJacket_H`, `SportyRobotHands_H`, `SpaceCombatTorso_L` and `BoilerSuitTorso_L`.
 - **Heavy is blocked as a whole.** Its body changed, and a Heavy class needs its body. Heavy waits for a fresh read of
   `SK_Body_H`, which needs the 17 Nov usmap or a proof that the 12.00 read is exact.
-- **Light can go ahead.** It uses the proven Light meshes only. The builder still needs an option that takes the
-  proven list; the index outputs from before this proof (`preview-v1`, `apply-v1`) include the dropped meshes.
+- **Light goes ahead** on the proven meshes only. `build-archetype-index.py --proven <proof.json>` adds this as a
+  sixth proof and records each mesh's proof row in `report.json` (`containers17Nov`). Its outputs are
+  `preview-v2` / `apply-v2`: 78 Light meshes, 0 Heavy, 28 refused, reproducible. `preview-v1` / `apply-v1` predate
+  the proof and must not be applied.
 - **Medium (for information):** 77 Medium siblings the live index serves also changed on 17 Nov. That is for the S12
   refresh to handle.
 
@@ -133,7 +168,7 @@ production build.
 
 ## Limits
 
-- **Classes:** Light/Heavy come only for the 173 proven meshes. Other items are left off on a class until the bulk
+- **Classes:** Light comes only for its 78 proven meshes, and Heavy not at all yet (see the 17 Nov proof). Other items are left off on a class until the bulk
   extraction (below).
 - **Body types:** Feminine stays hidden (agreed order: S12 refresh, then S12 body, then Feminine, then Light/Heavy).
   The class picker greys Androgynous on Light/Heavy, as the game does. Muscular types are not offered.
