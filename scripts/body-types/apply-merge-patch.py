@@ -17,7 +17,9 @@ Modes (exactly one):
   change in the same merge.
 
 Guards: the active assets.json and skin-pairs.json must hash to the patch's pins; every patched entry must still hold
-its "from" URL and sha256; only url and sha256 change. Files are read, changed and written back whole, keeping every
+its "from" URL and sha256; only url and sha256 change, plus bodyMaskUrl where the patch carries a bodyMask change
+(tier 2, 23 Nov 2026): the entry must still name the old mask, and the new mask file must already be in place,
+resolved from ACTIVE_DIR, with the patch's sha256. Files are read, changed and written back whole, keeping every
 field and the source formatting (2-space JSON, CRLF), so the diff is exactly the repointed lines.
 """
 import hashlib
@@ -65,15 +67,35 @@ def main(argv):
     assets, pairs = load_exact(assets_path), load_exact(pairs_path)
     body = patch['body']['source']
 
-    applied = 0
+    applied = masks = 0
     for key, change in patch['meshes'].items():
         entry = assets['meshes'].get(key)
         if entry is None or entry['url'] != change['fromUrl'] or entry['sha256'] != change['fromSha256']:
             raise SystemExit(f'{key} no longer matches the patch; rebuild the candidate (HANDOFF.md)')
         if key == body:
             continue
+        mask = change.get('bodyMask')
+        if mask:
+            if entry.get('bodyMaskUrl') != mask['fromUrl']:
+                raise SystemExit(f'{key}: its body mask no longer matches the patch; rebuild the candidate')
+            target = active_dir / mask['toUrl']
+            if not target.is_file() or sha(target) != mask['toSha256']:
+                raise SystemExit(f'{key}: the new body mask {target} is missing or differs; copy the tier-2 data first')
+            entry['bodyMaskUrl'] = mask['toUrl']
+            masks += 1
         entry['url'], entry['sha256'] = change['toUrl'], change['toSha256']
         applied += 1
+
+    for key, change in patch.get('bodyMasks', {}).items():
+        # Mask-only (tier 2, 23 Nov 2026): the mesh is already the file the mask was regenerated from.
+        entry = assets['meshes'].get(key)
+        if entry is None or entry['sha256'] != change['meshSha256'] or entry.get('bodyMaskUrl') != change['fromUrl']:
+            raise SystemExit(f'{key} no longer matches the patch; rebuild the candidate')
+        target = active_dir / change['toUrl']
+        if not target.is_file() or sha(target) != change['toSha256']:
+            raise SystemExit(f'{key}: the new body mask {target} is missing or differs; copy the tier-2 data first')
+        entry['bodyMaskUrl'] = change['toUrl']
+        masks += 1
 
     body_pairs = 0
     if body_url is not None:
@@ -96,6 +118,7 @@ def main(argv):
     (out_dir / 'assets.json').write_bytes(dump(assets))
     (out_dir / 'skin-pairs.json').write_bytes(dump(pairs) if body_pairs else pairs_path.read_bytes())
     print(json.dumps({'mode': 'garments-only' if garments_only else 'with-body', 'meshesRepointed': applied,
+                      'bodyMasksRepointed': masks,
                       'skinPairsRewritten': body_pairs, 'out': str(out_dir),
                       'assetsSha256': sha(out_dir / 'assets.json'),
                       'skinPairsSha256': sha(out_dir / 'skin-pairs.json')}, indent=1))

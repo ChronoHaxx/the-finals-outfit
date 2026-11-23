@@ -70,6 +70,47 @@ class ApplyPatch(unittest.TestCase):
         self.assertEqual(assets['attachmentBody']['restBones'], {'root': [1]})
         self.assertEqual(pairs['items']['face-01']['body']['url'], '../s12/SK_Body_M.glb')
 
+    def test_a_body_mask_repoint_needs_the_new_file_in_place(self):
+        # Tier 2 (23 Nov 2026): the S12 body mask ships with its mesh; the patch pins the file's sha256.
+        assets = json.loads((self.active / 'assets.json').read_bytes())
+        assets['meshes'][TEE]['bodyMaskUrl'] = '../live/SK_Tee_M.bodymask.png'
+        (self.active / 'assets.json').write_bytes(tool.dump(assets))
+        self.patch['activeIndexSha256'] = tool.sha(self.active / 'assets.json')
+        new = self.tmp / 's12' / 'SK_Tee_M.bodymask.png'
+        self.patch['meshes'][TEE]['bodyMask'] = {'fromUrl': '../live/SK_Tee_M.bodymask.png',
+                                                 'toUrl': '../s12/SK_Tee_M.bodymask.png',
+                                                 'toSha256': hashlib.sha256(b'mask').hexdigest()}
+        with self.assertRaises(SystemExit):        # not copied yet
+            self.run_tool('--garments-only', out='out-missing')
+        new.parent.mkdir()
+        new.write_bytes(b'other')
+        with self.assertRaises(SystemExit):        # another file
+            self.run_tool('--garments-only', out='out-other')
+        new.write_bytes(b'mask')
+        out, _ = self.run_tool('--garments-only')
+        self.assertEqual(out['meshes'][TEE]['bodyMaskUrl'], '../s12/SK_Tee_M.bodymask.png')
+        self.assertEqual(out['meshes'][TEE]['url'], '../s12/SK_Tee_M.glb')
+        self.patch['meshes'][TEE]['bodyMask']['fromUrl'] = '../elsewhere.png'
+        with self.assertRaises(SystemExit):        # the entry names another mask now
+            self.run_tool('--garments-only', out='out-moved')
+
+    def test_a_mask_only_repoint_keeps_the_mesh(self):
+        # The mesh is already its S12 file (an earlier batch); only the body mask moves.
+        assets = json.loads((self.active / 'assets.json').read_bytes())
+        assets['meshes'][HAT]['bodyMaskUrl'] = '../live/SK_Hat_M.bodymask.png'
+        (self.active / 'assets.json').write_bytes(tool.dump(assets))
+        self.patch['activeIndexSha256'] = tool.sha(self.active / 'assets.json')
+        (self.tmp / 's12').mkdir()
+        (self.tmp / 's12' / 'SK_Hat_M.bodymask.png').write_bytes(b'hat')
+        self.patch['bodyMasks'] = {HAT: {'fromUrl': '../live/SK_Hat_M.bodymask.png', 'toUrl': '../s12/SK_Hat_M.bodymask.png',
+                                         'toSha256': hashlib.sha256(b'hat').hexdigest(), 'meshSha256': 'h0'}}
+        out, _ = self.run_tool('--garments-only')
+        self.assertEqual(out['meshes'][HAT], {'url': '../live/SK_Hat_M.glb', 'sha256': 'h0',
+                                              'bodyMaskUrl': '../s12/SK_Hat_M.bodymask.png'})
+        self.patch['bodyMasks'][HAT]['meshSha256'] = 'h-other'
+        with self.assertRaises(SystemExit):        # the mesh is not the file the mask was made from
+            self.run_tool('--garments-only', out='out-other-mesh')
+
     def test_refuses_the_preserved_body_url(self):
         with self.assertRaises(SystemExit):
             self.run_tool('--body-url', LIVE_BODY)
