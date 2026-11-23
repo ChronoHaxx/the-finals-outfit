@@ -162,11 +162,27 @@ with the published mask (texels set):
   SuitJacket, TechPants, DoubleHolsterPants, EmpressShoes. These can keep their published masks.
 - `SK_Samurai_ClothTop_M`: 1 texel more hidden out of 550,436. Negligible, but it is a different file, so either
   admit it with the S12 mask or keep the published one and record why.
-- `SK_Space_PioneerTechConsole_M` (published 0 texels) and `SK_Robots_CordBelt_M` (255 texels): the generator
-  wrote no mask in either run. Investigate before admitting.
+- `SK_Space_PioneerTechConsole_M` and `SK_Robots_CordBelt_M` first came out blank. The cause was the generator,
+  not the masks. Each item shows two meshes. The report step hashes every mesh from this worktree's `public/`, where
+  those files did not exist, so the run crashed after writing the first mesh's mask. After copying the GLBs the items
+  need into the worktree's ignored `public/models`: **CordBelt 255 texels live and S12, 0 differ. PioneerTechConsole
+  covers 0 texels in both**, and its published mask is empty too. Neither changes.
+  (Shipping the S12 mask for the one-texel ClothTop: coordinator, 23 Nov, game-faithful.)
 - Still to do: item masks (`run-item-masks.py`). SuitJacket's item mask is a w161 part-hide mask, a different
   system, and stays held. The builder also needs a path that admits a reworked or mask-stale mesh whose masks are
   proven unchanged.
+
+### v7 (the hand-off), 23 Nov
+
+Fresh captures of v7 on 5243 against live on 5241 (`captures-v7/`), for the guided checklist steps, the rework
+outfits and footwear. Results, step by step, are in `functional-review.md`. In short:
+- Androgynous matches live within noise everywhere, still and idle, the reworked bracelet and hood wrap included.
+- Masculine: S12 garments slightly slimmer, layers on top, cross-slot hems as on live.
+- Flex (the five outfits with reviewed weights, Masculine): clean. Earlier set: `TechCropTopNoBags` opens a small
+  underarm slot in the raised-arm extreme (`captures/zoom/o04-flex-back-underarm-x3.png`); live opens a sliver
+  there too, and idle is clean. Accepted as the S12 weights.
+- **Footwear was out of frame** in every earlier camera (they frame head to thigh). `capture-review.mjs` gains
+  `feet`, `feetback`, `feetside`, and the feet pass covers every footwear mesh admitted by review: FEETSUMMARY
 
 ### Found and fixed during the review
 

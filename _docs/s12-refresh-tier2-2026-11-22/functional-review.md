@@ -47,8 +47,30 @@ to `public/`. Outfit links below are built by `capture-review.mjs` from `review-
 
 ## Recorded result
 
-- Tested revision/build: (filled in below)
-- Agent run: (filled in below)
+- Tested revision/build: tools at `ade177a` (this branch); data `merge-out-batchA-v7/assets.json` (`d9eaaf7d…`) on 5243
+  against live `3f64b2e6…` on 5241, both `--live-body`. 23 Nov 2026.
+- Agent run (`capture-review.mjs`, then `diff-captures.py`, then the pair images looked at full size; captures in
+  `scripts/generated/s12-refresh-tier2-v1/captures-v7/`):
+  - [x] **1. Start: PASS.** Every shot on 5243 loaded all of the outfit's meshes with 0 console errors (o01 16 meshes,
+    Masculine idle, the four cameras).
+  - [x] **2. Changed shapes: PASS.** o01 (`func-idle-diff/o01…masculine-front`): the S12 rain jacket is slightly
+    slimmer; harness, belt and pouches stay on top. o07 (`…masculine-back`): the S12 shirt under the armour changes
+    slightly; armour and grenades stay on top. Nothing pokes through.
+  - [x] **3. Skinning under motion: PASS, with one note.** Flex on o03 (`func-flex-diff/o03…`, right underarm zoom
+    `captures/zoom/o03-flex-v7-right-underarm.png`) and o05 (`…masculine-back`): sleeves, the robot top's armour, the
+    gloves and the waist pouches bend without spikes, tears or stretched triangles. Note, from the earlier set
+    (`captures/zoom/o04-flex-back-underarm-x3.png`): in Flex's raised arms, the S12 `TechCropTopNoBags` opens a
+    small slot at the underarm where the garment's inside shows. Live opens a similar sliver beside it, and idle is
+    clean. Accepted as the S12 weights.
+  - [x] **4. Cross-slot: PASS.** x12 (`…masculine-waist`): the pre-S12 tee's hem lies over the S12 Viking pants as
+    on live; only the pants' dark side straps move. x13 (`…masculine-front`): the S12 jacket's hem sits over the
+    pre-S12 jeans and belt as on live.
+  - [x] **5. Androgynous: PASS.** o01, o06, o10 (and x12, x13), still and idle: within the capture noise of live
+    (≤ 147 px, max level ≤ 20, all at the face or on noise spots seen in live-vs-live).
+  - [x] **Rework and gap outfits** (r01 braided bracelet, r02 hood wrap, r03 Trentila boots): Androgynous still pose
+    matches live within noise (≤ 107 px, level ≤ 7). Idle and Flex Masculine: the same pieces, sitting slightly
+    differently on the re-sculpted body, with no stretching.
+  - Footwear: FEET
 - User checks: waived (standing waiver on all PRs, 22 Nov; recorded in memory `standing-check-waiver`).
 - Merge authorization: tools/docs PR merges on agent pass; the index apply and the GLB upload are separate
   coordinator approvals.
