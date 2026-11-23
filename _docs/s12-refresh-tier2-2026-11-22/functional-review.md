@@ -82,3 +82,52 @@ to `public/`. Outfit links below are built by `capture-review.mjs` from `review-
 - User checks: waived (standing waiver on all PRs, 22 Nov; recorded in memory `standing-check-waiver`).
 - Merge authorization: tools/docs PR merges on agent pass; the index apply and the GLB upload are separate
   coordinator approvals.
+
+# v10c: batch B and the batch-A mask fixes (on the Light index)
+
+- **Data under test:** `scripts/generated/s12-refresh-tier2-v1/merge-out-v10c/assets.json` (`b164180c…`, compact),
+  built on active `425023bb…` (batch A v8 + Light).
+- **Servers:** 5241 serves live. 5245 serves v10c:
+
+  ```powershell
+  $env:VITE_ANIMATIONS_BASE = "https://fd946744.the-finals-outfit-assets.pages.dev/"; node scripts/body-types/serve-preview.mjs --port 5245 --preview ../../../public/models/s12-bodytype-refresh-v1 --index scripts/generated/s12-refresh-tier2-v1/merge-out-v10c --live-body --overlay public
+  ```
+
+  `--overlay public` serves this worktree's ignored `public/models/s12-refresh-tier2-v1/coverage-s12/`, the new
+  masks.
+- **Outfits:** `review-outfits-batchB.json` (b01 Pioneer top and console + frog shoes + tech pants + kneepads; b02
+  ClothTop + dad jeans + cord belt + cleats + Disco Bot gloves; b03 holster pants + Empress shoes + Anubis mask), and
+  `review-outfits-batchA-emote.json` o01–o06 for the masks.
+
+- [ ] **1. Start:** b01–b03 on 5245, Masculine and Androgynous. Expected: every mesh loads, no console error.
+- [ ] **2. Batch B shapes, idle, including the feet:** Expected: the S12 garments sit as on live; shoes, hems and
+  cuffs do not clip.
+- [ ] **3. Skinning under motion:** Flex, Masculine, b01–b03. Expected: no spikes, tears or stretched triangles.
+- [ ] **4. The changed masks:** o02 (SciFi gloves), o03 (tech crop top, cloud bag), o04 (tech crop top, bandolier),
+  idle. Expected: the skin under each garment stays hidden; at most a sliver changes at creases.
+- [ ] **5. Androgynous:** b01–b03, still pose. Expected: identical to live except where a garment's own skinning
+  changed.
+
+## Recorded result (v10c)
+
+- Tested revision: tools at `036d7b0`; data `merge-out-v10c` (`b164180c…`) on 5245 against live `425023bb…` on
+  5241. 23 Nov 2026. Captures are in `scripts/generated/s12-refresh-tier2-v1/captures-v10/`; diffs are in `*-diff/`
+  and zooms in `zoom/`, all looked at full size.
+  - [x] **1. Start: PASS.** Every shot on 5245 loaded all the outfit's meshes (b01 13, b02 16, b03 14) with 0
+    console errors. The first page load timed out once at 180 s (a cold server) and passed on the retry.
+  - [x] **2. Batch B shapes: PASS.**
+    - TechPants, kneepads, the thigh pouch and the Pioneer upper shift slightly and cleanly.
+    - Frog shoes are unchanged, and Empress shoes change only at the opening.
+    - The dad jeans' rolled hem sits over the pre-S12 cleats as on live, on Masculine and Androgynous.
+    - The cord belt's cords hang straighter in idle (its S12 weights), with no stretching
+      (`zoom/b02m-waist-jeans.png`).
+  - [x] **3. Skinning under motion: PASS.** Flex: ClothTop's raised sleeves and underarm match live by eye
+    (`zoom/b02m-flex-sleeves.png`). The Pioneer upper, console and pants are clean, and b03 is clean.
+  - [x] **4. The changed masks: PASS.** o02–o06, idle, Masculine and Androgynous (`masks-idle-diff/`, 40 shots).
+    - o04 (TechCropTopNoBags, Bandolier) is pixel-identical to live.
+    - o02's hand-framing waist shots are pixel-identical. Elsewhere o02 differs only by speckle on the Phantom
+      mask's translucent visor.
+    - o03 (TechCropTop, CloudBag) shows at most 281 px of speckle at the gauntlet edge.
+    - No skin shows.
+  - [x] **5. Androgynous: PASS.** Still: b01 and b03 are within noise. b02 shows a one-pixel line on the alpha-cut
+    edge of the untouched worn cape; at 3× its outline is the same shape (`zoom/b02-front-cape-x3.png`).
