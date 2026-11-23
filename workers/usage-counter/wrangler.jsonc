@@ -1,0 +1,21 @@
+// usage-counter: the shared, cookie-free event collector (README.md). Deploying it is an account-side step.
+{
+  "name": "usage-counter",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  // No request logs: the collector must never keep an IP address or user agent anywhere.
+  "observability": { "enabled": false },
+  "analytics_engine_datasets": [{ "binding": "EVENTS", "dataset": "usage_events" }],
+  "kv_namespaces": [
+    // Create with `wrangler kv namespace create SALTS` and put the printed id here.
+    { "binding": "SALTS", "id": "REPLACE_WITH_SALTS_NAMESPACE_ID" }
+  ],
+  "ratelimits": [
+    // Requests per client IP: a page load sends 2-4.
+    { "name": "IP_LIMIT", "namespace_id": "4301", "simple": { "limit": 60, "period": 60 } }
+  ],
+  // 12:07 UTC daily: write tomorrow's salt well before midnight.
+  "triggers": { "crons": ["7 12 * * *"] }
+}

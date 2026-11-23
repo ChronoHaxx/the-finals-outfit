@@ -13,6 +13,7 @@ import { playerNumberShareCode } from "../lib/player-number";
 import { ShareIcon } from "./Icons";
 import { useFeature } from "../lib/discovery";
 import { PanelHeader } from "./ViewerPanel";
+import { track } from "../lib/track";
 
 type LinkStyle = ShareStyle | "preview";
 
@@ -132,6 +133,9 @@ export default function ShareBuild() {
         return { url, note: now ? `Link copied · preview shows frame ${now.frame}` : "Link copied · with preview image" };
       }, error => { console.warn("[share preview]", error); return { url: shortNow, note: "Preview unavailable · plain link copied" }; });
     }
+    // Counted once the link exists, copied or shown for copying by hand. "preview" only when the card link came back.
+    void result.then(r => track("share_link_created", { kind: SHARE_PREVIEW_BASE && r.url.startsWith(SHARE_PREVIEW_BASE) ? "preview" : "plain",
+      has_pose: !!now, has_camera: !!viewNow, has_lighting: !!lightingNow }));
     try {
       const copied = await copyText(result.then(r => r.url));
       setCopiedLink(copied);

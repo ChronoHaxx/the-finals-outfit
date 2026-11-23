@@ -8,6 +8,11 @@ import { takeSlots } from "../rig/take-slots";
 import { moveMark, setRange, useVideoRange } from "../lib/video-range";
 import { useFeature } from "../lib/discovery";
 import { TakesSection, type TakesState } from "./VideoTakes";
+import { track, trackError, type EventProps } from "../lib/track";
+
+/** The analytics names for a finished export: the PNG sequence is "png_frames", so it is never read as a screenshot. */
+const exportedAs = (format: VideoFormat, source: "emote" | "take"): EventProps["video_exported"] =>
+  ({ format: format === "png" ? "png_frames" : format, source });
 
 // The capture panel's Video tab (21 Nov 2026): the emote in front as a 60 fps video, rendered in this browser
 // (rig/VideoExport.ts). The job's state lives in the panel's button (useVideoExport), which stays mounted: the panel
@@ -76,7 +81,7 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
   // One job at a time (both draw through the same renderer): render, save the file, say what was saved.
   const run = (work: (ctx: ScreenshotContext, animator: RigAnimator, signal: AbortSignal, when: string) =>
     Promise<{ blob: Blob; extension: string; frames: number; width: number; height: number; sound: string | null; samples: number; name: string }>,
-    quality: VideoQuality, onDone?: () => void) => {
+    quality: VideoQuality, exported: EventProps["video_exported"], onDone?: () => void) => {
     const ctx = context.current;
     if (!ctx || !animator || controller.current) return;
     const abort = new AbortController();
@@ -95,6 +100,7 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
         link.click();
         window.setTimeout(() => URL.revokeObjectURL(url), 5 * 60_000);
         onDone?.();
+        track("video_exported", exported);
         const soundNote = result.sound === "aac" || result.sound === "opus" || result.sound === "pcm" ? ", with sound" : result.sound === "wav" ? ", sound as WAV" : "";
         const grain = result.samples < QUALITY[quality].samples ? " Some frames kept changing while drawn: a little grain." : "";
         setStatus(`Saved ${name}: ${result.width} × ${result.height}, ${result.frames} frames${soundNote}, ${megabytes(result.blob.size)}.${grain}`);
@@ -102,6 +108,7 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
         if (error instanceof DOMException && error.name === "AbortError") setStatus("Cancelled. Nothing was saved.");
         else {
           console.error("[video]", error);
+          trackError();
           setStatus(`Couldn’t make the video: ${error instanceof Error ? error.message : String(error)}`);
         }
       } finally {
@@ -115,7 +122,7 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
   const start: VideoJob["start"] = options => run(async (ctx, rig, signal, when) => {
     const result = await recordVideo(ctx, rig, { ...settings(options), range: options.range }, setProgress, signal, when);
     return { ...result, name: exportName(result.clip, when) };
-  }, options.quality);
+  }, options.quality, exportedAs(options.format, "emote"));
   const startTake: VideoJob["startTake"] = (load, options, onDone) => run(async (ctx, rig, signal, when) => {
     const take = await load();
     if (!take) throw new Error("This take is gone (discarded in another tab?)");
@@ -123,7 +130,7 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
     if (!stage) throw new Error("The 3D view isn’t ready");
     const result = await renderTake(ctx, rig, stage, take, settings(options), setProgress, signal, when);
     return { ...result, name: takeExportName(take.meta, when) };
-  }, options.quality, onDone);
+  }, options.quality, exportedAs(options.format, "take"), onDone);
   return { running: !!progress, progress, status, start, startTake, cancel: () => controller.current?.abort() };
 }
 

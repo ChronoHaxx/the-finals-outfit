@@ -7,6 +7,7 @@ import { deleteCameraView, renameCameraView, saveCameraView, useSavedOutfits, ty
 import { AxesIcon, PencilIcon, TrashIcon } from "./Icons";
 import { useFeature } from "../lib/discovery";
 import { onViewerCanvas, PanelSheet, PanelTrigger, usePanel } from "./ViewerPanel";
+import { track } from "../lib/track";
 
 /**
  * Camera (21 Nov 2026, Shocka's feedback item 3): where the camera is and what it looks at, typed or read as it moves;
@@ -123,7 +124,7 @@ function CameraPanelBody() {
           // Hold the camera on the view being saved (a drag's inertia would otherwise carry it past).
           const now = handle.get();
           handle.set(now);
-          report(saveCameraView(now), name => `Saved “${name}”.`);
+          report(saveCameraView(now), name => { track("camera_view_saved"); return `Saved “${name}”.`; });
         }}
         className="h-8 border border-line px-2 text-xs hover:bg-ink-900 disabled:cursor-not-allowed disabled:text-fg-muted disabled:hover:bg-transparent">
         Save view

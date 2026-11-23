@@ -10,6 +10,7 @@ import { SCENES, sceneById } from "../lib/scenes";
 import { SunIcon, TrashIcon } from "./Icons";
 import { useFeature } from "../lib/discovery";
 import { onViewerCanvas, PanelSheet, PanelTrigger, usePanel } from "./ViewerPanel";
+import { track } from "../lib/track";
 
 /**
  * Lighting and backdrop (11-12 Nov 2026): the whole scene in one panel, a colour picker for everything. Looks (Studio,
@@ -78,12 +79,16 @@ export function LightingPanel() {
           <Section title="Looks">
             <div className="flex flex-wrap gap-1.5">
               {FULL_LOOKS.map(full => (
-                <Chip key={full.id} pressed={name === full.label} onClick={() => apply(full.look())}>{full.label}</Chip>
+                <Chip key={full.id} pressed={name === full.label} onClick={() => {
+                  track("lighting_preset_changed", { kind: "look", preset: full.id });
+                  apply(full.look());
+                }}>{full.label}</Chip>
               ))}
             </div>
             {sun && <div className="flex flex-wrap gap-1.5">
               {SUN_LOOKS.map(s => (
                 <Chip key={s.id} pressed={sunLookActive(s)} onClick={() => {
+                  track("lighting_preset_changed", { kind: "sun", preset: s.id });
                   const next = structuredClone(look);
                   next.lights = next.lights.map(l => l.role === "sun"
                     ? { ...movedLight(l, { bearing: s.bearing, height: s.height }), enabled: true, castShadow: true } : l);
@@ -189,7 +194,7 @@ export function LightingPanel() {
             {looks.length > 0 && <ul className="flex flex-col gap-1">
               {looks.map(saved => (
                 <li key={saved.id} className="flex items-center gap-1.5">
-                  <button type="button" onClick={() => apply(saved.look)} title={`Use ${saved.name}`}
+                  <button type="button" onClick={() => { track("lighting_preset_changed", { kind: "look", preset: "saved" }); apply(saved.look); }} title={`Use ${saved.name}`}
                     className="flex min-w-0 flex-1 flex-col items-start border border-line px-2 py-1 text-left hover:bg-ink-900">
                     <span className="text-xs">{saved.name}</span>
                     <span className="w-full truncate text-[11px] text-fg-muted">{describeLook(saved.look)}</span>
@@ -318,7 +323,7 @@ function BackdropEditor({ backdrop, onChange }: { backdrop: Backdrop; onChange(b
       <div role="radiogroup" aria-label="Scenes" className="flex flex-wrap gap-1.5">
         {SCENES.map(s => (
           <button key={s.id} type="button" role="radio" aria-checked={scene === s.id}
-            onClick={() => scene !== s.id && onChange({ ...s.fallback, scene: s.id })}
+            onClick={() => { if (scene === s.id) return; track("lighting_preset_changed", { kind: "scene", preset: s.id }); onChange({ ...s.fallback, scene: s.id }); }}
             className={`h-8 border px-2 text-xs transition-colors ${scene === s.id ? "border-fg bg-fg text-ink-950" : "border-line hover:bg-ink-900"}`}
             style={scene === s.id ? undefined : { background: backdropCss(s.fallback) }}>
             {s.label}
@@ -334,7 +339,7 @@ function BackdropEditor({ backdrop, onChange }: { backdrop: Backdrop; onChange(b
           const checked = !scene && backdropCss(preset.backdrop) === css;
           return (
             <button key={preset.id} type="button" role="radio" aria-checked={checked} title={preset.label}
-              aria-label={preset.label} onClick={() => onChange(colours({ ...preset.backdrop }))}
+              aria-label={preset.label} onClick={() => { track("lighting_preset_changed", { kind: "backdrop", preset: preset.id }); onChange(colours({ ...preset.backdrop })); }}
               className={`size-7 border transition-shadow ${checked ? "border-fg ring-1 ring-fg" : "border-line hover:border-fg/50"}`}
               style={{ background: backdropCss(preset.backdrop) }} />
           );

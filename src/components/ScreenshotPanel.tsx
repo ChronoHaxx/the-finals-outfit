@@ -10,6 +10,7 @@ import { PanelSheet, PanelTrigger, usePanel } from "./ViewerPanel";
 import { CAPTURE_TILE, VideoTab, useVideoExport } from "./VideoCapture";
 import { formatClock, useTakes } from "./VideoTakes";
 import type { SiteMode } from "../lib/site-mode";
+import { track, trackError } from "../lib/track";
 
 // The output image: GPU memory is bounded by the capture's tile (CAPTURE_TILE), so this budget is for the image itself,
 // its read-back and its PNG encoding (a few bytes per pixel, several copies): ~25 MB per copy at the desktop cap, ~10
@@ -136,9 +137,12 @@ export function ScreenshotPanel({ context, backdrop, ready, animator, mode = "gl
           link.click();
           window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
         }
+        // 1-4; a very large view falls back to a fraction of 1 (screenshotSizes), reported as 1.
+        track("screenshot_exported", { scale: Math.min(4, Math.max(1, Math.round(size.scale))), transparent: choices.transparent });
         setStatus(`${copied ? `Copied ${dimensions} to the clipboard` : `Saved ${dimensions}`}${capture.samples < capture.wantedSamples ? " (some grain: the scene kept changing)" : ""}`);
       } catch (error) {
         console.error("[screenshot]", error);
+        trackError();
         const blocked = error instanceof DOMException && error.name === "NotAllowedError";
         setStatus(output === "copy"
           ? `Couldn’t copy: ${blocked ? "the browser didn’t allow the clipboard. Save PNG works instead." : error instanceof Error ? error.message : String(error)}`

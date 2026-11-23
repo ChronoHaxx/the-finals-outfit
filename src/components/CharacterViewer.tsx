@@ -49,6 +49,7 @@ import { CameraBridge } from "./CameraBridge";
 import { useLightingStore } from "../lib/lighting-store";
 import { backdropCss, backdropIsDark } from "../lib/stage-lighting";
 import { IS_TOUCH, SHADOWS, StageLights, TONE_MAPPING } from "./ViewerStage";
+import { trackError } from "../lib/track";
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
 // (22 Nov 2026) The archetype picker is a preview behind a flag (lib/archetype.ts); with it off every outfit is Medium.
@@ -341,6 +342,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
       .catch((e) => {
         console.error(e);
         if (cancelled) return;
+        trackError();
         // A mesh-gate refusal (bot check, rate limit, daily quota) says what happened and what to do.
         setError(e instanceof MeshGateError ? e.message : "Failed to load the base body model.");
         endOperation(operationId);
@@ -376,6 +378,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
       // Anything the pass's own per-step handlers did not anticipate: surface it so Retry works.
       if (cancelled) return;
       console.error(e);
+      trackError();
       setError("Couldn’t update the preview.");
     }).finally(() => {
       livePasses.current.delete(cancel);

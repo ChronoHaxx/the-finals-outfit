@@ -5,6 +5,8 @@ import { AUTOMATED } from "../lib/automation";
 import { featureUsed, markSeen, markUsed, setTour, tourState, useTour } from "../lib/discovery";
 import { inflate, isControlSized, nearest, place, type Box, type Placement, type Side } from "../lib/discovery-layout";
 import { dismissHint, hintDismissed, type HintId } from "../lib/hints";
+import { reportFeatureExposure, reportFeatureUse } from "../lib/feature-exposure";
+import { track, trackOnce } from "../lib/track";
 import { isTypingTarget, requestDrawerOpen } from "../lib/viewer-chrome";
 import { ArrowIcon, CloseIcon } from "./Icons";
 
@@ -48,18 +50,23 @@ export function nudge(id: HintId): void {
 
 let focusBeforeTour: Element | null = null;
 
-/** Starts the tour: from where it was left ("resume", the default) or from the first stop. */
-export function startTour(from: "resume" | "start" = "resume"): void {
+/** Starts the tour: from where it was left ("resume", the default) or from the first stop. `entry` is only for the
+ *  analytics: the welcome screen or the Guide sheet. */
+export function startTour(from: "resume" | "start" = "resume", entry: "welcome" | "guide" = "guide"): void {
   if (AUTOMATED) return;
   const tour = tourState();
   focusBeforeTour = document.activeElement;
   useLayer.setState({ direction: 1, show: null });
   const resumable = (tour.status === "paused" || tour.status === "running") && tour.stop;
-  setTour({ status: "running", stop: from === "resume" && resumable ? tour.stop : TOUR[0] });
+  const resuming = from === "resume" && !!resumable;
+  track("tour_started", { from: resuming ? "resume" : tour.status === "done" ? "replay" : "start", entry });
+  setTour({ status: "running", stop: resuming ? tour.stop : TOUR[0] });
 }
 
 function endTour(status: "paused" | "done") {
   const tour = tourState();
+  if (status === "done") track("tour_completed");
+  else if (tour.status === "running" && tour.stop) track("tour_skipped", { stop: tour.stop });
   setTour({ status, stop: status === "done" ? null : tour.stop });
   const back = focusBeforeTour;
   focusBeforeTour = null;
@@ -144,20 +151,33 @@ const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)"
 // ---------------------------------------------------------------------------------------------------------------------
 // Using a control counts: a press, a change, or its key.
 
-const KEY_FEATURES: Record<string, FeatureId> = { h: "hide-ui", H: "hide-ui", ",": "timeline", ".": "timeline", "<": "emote-speed", ">": "emote-speed", "?": "guide" };
+const KEY_FEATURES: Record<string, FeatureId> = { h: "hide-ui", H: "hide-ui", ",": "timeline", ".": "timeline", "<": "emote-speed", ">": "emote-speed", "?": "guide",
+  // I and O mark the video range (EmoteTimeline.tsx), as the guide lists them.
+  i: "video-range", I: "video-range", o: "video-range", O: "video-range" };
+
+/** What each nudge suggests doing: using one of these while it shows counts as the hint used (analytics only). */
+const HINT_GOALS: Record<HintId, readonly FeatureId[]> = { "pause-share": ["share"], "emote-keys": ["timeline", "emote-speed"] };
+
+/** A use, for the guide (remembered per browser) and for analytics (this page load only, nothing stored). */
+function used(id: string) {
+  markUsed(id);
+  reportFeatureUse(id);
+  const hint = useLayer.getState().nudge;
+  if (hint && (HINT_GOALS[hint] as readonly string[]).includes(id)) trackOnce(`hint-used:${hint}`, "hint_used", { hint });
+}
 
 function useUsageTracking() {
   useEffect(() => {
     const use = (target: EventTarget | null) => {
       const element = target instanceof Element ? target.closest<HTMLElement>("[data-feature]") : null;
-      if (element?.dataset.feature) markUsed(element.dataset.feature);
+      if (element?.dataset.feature) used(element.dataset.feature);
     };
     const onClick = (event: MouseEvent) => use(event.target);
     const onInput = (event: Event) => use(event.target);
     const onKey = (event: KeyboardEvent) => {
       if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing || isTypingTarget(event.target)) return;
       const id = KEY_FEATURES[event.key];
-      if (id && document.querySelector(selector(id))) markUsed(id);
+      if (id && document.querySelector(selector(id))) used(id);
     };
     document.addEventListener("click", onClick, true);
     document.addEventListener("input", onInput, true);
@@ -402,7 +422,7 @@ const SEEN_MS = 700;
 function FeatureCallout({ target, onHover }: { target: Target; onHover?: (over: boolean) => void }) {
   const feature = featureById(target.id);
   useEffect(() => {
-    const timer = window.setTimeout(() => markSeen(target.id), SEEN_MS);
+    const timer = window.setTimeout(() => { markSeen(target.id); reportFeatureExposure(target.id, "guided"); }, SEEN_MS);
     return () => window.clearTimeout(timer);
   }, [target.id]);
   // While the callout shows, the control's native tooltip steps aside (it would say the same, a second later), and comes
@@ -455,6 +475,7 @@ function useRevealed(id: FeatureId, onMissing: () => void): HTMLElement | null {
         found.scrollIntoView({ block: "nearest", inline: "nearest", behavior: reducedMotion() ? "auto" : "smooth" });
         setElement(found);
         markSeen(id);
+        reportFeatureExposure(id, "guided");
         return;
       }
       const hidden = document.querySelector(selector(id));
@@ -503,6 +524,7 @@ function Nudge({ id }: { id: HintId }) {
   const close = (record = true) => { if (record) dismissHint(id); useLayer.setState({ nudge: null }); };
   useEffect(() => {
     if (!element) { useLayer.setState({ nudge: null }); return; } // not now: it can come again at its next moment
+    trackOnce(`hint-shown:${id}`, "hint_shown", { hint: id });
     // Shown long enough to count as had; gone after a while, counting only time the tab is visible.
     const had = window.setTimeout(() => dismissHint(id), 1500);
     let left = 9000, started = 0, timer = 0;

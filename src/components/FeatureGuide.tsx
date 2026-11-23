@@ -11,6 +11,7 @@ import { useGuideStore } from "../store/useGuideStore";
 import { canShowFeature, Keys, showFeature, startTour } from "./Discovery";
 import { CheckIcon, GuideIcon, ViewfinderIcon } from "./Icons";
 import { PanelHeader } from "./ViewerPanel";
+import { usePrivacyStore } from "../store/usePrivacyStore";
 
 // The Guide (22 Nov 2026; before, "What you can do"): a compact sheet from the top bar's Guide button or the ? key. It
 // does not describe where things are; it points at them. Three parts:
@@ -53,6 +54,7 @@ export default function FeatureGuide() {
 const GUIDE_ID = "feature-guide";
 
 function GuideSheet({ onClose }: { onClose: () => void }) {
+  const showPrivacy = usePrivacyStore(state => state.show);
   const dialog = useRef<HTMLDialogElement>(null);
   const tourButton = useRef<HTMLButtonElement>(null);
   const [closing, setClosing] = useState(false);
@@ -109,7 +111,7 @@ function GuideSheet({ onClose }: { onClose: () => void }) {
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             <div className="border-b border-line p-3">
               <button ref={tourButton} type="button" disabled={stops === 0}
-                onClick={() => close(() => startTour(resumable ? "resume" : "start"))}
+                onClick={() => close(() => startTour(resumable ? "resume" : "start", "guide"))}
                 className="chamfer flex h-12 w-full items-center justify-between gap-3 bg-finals pl-4 pr-5 text-white transition-colors [--cut:12px] hover:bg-finals-hi disabled:bg-ink-700 disabled:text-fg-muted">
                 <span className="text-[22px] font-extrabold uppercase tracking-[0.01em] [font-stretch:62.5%]">{tourLabel}</span>
                 <span className="hud text-white/75">{tourDetail}</span>
@@ -135,6 +137,13 @@ function GuideSheet({ onClose }: { onClose: () => void }) {
                   <ShortcutList key={list.title} title={list.title} shortcuts={list.shortcuts} />)}
               </div>
             </section>
+
+            <div className="border-t border-line p-3">
+              <button type="button" onClick={showPrivacy}
+                className="text-xs text-fg-muted underline underline-offset-2 transition-colors hover:text-fg">
+                Privacy: what this site counts, and how to opt out
+              </button>
+            </div>
           </div>
         </div>
       </div>
