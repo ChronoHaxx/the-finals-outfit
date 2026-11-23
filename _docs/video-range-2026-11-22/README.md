@@ -4,6 +4,9 @@ The coordinator relayed the owner's ask (22 Nov): "in/out markers on the emote t
 times), export only that range, an optional loop count, honour the speed setting; the default stays the whole emote."
 Branch `claude/video-range-export-2026-11-22` off main 8a03d0e (the MOV export, #81). Checklist: `functional-checklist.md`.
 
+**Status: merged.** PR #82 (head c14c7d6) merged into main as 3f954d3 on 22 Nov 2026, 23:28 UTC, after the agent
+checklist PASS under the owner's waiver.
+
 ## What a person sees
 
 - **Timeline (computer):** a **Video range** button (a bracket icon) beside Loop.

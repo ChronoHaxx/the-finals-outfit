@@ -12,6 +12,9 @@ camera, switch emotes, drag lights, scrub). Recommended design: 'record then ren
 
 Branch `claude/video-takes-2026-11-22` off main 3f954d3 (video range, #82); main 8333137 merged in on 23 Nov. Checklist: `functional-checklist.md`.
 
+**Status: merged.** PR #88 (head b5e0037) merged into main as 13a6694 on 23 Nov 2026, 09:44 UTC, by the coordinator,
+after the agent checklist PASS under the owner's waiver and green CI (build, compatibility).
+
 ## What a person sees
 
 - Capture, then **Video**, then **Take** (beside **Emote**, today's export).

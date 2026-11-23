@@ -3,6 +3,9 @@
 Shocka, the main user, asked for a transparent MOV to edit with. Branch `claude/mov-qtrle-export-2026-11-22` off main
 1691441. Checklist: `functional-checklist.md`. Optional editor check for the owner: the end of this file.
 
+**Status: merged.** PR #81 (head c7634ba) merged into main as 8a03d0e on 22 Nov 2026, 22:55 UTC, after the agent
+checklist PASS under the owner's waiver. The owner's optional editor check (end of this file) has not been reported.
+
 ## The route
 
 A 22 Nov review set the route:
