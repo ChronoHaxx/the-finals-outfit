@@ -42,7 +42,9 @@ const BODY_TYPES = ["masculine", "feminine", "androgynous"]
 // back and sideleft (S12 item refresh tier 1, 12 Nov 2026): both sides and both hands.
 const ALL_CAMERAS = { front: "0,1.25,1.9,0,1.25,0", side: "1.9,1.25,0,0,1.25,0", full: "0,0.95,4.3,0,0.95,0",
   waist: "0,1.0,1.5,0,1.0,0", waistback: "0,1.0,-1.5,0,1.0,0", back: "0,1.25,-1.9,0,1.25,0",
-  sideleft: "-1.9,1.25,0,0,1.25,0" };
+  sideleft: "-1.9,1.25,0,0,1.25,0",
+  // Feet cameras (tier 2, 23 Nov 2026): the others frame head to thigh, so footwear was never in view.
+  feet: "0,0.45,1.3,0,0.2,0", feetback: "0,0.45,-1.3,0,0.2,0", feetside: "-1.3,0.45,0,0,0.2,0" };
 const CAMERAS = Object.fromEntries(Object.entries(ALL_CAMERAS)
   .filter(([name]) => (option("--cameras") ?? "front,side,full").split(",").includes(name)));
 // --query "anim=outfit-idle&animTime=6&sway=0": extra viewer switches for every shot. Main plays the outfit idle by

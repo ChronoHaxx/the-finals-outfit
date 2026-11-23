@@ -1,0 +1,45 @@
+{
+ "o01-rainjacket-combat": {
+  "face": "head-face-01-base",
+  "upperBody": "streetwear-closedrainjacket-windbreaker",
+  "lowerBody": "pirate-scallywagpants-cotton",
+  "feet": "military-sniperboots-leather",
+  "hands": "cowboy-handcloth-bandage",
+  "upperBack": "streetwear-tacticalbandolier-cotton",
+  "headwear": "racing-helmet-carbonfiber"
+ },
+ "o06-jester": {
+  "face": "head-face-01-base",
+  "upperBody": "medieval-jesterjacket-cotton-redblue",
+  "lowerBody": "medieval-jesterpants-cotton-black",
+  "feet": "medieval-jestershoes-leather-blackblue",
+  "wrist": "historic-simplebracelet-metal"
+ },
+ "o07-marine-viking": {
+  "face": "head-face-01-base",
+  "upperBody": "military-marinevest-plastic-black",
+  "lowerBody": "historic-vikingpants-linen-black",
+  "feet": "historic-vikingboots-leather-black",
+  "upperBack": "military-bulletbandolier-metal",
+  "hands": "fromtencent-asianspiritgloves-leather"
+ },
+ "o10-sentinel-emperor": {
+  "face": "head-face-01-base",
+  "upperBody": "actionhero-sentineltop-mesh",
+  "lowerBody": "historic-easternemperorpants-linen-black",
+  "feet": "historic-easternemperorshoes-linen-black",
+  "facewear": "historic-empressfacemask-dark"
+ },
+ "x12-pres12tee-over-s12pants": {
+  "face": "head-face-01-base",
+  "upperBody": "casual-basictshirt-cotton-black",
+  "lowerBody": "historic-vikingpants-linen-white",
+  "feet": "halloween-vampireboots-leather"
+ },
+ "x13-s12jacket-over-pres12jeans": {
+  "face": "head-face-01-base",
+  "upperBody": "streetwear-cutejacket-canvas-blackwhite",
+  "lowerBody": "casual-loosejeans-denim-darkblue",
+  "feet": "casual-tallsneakers-canvas"
+ }
+}

@@ -45,8 +45,13 @@ const previewRoutes = previewDir ? new Map([
 ]) : new Map();
 for (const file of previewRoutes.values()) if (!existsSync(file)) throw new Error(`Missing preview file ${file}`);
 
+// --overlay <dir> (tier 2, 22 Nov 2026): a folder laid out like public/ (this worktree's own, ignored public/). A
+// /models/ request is answered from it when the file exists there, so preview indexes and derived masks built in a
+// worktree are served without writing the root checkout's public/.
+const overlayDir = option("--overlay") ? path.resolve(option("--overlay")) : undefined;
+if (overlayDir && !existsSync(path.join(overlayDir, "models"))) throw new Error(`--overlay needs ${overlayDir}/models`);
 const inMemory = [["/models/", publicDir], ["/src/data/", root]];
-const types = { ".json": "application/json", ".glb": "model/gltf-binary" };
+const types = { ".json": "application/json", ".glb": "model/gltf-binary", ".png": "image/png" };
 const servePlugin = {
   name: "body-type-preview-serving",
   configureServer(server) {
@@ -54,6 +59,12 @@ const servePlugin = {
       const [pathname, query = ""] = (req.url ?? "").split("?");
       if ((req.method !== "GET" && req.method !== "HEAD") || /(^|&)import(=|&|$)/.test(query)) return next();
       let file = previewRoutes.get(pathname);
+      if (!file && overlayDir && pathname.startsWith("/models/")) {
+        try {
+          const candidate = path.join(overlayDir, decodeURIComponent(pathname));
+          if (candidate.startsWith(overlayDir + path.sep) && existsSync(candidate)) file = candidate;
+        } catch { /* not an overlay path */ }
+      }
       if (!file) {
         const base = inMemory.find(([prefix]) => pathname.startsWith(prefix))?.[1];
         if (!base || !pathname.endsWith(".json")) return next();
@@ -70,6 +81,16 @@ const servePlugin = {
   },
 };
 
+// The nearest node_modules upward: a junction in the worktree, or (22 Nov 2026, tier 2) none, in which case Node finds
+// the root checkout's, since worktrees are nested inside it. A junction is avoided where possible: removing a worktree
+// with one inside deleted shared files on 21 Nov.
+const nodeModules = (() => {
+  for (let dir = root; ; dir = path.dirname(dir)) {
+    if (existsSync(path.join(dir, "node_modules"))) return realpathSync(path.join(dir, "node_modules"));
+    if (path.dirname(dir) === dir) throw new Error("No node_modules above " + root);
+  }
+})();
+
 // The project's own vite.config.ts (catalog virtual module, routes define, React, Tailwind) plus this server's
 // middleware. configLoader "runner" evaluates the config in memory, where the default "bundle" loader would write a
 // temporary file under node_modules/.vite-temp.
@@ -79,7 +100,7 @@ const server = await createServer({
   plugins: [servePlugin],
   server: { port, strictPort: true, host: "127.0.0.1",
     // node_modules is a junction, so Vite sees package files (the UI font) at the release worktree's real path.
-    fs: { allow: [root, realpathSync(path.join(root, "node_modules"))] },
+    fs: { allow: [root, nodeModules] },
     // Vite full-reloads the page on any watched change, even a .py edit (6 Nov 2026: it killed a capture run mid-shot).
     watch: { ignored: ["**/_docs/**", "**/scripts/generated/**", "**/scripts/body-types/**", "**/*.py"] } },
 });
