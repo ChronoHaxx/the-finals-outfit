@@ -71,9 +71,11 @@ export function useTakes(animator: RigAnimator | null, mode: SiteMode, onStopped
     if (takeSlots.recorder === done) takeSlots.recorder = null;
     if (done.saveError) memory.current.set(done.id, done.data());
     setRecording(null);
-    setNotice(done.stopReason === "limit" ? `Stopped at ${formatClock(MAX_TAKE_SECONDS)}, the longest a take can be.`
+    // A plain Stop says nothing new: what was said when it started (a take that made room) stays.
+    const said = done.stopReason === "limit" ? `Stopped at ${formatClock(MAX_TAKE_SECONDS)}, the longest a take can be.`
       : done.stopReason === "hidden" ? "Stopped: the tab was hidden. The take so far is saved."
-      : done.stopReason === "gone" ? "This take was discarded in another tab." : done.saveError ? done.saveError : "");
+      : done.stopReason === "gone" ? "This take was discarded in another tab." : done.saveError;
+    if (said) setNotice(said);
     changed();
     stoppedRef.current?.();
   }, [changed]);
