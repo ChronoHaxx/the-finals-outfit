@@ -10,8 +10,9 @@
 // - one skeleton per class, the Light and Heavy ones exact uniform scales of Medium (bone translations x0.85 / x1.15,
 //   rotations identical);
 // - the shape comes from each mesh's class morph (light_* / heavy_*), which cannot be derived from the Medium one;
-// - almost every Medium part names its own Light and Heavy mesh (Customization.Archetype.* TagOverrides), and the
-//   head is shared, so a Light contestant has a smaller body under a full-size head.
+// - almost every Medium part names its own Light and Heavy mesh (Customization.Archetype.* TagOverrides);
+// - the head is shared, and on Light and Heavy it is the Medium head scaled with the class, morphs included (measured
+//   23 Nov 2026: the neck rim fits to 0.1 cm scaled, against 1.5-2 cm at full size; src/rig/Archetype.ts).
 //
 // An outfit without an archetype (every link and saved outfit made before 22 Nov 2026) is Medium, which is what the
 // site always showed.

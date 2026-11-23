@@ -133,14 +133,34 @@ class EveryClassMeshAccounted(unittest.TestCase):
         (items / 'DA_Test.json').write_text(json.dumps({'properties': {'VisualParts': parts}}), encoding='utf-8')
         self.named = {t for p in parts for o in p['TagOverrides'] for t in [o['ReplacementSkeletalMesh']['AssetPathName']]}
 
+        self.models, self.staged, self.tmp = models, staged, tmp
         self.out = tmp / 'out'
+        self.printed, self.report, self.result = self.run_builder(self.out)
+
+    def run_builder(self, out):
         printed = io.StringIO()
-        with mock.patch.object(sys, 'argv', ['build', '--models', str(models), '--out', str(self.out)]), \
+        with mock.patch.object(sys, 'argv', ['build', '--models', str(self.models), '--out', str(out)]), \
                 contextlib.redirect_stdout(printed):
             tool.main()
-        self.printed = printed.getvalue()
-        self.report = json.loads((self.out / 'report.json').read_text(encoding='utf-8'))
-        self.result = json.loads((self.out / 'assets.json').read_text(encoding='utf-8'))
+        return (printed.getvalue(), json.loads((out / 'report.json').read_text(encoding='utf-8')),
+                json.loads((out / 'assets.json').read_text(encoding='utf-8')))
+
+    def apply_and_add_late_mesh(self):
+        """Make the first run's index the active one (the apply), then stage one more Medium/Light pair."""
+        index = self.models / 'reconstructed-assemblies-v1'
+        active = dict(self.result)
+        active['meshes'] = dict(active['meshes'])
+        active['meshes'][path('SK_Late_M')] = {'kind': 'skeletal', 'url': '../live/SK_Late_M.glb',
+                                               'sha256': write_glb(self.staged / 'SK_Late_M.glb', 'SK_Late_M'),
+                                               'slots': [{'slot': 'Main'}]}
+        write_glb(self.staged / 'SK_Late_L.glb', 'SK_Late_L', scale=SCALES['L'])
+        (index / 'assets.json').write_text(json.dumps(active), encoding='utf-8')
+        late = {'SkeletalMesh': {'AssetPathName': path('SK_Late_M')}, 'TagOverrides': [
+            {'MatchingTags': ['Customization.Archetype.Light'], 'bOverrideMesh': True,
+             'ReplacementSkeletalMesh': {'AssetPathName': path('SK_Late_L')}}]}
+        items = self.models / 'reconstructed-assembly-v2' / 'items'
+        (items / 'DA_Late.json').write_text(json.dumps({'properties': {'VisualParts': [late]}}), encoding='utf-8')
+        return active
 
     def reasons(self, name):
         return [r['reason'] for r in self.report['skipped'][path(name)]['reasons']]
@@ -189,6 +209,32 @@ class EveryClassMeshAccounted(unittest.TestCase):
         self.assertIn([path('SK_Repointed_L'), 'light', 'medium sibling repointed', path('SK_Repointed_M')], rows)
         self.assertIn(f'{len(self.report["skipped"])} skipped;', self.printed)
         self.assertIn('skipped light: 1 medium sibling repointed', self.printed)
+
+    def test_a_later_run_on_the_applied_index_keeps_the_class_and_adds_new_meshes(self):
+        # 23 Nov 2026: on the index with Light applied, SK_Body_L is "already in the active index"; the class must
+        # still build (re-proven against the staged Medium body), or every new Light mesh would drop with it.
+        active = self.apply_and_add_late_mesh()
+        _, report, result = self.run_builder(self.tmp / 'out2')
+        self.assertEqual(report['added'], {'light': [path('SK_Late_L')], 'heavy': []})
+        self.assertTrue(report['classes']['light']['alreadyApplied'])
+        self.assertEqual(result['archetypes'], self.result['archetypes'])
+        self.assertEqual(self.reasons_in(report, 'SK_Good_L'), ['already in the active index'])
+        for key, value in active['meshes'].items():
+            self.assertEqual(result['meshes'][key], value)
+
+    def test_a_repointed_medium_body_drops_new_meshes_but_keeps_the_applied_record(self):
+        active = self.apply_and_add_late_mesh()
+        active['meshes'][path('SK_Body_M')] = dict(active['meshes'][path('SK_Body_M')], sha256='s12-body')
+        (self.models / 'reconstructed-assemblies-v1' / 'assets.json').write_text(json.dumps(active), encoding='utf-8')
+        _, report, result = self.run_builder(self.tmp / 'out3')
+        self.assertEqual(report['added'], {'light': [], 'heavy': []})
+        self.assertEqual(report['classes']['light'], {'refused': 'class body not proven'})
+        self.assertEqual(self.reasons_in(report, 'SK_Late_L'), ['class body not proven'])
+        self.assertEqual(result['archetypes'], self.result['archetypes'])
+
+    @staticmethod
+    def reasons_in(report, name):
+        return [r['reason'] for r in report['skipped'][path(name)]['reasons']]
 
     def test_the_active_index_is_only_added_to(self):
         for key, value in self.assets['meshes'].items():

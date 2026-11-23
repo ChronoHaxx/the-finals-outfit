@@ -173,7 +173,8 @@ re-plans on whatever index is active. Read-only result:
 - **15 Light rows dropped from the 23 Nov 78.** Batch A repointed their Medium sibling to `s12-bodytype-refresh-v1`.
   Proof 1 (same build) then fails: the staged `_L` was read beside the S11 Medium, not the S12 one.
   - These 15 are **waiting for an S12-matched `_L` read**. Like Heavy, that needs a fresh read from the 17 Nov
-    containers, which waits on the usmap for that build.
+    containers, which waits on the usmap for that build. Four of them could rejoin sooner under the proposed proof 1′
+    in [LIGHT-BULK-PLAN.md](LIGHT-BULK-PLAN.md) ("Early win"), if the coordinator approves it.
   - The 15: `Casual_Bangles`, `Casual_LowWedgeHeels`, `Cowboy_HandCloth`, `CrossPromo_NRHarness`,
     `CrossPromo_NRSuitBelts`, `FromTencent_AsianSpiritBoots`, `Historic_SimpleBracelet`,
     `Military_PantsWithHolsterPouch`, `Military_WaistPouches`, `Pirate_ScallywagPants`, `Space_AstroPilotGloves`,
@@ -228,4 +229,5 @@ production build.
   items are left off on that class and named, like a missing mesh. Applying them needs the offset semantics: which frame
   they act in, and whether they compose before or after the socket offset.
 
-See [APPLY.md](APPLY.md) for the index apply and [BULK-EXTRACTION.md](BULK-EXTRACTION.md) for the rest.
+See [APPLY.md](APPLY.md) for the index apply and [LIGHT-BULK-PLAN.md](LIGHT-BULK-PLAN.md) for the rest of Light (row
+list, order, batches, commands; ready to start once a patched usmap passes its proof).

@@ -33,7 +33,9 @@ the 22 Nov census shows is impossible (_docs/archetypes-2026-11-22/README.md).
 
 The class bodies (SK_Body_L/H) take the same proofs plus a skeleton proof: every bone translation is the class scale of
 Medium's and every rotation equal. Their skin-material bounds origin is the class scale of the Medium body's (a pure
-scale moves the bounds centre by exactly that factor).
+scale moves the bounds centre by exactly that factor). A class the active index already carries (an earlier apply) is
+re-proven the same way from its staged body, which must be the bytes the index serves beside a Medium body that still
+matches; its `archetypes` record is kept either way, so a later run only ever adds.
 
 With --proven (scripts/archetypes/prove-nov17.py's proof.json), a sixth proof: the class mesh's package is byte-identical
 in today's game containers (rewritten 17 Nov 2026), since the staged meshes were read before that update.
@@ -324,20 +326,35 @@ def main():
                        if staged_sha(f) == assets["meshes"][medium_body]["sha256"]]
     for cls, (tag, scale) in CLASSES.items():
         target = swaps[cls].get(medium_body)
-        if not target or target not in added or not medium_body_glb:
+        applied = (assets.get("archetypes") or {}).get(cls)
+        body_file = None
+        if target in added:
+            body_file = models / report["meshes"][target]["file"]
+        elif target in assets["meshes"] and applied and applied.get("body") == target and medium_body_glb:
+            # Applied earlier (23 Nov 2026: Light). Re-prove it against today's Medium body, so that a later run on the
+            # applied index keeps the class (its new meshes need it) only while the Medium body is still the one it was
+            # proven against: the staged class body must be the bytes the index serves, beside the matching Medium.
+            staged_body = medium_body_glb[0].parent / (target.rsplit(".", 1)[-1] + ".glb")
+            if staged_body.exists() and staged_sha(staged_body) == assets["meshes"][target].get("sha256"):
+                body_file = staged_body
+        if not target or body_file is None or not medium_body_glb:
             report["classes"][cls] = {"refused": "class body not proven"}
             continue
         mj, _ = glb(medium_body_glb[0])
-        cj, _ = glb(models / report["meshes"][target]["file"])
+        cj, _ = glb(body_file)
         measured, residual, rotation = skeleton_scale(mj, cj, scale)
         # 1e-5 m (a hundredth of a millimetre) and 1e-5 per quaternion component: float32 rounding, nothing more.
         if abs(measured - scale) > 1e-5 or residual > 1e-5 or rotation > 1e-5:
             report["classes"][cls] = {"refused": f"skeleton is not a x{scale} scale ({measured}, residual {residual} m, rot {rotation})"}
             continue
-        archetypes[cls] = {"body": target, "skeletonScale": scale,
-                           "boundsOrigin": [round(v * scale, 6) for v in medium_origin]}
+        record = {"body": target, "skeletonScale": scale, "boundsOrigin": [round(v * scale, 6) for v in medium_origin]}
+        if applied and target not in added and applied != record:
+            report["classes"][cls] = {"refused": f"the applied record {applied} is not today's proof {record}"}
+            continue
+        archetypes[cls] = record
         report["classes"][cls] = {"body": target, "skeletonScale": scale, "measuredScale": measured,
-                                  "translationResidualMaxM": residual, "rotationMaxDiff": rotation}
+                                  "translationResidualMaxM": residual, "rotationMaxDiff": rotation,
+                                  "alreadyApplied": target not in added}
 
     # A class without a proven body cannot be built, so none of its meshes join (with neither, the index is unchanged).
     for k in sorted(added):
@@ -367,7 +384,8 @@ def main():
                                    for k in [*assets.get("itemBodyMasks", {}),
                                              *sorted(set(item_masks) - set(assets.get("itemBodyMasks", {})))]}
     if archetypes:
-        result["archetypes"] = archetypes
+        # Additive: a class applied earlier keeps its record even when this run cannot re-prove it.
+        result["archetypes"] = {**(assets.get("archetypes") or {}), **archetypes}
     (out / "assets.json").write_text(json.dumps(result, separators=(",", ":")), encoding="utf-8")
     (out / "skin-pairs.json").write_text(json.dumps(skin_pairs, separators=(",", ":")), encoding="utf-8")
     report["added"] = {cls: sorted(k for k, v in report["meshes"].items() if v["class"] == cls and k in added) for cls in CLASSES}

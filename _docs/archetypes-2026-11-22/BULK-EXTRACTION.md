@@ -1,5 +1,8 @@
 # Bulk Light/Heavy extraction plan (draft, 22 Nov 2026)
 
+**Superseded on 23 Nov** by [LIGHT-BULK-PLAN.md](LIGHT-BULK-PLAN.md): row list, order, batches and commands for Light,
+with Heavy siblings read in the same runs. The open items below still stand.
+
 **Need:** the definitions name about 997 Light and 996 Heavy class meshes.
 - 191 are staged in S11 (18 Oct). 173 of those pass the index proofs; the 17 Nov proof is pending.
 - 810 are in the June dump, which is a different build and needs the user's build-mixing sign-off.
