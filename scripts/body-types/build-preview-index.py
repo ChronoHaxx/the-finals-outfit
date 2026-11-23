@@ -82,18 +82,93 @@ def body_type_meshes(census_json, index_meshes):
     return {source for source, row in census.items() if BODY_TYPE_MORPHS & set(row.get('morphs', []))}
 
 
-def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir):
+def glb_slots(path):
+    """Source slot names of a GLB's materials (gzip-wrapped or plain). A file that is not a GLB has none."""
+    import gzip
+    import struct
+    b = Path(path).read_bytes()
+    if b[:2] == b'\x1f\x8b':
+        b = gzip.decompress(b)
+    if len(b) < 20 or struct.unpack('<I', b[:4])[0] != 0x46546C67:
+        return set()
+    doc = json.loads(b[20:20 + struct.unpack('<I', b[12:16])[0]])
+    return {(m.get('extras', {}).get('sourceSlot') or {}).get('MaterialSlotName') for m in doc.get('materials', [])} - {None}
+
+
+def carries_masks(assets, source):
+    """Does the index name geometry-derived masks for this mesh (a body mask, or an item mask naming it)?"""
+    entry = assets['meshes'][source]
+    return bool(entry.get('bodyMaskUrl') or entry.get('bodyMaskUvTiles')) or any(
+        source in meshes for meshes in assets.get('itemBodyMasks', {}).values())
+
+
+def named_masks(assets, source):
+    """Every mask the index names for this mesh, as (kind, url): its body mask and each item mask naming it."""
+    entry = assets['meshes'][source]
+    masks = {('body', entry['bodyMaskUrl'])} if entry.get('bodyMaskUrl') else set()
+    return masks | {('item', meshes[source]['url']) for meshes in assets.get('itemBodyMasks', {}).values()
+                    if source in meshes}
+
+
+def uncovered_masks(assets, source, row):
+    """Masks the index names now that the mask proof did not judge (the index may have moved since, 23 Nov 2026)."""
+    return named_masks(assets, source) - {(m['kind'], m['url']) for m in row.get('masks', [])}
+
+
+def load_mask_proof(mask_json):
+    """{name: row} from one or more mask-proof.py outputs (comma-separated)."""
+    rows = {}
+    for f in mask_json.split(','):
+        for name, row in json.loads(Path(f).read_text(encoding='utf-8'))['meshes'].items():
+            if name in rows:
+                raise SystemExit(f'{name}: in two mask proofs')
+            rows[name] = row
+    return rows
+
+
+def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir, surface_json=None,
+                    admit_rework=None, mask_rows=None, ship_masks=None):
     """{source: admission} from skin-by-name-proof.py output (S12 item refresh tier 1, 12 Nov 2026).
 
     Every admissible ("re-encoded") mesh is admitted, or only those named in admit_only. A mesh of any other tier-1
     class (weights, normals, morph set, extension bones) is admitted only when named in admit_reviewed, after a review;
-    a surface or loader refusal never is. The live GLB and the rebuild must still be the files the skin proof judged."""
+    a surface or loader refusal never is. The live GLB and the rebuild must still be the files the skin proof judged.
+
+    With surface_json (surface-match-proof.py output, tier 2, 22 Nov 2026), a "surface differs" mesh the surface proof
+    judged "permuted" (the same triangles in another vertex order, nothing else changed) is admissible too, and a
+    permuted mesh with tier-1 kinds (permuted+weights, ...) only by name after review. A reworked surface never is:
+    its geometry-derived data (body mask, item masks) would be stale."""
     if not admit_json:
-        if admit_only or admit_reviewed:
-            raise SystemExit('--admit-only/--admit-reviewed need --admit SKIN_PROOF_JSON')
+        if admit_only or admit_reviewed or surface_json or admit_rework:
+            raise SystemExit('--admit-only/--admit-reviewed/--admit-surface/--admit-rework need --admit SKIN_PROOF_JSON')
         return {}
+    if admit_rework and not surface_json:
+        raise SystemExit('--admit-rework needs --admit-surface SURFACE_PROOF_JSON')
     skin = json.loads(Path(admit_json).read_text(encoding='utf-8'))['meshes']
-    reviewed = set(admit_reviewed or [])
+    surface = json.loads(Path(surface_json).read_text(encoding='utf-8'))['meshes'] if surface_json else {}
+    for name, r in surface.items():
+        s = skin.get(name)
+        if s is None or s['class'] != 'surface differs':
+            raise SystemExit(f'{name}: the surface proof judged it, but the skin proof does not call it "surface differs"')
+        if s['liveSha256'] != r['liveSha256'] or s['s12Sha256'] != r['s12Sha256'] or s['source'] != r['source']:
+            raise SystemExit(f'{name}: the surface proof and the skin proof judged different files')
+        if r['class'].startswith('permuted'):
+            # The surface proof's verdict replaces "surface differs"; the rest of the row (hashes, source) is the same.
+            skin[name] = {**s, **{k: v for k, v in r.items() if k not in ('notPermuted',)}, 'surfaceProof': True}
+    for name in sorted(admit_rework or []):
+        # A reworked surface whose live textures still fit (surface proof "same UVs") and that carries NO geometry-derived
+        # data: no per-mesh body mask and no item mask naming it. Then only the GLB changes, as for a permuted mesh, and
+        # the change is reviewed by eye. Anything with a mask needs the masks re-derived first (batch B).
+        r = surface.get(name)
+        if r is None or not r['class'].startswith('reworked: same UVs'):
+            raise SystemExit(f'{name}: --admit-rework needs a surface-proof "reworked: same UVs" row, not '
+                             f'{r["class"] if r else "none"}')
+        if carries_masks(assets, r['source']) and mask_rows is None:
+            # Without a mask proof, anything with a mask needs the masks re-derived first (batch B).
+            raise SystemExit(f'{name}: it carries a body mask or an item mask; re-derive them before admitting it')
+        skin[name] = {**skin[name], **{k: v for k, v in r.items() if k not in ('notPermuted',)}, 'surfaceProof': True,
+                      'class': r['class'], 'admissible': False}
+    reviewed = set(admit_reviewed or []) | set(admit_rework or [])
     names = (set(admit_only) if admit_only is not None
              else {n for n, r in skin.items() if r.get('admissible')}) | reviewed
     admitted = {}
@@ -101,8 +176,9 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
         r = skin.get(name)
         if r is None:
             raise SystemExit(f'{name}: not in the skin proof')
-        if r['class'] in ('surface differs', 'loader refuses'):
-            raise SystemExit(f'{name}: {r["class"]}; it is not a tier-1 swap')
+        if r['class'] in ('surface differs', 'loader refuses') or (r['class'].startswith('reworked')
+                                                                  and name not in set(admit_rework or [])):
+            raise SystemExit(f'{name}: {r["class"]}; it is not a GLB swap')
         if not r.get('admissible') and name not in reviewed:
             raise SystemExit(f'{name} is "{r["class"]}": admit it only by name after review (--admit-reviewed)')
         if proof.get(name, {}).get('status') != 'refused' or proof[name]['source'] != r['source']:
@@ -112,15 +188,74 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
             raise SystemExit(f'{name}: the live mesh changed since the skin proof')
         if hashlib.sha256((Path(rebuilt_dir) / f'{name}.glb').read_bytes()).hexdigest() != r['s12Sha256']:
             raise SystemExit(f'{name}: the rebuild changed since the skin proof')
+        unbound = glb_slots(Path(rebuilt_dir) / f'{name}.glb') - {s.get('slot') for s in entry.get('slots', [])}
+        if unbound:
+            # The viewer binds materials by slot name and throws on a slot the index does not list (22 Nov 2026,
+            # SK_Military_CombatPants_M's new "CombatPants_Cloth").
+            raise SystemExit(f'{name}: the rebuild has material slots the index does not bind: {sorted(unbound)}')
+        if mask_rows is not None and not r.get('admissible') and carries_masks(assets, r['source']):
+            # Tier 2, 23 Nov 2026: changed weights, normals or surface can change a mask derived in the idle pose. With a
+            # mask proof, a reviewed mesh that carries masks is admitted only when every one of them regenerates
+            # unchanged from the S12 mesh, or only its body mask changed and the S12 one ships (--ship-s12-masks).
+            m = mask_rows.get(name)
+            if m is None or m['source'] != r['source']:
+                raise SystemExit(f'{name}: it carries masks and the mask proof does not judge it')
+            if uncovered_masks(assets, r['source'], m):
+                raise SystemExit(f'{name}: the index names masks the mask proof did not judge: '
+                                 f'{sorted(uncovered_masks(assets, r["source"], m))}')
+            if (m['liveSha256'], m['s12Sha256']) != (r['liveSha256'], r['s12Sha256']):
+                raise SystemExit(f'{name}: the mask proof regenerated other files than the skin proof judged')
+            if not (m['status'] == 'unchanged' or (m['status'] == 'body-changed' and name in (ship_masks or {}))):
+                raise SystemExit(f"{name}: mask proof says {m['status']}: {'; '.join(m.get('reasons', []))}")
         admitted[r['source']] = {'name': name, 'class': r['class'], 'by': 'proof' if r.get('admissible') else 'review',
+                                 **({'proof': 'surface-match'} if r.get('surfaceProof') else {}),
+                                 **({'masks': mask_rows[name]['status']} if mask_rows and name in mask_rows
+                                    and carries_masks(assets, r['source']) else {}),
                                  'liveSha256': r['liveSha256'], 's12Sha256': r['s12Sha256'],
                                  'morphsChanged': r.get('morphsChanged', {}),
                                  **{k: r[k] for k in ('morphsAdded', 'morphsRemoved') if k in r}}
     return admitted
 
 
+def stale_packages(package_json, proof):
+    """Sources whose Season 12 package is not proven byte-identical on the installed build (tier 2, 23 Nov 2026).
+
+    The rebuilds come from the 6 Nov read of the 12.00 build; the game updated on 17 Nov, and a fresh read needs a
+    mapping for the new build. A package whose bytes are unchanged (`package-proof-*.json`, from the probe's
+    `package-hashes` mode against the 6 Nov `assets` run) still describes today's game. Any other mesh, a mesh missing
+    from the proof included, is never repointed (coordinator, 22 Nov). For the item rule it counts as Season 12 only
+    when its live file already carries the 12.00 body-type shape (see `main`)."""
+    rows = json.loads(Path(package_json).read_text(encoding='utf-8'))['all']
+    identical = {row['mesh'] for row in rows if row.get('identical')}
+    return {row['source'] for name, row in proof.items() if name not in identical}
+
+
+def settle(proven, kept, unchanged, users, body):
+    """The item rule to its fixpoint: (effective S12 set, held {source: reason}).
+
+    A proven mesh is held when an item that shows it also shows a mesh outside the effective set; a held mesh with
+    changed morphs leaves the effective set, which can hold others."""
+    effective = set(proven) | kept
+    while True:
+        held = {}
+        for source in sorted(proven - {body}):
+            # Only OTHER meshes count: once held, a mesh is itself pre-S12, and counting it would make every item that
+            # shows it "mixed" and name those as the reason (6 Nov 2026, loose jeans). The swap set is the same either
+            # way, since the effective set only shrinks; the recorded reasons are the root ones.
+            mixed = sorted({item for item, meshes in users.get(source, [])
+                            if any(m not in effective and m != body and m != source for m in meshes)})
+            if mixed:
+                held[source] = {'reason': 'an item that shows it also shows a mesh the preview keeps pre-S12',
+                                'items': mixed[:20], 'itemCount': len(mixed)}
+        settled = (proven - {s for s in held if s not in unchanged}) | kept
+        if settled == effective:
+            return effective, held
+        effective = settled
+
+
 def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None, census_json=None, changed_only=False,
-         admit_json=None, admit_only=None, admit_reviewed=None):
+         admit_json=None, admit_only=None, admit_reviewed=None, surface_json=None, admit_rework=None, package_json=None,
+         mask_json=None, ship_masks=None):
     out = Path(out_json)
     if out.exists():
         raise SystemExit(f'Preserve existing {out}')
@@ -128,9 +263,16 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     assets = json.loads(active.read_text(encoding='utf-8'))
     proof = json.loads(Path(proof_json).read_text(encoding='utf-8'))
     served_from = active.parent
-    swapped, held = {}, {}
-    admitted = admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir)
-    proven = {row['source'] for row in proof.values() if row.get('status') == 'morph-only'} | set(admitted)
+    swapped, held, mask_repoints = {}, {}, {}
+    mask_rows = load_mask_proof(mask_json) if mask_json else None
+    ship_masks = dict(ship_masks or {})
+    if ship_masks and mask_rows is None:
+        raise SystemExit('--ship-s12-masks needs --mask-proof')
+    admitted = admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir,
+                               surface_json, admit_rework, mask_rows, ship_masks)
+    stale = stale_packages(package_json, proof) if package_json else set()
+    admitted = {source: row for source, row in admitted.items() if source not in stale}
+    proven = ({row['source'] for row in proof.values() if row.get('status') == 'morph-only'} | set(admitted)) - stale
     body = assets.get('attachmentBody', {}).get('source')
     # Item consistency (review-v1 short dress, 6 Nov 2026): a Season 12 undershirt under the dress's pre-S12 shell grew
     # its fuller S12 chest straight through the dress. So a garment mesh is swapped only when every supported item that
@@ -160,26 +302,15 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     # An admitted mesh is always repointed when the item rule allows: it is never "kept" on its live GLB, and never
     # "unchanged" (a morph-set change leaves morphsChanged empty, so the morph proof cannot speak for it).
     kept -= set(admitted)
+    # A stale package (changed since the 6 Nov read) is never repointed. Its live file already has the 12.00 body-type
+    # shape when its morphs equal the read's, so it is as consistent with its item partners as before: keep it. With
+    # changed morphs it is a pre-S12 mesh and holds them (tier 2, 23 Nov 2026).
+    kept |= stale & unchanged
     assert not set(admitted) & unchanged
-    effective = set(proven) | kept
-    while True:
-        held = {}
-        for source in sorted(proven - {body}):
-            # Only OTHER meshes count: once held, a mesh is itself pre-S12, and counting it would make every item that
-            # shows it "mixed" and name those as the reason (6 Nov 2026, loose jeans). The swap set is the same either
-            # way, since the effective set only shrinks; the recorded reasons are the root ones.
-            mixed = sorted({item for item, meshes in users.get(source, [])
-                            if any(m not in effective and m != body and m != source for m in meshes)})
-            if mixed:
-                held[source] = {'reason': 'an item that shows it also shows a mesh the preview keeps pre-S12',
-                                'items': mixed[:20], 'itemCount': len(mixed)}
-        settled = (proven - {s for s in held if s not in unchanged}) | kept
-        if settled == effective:
-            break
-        effective = settled
+    effective, held = settle(proven, kept, unchanged, users, body)
     for name, row in sorted(proof.items()):
         admission = admitted.get(row.get('source'))
-        if (row.get('status') != 'morph-only' and not admission) or row['source'] in held:
+        if (row.get('status') != 'morph-only' and not admission) or row['source'] in held or row['source'] in stale:
             continue
         if changed_only and not admission and not row['morphsChanged'] and row['source'] != body:
             # Identical to the live GLB in everything the proof compares, morphs included: repointing it changes
@@ -202,6 +333,30 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
                                       'admitted': {k: admission[k] for k in ('class', 'by')}} if admission
                                      else {'morphsChanged': row['morphsChanged']})}
         entry['url'], entry['sha256'] = url, sha
+        if name in ship_masks:
+            m = mask_rows[name]
+            if m['status'] != 'body-changed':
+                raise SystemExit(f"{name}: --ship-s12-masks needs a mask proof 'body-changed' row, not {m['status']}")
+            mask_repoints[row['source']] = {'from': entry['bodyMaskUrl'], 'to': ship_masks[name],
+                                            'sha256': m['s12BodyMask']['sha256'], 'file': m['s12BodyMask']['file']}
+            entry['bodyMaskUrl'] = ship_masks[name]
+    # A mesh already on its S12 file (an earlier batch applied it) keeps its GLB; only its body mask moves, and only
+    # when the mask proof regenerated the mask from exactly that file (tier 2, 23 Nov 2026: batch A went live first).
+    for n in sorted(ship_masks):
+        m = (mask_rows or {}).get(n)
+        if m is None or m['source'] in mask_repoints:
+            continue
+        entry = assets['meshes'][m['source']]
+        body = next((x for x in m.get('masks', []) if x['kind'] == 'body'), None)
+        if m['status'] != 'body-changed' or entry.get('sha256') != m['s12Sha256'] or body is None \
+                or entry.get('bodyMaskUrl') != body['url'] or uncovered_masks(assets, m['source'], m):
+            continue
+        mask_repoints[m['source']] = {'from': entry['bodyMaskUrl'], 'to': ship_masks[n], 'sha256': m['s12BodyMask']['sha256'],
+                                      'file': m['s12BodyMask']['file'], 'maskOnly': True, 'meshSha256': entry['sha256']}
+        entry['bodyMaskUrl'] = ship_masks[n]
+    unshipped = {n for n in ship_masks if mask_rows.get(n, {}).get('source') not in mask_repoints}
+    if unshipped:
+        raise SystemExit(f'--ship-s12-masks names meshes that are not repointed: {sorted(unshipped)}')
     assets['s12BodyTypePreview'] = {
         'note': 'Preview only: meshes proven morph-only against the active index, rebuilt from the Season 12 paks.',
         'activeIndexSha256': hashlib.sha256(active.read_bytes()).hexdigest(),
@@ -211,12 +366,17 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
         'changedOnly': changed_only,
         **({'admitted': admitted, 'skinProofSha256': hashlib.sha256(Path(admit_json).read_bytes()).hexdigest()}
            if admit_json else {}),
+        **({'surfaceProofSha256': hashlib.sha256(Path(surface_json).read_bytes()).hexdigest()} if surface_json else {}),
+        **({'packageProofSha256': hashlib.sha256(Path(package_json).read_bytes()).hexdigest(),
+            'stalePackages': sorted(stale)} if package_json else {}),
+        **({'maskProofSha256': {f: hashlib.sha256(Path(f).read_bytes()).hexdigest() for f in mask_json.split(',')},
+            'maskRepoints': mask_repoints} if mask_json else {}),
         'swapped': swapped, 'held': held,
         'keptUnchanged': sorted(kept),
         'effective': sorted(effective)}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(assets, indent=1) + '\n', encoding='utf-8')
-    print(json.dumps({'swapped': len(swapped), 'held': {k.rsplit('.', 1)[-1]: v['itemCount'] for k, v in held.items()},
+    print(json.dumps({'swapped': len(swapped), 'stale': len(stale), 'held': {k.rsplit('.', 1)[-1]: v['itemCount'] for k, v in held.items()},
                       'out': str(out)}))
 
 
@@ -232,9 +392,13 @@ if __name__ == '__main__':
         argv.remove('--changed-only')
     options = {}
     for flag, key, split in (('--admit', 'admit_json', False), ('--admit-only', 'admit_only', True),
-                             ('--admit-reviewed', 'admit_reviewed', True)):
+                             ('--admit-reviewed', 'admit_reviewed', True), ('--admit-surface', 'surface_json', False),
+                             ('--admit-rework', 'admit_rework', True), ('--package-proof', 'package_json', False),
+                             ('--mask-proof', 'mask_json', False), ('--ship-s12-masks', 'ship_masks', True)):
         if flag in argv:
             i = argv.index(flag)
             options[key] = argv[i + 1].split(',') if split else argv[i + 1]
             del argv[i:i + 2]
+    if 'ship_masks' in options:
+        options['ship_masks'] = dict(pair.split('=', 1) for pair in options['ship_masks'])
     main(*argv[:5], census_json=census, changed_only=changed, **options)

@@ -1,0 +1,24 @@
+{
+ "r01-braided-crystal": {
+ "face": "head-face-01-base",
+ "upperBody": "casual-basictshirt-cotton-black",
+ "lowerBody": "casual-loosejeans-denim-darkblue",
+ "feet": "casual-tallsneakers-canvas",
+ "wrist": "streetwear-braidedbraceletset-base-blueorange",
+ "headwear": "streetwear-crystalheadband-plastic-red"
+ },
+ "r02-pop-hoodwrap": {
+ "face": "head-face-01-base",
+ "upperBody": "casual-basictshirt-cotton-black",
+ "lowerBody": "casual-loosejeans-denim-darkblue",
+ "feet": "casual-tallsneakers-canvas",
+ "wrist": "streetwear-popbraceletset-base",
+ "headwear": "winter-hoodwrap-nylon"
+ },
+ "r03-trentila-boots": {
+ "face": "head-face-01-base",
+ "upperBody": "casual-basictshirt-cotton-black",
+ "lowerBody": "casual-loosejeans-denim-darkblue",
+ "feet": "military-tacticalboots-base-trentila"
+ }
+}

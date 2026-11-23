@@ -16,6 +16,9 @@ export const OutfitSchema = z.object({
   // The player number (src/lib/player-number.ts). Any number is accepted, and anything else is dropped rather than
   // failing the link; callers read it through player-number.ts. Absent = each piece prints its own number.
   playerNumber: z.number().optional().catch(undefined),
+  // An archetype id (src/lib/archetype.ts, 22 Nov 2026). Like bodyType, any short string is accepted and read through
+  // archetype.ts, where an unknown value is Medium. Absent = Medium.
+  archetype: z.string().max(16).optional().catch(undefined),
 });
 export type Outfit = z.infer<typeof OutfitSchema>;
 
@@ -38,6 +41,7 @@ export function encodeOutfit(outfit: Outfit): string {
   if (outfit.presetName) compact.presetName = outfit.presetName;
   if (outfit.bodyType) compact.bodyType = outfit.bodyType;
   if (outfit.playerNumber !== undefined) compact.playerNumber = outfit.playerNumber;
+  if (outfit.archetype) compact.archetype = outfit.archetype;
   const b64 = btoa(JSON.stringify(compact));
   return "1." + b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }

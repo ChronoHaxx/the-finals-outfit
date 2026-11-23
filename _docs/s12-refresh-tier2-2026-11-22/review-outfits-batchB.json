@@ -1,0 +1,22 @@
+{
+ "b01-pioneer-frog-techpants": {
+  "face": "head-face-01-base",
+  "upperBody": "space-pioneerupper-windbreaker",
+  "lowerBody": "streetwear-techpants-nylon-phantom",
+  "feet": "cute-frogshoes-cotton"
+ },
+ "b02-clothtop-dadjeans-cleats": {
+  "face": "head-face-01-base",
+  "upperBody": "samurai-clothtop-linen-blue",
+  "lowerBody": "streetwear-dadjeans-denim-blackcns",
+  "feet": "sport-cleats-leather",
+  "hands": "robots-discobotgloves-metal"
+ },
+ "b03-holster-empress-anubis": {
+  "face": "head-face-01-base",
+  "upperBody": "casual-basictshirt-cotton-black",
+  "lowerBody": "military-doubleholsterpants-windbreaker-alfaacta",
+  "feet": "historic-empressshoes-dark",
+  "facewear": "historic-anubismaskregular-gold"
+ }
+}

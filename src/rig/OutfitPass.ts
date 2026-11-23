@@ -8,7 +8,9 @@ import type { CharacterRig, RigMaterial, RigMaterialBinding, RigDecal, RigItem }
 import { loadHeadWraps, type HeadWrapData } from "./HeadWrap";
 import { bodyTypePreview, type BodyTypePreview } from "./BodyTypePreview";
 import { shownBodyType } from "../lib/body-type";
-import { loadSourceAssemblyAssets, loadSourceAssemblyItems, sourceHeadComponentCarries, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "./SourceAssembly";
+import { ARCHETYPE_LABELS, bodyTypeSupportsArchetype, type ArchetypeId } from "../lib/archetype";
+import { indexClass } from "./Archetype";
+import { loadSourceAssemblyAssets, loadSourceAssemblyItems, type SkinPairClassBody, sourceHeadComponentCarries, loadSourceFaceCosmetics, loadSourceReconstructionItems, faceCosmeticRule, loadSourceOutfit, loadSourceRigParts, loadSourceSkinPair, loadSourceSkinPairAttachments, MissingSourceDefinitionError, hairOverridePrecedenceGate, attachmentMirroredScaleGate, mergedPartTransformsGate, activatedEffectPartsGate, type HairOverridePrecedence, type SourceOutfit, type SourceMaterialParameters } from "./SourceAssembly";
 import { sourceHairMissingMeshes, sourceHairUnresolved } from "./SourceHairAvailability";
 import { effectiveBuild, withRenderableFace, type Build } from "../store/useBuildStore";
 import { equipmentConflicts } from "../lib/equipment";
@@ -133,6 +135,9 @@ export interface OutfitPassReport {
   setHasRecoveredPreview(recovered: boolean): void;
   /** The resolved source assembly, as soon as it is final (the builder publishes it to the browser harness). */
   onAssembly?(assembly: SourceOutfit): void;
+  /** (22 Nov 2026, archetypes) The selected items this pass left off because the rig's class (Light or Heavy) has no
+   *  mesh for them in the index yet, by catalog name; empty on Medium and when every item is available. */
+  setClassUnavailable?(archetype: ArchetypeId, names: string[]): void;
 }
 
 /** `outfitBodyType`: the body type of the outfit, as the build store holds it (the picker, 12 Nov 2026). */
@@ -164,10 +169,15 @@ export async function runOutfitPass(rig: CharacterRig, build: Build, outfitBodyT
   // The body-type context (BodyTypePreview.ts): the capture-only dev switch, else the outfit's own body type
   // (12 Nov 2026: the picker; before it, the index's "bodyType" field, which the active index sets to
   // "masculine" and the app no longer reads). A body type visitors cannot pick yet renders as Masculine.
+  // (22 Nov 2026) The rig's class, chosen when the viewer loaded the body for the outfit's archetype. A body type the
+  // game does not offer on that class (Androgynous is Medium-only) renders as Masculine, which every class supports.
+  const archetype: ArchetypeId = rig.archetypeOf()?.id ?? "medium";
   let bodyType: BodyTypePreview | undefined;
   try {
+    const shown = shownBodyType(outfitBodyType);
     const selected = DEV.bodyType
-      ?? (DEV.reconstructed && DEV.sourceAssembly ? shownBodyType(outfitBodyType) : undefined);
+      ?? (DEV.reconstructed && DEV.sourceAssembly
+        ? bodyTypeSupportsArchetype(shown, archetype) ? shown : "masculine" : undefined);
     bodyType = bodyTypePreview(selected);
   } catch (e) {
     if (control.cancelled()) return;
@@ -221,9 +231,25 @@ export async function runOutfitPass(rig: CharacterRig, build: Build, outfitBodyT
   const covered = completeCoat ? build : effectiveBuild(build);
   // An icon-only face renders the default face instead of a headless body (render-time only).
   const renderableSet = sourceRenderable;
-  const eff = renderableSet
+  let eff = renderableSet
     ? withRenderableFace(covered, id => !!getItemById(id)?.model || renderableSet.has(id))
     : covered;
+  // (22 Nov 2026) What a Light or Heavy face's skin pair puts in place of the Medium body (rig/Archetype.ts).
+  let classBody: SkinPairClassBody | undefined;
+  if (archetype !== "medium") {
+    try {
+      const assetsUrl = modelUrl("models/reconstructed-assemblies-v1");
+      classBody = indexClass(await loadSourceAssemblyAssets(assetsUrl), archetype,
+        path => new URL(path, new URL(assetsUrl + "/", window.location.href)).href)?.skinBody;
+      if (!classBody) throw new Error(`The index carries no ${archetype} body`);
+    } catch (e) {
+      if (control.cancelled()) return;
+      console.error(e);
+      report.setError(`Couldn’t load the ${ARCHETYPE_LABELS[archetype]} body data.`);
+      return;
+    }
+    if (control.cancelled()) return;
+  }
   let assembly: SourceOutfit | undefined;
   let sourceShirtConflict = false;
   if (DEV.reconstructed && DEV.sourceAssembly) {
@@ -231,15 +257,31 @@ export async function runOutfitPass(rig: CharacterRig, build: Build, outfitBodyT
       const ids = Object.values(eff).filter((id): id is string => !!id);
       const sourceUrl = modelUrl("models/reconstructed-assembly-v2");
       assembly = await loadSourceOutfit(ids, sourceUrl, bodyType ? [bodyType.tag] : [],
-        { hairOverridePrecedence: hairPrecedence });
+        { hairOverridePrecedence: hairPrecedence }, archetype);
+      if (archetype !== "medium") {
+        // A Light or Heavy outfit shows only the items the index can build on that class; the rest are left off (the
+        // selection keeps them) and named. They are resolved out, so their tags hide nothing they no longer cover.
+        const unavailable = await classUnavailableItems(eff, assembly, supported, faceCosmetics, classBody!,
+          hairSelectionFor(eff, assembly, supported), resolverGates);
+        if (control.cancelled()) return;
+        if (unavailable.size) {
+          eff = Object.fromEntries(Object.entries(eff).map(([slot, id]) =>
+            [slot, id && unavailable.has(id) ? null : id])) as typeof eff;
+          assembly = await loadSourceOutfit(ids.filter(id => !unavailable.has(id)), sourceUrl,
+            bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence }, archetype);
+        }
+        report.setClassUnavailable?.(archetype, [...unavailable]
+          .map(id => getBrowseItem(id)?.name ?? getItemById(id)?.name ?? id));
+      } else report.setClassUnavailable?.(archetype, []);
+      const shownIds = Object.values(eff).filter((id): id is string => !!id);
       sourceShirtConflict = !!completeCoat && assembly.slotConflicts.some(c =>
         c.slot === "EBodySlot::BodyUpper" && c.items.includes(build.outerwear!) && c.items.includes(build.upperBody!));
       if (sourceShirtConflict) {
         // The coat includes its authored top and occupies BodyUpper. Keep the
         // user's shirt selection for removal of the coat, but it contributes
         // neither geometry nor active tags while that complete coat is worn.
-        assembly = await loadSourceOutfit(ids.filter(id => id !== build.upperBody), sourceUrl,
-          bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence });
+        assembly = await loadSourceOutfit(shownIds.filter(id => id !== build.upperBody), sourceUrl,
+          bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence }, archetype);
       }
       if (control.cancelled()) return;
     } catch (e) {
@@ -306,7 +348,7 @@ export async function runOutfitPass(rig: CharacterRig, build: Build, outfitBodyT
     try {
       const parameters = assembly.materialParameters.filter(p => p.itemId === eff.hair || cosmeticRule(p));
       const assetsUrl = modelUrl('models/reconstructed-assemblies-v1');
-      const pair = await loadSourceSkinPair(faceItem.id, requestedFace, assetsUrl, parameters, hairSelection);
+      const pair = await loadSourceSkinPair(faceItem.id, requestedFace, assetsUrl, parameters, hairSelection, classBody);
       if (control.cancelled()) return;
       if (!pair) appearanceSlots.clear(); // this face remains on the existing path
       else {
@@ -410,7 +452,7 @@ export async function runOutfitPass(rig: CharacterRig, build: Build, outfitBodyT
         const parameterOutfit = hair === eff.hair ? assembly : await loadSourceOutfit(
           [...Object.entries(eff).filter(([slot]) => slot !== 'hair').map(([, id]) => id), hair]
             .filter((id): id is string => !!id), modelUrl('models/reconstructed-assembly-v2'),
-          bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence });
+          bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence }, archetype);
         if (control.cancelled()) return;
         skinParameters = parameterOutfit.materialParameters.filter(p => p.itemId === hair || cosmeticRule(p));
       } catch (e) {
@@ -447,7 +489,7 @@ export async function runOutfitPass(rig: CharacterRig, build: Build, outfitBodyT
     if (item && !item.model?.gltfPath && !sourceItem && skinCandidate) {
       try {
         legacyFreePair = await loadSourceSkinPair(item.id, skinCandidate,
-          modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection);
+          modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection, classBody);
       } catch (e) {
         if (control.cancelled()) return;
         console.error(e);
@@ -478,7 +520,7 @@ export async function runOutfitPass(rig: CharacterRig, build: Build, outfitBodyT
         const sourceParts = sourceItem ? await loadSourceRigParts(sourceItem,
           modelUrl("models/reconstructed-assemblies-v1"), resolverGates) : undefined;
         const sourceSkinPair = legacyFreePair ?? (skinCandidate ? await loadSourceSkinPair(item.id, skinCandidate,
-          modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection) : undefined);
+          modelUrl("models/reconstructed-assemblies-v1"), skinParameters, hairSelection, classBody) : undefined);
         // (w128) A pair that records attached statics (a face's skull) brings their rig parts instead.
         const pairAttachments = sourceSkinPair?.attachedParts?.length && skinCandidate
           ? await loadSourceSkinPairAttachments(skinCandidate, sourceSkinPair,
@@ -587,12 +629,12 @@ export async function runOutfitPass(rig: CharacterRig, build: Build, outfitBodyT
       try {
         const ids = Object.values(actual).filter((id): id is string => !!id);
         assembly = await loadSourceOutfit(ids, modelUrl("models/reconstructed-assembly-v2"),
-          bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence });
+          bodyType ? [bodyType.tag] : [], { hairOverridePrecedence: hairPrecedence }, archetype);
         sourceShirtConflict = !!activeCoat && assembly.slotConflicts.some(c =>
           c.slot === "EBodySlot::BodyUpper" && c.items.includes(activeCoat) && c.items.includes(actual.upperBody!));
         if (sourceShirtConflict) assembly = await loadSourceOutfit(ids.filter(id => id !== actual.upperBody),
           modelUrl("models/reconstructed-assembly-v2"), bodyType ? [bodyType.tag] : [],
-          { hairOverridePrecedence: hairPrecedence });
+          { hairOverridePrecedence: hairPrecedence }, archetype);
         if (control.cancelled()) return;
       } catch (e) {
         if (control.cancelled()) return;
@@ -624,4 +666,42 @@ export async function runOutfitPass(rig: CharacterRig, build: Build, outfitBodyT
       mesh.visible = materials.some((m) => m.userData.reconstructed === true);
     });
   }
+}
+
+// (22 Nov 2026, archetypes) The hair selection a face's skin pair is checked against: the selected hair and, when the
+// source path supports it, its resolved item (the same selection the face staging below uses).
+function hairSelectionFor(eff: Build, assembly: SourceOutfit, supported: ReadonlySet<string>) {
+  const item = eff.hair && DEV.sourceMeshes && DEV.sourceFitting && supported.has(eff.hair) ? assembly.items[eff.hair] : undefined;
+  return { id: eff.hair ?? undefined, item };
+}
+
+/** (22 Nov 2026, archetypes) The selected items a Light or Heavy rig cannot build yet: an item builds on a class only
+ *  through its source data, every part resolving (under the class's tag) to a mesh the index holds, and a face only
+ *  through a skin pair whose body becomes the class body. A legacy-only item has no class mesh at all. A 2D decal and
+ *  a material-only eye cosmetic need no mesh and stay. Nothing is approximated: a Medium mesh is never shown on Light. */
+async function classUnavailableItems(eff: Build, assembly: SourceOutfit, supported: ReadonlySet<string>,
+  faceCosmetics: ReadonlyMap<string, string[]>, classBody: SkinPairClassBody,
+  hairSelection: ReturnType<typeof hairSelectionFor>,
+  resolverGates: Parameters<typeof loadSourceRigParts>[2]): Promise<Set<string>> {
+  const assetsUrl = modelUrl("models/reconstructed-assemblies-v1");
+  const unavailable = new Set<string>();
+  for (const slot of SLOTS) {
+    const id = eff[slot];
+    if (!id) continue;
+    const item = getItemById(id), source = assembly.items[id];
+    if (slot === "face") {
+      const pair = source && DEV.sourceMeshes && DEV.sourceFitting
+        ? await loadSourceSkinPair(id, source, assetsUrl, [], hairSelection, classBody).catch(() => undefined) : undefined;
+      if (!pair || pair.body.sourceMesh !== classBody.body) unavailable.add(id);
+      continue;
+    }
+    if (source && supported.has(id)) {
+      try { await loadSourceRigParts(source, assetsUrl, resolverGates); }
+      catch { unavailable.add(id); }
+      continue;
+    }
+    if (item?.decal || faceCosmetics.has(id)) continue;
+    unavailable.add(id);
+  }
+  return unavailable;
 }

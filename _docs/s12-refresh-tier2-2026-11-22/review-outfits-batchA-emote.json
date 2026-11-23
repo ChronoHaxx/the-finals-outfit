@@ -1,0 +1,44 @@
+{
+ "o02-crophoodie-dede": {
+  "face": "head-face-01-base",
+  "upperBody": "streetwear-croptophoodie-cotton-redcpop",
+  "lowerBody": "military-dedetights-denim",
+  "feet": "streetwear-techboots-leather",
+  "hands": "scifi-gloves-rubber",
+  "wrist": "streetwear-twistedbraceletset-base-silvergold",
+  "facewear": "scifi-phantommask-metal"
+ },
+ "o03-techcrop-holster": {
+  "face": "head-face-01-base",
+  "upperBody": "streetwear-techcroptop-nylon-ivada",
+  "lowerBody": "military-pantswithholsterpouch-nylon",
+  "feet": "streetwear-popgothshoes-leather-black",
+  "upperBack": "traditional-cloudbag-dark",
+  "hands": "monsters-easterndemongauntlet-metal-brown",
+  "wrist": "casual-bangles-metal-gold"
+ },
+ "o04-techcrop-engimo": {
+  "face": "head-face-01-base",
+  "upperBody": "streetwear-techcroptop-nylon-engimo",
+  "lowerBody": "streetwear-techjoggerspouch-nylon-engimo",
+  "feet": "military-marineboots-leather-black",
+  "upperBack": "cowboy-wranglerbandolier-leather-white",
+  "hands": "space-astropilotgloves-cotton",
+  "headwear": "robots-synthhelmet-plastic-black"
+ },
+ "o05-robotwarrior": {
+  "face": "head-face-01-base",
+  "upperBody": "robots-robotwarriortop-metal",
+  "lowerBody": "sport-paddedpants-nylon",
+  "feet": "christmas-elfboots-felt",
+  "hands": "medieval-knightgloves-leather-ultimate",
+  "facewear": "sport-umpiremask-leather"
+ },
+ "o06-jester": {
+  "face": "head-face-01-base",
+  "upperBody": "medieval-jesterjacket-cotton-redblue",
+  "lowerBody": "medieval-jesterpants-cotton-black",
+  "feet": "medieval-jestershoes-leather-blackblue",
+  "wrist": "historic-simplebracelet-metal"
+ }
+}

@@ -141,8 +141,14 @@ class SkinByName(unittest.TestCase):
         self.assertEqual(r['class'], 'loader refuses')
         self.assertIn('orphan', ' '.join(r['loader']))
 
-    def test_changed_influence_layout_is_a_loader_refusal(self):
-        self.assertEqual(self.judge(extra_sets=True)['class'], 'loader refuses')
+    def test_changed_influence_count_is_judged_by_weights_and_never_auto_admitted(self):
+        # 22 Nov 2026 (tier 2): 4 vs 8 influences per vertex is no loader problem (SourceMesh.ts reads both); the
+        # weights are compared by name across the layouts. Equal weights -> "influences", review only.
+        r = self.judge(extra_sets=True)
+        self.assertEqual(r['class'], 'influences')
+        self.assertEqual((r['influencesLive'], r['influencesS12']), (4, 8))
+        self.assertEqual(r['weightMaxSteps'], 0.0)
+        self.assertNotEqual(r['class'], 're-encoded')     # main() admits only "re-encoded" automatically
 
     def test_morph_set_change_reports_removed_shape(self):
         r = self.judge(morphs={'shrink_under_vest': np.full((4, 3), 0.003, np.float32)})
