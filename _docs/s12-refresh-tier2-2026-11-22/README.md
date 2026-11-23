@@ -49,7 +49,8 @@ the package is byte-identical in today's containers, and hold the rest.
 - A first build that treated every stale mesh as pre-S12 (v6) held 7 more meshes and fell to 1,181 items. That rule
   holds garments for no consistency gain, so v7 uses the narrower rule above.
 
-Effect on batch A (v5 → **v7**): 113 → **105** garments, 1,422 → **1,411** items.
+Effect on batch A (v5 → v7): 113 → 105 garments, 1,422 → 1,411 items. (v8 then holds the PopGoth shoes after the
+feet review: 104 garments, 1,410 items.)
 - Stale, so held: `SK_FromTencent_AsianSpiritGloves_M`, `SK_Historic_NeckCape_M`, `SK_Medieval_DragonSlayerSkirt_M`,
   `SK_Medieval_JesterNeckCape_M`, `SK_Medieval_JesterSkirt_M`.
 - Held by their items, which show a stale mesh with changed morphs: `SK_Historic_MonkTop_M`,
@@ -65,7 +66,7 @@ and batch A covers it on the active `3f64b2e6`. Of tier 1's 67 meshes:
 | | Meshes |
 |---|---:|
 | pilot, live since 15 Nov (PR #52) | 8 |
-| repointed by batch A v7 | 40 |
+| repointed by batch A v8 | 40 |
 | admitted, held by the item rule | 10 |
 | package changed on 17 Nov (LongCoat, AsianSpiritGloves, NeckCape, Tie) | 4 |
 | held for batch B (masks): Cleats, SuitJacket, CordBelt, TechPants | 4 |
@@ -80,7 +81,7 @@ W=.claude/worktrees/angry-darwin-c51aab
 O=$W/scripts/generated/s12-refresh-tier2-v1   # or the copied public/models/s12-refresh-tier2-v1
 A=public/models/reconstructed-assemblies-v1
 P=public/models/s12-bodytype-refresh-v1
-N=v8    # a new suffix each time (v7 is the hand-off)
+N=v9    # a new suffix each time (v8 is the hand-off)
 PY="/c/ProgramData/anaconda3/python.exe -X utf8 -I"
 node $W/_docs/body-types-2026-11-06/scripts/morph-census.mjs $A/assets.json $O/morph-census-$N.json
 $PY $W/scripts/body-types/morph-only-proof.py $A/assets.json $P/meshes $O/morph-only-proof-$N.json
@@ -89,7 +90,7 @@ $PY $W/scripts/body-types/surface-match-proof.py $A/assets.json $O/skin-by-name-
 $PY $W/scripts/body-types/build-preview-index.py $A/assets.json $O/morph-only-proof-$N.json $P/meshes $O/index-batchA-$N/assets.json \
     public/models/reconstructed-assembly-v2/customization.json --census $O/morph-census-$N.json --changed-only \
     --admit $O/skin-by-name-proof-$N.json --admit-surface $O/surface-match-proof-$N.json \
-    --admit-only $(cat $O/batchA-admit-only-final.txt) --admit-reviewed $(cat $O/batchA-admit-reviewed-final.txt) \
+    --admit-only $(cat $O/batchA-admit-only-final.txt) --admit-reviewed $(cat $O/batchA-admit-reviewed-v8.txt) \
     --admit-rework $(cat $O/batchA-admit-rework-final.txt) --package-proof $O/package-proof-$N.json
 $PY $W/scripts/body-types/make-merge-patch.py $A/assets.json $O/index-batchA-$N/assets.json $O/merge-patch-batchA-$N.json
 ```
@@ -168,9 +169,13 @@ with the published mask (texels set):
   need into the worktree's ignored `public/models`: **CordBelt 255 texels live and S12, 0 differ. PioneerTechConsole
   covers 0 texels in both**, and its published mask is empty too. Neither changes.
   (Shipping the S12 mask for the one-texel ClothTop: coordinator, 23 Nov, game-faithful.)
-- Still to do: item masks (`run-item-masks.py`). SuitJacket's item mask is a w161 part-hide mask, a different
-  system, and stays held. The builder also needs a path that admits a reworked or mask-stale mesh whose masks are
-  proven unchanged.
+- **Item masks** (`run-item-masks.py`, `batchB-item-mask-compare.json`, 23 Nov): all 8 item masks that name a
+  batch-B mesh (Cleats ×5 variants, TechPants, CordBelt, EmpressShoes, DoubleHolsterPants) regenerate identically
+  from the live mesh (0 texels off the published mask) **and from the S12 mesh (0 texels differ)**. Two first timed
+  out loading the harness while captures held the GPU, and passed on a rerun.
+- So every batch-B mask is unchanged in S12 except ClothTop's one texel. SuitJacket's item mask is a w161 part-hide
+  mask, a different system, and stays held. Next: a builder path that admits a mesh only when a mask proof shows
+  every mask naming it unchanged (or, for ClothTop, repoints its mask), plus the package proof.
 
 ### v7 (the hand-off), 23 Nov
 
@@ -182,7 +187,10 @@ outfits and footwear. Results, step by step, are in `functional-review.md`. In s
   underarm slot in the raised-arm extreme (`captures/zoom/o04-flex-back-underarm-x3.png`); live opens a sliver
   there too, and idle is clean. Accepted as the S12 weights.
 - **Footwear was out of frame** in every earlier camera (they frame head to thigh). `capture-review.mjs` gains
-  `feet`, `feetback`, `feetside`, and the feet pass covers every footwear mesh admitted by review: FEETSUMMARY
+  `feet`, `feetback`, `feetside`, and the feet pass covers every footwear mesh admitted by review. Tech, elf, wizard and Lunar boots and the Trentila overlay
+  are clean. **`SK_Streetwear_PopGothShoes_M` is held**: its S12 weights stretch the lower lacing and eyelets
+  (`captures/zoom/o03-feet-popgoth-andro-right.png`). Rebuilt without it as **v8, the hand-off: 104 garments,
+  1,410 items**, built with the script-written `package-proof-1117-v2.json`.
 
 ### Found and fixed during the review
 

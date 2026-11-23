@@ -4,7 +4,9 @@ Goal (user, 22 Nov: "do s12 clothing refresh"): every body-type mesh an outfit s
 fit the body they were made for, and Feminine can follow. Tier 1 shipped 9 meshes (PR #52, 81 items). This plan covers
 everything after it, most-worn first.
 
-Status: **plan + proofs done; batch A in progress.** Nothing here touches the active index, the main checkout or a host.
+Status (23 Nov): **batch A reviewed and apply-ready as v8** (104 garments, 1,410 items; `APPLY.md`). Batch B masks
+checked (all unchanged but one texel); its builder path is next. C waits for a 17 Nov mapping. Nothing here touches
+the active index, the main checkout or a host.
 
 ## 1. Inputs (pinned, read-only)
 

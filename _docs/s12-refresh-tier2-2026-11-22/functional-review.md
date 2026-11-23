@@ -1,13 +1,13 @@
-# Guided functional review: S12 item refresh, tier 2 batch A (105 garments)
+# Guided functional review: S12 item refresh, tier 2 batch A (104 garments)
 
 ## What you are checking
 
-Batch A swaps 105 garments to their Season 12 files (no app change). You are checking that they look right on the
+Batch A swaps 104 garments to their Season 12 files (no app change). You are checking that they look right on the
 production body types (Masculine and Androgynous), that nothing clips against the pre-S12 items they are worn with,
 and that the garments whose skinning changed still bend cleanly in an emote.
 
 - Branch `claude/s12-refresh-tier2-2026-11-22` (the PR names the commit). Data under test: the garments-only index
-  `scripts/generated/s12-refresh-tier2-v1/merge-out-batchA-v7/assets.json` (`d9eaaf7d…`), built on the active index
+  `scripts/generated/s12-refresh-tier2-v1/merge-out-batchA-v8/assets.json` (`b4f28192…`), built on the active index
   `3f64b2e6…`.
 - Open: two local dev servers from the tier-2 worktree. **5241** is live data, **5243** batch A. Never the main
   session's 5174.
@@ -25,7 +25,7 @@ $env:VITE_ANIMATIONS_BASE = "https://fd946744.the-finals-outfit-assets.pages.dev
 ```
 
 ```powershell
-$env:VITE_ANIMATIONS_BASE = "https://fd946744.the-finals-outfit-assets.pages.dev/"; node scripts/body-types/serve-preview.mjs --port 5243 --preview ../../../public/models/s12-bodytype-refresh-v1 --index scripts/generated/s12-refresh-tier2-v1/merge-out-batchA-v7 --live-body
+$env:VITE_ANIMATIONS_BASE = "https://fd946744.the-finals-outfit-assets.pages.dev/"; node scripts/body-types/serve-preview.mjs --port 5243 --preview ../../../public/models/s12-bodytype-refresh-v1 --index scripts/generated/s12-refresh-tier2-v1/merge-out-batchA-v8 --live-body
 ```
 
 Each prints `Local: http://127.0.0.1:<port>/`; the first load takes about a minute. Stop with Ctrl+C. Neither writes
@@ -47,8 +47,10 @@ to `public/`. Outfit links below are built by `capture-review.mjs` from `review-
 
 ## Recorded result
 
-- Tested revision/build: tools at `ade177a` (this branch); data `merge-out-batchA-v7/assets.json` (`d9eaaf7d…`) on 5243
-  against live `3f64b2e6…` on 5241, both `--live-body`. 23 Nov 2026.
+- Tested revision/build: tools at `bf67fd6` (this branch); data `merge-out-batchA-v7/assets.json` (`d9eaaf7d…`) on 5243
+  against live `3f64b2e6…` on 5241, both `--live-body`. 23 Nov 2026. The hand-off is v8 (`b4f28192…`), which differs
+  from v7 only in `SK_Streetwear_PopGothShoes_M` (held after the footwear check below; `git diff --no-index` of the two
+  merged indexes: that entry's url and sha256 only). o03, the one outfit wearing it, was recaptured on v8.
 - Agent run (`capture-review.mjs`, then `diff-captures.py`, then the pair images looked at full size; captures in
   `scripts/generated/s12-refresh-tier2-v1/captures-v7/`):
   - [x] **1. Start: PASS.** Every shot on 5243 loaded all of the outfit's meshes with 0 console errors (o01 16 meshes,
@@ -70,7 +72,13 @@ to `public/`. Outfit links below are built by `capture-review.mjs` from `review-
   - [x] **Rework and gap outfits** (r01 braided bracelet, r02 hood wrap, r03 Trentila boots): Androgynous still pose
     matches live within noise (≤ 107 px, level ≤ 7). Idle and Flex Masculine: the same pieces, sitting slightly
     differently on the re-sculpted body, with no stretching.
-  - Footwear: FEET
+  - [x] **Footwear: PASS on v8, after holding one mesh.** The cameras above frame head to thigh, so a feet pass
+    (`feet`, `feetback`, `feetside`, `full`; 9 outfits, Masculine and Androgynous, idle; `feet-idle-diff/`):
+    proof-admitted footwear (Viking, vampire, sniper boots) matches live on Androgynous. Reviewed weights: tech boots
+    (straps sit slightly higher, clean), elf boots, wizard boots, Lunar boots, Trentila overlay: clean.
+    **`SK_Streetwear_PopGothShoes_M` failed:** its S12 weights pull the lower lacing and eyelets into stretched,
+    flattened shapes (`captures/zoom/o03-feet-popgoth-andro-right.png`). Held, as v8. o03 on v8
+    (`feet-v8-diff/`): within noise of live (≤ 21 px, level ≤ 2).
 - User checks: waived (standing waiver on all PRs, 22 Nov; recorded in memory `standing-check-waiver`).
 - Merge authorization: tools/docs PR merges on agent pass; the index apply and the GLB upload are separate
   coordinator approvals.
