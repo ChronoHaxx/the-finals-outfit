@@ -13,7 +13,8 @@ This catches:
 - a Light body with a floating neck shell, a misplaced hat or glasses, or an item silently swapped for a Medium one.
 
 - PR: this branch's PR. Record: `README.md` beside this file.
-- Test this revision: branch `claude/jovial-fermat-65dc6d`, at ``81c33da` (main `3f954d3` merged in; later commits are docs)`.
+- Test this revision: branch `claude/archetypes-light-2026-11-22` (PR #83), at `81c33da` (main `3f954d3` merged in;
+  later commits are docs).
 - **Open, part A (production build):**
   - Built and served by `node _docs/archetypes-2026-11-22/prod-steps.mjs` at
     http://127.0.0.1:4363/the-finals-outfit/.
