@@ -357,6 +357,19 @@ class ItemRule(unittest.TestCase):
         self.assertEqual(self.out_assets['meshes'][path('ClothTop')]['bodyMaskUrl'], url)
         with self.assertRaises(SystemExit):    # an unchanged mask is never replaced
             self.build(items, proof, morphs, **{**kw, 'masks': {'ClothTop': 'unchanged'}}, ship_masks={'ClothTop': url})
+        # v11 (23 Nov): named, but the item rule holds it (its outfit also shows pants that stay pre-S12). It keeps its
+        # live file and its published mask, recorded as maskHeld, instead of stopping the build.
+        outfit = {'outfit': ['ClothTop', 'Pants']}
+        held_rows = {**proof, 'Pants': ('refused', self.CHANGED, self.REORDERED)}
+        meta = self.build(outfit, held_rows, {**morphs, 'Pants': self.SHAPED}, ship_masks={'ClothTop': url}, **kw)
+        self.assertEqual(meta['swapped'], {})
+        self.assertIn(path('ClothTop'), meta['held'])
+        self.assertEqual(meta['maskHeld'], ['ClothTop'])
+        self.assertEqual(meta['maskRepoints'], {})
+        self.assertEqual(self.out_assets['meshes'][path('ClothTop')]['bodyMaskUrl'], '../coverage/ClothTop.bodymask.png')
+        with self.assertRaises(SystemExit):    # a name that is neither repointed nor held is still a mistake
+            self.build(outfit, held_rows, {**morphs, 'Pants': self.SHAPED}, ship_masks={'ClothTop': url, 'Pants': url},
+                       **kw)
 
     # Tier 2 (23 Nov 2026): the 17 Nov game update. Only packages proven byte-identical keep their 6 Nov rebuild.
     def test_a_package_changed_since_the_read_stays_live_and_holds_its_items(self):

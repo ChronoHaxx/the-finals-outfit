@@ -80,6 +80,20 @@ and batch A covers it on the active `3f64b2e6`. Of tier 1's 67 meshes:
 | held for batch B (masks): Cleats, SuitJacket, CordBelt, TechPants | 4 |
 | held for a review defect: CropTopHoodie | 1 |
 
+## Held: the game's own S12 weights are defective (do not retry blindly)
+
+| Mesh | What the S12 weights do | Evidence |
+|---|---|---|
+| `SK_Streetwear_CropTopHoodie_M` | 3,581 vertices reweighted; a stretched, smeared wedge of triangles at the underarm in idle | `captures/zoom/o02-side-underarm.png` |
+| `SK_Streetwear_PopGothShoes_M` | the lower lacing and eyelets are pulled into stretched, flattened shapes | `captures/zoom/o03-feet-popgoth-andro-right.png` |
+
+- The rebuilds carry the weights exactly as the Season 12 files ship them, so another rebuild or re-read of the same
+  build gives the same result.
+- Revisit only when:
+  - a later game build changes these meshes (the package proof or skin-by-name proof shows it); or
+  - someone decides on another route, such as keeping the live weights under the S12 shape.
+- Both stay live (pre-S12) until then.
+
 ## Rebuild on a moved index
 
 Git Bash, from the root checkout: `bash $W/_docs/s12-refresh-tier2-2026-11-22/replan.sh SUFFIX` (a new suffix
@@ -262,6 +276,43 @@ new masks). Outfits b01–b03 (`review-outfits-batchB.json`) and the batch-A mas
   - o05 and o06 match within noise.
 
   The changed texels lie under the garments, where the skin is hidden either way.
+
+### v11: the 8 unproven masks (23 Nov, after v10c was applied: active `b164180c…`)
+
+The coordinator asked for the 8 review meshes whose masks were never proven, re-planned on the post-v10c index.
+
+**Masks** (`run-masks-a.py v11-mask-sources-7.json s12t2-v11-live s12t2-v11-s12`, `mask-proof-v11.json`
+`4cbd3165…`). Every live regeneration reproduces the published mask.
+
+| Mesh | S12 mask | Texels changed |
+|---|---|---:|
+| DemonPants, JesterJacket, ChainNecklace, PopLanyardArmbandLeft, PopLanyardArmbandRight | unchanged | 0 |
+| TacticalKnightBracers | body-changed | 105, scattered along edges |
+| CroppedTshirtOversize | body-changed | 8,331: slivers at the torso sides under the arms and a strip on the upper arm, like the tech crop tops |
+
+- Zooms: `captures-v10/zoom/v11-mask-*-sheet.png`.
+- The two Season 12 masks are in `coverage-s12/` and `ship-masks-v11.txt`.
+- The bracers were regenerated through `space-bountyhuntertop-nylon`. Their first item, the camo long coat, fails to
+  load in the worktree, and the bracers' policy is conservative, so the item does not change the mask.
+- **`SK_Traditional_LunarDressTop_M` cannot be proven this way.** Its mask is a legacy `cosmetics/` mask with no
+  derived-coverage record. It stays held until someone decides whether a derived mask should replace it.
+
+**Result: nothing to apply.** `replan.sh v11e` admits all 7, and the item rule holds every one of them. They sit in one
+cluster of 37 meshes linked through shared items. Its roots cannot move until a fresh read of the 17 Nov build:
+- stale packages: LongCoat, JesterNeckCape, JesterSkirt, EasternDemonSkirt;
+- batch C UV reworks: TacticalKnightBelt, TacticalKnightTop, Hoodie, UtilityBelt;
+- meshes with no S12 rebuild: the vampire dress, Geisha goth dress, peasant skirt and tactical dress pieces.
+
+The 7 masks stay proven, so once the roots go Season 12 the 7 ride along. Run `replan.sh` with
+`LISTS=v11base MASKS=…,mask-proof-v11.json SHIP=ship-masks-v11.txt`.
+
+**Tool fixes found on the way:**
+- `replan.sh` takes `LISTS`, `MASKS` and `SHIP`.
+- It passes a list flag only for a non-empty list. An empty rework list made `--admit-rework` swallow the next flag.
+- It refuses `LISTS` equal to the suffix, because it writes the filtered lists under the suffix.
+- `build-preview-index.py`: a mesh named in `--ship-s12-masks` that the item rule holds keeps its live file and mask,
+  recorded as `maskHeld`, instead of stopping the build. Test:
+  `test_a_changed_body_mask_ships_the_s12_mask_only_when_named`.
 
 ### Found and fixed during the review
 

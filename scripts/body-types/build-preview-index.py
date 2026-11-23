@@ -354,7 +354,11 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
         mask_repoints[m['source']] = {'from': entry['bodyMaskUrl'], 'to': ship_masks[n], 'sha256': m['s12BodyMask']['sha256'],
                                       'file': m['s12BodyMask']['file'], 'maskOnly': True, 'meshSha256': entry['sha256']}
         entry['bodyMaskUrl'] = ship_masks[n]
-    unshipped = {n for n in ship_masks if mask_rows.get(n, {}).get('source') not in mask_repoints}
+    # A named mesh the item rule holds keeps its live file, and with it its published mask, until its items can move
+    # (tier 2 v11, 23 Nov 2026). Any other name that is not repointed is a mistake.
+    mask_held = sorted(n for n in ship_masks
+                       if mask_rows.get(n, {}).get('source') in held and mask_rows[n]['source'] not in mask_repoints)
+    unshipped = {n for n in ship_masks if mask_rows.get(n, {}).get('source') not in mask_repoints} - set(mask_held)
     if unshipped:
         raise SystemExit(f'--ship-s12-masks names meshes that are not repointed: {sorted(unshipped)}')
     assets['s12BodyTypePreview'] = {
@@ -370,7 +374,7 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
         **({'packageProofSha256': hashlib.sha256(Path(package_json).read_bytes()).hexdigest(),
             'stalePackages': sorted(stale)} if package_json else {}),
         **({'maskProofSha256': {f: hashlib.sha256(Path(f).read_bytes()).hexdigest() for f in mask_json.split(',')},
-            'maskRepoints': mask_repoints} if mask_json else {}),
+            'maskRepoints': mask_repoints, **({'maskHeld': mask_held} if mask_held else {})} if mask_json else {}),
         'swapped': swapped, 'held': held,
         'keptUnchanged': sorted(kept),
         'effective': sorted(effective)}
