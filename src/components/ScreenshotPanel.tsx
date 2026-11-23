@@ -153,8 +153,11 @@ export function ScreenshotPanel({ context, backdrop, ready, animator, mode = "gl
   return (
     // Not positioned itself: the panel anchors to the whole button row (CharacterViewer), as every viewer panel does.
     // While a video renders (it carries on with the panel closed) the button shows its progress.
+    // A take recording on a narrow view (23 Nov 2026): the row has no room for REC and Stop both (at 390 px it pushed Full
+    // screen, Hide UI and half of Graphics off the left edge), so Stop carries the time and the trigger steps aside until
+    // the take stops; the panel has nothing to do meanwhile, and Stop opens it on the new take.
     <div ref={panel.root} className="flex gap-1">
-      <PanelTrigger panel={panel} {...feature}
+      <PanelTrigger panel={panel} {...feature} className={recording ? "@max-2xl:hidden" : ""}
         aria-label={recording ? `Capture: recording a take, ${formatClock(recording.elapsed)}` : video.running ? `Capture: recording video, ${percent}%` : "Capture"}
         icon={recording || video.running ? <span aria-hidden="true" className="size-2 rounded-full bg-finals motion-safe:animate-pulse" /> : <CameraIcon size={15} />}
         name={recording ? "REC" : "Capture"} always={!!recording}
@@ -163,7 +166,9 @@ export function ScreenshotPanel({ context, backdrop, ready, animator, mode = "gl
       {recording && (
         <button type="button" onClick={() => void takes.stop()} aria-label="Stop recording the take" title="Stop recording the take"
           className="hud flex h-8 items-center gap-1.5 bg-finals px-2.5 text-white transition-colors hover:brightness-110">
-          <span aria-hidden="true" className="size-2 bg-white" />Stop
+          <span aria-hidden="true" className="size-2 bg-white" />
+          <span className="hidden @2xl:inline">Stop</span>
+          <span className="tabular-nums @2xl:hidden">{formatClock(recording.elapsed)}</span>
         </button>
       )}
       <PanelSheet panel={panel} label="Capture" title="Capture" icon={<CameraIcon size={13} />}>
