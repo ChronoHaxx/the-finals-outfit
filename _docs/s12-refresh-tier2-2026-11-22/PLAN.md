@@ -4,9 +4,19 @@ Goal (user, 22 Nov: "do s12 clothing refresh"): every body-type mesh an outfit s
 fit the body they were made for, and Feminine can follow. Tier 1 shipped 9 meshes (PR #52, 81 items). This plan covers
 everything after it, most-worn first.
 
-Status (23 Nov): **batch A reviewed and apply-ready as v8** (104 garments, 1,410 items; `APPLY.md`). Batch B masks
-checked (all unchanged but one texel); its builder path is next. C waits for a 17 Nov mapping. Nothing here touches
-the active index, the main checkout or a host.
+Status (23 Nov):
+- **Batch A v8 was applied** (104 garments; main-folder session, `b4f28192…`), and the Light apply landed on top
+  (`425023bb…`).
+- **v10c is apply-ready** (`APPLY.md`), built on that index with `replan.sh`. It covers batch B (10 meshes, plus
+  ClothTop with its S12 mask) and the 5 batch-A masks that S12 changed, as mask-only repoints. That gives 1,423 items
+  Season 12 throughout.
+- Held:
+  - 8 batch-A review meshes whose masks were never regenerated (never applied; still live);
+  - SuitJacket (a w161 part-hide mask);
+  - CropTopHoodie and PopGothShoes (review defects);
+  - stale packages.
+- C waits for a 17 Nov mapping.
+- Nothing here touches the active index, the main checkout or a host.
 
 ## 1. Inputs (pinned, read-only)
 

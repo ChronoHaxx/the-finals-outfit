@@ -9,8 +9,11 @@ index is `APPLY.md`. This file records what was built, the review, and what is l
 | File | What |
 |---|---|
 | `PLAN.md` | inputs, census, route stages, batches A/B/C |
-| `APPLY.md` | batch A: the merge recipe for a main-folder session, publish list, checks, rollback |
+| `APPLY.md` | v10c (batch B + mask-only fixes for batch A): the merge recipe for a main-folder session, publish list, checks, rollback. Batch A v8 was applied on 23 Nov. |
+| `replan.sh` | re-plan on whatever index is active: census, proofs, admission lists, build, patch (Git Bash) |
+| `index-diff.py` | what changed between two `assets.json` files, by mesh and field (the index is one compact line now) |
 | `review-outfits-batchA*.json` | the review outfits (13 + emote subset + 2 for the reworks) |
+| `review-outfits-batchB.json` | batch B review outfits b01–b03 |
 | `functional-review.md` | the guided checklist, run by the agent under the standing waiver |
 
 Data (ignored, this worktree): `scripts/generated/s12-refresh-tier2-v1/` — proofs, census, indexes, patches, captures.
@@ -23,7 +26,12 @@ Data (ignored, this worktree): `scripts/generated/s12-refresh-tier2-v1/` — pro
 - `refresh-route-census.py` (new): route stage per refused mesh and S12 items per stage through the item rule's
   fixpoint.
 - `build-preview-index.py`: `settle()` (the fixpoint, shared), `--admit-surface`, `--admit-rework`,
-  `--package-proof`, a material-slot guard. 17 tests.
+  `--package-proof`, a material-slot guard; `--mask-proof` and `--ship-s12-masks` (v10, below). 19 tests.
+- `package-proof.py` (new): per mesh, the package sha256 on 6 Nov and today.
+- `mask-proof.py` (new): judges every mask that names a mesh from live and S12 regenerations (unchanged,
+  body-changed, unproven).
+- `make-merge-patch.py` / `apply-merge-patch.py`: carry and verify body mask repoints, with the mesh or mask only. The
+  apply keeps the index's own format (2-space CRLF or compact). 11 apply tests.
 - `scripts/shader-probe`: `package-hashes` mode (package bytes only, no mapping).
 - `skin-by-name-proof.py`: 4 vs 8 influences is judged by weights ("influences"), not a loader refusal. 11 tests.
 - `serve-preview.mjs`: finds the nearest `node_modules` (no junction); `--overlay` serves a worktree mirror of
@@ -74,26 +82,17 @@ and batch A covers it on the active `3f64b2e6`. Of tier 1's 67 meshes:
 
 ## Rebuild on a moved index
 
-Git Bash, from the root checkout. Every step only reads the active index and refuses an existing output.
+Git Bash, from the root checkout: `bash $W/_docs/s12-refresh-tier2-2026-11-22/replan.sh SUFFIX` (a new suffix
+each time; v10c is the current hand-off). Every step only reads the active index and refuses an existing output.
+- It reruns the census and the three proofs (`morph-only`, `skin-by-name`, `surface-match`) on the active index.
+  `PROOFS=<earlier suffix>` reuses them when the index has not moved.
+- It keeps from the `v9-admit-*.txt` lists only the meshes the new morph-only proof still refuses. An applied mesh is
+  live and drops out.
+- It builds with the package proof, both mask proofs and `ship-masks-v9.txt`, then writes the merge patch.
+- `O=` points it at the copied data folder (`public/models/s12-refresh-tier2-v1`). `TOOLS=` points at main's
+  `scripts/body-types` once the v10 tools PR is merged.
 
-```bash
-W=.claude/worktrees/angry-darwin-c51aab
-O=$W/scripts/generated/s12-refresh-tier2-v1   # or the copied public/models/s12-refresh-tier2-v1
-A=public/models/reconstructed-assemblies-v1
-P=public/models/s12-bodytype-refresh-v1
-N=v9    # a new suffix each time (v8 is the hand-off)
-PY="/c/ProgramData/anaconda3/python.exe -X utf8 -I"
-node $W/_docs/body-types-2026-11-06/scripts/morph-census.mjs $A/assets.json $O/morph-census-$N.json
-$PY $W/scripts/body-types/morph-only-proof.py $A/assets.json $P/meshes $O/morph-only-proof-$N.json
-$PY $W/scripts/body-types/skin-by-name-proof.py $A/assets.json $O/morph-only-proof-$N.json $P/meshes public/models/body/SK_Body_M.glb $O/skin-by-name-proof-$N.json
-$PY $W/scripts/body-types/surface-match-proof.py $A/assets.json $O/skin-by-name-proof-$N.json $P/meshes public/models/body/SK_Body_M.glb $O/surface-match-proof-$N.json
-$PY $W/scripts/body-types/build-preview-index.py $A/assets.json $O/morph-only-proof-$N.json $P/meshes $O/index-batchA-$N/assets.json \
-    public/models/reconstructed-assembly-v2/customization.json --census $O/morph-census-$N.json --changed-only \
-    --admit $O/skin-by-name-proof-$N.json --admit-surface $O/surface-match-proof-$N.json \
-    --admit-only $(cat $O/batchA-admit-only-final.txt) --admit-reviewed $(cat $O/batchA-admit-reviewed-v8.txt) \
-    --admit-rework $(cat $O/batchA-admit-rework-final.txt) --package-proof $O/package-proof-$N.json
-$PY $W/scripts/body-types/make-merge-patch.py $A/assets.json $O/index-batchA-$N/assets.json $O/merge-patch-batchA-$N.json
-```
+Batch A's recipe (v8, applied) used the `batchA-admit-*` lists the same way, without the mask flags.
 
 The package proof comes first, whenever the game may have updated since the last one (about a minute; the
 probe build goes to an ignored folder; the FModel settings supply the archive key, which is never printed):
@@ -191,6 +190,78 @@ outfits and footwear. Results, step by step, are in `functional-review.md`. In s
   are clean. **`SK_Streetwear_PopGothShoes_M` is held**: its S12 weights stretch the lower lacing and eyelets
   (`captures/zoom/o03-feet-popgoth-andro-right.png`). Rebuilt without it as **v8, the hand-off: 104 garments,
   1,410 items**, built with the script-written `package-proof-1117-v2.json`.
+
+### v9 → v10c: batch B and the batch-A mask fixes, on the Light index (23 Nov)
+
+**Batch A's masks.** v8 admitted 13 masked meshes by review (weights or normals changed), but their masks were never
+regenerated.
+- Each was regenerated from its live and its S12 file (`run-masks-a.py`, `batchA-mask-compare-v2.json`,
+  `mask-proof-batchA-v1.json`). The live regeneration reproduces every published mask.
+- From S12, **8 are unchanged**: ElfBoots, KnightGlovesSpikesL, WizardBoots, WaistPouches, EasternDemonGauntlet,
+  RobotWarriorTop, TechBoots, LunarBoots.
+- **5 changed** (texels):
+
+  | Garment | Texels |
+  |---|---:|
+  | Bandolier | 1 |
+  | SciFi_Gloves | 10 |
+  | CloudBag | 23 |
+  | TechCropTop | 1,512 |
+  | TechCropTopNoBags | 1,503 |
+
+  The crop tops' changes are slivers at creases and the upper arm. None is badly off, so v8 stays with no rollback
+  (coordinator, 23 Nov). The S12 masks ship as mask-only repoints, because the meshes are already their S12 files.
+- Eight more review-admitted meshes carry masks that were never proven: DemonPants, JesterJacket,
+  TacticalKnightBracers, ChainNecklace, CroppedTshirtOversize, PopLanyardArmbandLeft/Right and LunarDressTop. None was
+  applied in v8; all still serve pre-S12 files on `425023bb`. They leave the admission lists until their masks are
+  regenerated (`v9-admit-reviewed-with-unproven-masks.txt` keeps the old list).
+
+**Builder gate** (`--mask-proof`, `--ship-s12-masks`). A review-admitted mesh that carries any mask needs a mask-proof
+row for exactly its live and S12 files. The row must cover every mask the index names for that mesh now, and its
+status must be either "unchanged", or "body-changed" with the mesh named in `--ship-s12-masks`. A mesh that is
+already its S12 file gets a mask-only repoint. Tests:
+- `test_a_masked_mesh_is_admitted_only_when_its_masks_are_proven_unchanged`;
+- `test_a_changed_body_mask_ships_the_s12_mask_only_when_named`;
+- the apply's mask and compact-format tests.
+
+**The index moved.** The Light apply landed on top of v8: 63 `_L` meshes, and the index is now compact JSON
+(`425023bb…`). `replan.sh` reran the census and proofs there as v10.
+- A trailing newline in a list file dropped EmpressShoes. Fixed with `.strip()` and rebuilt as **v10c** from v10's
+  proofs. (v10b is a duplicate run of the old script; ignore it.)
+- v10c repoints 11 meshes and 6 masks (`APPLY.md`): patch `2fd127a1…`, expected result `b164180c…`, 16 mesh entries
+  changed (`index-diff.py`).
+- Cleats (9 items) and DoubleHolsterPants (1) are admitted but still held by the item rule: those items also show a
+  pre-S12 mesh.
+
+**Review** (`captures-v10/`). 5241 serves live `425023bb…` and 5245 serves v10c (`--live-body --overlay public` for the
+new masks). Outfits b01–b03 (`review-outfits-batchB.json`) and the batch-A mask outfits o01–o06. Diffs are in
+`*-diff/`, pairs looked at full size, zooms in `zoom/`.
+- **Still, Androgynous:**
+  - b01 and b03 are within noise.
+  - b02 shows a one-pixel line along the alpha-cut outer edge of `SK_Samurai_WornCape_M`, which this patch does not
+    touch. The cape loads the same file with the same morphs, and the joints it shares with ClothTop have identical
+    bind poses in the live and S12 ClothTop. At 3× its outline is the same shape (`zoom/b02-front-cape-x3.png`), so
+    the difference is sub-pixel. Accepted.
+- **Idle, Masculine and Androgynous, with the feet cameras:**
+  - TechPants, kneepads, the thigh pouch and the Pioneer upper shift slightly, cleanly.
+  - Frog shoes are unchanged; Empress shoes change only at the opening.
+  - DadJeans: sub-pixel shading over the whole jeans on Masculine (the S12 `medium_male`). The rolled hem and the
+    pre-S12 cleats sit as on live (`b-idle-diff/b02…masculine-feet*`).
+  - **CordBelt:** the cords hang straighter and closer together in idle (its S12 weights), with no stretching
+    (`zoom/b02m-waist-jeans.png`).
+  - ClothTop: sub-pixel shading only.
+  - Androgynous b03 is identical; b02's feet are identical.
+- **Flex, Masculine:** ClothTop's raised sleeves match by eye, including the underarm (`zoom/b02m-flex-sleeves.png`).
+  The Pioneer upper, its console and the pants are clean.
+- **Mask-only (`masks-idle-diff/`, o02–o06, idle, both body types, 40 shots):** no visible change. 5245 served the
+  new mask files (hashes checked through the server).
+  - o02 (SciFi gloves): the waist shots, which frame the hands, are pixel-identical. Front and side differ only by
+    speckle on the Phantom mask's translucent visor, which is accumulation noise on a mesh the patch does not touch.
+  - o03 (TechCropTop, CloudBag): at most 281 px of speckle at the gauntlet edge.
+  - o04 (TechCropTopNoBags, Bandolier): pixel-identical.
+  - o05 and o06 match within noise.
+
+  The changed texels lie under the garments, where the skin is hidden either way.
 
 ### Found and fixed during the review
 

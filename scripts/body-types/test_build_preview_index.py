@@ -30,12 +30,14 @@ def mesh_ref(name):
 
 class ItemRule(unittest.TestCase):
     def build(self, items, proof, morphs, changed_only=False, census=True, admit=None, admit_only=None,
-              admit_reviewed=None, surface=None, admit_rework=None, masked=(), package=None):
+              admit_reviewed=None, surface=None, admit_rework=None, masked=(), package=None, masks=None, ship_masks=None,
+              s12_live=(), item_masked=()):
         """items: {item: [mesh names]}; proof: {mesh: (status, morphsChanged, problems)}; morphs: {mesh: [names]};
         admit: {mesh: (skin-proof class, admissible)} written as a skin-by-name proof (tier 1, 12 Nov 2026);
         surface: {mesh: surface-proof class} written as a surface-match proof (tier 2, 22 Nov 2026), for meshes whose
         skin-proof class is "surface differs"; package: {mesh: identical} written as a package proof (tier 2, 23 Nov
-        2026); meshes it omits are missing from the proof."""
+        2026); meshes it omits are missing from the proof; masks: {mesh: status or (status, s12Sha256)} written as a
+        mask proof (23 Nov 2026), hashes taken from the skin proof unless given."""
         tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, tmp)
         meshes = sorted({m for ms in items.values() for m in ms} | {'SK_Body_M'})
@@ -44,6 +46,10 @@ class ItemRule(unittest.TestCase):
         assets = {'meshes': {(BODY if m == 'SK_Body_M' else path(m)): {'url': f'../live/{m}.glb', 'sha256': 'live'}
                              for m in meshes},
                   'attachmentBody': {'source': BODY, 'url': '../live/SK_Body_M.glb', 'sha256': 'live'}}
+        for m in item_masked:  # an item mask names it (one item, one mask)
+            assets.setdefault('itemBodyMasks', {})[f'DA_{m}'] = {path(m): {'url': f'../coverage/item-{m}.bodymask.png'}}
+        for m in s12_live:     # the active index already serves the rebuild (an earlier batch applied it)
+            assets['meshes'][path(m)].update({'url': f'../rebuilt/{m}.glb', 'sha256': hashlib.sha256(m.encode()).hexdigest()})
         for m in masked:
             assets['meshes'][path(m)]['bodyMaskUrl'] = f'../coverage/{m}.bodymask.png'
         (active / 'assets.json').write_text(json.dumps(assets), encoding='utf-8')
@@ -91,12 +97,26 @@ class ItemRule(unittest.TestCase):
             package_proof = tmp / 'package-proof.json'
             package_proof.write_text(json.dumps({'all': [{'mesh': m, 'identical': same} for m, same in package.items()]}),
                                      encoding='utf-8')
+        mask_proof = None
+        if masks is not None:
+            rows_m = {}
+            for name, status in masks.items():
+                status, s12 = status if isinstance(status, tuple) else (status, skin[name]['s12Sha256'])
+                rows_m[name] = {'source': path(name), 'status': status, 'liveSha256': skin[name]['liveSha256'],
+                                's12Sha256': s12, 'reasons': [] if status == 'unchanged' else [status],
+                                'masks': [{'kind': 'body', 'url': f'../coverage/{name}.bodymask.png'}] if name in masked else [],
+                                **({'s12BodyMask': {'file': f'cov/{name}.bodymask.png', 'sha256': 'mask'}}
+                                   if status == 'body-changed' else {})}
+            mask_proof = tmp / 'mask-proof.json'
+            mask_proof.write_text(json.dumps({'meshes': rows_m}), encoding='utf-8')
         out = tmp / 'out' / 'assets.json'
         tool.main(str(active / 'assets.json'), str(tmp / 'proof.json'), str(rebuilt), str(out),
                   str(tmp / 'customization.json'), str(tmp / 'census.json') if census else None, changed_only,
                   admit_json=str(skin_proof) if skin_proof else None, admit_only=admit_only, admit_reviewed=admit_reviewed,
                   surface_json=str(surface_proof) if surface_proof else None, admit_rework=admit_rework,
-                  package_json=str(package_proof) if package_proof else None)
+                  package_json=str(package_proof) if package_proof else None,
+                  mask_json=str(mask_proof) if mask_proof else None, ship_masks=ship_masks)
+        self.out_assets = json.loads(out.read_text(encoding='utf-8'))
         return json.loads(out.read_text(encoding='utf-8'))['s12BodyTypePreview']
 
     CHANGED = {'medium_female': {'maxCm': 3.0, 'verticesChanged': 10}}
@@ -289,6 +309,54 @@ class ItemRule(unittest.TestCase):
                     'permuted+weights'):
             with self.assertRaises(SystemExit):
                 self.build(items, proof, morphs, admit=admit, surface={'Socks': cls}, admit_rework=['Socks'])
+
+    # Tier 2 (23 Nov 2026): masks derived from the garment's geometry. A reviewed mesh that carries masks is admitted
+    # only when a mask proof shows every mask unchanged from the S12 mesh, or only the body mask changed and ships.
+    def test_a_masked_mesh_is_admitted_only_when_its_masks_are_proven_unchanged(self):
+        items = {'socks': ['Socks'], 'boots': ['Boots']}
+        proof = {'Socks': ('refused', {}, self.REORDERED), 'Boots': ('refused', self.CHANGED, ['WEIGHTS_0 differs'])}
+        morphs = {'Socks': self.SHAPED, 'Boots': self.SHAPED}
+        admit = {'Socks': ('surface differs', False), 'Boots': ('weights', False)}
+        kw = dict(admit=admit, surface={'Socks': self.SAME_UVS}, admit_rework=['Socks'], admit_reviewed=['Boots'],
+                  masked=['Socks', 'Boots'])
+        meta = self.build(items, proof, morphs, masks={'Socks': 'unchanged', 'Boots': 'unchanged'}, **kw)
+        self.assertEqual(set(meta['swapped']), {path('Socks'), path('Boots')})
+        self.assertEqual(meta['admitted'][path('Boots')]['masks'], 'unchanged')
+        self.assertEqual(self.out_assets['meshes'][path('Socks')]['bodyMaskUrl'], '../coverage/Socks.bodymask.png')
+        # The index moved after the proof: an item mask now names Boots that the proof never regenerated.
+        with self.assertRaises(SystemExit):
+            self.build(items, proof, morphs, masks={'Socks': 'unchanged', 'Boots': 'unchanged'}, item_masked=['Boots'], **kw)
+        for masks in ({'Socks': 'unchanged'},                                  # Boots not judged
+                      {'Socks': 'unchanged', 'Boots': 'unproven'},
+                      {'Socks': 'unchanged', 'Boots': 'body-changed'},           # changed but not shipped
+                      {'Socks': 'unchanged', 'Boots': ('unchanged', 'other file')}):  # judged another rebuild
+            with self.assertRaises(SystemExit, msg=masks):
+                self.build(items, proof, morphs, masks=masks, **kw)
+
+    def test_a_changed_body_mask_ships_the_s12_mask_only_when_named(self):
+        items = {'top': ['ClothTop']}
+        proof = {'ClothTop': ('refused', {}, self.REORDERED)}
+        morphs = {'ClothTop': self.SHAPED}
+        kw = dict(admit={'ClothTop': ('surface differs', False)}, surface={'ClothTop': self.SAME_UVS},
+                  admit_rework=['ClothTop'], masked=['ClothTop'], masks={'ClothTop': 'body-changed'})
+        with self.assertRaises(SystemExit):
+            self.build(items, proof, morphs, **kw)
+        url = '../s12-refresh-tier2-v1/coverage-s12/ClothTop.bodymask.png'
+        meta = self.build(items, proof, morphs, ship_masks={'ClothTop': url}, **kw)
+        self.assertEqual(self.out_assets['meshes'][path('ClothTop')]['bodyMaskUrl'], url)
+        self.assertEqual(meta['maskRepoints'][path('ClothTop')],
+                         {'from': '../coverage/ClothTop.bodymask.png', 'to': url, 'sha256': 'mask',
+                          'file': 'cov/ClothTop.bodymask.png'})
+        # Already on its S12 file (an earlier batch applied it): the mask alone moves.
+        live = {'ClothTop': ('morph-only', {}, None)}
+        kw2 = dict(admit={'ClothTop': ('surface differs', False)}, masked=['ClothTop'], masks={'ClothTop': 'body-changed'})
+        tmp_meta = self.build(items, live, morphs, changed_only=True, ship_masks={'ClothTop': url}, s12_live=['ClothTop'],
+                              **kw2)
+        self.assertEqual(tmp_meta['swapped'], {})
+        self.assertEqual(tmp_meta['maskRepoints'][path('ClothTop')]['maskOnly'], True)
+        self.assertEqual(self.out_assets['meshes'][path('ClothTop')]['bodyMaskUrl'], url)
+        with self.assertRaises(SystemExit):    # an unchanged mask is never replaced
+            self.build(items, proof, morphs, **{**kw, 'masks': {'ClothTop': 'unchanged'}}, ship_masks={'ClothTop': url})
 
     # Tier 2 (23 Nov 2026): the 17 Nov game update. Only packages proven byte-identical keep their 6 Nov rebuild.
     def test_a_package_changed_since_the_read_stays_live_and_holds_its_items(self):

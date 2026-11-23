@@ -4,8 +4,10 @@ to the active index the preview was built on, for apply-merge-patch.py.
   python -I scripts/body-types/make-merge-patch.py ACTIVE_ASSETS_JSON CANDIDATE_ASSETS_JSON OUT_PATCH_JSON
 
 The candidate must differ from the active index only in mesh url/sha256 and the s12BodyTypePreview block (the body's
-sha256 may change in place: the preview server answers the preserved body URL with the S12 body). Anything else stops
-the tool. Read-only on both inputs; refuses an existing output.
+sha256 may change in place: the preview server answers the preserved body URL with the S12 body). A repointed mesh may
+also change its bodyMaskUrl when the preview recorded it in maskRepoints (tier 2, 23 Nov 2026: the S12 body mask ships,
+build-preview-index.py --ship-s12-masks); the patch carries the mask file's sha256. Anything else stops the tool.
+Read-only on both inputs; refuses an existing output.
 """
 import hashlib
 import json
@@ -30,15 +32,27 @@ def main(active_json, candidate_json, out_json):
         raise SystemExit('The candidate changes more than mesh urls and hashes')
     if set(a['meshes']) != set(c['meshes']):
         raise SystemExit('The candidate adds or removes meshes')
-    meshes = {}
+    meshes, body_masks = {}, {}
+    repoints = meta.get('maskRepoints', {})
     for key in sorted(a['meshes']):
         x, y = a['meshes'][key], c['meshes'][key]
-        if {k: v for k, v in x.items() if k not in ('url', 'sha256')} != {k: v for k, v in y.items() if k not in ('url', 'sha256')}:
+        mask = repoints.get(key)
+        if mask and (x.get('bodyMaskUrl'), y.get('bodyMaskUrl')) != (mask['from'], mask['to']):
+            raise SystemExit(f'{key}: the body mask change differs from the preview record')
+        ignored = ('url', 'sha256', 'bodyMaskUrl') if mask else ('url', 'sha256')
+        if {k: v for k, v in x.items() if k not in ignored} != {k: v for k, v in y.items() if k not in ignored}:
             raise SystemExit(f'{key}: the candidate changes more than url and sha256')
         if (x['url'], x['sha256']) != (y['url'], y['sha256']):
             meshes[key] = {'fromUrl': x['url'], 'toUrl': y['url'], 'fromSha256': x['sha256'], 'toSha256': y['sha256'],
                            **({'admitted': meta['swapped'][key]['admitted']} if 'admitted' in meta['swapped'].get(key, {}) else {}),
-                           'morphsChanged': {k: v['maxCm'] for k, v in meta['swapped'].get(key, {}).get('morphsChanged', {}).items()}}
+                           'morphsChanged': {k: v['maxCm'] for k, v in meta['swapped'].get(key, {}).get('morphsChanged', {}).items()},
+                           **({'bodyMask': {'fromUrl': mask['from'], 'toUrl': mask['to'], 'toSha256': mask['sha256']}}
+                              if mask else {})}
+        elif mask and mask.get('maskOnly') and y['sha256'] == mask['meshSha256']:
+            body_masks[key] = {'fromUrl': mask['from'], 'toUrl': mask['to'], 'toSha256': mask['sha256'],
+                               'meshSha256': mask['meshSha256']}
+        elif mask:
+            raise SystemExit(f'{key}: a body mask repoint on a mesh that is not repointed')
     if set(meshes) != set(meta['swapped']):
         raise SystemExit('The repointed meshes differ from the preview record')
     patch = {
@@ -52,9 +66,12 @@ def main(active_json, candidate_json, out_json):
                  'servedFrom': meta['swapped'].get(body, {}).get('servedFrom'),
                  'note': 'The S12 body is not part of a garments-only merge; it ships with stage 3 and its app changes.'},
         'admitted': meta.get('admitted', {}),
-        'meshes': meshes}
+        'meshes': meshes,
+        **({'bodyMasks': body_masks} if body_masks else {})}
     out.write_text(json.dumps(patch, indent=1) + '\n', encoding='utf-8')
-    print(json.dumps({'meshes': len(meshes), 'garments': len([k for k in meshes if k != body]), 'out': str(out)}))
+    print(json.dumps({'meshes': len(meshes), 'garments': len([k for k in meshes if k != body]),
+                      'bodyMasks': len([k for k in meshes if 'bodyMask' in meshes[k]]) + len(body_masks),
+                      'maskOnly': len(body_masks), 'out': str(out)}))
 
 
 if __name__ == '__main__':
