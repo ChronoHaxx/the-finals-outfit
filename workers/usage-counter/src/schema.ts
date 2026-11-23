@@ -109,12 +109,11 @@ export function readEnvelope(body: unknown, origin: string | null): (Envelope & 
   return { app, form_factor: (form_factor as string | undefined) ?? "", build: (build as string | undefined) ?? "", events };
 }
 
-/** One event checked against its app's spec: its name and its values as strings in column order, or null. An event
- *  is `{ e, p }` (the outfit builder's short form) or `{ name, props }` (WuWa VR's); the stored row is the same. */
+/** One event (`{ e, p? }`) checked against its app's spec: its name and its values as strings in column order, or
+ *  null. */
 export function checkEvent(app: string, raw: unknown): CheckedEvent | null {
   if (!raw || typeof raw !== "object") return null;
-  const short = raw as { e?: unknown; p?: unknown; name?: unknown; props?: unknown };
-  const e = short.e ?? short.name, p = short.p ?? short.props;
+  const { e, p } = raw as { e?: unknown; p?: unknown };
   const events = APPS[app]?.events;
   if (typeof e !== "string" || !events || !Object.hasOwn(events, e)) return null;
   const spec = events[e];

@@ -162,14 +162,14 @@ test("the app's batches fit the collector, and every event the app can send is i
     assert.ok(checkEvent("outfit", Object.keys(p).length ? { e, p } : { e }), e);
 });
 
-test("an app may send WuWa VR's shape: { name, props }, no form factor or build, the hash on its own visitor event", async () => {
+test("a minimal-envelope app may leave out form factor and build, and names its own visitor event", async () => {
   const e = env();
   const apps = APPS as Record<string, (typeof APPS)[string]>;
   apps["test-site"] = { origins: [ORIGIN], visitorEvent: "page_viewed", envelope: "minimal",
     events: { page_viewed: [["lang", id]], guide_section_reached: [["section", id], ["lang", id]] } };
   try {
     const body = JSON.stringify({ app: "test-site", schema: 1, events: [
-      { name: "page_viewed", props: { lang: "en" } }, { name: "guide_section_reached", props: { section: "install", lang: "en" } }] });
+      { e: "page_viewed", p: { lang: "en" } }, { e: "guide_section_reached", p: { section: "install", lang: "en" } }] });
     const res = await collect(new Request("https://x.example/e", { method: "POST", body,
       headers: { Origin: ORIGIN, "User-Agent": CHROME, "CF-Connecting-IP": "203.0.113.7" } }), e, NOON);
     assert.equal(res.status, 204);

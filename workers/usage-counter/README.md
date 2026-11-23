@@ -31,8 +31,7 @@ The event list, what each event decides, and how to report the numbers honestly 
   "events": [{ "e": "app_loaded" }, { "e": "item_equipped", "p": { "slot": "hair", "item_id": "pompadour" } }] }
 ```
 
-Events may also be written `{ "name": ..., "props": ... }` (WuWa VR's sender); the row is the same. An app whose spec
-says `envelope: "minimal"` may leave out `form_factor` and `build`; they are stored empty. At most 20 events and 16 KB
+An app whose spec says `envelope: "minimal"` may leave out `form_factor` and `build`; they are stored empty. At most 20 events and 16 KB
 per request. The answer is always an empty body: 204 when accepted or dropped for privacy,
 403 for an origin or envelope that is not allowed, 429 past 60 requests a minute from one address.
 
