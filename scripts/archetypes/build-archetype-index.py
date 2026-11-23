@@ -6,8 +6,18 @@ Reads only. Inputs (default: the root checkout's public/models, found from this 
   season11-staging-*/source-glb/*.glb                        extracted meshes, Light/Medium/Heavy siblings included
 
 Writes to --out: assets.json (the active index plus the class meshes and an `archetypes` record), skin-pairs.json
-(unchanged copy, so a preview server can answer both), report.json (every proof and every refusal), publish-list.tsv
-(each class mesh file, where the index expects it, and its sha256).
+(unchanged copy, so a preview server can answer both), report.json (every proof, every refusal and every skip),
+publish-list.tsv (each class mesh file, where the index expects it, and its sha256), skipped.tsv (each class mesh left
+out without a proof, and why).
+
+Every class mesh the item definitions name ends in exactly one of three lists, never dropped silently:
+  added    (report.json "added", "meshes")  every proof below holds;
+  refused  (report.json "refused")          a proof was tried and failed;
+  skipped  (report.json "skipped")          no proof was tried, for a recorded reason: "medium sibling repointed" (the
+           active index serves another build of the Medium mesh than the staged one, e.g. an S12 refresh), "medium
+           sibling not staged", "medium not in the active index", "medium not skeletal in the active index", "swap
+           conflict" (one Medium mesh swapped for different class meshes), "already in the active index", or "class
+           body not proven" (the mesh passed, but its class cannot be built).
 
 A class mesh joins the index only with proof, never by approximation:
   1. Same build: its Medium sibling's staged GLB is byte-identical (sha256) to the mesh the active index serves, so the
@@ -195,11 +205,12 @@ def main():
     skin_pairs = json.loads((index_dir / "skin-pairs.json").read_text(encoding="utf-8"))
     report = {"activeSha256": sha256(index_dir / "assets.json"), "skinPairsSha256": sha256(index_dir / "skin-pairs.json"),
               "currentProof": {k: current[k] for k in ("file", "sha256", "containers")} if current else None,
-              "classes": {}, "meshes": {}, "refused": {}}
+              "classes": {}, "meshes": {}, "refused": {}, "skipped": {}}
 
-    # The Archetype mesh swaps the definitions author: Medium skeletal mesh -> class mesh.
-    swaps = {cls: {} for cls in CLASSES}
-    conflicts = set()
+    # The Archetype mesh swaps the definitions author: Medium skeletal mesh -> class mesh. Every class mesh named here
+    # ends in exactly one of report["meshes"] (added), report["refused"] (a proof failed) or report["skipped"] (never
+    # proven, with the reason): nothing is dropped silently (coordinator, 23 Nov 2026).
+    named = {cls: {} for cls in CLASSES}  # class -> Medium -> every class mesh the definitions swap it for
     items_dir = models / "reconstructed-assembly-v2" / "items"
     for f in sorted(items_dir.glob("*.json")):
         d = json.loads(f.read_text(encoding="utf-8"))
@@ -211,9 +222,31 @@ def main():
                 for cls, (tag, _) in CLASSES.items():
                     if rule.get("MatchingTags") == [tag] and rule.get("bOverrideMesh"):
                         target = (rule.get("ReplacementSkeletalMesh") or {}).get("AssetPathName") or ""
-                        if target and swaps[cls].setdefault(medium, target) != target:
-                            conflicts.add(medium)
+                        if target:
+                            named[cls].setdefault(medium, set()).add(target)
+    conflicts = {medium for cls in CLASSES for medium, targets in named[cls].items() if len(targets) > 1}
+    swaps = {cls: {medium: next(iter(targets)) for medium, targets in named[cls].items() if len(targets) == 1}
+             for cls in CLASSES}
     report["swapConflicts"] = sorted(conflicts)
+
+    def skip(target, cls, medium, reason, **detail):
+        """A class mesh left out without being proven, and why (one entry per Medium mesh that names it)."""
+        row = report["skipped"].setdefault(target, {"class": cls, "reasons": []})
+        row["reasons"].append({"medium": medium, "reason": reason, **detail})
+
+    for cls in CLASSES:
+        for medium_path, targets in named[cls].items():
+            entry = assets["meshes"].get(medium_path)
+            for target in sorted(targets):
+                if medium_path in conflicts:
+                    skip(target, cls, medium_path, "swap conflict",
+                         candidates={c: sorted(named[c].get(medium_path, ())) for c in CLASSES})
+                elif target in assets["meshes"]:
+                    skip(target, cls, medium_path, "already in the active index")
+                elif entry is None:
+                    skip(target, cls, medium_path, "medium not in the active index")
+                elif entry.get("kind") != "skeletal":
+                    skip(target, cls, medium_path, "medium not skeletal in the active index")
 
     staged = {}
     for folder in STAGING:
@@ -231,8 +264,20 @@ def main():
         if entry.get("kind") != "skeletal" or medium_path in conflicts:
             continue
         name = medium_path.rsplit(".", 1)[-1]
-        match = [f for f in staged.get(name + ".glb", []) if staged_sha(f) == entry.get("sha256")]
+        candidates = staged.get(name + ".glb", [])
+        match = [f for f in candidates if staged_sha(f) == entry.get("sha256")]
         if not match:
+            # Proof 1 (same build) cannot hold: the staged class meshes belong to another Medium build, or to none.
+            for cls in CLASSES:
+                target = swaps[cls].get(medium_path)
+                if not target or target in assets["meshes"]:
+                    continue
+                if candidates:
+                    skip(target, cls, medium_path, "medium sibling repointed", liveUrl=entry.get("url"),
+                         liveSha256=entry.get("sha256"),
+                         stagedSha256=sorted({staged_sha(f) for f in candidates}))
+                else:
+                    skip(target, cls, medium_path, "medium sibling not staged")
             continue
         medium_glb = match[0]
         medium = mesh_data(medium_glb)
@@ -295,7 +340,24 @@ def main():
                                   "translationResidualMaxM": residual, "rotationMaxDiff": rotation}
 
     # A class without a proven body cannot be built, so none of its meshes join (with neither, the index is unchanged).
+    for k in sorted(added):
+        if report["meshes"][k]["class"] not in archetypes:
+            skip(k, report["meshes"][k]["class"], report["meshes"][k]["medium"], "class body not proven")
     added = {k: v for k, v in added.items() if report["meshes"][k]["class"] in archetypes}
+    # A class mesh reached from several Medium meshes counts once: added or refused through any of them wins.
+    for k in [k for k in report["skipped"] if k in added or k in report["refused"]]:
+        del report["skipped"][k]
+    every = {target for cls in CLASSES for targets in named[cls].values() for target in targets}
+    accounted = set(added) | set(report["refused"]) | set(report["skipped"])
+    if every - accounted:
+        sys.exit(f"{len(every - accounted)} class meshes neither added, refused nor skipped, e.g. {sorted(every - accounted)[:3]}")
+    if set(added) & set(report["refused"]):
+        sys.exit(f"class meshes both added and refused (reached from two Medium meshes): {sorted(set(added) & set(report['refused']))[:3]}")
+    counts = {cls: {} for cls in CLASSES}
+    for k, row in report["skipped"].items():
+        why = "; ".join(sorted({r["reason"] for r in row["reasons"]}))
+        counts[row["class"]][why] = counts[row["class"]].get(why, 0) + 1
+    report["skippedCounts"] = {cls: dict(sorted(c.items())) for cls, c in counts.items()}
     item_masks = {source: {k: v for k, v in masks.items() if k in added} for source, masks in item_masks.items()}
     item_masks = {source: masks for source, masks in item_masks.items() if masks}
     result = dict(assets)
@@ -314,8 +376,15 @@ def main():
     (out / "publish-list.tsv").write_text("".join(
         f"{report['meshes'][k]['file']}\t{report['meshes'][k]['publish']}\t{report['meshes'][k]['sha256']}\n"
         for k in sorted(added)), encoding="utf-8")
+    # class mesh <TAB> class <TAB> reason <TAB> the Medium mesh that names it: the apply record copies this list.
+    (out / "skipped.tsv").write_text("".join(
+        f"{k}\t{row['class']}\t{r['reason']}\t{r['medium']}\n"
+        for k, row in sorted(report["skipped"].items()) for r in row["reasons"]), encoding="utf-8")
     print(json.dumps({cls: len(v) for cls, v in report["added"].items()}), "class meshes;",
-          len(report["refused"]), "refused;", "classes:", sorted(archetypes))
+          len(report["refused"]), "refused;", len(report["skipped"]), "skipped;", "classes:", sorted(archetypes))
+    for cls, c in report["skippedCounts"].items():
+        for why, n in c.items():
+            print(f"  skipped {cls}: {n} {why}")
 
 
 if __name__ == "__main__":

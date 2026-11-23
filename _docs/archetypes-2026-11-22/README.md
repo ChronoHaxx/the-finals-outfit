@@ -12,6 +12,8 @@ Branch `claude/jovial-fermat-65dc6d`. Behind a flag until the class meshes are h
   `public/models`.
 - **Heavy** is blocked: `SK_Body_H` changed in the 17 Nov update. A Heavy class needs its body, so the builder leaves
   Heavy out of the index whole, and the picker never offers it. Heavy waits for a fresh read of `SK_Body_H`.
+- **Since S12 batch A landed** (active index b4f28192), Light re-plans to 63 meshes. The other 15 are waiting for an
+  S12-matched `_L` read (see "Re-plan on the S12 batch A index" below).
 - **The runtime supports both classes.** The Heavy captures from before the proof (`captures-v1`) show it working.
 
 ## How the game builds a class
@@ -137,7 +139,8 @@ Result on active `assets.json` 3f64b2e6 and skin-pairs f15a73a2:
 - **Refused, 11 meshes, with a reason each** (in `report.json`). Each is a reshaped class mesh that needs its own masks:
   - indices or UVs differ: `HeadPhonesAntennaPart_L`, `NRSuit_L`, `Racing_Gloves_L/H`, `AstroPilotGloves_H`;
   - vertex count differs: `AmmoBackpack_L/H`, `PoetShirtWithVest_L/H`, `CordBracelet_L`, `PioneerUpper_H`.
-- **Skipped:** `SK_Goth_M`, because the definitions disagree about its class mesh.
+- **Skipped:** `SK_Goth_M`, because the definitions disagree about its class mesh. Until 23 Nov this pass skipped
+  some rows without recording them; see the next sections.
 - **Reproducible:** two runs give byte-identical output.
 
 ## 17 Nov container proof (coordinator condition, 22 Nov)
@@ -160,6 +163,44 @@ both runs recorded. The proof per mesh is in `scripts/generated/archetypes/nov17
   the proof and must not be applied.
 - **Medium (for information):** 77 Medium siblings the live index serves also changed on 17 Nov. That is for the S12
   refresh to handle.
+
+## Re-plan on the S12 batch A index (23 Nov)
+
+S12 tier-2 batch A v8 landed before the Light apply, so the active index moved from 3f64b2e6 to b4f28192. The builder
+re-plans on whatever index is active. Read-only result:
+
+- **63 Light meshes, 0 Heavy, 25 refused** (61.3 MB). `assets.json` 425023bb…, `publish-list.tsv` 5df7361e….
+- **15 Light rows dropped from the 23 Nov 78.** Batch A repointed their Medium sibling to `s12-bodytype-refresh-v1`.
+  Proof 1 (same build) then fails: the staged `_L` was read beside the S11 Medium, not the S12 one.
+  - These 15 are **waiting for an S12-matched `_L` read**. Like Heavy, that needs a fresh read from the 17 Nov
+    containers, which waits on the usmap for that build.
+  - The 15: `Casual_Bangles`, `Casual_LowWedgeHeels`, `Cowboy_HandCloth`, `CrossPromo_NRHarness`,
+    `CrossPromo_NRSuitBelts`, `FromTencent_AsianSpiritBoots`, `Historic_SimpleBracelet`,
+    `Military_PantsWithHolsterPouch`, `Military_WaistPouches`, `Pirate_ScallywagPants`, `Space_AstroPilotGloves`,
+    `Space_AstroPilotGun`, `Space_AstroPilotPants`, `Streetwear_TechCropTopArmPouch` and
+    `Streetwear_TechCropTopNoBags` (each `SK_<name>_L`).
+  - Three meshes refused on 23 Nov are now skipped for the same reason: `CrossPromo_NRSuit_L`,
+    `Space_AstroPilotGloves_H` and `Streetwear_BoilerSuitTorso_L`. That is why refused fell from 28 to 25.
+- **Every skip is now listed.** Until 23 Nov the builder dropped these rows silently, so the 15 showed up only by
+  diffing against the pins. It now puts every class mesh the definitions name in exactly one of `added`, `refused` or
+  `skipped`. Each skip records its reason and the Medium mesh behind it, in `report.json` (`skipped`,
+  `skippedCounts`) and `skipped.tsv`. It stops if a mesh lands in none, or in two.
+  - Test: `python -I scripts/archetypes/test_build_archetype_index.py`.
+  - Skips on b4f28192, Light (Heavy shows the same counts, plus 62 `class body not proven`):
+
+    | Reason | Light meshes |
+    | --- | --- |
+    | medium sibling not staged (needs the bulk extraction) | 792 |
+    | medium sibling repointed | 114 |
+    | medium not in the active index | 89 |
+    | already in the active index | 9 |
+    | swap conflict | 1 |
+    | already in the active index; swap conflict | 1 |
+
+  - **"Repointed" means the index now serves a different Medium GLB than the staged one.** For 53 of the 114, the
+    index serves it from `s12-bodytype-refresh-v1`, the 15 above included. The other 61 come from our own fix-wave
+    folders (`reconstructed-w84-…`, `w139-…` and others); these were never in the Light set. Each skip row has the live
+    `liveUrl`, so you can tell which is which.
 
 ## Checks (agent PASS under the standing waiver)
 
