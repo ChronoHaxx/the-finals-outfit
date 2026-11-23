@@ -10,8 +10,10 @@ Status (23 Nov):
 - **v10c is apply-ready** (`APPLY.md`), built on that index with `replan.sh`. It covers batch B (10 meshes, plus
   ClothTop with its S12 mask) and the 5 batch-A masks that S12 changed, as mask-only repoints. That gives 1,423 items
   Season 12 throughout.
+- v10c was applied (`b164180c…`). v11 proved 7 of the 8 unproven masks, but the item rule holds all 7 behind stale,
+  batch-C and never-read meshes, so there is nothing to apply (README → "v11").
 - Held:
-  - 8 batch-A review meshes whose masks were never regenerated (never applied; still live);
+  - the 7 mask-proven review meshes above (item rule), and LunarDressTop (a legacy mask with no generation record);
   - SuitJacket (a w161 part-hide mask);
   - CropTopHoodie and PopGothShoes (review defects);
   - stale packages.
