@@ -31,7 +31,7 @@ def mesh_ref(name):
 class ItemRule(unittest.TestCase):
     def build(self, items, proof, morphs, changed_only=False, census=True, admit=None, admit_only=None,
               admit_reviewed=None, surface=None, admit_rework=None, masked=(), package=None, masks=None, ship_masks=None,
-              s12_live=()):
+              s12_live=(), item_masked=()):
         """items: {item: [mesh names]}; proof: {mesh: (status, morphsChanged, problems)}; morphs: {mesh: [names]};
         admit: {mesh: (skin-proof class, admissible)} written as a skin-by-name proof (tier 1, 12 Nov 2026);
         surface: {mesh: surface-proof class} written as a surface-match proof (tier 2, 22 Nov 2026), for meshes whose
@@ -46,6 +46,8 @@ class ItemRule(unittest.TestCase):
         assets = {'meshes': {(BODY if m == 'SK_Body_M' else path(m)): {'url': f'../live/{m}.glb', 'sha256': 'live'}
                              for m in meshes},
                   'attachmentBody': {'source': BODY, 'url': '../live/SK_Body_M.glb', 'sha256': 'live'}}
+        for m in item_masked:  # an item mask names it (one item, one mask)
+            assets.setdefault('itemBodyMasks', {})[f'DA_{m}'] = {path(m): {'url': f'../coverage/item-{m}.bodymask.png'}}
         for m in s12_live:     # the active index already serves the rebuild (an earlier batch applied it)
             assets['meshes'][path(m)].update({'url': f'../rebuilt/{m}.glb', 'sha256': hashlib.sha256(m.encode()).hexdigest()})
         for m in masked:
@@ -321,6 +323,9 @@ class ItemRule(unittest.TestCase):
         self.assertEqual(set(meta['swapped']), {path('Socks'), path('Boots')})
         self.assertEqual(meta['admitted'][path('Boots')]['masks'], 'unchanged')
         self.assertEqual(self.out_assets['meshes'][path('Socks')]['bodyMaskUrl'], '../coverage/Socks.bodymask.png')
+        # The index moved after the proof: an item mask now names Boots that the proof never regenerated.
+        with self.assertRaises(SystemExit):
+            self.build(items, proof, morphs, masks={'Socks': 'unchanged', 'Boots': 'unchanged'}, item_masked=['Boots'], **kw)
         for masks in ({'Socks': 'unchanged'},                                  # Boots not judged
                       {'Socks': 'unchanged', 'Boots': 'unproven'},
                       {'Socks': 'unchanged', 'Boots': 'body-changed'},           # changed but not shipped

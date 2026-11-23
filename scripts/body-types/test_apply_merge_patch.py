@@ -111,6 +111,20 @@ class ApplyPatch(unittest.TestCase):
         with self.assertRaises(SystemExit):        # the mesh is not the file the mask was made from
             self.run_tool('--garments-only', out='out-other-mesh')
 
+    def test_a_compact_index_is_written_back_compact(self):
+        # 23 Nov 2026: the Light apply writes the index as one line of compact JSON; keep it that way.
+        assets = json.loads((self.active / 'assets.json').read_bytes())
+        (self.active / 'assets.json').write_bytes(tool.dump(assets, 'compact'))
+        self.patch['activeIndexSha256'] = tool.sha(self.active / 'assets.json')
+        out, _ = self.run_tool('--garments-only')
+        raw = (self.tmp / 'out' / 'assets.json').read_bytes()
+        self.assertEqual(raw, tool.dump(out, 'compact'))
+        self.assertEqual(out['meshes'][TEE]['url'], '../s12/SK_Tee_M.glb')
+        (self.active / 'assets.json').write_bytes(json.dumps(assets, indent=4).encode())   # an unknown format
+        self.patch['activeIndexSha256'] = tool.sha(self.active / 'assets.json')
+        with self.assertRaises(SystemExit):
+            self.run_tool('--garments-only', out='out-unknown')
+
     def test_refuses_the_preserved_body_url(self):
         with self.assertRaises(SystemExit):
             self.run_tool('--body-url', LIVE_BODY)

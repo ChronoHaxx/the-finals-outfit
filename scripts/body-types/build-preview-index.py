@@ -102,6 +102,19 @@ def carries_masks(assets, source):
         source in meshes for meshes in assets.get('itemBodyMasks', {}).values())
 
 
+def named_masks(assets, source):
+    """Every mask the index names for this mesh, as (kind, url): its body mask and each item mask naming it."""
+    entry = assets['meshes'][source]
+    masks = {('body', entry['bodyMaskUrl'])} if entry.get('bodyMaskUrl') else set()
+    return masks | {('item', meshes[source]['url']) for meshes in assets.get('itemBodyMasks', {}).values()
+                    if source in meshes}
+
+
+def uncovered_masks(assets, source, row):
+    """Masks the index names now that the mask proof did not judge (the index may have moved since, 23 Nov 2026)."""
+    return named_masks(assets, source) - {(m['kind'], m['url']) for m in row.get('masks', [])}
+
+
 def load_mask_proof(mask_json):
     """{name: row} from one or more mask-proof.py outputs (comma-separated)."""
     rows = {}
@@ -187,6 +200,9 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
             m = mask_rows.get(name)
             if m is None or m['source'] != r['source']:
                 raise SystemExit(f'{name}: it carries masks and the mask proof does not judge it')
+            if uncovered_masks(assets, r['source'], m):
+                raise SystemExit(f'{name}: the index names masks the mask proof did not judge: '
+                                 f'{sorted(uncovered_masks(assets, r["source"], m))}')
             if (m['liveSha256'], m['s12Sha256']) != (r['liveSha256'], r['s12Sha256']):
                 raise SystemExit(f'{name}: the mask proof regenerated other files than the skin proof judged')
             if not (m['status'] == 'unchanged' or (m['status'] == 'body-changed' and name in (ship_masks or {}))):
@@ -333,7 +349,7 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
         entry = assets['meshes'][m['source']]
         body = next((x for x in m.get('masks', []) if x['kind'] == 'body'), None)
         if m['status'] != 'body-changed' or entry.get('sha256') != m['s12Sha256'] or body is None \
-                or entry.get('bodyMaskUrl') != body['url']:
+                or entry.get('bodyMaskUrl') != body['url'] or uncovered_masks(assets, m['source'], m):
             continue
         mask_repoints[m['source']] = {'from': entry['bodyMaskUrl'], 'to': ship_masks[n], 'sha256': m['s12BodyMask']['sha256'],
                                       'file': m['s12BodyMask']['file'], 'maskOnly': True, 'meshSha256': entry['sha256']}
