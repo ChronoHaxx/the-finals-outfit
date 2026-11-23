@@ -2,7 +2,7 @@
 // which link crawlers (Discord, X, Slack, iMessage...) never send, so every shared link unfurls as the same generic
 // card. This Worker gives a shared outfit its own URL:
 //
-//   POST /api/share?o=<outfit code>[&bt=<body type>][&pn=<player number>][&emote=<clip>&t=<s>&paused=1][&view=<camera>][&lt=<lighting>]
+//   POST /api/share?o=<outfit code>[&bt=<body type>][&ar=<archetype>][&pn=<player number>][&emote=<clip>&t=<s>&paused=1][&view=<camera>][&lt=<lighting>]
 //                                     body: a 1200x630 JPEG
 //                                     -> { url }
 //   GET  /s/<id>?o=<outfit code>[&emote=..]   the page crawlers read: og:image + summary_large_image; people are
@@ -15,10 +15,12 @@
 // The optional pose (10 Nov 2026: an emote frame the card shows), body type (12 Nov 2026: `bt`, absent for
 // Masculine), player number (21 Nov 2026: `pn`, absent for each piece's own) and camera view (21 Nov 2026: `view`, the
 // camera the builder opens on; the card is unchanged) and lighting (22 Nov 2026: `lt`, the look the builder opens with,
-// carried as an opaque value of the app's grammar) are stored and carried the same way as the code.
+// carried as an opaque value of the app's grammar) and archetype (22 Nov 2026: `ar`, absent for Medium) are stored and
+// carried the same way as the code.
 // Free-plan quotas (1,000 KV writes a day) are a hard ceiling: past it uploads fail and the app shares a plain link.
 
 import {
+  archetypeMetadata, archetypeQuery, readArchetype, storedArchetype,
   bodyTypeMetadata, bodyTypeQuery, HEIGHT, jpegSize, lightingMetadata, lightingQuery, MAX_BYTES, MAX_METADATA_BYTES,
   metadataBytes, newId, playerNumberMetadata, playerNumberQuery, poseMetadata, poseQuery, previewPage, readBodyType,
   readLighting, readPlayerNumber, readPose, readView, storedBodyType, storedLighting, storedPlayerNumber, storedPose,
@@ -48,13 +50,15 @@ async function upload(request: Request, env: Env, url: URL): Promise<Response> {
   if (pose === null) return json({ error: "bad pose" }, 400, headers);
   const bodyType = readBodyType(url.searchParams);
   if (bodyType === null) return json({ error: "bad body type" }, 400, headers);
+  const archetype = readArchetype(url.searchParams);
+  if (archetype === null) return json({ error: "bad archetype" }, 400, headers);
   const playerNumber = readPlayerNumber(url.searchParams);
   if (playerNumber === null) return json({ error: "bad player number" }, 400, headers);
   const view = readView(url.searchParams);
   if (view === null) return json({ error: "bad camera view" }, 400, headers);
   const lighting = readLighting(url.searchParams);
   if (lighting === null) return json({ error: "bad lighting" }, 400, headers);
-  const metadata = { o: code, ...bodyTypeMetadata(bodyType), ...playerNumberMetadata(playerNumber), ...poseMetadata(pose),
+  const metadata = { o: code, ...bodyTypeMetadata(bodyType), ...archetypeMetadata(archetype), ...playerNumberMetadata(playerNumber), ...poseMetadata(pose),
     ...viewMetadata(view), ...lightingMetadata(lighting) };
   if (metadataBytes(metadata) > MAX_METADATA_BYTES) return json({ error: "link too long for a preview" }, 413, headers);
   if (env.UPLOAD_LIMIT) {
@@ -72,7 +76,7 @@ async function upload(request: Request, env: Env, url: URL): Promise<Response> {
   } catch {
     return json({ error: "storage unavailable" }, 503, headers); // e.g. the daily write quota
   }
-  return json({ url: `${url.origin}/s/${id}?o=${code}${bodyTypeQuery(bodyType)}${playerNumberQuery(playerNumber)}${poseQuery(pose)}${viewQuery(view)}${lightingQuery(lighting)}` },
+  return json({ url: `${url.origin}/s/${id}?o=${code}${bodyTypeQuery(bodyType)}${archetypeQuery(archetype)}${playerNumberQuery(playerNumber)}${poseQuery(pose)}${viewQuery(view)}${lightingQuery(lighting)}` },
     201, headers);
 }
 
@@ -106,13 +110,15 @@ export default {
         : fromStore ? storedBodyType(stored.metadata) : readBodyType(url.searchParams) ?? undefined;
       const playerNumber = !code ? undefined
         : fromStore ? storedPlayerNumber(stored.metadata) : readPlayerNumber(url.searchParams) ?? undefined;
+      const archetype = !code ? undefined
+        : fromStore ? storedArchetype(stored.metadata) : readArchetype(url.searchParams) ?? undefined;
       const view = !code ? undefined : fromStore ? storedView(stored.metadata) : readView(url.searchParams) ?? undefined;
       const lighting = !code ? undefined
         : fromStore ? storedLighting(stored.metadata) : readLighting(url.searchParams) ?? undefined;
       const self = `${url.origin}/s/${page[1]}${code
-        ? `?o=${code}${bodyTypeQuery(bodyType)}${playerNumberQuery(playerNumber)}${poseQuery(pose)}${viewQuery(view)}${lightingQuery(lighting)}` : ""}`;
+        ? `?o=${code}${bodyTypeQuery(bodyType)}${archetypeQuery(archetype)}${playerNumberQuery(playerNumber)}${poseQuery(pose)}${viewQuery(view)}${lightingQuery(lighting)}` : ""}`;
       return new Response(previewPage(env, self, stored.value ? `${url.origin}/i/${page[1]}.jpg` : null, code, pose,
-        bodyType, playerNumber, view, lighting), {
+        bodyType, playerNumber, view, lighting, archetype), {
         headers: { ...security, "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, max-age=3600" } });
     }
     return Response.redirect(env.APP_URL, 302);

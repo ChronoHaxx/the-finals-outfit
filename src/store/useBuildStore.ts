@@ -5,6 +5,7 @@ import { getItemById } from "../lib/catalog";
 import { migrateBuildSlots } from "../lib/outfit-slots";
 import { resolveEquipmentSlots } from "../lib/equipment";
 import { DEFAULT_BODY_TYPE, type BodyTypeId } from "../lib/body-type";
+import { DEFAULT_ARCHETYPE, type ArchetypeId } from "../lib/archetype";
 import { storedPlayerNumber } from "../lib/player-number";
 
 // `build` is the serializable source of truth: slot -> selected item id (or null).
@@ -71,13 +72,17 @@ interface BuildState {
   /** The outfit's player number exactly as chosen or stored (src/lib/player-number.ts); null: each piece prints its
    *  own number. A value this site cannot print is kept as it is and renders as null. */
   playerNumber: number | null;
+  /** The outfit's archetype (src/lib/archetype.ts: light, medium or heavy) exactly as it was chosen or stored. A value
+   *  this site cannot name is kept as it is and renders as Medium. */
+  archetype: string;
   equip: (item: Item) => void;
   unequip: (slot: Slot) => void;
   toggle: (item: Item) => void;
   // Replace the whole build (share-link hydration). Caller validates ids beforehand. Without a body type, the current
   // one stays (Randomise and Reset keep it); likewise the player number when it is undefined (null is "each piece's own").
-  load: (slots: Partial<Record<Slot, string>>, bodyType?: string, playerNumber?: number | null) => void;
+  load: (slots: Partial<Record<Slot, string>>, bodyType?: string, playerNumber?: number | null, archetype?: string) => void;
   setBodyType: (bodyType: BodyTypeId) => void;
+  setArchetype: (archetype: ArchetypeId) => void;
   setPlayerNumber: (playerNumber: number | null) => void;
   reset: () => void;
 }
@@ -86,6 +91,7 @@ export const useBuildStore = create<BuildState>((set) => ({
   build: defaultBuild(),
   bodyType: DEFAULT_BODY_TYPE,
   playerNumber: null,
+  archetype: DEFAULT_ARCHETYPE,
   equip: (item) => set((s) => ({ build: { ...blankBuild(),
     ...resolveEquipmentSlots({ ...s.build, [item.slot]: item.id }, item.slot).slots } })),
   unequip: (slot) => set((s) => ({ build: { ...s.build, [slot]: null } })),
@@ -98,11 +104,13 @@ export const useBuildStore = create<BuildState>((set) => ({
   // the link stays empty (and the visual-diff harness renders items in isolation).
   // Slot maps written down before a catalog slot correction are migrated here as well as
   // in the share-link path, so loading a build directly can't disagree with loading its URL.
-  load: (slots, bodyType, playerNumber) => set({ build: { ...blankBuild(), ...migrateBuildSlots(slots) },
+  load: (slots, bodyType, playerNumber, archetype) => set({ build: { ...blankBuild(), ...migrateBuildSlots(slots) },
     ...(bodyType === undefined ? {} : { bodyType }),
+    ...(archetype === undefined ? {} : { archetype }),
     ...(playerNumber === undefined ? {} : { playerNumber: storedPlayerNumber(playerNumber) }) }),
   setBodyType: (bodyType) => set(s => s.bodyType === bodyType ? s : { bodyType }),
+  setArchetype: (archetype) => set(s => s.archetype === archetype ? s : { archetype }),
   setPlayerNumber: (playerNumber) => set(s => s.playerNumber === playerNumber ? s : { playerNumber: storedPlayerNumber(playerNumber) }),
-  // The starting look; the body type and the player number are the user's choices and stay.
+  // The starting look; the body type, the archetype and the player number are the user's choices and stay.
   reset: () => set({ build: defaultBuild() }),
 }));

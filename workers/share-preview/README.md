@@ -206,6 +206,20 @@ Live checks after the deploy, all read-only (nothing stored):
 - The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit and serves its 73 KB card. The root redirects (302).
 - An upload with `pn=07` from the allowed origin gets 400 `bad player number`. A foreign origin gets 403.
 
+## Redeploying for archetypes (23 Nov 2026; not deployed yet)
+
+The app can carry a contestant class (`_docs/archetypes-2026-11-22/README.md`): `ar=l` for Light, `ar=h` for Heavy,
+absent for Medium, after `bt` and before `pn`.
+- **Validation:** the Worker checks it (`^[a-z]{1,2}$`, else 400 `bad archetype`) and stores it in the entry's metadata
+  as `ar`. A stored `ar` wins over a link's, like every other field.
+- **Output:** it returns `ar` in the link and the page's builder URL. An entry or link without it is Medium, exactly as
+  before.
+- **Deploy order:** deploy first. The app refuses a preview-card link if the Worker dropped `ar`, so a Worker without
+  this change never turns a Light share into a Medium one; the app copies the plain link instead.
+- **When:** the app only sends `ar` for a class outfit, and classes are flagged and absent from the live index. So the
+  deploy can wait until Light is applied. It needs the coordinator's approval like every Worker deploy. It replaces
+  `b3c57e95`; the rollback is `npx --yes wrangler@4.131.1 rollback b3c57e95-cb84-4a9c-bf89-f45868aafea3`.
+
 ## Live deployment (20 Oct 2026)
 
 - Worker `the-finals-outfit-share` at https://the-finals-outfit-share.chronohaxx.workers.dev (account subdomain renamed from the

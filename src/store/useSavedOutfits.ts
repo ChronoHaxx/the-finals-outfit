@@ -22,6 +22,7 @@ import { builderHashMode, builderHashParams, builderPath } from "../lib/site-mod
 import { migrateOutfit } from "../lib/outfit-slots";
 import type { Slot } from "../lib/slots";
 import { BODY_TYPE_PARAM, DEFAULT_BODY_TYPE } from "../lib/body-type";
+import { DEFAULT_ARCHETYPE } from "../lib/archetype";
 import {
   VIEW_CAP, VIEW_PARAM, hasDeletedView, liveViews, viewsWritable, withViewAdded, withViewDeleted, withViewRenamed, withViewRestored,
   type CameraView,
@@ -81,7 +82,7 @@ export async function startSavedOutfits(options: StartOptions = {}): Promise<voi
   teardown.push(lib.subscribe(onLibraryChange));
   teardown.push(useBuildStore.subscribe((state, previous) => {
     if (!applying && (state.build !== previous.build || state.bodyType !== previous.bodyType
-      || state.playerNumber !== previous.playerNumber)) onHandEdit();
+      || state.playerNumber !== previous.playerNumber || state.archetype !== previous.archetype)) onHandEdit();
   }));
   teardown.push(() => lib.close());
   if (typeof window !== "undefined" && typeof document !== "undefined") {
@@ -130,29 +131,33 @@ function own<T>(change: () => T): T {
 
 // An outfit's stored body type, as the build store holds it: absent (saved before body types) is Masculine.
 const storedBodyType = (bodyType: string | undefined) => bodyType || DEFAULT_BODY_TYPE;
+// Likewise its archetype: absent (saved before archetypes, 22 Nov 2026) is Medium.
+const storedArchetype = (archetype: string | undefined) => archetype || DEFAULT_ARCHETYPE;
 
 function show(slots: SlotMap, labels: Record<string, string> | undefined, bodyType: string | undefined,
-  playerNumber: number | undefined) {
+  playerNumber: number | undefined, archetype: string | undefined) {
   const resolved = resolveSavedSlots(slots, labels);
   const state = useBuildStore.getState();
   const nextBodyType = storedBodyType(bodyType);
+  const nextArchetype = storedArchetype(archetype);
   // Absent (saved before player numbers) is null: each piece prints its own number, as the site always showed.
   const nextNumber = storedPlayerNumber(playerNumber);
-  if (!sameBuild(state.build, resolved.build) || state.bodyType !== nextBodyType || state.playerNumber !== nextNumber) {
+  if (!sameBuild(state.build, resolved.build) || state.bodyType !== nextBodyType || state.playerNumber !== nextNumber
+    || state.archetype !== nextArchetype) {
     applying = true;
-    try { state.load(resolved.build, nextBodyType, nextNumber); } finally { applying = false; }
+    try { state.load(resolved.build, nextBodyType, nextNumber, nextArchetype); } finally { applying = false; }
   }
   useSavedOutfits.setState({ missing: resolved.missing });
 }
 
 function showRecord(record: OutfitRecord) {
   appliedSlots = record.slots;
-  show(record.slots, record.labels, record.bodyType, record.playerNumber);
+  show(record.slots, record.labels, record.bodyType, record.playerNumber, record.archetype);
 }
 
 function showDraft(draft: Draft) {
   appliedSlots = undefined;
-  show(draft.slots, draft.labels, draft.bodyType, draft.playerNumber);
+  show(draft.slots, draft.labels, draft.bodyType, draft.playerNumber, draft.archetype);
 }
 
 function publish() {
@@ -181,21 +186,21 @@ function onLibraryChange() {
 function onHandEdit() {
   const lib = library;
   if (!lib) return;
-  const { build, bodyType, playerNumber } = useBuildStore.getState();
+  const { build, bodyType, playerNumber, archetype } = useBuildStore.getState();
   const number = playerNumber ?? undefined; // a record or draft field: absent for each piece's own
   const { slots, missing } = keepMissing(build, useSavedOutfits.getState().missing);
   const current = lib.getCurrent();
   if (useSavedOutfits.getState().toast?.kind === "roll") useSavedOutfits.setState({ toast: null });
   if (current?.kind === "record") {
     const record = lib.get(current.id)!;
-    own(() => lib.setContent(record.id, slots, labelsFor(slots, record.labels), false, bodyType, playerNumber));
+    own(() => lib.setContent(record.id, slots, labelsFor(slots, record.labels), false, bodyType, playerNumber, archetype));
     appliedSlots = lib.get(record.id)!.slots;
   } else if (current?.kind === "draft") {
     promoteDraft({ ...current.draft, slots, labels: labelsFor(slots, current.draft.labels), generated: false, bodyType,
-      playerNumber: number }, true);
+      playerNumber: number, archetype }, true);
   } else {
     // Nothing on screen was chosen yet (should not happen after openFromUrl): keep the edit anyway.
-    promoteDraft({ name: "Outfit", slots, labels: labelsFor(slots), bodyType, playerNumber: number, reason: "cap" }, true);
+    promoteDraft({ name: "Outfit", slots, labels: labelsFor(slots), bodyType, playerNumber: number, archetype, reason: "cap" }, true);
   }
   useSavedOutfits.setState({ missing });
   publish();
@@ -207,12 +212,14 @@ const nextName = (lib: OutfitLibrary, stem: string) => uniqueName(stem, lib.live
 const currentBodyType = () => useBuildStore.getState().bodyType;
 // The player number too (absent from the record when each piece prints its own).
 const currentPlayerNumber = () => useBuildStore.getState().playerNumber ?? undefined;
+// And the archetype: a roll dresses the contestant on screen, it does not change their class.
+const currentArchetype = () => useBuildStore.getState().archetype;
 
 function createStarting(lib: OutfitLibrary): OutfitRecord {
   const slots = startingOutfit() as SlotMap;
   // Uncapped only in effect: called when there are no live outfits at all.
   return own(() => lib.create({ name: nextName(lib, "Outfit"), slots, labels: labelsFor(slots), generated: true,
-    bodyType: currentBodyType(), playerNumber: currentPlayerNumber() }))!;
+    bodyType: currentBodyType(), playerNumber: currentPlayerNumber(), archetype: currentArchetype() }))!;
 }
 
 /** The draft becomes a saved outfit. At the cap it stays a draft (and says so). */
@@ -220,7 +227,7 @@ function promoteDraft(draft: Draft, edited: boolean): boolean {
   const lib = library!;
   const record = own(() => lib.create({ name: uniqueName(draft.name, lib.liveNames()), slots: draft.slots,
     labels: draft.labels, generated: draft.generated, bodyType: draft.bodyType, playerNumber: draft.playerNumber,
-    cameraViews: draft.cameraViews }));
+    cameraViews: draft.cameraViews, archetype: draft.archetype }));
   if (record) {
     own(() => lib.select(record.id));
     appliedSlots = record.slots;
@@ -309,14 +316,16 @@ export function openFromUrl(href: string): LinkResult {
   const bodyType = storedBodyType(outfit.bodyType);
   // Likewise the player number: a link without one shows each piece's own number.
   const playerNumber = storedPlayerNumber(outfit.playerNumber);
+  // And the archetype: a link without one is Medium, as every link made before archetypes was.
+  const archetype = storedArchetype(outfit.archetype);
   const result = { omitted: resolved.missing.length > 0, error: false };
   const lib = library;
   if (!lib) {
-    useBuildStore.getState().load(resolved.build, bodyType, playerNumber);
+    useBuildStore.getState().load(resolved.build, bodyType, playerNumber, archetype);
     return result;
   }
   const opened = openUnsaved(lib, outfit.presetName?.trim() || "Shared outfit", resolved.slots, resolved.build, bodyType,
-    playerNumber, "link", "Open the link anyway?");
+    playerNumber, "link", "Open the link anyway?", archetype);
   return opened.kind === "declined" ? { ...result, declined: true } : result;
 }
 
@@ -333,18 +342,20 @@ type Opened = { kind: "same" } | { kind: "declined" } | { kind: "record"; record
  * draft is in place, so the router's re-run finds the draft and leaves it alone.
  */
 function openUnsaved(lib: OutfitLibrary, name: string, slots: SlotMap, build: Partial<Record<Slot, string>>,
-  bodyType: string, playerNumber: number | null, reason: "link" | "preset", ask: string): Opened {
+  bodyType: string, playerNumber: number | null, reason: "link" | "preset", ask: string, archetype: string): Opened {
   ensureCurrent(false);
   const current = lib.getCurrent();
   const state = useBuildStore.getState();
-  if (current && sameBuild(state.build, build) && state.bodyType === bodyType && state.playerNumber === playerNumber) {
+  if (current && sameBuild(state.build, build) && state.bodyType === bodyType && state.playerNumber === playerNumber
+    && state.archetype === archetype) {
     if (current.kind === "record" && reason === "link") cleanUrl(); // already this saved outfit (also the Roadmap round trip)
     return { kind: "same" };
   }
   if (current?.kind === "draft" && current.draft.edited && !confirmLeave(
     `“${current.draft.name}” is not saved (you have ${lib.cap} saved outfits). ${ask}`)) return { kind: "declined" };
   const match = lib.live().find(record => sameBuild(resolveSavedSlots(record.slots, record.labels).build, build)
-    && storedBodyType(record.bodyType) === bodyType && samePlayerNumber(record.playerNumber, playerNumber));
+    && storedBodyType(record.bodyType) === bodyType && samePlayerNumber(record.playerNumber, playerNumber)
+    && storedArchetype(record.archetype) === archetype);
   let opened: Opened;
   if (match) {
     own(() => lib.select(match.id));
@@ -352,7 +363,8 @@ function openUnsaved(lib: OutfitLibrary, name: string, slots: SlotMap, build: Pa
     cleanUrl();
     opened = { kind: "record", record: match };
   } else {
-    const draft: Draft = { name, slots, labels: labelsFor(slots), bodyType, playerNumber: playerNumber ?? undefined, reason };
+    const draft: Draft = { name, slots, labels: labelsFor(slots), bodyType, playerNumber: playerNumber ?? undefined,
+      ...(archetype === DEFAULT_ARCHETYPE ? {} : { archetype }), reason };
     own(() => lib.setDraft(draft));
     showDraft(draft);
     if (reason !== "link") cleanUrl();
@@ -376,7 +388,7 @@ export function openPreset(name: string, slots: SlotMap): "same" | "declined" | 
   const previous = lib.getCurrent();
   const wearing = { ...resolved.build } as SlotMap;
   const opened = openUnsaved(lib, name, wearing, resolved.build, currentBodyType(), useBuildStore.getState().playerNumber,
-    "preset", `Wear “${name}” anyway?`);
+    "preset", `Wear “${name}” anyway?`, currentArchetype());
   if (opened.kind === "record") toast(`Your saved outfit “${opened.record.name}” already has these pieces.`, "info");
   if (opened.kind !== "draft") return opened.kind;
   const draft = opened.draft;
@@ -550,7 +562,7 @@ function replaceWithGenerated(build: Partial<Record<Slot, string>>, stem: string
     }
   };
   const created = own(() => lib.create({ name: nextName(lib, stem), slots, labels, generated: true,
-    bodyType: currentBodyType(), playerNumber: currentPlayerNumber() }));
+    bodyType: currentBodyType(), playerNumber: currentPlayerNumber(), archetype: currentArchetype() }));
   if (created) {
     if (current?.kind === "draft") cleanUrl();
     own(() => lib.select(created.id));
@@ -564,7 +576,7 @@ function replaceWithGenerated(build: Partial<Record<Slot, string>>, stem: string
   } else {
     // At the cap: show it unsaved. The outfit you had stays exactly as it was.
     const draft: Draft = { name: stem === "Random" ? "Random outfit" : "New outfit", slots, labels, generated: true,
-      bodyType: currentBodyType(), playerNumber: currentPlayerNumber(), reason: "cap" };
+      bodyType: currentBodyType(), playerNumber: currentPlayerNumber(), archetype: currentArchetype(), reason: "cap" };
     own(() => lib.setDraft(draft));
     showDraft(draft);
     toast(`${verb}, not saved: you have ${lib.cap} saved outfits.`, "roll", () => {
