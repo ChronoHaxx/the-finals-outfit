@@ -31,7 +31,9 @@ The event list, what each event decides, and how to report the numbers honestly 
   "events": [{ "e": "app_loaded" }, { "e": "item_equipped", "p": { "slot": "hair", "item_id": "pompadour" } }] }
 ```
 
-At most 20 events and 16 KB per request. The answer is always an empty body: 204 when accepted or dropped for privacy,
+Events may also be written `{ "name": ..., "props": ... }` (WuWa VR's sender); the row is the same. An app whose spec
+says `envelope: "minimal"` may leave out `form_factor` and `build`; they are stored empty. At most 20 events and 16 KB
+per request. The answer is always an empty body: 204 when accepted or dropped for privacy,
 403 for an origin or envelope that is not allowed, 429 past 60 requests a minute from one address.
 
 ## Columns
@@ -44,7 +46,7 @@ Every app's rows have the same layout, so one query shape fits all:
 | `blob1` | event |
 | `blob2` | form factor: `phone`, `tablet`, `desktop` |
 | `blob3` | build (7-character commit, or `dev`) |
-| `blob4` | visitor hash on `app_loaded`, empty otherwise |
+| `blob4` | visitor hash on the app's `visitorEvent` (`app_loaded`; `page_viewed` on a multi-page site), empty otherwise |
 | `blob5` to `blob8` | the event's properties, in the order `src/schema.ts` lists them |
 | `double1` | 1 |
 
@@ -62,8 +64,10 @@ GROUP BY day ORDER BY day
 
 ## Adding an app
 
-1. Add it to `APPS` in `src/schema.ts`: its exact origins and its events, each with its properties in column order.
-   Use the shared naming scheme: `object_action`, snake_case, past tense, no app name in the event.
+1. Add it to `APPS` in `src/schema.ts`: its exact origins, its `visitorEvent` (the one event each page load sends
+   first), `envelope` (`"full"` or `"minimal"`), and its events, each with its properties in column order. Put
+   properties every event shares (such as `page` and `lang`) first, so they land in the same columns.
+   Use the shared naming scheme: `object_action`, snake_case, no app name in the event.
 2. Add a test, redeploy, then ship the app's sender. Its batches must use the same envelope.
 
 ## Deploy (account-side; the maintainer runs these)

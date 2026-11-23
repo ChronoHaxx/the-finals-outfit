@@ -14,7 +14,7 @@
 // Defensibility: allowlisted origins only, a per-IP rate limit, obvious bots dropped, every value checked by pattern
 // (schema.ts), at most 20 rows per request (Analytics Engine takes 25).
 
-import { checkEvent, readEnvelope, type CheckedEvent, type Envelope } from "./schema";
+import { APPS, checkEvent, readEnvelope, type CheckedEvent, type Envelope } from "./schema";
 
 export interface DataPoint { indexes?: string[]; blobs?: string[]; doubles?: number[] }
 export interface Dataset { writeDataPoint(point: DataPoint): void }
@@ -72,7 +72,8 @@ export async function visitorHash(salt: string, app: string, ip: string, userAge
 }
 
 /** One dataset row. Fixed columns, so every app's rows query the same way:
- *  index1 app · blob1 event · blob2 form factor · blob3 build · blob4 visitor (app_loaded only) · blob5-8 properties. */
+ *  index1 app · blob1 event · blob2 form factor · blob3 build (both empty for a "minimal" app) · blob4 visitor (the
+ *  app's visitor event only) · blob5-8 properties. */
 export function row(envelope: Envelope, event: CheckedEvent, visitor: string): DataPoint {
   return { indexes: [envelope.app], blobs: [event.event, envelope.form_factor, envelope.build, visitor, ...event.values], doubles: [1] };
 }
@@ -100,10 +101,12 @@ export async function collect(request: Request, env: Env, now = Date.now()): Pro
   if (!envelope) return empty(403);
 
   const checked = envelope.events.map(raw => checkEvent(envelope.app, raw)).filter((e): e is CheckedEvent => e !== null);
+  // Only the app's one per-page-load event carries the visitor hash (app_loaded here, page_viewed on WuWa VR).
+  const visitorEvent = APPS[envelope.app].visitorEvent;
   let visitor = "";
-  if (checked.some(e => e.event === "app_loaded") && ip)
+  if (checked.some(e => e.event === visitorEvent) && ip)
     visitor = await visitorHash(await saltFor(env, utcDay(now)), envelope.app, ip, userAgent);
-  for (const event of checked) env.EVENTS.writeDataPoint(row(envelope, event, event.event === "app_loaded" ? visitor : ""));
+  for (const event of checked) env.EVENTS.writeDataPoint(row(envelope, event, event.event === visitorEvent ? visitor : ""));
   return empty(204);
 }
 

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import worker, {
   clearSaltCache, collect, MAX_BODY, prepareSalts, SALT_GRACE_S, utcDay, type DataPoint, type Env,
 } from "../workers/usage-counter/src/index";
-import { APPS, BATCH_MAX as BATCH_MAX_ROWS, checkEvent } from "../workers/usage-counter/src/schema";
+import { APPS, BATCH_MAX as BATCH_MAX_ROWS, checkEvent, id } from "../workers/usage-counter/src/schema";
 import { APP_ID, BATCH_MAX, SCHEMA, type EventProps } from "../src/lib/track";
 
 class MemoryKV {
@@ -160,4 +160,23 @@ test("the app's batches fit the collector, and every event the app can send is i
   assert.deepEqual(Object.keys(examples).sort(), Object.keys(APPS.outfit.events).sort());
   for (const [e, p] of Object.entries(examples))
     assert.ok(checkEvent("outfit", Object.keys(p).length ? { e, p } : { e }), e);
+});
+
+test("an app may send WuWa VR's shape: { name, props }, no form factor or build, the hash on its own visitor event", async () => {
+  const e = env();
+  const apps = APPS as Record<string, (typeof APPS)[string]>;
+  apps["test-site"] = { origins: [ORIGIN], visitorEvent: "page_viewed", envelope: "minimal",
+    events: { page_viewed: [["lang", id]], guide_section_reached: [["section", id], ["lang", id]] } };
+  try {
+    const body = JSON.stringify({ app: "test-site", schema: 1, events: [
+      { name: "page_viewed", props: { lang: "en" } }, { name: "guide_section_reached", props: { section: "install", lang: "en" } }] });
+    const res = await collect(new Request("https://x.example/e", { method: "POST", body,
+      headers: { Origin: ORIGIN, "User-Agent": CHROME, "CF-Connecting-IP": "203.0.113.7" } }), e, NOON);
+    assert.equal(res.status, 204);
+    assert.deepEqual(e.EVENTS.rows.map(r => r.indexes![0]), ["test-site", "test-site"]);
+    assert.match(e.EVENTS.rows[0].blobs![3], /^[0-9a-f]{16}$/);
+    assert.deepEqual(e.EVENTS.rows[1].blobs, ["guide_section_reached", "", "", "", "install", "en"]);
+    // The outfit builder's full envelope stays required for it.
+    assert.equal((await collect(post([{ e: "app_loaded" }], { envelope: { form_factor: undefined } }), e, NOON)).status, 403);
+  } finally { delete apps["test-site"]; }
 });

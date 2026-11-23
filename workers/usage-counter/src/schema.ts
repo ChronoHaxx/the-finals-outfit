@@ -21,6 +21,12 @@ export type EventSpec = readonly (readonly [prop: string, check: Check])[];
 export interface AppSpec {
   /** Origins allowed to send for this app (the `Origin` header, exact). */
   origins: readonly string[];
+  /** The one event per page load that carries the daily visitor hash (`app_loaded`, or `page_viewed` on a multi-page
+   *  site). */
+  visitorEvent: string;
+  /** Whether batches must carry `form_factor` and `build` in the envelope. An app that leaves them out stores them
+   *  empty (blob2, blob3). */
+  envelope: "full" | "minimal";
   events: Readonly<Record<string, EventSpec>>;
 }
 
@@ -34,6 +40,8 @@ export const APPS: Readonly<Record<string, AppSpec>> = {
   // THE FINALS outfit builder (github.com/ChronoHaxx/the-finals-outfit).
   outfit: {
     origins: ["https://chronohaxx.github.io"],
+    visitorEvent: "app_loaded",
+    envelope: "full",
     events: {
       app_loaded: [],
       share_link_opened: sharePresence,
@@ -66,16 +74,21 @@ export function readEnvelope(body: unknown, origin: string | null): (Envelope & 
   if (!body || typeof body !== "object") return null;
   const { app, schema, form_factor, build, events } = body as Record<string, unknown>;
   if (typeof app !== "string" || !Object.hasOwn(APPS, app) || !origin || !APPS[app].origins.includes(origin)) return null;
-  if (schema !== SCHEMA || !oneOf(...FORM_FACTORS)(form_factor)) return null;
-  if (typeof build !== "string" || !/^(?:[0-9a-f]{7}|dev)$/.test(build)) return null;
+  if (schema !== SCHEMA) return null;
+  // Both are optional for a "minimal" app, but never malformed when present.
+  const full = APPS[app].envelope === "full";
+  if ((full || form_factor !== undefined) && !oneOf(...FORM_FACTORS)(form_factor)) return null;
+  if ((full || build !== undefined) && (typeof build !== "string" || !/^(?:[0-9a-f]{7}|dev)$/.test(build))) return null;
   if (!Array.isArray(events) || events.length === 0 || events.length > BATCH_MAX) return null;
-  return { app, form_factor: form_factor as string, build, events };
+  return { app, form_factor: (form_factor as string | undefined) ?? "", build: (build as string | undefined) ?? "", events };
 }
 
-/** One event checked against its app's spec: its name and its values as strings in column order, or null. */
+/** One event checked against its app's spec: its name and its values as strings in column order, or null. An event
+ *  is `{ e, p }` (the outfit builder's short form) or `{ name, props }` (WuWa VR's); the stored row is the same. */
 export function checkEvent(app: string, raw: unknown): CheckedEvent | null {
   if (!raw || typeof raw !== "object") return null;
-  const { e, p } = raw as { e?: unknown; p?: unknown };
+  const short = raw as { e?: unknown; p?: unknown; name?: unknown; props?: unknown };
+  const e = short.e ?? short.name, p = short.p ?? short.props;
   const events = APPS[app]?.events;
   if (typeof e !== "string" || !events || !Object.hasOwn(events, e)) return null;
   const spec = events[e];
