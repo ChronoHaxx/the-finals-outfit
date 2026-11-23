@@ -1,13 +1,13 @@
-# Guided functional review: S12 item refresh, tier 2 batch A (113 garments)
+# Guided functional review: S12 item refresh, tier 2 batch A (105 garments)
 
 ## What you are checking
 
-Batch A swaps 113 garments to their Season 12 files (no app change). You are checking that they look right on the
+Batch A swaps 105 garments to their Season 12 files (no app change). You are checking that they look right on the
 production body types (Masculine and Androgynous), that nothing clips against the pre-S12 items they are worn with,
 and that the garments whose skinning changed still bend cleanly in an emote.
 
 - Branch `claude/s12-refresh-tier2-2026-11-22` (the PR names the commit). Data under test: the garments-only index
-  `scripts/generated/s12-refresh-tier2-v1/merge-out-batchA-v5/assets.json` (`3ddde00d…`), built on the active index
+  `scripts/generated/s12-refresh-tier2-v1/merge-out-batchA-v7/assets.json` (`d9eaaf7d…`), built on the active index
   `3f64b2e6…`.
 - Open: two local dev servers from the tier-2 worktree. **5241** is live data, **5243** batch A. Never the main
   session's 5174.
@@ -25,11 +25,11 @@ $env:VITE_ANIMATIONS_BASE = "https://fd946744.the-finals-outfit-assets.pages.dev
 ```
 
 ```powershell
-$env:VITE_ANIMATIONS_BASE = "https://fd946744.the-finals-outfit-assets.pages.dev/"; node scripts/body-types/serve-preview.mjs --port 5243 --preview ../../../public/models/s12-bodytype-refresh-v1 --index scripts/generated/s12-refresh-tier2-v1/merge-out-batchA-v5 --live-body
+$env:VITE_ANIMATIONS_BASE = "https://fd946744.the-finals-outfit-assets.pages.dev/"; node scripts/body-types/serve-preview.mjs --port 5243 --preview ../../../public/models/s12-bodytype-refresh-v1 --index scripts/generated/s12-refresh-tier2-v1/merge-out-batchA-v7 --live-body
 ```
 
 Each prints `Local: http://127.0.0.1:<port>/`; the first load takes about a minute. Stop with Ctrl+C. Neither writes
-to `public/`. Outfit links below are built by `capture-review.mjs` from `review-outfits-batchA.json` (same slots).
+to `public/`. Outfit links below are built by `capture-review.mjs` from `review-outfits-batchA.json` (same slots); the agent run used `review-outfits-batchA-functional.json`, `-emote.json` and `-rework.json`.
 
 ## Try it yourself
 
