@@ -203,8 +203,11 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   const outfitArchetype = useBuildStore((s) => s.archetype);
   const requestedArchetype: ArchetypeId = ARCHETYPES ? archetypeOf(outfitArchetype) : "medium";
   const [bodyArchetype, setBodyArchetype] = useState<ArchetypeId>("medium");
-  // Selected items the class cannot build yet (rig/OutfitPass.ts classUnavailableItems), and a class the index lacks.
-  const [classNotice, setClassNotice] = useState<string | null>(null);
+  // A class the index lacks (the body load owns it) and the selected items the class cannot build yet (each outfit pass
+  // owns it: rig/OutfitPass.ts classUnavailableItems). Two owners, two states, so neither clears the other.
+  const [classFallbackNotice, setClassFallbackNotice] = useState<string | null>(null);
+  const [classItemsNotice, setClassItemsNotice] = useState<string | null>(null);
+  const classNotice = [classFallbackNotice, classItemsNotice].filter(Boolean).join(" ") || null;
   const equippedCount = SLOTS.filter((slot) => build[slot]).length;
   // What the rig wore after its last committed outfit pass (rig/OutfitPass.ts), kept between passes.
   const outfitState = useRef(newOutfitPassState());
@@ -273,10 +276,10 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
       const found = sourceBodies ? indexClass(await loadSourceAssemblyAssets(assetsUrl), requestedArchetype,
         path => new URL(path, new URL(assetsUrl + "/", window.location.href)).href)?.rig : undefined;
       if (!found && !cancelled)
-        setClassNotice(`${ARCHETYPE_LABELS[requestedArchetype]} contestants aren’t available here yet; showing Medium.`);
+        setClassFallbackNotice(`${ARCHETYPE_LABELS[requestedArchetype]} contestants aren’t available here yet; showing Medium.`);
       return found;
     };
-    setClassNotice(null);
+    setClassFallbackNotice(null);
     classOf()
       .then(archetype => {
         if (cancelled) return;
@@ -317,7 +320,7 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
       { cancelled: () => cancelled, signal: controller.signal, prepared },
       { setError, setMissingFittingData, setHasRecoveredPreview,
         onAssembly: assembly => { rigHarness().__sourceAssembly = assembly; },
-        setClassUnavailable: (archetype, names) => setClassNotice(names.length
+        setClassUnavailable: (archetype, names) => setClassItemsNotice(names.length
           ? `Not on ${ARCHETYPE_LABELS[archetype]} yet: ${names.join(", ")}. Their ${ARCHETYPE_LABELS[archetype]} versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.`
           : null) }).catch((e) => {
       // Anything the pass's own per-step handlers did not anticipate: surface it so Retry works.
