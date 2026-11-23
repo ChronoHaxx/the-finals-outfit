@@ -193,3 +193,28 @@ test("an app with no visitor event never gets a hash, and no salt is even made f
     assert.equal(e.SALTS.values.size, 0);
   } finally { delete apps["no-hash"]; }
 });
+
+test("WuWa VR's events are accepted in its column layout, and its hash differs from the outfit builder's", async () => {
+  const e = env();
+  const body = (events: unknown[]) => JSON.stringify({ app: "wuwa-vr", schema: 1, form_factor: "tablet", build: "e295ae9", events });
+  const send = (events: unknown[], origin = ORIGIN) => collect(new Request("https://x.example/e", { method: "POST", body: body(events),
+    headers: { Origin: origin, "User-Agent": CHROME, "CF-Connecting-IP": "203.0.113.7" } }), e, NOON);
+  await send([
+    { e: "app_loaded", p: { page: "l.ja-guide", lang: "ja" } },
+    { e: "download_clicked", p: { page: "index", lang: "zh-Hans", asset: "installer", placement: "hero" } },
+    { e: "video_played", p: { page: "index", lang: "pt-BR", video: "-AbC_12xYz9", placement: "grid" } },
+    { e: "video_played", p: { page: "index", lang: "en", video: "not a video id", placement: "grid" } },
+    { e: "language_chosen", p: { page: "index", lang: "en", to: "klingon", via: "menu" } },
+  ]);
+  assert.deepEqual(e.EVENTS.rows.map(row => row.blobs![0]), ["app_loaded", "download_clicked", "video_played"]);
+  assert.deepEqual(e.EVENTS.rows[1].blobs, ["download_clicked", "tablet", "e295ae9", "", "index", "zh-Hans", "installer", "hero"]);
+  const wuwaHash = e.EVENTS.rows[0].blobs![3];
+  assert.match(wuwaHash, /^[0-9a-f]{16}$/);
+  await collect(post([{ e: "app_loaded" }]), e, NOON);
+  assert.notEqual(e.EVENTS.rows.at(-1)!.blobs![3], wuwaHash, "same person, same day, different app: unrelated hashes");
+  // An outfit-builder event is not a WuWa VR event, and a foreign origin may not send for it.
+  e.EVENTS.rows = [];
+  await send([{ e: "emote_played", p: { emote_id: "wave", mode: "standard" } }]);
+  assert.equal(e.EVENTS.rows.length, 0);
+  assert.equal((await send([{ e: "app_loaded", p: { page: "index", lang: "en" } }], "https://evil.example")).status, 403);
+});

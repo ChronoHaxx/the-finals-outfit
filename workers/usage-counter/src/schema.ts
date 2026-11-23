@@ -36,6 +36,14 @@ export const BATCH_MAX = 20;
 
 const sharePresence = [["has_pose", bool], ["has_camera", bool], ["has_lighting", bool]] as const;
 
+// WuWa VR guide site (github.com/ChronoHaxx/wuwa-vr, docs/TRACKING-PLAN.md, "Registering with the collector"). A
+// multi-page site: one app_loaded per page load. Every event carries the page (an id such as "l.ja-guide") and the
+// page's language, first, so they share columns blob5 and blob6.
+const wuwaLangs = ["en", "zh-Hans", "ja", "ko", "es", "pt-BR", "fr", "de", "ru", "ar", "other"] as const;
+const wuwaPage = [["page", id], ["lang", oneOf(...wuwaLangs)]] as const;
+/** A YouTube video id: 11 characters, capitals and a leading "-" allowed, so not an `id`. */
+const youtube: Check = v => typeof v === "string" && /^(?:[\w-]{11}|other)$/.test(v);
+
 export const APPS: Readonly<Record<string, AppSpec>> = {
   // THE FINALS outfit builder (github.com/ChronoHaxx/the-finals-outfit).
   outfit: {
@@ -62,6 +70,24 @@ export const APPS: Readonly<Record<string, AppSpec>> = {
       feature_exposed: [["feature", id], ["via", oneOf("screen", "guided", "used")]],
       feature_used: [["feature", id]],
       error_occurred: [["kind", oneOf("caught", "uncaught")]],
+    },
+  },
+  "wuwa-vr": {
+    origins: ["https://chronohaxx.github.io"],
+    visitorEvent: "app_loaded",
+    envelope: "full",
+    events: {
+      app_loaded: wuwaPage,
+      download_clicked: [...wuwaPage, ["asset", oneOf("installer", "portable_zip", "release_notes", "previous_release", "source", "other")],
+        ["placement", oneOf("header", "hero", "closing", "guide", "page", "other")]],
+      guide_section_reached: [...wuwaPage, ["section", id]],
+      outbound_link_clicked: [...wuwaPage, ["target", oneOf("github_issues", "github_repo", "youtube", "kofi", "uevr_docs", "game", "other")]],
+      feedback_draft_used: [...wuwaPage, ["action", oneOf("copied", "opened_github", "other")], ["kind", oneOf("bug", "feature", "language", "other")]],
+      faq_opened: [...wuwaPage, ["question", id]],
+      shortcut_searched: [...wuwaPage, ["result", oneOf("found", "none", "other")]],
+      video_played: [...wuwaPage, ["video", youtube], ["placement", oneOf("feature", "grid", "story", "other")]],
+      language_chosen: [...wuwaPage, ["to", oneOf(...wuwaLangs)], ["via", oneOf("menu", "suggestion", "other")]],
+      controls_card_used: [...wuwaPage, ["pad", oneOf("xbox", "ps", "vr", "other")], ["action", oneOf("switched", "saved_image", "other")]],
     },
   },
 };
