@@ -7,13 +7,20 @@ import { framePlan, videoSizes } from "../src/rig/VideoExport";
 import { avcCodecs, muxMp4, type Mp4Sample } from "../src/lib/mp4-mux";
 import { muxWebm, opusHead, vint, vp9Codec } from "../src/lib/webm-mux";
 import { ZipStoreWriter, crc32 } from "../src/lib/zip-store";
-import { encodeWav } from "../src/lib/wav-encode";
+import { encodeWav, pcm16le } from "../src/lib/wav-encode";
+import { QtrleEncoder } from "../src/lib/qtrle-encode";
+import { muxMov } from "../src/lib/mov-mux";
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { RigAnimator, type AnimationManifest } from "../src/rig/RigAnimator";
 import { EmoteSounds, seededRandom, type SoundsManifest } from "../src/rig/EmoteSounds";
 
-// The video export (21 Nov 2026): the frame plan, the sizes offered, the supersampling tiles, the three containers
-// (read back with small parsers written from the specs, not from the writers), the WAV, the animator's recording
-// clock and the offline sound schedule. The GPU render and WebCodecs encoding are checked in the browser.
+// The video export (21 Nov 2026): the frame plan, the sizes offered, the supersampling tiles, the containers (read
+// back with small parsers written from the specs, not from the writers), the WAV, the animator's recording clock and
+// the offline sound schedule. The GPU render and WebCodecs encoding are checked in the browser. The MOV (22 Nov) is
+// also decoded by ffmpeg when it is installed, as an independent decoder (skipped where it is not, as in CI).
 
 test("frame plan: a one-shot records its first to last frame; a loop one pass without the repeat", () => {
   const once = framePlan({ duration: 2, loop: false });
@@ -30,6 +37,50 @@ test("frame plan: a one-shot records its first to last frame; a loop one pass wi
   const float32 = framePlan({ duration: Math.fround(340 / 60), loop: false });
   assert.equal(float32.frames, 341);
   assert.equal(float32.time(340), Math.fround(340 / 60));
+});
+
+test("frame plan with a range: the part, its loops and the emote speed, end pose kept, loops seamless", () => {
+  // A one-shot from 1 s to 2 s: 61 frames, ending on the range's end pose.
+  const part = framePlan({ duration: 4, loop: false }, 60, { from: 1, to: 2 });
+  assert.deepEqual([part.frames, part.time(0), part.time(30), part.time(60)], [61, 1, 1.5, 2]);
+  // Half speed: twice the frames, clip time advancing 1/120 s a frame.
+  const slow = framePlan({ duration: 4, loop: false }, 60, { from: 1, to: 2, speed: 0.5 });
+  assert.equal(slow.frames, 121);
+  assert.ok(Math.abs(slow.time(1) - (1 + 1 / 120)) < 1e-12 && slow.time(120) === 2);
+  assert.equal(slow.duration, 121 / 60);
+  // Three times over at 2x: each pass 30 frames, back to the start between passes, the end pose last.
+  const thrice = framePlan({ duration: 4, loop: false }, 60, { from: 1, to: 2, loops: 3, speed: 2 });
+  assert.equal(thrice.frames, 91);
+  assert.ok(Math.abs(thrice.time(29) - (1 + 29 / 30)) < 1e-9);
+  assert.equal(thrice.time(30), 1, "the second pass starts again at the range's start");
+  assert.equal(thrice.time(60), 1);
+  assert.equal(thrice.time(90), 2);
+  // A looping clip records whole passes without the repeat, so the video loops seamlessly.
+  const loop = framePlan({ duration: 4, loop: true }, 60, { from: 0.5, to: 1.5, loops: 2 });
+  assert.deepEqual([loop.frames, loop.time(59), loop.time(60)], [120, 0.5 + 59 / 60, 0.5]);
+  // A range snapped to a clip's float32 frame time (0.033333335 s) is a hair longer than its video frames: each pass
+  // must still start on the range's start, not show its end one frame late (seen in the app, 22 Nov 2026).
+  const f32 = Math.fround(1 / 30), snapped = { from: 12 * f32, to: 60 * f32 };
+  const halves = framePlan({ duration: 4.333, loop: false }, 60, { ...snapped, loops: 2, speed: 0.5 });
+  assert.equal(halves.frames, 385);
+  assert.equal(halves.time(192), snapped.from, "the second pass starts at the start");
+  assert.ok(halves.time(191) < snapped.to && halves.time(191) > snapped.to - 0.01);
+  assert.equal(halves.time(384), snapped.to, "the end pose last");
+  for (const speed of [0.25, 1 / 3, 0.5, 2 / 3, 0.8, 1, 1.25, 1.5, 2, 3, 4]) {
+    const plan = framePlan({ duration: 4.333, loop: false }, 60, { ...snapped, loops: 3, speed });
+    const exact = 1.6 * 60 / speed, perPass = Math.round(exact);
+    if (Math.abs(exact - perPass) > 1e-6) continue; // 1.25x: a pass is 76.8 frames, so no frame falls on its start
+    for (let pass = 1; pass < 3; pass++) assert.ok(Math.abs(plan.time(pass * perPass) - snapped.from) < 1e-6, `pass ${pass} at ${speed}x`);
+  }
+  // Out of bounds and odd input are clamped: a range past the end, zero or negative loops, a non-positive speed.
+  const clamped = framePlan({ duration: 2, loop: false }, 60, { from: 1.5, to: 9, loops: 0, speed: -1 });
+  assert.deepEqual([clamped.from, clamped.to, clamped.loops, clamped.speed, clamped.frames], [1.5, 2, 1, 1, 31]);
+  // Left out, it is exactly the old plan: the whole clip once at 1x.
+  for (const clip of [{ duration: 4.21, loop: false }, { duration: 3, loop: true }]) {
+    const a = framePlan(clip), b = framePlan(clip, 60, {});
+    assert.equal(a.frames, b.frames);
+    for (let f = 0; f < a.frames; f++) assert.equal(a.time(f), clip.loop ? f / 60 : Math.min(f / 60, clip.duration));
+  }
 });
 
 test("video sizes keep the stage's shape at even sizes within the budget", () => {
@@ -243,6 +294,222 @@ test("WAV: 16-bit PCM, interleaved, clamped", () => {
   assert.equal(view.getUint32(40, true), 16);
   const samples = Array.from({ length: 8 }, (_, i) => view.getInt16(44 + i * 2, true));
   assert.deepEqual(samples, [0, 16384, 32767, -16384, -32768, 0, 32767, -32768]);
+  assert.deepEqual([...pcm16le([Float32Array.of(0, 1, -1, 2), Float32Array.of(0.5, -0.5, 0, -2)])], [...wav.subarray(44)],
+    "the MOV's PCM is the WAV's data");
+});
+
+// --- QuickTime Animation, read with a decoder written from the format (Apple's QTFF; ffmpeg's qtrle.c) ----------------
+/** Decode one 32-bit QuickTime Animation frame to straight RGBA, over `previous` (skipped pixels keep its colour). */
+function decodeQtrle(data: Uint8Array, width: number, height: number, previous?: Uint8Array): Uint8Array {
+  const out = previous ? previous.slice() : new Uint8Array(width * height * 4);
+  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+  assert.equal(view.getUint32(0), data.length, "the chunk size is the frame's size");
+  let at = 4, start = 0, lines = height;
+  const header = view.getUint16(at); at += 2;
+  if (header & 8) { start = view.getUint16(at); lines = view.getUint16(at + 4); at += 8; }
+  for (let y = start; y < start + lines; y++) {
+    let x = data[at++] - 1;
+    const put = (from: number) => {
+      assert.ok(x < width, `line ${y} runs past its end`);
+      const p = (y * width + x++) * 4;
+      out[p] = data[from + 1]; out[p + 1] = data[from + 2]; out[p + 2] = data[from + 3]; out[p + 3] = data[from];
+    };
+    for (;;) {
+      const code = (data[at++] << 24) >> 24;
+      if (code === -1) break;
+      if (code === 0) { x += data[at++] - 1; continue; }
+      if (code < 0) { for (let i = 0; i < -code; i++) put(at); at += 4; }
+      else for (let i = 0; i < code; i++) { put(at); at += 4; }
+    }
+  }
+  assert.equal(data[at++], 0, "a zero after the last line");
+  assert.equal(at, data.length, "nothing after the frame");
+  return out;
+}
+
+/** A frame like a render: a transparent background, a shaded block with soft (low-alpha) edges, a flat stripe. */
+function testFrame(width: number, height: number, seed: number): Uint8Array {
+  const rgba = new Uint8Array(width * height * 4);
+  let s = seed;
+  const rand = () => (s = (s * 1103515245 + 12345) >>> 0) >>> 24;
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    const p = (y * width + x) * 4;
+    if (x > width / 4 && x < (3 * width) / 4 && y > 2) rgba.set([rand(), rand(), rand(), x % 7 === 0 ? rand() : 255], p);
+    else if (y === 1) rgba.set([200, 10, 30, 128], p); // a flat translucent stripe: one long run per line
+    else if (x % 11 === 3) rgba.set([255, 255, 255, 0], p); // colour under alpha 0 is kept as it was
+  }
+  return rgba;
+}
+
+test("QuickTime Animation: keyframes decode to the exact pixels, alpha first, every line coded in full", () => {
+  for (const [width, height] of [[1, 1], [2, 3], [127, 4], [128, 3], [255, 2], [300, 7], [33, 9]]) {
+    const encoder = new QtrleEncoder(width, height);
+    for (const seed of [1, 7]) {
+      const rgba = testFrame(width, height, seed);
+      const frame = encoder.encode(rgba).slice();
+      assert.ok(frame.length <= QtrleEncoder.maxBytes(width, height), "within the worst case");
+      assert.deepEqual([frame[4], frame[5]], [0, 0], "header 0: all lines, no start line");
+      // A keyframe never relies on the previous picture: decoding over garbage gives the same result.
+      const garbage = new Uint8Array(width * height * 4).fill(0x5a);
+      assert.deepEqual(decodeQtrle(frame, width, height, garbage), rgba, `${width}×${height} seed ${seed}`);
+    }
+  }
+  // Runs: a transparent line is one repeat per 127 pixels; a lone pixel is a literal, never the -1 end code.
+  const encoder = new QtrleEncoder(300, 1);
+  const clear = encoder.encode(new Uint8Array(300 * 4)).slice();
+  assert.deepEqual([...clear.subarray(6)], [1, 256 - 127, 0, 0, 0, 0, 256 - 127, 0, 0, 0, 0, 256 - 46, 0, 0, 0, 0, 0xff, 0]);
+  const lone = new QtrleEncoder(3, 1).encode(Uint8Array.of(1, 2, 3, 4, 9, 9, 9, 9, 9, 9, 9, 9)).slice();
+  assert.deepEqual([...lone.subarray(6)], [1, 1, 4, 1, 2, 3, 256 - 2, 9, 9, 9, 9, 0xff, 0], "literal 1, then a repeat of 2");
+  // Runs stop at the line's end: two lines of one colour are two runs, not one.
+  const two = new QtrleEncoder(4, 2).encode(new Uint8Array(32).fill(7)).slice();
+  assert.deepEqual([...two.subarray(6)], [1, 256 - 4, 7, 7, 7, 7, 0xff, 1, 256 - 4, 7, 7, 7, 7, 0xff, 0]);
+  // The encoder reuses its buffer: the next frame overwrites the last one's view.
+  const reused = new QtrleEncoder(2, 1), a = reused.encode(Uint8Array.of(1, 1, 1, 1, 2, 2, 2, 2));
+  reused.encode(new Uint8Array(8));
+  assert.notDeepEqual([...a.subarray(7, 11)], [1, 1, 1, 1]);
+  assert.throws(() => new QtrleEncoder(0, 10));
+  assert.throws(() => new QtrleEncoder(4, 4).encode(new Uint8Array(10)));
+});
+
+// --- MOV, read with the box parser above (QuickTime File Format) -----------------------------------------------------
+const pascal = (bytes: Uint8Array, at: number) => String.fromCharCode(...bytes.subarray(at + 1, at + 1 + bytes[at]));
+const fourcc = (bytes: Uint8Array, at: number) => String.fromCharCode(...bytes.subarray(at, at + 4));
+const u16 = (bytes: Uint8Array, at: number) => new DataView(bytes.buffer, bytes.byteOffset).getUint16(at);
+
+function movFixture(width: number, height: number, frames: number, channels = 2, soundFrames = frames * 800) {
+  const encoder = new QtrleEncoder(width, height);
+  const pictures = Array.from({ length: frames }, (_, i) => testFrame(width, height, i + 3));
+  const coded = pictures.map(p => encoder.encode(p).slice());
+  const pcm = pcm16le(Array.from({ length: channels }, (_, c) =>
+    Float32Array.from({ length: soundFrames }, (_, i) => Math.sin((i + c * 100) / 20) * 0.5)));
+  return { pictures, coded, pcm };
+}
+
+test("MOV: 'qt  ' brand, movie box first, Animation keyframes and interleaved PCM where the tables say", async () => {
+  const { coded, pcm } = movFixture(64, 36, 5);
+  // Frames given as Blobs (as the export does) and as bytes: the same file.
+  const blob = muxMov({ width: 64, height: 36, fps: 60, frames: coded.map(f => new Blob([f as BlobPart])) },
+    { sampleRate: 48000, channels: 2, pcm });
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  assert.deepEqual(bytes, new Uint8Array(await muxMov({ width: 64, height: 36, fps: 60, frames: coded }, { sampleRate: 48000, channels: 2, pcm }).arrayBuffer()));
+  assert.equal(blob.type, "video/quicktime");
+  assert.deepEqual(boxes(bytes).map(b => b.type), ["ftyp", "moov", "mdat"]);
+  const [ftyp] = boxes(bytes);
+  assert.deepEqual([fourcc(bytes, ftyp.body), u32(bytes, ftyp.body + 4), fourcc(bytes, ftyp.body + 8)], ["qt  ", 0x200, "qt  "]);
+  const [mvhd] = find(bytes, ["moov", "mvhd"]);
+  assert.deepEqual([u32(bytes, mvhd.body + 12), u32(bytes, mvhd.body + 16)], [1000, 83], "5 frames at 60 fps = 83 ms");
+  const traks = find(bytes, ["moov", "trak"]);
+  assert.equal(traks.length, 2);
+  const [video, sound] = traks;
+  const stbl = (trak: Box, type: string) => find(bytes, ["mdia", "minf", "stbl", type], trak)[0];
+
+  // Handlers: QuickTime's component types and Pascal-string names.
+  const [mediaHandler] = find(bytes, ["mdia", "hdlr"], video), [dataHandler] = find(bytes, ["mdia", "minf", "hdlr"], video);
+  assert.deepEqual([fourcc(bytes, mediaHandler.body + 4), fourcc(bytes, mediaHandler.body + 8), pascal(bytes, mediaHandler.body + 24)], ["mhlr", "vide", "VideoHandler"]);
+  assert.deepEqual([fourcc(bytes, dataHandler.body + 4), fourcc(bytes, dataHandler.body + 8), pascal(bytes, dataHandler.body + 24)], ["dhlr", "url ", "DataHandler"]);
+  const [mdhd] = find(bytes, ["mdia", "mdhd"], video);
+  assert.deepEqual([u32(bytes, mdhd.body + 12), u32(bytes, mdhd.body + 16), u16(bytes, mdhd.body + 20)], [60000, 5000, 0x7fff]);
+  const [elst] = find(bytes, ["edts", "elst"], video);
+  assert.deepEqual([u32(bytes, elst.body + 4), u32(bytes, elst.body + 8), i32(bytes, elst.body + 12)], [1, 83, 0], "from 0");
+
+  // The sample entry: 'rle ', 64 × 36, depth 32 (alpha), named Animation, then fiel and pasp.
+  const stsd = stbl(video, "stsd"), entry = stsd.body + 8;
+  assert.equal(fourcc(bytes, entry + 4), "rle ");
+  assert.deepEqual([u16(bytes, entry + 32), u16(bytes, entry + 34)], [64, 36]);
+  assert.equal(pascal(bytes, entry + 50), "Animation");
+  assert.equal(u16(bytes, entry + 82), 32, "depth 32: Millions of Colors+");
+  assert.equal(i32(bytes, entry + 84) >> 16, -1, "no colour table");
+  assert.deepEqual(boxes(bytes, entry + 86, entry + u32(bytes, entry)).map(b => b.type), ["fiel", "pasp"]);
+  assert.equal(find(bytes, ["mdia", "minf", "stbl", "stss"], video).length, 0, "no sync table: every frame is a keyframe");
+  const stts = stbl(video, "stts");
+  assert.deepEqual([u32(bytes, stts.body + 4), u32(bytes, stts.body + 8), u32(bytes, stts.body + 12)], [1, 5, 1000]);
+  const stsz = stbl(video, "stsz"), stco = stbl(video, "stco");
+  assert.equal(u32(bytes, stsz.body + 8), 5);
+  coded.forEach((frame, i) => {
+    assert.equal(u32(bytes, stsz.body + 12 + i * 4), frame.length);
+    const at = u32(bytes, stco.body + 8 + i * 4);
+    assert.deepEqual(bytes.subarray(at, at + frame.length), frame, `frame ${i} at its offset`);
+  });
+
+  // Sound: 'sowt' 16-bit stereo 48 kHz with a stereo layout, one PCM frame per sample, 800 a chunk, each chunk just
+  // before its video frame.
+  const soundEntry = stbl(sound, "stsd").body + 8;
+  assert.equal(fourcc(bytes, soundEntry + 4), "sowt");
+  assert.deepEqual([u16(bytes, soundEntry + 16), u16(bytes, soundEntry + 24), u16(bytes, soundEntry + 26)], [0, 2, 16], "version 0, stereo, 16-bit");
+  assert.equal(u32(bytes, soundEntry + 32), 48000 * 65536);
+  const [chan] = boxes(bytes, soundEntry + 36, soundEntry + u32(bytes, soundEntry));
+  assert.equal(chan.type, "chan");
+  assert.equal(u32(bytes, chan.body + 4), (101 << 16) | 2, "kAudioChannelLayoutTag_Stereo");
+  const [soundTkhd] = find(bytes, ["tkhd"], sound);
+  assert.equal(u16(bytes, soundTkhd.body + 36), 0x0100, "full volume");
+  const soundStts = stbl(sound, "stts"), soundStsz = stbl(sound, "stsz"), soundStsc = stbl(sound, "stsc"), soundStco = stbl(sound, "stco");
+  assert.deepEqual([u32(bytes, soundStts.body + 8), u32(bytes, soundStts.body + 12)], [4000, 1]);
+  assert.deepEqual([u32(bytes, soundStsz.body + 4), u32(bytes, soundStsz.body + 8)], [4, 4000], "4 bytes a frame, 4000 frames");
+  assert.deepEqual([u32(bytes, soundStsc.body + 4), u32(bytes, soundStsc.body + 8), u32(bytes, soundStsc.body + 12)], [1, 1, 800]);
+  assert.equal(u32(bytes, soundStco.body + 4), 5);
+  for (let i = 0; i < 5; i++) {
+    const at = u32(bytes, soundStco.body + 8 + i * 4);
+    assert.deepEqual(bytes.subarray(at, at + 3200), pcm.subarray(i * 3200, (i + 1) * 3200), `sound chunk ${i}`);
+    assert.equal(at + 3200, u32(bytes, stco.body + 8 + i * 4), `sound chunk ${i} sits just before frame ${i}`);
+  }
+  const [mdat] = boxes(bytes).filter(b => b.type === "mdat");
+  assert.equal(mdat.start + mdat.size, bytes.length);
+});
+
+test("MOV: no sound, odd sound lengths and mono keep every sample; chunk runs change where the count does", async () => {
+  const { coded } = movFixture(8, 4, 3);
+  const silent = new Uint8Array(await muxMov({ width: 8, height: 4, fps: 60, frames: coded }).arrayBuffer());
+  assert.equal(find(silent, ["moov", "trak"]).length, 1);
+  // 1,000 mono frames for 3 video frames: 800 + 200 + nothing (an empty chunk is left out).
+  const short = movFixture(8, 4, 3, 1, 1000);
+  const bytes = new Uint8Array(await muxMov({ width: 8, height: 4, fps: 60, frames: short.coded }, { sampleRate: 48000, channels: 1, pcm: short.pcm }).arrayBuffer());
+  const sound = find(bytes, ["moov", "trak"])[1];
+  const stsc = find(bytes, ["mdia", "minf", "stbl", "stsc"], sound)[0], stco = find(bytes, ["mdia", "minf", "stbl", "stco"], sound)[0];
+  assert.equal(u32(bytes, stsc.body + 4), 2);
+  assert.deepEqual([u32(bytes, stsc.body + 8), u32(bytes, stsc.body + 12), u32(bytes, stsc.body + 20), u32(bytes, stsc.body + 24)], [1, 800, 2, 200]);
+  assert.equal(u32(bytes, stco.body + 4), 2);
+  const stsz = find(bytes, ["mdia", "minf", "stbl", "stsz"], sound)[0];
+  assert.deepEqual([u32(bytes, stsz.body + 4), u32(bytes, stsz.body + 8)], [2, 1000]);
+  const entry = find(bytes, ["mdia", "minf", "stbl", "stsd"], sound)[0].body + 8;
+  assert.equal(u32(bytes, boxes(bytes, entry + 36, entry + u32(bytes, entry))[0].body + 4), (100 << 16) | 1, "mono layout");
+  // Longer sound than picture: the rest rides with the last frame.
+  const long = movFixture(8, 4, 2, 2, 2000);
+  const longBytes = new Uint8Array(await muxMov({ width: 8, height: 4, fps: 60, frames: long.coded }, { sampleRate: 48000, channels: 2, pcm: long.pcm }).arrayBuffer());
+  const longStsc = find(longBytes, ["mdia", "minf", "stbl", "stsc"], find(longBytes, ["moov", "trak"])[1])[0];
+  assert.deepEqual([u32(longBytes, longStsc.body + 12), u32(longBytes, longStsc.body + 24)], [800, 1200]);
+  assert.throws(() => muxMov({ width: 8, height: 4, fps: 60, frames: [] }));
+  assert.throws(() => muxMov({ width: 8, height: 4, fps: 60, frames: coded }, { sampleRate: 48000, channels: 2, pcm: new Uint8Array(6) }));
+});
+
+// ffmpeg, where installed, as a decoder that shares nothing with this code: probe the streams, then decode every frame
+// and the sound and compare them to what went in, exactly.
+const ffmpegMissing = spawnSync("ffprobe", ["-version"]).error ? "ffmpeg is not installed" : false;
+test("MOV: ffmpeg reads qtrle argb frames and PCM back exactly", { skip: ffmpegMissing }, async () => {
+  const width = 70, height = 40, frames = 6;
+  const { pictures, coded, pcm } = movFixture(width, height, frames);
+  const dir = mkdtempSync(join(tmpdir(), "mov-test-"));
+  try {
+    const file = join(dir, "test.mov");
+    writeFileSync(file, new Uint8Array(await muxMov({ width, height, fps: 60, frames: coded }, { sampleRate: 48000, channels: 2, pcm }).arrayBuffer()));
+    const probe = spawnSync("ffprobe", ["-v", "error", "-show_entries", "stream=codec_name,codec_tag_string,pix_fmt,width,height,nb_frames,r_frame_rate,sample_rate,channels",
+      "-of", "json", file], { encoding: "utf8" });
+    assert.equal(probe.status, 0, probe.stderr);
+    const [v, a] = JSON.parse(probe.stdout).streams;
+    assert.deepEqual([v.codec_name, v.codec_tag_string, v.pix_fmt, v.width, v.height, v.nb_frames, v.r_frame_rate],
+      ["qtrle", "rle ", "argb", width, height, String(frames), "60/1"]);
+    assert.deepEqual([a.codec_name, a.sample_rate, a.channels], ["pcm_s16le", "48000", 2]);
+    const decoded = spawnSync("ffmpeg", ["-v", "error", "-i", file, "-map", "0:v", "-f", "rawvideo", "-pix_fmt", "rgba", "-"], { maxBuffer: 1 << 26 });
+    assert.equal(decoded.status, 0, String(decoded.stderr));
+    const expected = new Uint8Array(pictures.reduce((n, p) => n + p.length, 0));
+    pictures.forEach((p, i) => expected.set(p, i * p.length));
+    // All of it, colour under alpha 0 included: ffmpeg's argb → rgba only reorders bytes.
+    assert.deepEqual(new Uint8Array(decoded.stdout), expected, "every frame, pixel for pixel, alpha included");
+    const sound = spawnSync("ffmpeg", ["-v", "error", "-i", file, "-map", "0:a", "-f", "s16le", "-"], { maxBuffer: 1 << 26 });
+    assert.equal(sound.status, 0, String(sound.stderr));
+    assert.deepEqual(new Uint8Array(sound.stdout), pcm, "the sound, sample for sample, from 0");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 // --- The animator's recording clock ----------------------------------------------------------------------------------
@@ -407,6 +674,27 @@ test("offline sound: windows stop at their end (or the clip's), loops cover the 
     assert.equal(music.stop, undefined);
     assert.deepEqual(music.gain.events.slice(0, 2), [["set", 0, 0], ["ramp", 1, 0.05]], "the attack");
     assert.equal(await sounds.renderOffline("Nope", { duration: 1, clipLength: 1, looping: false }), null);
+
+    // A range of 2.5-3.5 s, twice, at half speed (4 s of video). The voice (from 2 s, 3 s long) is mid-sound at 2.5 s:
+    // each pass joins it 0.5 s of clip in (times its rate), with a short fade-in, and stops it at the range's end.
+    // The clap (1 s) is before the range and over: silent. Rates and the fade are scaled by the speed, like tape.
+    await sounds.renderOffline("Seq", { duration: 4, clipLength: 3.5, looping: false, range: { from: 2.5, to: 3.5, loops: 2, speed: 0.5 } });
+    const passes = FakeOffline.last.sources;
+    assert.equal(passes.length, 2, "the voice once per pass; the clap never");
+    passes.forEach((v, pass) => {
+      assert.equal(v.wave, "Voice");
+      assert.ok(Math.abs(v.when! - pass * 2) < 1e-9, `pass ${pass} starts at ${pass * 2} s`);
+      assert.ok(Math.abs(v.offset! - 0.5 * rate) < 1e-9, "joined where the sound would be");
+      assert.ok(Math.abs(v.rate - rate * 0.5) < 1e-9, "half speed: half the playback rate");
+      assert.deepEqual(v.gain.events[0], ["set", 0, pass * 2]);
+      assert.ok(Math.abs(v.gain.events[1][2] - (pass * 2 + 0.015)) < 1e-9, "a short fade-in, no click");
+    });
+    assert.ok(Math.abs(passes[0].stop! - (2 + 0.25 / 0.5 + 0.01)) < 1e-9, "pass 1 stops at the range's end, its fade at half speed");
+    assert.equal(passes[1].stop, undefined, "the last pass runs to the recording's end");
+    // A looping clip's covering musical window, the whole clip twice: started once, never cut.
+    await sounds.renderOffline("Loop", { duration: 12, clipLength: 6, looping: true, range: { from: 0, to: 6, loops: 2, speed: 1 } });
+    assert.equal(FakeOffline.last.sources.length, 1);
+    assert.equal(FakeOffline.last.sources[0].stop, undefined);
   } finally {
     delete (globalThis as { OfflineAudioContext?: unknown }).OfflineAudioContext;
   }

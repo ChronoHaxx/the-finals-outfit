@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { useFeature } from "../lib/discovery";
+import { PanelHeader } from "./ViewerPanel";
 import { SLOT_LABELS, type Slot } from "../lib/slots";
 import { getBrowseItem } from "../lib/browse-catalog";
 import { assetUrl } from "../lib/assets";
@@ -101,6 +103,7 @@ function OutfitRow({ record, current, now }: { record: OutfitRecord; current: bo
 export function OutfitSwitcher() {
   const library = useSavedOutfits(state => state.library);
   const [open, setOpen] = useState(false);
+  const feature = useFeature("saved-outfits", "Your saved outfits");
   const root = useRef<HTMLDivElement>(null);
   const [now, setNow] = useState(() => Date.now());
 
@@ -120,7 +123,7 @@ export function OutfitSwitcher() {
   return <div ref={root} className="flex min-w-0 items-center gap-2">
     <h2 className="min-w-0">
       <button type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} aria-haspopup="dialog"
-        aria-label={`Saved outfits: ${name}`} title="Your saved outfits"
+        aria-label={`Saved outfits: ${name}`} {...feature}
         className="group flex min-w-0 max-w-full items-center gap-1.5 text-left">
         <span className="display truncate text-[24px] group-hover:text-white">{name}</span>
         <ChevronIcon size={12} className={`mb-0.5 shrink-0 text-fg-dim transition-transform group-hover:text-fg ${open ? "rotate-180" : ""}`} />
@@ -128,14 +131,10 @@ export function OutfitSwitcher() {
     </h2>
     <SaveState library={library} />
     {open && library && <div role="dialog" aria-label="Saved outfits"
-      className="absolute inset-x-0 top-[calc(100%+6px)] z-40 flex max-h-[min(70dvh,30rem)] animate-rise flex-col border border-ink-600 bg-ink-850 shadow-[0_18px_40px_-12px_rgb(0_0_0/0.8)] lg:top-auto lg:bottom-[calc(100%+6px)] lg:right-auto lg:w-[24rem]">
-      <div className="flex items-center gap-3 border-b border-line px-3 py-2.5">
-        <p className="hud text-fg">Saved outfits</p>
-        <p className="hud tabular-nums text-fg-dim" title={`This browser keeps up to ${library.cap} outfits`}>{library.outfits.length} / {library.cap}</p>
-        <button type="button" onClick={() => setOpen(false)} aria-label="Close saved outfits" className="-mr-1 ml-auto grid size-7 place-items-center text-fg-dim hover:text-fg">
-          <CloseIcon size={14} />
-        </button>
-      </div>
+      className="panel absolute inset-x-0 top-[calc(100%+6px)] z-40 flex max-h-[min(70dvh,30rem)] animate-drop flex-col motion-reduce:animate-none lg:top-auto lg:bottom-[calc(100%+6px)] lg:right-auto lg:w-[24rem]">
+      <PanelHeader title="Saved outfits" onClose={() => setOpen(false)} closeLabel="Close saved outfits">
+        <span className="hud ml-1 tabular-nums text-fg-dim" title={`This browser keeps up to ${library.cap} outfits`}>{library.outfits.length} / {library.cap}</span>
+      </PanelHeader>
       {library.status === "off"
         ? <p className={`${notice} ${amber} m-3 mb-0`}>Saving is off: this browser isn’t letting the site store anything (a private window, or site data is blocked). Your outfits last until you close this tab.</p>
         : <p className="px-3 pt-2.5 text-[11px] leading-snug text-fg-dim">Changes save as you go, in this browser only. Private windows forget them when closed, and Safari can clear them after a week without a visit. Share a link to keep an outfit anywhere.</p>}

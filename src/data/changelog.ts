@@ -14,6 +14,49 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-22-video-range",
+    date: "2026-11-22",
+    title: "Record part of an emote, looped or slowed",
+    notes: [
+      "Turn on Video range on the emote timeline and drag its two red markers, or press I and O at a frame, to choose the part of an emote a video records. The Video tab under Capture shows the same range as times you can type; Whole goes back to the full emote. Each emote keeps its own range.",
+      "Loops repeats the video's part up to 20 times, and videos now follow the emote speed: at half speed you get slow motion, with the sound slowed down too, as you hear it in the builder.",
+    ],
+    items: ["faster-builder"],
+  },
+  {
+    id: "2026-11-22-transparent-mov",
+    date: "2026-11-22",
+    title: "See-through MOV for video editors",
+    notes: [
+      "The Video tab under Capture can now save an emote as a MOV with a transparent background, the kind of file Premiere Pro, After Effects and DaVinci Resolve take with its transparency. It is QuickTime Animation, so every frame keeps every pixel exactly as rendered, and the emote's sound comes along uncompressed.",
+      "Lossless means big: about 35 MB for each second at 1080p, more when the character fills the frame, so it is offered on computers only. On a phone, the PNG sequence and the see-through WebM still work.",
+    ],
+    items: ["faster-builder"],
+  },
+  {
+    id: "2026-11-22-builder-shows-you-around",
+    date: "2026-11-22",
+    title: "The builder shows you around",
+    notes: [
+      "Bring the pointer near a control you haven't tried and a one-line note names it, says what it does and shows its key. Once you have used it, the note waits for a hover. A small red corner marks a few controls you haven't tried yet.",
+      "Take the tour from the welcome screen or the Guide: it frames each control in turn, right on the page, and nothing is blocked while it runs. Esc stops it, and it carries on from that stop next time.",
+      "The Guide, also on the ? key, is now short: the tour, every control in one line with Show me to point at it, and the keys and gestures. On a phone, Show me and the tour do the pointing.",
+      "Lighting, Camera, Capture and Graphics now look and open the same way, with their names on the buttons when there is room. Camera has a new icon, so it is no longer mixed up with Capture.",
+    ],
+    items: ["faster-builder"],
+  },
+  {
+    id: "2026-11-22-player-number-one-digit",
+    date: "2026-11-22",
+    title: "One-digit player numbers",
+    notes: [
+      "The player number now goes from 0 to 99. A one-digit number prints centred on the piece, the way the game prints it, in the same lettering as the piece's own number.",
+      "Three pieces that always kept their own printed number, among them a baseball jersey, now show yours too, so every piece that prints a number follows your pick.",
+      "There is no way to hide the number: the game itself has none. Own shows each piece's printed number, as in its icon.",
+    ],
+    items: ["first-pass-3d"],
+  },
+  {
     id: "2026-11-22-shared-lighting",
     date: "2026-11-22",
     title: "Share links keep your lighting",

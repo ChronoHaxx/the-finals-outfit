@@ -30,6 +30,7 @@ import { setPreviewScene } from "../lib/viewer-handle";
 import { sceneById } from "../lib/scenes";
 import { SceneBackdrop, SceneTurntable, withUpright } from "./SceneMode";
 import { LightMarkers } from "./LightMarkers";
+import { useFeature } from "../lib/discovery";
 import { SLOTS } from "../lib/slots";
 import { getDownloadProgress, subscribeDownloadProgress } from "../lib/load-progress";
 import { AUTOMATED } from "../lib/automation";
@@ -187,6 +188,9 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   const exportContext = useRef<ExportContext | null>(null);
   const screenshotContext = useRef<ScreenshotContext | null>(null);
   const uiHidden = !!hideUi?.hidden;
+  // The viewer's own controls on the discovery map (lib/discovery.ts): their callouts name them and give the key.
+  const hideFeature = useFeature("hide-ui", "Hide UI for a clean look (H; H or Esc brings it back)");
+  const fullScreenFeature = useFeature("full-screen", immersive?.immersive ? "Exit full screen (Esc)" : "Full screen: hide everything but the character");
   const build = useBuildStore((s) => s.build);
   // The outfit's body type (src/lib/body-type.ts): Masculine, or another the picker offers.
   const outfitBodyType = useBuildStore((s) => s.bodyType);
@@ -423,35 +427,41 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
           style={{ "--b": darkBackdrop ? "rgb(242 239 233 / 0.32)" : "rgb(9 9 11 / 0.32)" } as CSSProperties} />}
         {/* No backdrop-filter on anything over the canvas: the canvas repaints every frame, so a
             blur behind it would be recomputed every frame too — a real cost on phones. */}
-        <div className="absolute right-3 top-3 z-20 flex gap-1.5 *:pointer-events-auto">
-          {/* Graphics quality (Auto by default). Left out in full screen, where the wider exit button needs the room. */}
-          {!immersive?.immersive && <GraphicsMenu deviceDpr={deviceDpr} />}
-          {immersive && (
-            // The same button enters and leaves, in the same place; leaving also says so in words.
-            <button type="button" onClick={immersive.toggle}
-              aria-label={immersive.immersive ? "Exit full screen" : "Full screen"}
-              title={immersive.immersive ? "Exit full screen (Esc)" : "Full screen: hide everything but the character"}
-              className={`hud flex h-8 items-center gap-2 whitespace-nowrap bg-ink-950/80 text-fg transition-colors hover:bg-ink-950 ${immersive.immersive ? "px-3" : "w-8 justify-center"}`}>
-              {immersive.immersive ? <CollapseIcon size={14} /> : <ExpandIcon size={14} />}
-              {immersive.immersive && "Exit full screen"}
-            </button>
-          )}
-          {hideUi && (
-            <button type="button" onClick={hideUi.hide} aria-label="Hide UI" title="Hide UI for a clean look (H; H or Esc brings it back)"
-              className="hud flex h-8 w-8 items-center justify-center bg-ink-950/80 text-fg transition-colors hover:bg-ink-950">
-              <EyeOffIcon size={15} />
-            </button>
-          )}
-          <ScreenshotPanel context={screenshotContext} backdrop={backdrop} ready={ready && !busy} animator={animator} />
-          {/* Camera: position and target to read or type, roll, and views saved with the outfit. */}
-          <CameraPanel />
-          {/* Lighting and backdrop: one panel for the whole scene (the Studio/Lobby switch became two of its looks). */}
-          <LightingPanel />
+        {/* The top row speaks one button language (ViewerPanel.tsx): square icon buttons act at once (full screen, hide
+            the controls); buttons with a chevron open a panel (Graphics, Capture, Camera, Lighting), and the two kinds
+            sit in their own groups. */}
+        <div className="absolute right-3 top-3 z-20 flex gap-3 *:flex *:gap-1.5 *:*:pointer-events-auto">
+          <div>
+            {immersive && (
+              // The same button enters and leaves, in the same place; leaving also says so in words.
+              <button type="button" onClick={immersive.toggle} {...fullScreenFeature}
+                aria-label={immersive.immersive ? "Exit full screen" : "Full screen"}
+                className={`hud flex h-8 items-center gap-2 whitespace-nowrap bg-ink-950/80 text-fg transition-colors hover:bg-ink-950 ${immersive.immersive ? "px-3" : "w-8 justify-center"}`}>
+                {immersive.immersive ? <CollapseIcon size={14} /> : <ExpandIcon size={14} />}
+                {immersive.immersive && "Exit full screen"}
+              </button>
+            )}
+            {hideUi && (
+              <button type="button" onClick={hideUi.hide} aria-label="Hide UI" {...hideFeature}
+                className="hud flex h-8 w-8 items-center justify-center bg-ink-950/80 text-fg transition-colors hover:bg-ink-950">
+                <EyeOffIcon size={15} />
+              </button>
+            )}
+          </div>
+          <div>
+            {/* Graphics quality (Auto by default). Left out in full screen, where the wider exit button needs the room. */}
+            {!immersive?.immersive && <GraphicsMenu deviceDpr={deviceDpr} />}
+            <ScreenshotPanel context={screenshotContext} backdrop={backdrop} ready={ready && !busy} animator={animator} />
+            {/* Camera: position and target to read or type, roll, and views saved with the outfit. */}
+            <CameraPanel />
+            {/* Lighting and backdrop: one panel for the whole scene (the Studio/Lobby switch became two of its looks). */}
+            <LightingPanel />
+          </div>
         </div>
         {/* One right-hand column under the top row, so the animation controls and the developer export panel
             stack instead of overlapping. It spans to the bottom so the emote picker can fit the viewer's height; only
             its children take pointer events, so the canvas behind the empty part still orbits. */}
-        <div className={`pointer-events-none absolute right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto *:shrink-0 ${timelineShown ? "bottom-15 pointer-coarse:bottom-17" : "bottom-3"}`}>
+        <div data-callout-side="left" className={`pointer-events-none absolute right-3 top-12 z-10 flex flex-col items-end gap-1.5 *:pointer-events-auto *:shrink-0 ${timelineShown ? "bottom-15 pointer-coarse:bottom-17" : "bottom-3"}`}>
           {/* PR #37's Sun slider, kept as a shortcut to the sun's direction. */}
           <SunShortcut />
           {animator && <AnimationControls animator={animator} rig={rig} ready={ready} busy={busy} studio={!darkBackdrop} />}

@@ -10,6 +10,7 @@ import { ReconstructionProgressProvider } from "./context/ReconstructionProgress
 import { loadCatalog } from "./lib/catalog-load";
 import IntroDialog from "./components/IntroDialog";
 import FeatureGuide from "./components/FeatureGuide";
+import Discovery from "./components/Discovery";
 import { startAnalytics } from "./lib/analytics";
 import { startSavedOutfits } from "./store/useSavedOutfits";
 import { openLink } from "./store/open-link";
@@ -65,6 +66,8 @@ function mount() {
           </Routes>
           <IntroDialog />
           <FeatureGuide />
+          {/* Callouts, the tour and Show me (one layer over every route; quiet under automation). */}
+          <Discovery />
         </ReconstructionProgressProvider>
       </HashRouter>
     </StrictMode>,

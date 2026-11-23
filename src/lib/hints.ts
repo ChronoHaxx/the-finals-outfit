@@ -2,8 +2,9 @@ import { useCallback, useSyncExternalStore } from "react";
 import { AUTOMATED } from "./automation";
 
 // One-time hints (21 Nov 2026): a small tip that points at a feature once, at the moment it is useful, and never again
-// in this browser once it is dismissed. There are deliberately few of them; the "What you can do" guide carries the
-// full list (FeatureGuide.tsx).
+// in this browser once it is dismissed. There are deliberately few of them. Since 22 Nov they are the discovery layer's
+// nudges (components/Discovery.tsx; their words are NUDGES in src/data/feature-guide.ts); this file only remembers which
+// ones a visitor has had.
 //
 // One key, read-modify-write, so a hint another version of the site knows about keeps its record. Storage can be
 // missing, full or throw (private windows, blocked site data): then a dismissal lasts until the page closes, and a
@@ -11,8 +12,9 @@ import { AUTOMATED } from "./automation";
 
 export const HINTS_KEY = "finals-outfit.hints";
 
-/** The hints there are. A new hint gets a new id; never reuse one, or visitors who dismissed the old one miss it. */
-export type HintId = "guide" | "pause-share";
+/** The hints there are. A new hint gets a new id; never reuse one, or visitors who dismissed the old one miss it.
+ *  Retired: "guide" (21 Nov, a tip under the Guide button; the welcome screen's tour button replaced it). */
+export type HintId = "pause-share" | "emote-keys";
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
 const isObject = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);

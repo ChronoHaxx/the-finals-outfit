@@ -181,6 +181,8 @@ export interface RecordableClip {
   /** Loops (an idle, or an emote with Loop on): one pass is recorded, without its repeated first frame. */
   loop: boolean;
   kind: ClipKind;
+  /** Its playback speed: the emote speed for an emote, 1 for the idle (a video honours it, 22 Nov 2026). */
+  speed: number;
 }
 
 /** The clips base URL: VITE_ANIMATIONS_BASE when set, else animations/ next to the app. */
@@ -438,19 +440,19 @@ export class RigAnimator {
     if (!this.mixer || !action || this.stopping || this.snapshot.loading) return null;
     const clip = action.getClip(), info = this.info(clip.name);
     return { clip: clip.name, label: info?.label ?? clip.name, source: info?.source, duration: clip.duration,
-      loop: action.loop === THREE.LoopRepeat, kind: info?.kind ?? "emote" };
+      loop: action.loop === THREE.LoopRepeat, kind: info?.kind ?? "emote", speed: this.scaleFor(action) };
   }
 
   /** A video export is driving the clock (update() leaves the pose alone; the viewer's camera turns no springs). */
   get recording(): boolean { return !!this.recorder; }
 
   /**
-   * Video export (21 Nov 2026): take the clip in front over for a frame-by-frame render. It plays alone, from its
-   * start, at the times recordFrame() gives; sway, deformation, face and props follow as in playback, sounds stay
-   * silent. The sway chains start from rest and settle on the first frame first, so every export of the same outfit
-   * and clip draws the same frames. endRecording() puts the viewer back where it was.
+   * Video export (21 Nov 2026): take the clip in front over for a frame-by-frame render. It plays alone, from `start`
+   * (clip seconds: a video range's start, 22 Nov), at the times recordFrame() gives; sway, deformation, face and props
+   * follow as in playback, sounds stay silent. The sway chains start from rest and settle on the first frame first, so
+   * every export of the same outfit, clip and range draws the same frames. endRecording() puts the viewer back.
    */
-  beginRecording(): RecordableClip | null {
+  beginRecording(start = 0): RecordableClip | null {
     const clip = this.recordable(), action = this.front();
     if (!clip || !action || !this.mixer || this.recorder) return null;
     this.recorder = { action, clip, time: Math.min(action.time, clip.duration), paused: this.snapshot.paused, inspecting: this.inspecting };
@@ -461,7 +463,7 @@ export class RigAnimator {
     action.enabled = true;
     action.stopFading().setEffectiveWeight(1);
     if (this.snapshot.sway && this.root) { this.springs.reset(); this.springs.rebuild(this.root); }
-    this.recordFrame(0, 0);
+    this.recordFrame(start, 0);
     for (let i = 0; i < SETTLE_STEPS && this.snapshot.sway; i++) this.springs.update(1 / 60);
     return clip;
   }

@@ -1,10 +1,12 @@
-import { useEffect, useId, useRef, useState, type RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import { captureView, isBlank, screenshotSizes, SCREENSHOT_SUPERSAMPLE, type ScreenshotContext } from "../rig/ViewerScreenshot";
 import type { RigAnimator } from "../rig/RigAnimator";
 import { encodePngAsync } from "../lib/png-encode";
 import { backdropCss, backdropPaint, type Backdrop } from "../lib/stage-lighting";
 import { sceneById } from "../lib/scenes";
 import { CameraIcon, CopyIcon, VideoIcon } from "./Icons";
+import { useFeature } from "../lib/discovery";
+import { PanelSheet, PanelTrigger, usePanel } from "./ViewerPanel";
 import { CAPTURE_TILE, VideoTab, useVideoExport } from "./VideoCapture";
 
 // The output image: GPU memory is bounded by the capture's tile (CAPTURE_TILE), so this budget is for the image itself,
@@ -57,34 +59,27 @@ type Output = "save" | "copy";
 export function ScreenshotPanel({ context, backdrop, ready, animator }: {
   context: RefObject<ScreenshotContext | null>; backdrop: Backdrop; ready: boolean; animator: RigAnimator | null;
 }) {
-  const [open, setOpen] = useState(false);
+  const panel = usePanel();
+  const open = panel.open;
   const [choices, setChoices] = useState(readChoices);
   const [running, setRunning] = useState<Output | null>(null);
   const [status, setStatus] = useState("");
   const [stage, setStage] = useState({ width: 0, height: 0, maxSide: 4096 });
-  const [viewerHeight, setViewerHeight] = useState(0); // the panel scrolls inside the viewer, as the Lighting panel does
   const video = useVideoExport(context, animator, backdrop);
-  const root = useRef<HTMLDivElement>(null);
-  const button = useRef<HTMLButtonElement>(null);
-  const panelId = useId();
+  const feature = useFeature("capture", video.running ? "Recording a video: open to see progress or cancel" : "Save a screenshot or an emote video");
+  const videoFeature = useFeature("video", "Record the emote as MP4, see-through MOV or WebM, or PNG frames");
   const change = (patch: Partial<Choices>) => setChoices(current => {
     const next = { ...current, ...patch };
     writeChoices(next);
     return next;
   });
 
+  // The sizes on offer follow the canvas as it is when the panel opens.
   useEffect(() => {
     if (!open) return;
-    const viewer = root.current?.closest("[data-viewer]");
-    if (viewer) setViewerHeight(viewer.clientHeight);
     const canvas = context.current?.gl.domElement;
     if (canvas) setStage({ width: canvas.clientWidth, height: canvas.clientHeight,
       maxSide: context.current!.gl.capabilities.maxTextureSize });
-    const outside = (event: PointerEvent) => { if (!root.current?.contains(event.target as Node)) setOpen(false); };
-    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); button.current?.focus(); } };
-    document.addEventListener("pointerdown", outside);
-    document.addEventListener("keydown", escape);
-    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
   }, [open, context]);
 
   const sizes = screenshotSizes(stage.width, stage.height, MAX_PIXELS, stage.maxSide);
@@ -144,21 +139,17 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
 
   const percent = video.progress?.frames ? Math.floor(100 * video.progress.frame / video.progress.frames) : 0;
   return (
-    // Not positioned itself: the panel anchors to the whole button row (CharacterViewer), as the Lighting panel's does.
-    <div ref={root}>
-      <button ref={button} type="button" onClick={() => setOpen(value => !value)} aria-expanded={open} aria-controls={panelId}
-        aria-label={video.running ? `Capture: recording video, ${percent}%` : "Capture"}
-        title={video.running ? "Recording a video: open to see progress or cancel" : "Save a screenshot or an emote video"}
-        className={`hud flex h-8 items-center justify-center gap-1.5 bg-ink-950/80 text-fg transition-colors hover:bg-ink-950 ${video.running ? "px-2.5" : "w-8"}`}>
-        {video.running ? <><span aria-hidden="true" className="size-2 rounded-full bg-finals motion-safe:animate-pulse" />{percent}%</> : <CameraIcon size={15} />}
-      </button>
-      {open && (
-        <div id={panelId} role="group" aria-label="Capture"
-          style={viewerHeight ? { maxHeight: viewerHeight - 56 } : undefined}
-          className="absolute right-0 top-9 z-30 flex w-80 max-w-[calc(100vw-1.5rem)] flex-col gap-3 overflow-y-auto border border-line bg-ink-950 p-3 text-sm text-fg shadow-lg">
+    // Not positioned itself: the panel anchors to the whole button row (CharacterViewer), as every viewer panel does.
+    // While a video renders (it carries on with the panel closed) the button shows its progress.
+    <div ref={panel.root}>
+      <PanelTrigger panel={panel} {...feature} aria-label={video.running ? `Capture: recording video, ${percent}%` : "Capture"}
+        icon={video.running ? <span aria-hidden="true" className="size-2 rounded-full bg-finals motion-safe:animate-pulse" /> : <CameraIcon size={15} />}
+        name="Capture" detail={video.running ? <span className="tabular-nums">{percent}%</span> : undefined} />
+      <PanelSheet panel={panel} label="Capture" title="Capture" icon={<CameraIcon size={13} />}>
           <div role="tablist" aria-label="Capture type" className="grid grid-cols-2 gap-1.5">
             {([["image", "Image", CameraIcon], ["video", "Video", VideoIcon]] as const).map(([tab, label, Icon]) => (
               <button key={tab} type="button" role="tab" aria-selected={choices.tab === tab} onClick={() => change({ tab })}
+                {...(tab === "video" ? videoFeature : {})}
                 className="flex h-8 items-center justify-center gap-2 border border-line text-xs transition-colors hover:bg-ink-900 aria-selected:border-fg/60 aria-selected:bg-ink-900">
                 <Icon size={14} />{label}
               </button>
@@ -211,7 +202,7 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
               </select>
             </label>
             <span className="-mt-2 text-xs leading-snug text-fg-muted">
-              Drawn at {SCREENSHOT_SUPERSAMPLE}× that size and scaled down, for clean edges and fine detail.
+              Drawn at {SCREENSHOT_SUPERSAMPLE}× and scaled down, for clean edges.
             </span>
             <div className={`grid gap-1.5 ${CAN_COPY ? "grid-cols-2" : ""}`}>
               {CAN_COPY && (
@@ -231,8 +222,7 @@ export function ScreenshotPanel({ context, backdrop, ready, animator }: {
               {!ready ? "Waiting for the outfit to finish loading." : video.running ? "A video is rendering; screenshots wait for it." : status}
             </span>
           </>)}
-        </div>
-      )}
+      </PanelSheet>
     </div>
   );
 }

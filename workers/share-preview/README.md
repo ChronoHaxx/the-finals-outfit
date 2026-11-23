@@ -178,6 +178,48 @@ Live checks after the deploy, all read-only (nothing stored):
 - The root redirects (302).
 - An upload with `lt=Lobby` gets 400 `bad lighting`; a foreign origin gets 403.
 
+## Redeploying for one-digit player numbers (22 Nov 2026)
+
+The app's player number now goes from 0 to 99 (`_docs/player-number-2026-11-22/README.md`). The Worker's `pn`
+allow-list changes from `^[1-9][0-9]$` to `^(?:[0-9]|[1-9][0-9])$`: one canonical spelling per number, no leading
+zero, so `pn=7` and `pn=0` are kept and `pn=07`, `pn=00` and `pn=100` are still refused (400 `bad player number`) or
+dropped from a link. Nothing else changes; 10–99 behave exactly as before.
+
+Deploy order does not matter for correctness, but deploy first. A Worker without this change refuses an upload with a
+one-digit `pn`, and the app then copies the plain short link, which carries the number.
+
+**Deployed 22 Nov 2026, evening London**, before PR #79 merged, from branch
+`claude/player-number-off-single-2026-11-22` at `8962e71`:
+- Version `b3c57e95-cb84-4a9c-bf89-f45868aafea3`, message "pn 0-99 (one-digit player numbers), PR #79 8962e71".
+- It replaces `c75c6189-f6af-4769-89f0-01a588f36ac8` (PR #76's lighting, with `pn` and `view`). Before the deploy,
+  `main`'s Worker source equalled `c75c6189`'s (`39d8eb3`), and the only code change is the allow-list. Bindings unchanged.
+- Approval: the coordinator session approved it for the user, under the user's standing instruction of 22 Nov (~12:20)
+  to keep merging and approving the routine steps they always approve. Every earlier share-Worker deploy had the user's
+  yes. The coordinator asked for the deploy before the merge.
+- To restore the previous version: `npx --yes wrangler@4.131.1 rollback c75c6189-f6af-4769-89f0-01a588f36ac8`.
+
+Live checks after the deploy, all read-only (nothing stored):
+- `/s/AAAAAAAAAAAA?o=2.&pn=7` opens `#/?o=2.&pn=7`, and `&pn=0` opens `#/?o=2.&pn=0`.
+- `&pn=07`, `&pn=00` and `&pn=100` are dropped (`#/?o=2.`). `&pn=42` is unchanged.
+- `?o=2.&bt=a&pn=9&emote=wave&t=1&view=0_1_2_0_1_0_5&lt=lobby` keeps every parameter in that order, `lt` last.
+  `&lt=lobby` alone is unchanged.
+- The 20 Oct link `/s/XkVfZU1EMmnr` still opens its outfit and serves its 73 KB card. The root redirects (302).
+- An upload with `pn=07` from the allowed origin gets 400 `bad player number`. A foreign origin gets 403.
+
+## Redeploying for archetypes (23 Nov 2026; not deployed yet)
+
+The app can carry a contestant class (`_docs/archetypes-2026-11-22/README.md`): `ar=l` for Light, `ar=h` for Heavy,
+absent for Medium, after `bt` and before `pn`.
+- **Validation:** the Worker checks it (`^[a-z]{1,2}$`, else 400 `bad archetype`) and stores it in the entry's metadata
+  as `ar`. A stored `ar` wins over a link's, like every other field.
+- **Output:** it returns `ar` in the link and the page's builder URL. An entry or link without it is Medium, exactly as
+  before.
+- **Deploy order:** deploy first. The app refuses a preview-card link if the Worker dropped `ar`, so a Worker without
+  this change never turns a Light share into a Medium one; the app copies the plain link instead.
+- **When:** the app only sends `ar` for a class outfit, and classes are flagged and absent from the live index. So the
+  deploy can wait until Light is applied. It needs the coordinator's approval like every Worker deploy. It replaces
+  `b3c57e95`; the rollback is `npx --yes wrangler@4.131.1 rollback b3c57e95-cb84-4a9c-bf89-f45868aafea3`.
+
 ## Live deployment (20 Oct 2026)
 
 - Worker `the-finals-outfit-share` at https://the-finals-outfit-share.chronohaxx.workers.dev (account subdomain renamed from the

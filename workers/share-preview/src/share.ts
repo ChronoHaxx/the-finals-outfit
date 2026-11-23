@@ -90,9 +90,10 @@ export function storedArchetype(metadata: Record<string, unknown> | null | undef
   return typeof archetype === "string" && ARCHETYPE.test(archetype) ? archetype : undefined;
 }
 
-// The outfit's player number (21 Nov 2026), in the app's grammar (src/lib/player-number.ts): pn=<10..99>, absent when
-// each piece shows its own number. Stored and carried like the body type; the app decides what it renders.
-const PLAYER_NUMBER = /^[1-9][0-9]$/;
+// The outfit's player number (21 Nov 2026), in the app's grammar (src/lib/player-number.ts): pn=<0..99> (one digit
+// since 22 Nov 2026; no leading zero), absent when each piece shows its own number. Stored and carried like the body
+// type; the app decides what it renders.
+const PLAYER_NUMBER = /^(?:[0-9]|[1-9][0-9])$/;
 
 /** The player number in these parameters: undefined when there is none, null when it is malformed. */
 export function readPlayerNumber(params: URLSearchParams): string | null | undefined {

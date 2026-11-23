@@ -10,7 +10,9 @@ import { getPoseCapture, subscribePose } from "../lib/viewer-handle";
 import { bodyTypeShareCode } from "../lib/body-type";
 import { archetypeShareCode } from "../lib/archetype";
 import { playerNumberShareCode } from "../lib/player-number";
-import { CloseIcon, ShareIcon } from "./Icons";
+import { ShareIcon } from "./Icons";
+import { useFeature } from "../lib/discovery";
+import { PanelHeader } from "./ViewerPanel";
 
 type LinkStyle = ShareStyle | "preview";
 
@@ -53,6 +55,7 @@ const describeView = (view: CameraView) => `${view.position.join(", ")}${view.ro
 // any other look in full, scene and backdrop included. The preview card is drawn in it either way. "Include lighting"
 // leaves it out, and the link then opens with whatever lighting its viewer has.
 export default function ShareBuild() {
+  const feature = useFeature("share");
   const build = useBuildStore(s => s.build);
   const bodyType = useBuildStore(s => s.bodyType);
   const playerNumber = useBuildStore(s => s.playerNumber);
@@ -163,7 +166,7 @@ export default function ShareBuild() {
   }, [open]);
 
   return <div ref={root} className="relative">
-    <button type="button" onClick={share} aria-expanded={open}
+    <button type="button" onClick={share} aria-expanded={open} {...feature}
       className="chamfer flex h-11 items-center gap-2 whitespace-nowrap bg-finals pl-3.5 pr-4 sm:pl-4 sm:pr-5 text-[18px] font-extrabold uppercase tracking-[0.02em] text-white transition-colors [--cut:11px] [font-stretch:70%] hover:bg-finals-hi active:translate-y-px">
       <ShareIcon size={16} /><span className="sm:hidden">Share</span><span className="hidden sm:inline">Share outfit</span>
     </button>
@@ -171,19 +174,16 @@ export default function ShareBuild() {
     <span role="status" className="sr-only">{status}</span>
     {/* Opens upwards over the picker on desktop (the outfit sits at the drawer's foot); on phones the outfit heads the
         items sheet, whose top would clip it, so it opens downwards. */}
-    {open && <div ref={popover} className="absolute bottom-[calc(100%+8px)] right-0 z-40 max-lg:bottom-auto max-lg:top-[calc(100%+8px)] w-[min(calc(100vw-1.5rem),23rem)] animate-rise border border-ink-600 bg-ink-850 p-3 shadow-[0_18px_40px_-12px_rgb(0_0_0/0.8)]">
-      <div className="flex items-center justify-between gap-3">
-        <p aria-hidden="true" className={`text-sm font-medium ${status.startsWith("Link copied") ? "text-fg" : "text-fg-muted"}`}>{status || "Share outfit"}</p>
-        <button type="button" onClick={() => setOpen(false)} aria-label="Close share panel" className="-mr-1 grid size-7 place-items-center text-fg-dim hover:text-fg">
-          <CloseIcon size={14} />
-        </button>
-      </div>
-      <div className="mt-3 flex gap-1.5">
+    {open && <div ref={popover} className="panel absolute bottom-[calc(100%+8px)] right-0 z-40 max-lg:bottom-auto max-lg:top-[calc(100%+8px)] w-[min(calc(100vw-1.5rem),23rem)] animate-drop motion-reduce:animate-none">
+      <PanelHeader title="Share outfit" icon={<ShareIcon size={13} />} onClose={() => setOpen(false)} closeLabel="Close share panel" />
+      <div className="flex flex-col gap-3 p-3">
+      {status && <p aria-hidden="true" className={`text-sm font-medium ${status.startsWith("Link copied") ? "text-fg" : "text-fg-muted"}`}>{status}</p>}
+      <div className="flex gap-1.5">
         <input aria-label="Outfit share link" readOnly value={link} onFocus={e => e.currentTarget.select()}
           className="h-9 min-w-0 flex-1 border border-line bg-ink-950 px-2 font-mono text-xs text-fg-muted outline-none focus:border-ink-600" />
         <button type="button" onClick={share} className="hud h-9 shrink-0 bg-fg px-3 text-ink-950 hover:bg-white">Copy</button>
       </div>
-      {copiedPose && <label className="mt-3 flex items-center gap-2.5 text-xs text-fg-muted">
+      {copiedPose && <label className="flex items-center gap-2.5 text-xs text-fg-muted">
         <input type="checkbox" checked={withPose} onChange={e => setWithPose(e.target.checked)} className="size-4 accent-finals" />
         <span className="min-w-0">Include this frame
           <span className="block truncate text-fg-dim">
@@ -191,19 +191,19 @@ export default function ShareBuild() {
           </span>
         </span>
       </label>}
-      {copiedView && <label className="mt-3 flex items-center gap-2.5 text-xs text-fg-muted">
+      {copiedView && <label className="flex items-center gap-2.5 text-xs text-fg-muted">
         <input type="checkbox" checked={withView} onChange={e => setWithView(e.target.checked)} className="size-4 accent-finals" />
         <span className="min-w-0">Include camera view
           <span className="block truncate text-fg-dim">Opens from {describeView(copiedView)}</span>
         </span>
       </label>}
-      {copiedLighting && <label className="mt-3 flex items-center gap-2.5 text-xs text-fg-muted">
+      {copiedLighting && <label className="flex items-center gap-2.5 text-xs text-fg-muted">
         <input type="checkbox" checked={withLighting} onChange={e => setWithLighting(e.target.checked)} className="size-4 accent-finals" />
         <span className="min-w-0">Include lighting
           <span className="block truncate text-fg-dim" title={copiedLighting.label}>{copiedLighting.label}</span>
         </span>
       </label>}
-      <label className="mt-3 flex items-center justify-between gap-3">
+      <label className="flex items-center justify-between gap-3">
         <span className="hud text-fg-dim">Link style</span>
         <select aria-label="Share link style" value={style} onChange={e => setStyle(e.target.value as LinkStyle)}
           className="select-plain h-9 border border-line bg-ink-950 pl-2.5 text-xs text-fg-muted">
@@ -212,6 +212,7 @@ export default function ShareBuild() {
           <option value="names">Item names in link</option>
         </select>
       </label>
+      </div>
     </div>}
   </div>;
 }

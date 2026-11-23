@@ -29,6 +29,8 @@ Shocka's item 6 (`_docs/feedback-shocka-2026-11/README.md`): set your contestant
   authored items, which keep their own number.
 - Not shipped: **Off** (no game state; would need per-program decal gating from the slicer) and **one-digit numbers**
   (need the folded centring lanes; a re-slice with live lanes).
+  - **22 Nov update:** one-digit numbers (0–9) shipped without a re-slice: the route now rewrites the folded centring
+    lanes too. The game has no Off. See `_docs/player-number-2026-11-22/README.md`.
 - The number is part of the outfit: build store `playerNumber`, saved-outfit known field `playerNumber` (kept as
   stored), link `pn=<10–99>`, share Worker stores and echoes `pn` (the client refuses a card link without it).
 

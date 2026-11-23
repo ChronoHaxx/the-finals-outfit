@@ -2,8 +2,10 @@ import type { BackdropPaint } from "../lib/stage-lighting";
 import { encodePngAsync } from "../lib/png-encode";
 import { avcCodecs, colorCodes, muxMp4, type Mp4AudioTrack, type Mp4Sample } from "../lib/mp4-mux";
 import { muxWebm, opusHead, vp9Codec, type WebmAudioFrame, type WebmVideoFrame } from "../lib/webm-mux";
+import { muxMov } from "../lib/mov-mux";
+import { QtrleEncoder } from "../lib/qtrle-encode";
 import { ZipStoreWriter } from "../lib/zip-store";
-import { encodeWav } from "../lib/wav-encode";
+import { encodeWav, pcm16le } from "../lib/wav-encode";
 import { ViewCapture, type ScreenshotContext } from "./ViewerScreenshot";
 import type { RecordableClip, RigAnimator } from "./RigAnimator";
 
@@ -11,8 +13,8 @@ import type { RecordableClip, RigAnimator } from "./RigAnimator";
 // own machine). Everything happens in the browser:
 //
 // Frames are rendered deterministically, not recorded in real time. The animator hands its clock over
-// (RigAnimator.beginRecording) and each frame is posed at exactly frame / 60 s, the sway chains stepped 1/60 s per
-// frame; then the frame is drawn through a capture of its own (ViewCapture: the screenshot's tiled, fully converged
+// (RigAnimator.beginRecording) and each frame is posed at exactly its clip time (framePlan: frame / 60 s, or within
+// the timeline's range, its loops and the emote speed, 22 Nov 2026), the sway chains stepped 1/60 s per frame; then the frame is drawn through a capture of its own (ViewCapture: the screenshot's tiled, fully converged
 // render, from a copy of the camera at the start), so every frame is as clean as a screenshot and a slow machine only
 // takes longer. The work runs inside the viewer's frame loop (CaptureDriver in CharacterViewer): one frame per
 // animation frame, after the contact shadow has been redrawn for the new pose and before the live view draws; the
@@ -27,8 +29,14 @@ import type { RecordableClip, RigAnimator } from "./RigAnimator";
 //   IS the alpha (I420 frames, U and V flat), muxed as Matroska BlockAdditions that decoders read as the alpha plane.
 //   Keyframes are forced on both at the same frames; colour under fully transparent pixels is bled outward first
 //   (bleedColour), so lossy 4:2:0 coding does not pull black into the soft edges.
+// - MOV, transparent (22 Nov 2026): QuickTime Animation, 32-bit ARGB, every frame a keyframe, coded here in plain
+//   JavaScript (qtrle-encode.ts) from the same straight-alpha pixels as the PNGs, so it is exact; the sound as 16-bit
+//   PCM, interleaved frame by frame (mov-mux.ts). Adobe's native .mov list has keyframe-only Animation, and Resolve's
+//   codec list has Animation; ffmpeg decodes it exactly (_docs/mov-export-2026-11-22). No browser encodes ProRes 4444,
+//   the codec editors would name first, but MOV is only the container. Big files (run-length coding saves the empty
+//   background, not the character), so the panel offers it on computers only.
 // - PNG sequence, transparent: every frame as a PNG with straight alpha, the sound as a WAV, in one stored zip. Works
-//   in every editor. (MOV with ProRes 4444 is what editors would like, but no browser can encode ProRes.)
+//   in every editor.
 // The sound is rendered offline from the emote's cues (EmoteSounds.renderOffline), the same rules as playback.
 
 export const FPS = 60;
@@ -36,7 +44,7 @@ const KEY_INTERVAL = FPS; // a keyframe every second: seekable, and a WebM clust
 const AUDIO_RATE = 48000;
 const IN_FLIGHT = 3; // frames drawn but not yet encoded or stored: bounds memory, keeps the GPU and encoders busy
 
-export type VideoFormat = "mp4" | "webm" | "png";
+export type VideoFormat = "mp4" | "webm" | "mov" | "png";
 export type VideoQuality = "draft" | "standard" | "best";
 
 /** Fine pixels per output pixel (supersample) and jittered samples per fine pixel, per quality. */
@@ -46,13 +54,48 @@ export const QUALITY: Record<VideoQuality, { supersample: number; samples: numbe
   best: { supersample: 2, samples: 8, label: "Best", detail: "2× supersampled, as crisp as a screenshot; slowest" },
 };
 
-/** The frames a clip records: a one-shot from its first frame to its last, a loop one pass without its repeat. */
-export function framePlan(clip: Pick<RecordableClip, "duration" | "loop">, fps = FPS): { frames: number; duration: number; time: (frame: number) => number } {
-  const exact = clip.duration * fps;
+/**
+ * What part of the clip a video records (22 Nov 2026): clip seconds `from` to `to` (the timeline's range markers),
+ * played `loops` times, at `speed` clip seconds per second of video (the emote speed: 0.5 is slow motion). Left out,
+ * the whole clip once at normal speed.
+ */
+export interface ExportRange { from: number; to: number; loops: number; speed: number }
+
+export interface FramePlan extends ExportRange {
+  frames: number;
+  /** Seconds of video. */
+  duration: number;
+  /** The clip time a frame shows. */
+  time: (frame: number) => number;
+}
+
+/**
+ * The frames a recording draws. A one-shot runs from the range's first frame to its last (the end pose included); a
+ * looping clip (an idle, or an emote with Loop on) runs whole passes without the repeated first frame, so the video
+ * itself loops seamlessly. Several loops repeat the range; between passes the motion jumps back to its start.
+ */
+export function framePlan(clip: Pick<RecordableClip, "duration" | "loop">, fps = FPS, range: Partial<ExportRange> = {}): FramePlan {
+  const from = Math.min(Math.max(0, range.from ?? 0), clip.duration);
+  const to = Math.min(Math.max(from, range.to ?? clip.duration), clip.duration);
+  const loops = Math.max(1, Math.round(range.loops ?? 1));
+  const speed = range.speed && range.speed > 0 ? range.speed : 1;
+  const length = to - from, total = loops * length;
+  const exact = total * fps / speed;
   // A clip's length comes from its float32 key times (three), so a whole number of frames can land a hair under: 340/60 s
   // reads 5.6666665 s, 339.99999 frames. The end pose is still a frame (22 Nov 2026: 1e-6 dropped it).
   const frames = Math.max(1, clip.loop ? Math.round(exact) : Math.floor(exact + 1e-3) + 1);
-  return { frames, duration: frames / fps, time: frame => Math.min(frame / fps, clip.duration) };
+  // A thousandth of a frame, in clip seconds. Range ends snap to the clip's own frame time, a float32 from its file
+  // (0.033333335 s, not 1/30), so a range can be a hair longer than its whole number of video frames: the frame that
+  // starts the next pass must still count as its start, not show the range's end (22 Nov 2026).
+  const slack = 1e-3 * speed / fps;
+  const time = (frame: number) => {
+    const played = frame * speed / fps; // clip seconds since the range's start
+    if (!clip.loop && played >= total - slack) return to;
+    if (length <= 0) return from;
+    const pass = Math.floor((played + slack) / length);
+    return from + Math.max(0, played - pass * length);
+  };
+  return { frames, duration: frames / fps, from, to, loops, speed, time };
 }
 
 /** Even sizes (4:2:0 video) of the stage's shape at common heights, within a pixel budget and the GPU's side limit. */
@@ -76,20 +119,24 @@ export interface VideoOptions {
   maxTile: number;
   /** Memory guard: the finished file (held in memory or the browser's blob storage until saved) may not pass this. */
   maxBytes: number;
+  /** The part of the clip, its loops and speed (framePlan); the whole clip once at normal speed when left out. */
+  range?: Partial<ExportRange>;
 }
 
 export interface VideoProgress { phase: "preparing" | "rendering" | "finishing"; frame: number; frames: number; bytes: number }
 
 export interface VideoResult {
   blob: Blob;
-  extension: "mp4" | "webm" | "zip";
+  extension: "mp4" | "webm" | "mov" | "zip";
   frames: number;
   width: number;
   height: number;
-  sound: "aac" | "opus" | "wav" | null;
+  sound: "aac" | "opus" | "pcm" | "wav" | null;
   /** Fewest samples any frame averaged (below the quality's: the scene changed while drawing, some grain). */
   samples: number;
   clip: RecordableClip;
+  /** The part of the clip recorded, its loops and speed. */
+  plan: FramePlan;
 }
 
 /** What the viewer's frame loop runs while an export is going (CaptureDriver). */
@@ -262,7 +309,7 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
   const front = animator.recordable();
   if (!front) throw new Error("Play an emote first");
   const clip: RecordableClip = front;
-  const plan = framePlan(clip);
+  const plan = framePlan(clip, FPS, options.range);
   const { width, height, format } = options;
   const transparent = format !== "mp4";
   const quality = QUALITY[options.quality];
@@ -288,12 +335,13 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
 
   // Sound, rendered offline before any frame (it is quick, and a failure here should not cost a long render).
   const wantSound = options.sound && animator.sounds.hasSound(clip.source);
-  const audioCodec = format === "png" ? null : format === "webm" ? (support.opus ? "opus" : null)
+  const rawSound = format === "png" || format === "mov"; // WAV or PCM: no encoder needed
+  const audioCodec = rawSound ? null : format === "webm" ? (support.opus ? "opus" : null)
     : support.aac ? "mp4a.40.2" : support.opus ? "opus" : null;
   let sound: { buffer: AudioBuffer } | null = null;
-  if (wantSound && (format === "png" || audioCodec)) {
+  if (wantSound && (rawSound || audioCodec)) {
     sound = await animator.sounds.renderOffline(clip.source, { duration: plan.duration, clipLength: clip.duration,
-      looping: clip.loop, sampleRate: AUDIO_RATE, signal });
+      looping: clip.loop, sampleRate: AUDIO_RATE, signal, range: plan });
   }
   if (signal.aborted) throw cancelled();
 
@@ -305,6 +353,8 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
   let stored = 0;
   let failure: unknown = null;
   const zip = format === "png" ? new ZipStoreWriter() : null;
+  const qtrle = format === "mov" ? new QtrleEncoder(width, height) : null;
+  const movFrames: Blob[] = []; // each frame its own Blob, so a long movie can sit in blob storage, not the JS heap
   const base = exportName(clip, stamp);
   let encoder: VideoEncoder | null = null;
   if (videoConfig) {
@@ -349,7 +399,7 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
       supersample: quality.supersample, samples: quality.samples, transparent, keepFloor: options.keepFloor,
       backdrop: transparent ? null : options.backdrop, maxTile: options.maxTile });
     let fewestSamples = Infinity;
-    const begun = animator.beginRecording();
+    const begun = animator.beginRecording(plan.time(0));
     try {
       if (!begun || begun.clip !== clip.clip) throw new Error("The emote changed; try again");
       onProgress({ phase: "rendering", frame: 0, frames: plan.frames, bytes: 0 });
@@ -376,11 +426,15 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
             }
             const frame = new VideoFrame(pixels, { format: "RGBA", codedWidth: width, codedHeight: height, timestamp, duration });
             try { encoder.encode(frame, { keyFrame }); } finally { frame.close(); }
+          } else if (qtrle) {
+            const frame = new Blob([qtrle.encode(pixels) as BlobPart]); // copies out of the encoder's buffer
+            movFrames.push(frame);
+            stored += frame.size;
           } else if (zip && png) {
             zip.add(`${base}/frame_${String(index).padStart(5, "0")}.png`, await png);
             stored = zip.size;
           }
-          if (stored > options.maxBytes) throw new Error(`The file passed ${Math.round(options.maxBytes / 1e6)} MB, more than this device can safely hold. Pick a smaller size${format === "png" ? " or a video format" : ""}.`);
+          if (stored > options.maxBytes) throw new Error(`The file passed ${Math.round(options.maxBytes / 1e6)} MB, more than this device can safely hold. Pick a smaller size${format === "png" ? " or a video format" : format === "mov" ? ", or the PNG sequence (smaller)" : ""}.`);
           committed++;
           onProgress({ phase: "rendering", frame: committed, frames: plan.frames, bytes: stored });
         };
@@ -434,8 +488,14 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
         zip!.add(`${base}/${base}.wav`, encodeWav(Array.from({ length: sound.buffer.numberOfChannels }, (_, c) => sound!.buffer.getChannelData(c)), AUDIO_RATE));
         soundKind = "wav";
       }
-      zip!.add(`${base}/README.txt`, new TextEncoder().encode(readme(clip, plan.frames, width, height, !!sound, base)));
+      zip!.add(`${base}/README.txt`, new TextEncoder().encode(readme(clip, plan, width, height, !!sound, base)));
       blob = zip!.finish();
+    } else if (format === "mov") {
+      if (movFrames.length !== plan.frames) throw new Error(`The movie has ${movFrames.length} of ${plan.frames} frames`);
+      const pcm = sound ? pcm16le(Array.from({ length: sound.buffer.numberOfChannels }, (_, c) => sound!.buffer.getChannelData(c))) : null;
+      blob = muxMov({ width, height, fps: FPS, frames: movFrames },
+        pcm ? { sampleRate: AUDIO_RATE, channels: sound!.buffer.numberOfChannels, pcm } : null);
+      if (pcm) soundKind = "pcm";
     } else {
       // Encoder output order is decode order, which both containers keep (each sample carries its presentation time).
       const frames = videoSamples;
@@ -481,16 +541,22 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
       }
     }
     return { blob, extension: format === "png" ? "zip" : format, frames: plan.frames, width, height, sound: soundKind,
-      samples: Number.isFinite(fewestSamples) ? fewestSamples : quality.samples, clip };
+      samples: Number.isFinite(fewestSamples) ? fewestSamples : quality.samples, clip, plan };
   }
 }
 
-function readme(clip: RecordableClip, frames: number, width: number, height: number, sound: boolean, base: string): string {
+function readme(clip: RecordableClip, plan: FramePlan, width: number, height: number, sound: boolean, base: string): string {
+  const whole = plan.from <= 1e-6 && plan.to >= clip.duration - 1e-6 && plan.loops === 1 && plan.speed === 1;
   return [
-    `${clip.label}: ${frames} frames at ${FPS} fps (${(frames / FPS).toFixed(3)} s), ${width} x ${height}.`,
+    `${clip.label}: ${plan.frames} frames at ${FPS} fps (${plan.duration.toFixed(3)} s), ${width} x ${height}.`,
+    ...(whole ? [] : [`Recorded: clip ${plan.from.toFixed(3)} s to ${plan.to.toFixed(3)} s${plan.loops > 1 ? `, ${plan.loops} times` : ""}` +
+      `${plan.speed !== 1 ? ` at ${formatSpeed(plan.speed)} speed` : ""}.`]),
     "Each PNG has a transparent background (straight alpha). Import the folder as an image sequence at 60 fps;",
     `frame_00000.png is 0.000 s, and each next frame is 1/${FPS} s later.`,
     sound ? `${base}.wav is the emote's sound, starting at frame 0 and as long as the frames.` : "This emote has no sound (or sound was turned off).",
     "",
   ].join("\n");
 }
+
+/** 0.5 as "0.5x", 1/3 as "0.33x". */
+export const formatSpeed = (speed: number) => `${Number(speed.toFixed(2))}x`;
