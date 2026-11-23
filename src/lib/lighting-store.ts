@@ -174,6 +174,11 @@ interface LightingStore {
   /** Back to the viewer's own look. Nothing was written, so nothing changes. */
   leaveShared(): void;
   dismissSharedOutcome(): void;
+  /** A take's render (22 Nov 2026, rig/VideoExport.ts renderTake): the lights, environment and exposure drawn instead of
+   *  the look's while it renders, as they were when the take was recorded; null otherwise. Never stored: storage only
+   *  ever receives the viewer's own look (writeCurrent), and the backdrop on screen stays theirs. */
+  takeLook: Look | null;
+  showTakeLook(look: Look | null): void;
   /** Write a pending change now (page hidden or closing). */
   flush(): void;
   /** Re-read storage (another tab changed it). */
@@ -206,6 +211,8 @@ export const useLightingStore = create<LightingStore>((set, get) => {
     selected: null,
     shared: null,
     sharedOutcome: null,
+    takeLook: null,
+    showTakeLook: look => { if (get().takeLook !== look) set({ takeLook: look }); },
     setMarkers: on => {
       set({ markers: on, ...(on ? {} : { selected: null }) });
       // Automated browsers start with the markers off and never store the choice (they never read it either).

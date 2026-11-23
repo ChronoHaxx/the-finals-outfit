@@ -63,6 +63,8 @@ export const FEATURES = [
   { id: "camera", group: "shoot", name: "Camera", hint: "Place the camera exactly, roll it, and save views." },
   { id: "capture", group: "shoot", name: "Capture", hint: "Save a PNG up to three times the view's size, or an emote as video." },
   { id: "video", group: "shoot", name: "Video", hint: "Record an emote as MP4, see-through MOV or WebM, or PNG frames.", needs: "Open Capture" },
+  { id: "video-record", group: "shoot", name: "Record a take", hint: "Record what you do in the viewer, then render it at 60 fps.", needs: "Open Capture, then Video" },
+  { id: "video-mov", group: "shoot", name: "Transparent MOV", hint: "Lossless see-through video for Premiere, After Effects or Resolve.", needs: "On a computer: Capture, then Video" },
   { id: "hide-ui", group: "shoot", name: "Hide UI", hint: "Leave only the character on screen for a clean shot.", keys: ["H"] },
   { id: "full-screen", group: "shoot", name: "Full screen", hint: "Fill the whole screen with the character. Esc leaves." },
   { id: "graphics", group: "shoot", name: "Graphics", hint: "Set quality, anti-aliasing and resolution, or show the frame rate." },

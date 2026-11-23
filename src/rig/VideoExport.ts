@@ -1,4 +1,6 @@
-import type { BackdropPaint } from "../lib/stage-lighting";
+import { backdropPaint, sanitizeLook, type BackdropPaint, type Look } from "../lib/stage-lighting";
+import { TakeTimeline, lookAt, type TakeLookEvent, type TakeSample } from "../lib/video-take";
+import type { TakeMeta } from "../lib/take-store";
 import { encodePngAsync } from "../lib/png-encode";
 import { avcCodecs, colorCodes, muxMp4, type Mp4AudioTrack, type Mp4Sample } from "../lib/mp4-mux";
 import { muxWebm, opusHead, vp9Codec, type WebmAudioFrame, type WebmVideoFrame } from "../lib/webm-mux";
@@ -301,22 +303,26 @@ const slug = (label: string) => label.normalize("NFKD").replace(/[^\w]+/g, "-").
 export const exportName = (clip: RecordableClip, stamp: string) => `finals-outfit-${slug(clip.label)}-${stamp}`;
 
 /**
- * Render and encode the clip in front as a video. Resolves with the file; rejects with an AbortError when `signal`
- * aborts. The viewer is left as it was (the clip at its time, playing or paused) whatever happens.
+ * What a video draws, frame by frame: an emote's frame plan (recordVideo) or a take (renderTake). The frame loop calls
+ * begin() once, then for each frame: check(), ready() and the draw before the live view draws, pose() of the next frame
+ * after it; end() whatever happens.
  */
-export async function recordVideo(context: ScreenshotContext, animator: RigAnimator, options: VideoOptions,
-  onProgress: (progress: VideoProgress) => void, signal: AbortSignal, stamp: string): Promise<VideoResult> {
-  const front = animator.recordable();
-  if (!front) throw new Error("Play an emote first");
-  const clip: RecordableClip = front;
-  const plan = framePlan(clip, FPS, options.range);
-  const { width, height, format } = options;
-  const transparent = format !== "mp4";
-  const quality = QUALITY[options.quality];
-  const support = await videoSupport();
-  onProgress({ phase: "preparing", frame: 0, frames: plan.frames, bytes: 0 });
+interface FrameSource {
+  frames: number;
+  /** Take the viewer's clock over and pose frame 0. A message when it cannot. */
+  begin(capture: ViewCapture): string | null;
+  /** Still in charge; else why the recording stops. */
+  check(): string | null;
+  /** The scene shows the posed frame (a take's lighting change has reached it). */
+  ready(): boolean;
+  /** Pose frame `index`, the next to draw. */
+  pose(index: number, capture: ViewCapture): void;
+  end(): void;
+}
 
-  // Video encoder (MP4 and WebM).
+/** The encoder settings for the format, checked before anything is rendered. */
+async function videoEncoders(format: VideoFormat, width: number, height: number) {
+  const support = await videoSupport();
   let videoConfig: VideoEncoderConfig | null = null;
   let alphaConfig: VideoEncoderConfig | null = null;
   if (format === "mp4") {
@@ -331,19 +337,63 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
     // The alpha stream: mostly flat, so cheap; its edges get the bits.
     alphaConfig = { ...videoConfig, bitrate: Math.round(bitrateFor(width, height) * 0.3) };
   }
-  if (signal.aborted) throw cancelled();
-
-  // Sound, rendered offline before any frame (it is quick, and a failure here should not cost a long render).
-  const wantSound = options.sound && animator.sounds.hasSound(clip.source);
   const rawSound = format === "png" || format === "mov"; // WAV or PCM: no encoder needed
   const audioCodec = rawSound ? null : format === "webm" ? (support.opus ? "opus" : null)
     : support.aac ? "mp4a.40.2" : support.opus ? "opus" : null;
-  let sound: { buffer: AudioBuffer } | null = null;
-  if (wantSound && (rawSound || audioCodec)) {
-    sound = await animator.sounds.renderOffline(clip.source, { duration: plan.duration, clipLength: clip.duration,
-      looping: clip.loop, sampleRate: AUDIO_RATE, signal, range: plan });
+  return { videoConfig, alphaConfig, audioCodec, rawSound };
+}
+
+/**
+ * Render and encode the clip in front as a video. Resolves with the file; rejects with an AbortError when `signal`
+ * aborts. The viewer is left as it was (the clip at its time, playing or paused) whatever happens.
+ */
+export async function recordVideo(context: ScreenshotContext, animator: RigAnimator, options: VideoOptions,
+  onProgress: (progress: VideoProgress) => void, signal: AbortSignal, stamp: string): Promise<VideoResult> {
+  const front = animator.recordable();
+  if (!front) throw new Error("Play an emote first");
+  const clip: RecordableClip = front;
+  const plan = framePlan(clip, FPS, options.range);
+  onProgress({ phase: "preparing", frame: 0, frames: plan.frames, bytes: 0 });
+  const encoders = await videoEncoders(options.format, options.width, options.height);
+  if (signal.aborted) throw cancelled();
+
+  // Sound, rendered offline before any frame (it is quick, and a failure here should not cost a long render).
+  let sound: AudioBuffer | null = null;
+  if (options.sound && animator.sounds.hasSound(clip.source) && (encoders.rawSound || encoders.audioCodec)) {
+    sound = (await animator.sounds.renderOffline(clip.source, { duration: plan.duration, clipLength: clip.duration,
+      looping: clip.loop, sampleRate: AUDIO_RATE, signal, range: plan }))?.buffer ?? null;
   }
   if (signal.aborted) throw cancelled();
+
+  const base = exportName(clip, stamp);
+  const source: FrameSource = {
+    frames: plan.frames,
+    begin: () => {
+      const begun = animator.beginRecording(plan.time(0));
+      return !begun || begun.clip !== clip.clip ? "The emote changed; try again" : null;
+    },
+    check: () => animator.recordingCurrent() ? null : "The emote changed while recording; recording stopped.",
+    ready: () => true,
+    pose: index => animator.recordFrame(plan.time(index), 1 / FPS),
+    end: () => animator.endRecording(),
+  };
+  const encoded = await encodeVideo(context, options, encoders, source, sound, onProgress, signal, base,
+    hasSound => readme(clip, plan, options.width, options.height, hasSound, base));
+  return { ...encoded, clip, plan };
+}
+
+/** The file of a recording, before the caller adds what it recorded. */
+type EncodedVideo = Omit<VideoResult, "clip" | "plan">;
+
+/** Draw every frame of `source`, then finish the encoders and the container. */
+async function encodeVideo(context: ScreenshotContext, options: VideoOptions, encoders: Awaited<ReturnType<typeof videoEncoders>>,
+  source: FrameSource, sound: AudioBuffer | null, onProgress: (progress: VideoProgress) => void, signal: AbortSignal, base: string,
+  readmeText: (hasSound: boolean) => string): Promise<EncodedVideo> {
+  const { width, height, format } = options;
+  const { videoConfig, alphaConfig, audioCodec } = encoders;
+  const transparent = format !== "mp4";
+  const quality = QUALITY[options.quality];
+  const frames = source.frames;
 
   // Outputs.
   const videoSamples: { data: Uint8Array; timestamp: number; key: boolean }[] = [];
@@ -355,7 +405,6 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
   const zip = format === "png" ? new ZipStoreWriter() : null;
   const qtrle = format === "mov" ? new QtrleEncoder(width, height) : null;
   const movFrames: Blob[] = []; // each frame its own Blob, so a long movie can sit in blob storage, not the JS heap
-  const base = exportName(clip, stamp);
   let encoder: VideoEncoder | null = null;
   if (videoConfig) {
     encoder = new VideoEncoder({
@@ -394,15 +443,15 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
   }
 
   // Draw every frame, then finish the encoders and the container. (A function so the encoder is closed on any exit.)
-  async function renderAndMux(): Promise<VideoResult> {
+  async function renderAndMux(): Promise<EncodedVideo> {
     const capture = new ViewCapture(context.gl, context.scene, context.camera, { width, height,
       supersample: quality.supersample, samples: quality.samples, transparent, keepFloor: options.keepFloor,
       backdrop: transparent ? null : options.backdrop, maxTile: options.maxTile });
     let fewestSamples = Infinity;
-    const begun = animator.beginRecording(plan.time(0));
     try {
-      if (!begun || begun.clip !== clip.clip) throw new Error("The emote changed; try again");
-      onProgress({ phase: "rendering", frame: 0, frames: plan.frames, bytes: 0 });
+      const problem = source.begin(capture);
+      if (problem) throw new Error(problem);
+      onProgress({ phase: "rendering", frame: 0, frames, bytes: 0 });
       await new Promise<void>((resolve, reject) => {
         let next = 0, drawn = false, inFlight = 0, committed = 0, finished = false;
         let tail: Promise<void> = Promise.resolve();
@@ -436,12 +485,14 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
           }
           if (stored > options.maxBytes) throw new Error(`The file passed ${Math.round(options.maxBytes / 1e6)} MB, more than this device can safely hold. Pick a smaller size${format === "png" ? " or a video format" : format === "mov" ? ", or the PNG sequence (smaller)" : ""}.`);
           committed++;
-          onProgress({ phase: "rendering", frame: committed, frames: plan.frames, bytes: stored });
+          onProgress({ phase: "rendering", frame: committed, frames, bytes: stored });
         };
         captureSlot.current = {
           capture: () => {
-            if (finished || drawn || next >= plan.frames) return;
-            if (!animator.recordingCurrent()) { fail(new Error("The emote changed while recording; recording stopped.")); return; }
+            if (finished || drawn || next >= frames) return;
+            const stop = source.check();
+            if (stop) { fail(new Error(stop)); return; }
+            if (!source.ready()) return; // a lighting change still on its way into the scene
             if (inFlight >= IN_FLIGHT || (encoder && encoder.encodeQueueSize > IN_FLIGHT)
             || (alphaEncoder && alphaEncoder.encodeQueueSize > IN_FLIGHT)) return; // let the pipeline drain
             try { capture.draw(); } catch (error) { fail(error); return; }
@@ -456,23 +507,23 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
             tail = tail.then(async () => { await commit(index, await read, png); })
               .then(() => {
                 inFlight--;
-                if (committed === plan.frames && !finished) { finished = true; captureSlot.current = null; resolve(); }
+                if (committed === frames && !finished) { finished = true; captureSlot.current = null; resolve(); }
               }, fail);
           },
           advance: () => {
             if (finished || !drawn) return;
             drawn = false;
-            if (next < plan.frames) animator.recordFrame(plan.time(next), 1 / FPS);
+            if (next < frames) source.pose(next, capture);
           },
         };
       });
     } finally {
       captureSlot.current = null;
-      animator.endRecording();
+      source.end();
       capture.dispose();
     }
 
-    onProgress({ phase: "finishing", frame: plan.frames, frames: plan.frames, bytes: stored });
+    onProgress({ phase: "finishing", frame: frames, frames, bytes: stored });
     if (encoder) {
       await Promise.all([encoder.flush(), alphaEncoder?.flush()]);
       if (failure) throw failure;
@@ -483,36 +534,36 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
 
     let blob: Blob;
     let soundKind: VideoResult["sound"] = null;
+    const duration = frames / FPS;
     if (format === "png") {
       if (sound) {
-        zip!.add(`${base}/${base}.wav`, encodeWav(Array.from({ length: sound.buffer.numberOfChannels }, (_, c) => sound!.buffer.getChannelData(c)), AUDIO_RATE));
+        zip!.add(`${base}/${base}.wav`, encodeWav(Array.from({ length: sound.numberOfChannels }, (_, c) => sound.getChannelData(c)), AUDIO_RATE));
         soundKind = "wav";
       }
-      zip!.add(`${base}/README.txt`, new TextEncoder().encode(readme(clip, plan, width, height, !!sound, base)));
+      zip!.add(`${base}/README.txt`, new TextEncoder().encode(readmeText(!!sound)));
       blob = zip!.finish();
     } else if (format === "mov") {
-      if (movFrames.length !== plan.frames) throw new Error(`The movie has ${movFrames.length} of ${plan.frames} frames`);
-      const pcm = sound ? pcm16le(Array.from({ length: sound.buffer.numberOfChannels }, (_, c) => sound!.buffer.getChannelData(c))) : null;
+      if (movFrames.length !== frames) throw new Error(`The movie has ${movFrames.length} of ${frames} frames`);
+      const pcm = sound ? pcm16le(Array.from({ length: sound.numberOfChannels }, (_, c) => sound.getChannelData(c))) : null;
       blob = muxMov({ width, height, fps: FPS, frames: movFrames },
-        pcm ? { sampleRate: AUDIO_RATE, channels: sound!.buffer.numberOfChannels, pcm } : null);
+        pcm ? { sampleRate: AUDIO_RATE, channels: sound!.numberOfChannels, pcm } : null);
       if (pcm) soundKind = "pcm";
     } else {
       // Encoder output order is decode order, which both containers keep (each sample carries its presentation time).
-      const frames = videoSamples;
-      if (frames.length !== plan.frames) throw new Error(`The encoder returned ${frames.length} of ${plan.frames} frames`);
+      if (videoSamples.length !== frames) throw new Error(`The encoder returned ${videoSamples.length} of ${frames} frames`);
       let audio: Awaited<ReturnType<typeof encodeAudio>> | null = null;
-      if (sound && audioCodec) audio = await encodeAudio(sound.buffer, audioCodec);
+      if (sound && audioCodec) audio = await encodeAudio(sound, audioCodec);
       if (signal.aborted) throw cancelled();
       if (format === "mp4") {
         if (!videoDescription) throw new Error("The H.264 encoder gave no stream description");
         const timescale = FPS * 1000, tick = timescale / FPS;
         // Encoder output is in decode order; each frame's presentation time is its index (timestamps are whole microseconds).
-        const samples: Mp4Sample[] = frames.map(s => ({ data: s.data, pts: Math.round(s.timestamp * FPS / 1e6) * tick, duration: tick, key: s.key }));
+        const samples: Mp4Sample[] = videoSamples.map(s => ({ data: s.data, pts: Math.round(s.timestamp * FPS / 1e6) * tick, duration: tick, key: s.key }));
         let audioTrack: Mp4AudioTrack | null = null;
         if (audio && audioCodec) {
           const aac = audioCodec === "mp4a.40.2";
-          const delay = aac ? await measureAacDelay(sound!.buffer, audio.chunks, audio.description) : 0;
-          audioTrack = { codec: aac ? "aac" : "opus", sampleRate: AUDIO_RATE, channels: sound!.buffer.numberOfChannels,
+          const delay = aac ? await measureAacDelay(sound!, audio.chunks, audio.description) : 0;
+          audioTrack = { codec: aac ? "aac" : "opus", sampleRate: AUDIO_RATE, channels: sound!.numberOfChannels,
             description: audio.description, delay: aac ? delay : 312, bitrate: 192_000,
             samples: audio.chunks.map(c => ({ data: c.data, pts: Math.round(c.timestamp * AUDIO_RATE / 1e6),
               duration: Math.round(c.duration * AUDIO_RATE / 1e6) || (aac ? 1024 : 960), key: true })) };
@@ -522,27 +573,122 @@ export async function recordVideo(context: ScreenshotContext, animator: RigAnima
       } else {
         const codes = colorCodes(videoColor);
         // Each colour frame with its alpha frame; a keyframe only where both streams start fresh (seeking lands there).
-      const webmFrames: WebmVideoFrame[] = frames.map(f => {
-        const alpha = alphaSamples.get(f.timestamp);
-        if (!alpha) throw new Error("The alpha encoder skipped a frame");
-        return { data: f.data, alpha: alpha.data, time: f.timestamp / 1000, key: f.key && alpha.key };
-      });
+        const webmFrames: WebmVideoFrame[] = videoSamples.map(f => {
+          const alpha = alphaSamples.get(f.timestamp);
+          if (!alpha) throw new Error("The alpha encoder skipped a frame");
+          return { data: f.data, alpha: alpha.data, time: f.timestamp / 1000, key: f.key && alpha.key };
+        });
         let webmAudio = null;
         if (audio) {
           const preSkip = audio.description && audio.description.length >= 19 ? audio.description[10] | (audio.description[11] << 8) : 312;
-          const head = audio.description && audio.description.length >= 19 ? audio.description : opusHead(sound!.buffer.numberOfChannels, preSkip, AUDIO_RATE);
-          webmAudio = { sampleRate: AUDIO_RATE, channels: sound!.buffer.numberOfChannels, head, preSkip,
+          const head = audio.description && audio.description.length >= 19 ? audio.description : opusHead(sound!.numberOfChannels, preSkip, AUDIO_RATE);
+          webmAudio = { sampleRate: AUDIO_RATE, channels: sound!.numberOfChannels, head, preSkip,
             frames: audio.chunks.map(c => ({ data: c.data, time: c.timestamp / 1000 }) as WebmAudioFrame) };
           soundKind = "opus";
         }
-        blob = muxWebm({ width, height, codec: "V_VP9", frameDuration: 1e9 / FPS, duration: plan.duration * 1000, alpha: true,
+        blob = muxWebm({ width, height, codec: "V_VP9", frameDuration: 1e9 / FPS, duration: duration * 1000, alpha: true,
           colour: videoColor ? { matrix: codes.matrix, range: codes.fullRange ? 2 : 1, transfer: codes.transfer, primaries: codes.primaries } : null,
           frames: webmFrames, audio: webmAudio });
       }
     }
-    return { blob, extension: format === "png" ? "zip" : format, frames: plan.frames, width, height, sound: soundKind,
-      samples: Number.isFinite(fewestSamples) ? fewestSamples : quality.samples, clip, plan };
+    return { blob, extension: format === "png" ? "zip" : format, frames, width, height, sound: soundKind,
+      samples: Number.isFinite(fewestSamples) ? fewestSamples : quality.samples };
   }
+}
+
+// --- Takes (22 Nov 2026) -----------------------------------------------------------------------------------------------
+
+/** The viewer's side of a take's render (CharacterViewer provides it: takeSlots.stage). */
+export interface TakeStage {
+  /** The character's own turn (scene turntable mode), radians; set per frame and put back after. */
+  getYaw(): number;
+  setYaw(radians: number): void;
+  /** Draw these lights instead of the viewer's look (null: theirs again). Never stored. */
+  showLook(look: Look | null): void;
+  /** The scene shows `look` (its change has been committed). */
+  lookShown(look: Look): boolean;
+}
+
+/** A take to render: its record, samples and lighting changes (lib/take-store.ts, or the recorder's memory). */
+export interface TakeInput { meta: TakeMeta; samples: TakeSample[]; events: TakeLookEvent[] }
+
+// Orbiting turns the sway springs as the character turning would (AnimationControls' rule, at 60 frames a second): a
+// jump larger than TELEPORT in one frame is a camera reset, not a turn; a fast flick is capped.
+const TELEPORT = 0.6, MAX_TURN = 0.15;
+
+export const takeExportName = (meta: Pick<TakeMeta, "name">, stamp: string) => `finals-outfit-${slug(meta.name)}-${stamp}`;
+
+/**
+ * Render a take (lib/video-take.ts) frame by frame at 60 fps: each frame posed from the samples (TakeTimeline), drawn
+ * through a capture whose camera follows the recorded one, lit by the look recorded then; the sound from its
+ * segments. The current outfit is worn. The viewer is given back as it was, its own look and turn included.
+ */
+export async function renderTake(context: ScreenshotContext, animator: RigAnimator, stage: TakeStage, take: TakeInput,
+  options: VideoOptions, onProgress: (progress: VideoProgress) => void, signal: AbortSignal, stamp: string): Promise<EncodedVideo & { frames: number }> {
+  if (!take.samples.length) throw new Error("This take has nothing recorded");
+  const length = (clip: string) => animator.info(clip)?.duration ?? 0;
+  const timeline = new TakeTimeline(take.samples, length);
+  const frames = timeline.frames(FPS);
+  onProgress({ phase: "preparing", frame: 0, frames, bytes: 0 });
+  const missing = await animator.prepareTake(timeline.clips());
+  if (missing.length) throw new Error(`This take uses ${missing.length === 1 ? "an emote" : `${missing.length} emotes`} this game version of the site doesn’t have: switch to ${take.meta.mode === "chinals" ? "Chinals" : "Global"} to render it.`);
+  const encoders = await videoEncoders(options.format, options.width, options.height);
+  if (signal.aborted) throw cancelled();
+
+  let sound: AudioBuffer | null = null;
+  const segments = timeline.soundSegments().map(s => ({ ...s, source: animator.info(s.clip)?.source, clipLength: length(s.clip) }));
+  if (options.sound && segments.some(s => animator.sounds.hasSound(s.source)) && (encoders.rawSound || encoders.audioCodec)) {
+    sound = (await animator.sounds.renderSegments(segments, { duration: frames / FPS, sampleRate: AUDIO_RATE, signal }))?.buffer ?? null;
+  }
+  if (signal.aborted) throw cancelled();
+
+  const looks = take.events.map(event => ({ t: event.t, look: sanitizeLook(event.look) }));
+  const transparent = options.format !== "mp4";
+  const yaw = stage.getYaw();
+  let shown: Look | null = null, lastAzimuth: number | null = null;
+  const apply = (index: number, capture: ViewCapture, first: boolean) => {
+    const t = index / FPS, frame = timeline.frameAt(t);
+    capture.setView(frame.position, frame.quaternion, frame.fov);
+    stage.setYaw(frame.yaw);
+    const azimuth = Math.atan2(frame.position[0] - frame.target[0], frame.position[2] - frame.target[2]) - frame.yaw;
+    let turn = 0;
+    if (lastAzimuth !== null) {
+      const change = Math.atan2(Math.sin(azimuth - lastAzimuth), Math.cos(azimuth - lastAzimuth));
+      if (Math.abs(change) < TELEPORT) turn = Math.min(MAX_TURN, Math.max(-MAX_TURN, change));
+    }
+    lastAzimuth = azimuth;
+    animator.poseTake(frame, first ? 0 : 1 / FPS, turn, first);
+    const look = (lookAt(looks, t) as Look | undefined) ?? null;
+    if (look && look !== shown) {
+      shown = look;
+      stage.showLook(look);
+      if (!transparent) capture.setBackdrop(backdropPaint(look.backdrop));
+    }
+  };
+  const base = takeExportName(take.meta, stamp);
+  const source: FrameSource = {
+    frames,
+    begin: capture => {
+      if (!animator.beginTake()) return "Turn on the animation (the idle or an emote) first, then render the take.";
+      apply(0, capture, true);
+      return null;
+    },
+    check: () => animator.takeCurrent() ? null : "An emote was picked while the take rendered; rendering stopped.",
+    ready: () => !shown || stage.lookShown(shown),
+    pose: (index, capture) => apply(index, capture, false),
+    end: () => {
+      animator.endTake();
+      stage.setYaw(yaw);
+      stage.showLook(null);
+    },
+  };
+  return encodeVideo(context, options, encoders, source, sound, onProgress, signal, base, hasSound => [
+    `${take.meta.name}: a take, ${frames} frames at ${FPS} fps (${(frames / FPS).toFixed(3)} s), ${options.width} x ${options.height}.`,
+    "Each PNG has a transparent background (straight alpha). Import the folder as an image sequence at 60 fps;",
+    `frame_00000.png is 0.000 s, and each next frame is 1/${FPS} s later.`,
+    hasSound ? `${base}.wav is the emotes' sound, starting at frame 0 and as long as the frames.` : "No emote in this take has sound (or sound was turned off).",
+    "",
+  ].join("\n"));
 }
 
 function readme(clip: RecordableClip, plan: FramePlan, width: number, height: number, sound: boolean, base: string): string {

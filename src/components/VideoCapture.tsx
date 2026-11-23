@@ -2,9 +2,12 @@ import { useEffect, useRef, useState, useSyncExternalStore, type RefObject } fro
 import { backdropPaint, type Backdrop } from "../lib/stage-lighting";
 import type { ScreenshotContext } from "../rig/ViewerScreenshot";
 import type { RigAnimator } from "../rig/RigAnimator";
-import { FPS, QUALITY, exportName, formatSpeed, framePlan, recordVideo, videoSizes, videoSupport,
-  type ExportRange, type VideoFormat, type VideoProgress, type VideoQuality, type VideoSupport } from "../rig/VideoExport";
+import { FPS, QUALITY, exportName, formatSpeed, framePlan, recordVideo, renderTake, takeExportName, videoSizes, videoSupport,
+  type ExportRange, type TakeInput, type VideoFormat, type VideoProgress, type VideoQuality, type VideoSupport } from "../rig/VideoExport";
+import { takeSlots } from "../rig/take-slots";
 import { moveMark, setRange, useVideoRange } from "../lib/video-range";
+import { useFeature } from "../lib/discovery";
+import { TakesSection, type TakesState } from "./VideoTakes";
 
 // The capture panel's Video tab (21 Nov 2026): the emote in front as a 60 fps video, rendered in this browser
 // (rig/VideoExport.ts). The job's state lives in the panel's button (useVideoExport), which stays mounted: the panel
@@ -12,6 +15,9 @@ import { moveMark, setRange, useVideoRange } from "../lib/video-range";
 //
 // Range, loops and speed (22 Nov 2026): an emote's video covers the timeline's range (typed here or marked there;
 // lib/video-range.ts), repeated Loops times, at the emote speed. The defaults are the whole emote, once, at 1x.
+//
+// Takes (22 Nov 2026, VideoTakes.tsx): the tab records either the emote in front or a take, rendered with the same
+// format, size, quality and sound choices.
 
 // Memory guards. A phone gets at most 1080p frames, smaller GPU tiles, and a smaller ceiling for the finished file (it
 // is held in memory, or the browser's blob storage, until saved). A phone is told apart by its primary pointer.
@@ -22,8 +28,9 @@ export const CAPTURE_TILE = PHONE ? 1024 : 2048;
 const MAX_FILE_BYTES = LOW_MEMORY ? 400e6 : 2e9;
 
 const KEY = "finals-outfit.video";
-interface VideoChoices { format: VideoFormat; quality: VideoQuality; height: number; sound: boolean; loops: number }
-const DEFAULTS: VideoChoices = { format: "mp4", quality: "standard", height: 1080, sound: true, loops: 1 };
+type VideoSource = "emote" | "take";
+interface VideoChoices { format: VideoFormat; quality: VideoQuality; height: number; sound: boolean; loops: number; source: VideoSource }
+const DEFAULTS: VideoChoices = { format: "mp4", quality: "standard", height: 1080, sound: true, loops: 1, source: "emote" };
 export const MAX_LOOPS = 20;
 function readChoices(): VideoChoices {
   try {
@@ -34,6 +41,7 @@ function readChoices(): VideoChoices {
       height: typeof s.height === "number" && Number.isFinite(s.height) ? s.height : DEFAULTS.height,
       sound: typeof s.sound === "boolean" ? s.sound : DEFAULTS.sound,
       loops: typeof s.loops === "number" && Number.isInteger(s.loops) && s.loops >= 1 && s.loops <= MAX_LOOPS ? s.loops : DEFAULTS.loops,
+      source: s.source === "take" ? "take" : DEFAULTS.source,
     };
   } catch { return DEFAULTS; }
 }
@@ -47,12 +55,15 @@ function writeChoices(choices: VideoChoices) {
 const stamp = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
 const megabytes = (bytes: number) => bytes >= 1e9 ? `${(bytes / 1e9).toFixed(1)} GB` : `${Math.max(1, Math.round(bytes / 1e6))} MB`;
 
+type JobOptions = { width: number; height: number; format: VideoFormat; quality: VideoQuality; sound: boolean; keepFloor: boolean };
+
 export interface VideoJob {
   running: boolean;
   progress: VideoProgress | null;
   status: string;
-  start: (options: { width: number; height: number; format: VideoFormat; quality: VideoQuality; sound: boolean; keepFloor: boolean;
-    range?: Partial<ExportRange> }) => void;
+  start: (options: JobOptions & { range?: Partial<ExportRange> }) => void;
+  /** Render a take (`load` gives it); `onDone` once its file is saved (the take is marked rendered, never deleted). */
+  startTake: (load: () => Promise<TakeInput | null>, options: JobOptions, onDone: () => void) => void;
   cancel: () => void;
 }
 
@@ -62,7 +73,10 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
   const [status, setStatus] = useState("");
   const controller = useRef<AbortController | null>(null);
   useEffect(() => () => controller.current?.abort(), []); // the viewer unmounts: stop, and give the clock back
-  const start: VideoJob["start"] = ({ width, height, format, quality, sound, keepFloor, range }) => {
+  // One job at a time (both draw through the same renderer): render, save the file, say what was saved.
+  const run = (work: (ctx: ScreenshotContext, animator: RigAnimator, signal: AbortSignal, when: string) =>
+    Promise<{ blob: Blob; extension: string; frames: number; width: number; height: number; sound: string | null; samples: number; name: string }>,
+    quality: VideoQuality, onDone?: () => void) => {
     const ctx = context.current;
     if (!ctx || !animator || controller.current) return;
     const abort = new AbortController();
@@ -72,15 +86,15 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
     const when = stamp();
     void (async () => {
       try {
-        const result = await recordVideo(ctx, animator, { format, width, height, quality, keepFloor, sound,
-          backdrop: backdropPaint(backdrop), maxTile: CAPTURE_TILE, maxBytes: MAX_FILE_BYTES, range }, setProgress, abort.signal, when);
-        const name = `${exportName(result.clip, when)}.${result.extension}`;
+        const result = await work(ctx, animator, abort.signal, when);
+        const name = `${result.name}.${result.extension}`;
         const url = URL.createObjectURL(result.blob);
         const link = document.createElement("a");
         link.href = url;
         link.download = name;
         link.click();
         window.setTimeout(() => URL.revokeObjectURL(url), 5 * 60_000);
+        onDone?.();
         const soundNote = result.sound === "aac" || result.sound === "opus" || result.sound === "pcm" ? ", with sound" : result.sound === "wav" ? ", sound as WAV" : "";
         const grain = result.samples < QUALITY[quality].samples ? " Some frames kept changing while drawn: a little grain." : "";
         setStatus(`Saved ${name}: ${result.width} × ${result.height}, ${result.frames} frames${soundNote}, ${megabytes(result.blob.size)}.${grain}`);
@@ -96,7 +110,21 @@ export function useVideoExport(context: RefObject<ScreenshotContext | null>, ani
       }
     })();
   };
-  return { running: !!progress, progress, status, start, cancel: () => controller.current?.abort() };
+  const settings = ({ format, width, height, quality, keepFloor, sound }: JobOptions) =>
+    ({ format, width, height, quality, keepFloor, sound, backdrop: backdropPaint(backdrop), maxTile: CAPTURE_TILE, maxBytes: MAX_FILE_BYTES });
+  const start: VideoJob["start"] = options => run(async (ctx, rig, signal, when) => {
+    const result = await recordVideo(ctx, rig, { ...settings(options), range: options.range }, setProgress, signal, when);
+    return { ...result, name: exportName(result.clip, when) };
+  }, options.quality);
+  const startTake: VideoJob["startTake"] = (load, options, onDone) => run(async (ctx, rig, signal, when) => {
+    const take = await load();
+    if (!take) throw new Error("This take is gone (discarded in another tab?)");
+    const stage = takeSlots.stage;
+    if (!stage) throw new Error("The 3D view isn’t ready");
+    const result = await renderTake(ctx, rig, stage, take, settings(options), setProgress, signal, when);
+    return { ...result, name: takeExportName(take.meta, when) };
+  }, options.quality, onDone);
+  return { running: !!progress, progress, status, start, startTake, cancel: () => controller.current?.abort() };
 }
 
 const FORMATS: { id: VideoFormat; label: string; detail: string }[] = [
@@ -109,10 +137,12 @@ const FORMATS: { id: VideoFormat; label: string; detail: string }[] = [
 const ownEncoder = (format: VideoFormat) => format === "png" || format === "mov";
 
 /** The Video tab's form. */
-export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }: {
+export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready, takes, onRecordTake }: {
   job: VideoJob; animator: RigAnimator | null; stage: { width: number; height: number; maxSide: number };
-  keepFloor: boolean; onKeepFloor: (keep: boolean) => void; ready: boolean;
+  keepFloor: boolean; onKeepFloor: (keep: boolean) => void; ready: boolean; takes: TakesState; onRecordTake: () => void;
 }) {
+  const takeFeature = useFeature("video-record", "Record a take: what you do in the viewer, rendered at 60 fps");
+  const movFeature = useFeature("video-mov", "Lossless see-through MOV for video editors");
   const [choices, setChoices] = useState(readChoices);
   const [support, setSupport] = useState<VideoSupport | null>(null);
   useEffect(() => { let live = true; void videoSupport().then(s => { if (live) setSupport(s); }); return () => { live = false; }; }, []);
@@ -135,10 +165,29 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
   const soundPossible = ownEncoder(format) || (format === "webm" ? !!support?.opus : !!(support?.aac || support?.opus));
   const transparent = format !== "mp4";
   const running = job.running, progress = job.progress;
-  const disabled = !ready || running || !clip || !size || !support || !available(format);
+  const taking = choices.source === "take";
+  const disabled = !ready || running || !clip || !size || !support || !available(format) || !!takes.recording;
+  const renderTakeNow = (id: string) => {
+    if (!size || !ready || !support || !available(format)) return;
+    job.startTake(() => takes.input(id), { width: size.width, height: size.height, format, quality: choices.quality,
+      sound: choices.sound && soundPossible, keepFloor }, () => takes.rendered(id));
+  };
 
   return (
     <div className="flex flex-col gap-3">
+      <div role="radiogroup" aria-label="What to record" className="grid grid-cols-2 gap-1.5">
+        {([["emote", "Emote"], ["take", "Take"]] as const).map(([id, label]) => (
+          <button key={id} type="button" role="radio" aria-checked={choices.source === id} disabled={running}
+            onClick={() => change({ source: id })} {...(id === "take" ? takeFeature : {})}
+            className="flex h-8 items-center justify-center gap-2 border border-line text-xs transition-colors hover:bg-ink-900 disabled:opacity-40 aria-checked:border-fg/60 aria-checked:bg-ink-900">
+            {id === "take" && <span aria-hidden="true" className={`size-2 rounded-full bg-finals ${takes.recording ? "motion-safe:animate-pulse" : ""}`} />}
+            {label}
+          </button>
+        ))}
+      </div>
+      {taking ? (
+        <TakesSection takes={takes} busy={running || !ready} onRecord={onRecordTake} onRender={renderTakeNow} />
+      ) : (<>
       <span className="text-xs leading-snug text-fg-muted">
         {clip && plan
           ? <><span className="text-fg">{clip.label}</span> · {plan.duration.toFixed(2)} s · {plan.frames} frames at {FPS} fps{clip.loop && plan.loops === 1 ? " (one loop)" : ""}
@@ -171,12 +220,13 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
         <NumberField label="Loops" value={choices.loops} min={1} max={MAX_LOOPS} decimals={0} disabled={running}
           onCommit={n => change({ loops: Math.round(n) })} />
       </label>
+      </>)}
       <div role="radiogroup" aria-label="Video format" className="flex flex-col gap-1.5">
         {FORMATS.map(f => {
           const usable = available(f.id);
           return (
             <button key={f.id} type="button" role="radio" aria-checked={format === f.id} disabled={!usable || running}
-              onClick={() => change({ format: f.id })}
+              onClick={() => change({ format: f.id })} {...(f.id === "mov" ? movFeature : {})}
               className="flex flex-col items-start gap-0.5 border border-line px-2.5 py-1.5 text-left transition-colors hover:bg-ink-900 disabled:cursor-not-allowed disabled:opacity-40 aria-checked:border-fg/60 aria-checked:bg-ink-900">
               <span className="text-xs font-semibold">{f.label}</span>
               <span className="text-[11px] leading-snug text-fg-muted">
@@ -198,14 +248,15 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
         </label>
       )}
       {animator?.sounds.available && (
-        <label className={`flex items-start gap-2 ${hasSound && soundPossible ? "cursor-pointer" : "opacity-40"}`}>
-          <input type="checkbox" checked={choices.sound && hasSound && soundPossible} disabled={running || !hasSound || !soundPossible}
+        <label className={`flex items-start gap-2 ${(taking || hasSound) && soundPossible ? "cursor-pointer" : "opacity-40"}`}>
+          <input type="checkbox" checked={choices.sound && (taking || hasSound) && soundPossible} disabled={running || !(taking || hasSound) || !soundPossible}
             onChange={event => change({ sound: event.target.checked })} className="mt-0.5 size-4 cursor-pointer accent-finals" />
           <span className="flex flex-col">
             <span className="text-xs">Include sound</span>
-            <span className="text-[11px] leading-snug text-fg-muted">{!clip ? "The emote’s own sound effects and music."
-              : !hasSound ? "This emote has no sound." : !soundPossible ? "This browser can’t encode sound for this format."
-              : "The emote’s own sound effects and music, at the game’s volume."}</span>
+            <span className="text-[11px] leading-snug text-fg-muted">{!soundPossible ? "This browser can’t encode sound for this format."
+              : taking ? "The emotes’ own sound effects and music, at the game’s volume."
+              : !clip ? "The emote’s own sound effects and music."
+              : !hasSound ? "This emote has no sound." : "The emote’s own sound effects and music, at the game’s volume."}</span>
           </span>
         </label>
       )}
@@ -237,7 +288,7 @@ export function VideoTab({ job, animator, stage, keepFloor, onKeepFloor, ready }
             </button>
           </div>
         </div>
-      ) : (
+      ) : taking ? null : (
         <button type="button" disabled={disabled}
           onClick={() => size && job.start({ width: size.width, height: size.height, format, quality: choices.quality,
             sound: choices.sound && hasSound && soundPossible, keepFloor, range: exportRange })}

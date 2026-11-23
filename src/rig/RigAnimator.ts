@@ -7,6 +7,7 @@ import { EmoteSounds } from "./EmoteSounds";
 import { SpringBones } from "./SpringBones";
 import { frameAt, type PoseCapture, type SharePose } from "../lib/share-pose";
 import { clampSpeed } from "../lib/emote-playback";
+import type { TakeAction } from "../lib/video-take";
 
 // Showcase animation playback (5 Nov 2026). Plays the game's own front-end clips (outfit-screen idles, slot
 // reactions, emotes) on the body's driver skeleton. Every cosmetic follows for free: each one is skinned (or
@@ -274,6 +275,11 @@ export class RigAnimator {
   private pendingScrub: number | null = null; // a slider drag's latest time, applied once per frame by update()
   // A video export owns the clock (beginRecording): what to put back afterwards.
   private recorder: { action: THREE.AnimationAction; clip: RecordableClip; time: number; paused: boolean; inspecting: boolean } | null = null;
+  // A take's render (poseTake): what to give back, and every action it posed (to switch off when not in a frame).
+  private taker: { mixer: THREE.AnimationMixer; request: number; front: THREE.AnimationAction | null; time: number; paused: boolean;
+    inspecting: boolean; enabled: Map<THREE.AnimationAction, boolean>; touched: Set<THREE.AnimationAction>;
+    propsClip: string | null | undefined; sway: boolean } | null = null;
+  private takeClips = new Map<string, THREE.AnimationClip>(); // loaded by prepareTake, by clip id
   /** The viewer is dragging the timeline: the pose changes every frame (the still view uses its motion path). */
   scrubbing = false;
   // The static pose of every bone, captured as playback starts (and for bones an outfit change adds while it plays),
@@ -444,7 +450,7 @@ export class RigAnimator {
   }
 
   /** A video export is driving the clock (update() leaves the pose alone; the viewer's camera turns no springs). */
-  get recording(): boolean { return !!this.recorder; }
+  get recording(): boolean { return !!this.recorder || !!this.taker; }
 
   /**
    * Video export (21 Nov 2026): take the clip in front over for a frame-by-frame render. It plays alone, from `start`
@@ -454,7 +460,7 @@ export class RigAnimator {
    */
   beginRecording(start = 0): RecordableClip | null {
     const clip = this.recordable(), action = this.front();
-    if (!clip || !action || !this.mixer || this.recorder) return null;
+    if (!clip || !action || !this.mixer || this.recording) return null;
     this.recorder = { action, clip, time: Math.min(action.time, clip.duration), paused: this.snapshot.paused, inspecting: this.inspecting };
     this.pendingScrub = null;
     this.sounds.cut();
@@ -503,6 +509,147 @@ export class RigAnimator {
     this.seek(recorder.time);
     this.inspecting = recorder.inspecting;
     if (!recorder.paused) this.setPaused(false);
+  }
+
+  // --- Takes (22 Nov 2026, lib/video-take.ts) ----------------------------------------------------------------------
+  // Recording samples what the mixer blends each frame (takeSample). Rendering takes the clock over like a video export,
+  // but poses any blend of clips per frame (poseTake): an idle under an emote, a crossfade, the still pose.
+
+  /** The clips the mixer blends now (weight above zero), and whether the front emote advances audibly (as its sounds
+   *  are told each frame: updateSounds). */
+  takeSample(): { actions: TakeAction[]; audible: boolean; moving: boolean; sway: boolean } {
+    const actions: TakeAction[] = [];
+    const mixer = this.mixer;
+    if (mixer && !this.recording) {
+      for (const action of new Set([this.emoteAction, this.idleAction, ...this.fading])) {
+        if (!action || !action.enabled || !action.isScheduled()) continue;
+        const weight = action.getEffectiveWeight();
+        if (!(weight > 1e-4)) continue;
+        const clip = action.getClip();
+        actions.push({ clip: clip.name, time: THREE.MathUtils.clamp(action.time, 0, clip.duration), weight,
+          rate: action.paused ? 0 : action.getEffectiveTimeScale() * mixer.timeScale, loop: action.loop === THREE.LoopRepeat,
+          front: action === this.emoteAction });
+      }
+    }
+    const audible = !!this.emoteAction && !this.stopping && this.snapshot.moving && !!mixer && mixer.timeScale > 0 && !this.scrubbing;
+    return { actions, audible, moving: this.snapshot.moving, sway: this.snapshot.sway };
+  }
+
+  /** Before rendering a take: load its clips, their faces and props. Resolves with the ids this clip set lacks (a take
+   *  from the other game version). */
+  async prepareTake(ids: readonly string[]): Promise<string[]> {
+    const known = ids.filter(id => this.info(id)), unknown = ids.filter(id => !this.info(id));
+    await Promise.all([this.bindFace().catch(() => undefined), ...known.map(async id => {
+      const info = this.info(id)!;
+      this.takeClips.set(id, await this.clip(id));
+      await Promise.all([this.face.prepareClip(info.source).catch(() => undefined),
+        info.loop ? undefined : this.props.prepare(info.source).catch(() => undefined)]);
+    })]);
+    return unknown;
+  }
+
+  /** Take the clock over for a take's render (false with no body bound, or another recording running). Every clip
+   *  then shows only as poseTake() says; endTake() gives the viewer back what it had. */
+  beginTake(): boolean {
+    if (!this.mixer || !this.root || this.recording) return false;
+    const front = this.front();
+    const touched = new Set([this.emoteAction, this.idleAction, ...this.fading].filter((a): a is THREE.AnimationAction => !!a));
+    this.taker = { mixer: this.mixer, request: this.request, front, time: front ? Math.min(front.time, front.getClip().duration) : 0,
+      paused: this.snapshot.paused, inspecting: this.inspecting, enabled: new Map([...touched].map(a => [a, a.enabled])), touched,
+      propsClip: undefined, sway: this.snapshot.sway };
+    this.pendingScrub = null;
+    this.sounds.cut();
+    this.fading.clear();
+    this.springs.reset();
+    this.springs.rebuild(this.root);
+    return true;
+  }
+
+  /** The take's render still owns the clock: no emote picked, stopped or closed, and the same body. */
+  takeCurrent(): boolean {
+    return !!this.taker && this.taker.mixer === this.mixer && this.taker.request === this.request;
+  }
+
+  /**
+   * Pose one frame of a take: each clip at its time and weight, everything else off (none: the still pose). The sway
+   * steps `delta` seconds while the take's character moved, turned first by the camera's `turn` round it (radians) as
+   * orbiting turns it in playback. `settle`: the first frame, whose chains settle from rest as a video export's do.
+   */
+  poseTake(frame: { actions: readonly { clip: string; time: number; weight: number; front: boolean }[]; sway: boolean; moving: boolean },
+    delta: number, turn = 0, settle = false): void {
+    const taker = this.taker, mixer = this.mixer;
+    if (!taker || !mixer || mixer !== taker.mixer) return;
+    const posed = new Set<THREE.AnimationAction>(), faces: FaceSample[] = [];
+    let front: { id: string; time: number; weight: number } | null = null;
+    this.seeking = true; // a one-shot posed on its last frame is not the emote ending
+    try {
+      for (const entry of frame.actions) {
+        const clip = this.takeClips.get(entry.clip);
+        if (!clip) continue;
+        const action = mixer.clipAction(clip);
+        posed.add(action);
+        taker.touched.add(action);
+        if (!action.isScheduled()) action.play();
+        action.enabled = true;
+        action.setEffectiveTimeScale(1).setEffectiveWeight(entry.weight); // (stops any fade)
+        action.time = THREE.MathUtils.clamp(entry.time, 0, clip.duration);
+        action.paused = false;
+        faces.push({ source: this.info(entry.clip)?.source, time: action.time, weight: entry.weight });
+        if (entry.front && (!front || entry.weight > front.weight)) front = { id: entry.clip, time: action.time, weight: entry.weight };
+      }
+      for (const action of taker.touched) if (!posed.has(action)) action.enabled = false;
+      mixer.timeScale = 0;
+      mixer.update(0); // with nothing enabled, three blends every bone back to its static pose
+      for (const action of posed) action.paused = false; // three sets it when a clamped one-shot reaches its end
+      if (posed.size) this.runDeform(); else this.deform?.restore();
+      this.face.apply(faces); // none: the face at rest
+    } finally {
+      this.seeking = false;
+    }
+    const propsClip = front?.id ?? null;
+    if (propsClip !== taker.propsClip) {
+      taker.propsClip = propsClip;
+      this.props.setEmote(propsClip ? this.info(propsClip)?.source : null, propsClip ? this.propClocks.get(propsClip) ?? null : null);
+    }
+    this.props.update(front ? front.time : null);
+    if (frame.sway !== taker.sway) { if (!frame.sway) this.springs.reset(); taker.sway = frame.sway; }
+    if (!frame.sway) return;
+    if (settle) { for (let i = 0; i < SETTLE_STEPS; i++) this.springs.update(1 / 60); return; }
+    if (frame.moving && delta > 0) {
+      if (turn) this.springs.turn(turn);
+      this.springs.update(delta);
+    }
+  }
+
+  /** Give the clock back: the clips the take used stopped, the viewer's clip at the time it was at, playing or paused as
+   *  before (or the still pose, if nothing played). A clip picked meanwhile keeps the front. */
+  endTake(): void {
+    const taker = this.taker;
+    if (!taker) return;
+    this.taker = null;
+    const mixer = this.mixer;
+    if (!mixer || mixer !== taker.mixer) return;
+    for (const action of taker.touched) {
+      if (action === this.emoteAction || action === this.idleAction) action.enabled = taker.enabled.get(action) ?? true;
+      else action.stop();
+    }
+    const emote = this.emoteAction?.getClip().name ?? null;
+    this.props.setEmote(emote ? this.info(emote)?.source : null, emote ? this.propClocks.get(emote) ?? null : null);
+    const front = this.front();
+    if (front !== taker.front) return; // picked, stopped or closed meanwhile: that now owns the pose
+    if (!front) {
+      mixer.timeScale = 1;
+      mixer.update(0); // nothing enabled: the static pose
+      this.deform?.restore();
+      this.face.restore();
+      this.springs.reset();
+      this.props.update(null);
+      return;
+    }
+    if (!front.isScheduled()) front.play();
+    this.seek(taker.time);
+    this.inspecting = taker.inspecting;
+    if (!taker.paused) this.setPaused(false);
   }
 
   /** The emote in front and where it is, or null without one (the idle alone has no timeline). */
@@ -780,7 +927,7 @@ export class RigAnimator {
   /** Pause or resume. A pause is a hold of the frame on screen (see the top of this file); pausing an emote marks it
    *  inspected. Resuming an emote that sits on its last frame plays it again from the start. */
   setPaused(paused: boolean): void {
-    if (this.recorder) return; // a video export owns the clock
+    if (this.recording) return; // a video export owns the clock
     const action = this.front();
     if (!this.mixer || !this.snapshot.active || !action || this.stopping) return;
     if (paused) {
@@ -799,7 +946,7 @@ export class RigAnimator {
    *  played through first at 60 Hz so the chains carry the motion leading into that frame. `inspect`: the viewer's
    *  own seek (the timeline), which keeps an emote on its last frame at its end. Captures and links leave it off. */
   seek(seconds: number, options: { preroll?: boolean; inspect?: boolean } = {}): void {
-    if (this.recorder) return;
+    if (this.recording) return;
     if (options.inspect && this.emoteAction) this.inspecting = true;
     this.hold(seconds, options.preroll ?? true);
   }
@@ -807,7 +954,7 @@ export class RigAnimator {
   /** A timeline drag: the latest time is held on the next frame without the preroll (one hold per frame, however
    *  many input events arrive). A seek on release settles the chains. */
   scrub(seconds: number): void {
-    if (!this.emoteAction || this.recorder) return;
+    if (!this.emoteAction || this.recording) return;
     this.inspecting = true;
     this.pendingScrub = seconds;
     this.poseListeners.forEach(listener => listener());
@@ -816,7 +963,7 @@ export class RigAnimator {
   /** Step whole frames from the frame on screen (between two frames, one step reaches the next boundary), paused. */
   step(frames: number): void {
     const action = this.front();
-    if (!this.mixer || !action || !frames || this.recorder) return;
+    if (!this.mixer || !action || !frames || this.recording) return;
     const clip = action.getClip(), frameTime = this.frameTime(clip.name);
     const at = (this.pendingScrub ?? action.time) / frameTime;
     const frame = frames > 0 ? Math.floor(at + 1e-3) + frames : Math.ceil(at - 1e-3) + frames;
@@ -885,7 +1032,7 @@ export class RigAnimator {
 
   update(delta: number): void {
     if (!this.mixer) return;
-    if (this.recorder) { this.sounds.update(null, false); return; } // the video export poses each frame itself
+    if (this.recording) { this.sounds.update(null, false); return; } // a video export poses each frame itself
     if (this.holding) { if (this.snapshot.active) this.applyStill(); this.sounds.update(null, false); return; }
     if (this.pendingScrub !== null) this.hold(this.pendingScrub, false);
     const step = Math.min(delta, 0.1); // a hidden tab must not jump half an emote
@@ -961,6 +1108,7 @@ export class RigAnimator {
     this.seeking = false;
     this.pendingScrub = null;
     this.recorder = null; // a new body: the export watching recordingCurrent() stops
+    this.taker = null; // and a take's render watching takeCurrent()
     this.still.clear();
     this.held = null; // a new body: the old bones' poses mean nothing (a running hold stays, as its owner expects)
     if (this.snapshot.active || this.snapshot.paused) this.publish({ paused: false });
