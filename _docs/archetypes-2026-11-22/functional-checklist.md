@@ -13,7 +13,7 @@ This catches:
 - a Light body with a floating neck shell, a misplaced hat or glasses, or an item silently swapped for a Medium one.
 
 - PR: this branch's PR. Record: `README.md` beside this file.
-- Test this revision: branch `claude/jovial-fermat-65dc6d`, at `{{REV}}`.
+- Test this revision: branch `claude/jovial-fermat-65dc6d`, at ``81c33da` (main `3f954d3` merged in; later commits are docs)`.
 - **Open, part A (production build):**
   - Built and served by `node _docs/archetypes-2026-11-22/prod-steps.mjs` at
     http://127.0.0.1:4363/the-finals-outfit/.
@@ -69,4 +69,31 @@ If something fails, stop at that step and report its number and what happened.
 
 ## Recorded result
 
-{{RESULT}}
+- **Tested revision:** `81c33da`, 23 Nov 2026, by the agent under the owner's standing waiver (22 Nov: manual checks
+  waived on all PRs). These are agent results; the boxes above stay unticked.
+- **Part A** (`prod-steps.mjs`, production build with deploy.yml's live hosts): **7/7 pass**.
+  - Step 1: no Class row, status line "Medium · 3 pieces", flag absent.
+  - Step 2: flag on, still no Class row.
+  - Step 3:
+    - a Light link shows Medium with "Light contestants aren't available here yet; showing Medium.";
+    - the notice is still there after a reload;
+    - the outfit's own link keeps `ar=l`.
+  - Step 4: the Medium link has no `ar`.
+  - `?archetypes=off` clears the flag.
+  - Console: only the share Worker's CORS refusal of a 127.0.0.1 origin (by design; nothing stored).
+  - The first run failed step 3: the outfit pass cleared the fallback notice. Fixed in `81c33da`, then re-run.
+- **Part B** (`dev-steps.mjs`, dev server with `preview-v2`): **6/6 pass**, no console errors.
+  - Step 5: the picker offers Light and Medium.
+  - Step 6: Light loads `SK_Body_L` with "Light · 5 pieces".
+  - Step 7:
+    - the skirt is left off and named;
+    - a reload keeps Light;
+    - the link has `ar=l` and opens on Light in a fresh browser.
+- **Captures, looked at full size:** `captures-v5` (6 outfits × Light/Medium × full/head, 24 shots, no errors; the only
+  notice is the skirt's on Light), plus close-ups:
+  - the bare neck, side view: no shell;
+  - the round glasses, front and side: on the eyes;
+  - the cap, beanie and headphones;
+  - static hair.
+- **Explicitly waived:** all user checks (owner, 22 Nov, all PRs).
+- **Readiness:** agent PASS. The merge follows green CI + CLEAN, per the coordinator's plan (23 Nov).

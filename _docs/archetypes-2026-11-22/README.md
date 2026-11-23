@@ -57,9 +57,18 @@ Everything below was read from the game's data or measured on the extracted mesh
     skins and sockets to `S(s) x MediumRest⁻¹` (`mediumAsClassRests`); see the before/after shot in the PR.
   - **The same rule applies to** hair and beards with no class mesh, and statics on sockets (hats, glasses, static
     hair). They fit the head they were authored on, so they scale with it.
-- **Sockets.** Sockets live only on `SK_CharacterMeshMergeTarget_Skeleton`. On a class a socket keeps its Medium
-  relative transform scaled by the class and rides its (moved) bone. The body type DA's `SocketOffsetLight` /
-  `SocketOffsetsHeavy` compose on the right, inside that scaled frame.
+- **Sockets (23 Nov, settled by the glasses).** There are two kinds:
+  - **Body sockets.** These are the merge-target skeleton's (`SK_CharacterMeshMergeTarget_Skeleton`): `head`,
+    `eyewear_attachment`, `upperback_attachment`, `clavicle_attachment`. The composition is socket rest (Medium
+    relative transform, unscaled, riding its moved bone) × class scale × DA offset × part. Two things fit this and
+    nothing else:
+    - the eyewear offset is −0.15 of the socket's own distance in the world (0.85 × −2.390 = −2.031 cm), which puts
+      the scaled glasses exactly on the scaled eyes;
+    - the static part (glasses, hat, static hair) is scaled by the class, so it fits the scaled head.
+
+    The first composition also scaled the socket's own position. That sank the glasses 2 cm into the face on Light.
+  - **Head-component sockets** (earrings, `bAttachToHeadMesh`) live on the scaled head itself, so they scale fully,
+    their position included.
 - **Animation.** Clip translation tracks (pelvis, weapon_root) and the prop attach-bone rests scale by the class
   skeleton scale ("AnimationScaled" retargeting).
 - **Body types.**

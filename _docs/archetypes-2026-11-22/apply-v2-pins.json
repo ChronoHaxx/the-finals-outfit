@@ -1,0 +1,202 @@
+{
+ "built": "2026-11-23",
+ "activeSha256": "3f64b2e6b66a08b38b986fe2674aacdc5c3e0ac2d741fc6d0d8a58c123d2729b",
+ "skinPairsSha256": "f15a73a2a5dfc2f61c3bbd20bf1ea4b9c9e735a64f856ba12310f1e50e1c00a4",
+ "currentProof": {
+  "file": "scripts/generated/archetypes/nov17-proof-v1/proof.json",
+  "sha256": "6406580f9ebb433936f0629a0d7157e412a9a1e40061ec1a9bd5c1e8055d8615",
+  "containers": "2026-11-17T14:41:44.0875193Z"
+ },
+ "resultAssetsSha256": "9055f89ba03689afec67913575b567741ba272f29e8639cd283949ac34fa185f",
+ "publishListSha256": "aeabd19e31112d50a82610bbcd64374b149bc4430ab431d9662e600391bfbac4",
+ "classes": {
+  "light": {
+   "body": "/Game/Discovery/Characters/Body/SK_Body_L.SK_Body_L",
+   "skeletonScale": 0.85,
+   "measuredScale": 0.8499999947068176,
+   "translationResidualMaxM": 3.6185776073526114e-07,
+   "rotationMaxDiff": 1.6116254811932018e-06
+  },
+  "heavy": {
+   "refused": "class body not proven"
+  }
+ },
+ "added": {
+  "light": [
+   "/Game/Discovery/Characters/Attachments/Assets/KnifeBandolier/SK_Attachments_KnifeBandolier_L.SK_Attachments_KnifeBandolier_L",
+   "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_L.SK_Ballerina_BallerinaTights_L",
+   "/Game/Discovery/Characters/Body/SK_Body_L.SK_Body_L",
+   "/Game/Discovery/Characters/Casual/Assets/Bangles/SK_Casual_Bangles_L.SK_Casual_Bangles_L",
+   "/Game/Discovery/Characters/Casual/Assets/BasicShorts/SK_Casual_BasicShorts_L.SK_Casual_BasicShorts_L",
+   "/Game/Discovery/Characters/Casual/Assets/CropTopUndershirt/SK_Casual_CropTopUndershirt_L.SK_Casual_CropTopUndershirt_L",
+   "/Game/Discovery/Characters/Casual/Assets/GloveSpikes/SK_Casual_GloveSpikes_L.SK_Casual_GloveSpikes_L",
+   "/Game/Discovery/Characters/Casual/Assets/Headscarf/SK_Casual_Headscarf_L.SK_Casual_Headscarf_L",
+   "/Game/Discovery/Characters/Casual/Assets/LowWedgeHeels/SK_Casual_LowWedgeHeels_L.SK_Casual_LowWedgeHeels_L",
+   "/Game/Discovery/Characters/Casual/Assets/ShortDress/SK_Casual_ShortDress_L.SK_Casual_ShortDress_L",
+   "/Game/Discovery/Characters/Casual/Assets/ShortDressSkirt/SK_Casual_ShortDressSkirt_L.SK_Casual_ShortDressSkirt_L",
+   "/Game/Discovery/Characters/Casual/Assets/Shorts/SK_Casual_Shorts_L.SK_Casual_Shorts_L",
+   "/Game/Discovery/Characters/Casual/Assets/TightTurtleneck/SK_Casual_TightTurtleneck_L.SK_Casual_TightTurtleneck_L",
+   "/Game/Discovery/Characters/Cowboy/Assets/HandCloth/SK_Cowboy_HandCloth_L.SK_Cowboy_HandCloth_L",
+   "/Game/Discovery/Characters/CrossPromo/Assets/NRGloves/SK_CrossPromo_NRGloves_L.SK_CrossPromo_NRGloves_L",
+   "/Game/Discovery/Characters/CrossPromo/Assets/NRHarness/SK_CrossPromo_NRHarness_L.SK_CrossPromo_NRHarness_L",
+   "/Game/Discovery/Characters/CrossPromo/Assets/NRSuitBelts/SK_CrossPromo_NRSuitBelts_L.SK_CrossPromo_NRSuitBelts_L",
+   "/Game/Discovery/Characters/FromTencent/Assets/AsianSpiritBoots/SK_FromTencent_AsianSpiritBoots_L.SK_FromTencent_AsianSpiritBoots_L",
+   "/Game/Discovery/Characters/Gothic/Assets/BikerJacket/SK_Gothic_BikerJacket_L.SK_Gothic_BikerJacket_L",
+   "/Game/Discovery/Characters/Gothic/Assets/BikerJacketChain/SK_Gothic_BikerJacketChain_L.SK_Gothic_BikerJacketChain_L",
+   "/Game/Discovery/Characters/Gothic/Assets/BikerJacketRivets/SK_Gothic_BikerJacketRivets_L.SK_Gothic_BikerJacketRivets_L",
+   "/Game/Discovery/Characters/Gothic/Assets/SkullNecklaces/SK_Gothic_SkullNecklaces_L.SK_Gothic_SkullNecklaces_L",
+   "/Game/Discovery/Characters/Hairs/CoilySlick/SK_CoilySlick_L.SK_CoilySlick_L",
+   "/Game/Discovery/Characters/Historic/Assets/SimpleBracelet/SK_Historic_SimpleBracelet_L.SK_Historic_SimpleBracelet_L",
+   "/Game/Discovery/Characters/Medieval/Assets/GunHolster/SK_Medieval_GunHolster_L.SK_Medieval_GunHolster_L",
+   "/Game/Discovery/Characters/Medieval/Assets/KnightWaistBelt/SK_Medieval_KnightWaistBelt_L.SK_Medieval_KnightWaistBelt_L",
+   "/Game/Discovery/Characters/Medieval/Assets/TacticalKnightBracers/SK_Medieval_TacticalKnightBracers_L.SK_Medieval_TacticalKnightBracers_L",
+   "/Game/Discovery/Characters/Military/Assets/AcePilotBoots/SK_Military_AcePilotBoots_L.SK_Military_AcePilotBoots_L",
+   "/Game/Discovery/Characters/Military/Assets/AcePilotGloves/SK_Military_AcePilotGloves_L.SK_Military_AcePilotGloves_L",
+   "/Game/Discovery/Characters/Military/Assets/AssaultGloves/SK_Military_AssaultGloves_L.SK_Military_AssaultGloves_L",
+   "/Game/Discovery/Characters/Military/Assets/MarineGloves/SK_Military_MarineGloves_L.SK_Military_MarineGloves_L",
+   "/Game/Discovery/Characters/Military/Assets/MarinePants/SK_Military_MarinePants_L.SK_Military_MarinePants_L",
+   "/Game/Discovery/Characters/Military/Assets/PantsWithHolsterPouch/SK_Military_PantsWithHolsterPouch_L.SK_Military_PantsWithHolsterPouch_L",
+   "/Game/Discovery/Characters/Military/Assets/WaistPouches/SK_Military_WaistPouches_L.SK_Military_WaistPouches_L",
+   "/Game/Discovery/Characters/Pirate/Assets/PirateRings/SK_Pirate_PirateRings_L.SK_Pirate_PirateRings_L",
+   "/Game/Discovery/Characters/Pirate/Assets/ScallyWagPants/SK_Pirate_ScallywagPants_L.SK_Pirate_ScallywagPants_L",
+   "/Game/Discovery/Characters/Robots/Assets/DiscoJacket/SK_Robots_DiscoJacket_L.SK_Robots_DiscoJacket_L",
+   "/Game/Discovery/Characters/Robots/Assets/DiscoKeychain/SK_Robots_DiscoKeychain_L.SK_Robots_DiscoKeychain_L",
+   "/Game/Discovery/Characters/Robots/Assets/DiscoNecklace/SK_Robots_DiscoNecklace_L.SK_Robots_DiscoNecklace_L",
+   "/Game/Discovery/Characters/Robots/Assets/DiscoPants/SK_Robots_DiscoPants_L.SK_Robots_DiscoPants_L",
+   "/Game/Discovery/Characters/Robots/Assets/RetroRobotFeet/SK_Robots_RetroRobotFeet_L.SK_Robots_RetroRobotFeet_L",
+   "/Game/Discovery/Characters/Robots/Assets/SportyRobotHands/SK_Robots_SportyRobotHands_L.SK_Robots_SportyRobotHands_L",
+   "/Game/Discovery/Characters/Robots/Assets/SportyRobotShoes/SK_Robots_SportyRobotShoes_L.SK_Robots_SportyRobotShoes_L",
+   "/Game/Discovery/Characters/Robots/Assets/UrbanOperativeHelmet/SK_Robots_UrbanOperativeHelmet_L.SK_Robots_UrbanOperativeHelmet_L",
+   "/Game/Discovery/Characters/SciFi/Assets/HackerGloves/SK_SciFi_HackerGloves_L.SK_SciFi_HackerGloves_L",
+   "/Game/Discovery/Characters/SciFi/Assets/Pants/SK_SciFi_Pants_L.SK_SciFi_Pants_L",
+   "/Game/Discovery/Characters/SciFi/Assets/PantsToolBag/SK_SciFi_PantsToolBag_L.SK_SciFi_PantsToolBag_L",
+   "/Game/Discovery/Characters/Space/Assets/AstroPilotGloves/SK_Space_AstroPilotGloves_L.SK_Space_AstroPilotGloves_L",
+   "/Game/Discovery/Characters/Space/Assets/AstroPilotGun/SK_Space_AstroPilotGun_L.SK_Space_AstroPilotGun_L",
+   "/Game/Discovery/Characters/Space/Assets/AstroPilotPants/SK_Space_AstroPilotPants_L.SK_Space_AstroPilotPants_L",
+   "/Game/Discovery/Characters/Space/Assets/BountyHunterPants/SK_Space_BountyHunterPants_L.SK_Space_BountyHunterPants_L",
+   "/Game/Discovery/Characters/Space/Assets/EngineerCap/SK_Space_EngineerCap_L.SK_Space_EngineerCap_L",
+   "/Game/Discovery/Characters/Space/Assets/PioneerShoes/SK_Space_PioneerShoes_L.SK_Space_PioneerShoes_L",
+   "/Game/Discovery/Characters/Space/Assets/PioneerTechConsole/SK_Space_PioneerTechConsole_L.SK_Space_PioneerTechConsole_L",
+   "/Game/Discovery/Characters/Space/Assets/PioneerUpper/SK_Space_PioneerUpper_L.SK_Space_PioneerUpper_L",
+   "/Game/Discovery/Characters/Space/Assets/PlanetBracelet/SK_Space_PlanetBracelet_L.SK_Space_PlanetBracelet_L",
+   "/Game/Discovery/Characters/Space/Assets/SpaceBoots/SK_Space_SpaceBoots_L.SK_Space_SpaceBoots_L",
+   "/Game/Discovery/Characters/Space/Assets/SpaceBrain/SK_Space_SpaceBrain_L.SK_Space_SpaceBrain_L",
+   "/Game/Discovery/Characters/Space/Assets/SpaceCombatGloves/SK_Space_SpaceCombatGloves_L.SK_Space_SpaceCombatGloves_L",
+   "/Game/Discovery/Characters/Space/Assets/SpaceCombatPants/SK_Space_SpaceCombatPants_L.SK_Space_SpaceCombatPants_L",
+   "/Game/Discovery/Characters/Space/Assets/SpaceCombatPants/SK_Space_SpaceCombatPouches_L.SK_Space_SpaceCombatPouches_L",
+   "/Game/Discovery/Characters/Space/Assets/SpacePilotGloves/SK_Space_SpacePilotGloves_L.SK_Space_SpacePilotGloves_L",
+   "/Game/Discovery/Characters/Space/Assets/SpaceSuitPants/SK_Space_SpaceSuitPants_L.SK_Space_SpaceSuitPants_L",
+   "/Game/Discovery/Characters/Space/Assets/SpaceSuitPantsUltimate/SK_Space_SpaceSuitPantsUltimate_L.SK_Space_SpaceSuitPantsUltimate_L",
+   "/Game/Discovery/Characters/Space/Assets/SpaceTopVest/SK_Space_SpaceTopVest_L.SK_Space_SpaceTopVest_L",
+   "/Game/Discovery/Characters/Space/Assets/SpaceTopVestArmor/SK_Space_SpaceTopVestArmor_L.SK_Space_SpaceTopVestArmor_L",
+   "/Game/Discovery/Characters/StarterSet/Assets/Pants/SK_Pants_L.SK_Pants_L",
+   "/Game/Discovery/Characters/Streetwear/Assets/ChainNecklace/SK_Streetwear_ChainNecklace_L.SK_Streetwear_ChainNecklace_L",
+   "/Game/Discovery/Characters/Streetwear/Assets/FingerlessShortGloves/SK_Streetwear_FingerlessShortGloves_L.SK_Streetwear_FingerlessShortGloves_L",
+   "/Game/Discovery/Characters/Streetwear/Assets/HeartNecklace/SK_Streetwear_HeartNecklace_L.SK_Streetwear_HeartNecklace_L",
+   "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_L.SK_Streetwear_Hoodie_L",
+   "/Game/Discovery/Characters/Streetwear/Assets/PufferVest/SK_Streetwear_PufferVest_L.SK_Streetwear_PufferVest_L",
+   "/Game/Discovery/Characters/Streetwear/Assets/Shoes/SK_Streetwear_Shoes_L.SK_Streetwear_Shoes_L",
+   "/Game/Discovery/Characters/Streetwear/Assets/TechCropTopArmPouch/SK_Streetwear_TechCropTopArmPouch_L.SK_Streetwear_TechCropTopArmPouch_L",
+   "/Game/Discovery/Characters/Streetwear/Assets/TechCropTopNoBags/SK_Streetwear_TechCropTopNoBags_L.SK_Streetwear_TechCropTopNoBags_L",
+   "/Game/Discovery/Characters/Tech/Assets/HelmetNeck/SK_HelmetNeck_L.SK_HelmetNeck_L",
+   "/Game/Discovery/Characters/Tech/Assets/HelmetNeck/SK_NeckCloth_L.SK_NeckCloth_L",
+   "/Game/Discovery/Characters/Winter/Assets/SkiPants/SK_Winter_SkiPants_L.SK_Winter_SkiPants_L"
+  ],
+  "heavy": []
+ },
+ "refused": {
+  "/Game/Discovery/Characters/Body/SK_Body_H.SK_Body_H": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Casual/Assets/HeadPhonesAntennaPart/SK_Casual_HeadPhonesAntennaPart_L.SK_Casual_HeadPhonesAntennaPart_L": [
+   "primitive 0: indices differ",
+   "primitive 0: UVs differ"
+  ],
+  "/Game/Discovery/Characters/Casual/Assets/ShortSkirt/SK_Casual_ShortSkirt_L.SK_Casual_ShortSkirt_L": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Casual/Assets/ShortSkirt/SK_Casual_ShortSkirt_H.SK_Casual_ShortSkirt_H": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/CrossPromo/Assets/NRSuit/SK_CrossPromo_NRSuit_L.SK_CrossPromo_NRSuit_L": [
+   "primitive 0: indices differ",
+   "primitive 0: UVs differ"
+  ],
+  "/Game/Discovery/Characters/Hairs/HighPonytail/SK_HighPonytail_Tail_L.SK_HighPonytail_Tail_L": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Hairs/HighPonytail/SK_HighPonytail_Tail_H.SK_HighPonytail_Tail_H": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Medieval/Assets/TechJacketHarness/SK_Medieval_TechJacketHarness_L.SK_Medieval_TechJacketHarness_L": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Medieval/Assets/TechJacketHarness/SK_Medieval_TechJacketHarness_H.SK_Medieval_TechJacketHarness_H": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Military/Assets/AmmoBackpack/SK_AmmoBackpack_L.SK_AmmoBackpack_L": [
+   "primitive 0: vertex count differs",
+   "primitive 1: vertex count differs"
+  ],
+  "/Game/Discovery/Characters/Military/Assets/AmmoBackpack/SK_AmmoBackpack_H.SK_AmmoBackpack_H": [
+   "primitive 0: vertex count differs",
+   "primitive 1: vertex count differs"
+  ],
+  "/Game/Discovery/Characters/Pirate/Assets/PoetShirtWithVest/SK_Pirate_PoetShirtWithVest_L.SK_Pirate_PoetShirtWithVest_L": [
+   "primitive 0: vertex count differs"
+  ],
+  "/Game/Discovery/Characters/Pirate/Assets/PoetShirtWithVest/SK_Pirate_PoetShirtWithVest_H.SK_Pirate_PoetShirtWithVest_H": [
+   "primitive 0: vertex count differs"
+  ],
+  "/Game/Discovery/Characters/Racing/Assets/Gloves/SK_Racing_Gloves_L.SK_Racing_Gloves_L": [
+   "primitive 0: indices differ"
+  ],
+  "/Game/Discovery/Characters/Racing/Assets/Gloves/SK_Racing_Gloves_H.SK_Racing_Gloves_H": [
+   "primitive 0: indices differ",
+   "primitive 0: UVs differ"
+  ],
+  "/Game/Discovery/Characters/Retro/Assets/CordBracelet/SK_Retro_CordBracelet_L.SK_Retro_CordBracelet_L": [
+   "primitive 0: vertex count differs"
+  ],
+  "/Game/Discovery/Characters/Robots/Assets/DiscoBotGloves/SK_Robots_DiscoBotGloves_L.SK_Robots_DiscoBotGloves_L": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Robots/Assets/DiscoBotGloves/SK_Robots_DiscoBotGloves_H.SK_Robots_DiscoBotGloves_H": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Robots/Assets/DiscoJacket/SK_Robots_DiscoJacket_H.SK_Robots_DiscoJacket_H": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Robots/Assets/SportyRobotHands/SK_Robots_SportyRobotHands_H.SK_Robots_SportyRobotHands_H": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Space/Assets/AstroPilotGloves/SK_Space_AstroPilotGloves_H.SK_Space_AstroPilotGloves_H": [
+   "primitive 0: indices differ",
+   "primitive 0: UVs differ"
+  ],
+  "/Game/Discovery/Characters/Space/Assets/PioneerUpper/SK_Space_PioneerUpper_H.SK_Space_PioneerUpper_H": [
+   "primitive 0: vertex count differs"
+  ],
+  "/Game/Discovery/Characters/Space/Assets/SpaceCombatTorso/SK_Space_SpaceCombatTorso_L.SK_Space_SpaceCombatTorso_L": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Streetwear/Assets/BoilerSuitTorso/SK_Streetwear_BoilerSuitTorso_L.SK_Streetwear_BoilerSuitTorso_L": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Streetwear/Assets/MessengerBag/SK_Streetwear_MessengerBag_L.SK_Streetwear_MessengerBag_L": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Streetwear/Assets/MessengerBag/SK_Streetwear_MessengerBag_H.SK_Streetwear_MessengerBag_H": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Streetwear/Assets/SkiMask/SK_Streetwear_SkiMask_L.SK_Streetwear_SkiMask_L": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ],
+  "/Game/Discovery/Characters/Streetwear/Assets/SkiMask/SK_Streetwear_SkiMask_H.SK_Streetwear_SkiMask_H": [
+   "not current in the 17 Nov containers: package bytes differ"
+  ]
+ },
+ "swapConflicts": [
+  "/Game/Discovery/Characters/Hairs/Goth/SK_Goth_M.SK_Goth_M"
+ ]
+}
