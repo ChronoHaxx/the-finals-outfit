@@ -37,8 +37,8 @@ Run in Git Bash, from the main checkout, while no batch or other apply is runnin
    python -I scripts/archetypes/build-archetype-index.py --out scripts/generated/archetypes/apply --publish-dir reconstructed-archetypes-v1 --proven scripts/generated/archetypes/nov17-proof-apply/proof.json
    ```
 
-   - Expect `{"light": 78, "heavy": 0} class meshes; 28 refused; classes: ['light']`, with `apply/assets.json` =
-     `9055f89b…` and `publish-list.tsv` = `aeabd19e…`.
+   - Expect `{"light": 78, "heavy": 0} class meshes; 28 refused; <N> skipped; classes: ['light']`, with
+     `apply/assets.json` = `9055f89b…` and `publish-list.tsv` = `aeabd19e…`. (The 23 Nov builder printed no skip count.)
    - Anything else: stop and report to the coordinator. A fresh proof can only refuse more, for example if the game
      updated again.
 2. **Check the change is additive.** Every key and value of the active index is unchanged, `archetypes` holds only
@@ -60,14 +60,43 @@ Run in Git Bash, from the main checkout, while no batch or other apply is runnin
 ## Re-plan (the active index moved since 23 Nov)
 
 The builder reads whatever index is active, and records its sha in `report.json` (`activeSha256`), so re-planning is
-the same three commands from step 1 against the new index, plus a review of what changed:
+the same three commands from step 1 against the new index, plus a review of what changed.
 
-- **Compare the added list with 23 Nov's 78** (`report.json` `added.light` against `apply-v2-pins.json` beside this file, which also holds the 28 refusals).
+The builder (from the follow-up PR to #83) puts every class mesh the item definitions name in exactly one list:
+- `added`;
+- `refused`, where a proof failed;
+- `skipped`, with a reason and the Medium mesh behind it.
+
+It prints a count per reason and writes `skipped.tsv` beside `publish-list.tsv`. It stops if a mesh lands in no
+list or in two. The print line is now `{…} class meshes; N refused; N skipped; classes: […]`.
+
+- **Compare the added list with 23 Nov's 78** (`report.json` `added.light` against `apply-v2-pins.json` beside this
+  file, which also holds the 28 refusals). Every name that left `added` or `refused` must now be in `report.json`
+  `skipped`, with its reason. Stop if one is in neither.
   - **Fewer meshes is expected and correct** when the other apply repointed a Medium sibling (S12 batch A). Proof 1
-    (same build) then refuses that Light mesh, because the staged Light mesh belongs to the old Medium build. Record
-    the refused names in this folder.
+    (same build) can no longer hold, because the staged Light mesh belongs to the old Medium build. The builder skips
+    it as `medium sibling repointed`, with the live URL and sha it found.
   - **More meshes cannot happen without a new staging folder.** Stop if it does.
+- **Record the skips in the apply record.** Copy `skipped.tsv` into this folder as `apply-<date>-skipped.tsv`, beside
+  the new pins. In the dated section, list the names that left the 23 Nov set and their reasons.
 - **If `SK_Body_M` changed** (a body repoint), the Light body loses proof 1 and the whole class drops (`classes: []`).
   Stop and tell the coordinator: Light then needs a fresh read of `SK_Body_L` against the new Medium body.
 - **Re-check step 2's additivity against the new active index.** Then record the new pins (active sha, result sha,
   publish-list sha) in a dated section here, and continue from step 3.
+
+### Expected re-plan on b4f28192 (computed read-only, 23 Nov)
+
+On active `assets.json` `b4f28192ced46b8d445bfc988b2779066e9f5f038e28d73beb475e71afffb92f` (S12 batch A v8), with the
+17 Nov proof `6406580f…`:
+
+- The print line: `{"light": 63, "heavy": 0} class meshes; 25 refused; 2074 skipped; classes: ['light']`.
+- `assets.json` `425023bb9cef392b4154adcd41624a870ae76713ccd8ba98b149aae893c832d7`.
+- `publish-list.tsv` `5df7361ef5e80933c3dbe459611c41dbfb89c846199a9b7fe39e618b43e1fbe4` (63 rows, 61.3 MB).
+- 50 items gain `_L` mask entries.
+- **15 Light meshes leave the 23 Nov 78**, all `medium sibling repointed` to `s12-bodytype-refresh-v1`. They are
+  waiting for an S12-matched `_L` read; the names are in README.md, "Re-plan on the S12 batch A index".
+- **3 of the 28 refusals become skips** for the same reason (`CrossPromo_NRSuit_L`, `Space_AstroPilotGloves_H`,
+  `Streetwear_BoilerSuitTorso_L`), so refused falls to 25.
+
+The old builder gave the same `assets.json` and publish list, without the skip record. If the run on the apply day
+differs from these values, the active index has moved again: re-plan from there.
