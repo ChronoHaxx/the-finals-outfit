@@ -104,7 +104,7 @@ export async function collect(request: Request, env: Env, now = Date.now()): Pro
   // Only the app's one per-page-load event carries the visitor hash (app_loaded here, page_viewed on WuWa VR).
   const visitorEvent = APPS[envelope.app].visitorEvent;
   let visitor = "";
-  if (checked.some(e => e.event === visitorEvent) && ip)
+  if (visitorEvent && checked.some(e => e.event === visitorEvent) && ip)
     visitor = await visitorHash(await saltFor(env, utcDay(now)), envelope.app, ip, userAgent);
   for (const event of checked) env.EVENTS.writeDataPoint(row(envelope, event, event.event === visitorEvent ? visitor : ""));
   return empty(204);

@@ -22,8 +22,8 @@ export interface AppSpec {
   /** Origins allowed to send for this app (the `Origin` header, exact). */
   origins: readonly string[];
   /** The one event per page load that carries the daily visitor hash (`app_loaded`, or `page_viewed` on a multi-page
-   *  site). */
-  visitorEvent: string;
+   *  site). null: this app's rows never carry one (it counts page loads only, with nothing that links two of them). */
+  visitorEvent: string | null;
   /** Whether batches must carry `form_factor` and `build` in the envelope. An app that leaves them out stores them
    *  empty (blob2, blob3). */
   envelope: "full" | "minimal";

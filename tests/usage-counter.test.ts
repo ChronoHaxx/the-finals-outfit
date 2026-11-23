@@ -180,3 +180,16 @@ test("an app may send WuWa VR's shape: { name, props }, no form factor or build,
     assert.equal((await collect(post([{ e: "app_loaded" }], { envelope: { form_factor: undefined } }), e, NOON)).status, 403);
   } finally { delete apps["test-site"]; }
 });
+
+test("an app with no visitor event never gets a hash, and no salt is even made for it", async () => {
+  const e = env();
+  const apps = APPS as Record<string, (typeof APPS)[string]>;
+  apps["no-hash"] = { origins: [ORIGIN], visitorEvent: null, envelope: "minimal", events: { app_loaded: [] } };
+  try {
+    const body = JSON.stringify({ app: "no-hash", schema: 1, events: [{ e: "app_loaded" }] });
+    await collect(new Request("https://x.example/e", { method: "POST", body,
+      headers: { Origin: ORIGIN, "User-Agent": CHROME, "CF-Connecting-IP": "203.0.113.7" } }), e, NOON);
+    assert.equal(e.EVENTS.rows[0].blobs![3], "");
+    assert.equal(e.SALTS.values.size, 0);
+  } finally { delete apps["no-hash"]; }
+});

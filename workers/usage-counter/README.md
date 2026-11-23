@@ -65,7 +65,7 @@ GROUP BY day ORDER BY day
 ## Adding an app
 
 1. Add it to `APPS` in `src/schema.ts`: its exact origins, its `visitorEvent` (the one event each page load sends
-   first), `envelope` (`"full"` or `"minimal"`), and its events, each with its properties in column order. Put
+   first; `null` if its privacy promise rules out any visitor hash, so it counts page loads only), `envelope` (`"full"` or `"minimal"`), and its events, each with its properties in column order. Put
    properties every event shares (such as `page` and `lang`) first, so they land in the same columns.
    Use the shared naming scheme: `object_action`, snake_case, no app name in the event.
 2. Add a test, redeploy, then ship the app's sender. Its batches must use the same envelope.
