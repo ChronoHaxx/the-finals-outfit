@@ -171,6 +171,19 @@ def admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, serve
     return admitted
 
 
+def stale_packages(package_json, proof):
+    """Sources whose Season 12 package is not proven byte-identical on the installed build (tier 2, 23 Nov 2026).
+
+    The rebuilds come from the 6 Nov read of the 12.00 build; the game updated on 17 Nov, and a fresh read needs a
+    mapping for the new build. A package whose bytes are unchanged (`package-proof-*.json`, from the probe's
+    `package-hashes` mode against the 6 Nov `assets` run) still describes today's game. Any other mesh, a mesh missing
+    from the proof included, is never repointed (coordinator, 22 Nov). For the item rule it counts as Season 12 only
+    when its live file already carries the 12.00 body-type shape (see `main`)."""
+    rows = json.loads(Path(package_json).read_text(encoding='utf-8'))['all']
+    identical = {row['mesh'] for row in rows if row.get('identical')}
+    return {row['source'] for name, row in proof.items() if name not in identical}
+
+
 def settle(proven, kept, unchanged, users, body):
     """The item rule to its fixpoint: (effective S12 set, held {source: reason}).
 
@@ -195,7 +208,7 @@ def settle(proven, kept, unchanged, users, body):
 
 
 def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None, census_json=None, changed_only=False,
-         admit_json=None, admit_only=None, admit_reviewed=None, surface_json=None, admit_rework=None):
+         admit_json=None, admit_only=None, admit_reviewed=None, surface_json=None, admit_rework=None, package_json=None):
     out = Path(out_json)
     if out.exists():
         raise SystemExit(f'Preserve existing {out}')
@@ -206,7 +219,9 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     swapped, held = {}, {}
     admitted = admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir,
                                surface_json, admit_rework)
-    proven = {row['source'] for row in proof.values() if row.get('status') == 'morph-only'} | set(admitted)
+    stale = stale_packages(package_json, proof) if package_json else set()
+    admitted = {source: row for source, row in admitted.items() if source not in stale}
+    proven = ({row['source'] for row in proof.values() if row.get('status') == 'morph-only'} | set(admitted)) - stale
     body = assets.get('attachmentBody', {}).get('source')
     # Item consistency (review-v1 short dress, 6 Nov 2026): a Season 12 undershirt under the dress's pre-S12 shell grew
     # its fuller S12 chest straight through the dress. So a garment mesh is swapped only when every supported item that
@@ -236,11 +251,15 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     # An admitted mesh is always repointed when the item rule allows: it is never "kept" on its live GLB, and never
     # "unchanged" (a morph-set change leaves morphsChanged empty, so the morph proof cannot speak for it).
     kept -= set(admitted)
+    # A stale package (changed since the 6 Nov read) is never repointed. Its live file already has the 12.00 body-type
+    # shape when its morphs equal the read's, so it is as consistent with its item partners as before: keep it. With
+    # changed morphs it is a pre-S12 mesh and holds them (tier 2, 23 Nov 2026).
+    kept |= stale & unchanged
     assert not set(admitted) & unchanged
     effective, held = settle(proven, kept, unchanged, users, body)
     for name, row in sorted(proof.items()):
         admission = admitted.get(row.get('source'))
-        if (row.get('status') != 'morph-only' and not admission) or row['source'] in held:
+        if (row.get('status') != 'morph-only' and not admission) or row['source'] in held or row['source'] in stale:
             continue
         if changed_only and not admission and not row['morphsChanged'] and row['source'] != body:
             # Identical to the live GLB in everything the proof compares, morphs included: repointing it changes
@@ -273,12 +292,14 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
         **({'admitted': admitted, 'skinProofSha256': hashlib.sha256(Path(admit_json).read_bytes()).hexdigest()}
            if admit_json else {}),
         **({'surfaceProofSha256': hashlib.sha256(Path(surface_json).read_bytes()).hexdigest()} if surface_json else {}),
+        **({'packageProofSha256': hashlib.sha256(Path(package_json).read_bytes()).hexdigest(),
+            'stalePackages': sorted(stale)} if package_json else {}),
         'swapped': swapped, 'held': held,
         'keptUnchanged': sorted(kept),
         'effective': sorted(effective)}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(assets, indent=1) + '\n', encoding='utf-8')
-    print(json.dumps({'swapped': len(swapped), 'held': {k.rsplit('.', 1)[-1]: v['itemCount'] for k, v in held.items()},
+    print(json.dumps({'swapped': len(swapped), 'stale': len(stale), 'held': {k.rsplit('.', 1)[-1]: v['itemCount'] for k, v in held.items()},
                       'out': str(out)}))
 
 
@@ -295,7 +316,7 @@ if __name__ == '__main__':
     options = {}
     for flag, key, split in (('--admit', 'admit_json', False), ('--admit-only', 'admit_only', True),
                              ('--admit-reviewed', 'admit_reviewed', True), ('--admit-surface', 'surface_json', False),
-                             ('--admit-rework', 'admit_rework', True)):
+                             ('--admit-rework', 'admit_rework', True), ('--package-proof', 'package_json', False)):
         if flag in argv:
             i = argv.index(flag)
             options[key] = argv[i + 1].split(',') if split else argv[i + 1]

@@ -17,11 +17,11 @@ using System.Buffers.Binary;
 using System.Security.Cryptography;
 
 bool requestedShaders = args.Length > 0 && args[0] == "shaders";
-string mode = args.Length > 0 && args[0] is "shaders" or "textures" or "assets" or "properties" or "materials" or "inventory" or "catalog-metadata" or "level" ? args[0] : "shaders";
+string mode = args.Length > 0 && args[0] is "shaders" or "textures" or "assets" or "properties" or "materials" or "inventory" or "catalog-metadata" or "level" or "package-hashes" ? args[0] : "shaders";
 if (mode != "shaders" || requestedShaders) args = args[1..];
-int settingsIndex = requestedShaders || mode is "textures" or "assets" or "properties" or "materials" or "catalog-metadata" or "level" ? 5 : 4;
+int settingsIndex = requestedShaders || mode is "textures" or "assets" or "properties" or "materials" or "catalog-metadata" or "level" or "package-hashes" ? 5 : 4;
 if (args.Length != settingsIndex && args.Length != settingsIndex + 1)
-    throw new ArgumentException("Usage: ShaderProbe [shaders|textures|assets|properties|materials|inventory|catalog-metadata|level] <paks> <usmap> <oodle.dll> <empty-output-directory> [requests.json except inventory] [FModel-AppSettings.json]");
+    throw new ArgumentException("Usage: ShaderProbe [shaders|textures|assets|properties|materials|inventory|catalog-metadata|level|package-hashes] <paks> <usmap> <oodle.dll> <empty-output-directory> [requests.json except inventory] [FModel-AppSettings.json]");
 var output = Path.GetFullPath(args[3]);
 var input = Path.GetFullPath(args[0]).TrimEnd(Path.DirectorySeparatorChar);
 if (output.Equals(input, StringComparison.OrdinalIgnoreCase) ||
@@ -35,7 +35,7 @@ CUE4ParseLog.UseLogger(Log.Logger);
 OodleHelper.Initialize(Path.GetFullPath(args[2]));
 using var provider = new DefaultFileProvider(args[0], SearchOption.TopDirectoryOnly,
     new VersionContainer(EGame.GAME_TheFinals), StringComparer.OrdinalIgnoreCase);
-provider.ReadShaderMaps = mode is not "properties" and not "inventory" and not "catalog-metadata" and not "level";
+provider.ReadShaderMaps = mode is not "properties" and not "inventory" and not "catalog-metadata" and not "level" and not "package-hashes";
 provider.SkipReferencedTextures = true;
 provider.MappingsContainer = new FileUsmapTypeMappingsProvider(Path.GetFullPath(args[1]));
 Console.WriteLine($"Initializing GAME_TheFinals containers; inline shader maps={provider.ReadShaderMaps}...");
@@ -73,6 +73,8 @@ if (mode == "assets") return AssetExport.Run(provider, args[4], output);
 if (mode == "properties") return AssetExport.Run(provider, args[4], output, meshes: false);
 // Levels (12 Nov 2026, scene backdrops): properties of .umap and .uasset packages, with outer, path, class and template.
 if (mode == "level") return AssetExport.Run(provider, args[4], output, meshes: false, level: true);
+// Package bytes only (23 Nov 2026): no package is loaded, so the mapping is never consulted.
+if (mode == "package-hashes") return PackageHashes.Run(provider, args[4], output);
 if (mode == "materials") return MaterialInventory.Run(provider, args[4], output);
 if (mode == "catalog-metadata") return CatalogMetadataExport.Run(provider, args[4], output);
 if (mode == "inventory")

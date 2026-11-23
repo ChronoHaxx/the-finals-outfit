@@ -30,11 +30,12 @@ def mesh_ref(name):
 
 class ItemRule(unittest.TestCase):
     def build(self, items, proof, morphs, changed_only=False, census=True, admit=None, admit_only=None,
-              admit_reviewed=None, surface=None, admit_rework=None, masked=()):
+              admit_reviewed=None, surface=None, admit_rework=None, masked=(), package=None):
         """items: {item: [mesh names]}; proof: {mesh: (status, morphsChanged, problems)}; morphs: {mesh: [names]};
         admit: {mesh: (skin-proof class, admissible)} written as a skin-by-name proof (tier 1, 12 Nov 2026);
         surface: {mesh: surface-proof class} written as a surface-match proof (tier 2, 22 Nov 2026), for meshes whose
-        skin-proof class is "surface differs"."""
+        skin-proof class is "surface differs"; package: {mesh: identical} written as a package proof (tier 2, 23 Nov
+        2026); meshes it omits are missing from the proof."""
         tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, tmp)
         meshes = sorted({m for ms in items.values() for m in ms} | {'SK_Body_M'})
@@ -85,11 +86,17 @@ class ItemRule(unittest.TestCase):
             surface_proof = tmp / 'surface-proof.json'
             surface_proof.write_text(json.dumps({'meshes': rows_s}), encoding='utf-8')
             self.surface_proof = surface_proof
+        package_proof = None
+        if package is not None:
+            package_proof = tmp / 'package-proof.json'
+            package_proof.write_text(json.dumps({'all': [{'mesh': m, 'identical': same} for m, same in package.items()]}),
+                                     encoding='utf-8')
         out = tmp / 'out' / 'assets.json'
         tool.main(str(active / 'assets.json'), str(tmp / 'proof.json'), str(rebuilt), str(out),
                   str(tmp / 'customization.json'), str(tmp / 'census.json') if census else None, changed_only,
                   admit_json=str(skin_proof) if skin_proof else None, admit_only=admit_only, admit_reviewed=admit_reviewed,
-                  surface_json=str(surface_proof) if surface_proof else None, admit_rework=admit_rework)
+                  surface_json=str(surface_proof) if surface_proof else None, admit_rework=admit_rework,
+                  package_json=str(package_proof) if package_proof else None)
         return json.loads(out.read_text(encoding='utf-8'))['s12BodyTypePreview']
 
     CHANGED = {'medium_female': {'maxCm': 3.0, 'verticesChanged': 10}}
@@ -282,6 +289,31 @@ class ItemRule(unittest.TestCase):
                     'permuted+weights'):
             with self.assertRaises(SystemExit):
                 self.build(items, proof, morphs, admit=admit, surface={'Socks': cls}, admit_rework=['Socks'])
+
+    # Tier 2 (23 Nov 2026): the 17 Nov game update. Only packages proven byte-identical keep their 6 Nov rebuild.
+    def test_a_package_changed_since_the_read_stays_live_and_holds_its_items(self):
+        items = {'outfit': ['Top', 'Skirt'], 'skirt': ['Skirt'], 'tee': ['Tee']}
+        proof = {'Top': ('morph-only', self.CHANGED, None), 'Skirt': ('morph-only', self.CHANGED, None),
+                 'Tee': ('morph-only', {}, None)}
+        morphs = {m: self.SHAPED for m in ('Top', 'Skirt', 'Tee')}
+        meta = self.build(items, proof, morphs, package={'Top': False, 'Skirt': True})
+        self.assertEqual(meta['swapped'], {})                     # Top stale, Skirt held by it
+        self.assertEqual(meta['held'][path('Skirt')]['items'], ['outfit'])
+        self.assertEqual(meta['stalePackages'], [path('Tee'), path('Top')])  # Tee is missing from the proof
+        # Tee is stale but its live file already has the read's morphs: never repointed, still consistent.
+        self.assertIn(path('Tee'), meta['effective'])
+        self.assertIn(path('Tee'), meta['keptUnchanged'])
+        # A stale package beside a proven one holds it only when its own morphs changed.
+        belted = {'outfit': ['Top', 'Belt']}
+        rows = {'Top': ('morph-only', self.CHANGED, None), 'Belt': ('morph-only', {}, None)}
+        meta = self.build(belted, rows, {'Top': self.SHAPED, 'Belt': self.SHAPED}, package={'Top': True, 'Belt': False})
+        self.assertEqual(set(meta['swapped']), {path('Top')})
+        rows['Belt'] = ('morph-only', self.CHANGED, None)
+        meta = self.build(belted, rows, {'Top': self.SHAPED, 'Belt': self.SHAPED}, package={'Top': True, 'Belt': False})
+        self.assertEqual(meta['swapped'], {})
+        self.assertEqual(meta['held'][path('Top')]['items'], ['outfit'])
+        meta = self.build(items, proof, morphs, package={'Top': True, 'Skirt': True, 'Tee': True})
+        self.assertEqual(set(meta['swapped']), {path('Top'), path('Skirt'), path('Tee')})
 
     def test_a_census_from_another_index_is_refused(self):
         tmp = Path(tempfile.mkdtemp())
