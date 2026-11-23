@@ -5,7 +5,11 @@ the item definitions, the supported items and the preset outfits. It plans every
 because no staged read of its Medium sibling matches the live one:
   "medium sibling not staged"   the 18 Oct S11 read never covered it;
   "medium sibling repointed"    the live index serves another Medium GLB (an S12 refresh or one of our fix waves).
-Rows the builder refused (a proof failed: reshaped meshes) or skipped for other reasons are not read again here.
+On a report built with --live-equal-medium --proven (the current route, 23 Nov 2026), also every S11 read that passes
+every proof but has no 17 Nov proof row: today's read settles it. Rows that fail proof 1' go to followups.tsv (the live
+Medium is behind the game or reworked), never into a batch. Rows the builder refused (a proof failed: reshaped meshes)
+or skipped for other reasons are not read again here. rows.tsv carries each row's proof 1' verdict and the morph
+targets that differ from the live Medium, where the report has compared it.
 
 Order: the starting outfit's pieces first, then by preset impact (presets that show an item needing the mesh), then by
 item count, then by name. Batches of --batch rows; each batch's request list holds the Medium, Light and (unless
@@ -34,6 +38,8 @@ DEFAULT_MODELS = next((p / "public" / "models" for p in HERE.parents
                       REPO / "public" / "models")
 TAGS = {"light": "Customization.Archetype.Light", "heavy": "Customization.Archetype.Heavy"}
 PLANNED = ("medium sibling not staged", "medium sibling repointed")
+FOLLOWUP = ("medium changed in the game", "live Medium reweighted", "live Medium file missing")
+CURRENCY = ("not current in the 17 Nov containers: no proof row", "read before the 17 Nov update")
 # src/store/useBuildStore.ts DEFAULT_BUILD (23 Nov 2026), less the face: the outfit a first visit shows.
 STARTER = ["casual-basictshirt-cotton-black", "casual-loosejeans-denim-darkblue", "casual-tallsneakers-canvas"]
 
@@ -109,17 +115,32 @@ def main():
     supported = list(json.loads((models / "reconstructed-assemblies-v1" / "supported-items.json").read_text(encoding="utf-8"))["items"])
     presets = json.loads(Path(args.presets).read_text(encoding="utf-8"))["outfits"]
 
-    # The rows: Light meshes skipped for want of a matching Medium read.
-    rows = {}
+    # The rows: Light meshes skipped for want of a matching Medium read, and (on a report built with
+    # --live-equal-medium --proven) S11 reads that pass every proof but are not proven current, so today's read settles
+    # them. Rows that fail proof 1' are not read again: they are listed as follow-ups (the live Medium is behind the
+    # game, or reworked), never planned around.
+    folder = lambda medium: (lambda u: u.split("/")[1] if u.startswith("../") else u.split("/")[0])(
+        indexed.get(medium, {}).get("url", ""))
+    rows, followups = {}, {}
     for target, row in report["skipped"].items():
         if row["class"] != "light":
             continue
         reasons = [r for r in row["reasons"] if r["reason"] in PLANNED]
         if reasons:
             r = reasons[0]
-            live = indexed.get(r["medium"], {}).get("url", "")
-            rows[target] = {"medium": r["medium"], "reason": r["reason"],
-                            "liveFolder": live.split("/")[1] if live.startswith("../") else live.split("/")[0]}
+            rows[target] = {"medium": r["medium"], "reason": r["reason"], "liveFolder": folder(r["medium"])}
+        for r in row["reasons"]:
+            if r["reason"] in FOLLOWUP:
+                followups[target] = {"medium": r["medium"], "reason": r["reason"], "differs": r.get("differs", ""),
+                                     "liveFolder": folder(r["medium"])}
+    stale = {target: problems for target, problems in report["refused"].items()
+             if target.endswith("_L") and len(problems) == 1 and problems[0].startswith(CURRENCY)}
+    for target in stale:
+        medium = next((m for m, v in report.get("proof1Prime", {}).items() if v["targets"].get("light") == target), None)
+        if medium:
+            rows[target] = {"medium": medium, "reason": "S11 read not proven current", "liveFolder": folder(medium)}
+    early = [t for t in report.get("added", {}).get("light", [])]
+    prime = {v["targets"].get("light"): v for v in report.get("proof1Prime", {}).values()}
 
     # Their Heavy siblings, and which supported items and presets need each Light mesh.
     defs, heavy = {}, {}
@@ -137,7 +158,7 @@ def main():
     items_of = defaultdict(set)
     for item, d in defs.items():
         for mesh, swapped, _ in light_parts(d):
-            if mesh in rows:
+            if mesh in rows or mesh in followups:
                 items_of[mesh].add(item)
     presets_of = defaultdict(set)
     for p in presets:
@@ -148,7 +169,14 @@ def main():
     starter = {t for t, items in items_of.items() if items & set(STARTER)}
 
     order = sorted(rows, key=lambda t: (t not in starter, -len(presets_of[t]), -len(items_of[t]), t))
-    lines = ["order\tbatch\tlight\tmedium\theavy\treason\tliveFolder\tpresets\titems\tstarter\n"]
+    def morph_cells(target):
+        """Proof 1' verdict and the morph targets that differ from the live Medium (allowed, never hidden)."""
+        v = prime.get(target) or {}
+        m = v.get("morphs") or {}
+        return [v.get("verdict", ""), "; ".join(f"{k}:{d}" for k, d in (m.get("changedCm") or {}).items()),
+                "; ".join(m.get("onlyStaged") or []), "; ".join(m.get("onlyLive") or [])]
+    lines = ["\t".join(["order", "batch", "light", "medium", "heavy", "reason", "liveFolder", "presets", "items",
+                        "starter", "proof1Prime", "morphsChangedCm", "morphsOnlyStaged", "morphsOnlyLive"]) + "\n"]
     batches, seen = defaultdict(list), set()
     for n, t in enumerate(order):
         b = n // args.batch + 1
@@ -159,8 +187,9 @@ def main():
         # Each package in its first batch only: the converter refuses to overwrite a GLB an earlier batch wrote.
         batches[b].extend(p for p in packages if p not in seen)
         seen.update(packages)
-        lines.append(f"{n + 1}\t{b}\t{t}\t{r['medium']}\t{h}\t{r['reason']}\t{r['liveFolder']}\t"
-                     f"{len(presets_of[t])}\t{len(items_of[t])}\t{'yes' if t in starter else ''}\n")
+        lines.append("\t".join([str(n + 1), str(b), t, r["medium"], h, r["reason"], r["liveFolder"],
+                                str(len(presets_of[t])), str(len(items_of[t])), "yes" if t in starter else "",
+                                *morph_cells(t)]) + "\n")
 
     # Coverage now, and if every planned row lands (every other proof assumed to pass: an upper bound).
     def status(item, extra):
@@ -175,8 +204,9 @@ def main():
         return "ok"
     coverage = {}
     batch_of = {t: n // args.batch + 1 for n, t in enumerate(order)}
-    steps = [("now", set())] + [(f"throughBatch{b:02d}", {t for t, k in batch_of.items() if k <= b})
-                                for b in sorted(batches)[:-1]] + [("ifPlanLands", set(rows))]
+    # The early-win rows (added in the report: proof 1' and the 17 Nov proof hold) land with batch 01's wave.
+    steps = [("now", set())] + [(f"throughBatch{b:02d}", {t for t, k in batch_of.items() if k <= b} | set(early))
+                                for b in sorted(batches)[:-1]] + [("ifPlanLands", set(rows) | set(early))]
     for label, extra in steps:
         st = {item: status(item, extra) for item in defs}
         whole, left = 0, Counter()
@@ -196,6 +226,13 @@ def main():
     out.mkdir(parents=True)
     (out / "requests").mkdir()
     (out / "rows.tsv").write_text("".join(lines), encoding="utf-8")
+    # Follow-ups (not read or applied here): proof 1' failed against the live Medium. Those served from an older build
+    # need a Medium refresh first; those served from the S12 refresh are read with that territory's runs.
+    (out / "followups.tsv").write_text("\t".join(["light", "medium", "reason", "differs", "liveFolder", "presets",
+                                                  "items", "starter"]) + "\n" + "".join(
+        "\t".join([t, f["medium"], f["reason"], str(f["differs"]), f["liveFolder"], str(len(presets_of.get(t, ()))),
+                   str(len(items_of.get(t, ()))), "yes" if t in starter else ""]) + "\n"
+        for t, f in sorted(followups.items())), encoding="utf-8")
     for b, packages in sorted(batches.items()):
         (out / "requests" / f"b{b:02d}.json").write_text(json.dumps(sorted(set(packages)), indent=1) + "\n", encoding="utf-8")
     summary = {"policy": "archetypes-light-bulk-plan-v1", "report": args.report, "activeSha256": active,
@@ -203,6 +240,12 @@ def main():
                "byLiveFolder": dict(Counter(r["liveFolder"] for r in rows.values()).most_common()),
                "starterRows": sorted(starter), "batches": len(batches), "batchSize": args.batch,
                "packages": sum(len(set(p)) for p in batches.values()), "heavyRead": not args.no_heavy,
+               "earlyWin": {t: (prime.get(t) or {}).get("morphs") for t in early},
+               "followups": {"count": len(followups),
+                             "byReason": dict(Counter(f"{f['reason']}: {f['differs']}" for f in followups.values())),
+                             "servedFromS12Refresh": sum(f["liveFolder"] == "s12-bodytype-refresh-v1"
+                                                         for f in followups.values()),
+                             "starter": sorted(t for t in followups if t in starter)},
                "coverage": coverage}
     (out / "summary.json").write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")
     print(json.dumps({k: summary[k] for k in ("rows", "byReason", "batches", "packages")}))

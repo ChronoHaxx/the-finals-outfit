@@ -173,8 +173,10 @@ re-plans on whatever index is active. Read-only result:
 - **15 Light rows dropped from the 23 Nov 78.** Batch A repointed their Medium sibling to `s12-bodytype-refresh-v1`.
   Proof 1 (same build) then fails: the staged `_L` was read beside the S11 Medium, not the S12 one.
   - These 15 are **waiting for an S12-matched `_L` read**. Like Heavy, that needs a fresh read from the 17 Nov
-    containers, which waits on the usmap for that build. Four of them could rejoin sooner under the proposed proof 1′
-    in [LIGHT-BULK-PLAN.md](LIGHT-BULK-PLAN.md) ("Early win"), if the coordinator approves it.
+    containers, which waits on the usmap for that build.
+  - **Update, late 23 Nov:** proof 1′ was approved. Three of the 15 pass it and rejoin in W1: `Casual_LowWedgeHeels`,
+    `CrossPromo_NRSuitBelts` and `Military_PantsWithHolsterPouch`. `FromTencent_AsianSpiritBoots` fails on its
+    inverse-bind matrices and stays out, listed. See [LIGHT-BULK-PLAN.md](LIGHT-BULK-PLAN.md).
   - The 15: `Casual_Bangles`, `Casual_LowWedgeHeels`, `Cowboy_HandCloth`, `CrossPromo_NRHarness`,
     `CrossPromo_NRSuitBelts`, `FromTencent_AsianSpiritBoots`, `Historic_SimpleBracelet`,
     `Military_PantsWithHolsterPouch`, `Military_WaistPouches`, `Pirate_ScallywagPants`, `Space_AstroPilotGloves`,

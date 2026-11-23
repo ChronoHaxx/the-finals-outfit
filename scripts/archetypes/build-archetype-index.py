@@ -166,60 +166,104 @@ def prove(medium, cls, scale, object_path, index_slots):
     return not problems, r
 
 
-def skin_weights(path):
-    """Per primitive: {joint name: per-vertex weight}, every JOINTS_n/WEIGHTS_n set summed, normalized ints scaled."""
+# Proof 1' tolerances (approved by the coordinator 23 Nov 2026, with these stated): what a class mesh inherits from the
+# live Medium entry must be the same mesh, up to float noise from a re-read or re-convert.
+LIVE_EQUAL = {
+    "positionM": 1e-5,          # vertex positions, metres
+    "uv": 1e-6,                 # every UV set
+    "normal": 1e-4,             # unit normals, per component
+    "inverseBind": 1e-5,        # inverse-bind matrix elements (covers last-digit rotation noise of a re-convert)
+    "weightQuantization": 65535,  # weights compared exactly as normalized UNSIGNED_SHORT; joint indices exactly
+}
+
+
+def skin_detail(path):
+    """What proof 1' compares beyond mesh_data: per primitive the normals, the JOINTS_n index sets, the WEIGHTS_n sets
+    quantized to normalized u16, and the morph targets by name (POSITION deltas); the skin's joint names in order and
+    its inverse-bind matrices."""
     j, bin_ = glb(path)
-    if not j.get("skins"):
-        return None
-    names = [j["nodes"][i].get("name") for i in j["skins"][0]["joints"]]
-    out = []
+    skin = j["skins"][0] if j.get("skins") else None
+    names = [j["nodes"][i].get("name") for i in skin["joints"]] if skin else []
+    ibm = accessor(j, bin_, skin["inverseBindMatrices"]).astype(np.float64) if skin else np.zeros((0, 16))
+    prims = []
     for m in j["meshes"]:
+        targets = m.get("extras", {}).get("targetNames", [])
         for p in m["primitives"]:
-            at, cols = p["attributes"], {}
+            at = p["attributes"]
+            normals = accessor(j, bin_, at["NORMAL"]).astype(np.float64) if "NORMAL" in at else None
+            joints, weights = [], []
             for key in sorted(k for k in at if k.startswith("JOINTS_")):
-                joints = accessor(j, bin_, at[key]).astype(np.int64)
+                joints.append(accessor(j, bin_, at[key]).astype(np.int64))
                 wkey = "WEIGHTS_" + key[len("JOINTS_"):]
-                weights = accessor(j, bin_, at[wkey]).astype(np.float64)
-                weights /= {5121: 255.0, 5123: 65535.0}.get(j["accessors"][at[wkey]]["componentType"], 1.0)
-                for k in range(joints.shape[1]):
-                    for u in np.unique(joints[:, k]):
-                        hit = joints[:, k] == u
-                        col = cols.setdefault(names[u], np.zeros(len(joints)))
-                        col[hit] += weights[hit, k]
-            out.append(cols)
-    return out
+                w = accessor(j, bin_, at[wkey]).astype(np.float64)
+                w /= {5121: 255.0, 5123: 65535.0}.get(j["accessors"][at[wkey]]["componentType"], 1.0)
+                weights.append(np.rint(w * LIVE_EQUAL["weightQuantization"]).astype(np.int64))
+            morphs = {name: accessor(j, bin_, t["POSITION"]).astype(np.float64)
+                      for name, t in zip(targets, p.get("targets", [])) if "POSITION" in t}
+            prims.append({"normals": normals, "joints": joints, "weights": weights, "morphs": morphs})
+    return {"jointNames": names, "inverseBind": ibm, "prims": prims}
+
+
+def morph_diff(da, db):
+    """Morph targets that differ between the staged and the live Medium: allowed by proof 1', but recorded (they say
+    the live Medium is behind the game, for a later Medium refresh). Max delta difference in cm per changed target."""
+    changed, only_staged, only_live = {}, set(), set()
+    for pa, pb in zip(da["prims"], db["prims"]):
+        only_staged |= set(pa["morphs"]) - set(pb["morphs"])
+        only_live |= set(pb["morphs"]) - set(pa["morphs"])
+        for name in set(pa["morphs"]) & set(pb["morphs"]):
+            x, y = pa["morphs"][name], pb["morphs"][name]
+            d = float(np.abs(x - y).max() * 100) if x.shape == y.shape else float("inf")
+            if d > 1e-4:
+                changed[name] = max(changed.get(name, 0.0), round(d, 4))
+    return {"changedCm": dict(sorted(changed.items())), "onlyStaged": sorted(only_staged), "onlyLive": sorted(only_live)}
 
 
 def live_equal(staged_path, live_path):
-    """Proof 1' ("live-equal Medium", proposed 23 Nov 2026): the Medium read beside a class mesh matches the Medium GLB
-    the index serves on everything the class mesh inherits from the index entry: primitives, vertex counts, indices,
-    positions (1e-5 m), every UV set (1e-6), material slots, skin joint names and skin weights by joint name (2e-3).
-    Morph shapes may differ (the class mesh carries its own; S12 re-sculpted the Medium ones). Returns (ok, reason,
-    detail); the reason names what differs: the game's Medium surface, or only its weights (our own rework)."""
+    """Proof 1' ("live-equal Medium", approved 23 Nov 2026): the Medium read beside a class mesh is the live Medium GLB
+    up to float noise, on everything the class mesh inherits from the index entry (tolerances: LIVE_EQUAL):
+      primitive and vertex counts, indices (exact); positions, every UV set, normals (within epsilon); material slot
+      names in order (exact); skin joint names in order (exact); inverse-bind matrices (within epsilon); joint index
+      sets (exact) and weights after u16 quantization (exact).
+    Morph targets may differ; morph_diff records them. Returns (ok, reason, detail). The reason is "medium changed in
+    the game" for any surface, slot or skeleton difference, "live Medium reweighted" when only the skin weights or
+    their joint indices differ (our own rework, or the game's); there is no fallback for a failing row."""
     a, b = mesh_data(staged_path), mesh_data(live_path)
+    da, db = skin_detail(staged_path), skin_detail(live_path)
     pa, pb = a["prims"], b["prims"]
+
+    def changed(what, **extra):
+        return False, "medium changed in the game", {"differs": what, **extra}
     if len(pa) != len(pb) or any(len(x["pos"]) != len(y["pos"]) for x, y in zip(pa, pb)):
-        return False, "medium changed in the game", {"differs": "primitives or vertex counts"}
-    for x, y in zip(pa, pb):
+        return changed("primitives or vertex counts")
+    for i, (x, y, nx, ny) in enumerate(zip(pa, pb, da["prims"], db["prims"])):
         if (x["idx"] is None) != (y["idx"] is None) or (x["idx"] is not None and not np.array_equal(x["idx"], y["idx"])):
-            return False, "medium changed in the game", {"differs": "indices"}
-        if np.abs(x["pos"] - y["pos"]).max() > 1e-5:
-            return False, "medium changed in the game", {"differs": "positions"}
-        if len(x["uvs"]) != len(y["uvs"]) or any(np.abs(u - v).max() > UV_TOLERANCE for u, v in zip(x["uvs"], y["uvs"])):
-            return False, "medium changed in the game", {"differs": "UVs"}
-        if x["slot"] != y["slot"]:
-            return False, "medium changed in the game", {"differs": "material slots"}
-    if set(a["joints"] or {}) != set(b["joints"] or {}):
-        return False, "medium changed in the game", {"differs": "skin joints"}
-    wa, wb = skin_weights(staged_path), skin_weights(live_path)
-    worst = 0.0
-    for x, y in zip(wa or [], wb or []):
-        for name in set(x) | set(y):
-            n = len(next(iter(x.values()))) if x else len(next(iter(y.values())))
-            worst = max(worst, float(np.abs(x.get(name, np.zeros(n)) - y.get(name, np.zeros(n))).max()))
-    if worst > 2e-3:
-        return False, "live Medium reweighted", {"weightMaxDiff": round(worst, 6)}
-    return True, None, {"weightMaxDiff": round(worst, 6)}
+            return changed("indices", primitive=i)
+        if np.abs(x["pos"] - y["pos"]).max() > LIVE_EQUAL["positionM"]:
+            return changed("positions", primitive=i, maxM=float(np.abs(x["pos"] - y["pos"]).max()))
+        if len(x["uvs"]) != len(y["uvs"]) or any(np.abs(u - v).max() > LIVE_EQUAL["uv"] for u, v in zip(x["uvs"], y["uvs"])):
+            return changed("UVs", primitive=i)
+        if (nx["normals"] is None) != (ny["normals"] is None) or (
+                nx["normals"] is not None and np.abs(nx["normals"] - ny["normals"]).max() > LIVE_EQUAL["normal"]):
+            return changed("normals", primitive=i)
+    if [x["slot"] for x in pa] != [y["slot"] for y in pb]:
+        return changed("material slots", staged=[x["slot"] for x in pa], live=[y["slot"] for y in pb])
+    if da["jointNames"] != db["jointNames"]:
+        return changed("skin joint names or order")
+    if da["inverseBind"].shape != db["inverseBind"].shape or (
+            len(da["inverseBind"]) and np.abs(da["inverseBind"] - db["inverseBind"]).max() > LIVE_EQUAL["inverseBind"]):
+        return changed("inverse-bind matrices", maxDiff=float(np.abs(da["inverseBind"] - db["inverseBind"]).max())
+                       if da["inverseBind"].shape == db["inverseBind"].shape else None)
+    morphs = morph_diff(da, db)
+    for i, (nx, ny) in enumerate(zip(da["prims"], db["prims"])):
+        if len(nx["joints"]) != len(ny["joints"]) or any(not np.array_equal(u, v) for u, v in zip(nx["joints"], ny["joints"])):
+            return False, "live Medium reweighted", {"differs": "joint indices", "primitive": i, "morphs": morphs}
+        bad = [int((u != v).any(axis=1).sum()) for u, v in zip(nx["weights"], ny["weights"])]
+        if any(bad):
+            worst = max(int(np.abs(u - v).max()) for u, v in zip(nx["weights"], ny["weights"]))
+            return False, "live Medium reweighted", {"differs": "weights", "primitive": i, "vertices": sum(bad),
+                                                     "maxU16Steps": worst, "morphs": morphs}
+    return True, None, {"morphs": morphs}
 
 
 def skeleton_scale(medium_json, cls_json, scale):
@@ -277,7 +321,7 @@ def main():
     skin_pairs = json.loads((index_dir / "skin-pairs.json").read_text(encoding="utf-8"))
     report = {"activeSha256": sha256(index_dir / "assets.json"), "skinPairsSha256": sha256(index_dir / "skin-pairs.json"),
               "currentProof": {k: current[k] for k in ("file", "sha256", "containers")} if current else None,
-              "classes": {}, "meshes": {}, "refused": {}, "skipped": {}}
+              "classes": {}, "meshes": {}, "refused": {}, "skipped": {}, "proof1Prime": {}}
 
     # The Archetype mesh swaps the definitions author: Medium skeletal mesh -> class mesh. Every class mesh named here
     # ends in exactly one of report["meshes"] (added), report["refused"] (a proof failed) or report["skipped"] (never
@@ -358,18 +402,18 @@ def main():
         proof1 = {"proof1": "bytes"}
         wanted = [swaps[c].get(medium_path) for c in CLASSES]
         if not match and args.live_equal_medium and candidates and any(t and t not in assets["meshes"] for t in wanted):
-            # Proof 1' on each staged copy, today's read first; the first that holds stands in for proof 1.
+            # Proof 1' on one staged copy: today's read when there is one (candidates list --staging first), else the
+            # newest S11 read. No fallback to another copy: a failing row is skipped and listed.
             live_file = (index_dir / entry["url"]).resolve()
-            verdicts = []
-            for f in candidates:
-                ok, why, detail = live_equal(f, live_file) if live_file.is_file() else (False, "live Medium file missing", {})
-                verdicts.append((f, ok, why, detail))
-                if ok:
-                    match = [f]
-                    proof1 = {"proof1": "live-equal", **detail}
-                    break
-            if not match:
-                f, _, why, detail = verdicts[0]
+            f = candidates[0]
+            ok, why, detail = live_equal(f, live_file) if live_file.is_file() else (False, "live Medium file missing", {})
+            report["proof1Prime"][medium_path] = {
+                "verdict": "pass" if ok else why, "stagedFile": os.path.relpath(f, models).replace(os.sep, "/"),
+                "liveUrl": entry.get("url"), "targets": {c: swaps[c].get(medium_path) for c in CLASSES}, **detail}
+            if ok:
+                match = [f]
+                proof1 = {"proof1": "live-equal", "morphs": detail["morphs"]}
+            else:
                 for cls in CLASSES:
                     target = swaps[cls].get(medium_path)
                     if target and target not in assets["meshes"]:
@@ -507,6 +551,18 @@ def main():
     (out / "publish-list.tsv").write_text("".join(
         f"{report['meshes'][k]['file']}\t{report['meshes'][k]['publish']}\t{report['meshes'][k]['sha256']}\n"
         for k in sorted(added)), encoding="utf-8")
+    # Every proof 1' comparison, passing or not, with the morph targets that differ (the row table's morph columns).
+    def morph_cells(m):
+        m = m or {}
+        return ("; ".join(f"{k}:{v}" for k, v in (m.get("changedCm") or {}).items()),
+                "; ".join(m.get("onlyStaged") or []), "; ".join(m.get("onlyLive") or []))
+    tab = "\t"
+    (out / "proof1-prime.tsv").write_text(
+        tab.join(["medium", "light", "heavy", "verdict", "differs", "morphsChangedCm", "morphsOnlyStaged",
+                  "morphsOnlyLive"]) + "\n" + "".join(
+            tab.join([k, v["targets"].get("light") or "", v["targets"].get("heavy") or "", v["verdict"],
+                      str(v.get("differs", "")), *morph_cells(v.get("morphs"))]) + "\n"
+            for k, v in sorted(report["proof1Prime"].items())), encoding="utf-8")
     # class mesh <TAB> class <TAB> reason <TAB> the Medium mesh that names it: the apply record copies this list.
     (out / "skipped.tsv").write_text("".join(
         f"{k}\t{row['class']}\t{r['reason']}\t{r['medium']}\n"

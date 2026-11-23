@@ -1,0 +1,46 @@
+light	medium	reason	differs	liveFolder	presets	items	starter
+SK_Casual_Bangles_L	SK_Casual_Bangles_M	medium changed in the game	indices	s12-bodytype-refresh-v1	3	3	
+SK_Casual_BasicTshirt_L	SK_Casual_BasicTshirt_M	medium changed in the game	indices	reconstructed-meshes-v2	2	43	yes
+SK_Casual_ChainBelt_L	SK_Casual_ChainBelt_M	medium changed in the game	indices	reconstructed-w80-wrap-w2-v1	1	1	
+SK_Casual_FrontTieCropTopSleeves_L	SK_Casual_FrontTieCropTopSleeves_M	live Medium reweighted	joint indices	reconstructed-w121-transfer-t1	1	1	
+SK_Casual_HeadscarfStraps_L	SK_Casual_HeadscarfStraps_M	medium changed in the game	indices	reconstructed-w80-wrap-w1-v2	1	3	
+SK_Casual_Tshirt_L	SK_Casual_Tshirt_M	medium changed in the game	skin joint names or order	s12-bodytype-refresh-v1	0	20	
+SK_Cowboy_HandCloth_L	SK_Cowboy_HandCloth_M	live Medium reweighted	joint indices	s12-bodytype-refresh-v1	5	5	
+SK_CrossPromo_NRHarness_L	SK_CrossPromo_NRHarness_M	medium changed in the game	indices	s12-bodytype-refresh-v1	1	1	
+SK_FromTencent_AsianSpiritBoots_L	SK_FromTencent_AsianSpiritBoots_M	medium changed in the game	inverse-bind matrices	s12-bodytype-refresh-v1	5	5	
+SK_Gothic_CowboyBoots_L	SK_Gothic_CowboyBoots_M	medium changed in the game	indices	reconstructed-w139-parthide-p1b	1	1	
+SK_Historic_SimpleBracelet_L	SK_Historic_SimpleBracelet_M	medium changed in the game	indices	s12-bodytype-refresh-v1	2	3	
+SK_Medieval_KnightCape_L	SK_Medieval_KnightCape_M	medium changed in the game	skin joint names or order	reconstructed-w82-sweep-g1-v4	2	2	
+SK_Medieval_KnightNeckCloth_L	SK_Medieval_KnightNeckCloth_M	medium changed in the game	skin joint names or order	reconstructed-w82-sweep-g1-v4	2	2	
+SK_Military_WaistPouches_L	SK_Military_WaistPouches_M	medium changed in the game	skin joint names or order	s12-bodytype-refresh-v1	1	1	
+SK_Pirate_ScallywagPants_L	SK_Pirate_ScallywagPants_M	medium changed in the game	indices	s12-bodytype-refresh-v1	2	2	
+SK_Robots_DiscoBotGloves_L	SK_Robots_DiscoBotGloves_M	medium changed in the game	indices	s12-bodytype-refresh-v1	1	1	
+SK_Robots_RetroRobotHands_L	SK_Robots_RetroRobotHands_M	medium changed in the game	positions	reconstructed-w139-parthide-p1b	2	2	
+SK_Robots_RetroRobotHead_L	SK_Robots_RetroRobotHead_M	medium changed in the game	indices	reconstructed-w139-parthide-p1b	1	1	
+SK_Robots_RetroRobotLegs_L	SK_Robots_RetroRobotLegs_M	medium changed in the game	indices	reconstructed-w139-parthide-p1b	1	1	
+SK_Robots_SportyRobotLegs_L	SK_Robots_SportyRobotLegs_M	medium changed in the game	positions	reconstructed-w125-resweep-s3	2	2	
+SK_Space_AstroPilotGloves_L	SK_Space_AstroPilotGloves_M	medium changed in the game	indices	s12-bodytype-refresh-v1	3	3	
+SK_Space_AstroPilotGun_L	SK_Space_AstroPilotGun_M	medium changed in the game	indices	s12-bodytype-refresh-v1	2	2	
+SK_Space_AstroPilotPants_L	SK_Space_AstroPilotPants_M	medium changed in the game	indices	s12-bodytype-refresh-v1	2	2	
+SK_Space_AstroPilotUpper_L	SK_Space_AstroPilotUpper_M	medium changed in the game	indices	reconstructed-w84-led-head-b1-v3	2	3	
+SK_Space_SpaceBelt_L	SK_Space_SpaceBelt_M	medium changed in the game	indices	reconstructed-w125-resweep-t2	1	1	
+SK_Space_SpaceBeltUltimate_L	SK_Space_SpaceBeltUltimate_M	medium changed in the game	indices	reconstructed-w84-led-head-b1-v3	1	1	
+SK_Space_SpaceBracerScreen_L	SK_Space_SpaceBracerScreen_M	medium changed in the game	skin joint names or order	reconstructed-w84-led-head-b1-v3	1	1	
+SK_Space_SpaceBracers_L	SK_Space_SpaceBracers_M	medium changed in the game	indices	reconstructed-w125-resweep-t2	1	1	
+SK_Space_SpaceBracersUltimate_L	SK_Space_SpaceBracersUltimate_M	medium changed in the game	indices	reconstructed-w84-led-head-b1-v3	1	1	
+SK_Space_SpaceCape_L	SK_Space_SpaceCape_M	live Medium reweighted	joint indices	reconstructed-w125-resweep-t2	1	1	
+SK_Space_SpaceGorget_L	SK_Space_SpaceGorget_M	medium changed in the game	indices	reconstructed-w125-resweep-t2	1	1	
+SK_Space_SpaceHeroineBracers_L	SK_Space_SpaceHeroineBracers_M	live Medium reweighted	weights	reconstructed-w139-parthide-p2b	1	1	
+SK_Space_SpaceHeroineGunHolster_L	SK_Space_SpaceHeroineGunHolster_M	medium changed in the game	indices	reconstructed-w82-sweep-g2-v1	1	1	
+SK_Space_SpaceHeroineTop_L	SK_Space_SpaceHeroineTop_M	medium changed in the game	indices	reconstructed-w139-parthide-p2b	1	1	
+SK_Space_SpacePilotHipRadioUltimate_L	SK_Space_SpacePilotHipRadioUltimate_M	medium changed in the game	skin joint names or order	reconstructed-w84-led-head-b1-v3	1	1	
+SK_Space_SpacePilotJacket_L	SK_Space_SpacePilotJacket_M	medium changed in the game	indices	reconstructed-w170-clothsim-v1	1	2	
+SK_Space_SpacePilotJacketUltimate_L	SK_Space_SpacePilotJacketUltimate_M	medium changed in the game	positions	reconstructed-w170-clothsim-v1	1	1	
+SK_Space_SpacePilotPants_L	SK_Space_SpacePilotPants_M	medium changed in the game	indices	reconstructed-w84-led-head-b1-v3	2	2	
+SK_Space_SpacePilotPantsBelt_L	SK_Space_SpacePilotPantsBelt_M	medium changed in the game	skin joint names or order	reconstructed-w84-led-head-b1-v3	1	1	
+SK_Space_SpaceSoldierBandolier_L	SK_Space_SpaceSoldierBandolier_M	medium changed in the game	skin joint names or order	reconstructed-w84-led-head-b1-v3	1	1	
+SK_Space_SpaceSuitTop_L	SK_Space_SpaceSuitTop_M	medium changed in the game	indices	reconstructed-w125-resweep-t2	1	1	
+SK_Space_SpaceSuitTopUltimate_L	SK_Space_SpaceSuitTopUltimate_M	medium changed in the game	indices	reconstructed-w84-led-head-b1-v3	1	1	
+SK_Streetwear_BoilerSuitTorso_L	SK_Streetwear_BoilerSuitTorso_M	medium changed in the game	skin joint names or order	s12-bodytype-refresh-v1	4	5	
+SK_Streetwear_TechCropTopArmPouch_L	SK_Streetwear_TechCropTopArmPouch_M	medium changed in the game	skin joint names or order	s12-bodytype-refresh-v1	1	1	
+SK_Streetwear_TechCropTopNoBags_L	SK_Streetwear_TechCropTopNoBags_M	medium changed in the game	indices	s12-bodytype-refresh-v1	1	1	
