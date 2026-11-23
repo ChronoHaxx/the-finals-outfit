@@ -1,13 +1,20 @@
 # Light bulk extraction: plan, ready to start (23 Nov 2026; not run)
 
-**Asked by:** the coordinator (23 Nov), while the main-folder session hand-patches a 12.03 usmap (about 2 days).
+**Asked by:** the coordinator (23 Nov), while the main-folder session hand-patches a 12.03 usmap.
 
 **Goal:** reach the bar for unflagging Light, which the coordinator has passed to the user as a suggestion:
 - the starting outfit builds whole on Light;
 - most presets lose at most one piece.
 
-**Not run:** nothing here reads the game containers or writes `public/models`. It starts when a patched usmap passes
-its proof.
+**Not run:** nothing here reads the game containers or writes `public/models`.
+
+**Update (23 Nov, late).** The patched map v1 is proven (`f36b7c4f…`, with the window guard `check_window.py`), so
+this plan is runnable. Queue order (coordinator):
+1. the main-folder session proves v1 end to end on w177;
+2. this extraction runs, starting-outfit batch first (see "Run order with map v1" below);
+3. then Heavy (`SK_Body_H`).
+
+Index applies go one at a time through the main-folder session (local_602c33b0), after the release is live.
 
 This supersedes the 22 Nov draft in [BULK-EXTRACTION.md](BULK-EXTRACTION.md).
 
@@ -52,16 +59,18 @@ class meshes was reshaped and refused.
 The rest is held by the reshaped refusals (51 preset pieces), Medium meshes missing from the index (6), offset rules (3)
 and a swap conflict (1). So the bar comes at about batch 6.
 
-## Prerequisites
+## Prerequisites (state late on 23 Nov)
 
-1. **The patched usmap passes its proof** (main-folder session). Record its path and sha256 in the run record.
-2. **A builder proof for fresh reads.** This needs the coordinator's OK, because it changes the proof rule of 22 Nov.
+1. **Map v1 is proven:** done (main-folder session). `run-light-bulk.py` pins it by sha256 (`f36b7c4f…`).
+   `SOURCE_USMAP` may point at a copy, but the copy must have that sha256.
+2. **Proof 1′ is built but not yet approved.** It is in this PR behind `--live-equal-medium`, with tests. Using it
+   is the coordinator's call, because it changes the proof rule of 22 Nov. Without it, no fresh read can pass.
    - **Why:** proof 1 (same build) needs the staged Medium GLB to be byte-identical to the live one. A fresh read
      never is:
      - the live Medium came from an earlier read, often rebuilt by a fix wave (see `byLiveFolderTop` in the summary);
      - even re-converting the same 18 Oct read gives a byte-different Medium GLB. A dry run gave the Light GLB byte
        for byte, but the Medium differed in the last digit of its joint rotations.
-   - **Proposed proof 1′ ("live-equal Medium").** The Medium read beside the class mesh matches the live Medium GLB on
+   - **The rule ("live-equal Medium").** The Medium read beside the class mesh matches the live Medium GLB on
      everything the class mesh inherits:
      - primitive and vertex counts, indices;
      - positions within 1e-5 m;
@@ -72,82 +81,92 @@ and a swap conflict (1). So the bar comes at about batch 6.
 
      Morph shapes may differ. The class mesh carries its own, and S12 re-sculpted the Medium ones.
      - Surface differs: skip as `medium changed in the game` (the live Medium is stale; that is S12 refresh work).
-     - Weights differ: skip as `live Medium reweighted` (the class mesh would need the same work).
-     - Proofs 2–5 then run against that Medium as today.
-   - **Read-only check on 23 Nov:** of the 72 repointed Light rows whose staged Medium has the live surface, 68 also
-     have equal weights. Only morph shapes differ, which matches the S12 re-sculpt.
-   - **Two more builder pieces:**
-     - `--staging <dir>`, so the bulk GLBs can stay outside `public/models` until the apply;
-     - recording the read's own `source-run.json` (containers, mapping sha256) as the currency proof that `--proven`
-       gives today.
-3. **Re-runs on the applied index.** Done in this PR. On `b164180c` the builder skipped `SK_Body_L` as already in
-   the index and refused the whole class, so every new Light mesh would have dropped. It now re-proves an applied
-   class body against the staged Medium body, and keeps the applied `archetypes` record. There is a test for each.
+     - Weights differ: skip as `live Medium reweighted` (the class mesh would need the same rework).
+     - Proofs 2–5 then run against that Medium as before.
+   - **Checks on 23 Nov (read-only):**
+     - Of the 72 repointed Light rows whose staged Medium has the live surface, 68 also have equal weights.
+     - On the live index `b164180c`, `--live-equal-medium --proven <17 Nov proof>` adds exactly the four "early win"
+       meshes below. It also skips 40 as `medium changed in the game` and 4 as `live Medium reweighted`. The run took
+       5 min 40 s.
+3. **Builder input for fresh reads:** done. `--staging <run dir>` takes the runner's GLBs and its `run.json`. The
+   builder exits unless:
+   - the control passed;
+   - every batch was read with the pinned map, passed the guard and read every package.
 
-**Early win, no usmap needed (needs the same OK as prerequisite 2).** Four of the 15 Light rows that batch A
-dropped pass proof 1′ against their S12 Medium, and their packages are already proven current (17 Nov proof):
-`Casual_LowWedgeHeels`, `CrossPromo_NRSuitBelts`, `FromTencent_AsianSpiritBoots` and
-`Military_PantsWithHolsterPouch`. The same rule may admit more of the 68 once `prove-nov17.py` proves their Light
-packages; that comparison is package bytes and needs no new usmap.
+   With `--staging`, an S11 mesh (read before 17 Nov) still needs `--proven`.
+4. **Re-runs on the applied index:** done. On `b164180c` the builder skipped `SK_Body_L` as already in the index and
+   refused the whole class, so every new Light mesh would have dropped. It now re-proves an applied class body against
+   the staged Medium body, and keeps the applied `archetypes` record.
 
-## Commands, per batch
+**Early win (needs the same OK as proof 1′).** Four of the 15 Light rows that batch A dropped pass proof 1′ against
+their S12 Medium, and their packages are already proven current (17 Nov proof): `Casual_LowWedgeHeels`,
+`CrossPromo_NRSuitBelts`, `FromTencent_AsianSpiritBoots` and `Military_PantsWithHolsterPouch`.
 
-Run in Git Bash from the **main checkout**: the GLB converter (`scripts/shader-probe/stage-season-assets.py`) lives
-only there. Outputs stay in `scripts/generated/`; only the apply writes `public/models`.
+## Run order with map v1
+
+Run in Git Bash from this branch's worktree, or from main once this PR is merged. The tools are read from the main
+checkout. `RUN` sits in the main checkout's `scripts/generated`, so it survives a worktree archive. Nothing writes
+`public/models`.
 
 ```
-ROOT=/e/Coding/the-finals-outfit
-DOTNET=$ROOT/scripts/generated/shader-probe/tools/dotnet/dotnet.exe
-PROBE=$ROOT/scripts/generated/shader-probe/catalog-refresh-20261018/opus-probe-bin/ShaderProbe.dll   # sha256 57948870…
-USMAP=<the patched 12.03 usmap, as its proof records it>
-PAKS="C:/Program Files (x86)/Steam/steamapps/common/The Finals/Discovery/Content/Paks"
-OODLE=<as OODLE in scripts/archetypes/prove-nov17.py>
-SETTINGS=<as SETTINGS in scripts/archetypes/prove-nov17.py>
-PLAN=scripts/generated/archetypes/light-bulk-plan-v2
-RUN=scripts/generated/archetypes/light-bulk-v1
+M=/e/Coding/the-finals-outfit
+PLAN=$M/scripts/generated/archetypes/light-bulk-plan-v2
+RUN=$M/scripts/generated/archetypes/light-bulk-v1
 ```
 
-0. **Refresh the plan on the then-active index.** It will have moved since 23 Nov.
+0. **Refresh the plan after w177.** w177 may move the active index.
 
    ```
    python -I scripts/archetypes/build-archetype-index.py --out scripts/generated/archetypes/bulk-pre --publish-dir reconstructed-archetypes-v1
    python -I scripts/archetypes/plan-light-bulk.py --report scripts/generated/archetypes/bulk-pre/report.json --out $PLAN
    ```
 
-   Diff `$PLAN/rows.tsv` against `light-bulk/rows-v1.tsv`. Rows that left must be in the new report with a reason.
-   The planner refuses a report built on another index.
-1. **Read** (batch `NN` = 01…10):
+   Diff `$PLAN/rows.tsv` against [light-bulk/rows-v1.tsv](light-bulk/rows-v1.tsv). A row that left must be in the new
+   report with a reason. The planner refuses a report built on another index.
+1. **Control, once.** It proves that map v1 reads meshes exactly as the 18 Oct map did.
 
    ```
-   "$DOTNET" "$PROBE" assets "$PAKS" "$USMAP" "$OODLE" "$RUN/read-bNN" "$PLAN/requests/bNN.json" "$SETTINGS" > "$RUN/read-bNN.log" 2>&1
+   python -I scripts/archetypes/run-light-bulk.py control --run $RUN --proof $M/scripts/generated/archetypes/nov17-proof-apply-b4f2/proof.json
    ```
 
-   Every requested package must have a row in `read-bNN/**/assets.json`. Retry a missing one on its own, as
-   `scripts/stage-season-catalog.mjs` does. Record any that still fail.
-2. **Convert:**
+   It re-reads 24 packages that are byte-identical between the 18 Oct read and the 17 Nov containers. Every mesh
+   export must equal the 18 Oct one byte for byte, and the guard runs too. Stop if it fails.
+2. **Batches, starting with 01.** Batch 01 holds the starting outfit plus 97 rows by preset impact.
 
    ```
-   python -I scripts/archetypes/plan-light-bulk.py jobs --read "$RUN/read-bNN" --glb-dir "$RUN/source-glb" --out "$RUN/jobs-bNN.json"
-   python -I scripts/shader-probe/stage-season-assets.py build-glbs --jobs "$RUN/jobs-bNN.json" --report "$RUN/glb-bNN.json"
+   python -I scripts/archetypes/run-light-bulk.py batch --run $RUN --plan $PLAN --batch 01
    ```
 
-   Checked on 23 Nov against the 18 Oct read of `SK_Casual_LowWedgeHeels_M/L`: the jobs match the staging's, and the
-   output matches apart from the last-digit rotation noise above.
-3. **Build** (the flags arrive with prerequisite 2, so their names may change):
+   A batch converts only after all of these hold:
+   - the pins (probe `57948870…`, map `f36b7c4f…`);
+   - every package read, after retrying any missing one on its own;
+   - `check_window.py` exits 0 over every read folder;
+   - the probe's own `source-run.json` names the pinned map.
+
+   Each batch is recorded in `$RUN/run.json`. A recorded batch is never re-read into the same folder.
+3. **Build after each wave:**
 
    ```
-   python -I scripts/archetypes/build-archetype-index.py --staging "$RUN/source-glb" --out scripts/generated/archetypes/bulk-bNN --publish-dir reconstructed-archetypes-v1
+   python -I scripts/archetypes/build-archetype-index.py --staging $RUN --live-equal-medium --out scripts/generated/archetypes/bulk-w1 --publish-dir reconstructed-archetypes-v1
    ```
 
-   Every row must land in `added`, `refused` or `skipped` with a reason (the builder enforces this). Record
-   `skipped.tsv`.
-4. **Review, then apply through [APPLY.md](APPLY.md)** (pins, additivity, backup, publish-list copy with hashes, swap,
-   `dev-steps.mjs`). Look at captures at full size: the starting outfit and the top presets of the batch, on Light
-   against Medium.
-   - **Apply waves**, each a one-line coordinator approval:
+   Use `--live-equal-medium` only once the coordinator approves it. Without it, every fresh read skips as repointed or
+   not staged. Every row lands in `added`, `refused` or `skipped` with a reason; record `skipped.tsv`. Expect a run of
+   tens of minutes: the weight comparison is the slow part, so run it in the background.
+4. **Hand off each apply to the main-folder session** (local_602c33b0) through [APPLY.md](APPLY.md), after the release
+   is live. Each apply is a one-line coordinator approval.
+   - **Apply waves:**
      - W1: batch 1 (the starting outfit whole, 48 presets);
      - W2: batches 2–6 (the bar);
      - W3: batches 7–10.
+   - **Checks:** captures at full size of the starting outfit and the top presets of the wave, on Light against Medium.
+
+**Checked without the game:**
+- `run-light-bulk.py`: its pins resolve on this machine.
+- A batch run with a stand-in probe that replays three packages of the 18 Oct read:
+  - it read the packages, ran the guard and converted them;
+  - a batch with a missing package failed closed after its retry, without converting;
+  - re-running a recorded batch was refused.
 
 **Size:** the 63 applied Light meshes are 61.3 MB, so 907 come to roughly 0.9 GB uncompressed. They are hosted
 gzipped on the release's leaf shards. The staged Heavy siblings are about the same size again and stay local.

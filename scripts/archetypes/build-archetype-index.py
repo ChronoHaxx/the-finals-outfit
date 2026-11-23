@@ -17,7 +17,13 @@ Every class mesh the item definitions name ends in exactly one of three lists, n
            active index serves another build of the Medium mesh than the staged one, e.g. an S12 refresh), "medium
            sibling not staged", "medium not in the active index", "medium not skeletal in the active index", "swap
            conflict" (one Medium mesh swapped for different class meshes), "already in the active index", or "class
-           body not proven" (the mesh passed, but its class cannot be built).
+           body not proven" (the mesh passed, but its class cannot be built). With --live-equal-medium (proof 1',
+           below), "medium changed in the game" (the staged Medium's surface is not the live one's), "live Medium
+           reweighted" (only the skin weights differ: our own rework) or "live Medium file missing".
+
+Proof 1' (--live-equal-medium, proposed 23 Nov 2026; use it only with the coordinator's approval): where no staged
+Medium is byte-identical to the live one, one that matches it on everything the class mesh inherits stands in (see
+live_equal). Fresh reads of today's containers come in through --staging (scripts/archetypes/run-light-bulk.py).
 
 A class mesh joins the index only with proof, never by approximation:
   1. Same build: its Medium sibling's staged GLB is byte-identical (sha256) to the mesh the active index serves, so the
@@ -160,6 +166,62 @@ def prove(medium, cls, scale, object_path, index_slots):
     return not problems, r
 
 
+def skin_weights(path):
+    """Per primitive: {joint name: per-vertex weight}, every JOINTS_n/WEIGHTS_n set summed, normalized ints scaled."""
+    j, bin_ = glb(path)
+    if not j.get("skins"):
+        return None
+    names = [j["nodes"][i].get("name") for i in j["skins"][0]["joints"]]
+    out = []
+    for m in j["meshes"]:
+        for p in m["primitives"]:
+            at, cols = p["attributes"], {}
+            for key in sorted(k for k in at if k.startswith("JOINTS_")):
+                joints = accessor(j, bin_, at[key]).astype(np.int64)
+                wkey = "WEIGHTS_" + key[len("JOINTS_"):]
+                weights = accessor(j, bin_, at[wkey]).astype(np.float64)
+                weights /= {5121: 255.0, 5123: 65535.0}.get(j["accessors"][at[wkey]]["componentType"], 1.0)
+                for k in range(joints.shape[1]):
+                    for u in np.unique(joints[:, k]):
+                        hit = joints[:, k] == u
+                        col = cols.setdefault(names[u], np.zeros(len(joints)))
+                        col[hit] += weights[hit, k]
+            out.append(cols)
+    return out
+
+
+def live_equal(staged_path, live_path):
+    """Proof 1' ("live-equal Medium", proposed 23 Nov 2026): the Medium read beside a class mesh matches the Medium GLB
+    the index serves on everything the class mesh inherits from the index entry: primitives, vertex counts, indices,
+    positions (1e-5 m), every UV set (1e-6), material slots, skin joint names and skin weights by joint name (2e-3).
+    Morph shapes may differ (the class mesh carries its own; S12 re-sculpted the Medium ones). Returns (ok, reason,
+    detail); the reason names what differs: the game's Medium surface, or only its weights (our own rework)."""
+    a, b = mesh_data(staged_path), mesh_data(live_path)
+    pa, pb = a["prims"], b["prims"]
+    if len(pa) != len(pb) or any(len(x["pos"]) != len(y["pos"]) for x, y in zip(pa, pb)):
+        return False, "medium changed in the game", {"differs": "primitives or vertex counts"}
+    for x, y in zip(pa, pb):
+        if (x["idx"] is None) != (y["idx"] is None) or (x["idx"] is not None and not np.array_equal(x["idx"], y["idx"])):
+            return False, "medium changed in the game", {"differs": "indices"}
+        if np.abs(x["pos"] - y["pos"]).max() > 1e-5:
+            return False, "medium changed in the game", {"differs": "positions"}
+        if len(x["uvs"]) != len(y["uvs"]) or any(np.abs(u - v).max() > UV_TOLERANCE for u, v in zip(x["uvs"], y["uvs"])):
+            return False, "medium changed in the game", {"differs": "UVs"}
+        if x["slot"] != y["slot"]:
+            return False, "medium changed in the game", {"differs": "material slots"}
+    if set(a["joints"] or {}) != set(b["joints"] or {}):
+        return False, "medium changed in the game", {"differs": "skin joints"}
+    wa, wb = skin_weights(staged_path), skin_weights(live_path)
+    worst = 0.0
+    for x, y in zip(wa or [], wb or []):
+        for name in set(x) | set(y):
+            n = len(next(iter(x.values()))) if x else len(next(iter(y.values())))
+            worst = max(worst, float(np.abs(x.get(name, np.zeros(n)) - y.get(name, np.zeros(n))).max()))
+    if worst > 2e-3:
+        return False, "live Medium reweighted", {"weightMaxDiff": round(worst, 6)}
+    return True, None, {"weightMaxDiff": round(worst, 6)}
+
+
 def skeleton_scale(medium_json, cls_json, scale):
     """The class skeleton against Medium: the median translation ratio, the largest translation residual (metres) from
     the exact `scale`, and the largest quaternion component difference."""
@@ -189,6 +251,14 @@ def main():
     # --proven <proof.json from prove-nov17.py>: also require each class mesh's package to be byte-identical in today's
     # containers (the coordinator's rule for pre-update data, 22 Nov). A mesh the proof refused or never read is refused.
     ap.add_argument("--proven")
+    # --staging <run dir> (repeatable): a fresh read of today's containers (scripts/archetypes/run-light-bulk.sh), its
+    # GLBs in <run dir>/source-glb, searched before the S11 folders. Its run record (<run dir>/run.json) is the currency
+    # proof: every batch read with the pinned map and passed the usmap window guard. With --staging, a mesh from the
+    # S11 folders (read before 17 Nov) still needs --proven.
+    ap.add_argument("--staging", action="append", default=[])
+    # --live-equal-medium: proof 1' (see live_equal) where the staged Medium is not byte-identical to the live one.
+    # Proposed 23 Nov 2026; use it only with the coordinator's approval of that rule.
+    ap.add_argument("--live-equal-medium", action="store_true")
     args = ap.parse_args()
     current = None
     if args.proven:
@@ -250,7 +320,24 @@ def main():
                 elif entry.get("kind") != "skeletal":
                     skip(target, cls, medium_path, "medium not skeletal in the active index")
 
-    staged = {}
+    staged, fresh = {}, set()
+    report["stagingRuns"] = []
+    for run in map(Path, args.staging):
+        record = json.loads((run / "run.json").read_text(encoding="utf-8"))
+        if record.get("policy") != "archetypes-light-bulk-run-v1":
+            sys.exit(f"{run / 'run.json'} is not a run-light-bulk.sh record")
+        bad = {b: r for b, r in record.get("batches", {}).items()
+               if r.get("guard", {}).get("exitCode") != 0 or r.get("mappingSha256", "").lower() != record["usmapSha256"].lower()
+               or r.get("missing")}
+        if not record.get("control", {}).get("ok"):
+            sys.exit(f"{run}: the control (the patched map re-reads unchanged meshes byte for byte) has not passed")
+        if not record.get("batches") or bad:
+            sys.exit(f"{run}: batches without a clean read (guard, pinned map, every package): {sorted(bad) or 'none run'}")
+        report["stagingRuns"].append({"dir": str(run), "runSha256": sha256(run / "run.json"),
+                                      "usmapSha256": record["usmapSha256"], "batches": sorted(record["batches"])})
+        for f in sorted((run / "source-glb").glob("*.glb")):
+            staged.setdefault(f.name, []).append(f)
+            fresh.add(f)
     for folder in STAGING:
         for f in (models / folder / "source-glb").glob("*.glb"):
             staged.setdefault(f.name, []).append(f)
@@ -268,6 +355,27 @@ def main():
         name = medium_path.rsplit(".", 1)[-1]
         candidates = staged.get(name + ".glb", [])
         match = [f for f in candidates if staged_sha(f) == entry.get("sha256")]
+        proof1 = {"proof1": "bytes"}
+        wanted = [swaps[c].get(medium_path) for c in CLASSES]
+        if not match and args.live_equal_medium and candidates and any(t and t not in assets["meshes"] for t in wanted):
+            # Proof 1' on each staged copy, today's read first; the first that holds stands in for proof 1.
+            live_file = (index_dir / entry["url"]).resolve()
+            verdicts = []
+            for f in candidates:
+                ok, why, detail = live_equal(f, live_file) if live_file.is_file() else (False, "live Medium file missing", {})
+                verdicts.append((f, ok, why, detail))
+                if ok:
+                    match = [f]
+                    proof1 = {"proof1": "live-equal", **detail}
+                    break
+            if not match:
+                f, _, why, detail = verdicts[0]
+                for cls in CLASSES:
+                    target = swaps[cls].get(medium_path)
+                    if target and target not in assets["meshes"]:
+                        skip(target, cls, medium_path, why, liveUrl=entry.get("url"),
+                             stagedFile=os.path.relpath(f, models).replace(os.sep, "/"), **detail)
+                continue
         if not match:
             # Proof 1 (same build) cannot hold: the staged class meshes belong to another Medium build, or to none.
             for cls in CLASSES:
@@ -292,12 +400,17 @@ def main():
                 report["refused"][target] = ["not staged beside its Medium sibling"]
                 continue
             ok, proof = prove(medium, mesh_data(file), scale, target, entry["slots"])
-            proof.update({"class": cls, "medium": medium_path, "file": str(file.relative_to(models)).replace(os.sep, "/"),
-                          "sha256": staged_sha(file), "mediumSha256": entry["sha256"]})
+            proof.update({"class": cls, "medium": medium_path, "file": os.path.relpath(file, models).replace(os.sep, "/"),
+                          "sha256": staged_sha(file), "mediumSha256": entry["sha256"], **proof1})
             if not ok:
                 report["refused"][target] = proof["problems"]
                 continue
-            if current is not None:
+            if file in fresh:
+                proof["currency"] = "read from today's containers (stagingRuns)"
+            elif args.staging and current is None:
+                report["refused"][target] = ["read before the 17 Nov update, and no --proven proof given"]
+                continue
+            elif current is not None:
                 package = "Discovery/Content/" + target.split(".")[0][len("/Game/"):] + ".uasset"
                 proof["containers17Nov"] = current["packages"].get(package)
                 if target not in current["proven"]:
@@ -306,7 +419,7 @@ def main():
                     continue
             new = {k: v for k, v in entry.items() if k not in ("url", "sha256")}
             hosted = models / args.publish_dir / "meshes" / file.name if args.publish_dir else file
-            proof["publish"] = str(hosted.relative_to(models)).replace(os.sep, "/")
+            proof["publish"] = os.path.relpath(hosted, models).replace(os.sep, "/")
             new["url"] = os.path.relpath(hosted, index_dir).replace(os.sep, "/")
             new["sha256"] = proof["sha256"]
             added[target] = new

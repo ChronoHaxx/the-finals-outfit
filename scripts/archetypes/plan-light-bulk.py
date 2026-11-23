@@ -149,14 +149,16 @@ def main():
 
     order = sorted(rows, key=lambda t: (t not in starter, -len(presets_of[t]), -len(items_of[t]), t))
     lines = ["order\tbatch\tlight\tmedium\theavy\treason\tliveFolder\tpresets\titems\tstarter\n"]
-    batches = defaultdict(list)
+    batches, seen = defaultdict(list), set()
     for n, t in enumerate(order):
         b = n // args.batch + 1
         r = rows[t]
         h = sorted(heavy.get(r["medium"], ()))
         h = h[0] if len(h) == 1 else ""
         packages = [package_of(r["medium"]), package_of(t)] + ([package_of(h)] if h and not args.no_heavy else [])
-        batches[b].extend(packages)
+        # Each package in its first batch only: the converter refuses to overwrite a GLB an earlier batch wrote.
+        batches[b].extend(p for p in packages if p not in seen)
+        seen.update(packages)
         lines.append(f"{n + 1}\t{b}\t{t}\t{r['medium']}\t{h}\t{r['reason']}\t{r['liveFolder']}\t"
                      f"{len(presets_of[t])}\t{len(items_of[t])}\t{'yes' if t in starter else ''}\n")
 

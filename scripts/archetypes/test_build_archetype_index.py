@@ -36,23 +36,29 @@ def path(name):
     return f'/Game/Discovery/Characters/T/{name}.{name}'
 
 
-def write_glb(file, name, scale=1.0, bind=None):
-    """A one-triangle skinned GLB like the extraction writes: source package, material slot, skin, joint nodes.
-    `bind` scales the vertices instead of `scale` (a reshaped class mesh)."""
+def write_glb(file, name, scale=1.0, bind=None, tag=None, shift=0.0, spine=0.5):
+    """A one-triangle skinned GLB like the extraction writes: source package, material slot, skin, joint nodes,
+    JOINTS_0/WEIGHTS_0. `bind` scales the vertices instead of `scale` (a reshaped class mesh); `tag` changes only the
+    bytes (another read or rebuild of the same mesh); `shift` moves a vertex (the game changed the mesh); `spine` is
+    vertex 1's spine weight (a reweight)."""
     pos = (POSITIONS * (scale if bind is None else bind)).astype(np.float32)
+    pos[2, 0] += shift
     uv = np.array([[0, 0], [1, 0], [0, 1]], dtype=np.float32)
     idx = np.array([0, 1, 2], dtype=np.uint16)
     ibm = np.stack([np.eye(4, dtype=np.float32) for _ in JOINTS])
     for m, p in zip(ibm, JOINTS.values()):
         m[:3, 3] = -scale * np.array(p)
-    chunks = [pos.tobytes(), uv.tobytes(), idx.tobytes() + b'\0\0', ibm.transpose(0, 2, 1).tobytes()]
+    joints = np.array([[0, 0, 0, 0], [0, 1, 0, 0], [1, 0, 0, 0]], dtype=np.uint8)
+    weights = np.array([[1, 0, 0, 0], [1 - spine, spine, 0, 0], [1, 0, 0, 0]], dtype=np.float32)
+    chunks = [pos.tobytes(), uv.tobytes(), idx.tobytes() + b'\0\0', ibm.transpose(0, 2, 1).tobytes(),
+              joints.tobytes(), weights.tobytes()]
     views, offset = [], 0
     for c in chunks:
         views.append({'buffer': 0, 'byteOffset': offset, 'byteLength': len(c)})
         offset += len(c)
     j = {
         'asset': {'version': '2.0'},
-        'extras': {'source': tool.package_of(path(name))},
+        'extras': {'source': tool.package_of(path(name)), **({'read': tag} if tag else {})},
         'buffers': [{'byteLength': offset}],
         'bufferViews': views,
         'accessors': [
@@ -60,9 +66,12 @@ def write_glb(file, name, scale=1.0, bind=None):
             {'bufferView': 1, 'componentType': 5126, 'count': 3, 'type': 'VEC2'},
             {'bufferView': 2, 'componentType': 5123, 'count': 3, 'type': 'SCALAR'},
             {'bufferView': 3, 'componentType': 5126, 'count': len(JOINTS), 'type': 'MAT4'},
+            {'bufferView': 4, 'componentType': 5121, 'count': 3, 'type': 'VEC4'},
+            {'bufferView': 5, 'componentType': 5126, 'count': 3, 'type': 'VEC4'},
         ],
         'materials': [{'extras': {'sourceSlot': {'MaterialSlotName': 'Main'}, 'sourceMaterial': 'MI_Main'}}],
-        'meshes': [{'primitives': [{'attributes': {'POSITION': 0, 'TEXCOORD_0': 1}, 'indices': 2, 'material': 0}]}],
+        'meshes': [{'primitives': [{'attributes': {'POSITION': 0, 'TEXCOORD_0': 1, 'JOINTS_0': 4, 'WEIGHTS_0': 5},
+                                    'indices': 2, 'material': 0}]}],
         'nodes': [{'name': 'root', 'translation': [0.0, 0.0, 0.0], 'children': [1]},
                   {'name': 'spine', 'translation': [0.0, 0.5 * scale, 0.0]},
                   {'name': name, 'mesh': 0, 'skin': 0}],
@@ -239,6 +248,108 @@ class EveryClassMeshAccounted(unittest.TestCase):
     def test_the_active_index_is_only_added_to(self):
         for key, value in self.assets['meshes'].items():
             self.assertEqual(self.result['meshes'][key], value)
+
+
+class FreshReadsAndLiveEqualMedium(unittest.TestCase):
+    """The bulk extraction (23 Nov 2026): a fresh read is never byte-identical to the live Medium, so proof 1' compares
+    what the class mesh inherits; and a fresh read's currency is its own clean run, while an S11 read still needs the
+    17 Nov proof. Light is already applied here, as on the live index."""
+
+    def setUp(self):
+        self.tmp = tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        self.models = models = tmp / 'models'
+        s11, live, self.run_dir = models / STAGING / 'source-glb', models / 'live', tmp / 'run'
+        meshes, parts = {}, []
+
+        def medium(name, live_kw=None, stage_kw=None, where=s11):
+            """A Medium the index serves from live/ (written with live_kw), and a staged read (stage_kw) with its
+            Light sibling beside it."""
+            meshes[path(name)] = {'kind': 'skeletal', 'url': f'../live/{name}.glb', 'slots': [{'slot': 'Main'}],
+                                  'sha256': write_glb(live / f'{name}.glb', name, **(live_kw or {'tag': 'live'}))}
+            write_glb(where / f'{name}.glb', name, **(stage_kw or {}))
+            light = name[:-2] + '_L'
+            write_glb(where / f'{light}.glb', light, scale=SCALES['L'])
+            parts.append({'SkeletalMesh': {'AssetPathName': path(name)}, 'TagOverrides': [
+                {'MatchingTags': ['Customization.Archetype.Light'], 'bOverrideMesh': True,
+                 'ReplacementSkeletalMesh': {'AssetPathName': path(light)}}]})
+
+        # Light applied: both bodies indexed, the staged S11 bodies byte-identical to them.
+        body_m = write_glb(s11 / 'SK_Body_M.glb', 'SK_Body_M')
+        body_l = write_glb(s11 / 'SK_Body_L.glb', 'SK_Body_L', scale=SCALES['L'])
+        for name, sha in (('SK_Body_M', body_m), ('SK_Body_L', body_l)):
+            meshes[path(name)] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/{name}.glb', 'sha256': sha,
+                                  'slots': [{'slot': 'Main'}]}
+        parts.append({'SkeletalMesh': {'AssetPathName': path('SK_Body_M')}, 'TagOverrides': [
+            {'MatchingTags': ['Customization.Archetype.Light'], 'bOverrideMesh': True,
+             'ReplacementSkeletalMesh': {'AssetPathName': path('SK_Body_L')}}]})
+        medium('SK_Same_M')                                   # the live GLB is another build of the same mesh
+        medium('SK_Moved_M', live_kw={'shift': 0.01})         # the game changed the mesh since the staged read
+        medium('SK_Reweighted_M', live_kw={'spine': 0.3})     # our own rework changed the live weights
+        medium('SK_Fresh_M', stage_kw={'tag': 'fresh'}, where=self.run_dir / 'source-glb')   # read today
+
+        index = models / 'reconstructed-assemblies-v1'
+        index.mkdir(parents=True)
+        self.assets = {'attachmentBody': {'source': path('SK_Body_M')}, 'meshes': meshes,
+                       'archetypes': {'light': {'body': path('SK_Body_L'), 'skeletonScale': 0.85,
+                                                'boundsOrigin': [0.0, 0.0, 0.85]}}}
+        (index / 'assets.json').write_text(json.dumps(self.assets), encoding='utf-8')
+        pairs = {'items': {'Face_1': {'body': {'sourceMesh': path('SK_Body_M'), 'boundsOrigin': [0.0, 0.0, 1.0]}}}}
+        (index / 'skin-pairs.json').write_text(json.dumps(pairs), encoding='utf-8')
+        items = models / 'reconstructed-assembly-v2' / 'items'
+        items.mkdir(parents=True)
+        (items / 'DA_Test.json').write_text(json.dumps({'properties': {'VisualParts': parts}}), encoding='utf-8')
+        self.write_run({'b01': {'guard': {'exitCode': 0}, 'mappingSha256': 'F36B', 'missing': []}})
+
+    def write_run(self, batches, control_ok=True):
+        record = {'policy': 'archetypes-light-bulk-run-v1', 'usmapSha256': 'f36b', 'control': {'ok': control_ok},
+                  'batches': batches}
+        (self.run_dir / 'run.json').write_text(json.dumps(record), encoding='utf-8')
+
+    def build(self, *flags):
+        out = self.tmp / f'out-{len(list(self.tmp.glob("out-*")))}'
+        with mock.patch.object(sys, 'argv', ['build', '--models', str(self.models), '--out', str(out), *flags]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            tool.main()
+        return json.loads((out / 'report.json').read_text(encoding='utf-8'))
+
+    @staticmethod
+    def reasons(report, name):
+        return [r['reason'] for r in report['skipped'][path(name)]['reasons']]
+
+    def test_without_proof_1_prime_a_rebuilt_live_medium_is_only_repointed(self):
+        report = self.build()
+        self.assertEqual(report['added']['light'], [])
+        self.assertEqual(self.reasons(report, 'SK_Same_L'), ['medium sibling repointed'])
+
+    def test_proof_1_prime_admits_the_same_mesh_and_names_what_differs_otherwise(self):
+        report = self.build('--live-equal-medium')
+        self.assertEqual(report['classes']['light']['alreadyApplied'], True)
+        self.assertIn(path('SK_Same_L'), report['added']['light'])
+        self.assertEqual(report['meshes'][path('SK_Same_L')]['proof1'], 'live-equal')
+        self.assertEqual(self.reasons(report, 'SK_Moved_L'), ['medium changed in the game'])
+        self.assertEqual(report['skipped'][path('SK_Moved_L')]['reasons'][0]['differs'], 'positions')
+        self.assertEqual(self.reasons(report, 'SK_Reweighted_L'), ['live Medium reweighted'])
+        self.assertAlmostEqual(report['skipped'][path('SK_Reweighted_L')]['reasons'][0]['weightMaxDiff'], 0.2, places=5)
+
+    def test_a_fresh_read_needs_its_clean_run_and_an_s11_read_still_needs_the_17_nov_proof(self):
+        report = self.build('--live-equal-medium', '--staging', str(self.run_dir))
+        self.assertEqual(report['added']['light'], [path('SK_Fresh_L')])
+        self.assertEqual(report['meshes'][path('SK_Fresh_L')]['currency'], "read from today's containers (stagingRuns)")
+        self.assertEqual(report['refused'][path('SK_Same_L')],
+                         ['read before the 17 Nov update, and no --proven proof given'])
+        self.assertEqual(report['stagingRuns'][0]['batches'], ['b01'])
+
+    def test_a_run_with_a_guard_refusal_or_a_missing_package_is_not_used(self):
+        for bad in ({'guard': {'exitCode': 1}, 'mappingSha256': 'f36b', 'missing': []},
+                    {'guard': {'exitCode': 0}, 'mappingSha256': 'e5b2', 'missing': []},
+                    {'guard': {'exitCode': 0}, 'mappingSha256': 'f36b', 'missing': ['X.uasset']}):
+            self.write_run({'b01': bad})
+            with self.assertRaises(SystemExit):
+                self.build('--live-equal-medium', '--staging', str(self.run_dir))
+        self.write_run({'b01': {'guard': {'exitCode': 0}, 'mappingSha256': 'f36b', 'missing': []}}, control_ok=False)
+        with self.assertRaises(SystemExit):
+            self.build('--live-equal-medium', '--staging', str(self.run_dir))
 
 
 if __name__ == '__main__':
