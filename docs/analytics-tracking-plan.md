@@ -11,8 +11,8 @@ is not in this file must not be sent. To add one, add it here first, with its re
 
 | Decision | Choice | Why |
 | --- | --- | --- |
-| Provider | Cloudflare Workers Analytics Engine, behind one self-built collector Worker shared by this app, the portfolio, WuWa VR's site and WuWa Studio | The only free option with a daily-rotating visitor hash and key/value properties. Umami Cloud's salt rotates monthly. Plausible charges for properties. GoatCounter has no properties, so slot and item id would have to be faked as event names |
-| Collector | Worker `usage-counter`, dataset `usage_events`. Its code is in `workers/usage-counter/` until it moves to a repo of its own (`ChronoHaxx/usage-counter`) | It serves four apps, so it should not ship on this app's release cycle. It shares nothing with `workers/site` (not its dataset, not its secret) |
+| Provider | Cloudflare Workers Analytics Engine, behind one self-built collector Worker shared by this app, WuWa VR's site and WuWa Studio | The only free option with a daily-rotating visitor hash and key/value properties. Umami Cloud's salt rotates monthly. Plausible charges for properties. GoatCounter has no properties, so slot and item id would have to be faked as event names |
+| Collector | Worker `usage-counter`, dataset `usage_events`. Its code is in `workers/usage-counter/` until it moves to a repo of its own (`ChronoHaxx/usage-counter`) | It serves several apps, so it should not ship on this app's release cycle. It shares nothing with `workers/site` (not its dataset, not its secret) |
 | Contact route | GitHub issues on each app's own repository | The data holds nothing tied to a person, so there is nothing to look up or delete on request |
 
 Cloudflare Web Analytics (`src/lib/analytics.ts`) stays for page views, referrers and Core Web Vitals. **The
@@ -64,14 +64,14 @@ For `app_loaded` only, the collector computes `SHA-256(salt ‖ app ‖ IP ‖ u
   an address, or to the previous day's hash. A daily cron writes the next day's salt in advance, so every Worker
   instance uses the same salt from midnight. Two instances each creating their own salt would count one visitor
   twice.
-- **The app is part of the hash.** One person gets unrelated hashes on this app and on the portfolio, so the four
+- **The app is part of the hash.** One person gets unrelated hashes on this app and on WuWa VR's site, so the
   apps' data cannot be joined into one person's browsing.
 
-## Naming scheme (shared by all four apps)
+## Naming scheme (shared by every app)
 
 - Event names are `object_action`, snake_case, with the verb in the past tense: `item_equipped`, `share_link_opened`.
 - Names do not include the app's name. The envelope carries `app`, so one query can compare apps, for example
-  `share_link_created` across all four.
+  `share_link_created` across all of them.
 - Property names are snake_case. Values are lowercase ids. Booleans are `true` or `false`, never `"yes"`.
 - The collector's allowlist maps each origin to its app, and lists each app's event names and property rules.
 
@@ -189,7 +189,7 @@ rewritten before that Worker serves the app.
 
 A typical page load is about 20–40 events (one `app_loaded`, about 10 exposures, a few uses, items and emotes), sent
 in 2–4 requests. Workers Free allows 100,000 Analytics Engine data points a day (checked 23 Nov 2026), so roughly
-3,000–5,000 page loads a day across all four apps before the limit. Requests also count against the account's 100,000
+3,000–5,000 page loads a day across all its apps before the limit. Requests also count against the account's 100,000
 Worker requests a day, which the share-preview Worker uses too, and so will the site Worker after the migration. Near
 either limit, send exposures as one summary row per page load.
 

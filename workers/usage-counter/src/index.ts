@@ -1,4 +1,4 @@
-// usage-counter: one cookie-free event collector for Hazimi's apps (README.md). It turns small JSON batches into
+// usage-counter: one cookie-free event collector for the owner's apps (README.md). It turns small JSON batches into
 // Workers Analytics Engine rows and keeps nothing else.
 //
 //   POST /e   body (text/plain): { app, schema, form_factor, build, events: [{ e, p? }, ...] }  ->  204
@@ -101,7 +101,7 @@ export async function collect(request: Request, env: Env, now = Date.now()): Pro
   if (!envelope) return empty(403);
 
   const checked = envelope.events.map(raw => checkEvent(envelope.app, raw)).filter((e): e is CheckedEvent => e !== null);
-  // Only the app's one per-page-load event carries the visitor hash (app_loaded here, page_viewed on WuWa VR).
+  // Only the app's one per-page-load event carries the visitor hash (its visitorEvent: app_loaded for every app so far).
   const visitorEvent = APPS[envelope.app].visitorEvent;
   let visitor = "";
   if (visitorEvent && checked.some(e => e.event === visitorEvent) && ip)

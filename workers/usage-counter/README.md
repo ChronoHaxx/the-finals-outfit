@@ -1,7 +1,7 @@
 # usage-counter: a shared, cookie-free event collector
 
-One Cloudflare Worker that receives product events from Hazimi's apps and writes them to Workers Analytics Engine.
-The outfit builder is its first app; the portfolio, WuWa VR's site and WuWa Studio are meant to join it. It lives
+One Cloudflare Worker that receives product events from the owner's apps and writes them to Workers Analytics Engine.
+The outfit builder is its first app; WuWa VR's site and WuWa Studio are meant to join it. It lives
 here until it moves to a repository of its own (`ChronoHaxx/usage-counter`); it imports nothing from this app.
 
 The event list, what each event decides, and how to report the numbers honestly are in
@@ -77,7 +77,7 @@ Git Bash, in `workers/usage-counter`:
 npx --yes wrangler@4.131.1 kv namespace create SALTS
 ```
 
-Put the printed id in `wrangler.jsonc` (`REPLACE_WITH_SALTS_NAMESPACE_ID`), then:
+Put the printed id in `wrangler.jsonc` (the `SALTS` binding's `id`), then:
 
 ```bash
 npx --yes wrangler@4.131.1 deploy

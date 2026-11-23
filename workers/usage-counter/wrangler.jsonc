@@ -10,7 +10,7 @@
   "analytics_engine_datasets": [{ "binding": "EVENTS", "dataset": "usage_events" }],
   "kv_namespaces": [
     // Create with `wrangler kv namespace create SALTS` and put the printed id here.
-    { "binding": "SALTS", "id": "REPLACE_WITH_SALTS_NAMESPACE_ID" }
+    { "binding": "SALTS", "id": "6b31b190969c46af94f0231db5e0ad08" }
   ],
   "ratelimits": [
     // Requests per client IP: a page load sends 2-4.
