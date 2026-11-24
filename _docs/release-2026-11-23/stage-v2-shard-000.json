@@ -1,0 +1,22 @@
+{
+  "dryRun": false,
+  "output": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\_assets-upload\\v18-release-20261123-reconstruction-000",
+  "shard": "reconstruction-000",
+  "files": 20000,
+  "bytes": 3925104726,
+  "rewrittenIndices": [
+    "models/reconstructed-assemblies-v1/assets.json",
+    "models/reconstructed-assemblies-v1/face-cosmetics.json",
+    "models/reconstructed-assemblies-v1/skin-pairs.json",
+    "models/reconstructed-assemblies-v1/supported-items.json"
+  ],
+  "manifestSha256": "46cb40f86258e7c6e9219db76b6a7294984b26778637a9e87ddaad612022cb34",
+  "linkedFromPrevious": 19993,
+  "encodedFresh": 4,
+  "fresh": [
+    "models/reconstructed-assemblies-v1/assets.json",
+    "models/reconstructed-assemblies-v1/face-cosmetics.json",
+    "models/reconstructed-assemblies-v1/skin-pairs.json",
+    "models/reconstructed-assemblies-v1/supported-items.json"
+  ]
+}

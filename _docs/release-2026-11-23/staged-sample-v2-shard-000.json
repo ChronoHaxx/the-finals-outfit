@@ -1,0 +1,142 @@
+{
+  "shard": "reconstruction-000",
+  "dir": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\_assets-upload\\v18-release-20261123-reconstruction-000",
+  "checkedAt": "2026-11-24T20:08:55.260Z",
+  "files": 20000,
+  "sizesChecked": 19997,
+  "fresh": 4,
+  "linkedSampled": 15,
+  "gzipRows": 356,
+  "headers": "/*\n  Access-Control-Allow-Origin: *\n  Cache-Control: public, max-age=31536000, immutable\n",
+  "rows": [
+    {
+      "path": "models/reconstructed-assemblies-v1/assets.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assemblies-v1/face-cosmetics.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assemblies-v1/skin-pairs.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assemblies-v1/supported-items.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-attached-v6/materials/mi-head-face-22-base-head-v7330c8bbee.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-v1/materials/skin-776aaf05cf62839496c851e6.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-neutral-qualified10-v1/materials/hair-302e7f046fb60d4e1a980f2a.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-face14-v2/materials/skin-ca84d6b4469819b2f52a0223.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assembly-v2/items/municipal-pants-polyester-helicoptermedic.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-bulk-ordinary-v1/materials/hair-a68d48db5e93b51e6e2e8731.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w76-s12-wave-a-v3/materials/6f40db9c733f533b.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w76-s12-wave-a-v3/materials/4f1330595fe4c950.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-hardsurface-statues-v2/materials/skin-73a1fe12658aa428e888ce61.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-face14-v2/materials/skin-157452c5aa21b51e90cee507.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-face-batch02-qualified-v1/materials/skin-699aee6cf8389dd927cd1ccd.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-bulk-ordinary-v1/materials/hair-afc152bd86f781a3907541c1.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-batch02-v1/materials/hair-669e51abc0b89f2d04c0f32d.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-eyebrows-v2/materials/skin-9bfb122fecf4e7c008d1c2c2.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-face-batch02-qualified-v1/materials/skin-128eff1b3b638f98a128954a.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "shard": "reconstruction-002",
+  "dir": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\_assets-upload\\v18-release-20261123-reconstruction-002",
+  "checkedAt": "2026-11-23T23:33:36.504Z",
+  "files": 8142,
+  "sizesChecked": 8139,
+  "fresh": 6,
+  "linkedSampled": 25,
+  "gzipRows": 495,
+  "headers": "/*\n  Access-Control-Allow-Origin: *\n  Cache-Control: public, max-age=31536000, immutable\n",
+  "rows": [
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-s12/SK_Cowboy_WranglerBandolier_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-s12/SK_Samurai_ClothTop_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-s12/SK_SciFi_Gloves_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-s12/SK_Streetwear_TechCropTopNoBags_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-s12/SK_Streetwear_TechCropTop_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-s12/SK_Traditional_CloudBag_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w128-face-attachments-n2-v3/meshes/SM_Military_Skull.glb",
+      "kind": "linked",
+      "encoding": "gzip",
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-fresh-b3-monsters-eastern-demon-mask-v1-v1/materials/bb76b7c5ed35fb08.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch13-wizard-boots-v1/materials/b461cafdeb7a9510.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch21-cowboy-bandolier-cowboy-v1/materials/b3ea69b2ad00c617.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-reuse-b14-military-double-holster-pants-v1-v1/materials/89799ce0cc283295.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-fresh-b5-streetwear-tech-crop-top-no-bags-v1-r1/materials/af040945191365f8.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-mp-ready-b1-cowboy-basic-chaps-r1/materials/a056eac6f8ac1b66.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-reuse-b14-streetwear-commando-jacket-v1-v1/meshes/SK_Hologram_TrentilaJacketHologram_M.glb",
+      "kind": "linked",
+      "encoding": "gzip",
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-fsingle2-space-bounty-hunter-pants-v1-v1/materials/mi-space-bountyhunterpants-nylon-black.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-hides-military-dede-tights-g2-v1-v3/materials/fbcf8075614ff245.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w86-lace-b1-v2/materials/497c8b13aa229a10.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch18b-starter-shirt-v1/materials/mi-shirt-cotton-red.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch24-streetwear-wide-wristband-r2-v1/materials/mi-streetwear-widewristband-leather.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-validated-reuse-streetwear-jacket-cac645ee-v2/materials/c5619edab15dc057.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch21-robots-boots-r2-v1/materials/mi-robots-boots-nylon-volpe.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch21-military-combat-vest-with-backpack-v1/materials/5cfe38366f789a9d.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-fitmask-reuse-b1-casual-turtle-neck-v1-v1/coverage/SK_Casual_TurtleNeck_M.bodymask.png",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w157-sss-p1-v2/materials/8f6b9d1b0919a016.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w44-umpiremask-attached-b1-v1/materials/07ef55f3ada96457.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-wrap-b3-gothic-pants-v1-v1-mk1/materials/0db8848eade764fa.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-hides-military-military-mechanic-pants-v1-v3/materials/7e5e269c8af2fc3b.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-face-shadow-v3/t-bodycosmetics-blackeyes-01-head-mask-face-shadow.png",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch21-winter-fingerless-gloves-v1/meshes/SK_Winter_FingerlessGloves_M.glb",
+      "kind": "linked",
+      "encoding": "gzip",
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-active-reuse-tactical-ospuze-v1/materials/c0111f70d99def86.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-neutral-frame-v1/materials/05b9765f87af9f77.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    }
+  ]
+}

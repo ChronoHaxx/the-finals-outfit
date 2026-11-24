@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-23-season-12-refit",
+    date: "2026-11-23",
+    title: "115 more garments in their Season 12 shape",
+    notes: [
+      "Season 12 reshaped much of the clothing for the new body types. 115 more garments now use the game's Season 12 versions, every colour of them: rain jackets, tech crop tops, dad jeans and samurai tops, frog shoes, viking and marine boots, knight gloves, bracelets, the phantom mask and the racing helmet among them.",
+      "Six garments, the samurai cloth top, the tech crop tops and the cloud bag among them, also hide the body beneath them with masks remade for Season 12.",
+    ],
+    items: ["light-heavy"],
+  },
+  {
     id: "2026-11-22-video-takes",
     date: "2026-11-22",
     title: "Record what you do, then render it",

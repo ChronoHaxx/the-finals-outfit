@@ -1,0 +1,340 @@
+{
+  "old": {
+    "path": "E:/Coding/the-finals-outfit/_docs/goal-100-2026-10-11/release-2026-11-12/shard-plan-v4.json",
+    "version": "v17-release-20261121",
+    "uniqueFiles": 47948
+  },
+  "new": {
+    "path": "scripts/generated/release-2026-11-23/shard-plan-v1.json",
+    "version": "v18-release-20261123",
+    "uniqueFiles": 48132
+  },
+  "counts": {
+    "added": 184,
+    "changed": 1,
+    "same": 47947,
+    "removed": 0,
+    "novelContent": 185
+  },
+  "bytes": {
+    "added": 150768501,
+    "changed": 4731605,
+    "novelContent": 155500106
+  },
+  "addedByPrefix": {
+    "models/reconstructed-archetypes-v1": 63,
+    "models/s12-bodytype-refresh-v1": 115,
+    "models/s12-refresh-tier2-v1": 6
+  },
+  "changedByPrefix": {
+    "models/reconstructed-assemblies-v1": 1
+  },
+  "removedByPrefix": {},
+  "shards": [
+    {
+      "name": "reconstruction-000",
+      "files": 19997,
+      "bytes": 4237497096,
+      "identicalTo": null,
+      "overlap": [
+        {
+          "live": "reconstruction-000",
+          "shared": 19997,
+          "liveFiles": 19997
+        },
+        {
+          "live": "reconstruction-001",
+          "shared": 0,
+          "liveFiles": 19997
+        },
+        {
+          "live": "reconstruction-002",
+          "shared": 1,
+          "liveFiles": 7955
+        }
+      ],
+      "newOrChanged": 1
+    },
+    {
+      "name": "reconstruction-001",
+      "files": 19997,
+      "bytes": 8887235116,
+      "identicalTo": null,
+      "overlap": [
+        {
+          "live": "reconstruction-000",
+          "shared": 0,
+          "liveFiles": 19997
+        },
+        {
+          "live": "reconstruction-001",
+          "shared": 19813,
+          "liveFiles": 19997
+        },
+        {
+          "live": "reconstruction-002",
+          "shared": 6,
+          "liveFiles": 7955
+        }
+      ],
+      "newOrChanged": 178
+    },
+    {
+      "name": "reconstruction-002",
+      "files": 8139,
+      "bytes": 4061620600,
+      "identicalTo": null,
+      "overlap": [
+        {
+          "live": "reconstruction-000",
+          "shared": 1,
+          "liveFiles": 19997
+        },
+        {
+          "live": "reconstruction-001",
+          "shared": 184,
+          "liveFiles": 19997
+        },
+        {
+          "live": "reconstruction-002",
+          "shared": 7949,
+          "liveFiles": 7955
+        }
+      ],
+      "newOrChanged": 6
+    }
+  ],
+  "movedPrefixes": 8,
+  "movedPrefixSample": [
+    {
+      "prefix": "models/reconstructed-item-mask-municipal-torso-g2-v4/",
+      "from": 1,
+      "to": 2
+    },
+    {
+      "prefix": "models/reconstructed-masks-shadow-v1/",
+      "from": 1,
+      "to": 2
+    },
+    {
+      "prefix": "models/reconstructed-multipart-batch23-from-tencent-military-monk-vest-v1/",
+      "from": 1,
+      "to": 2
+    },
+    {
+      "prefix": "models/reconstructed-multipart-batch23-military-dede-vest-g2-v1/",
+      "from": 1,
+      "to": 2
+    },
+    {
+      "prefix": "models/reconstructed-multipart-batch23-sci-fi-muscle-suit-upper-v1/",
+      "from": 1,
+      "to": 2
+    },
+    {
+      "prefix": "models/reconstructed-rerunfixed-attached-b1-v2-v1/",
+      "from": 1,
+      "to": 2
+    },
+    {
+      "prefix": "models/reconstructed-attached-b12-v1/",
+      "from": 1,
+      "to": 2
+    },
+    {
+      "prefix": "models/reconstructed-g100-w55-paint-b1-v1/",
+      "from": 2,
+      "to": 1
+    }
+  ],
+  "added": [
+    "models/reconstructed-archetypes-v1/meshes/SK_Attachments_KnifeBandolier_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Ballerina_BallerinaTights_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Casual_BasicShorts_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Casual_CropTopUndershirt_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Casual_GloveSpikes_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Casual_Headscarf_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Casual_ShortDressSkirt_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Casual_ShortDress_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Casual_Shorts_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Casual_TightTurtleneck_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_CoilySlick_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_CrossPromo_NRGloves_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Gothic_BikerJacketChain_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Gothic_BikerJacketRivets_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Gothic_BikerJacket_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Gothic_SkullNecklaces_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_HelmetNeck_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Medieval_GunHolster_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightWaistBelt_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Medieval_TacticalKnightBracers_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Military_AcePilotBoots_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Military_AcePilotGloves_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Military_AssaultGloves_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Military_MarineGloves_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Military_MarinePants_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_NeckCloth_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Pants_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Pirate_PirateRings_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Robots_DiscoJacket_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Robots_DiscoKeychain_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Robots_DiscoNecklace_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Robots_DiscoPants_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Robots_RetroRobotFeet_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Robots_SportyRobotHands_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Robots_SportyRobotShoes_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Robots_UrbanOperativeHelmet_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_SciFi_HackerGloves_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_SciFi_PantsToolBag_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_SciFi_Pants_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_BountyHunterPants_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_EngineerCap_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_PioneerShoes_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_PioneerTechConsole_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_PioneerUpper_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_PlanetBracelet_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceBoots_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceBrain_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceCombatGloves_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceCombatPants_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceCombatPouches_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_SpacePilotGloves_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceSuitPantsUltimate_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceSuitPants_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceTopVestArmor_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceTopVest_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_ChainNecklace_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_FingerlessShortGloves_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_HeartNecklace_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Hoodie_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_PufferVest_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Shoes_L.glb",
+    "models/reconstructed-archetypes-v1/meshes/SK_Winter_SkiPants_L.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_ActionHero_SentinelTop_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Casual_Bangles_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Casual_LowWedgeHeels_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Christmas_ElfBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Cowboy_BasicChaps_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Cowboy_HandCloth_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Cowboy_WranglerBandolier_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Cowboy_WranglerBracelet_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_CrossPromo_NRHarness_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_CrossPromo_NRSuitBelts_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_CrossPromo_NRSuit_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Cute_FrogShoes_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_FromTencent_AsianSpiritBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Halloween_LowHeelsFlowers_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Halloween_LowHeelsTights_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Halloween_LowHeels_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Halloween_VampireBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Historic_AnubisMaskRegular_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Historic_EasternEmperorPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Historic_EasternEmperorShoes_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Historic_EmpressFaceMask_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Historic_EmpressShoes_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Historic_SimpleBracelet_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Historic_VikingBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Historic_VikingPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_CombatVestSamuraiHologram_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_DissunJacketHologram_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_EngimoJacketHologram02_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_EngimoPantsHologram02_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_EngimoPantsHologram_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_HoltowJacketHologramS8_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_HoltowPantsHologram_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_IseultPufferJacketHologram_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_TrentilaShoesHologram_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_DragonSlayerBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_DragonSlayerTorso_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_ElfPrincessTorsoUltimate_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_ElfPrincessWristCoversUltimate_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_JesterPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_JesterShoes_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_KnightGlovesSpikesL_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_KnightGloves_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_RoyalGloves_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_WizardBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Mexico_RancheroHolster_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_AcePilotTop_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_BulletBandolier_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_CombatVestSamurai_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_DedeTights_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_DoubleBeltParts_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_DoubleBelt_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_MarineBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_MarineVest_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_PantsWithHolsterPouch_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_RiotMedievalPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_SniperBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_TacticalHarness_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Military_WaistPouches_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Monsters_EasternDemonGauntlet_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Ninja_ShinobiJacket_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Ninja_ShinobiPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Pirate_ScallywagPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Racing_Helmet_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Robots_ConicalHatSciFi_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Robots_CordBelt_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Robots_DiscoBotGloves_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Robots_RobotVest_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Robots_RobotWarriorTop_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Robots_RobotWristCovers_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Robots_SynthHelmet_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Samurai_ClothTop_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Samurai_Gloves_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Samurai_LoosePants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Samurai_UpperBody02_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_SciFi_CyberBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_SciFi_Gloves_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_SciFi_Kneepads_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_SciFi_PhantomMaskTranslucent_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_SciFi_PhantomMask_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Space_AstroPilotGloves_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Space_AstroPilotGun_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Space_AstroPilotPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Space_PioneerTechConsole_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Space_PioneerUpper_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Sport_ChestGuard_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Sport_FencerJacket_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Sport_FencerShoes_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Sport_PaddedPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Sport_UmpireMask_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_BoilerSuitPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_BoilerSuitTorso_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_BraidedBraceletSet_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_ClosedRainJacket_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_Crown_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_CuteJacket_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_DadJeans_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_KandiBracelet_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_OpenJacket_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_ShoulderBag_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TacticalBandolier_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TechBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TechCropTopArmPouch_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TechCropTopNoBags_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TechCropTop_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TechJoggersPouch_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TechPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TwistedBraceletSet_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Traditional_CloudBag_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Traditional_LunarBoots_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Traditional_RabbitMask_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Traditional_UrbanWarriorBelt_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Traditional_UrbanWarriorPants_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Traditional_UrbanWarriorSkirtShortPocket_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Winter_CroppedPufferJacket_M.glb",
+    "models/s12-bodytype-refresh-v1/meshes/SK_Winter_HoodWrap_M.glb",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_Cowboy_WranglerBandolier_M.bodymask.png",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_Samurai_ClothTop_M.bodymask.png",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_SciFi_Gloves_M.bodymask.png",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_Streetwear_TechCropTopNoBags_M.bodymask.png",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_Streetwear_TechCropTop_M.bodymask.png",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_Traditional_CloudBag_M.bodymask.png"
+  ],
+  "changed": [
+    "models/reconstructed-assemblies-v1/assets.json"
+  ],
+  "removed": []
+}
