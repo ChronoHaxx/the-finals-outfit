@@ -1,0 +1,384 @@
+{
+  "at": "2026-11-24T20:17:41.713Z",
+  "appUrl": "http://127.0.0.1:4341/the-finals-outfit/",
+  "simulatedShards": false,
+  "planSha256": "21ee48aeac9883809954bd32efd20f09c58f7341735e8d630ef10c8199477488",
+  "hosts": {
+    "assetsBase": "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+    "modelsBase": "https://a029b249.the-finals-outfit-assets.pages.dev/",
+    "shards": {
+      "0": "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+      "1": "https://f1fa60b6.the-finals-outfit-assets.pages.dev/",
+      "2": "https://709a36ca.the-finals-outfit-assets.pages.dev/"
+    }
+  },
+  "expectedHosts": [
+    "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+    "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+    "https://a029b249.the-finals-outfit-assets.pages.dev/",
+    "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+    "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+  ],
+  "hostsUsed": [
+    "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+    "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+    "https://a029b249.the-finals-outfit-assets.pages.dev/",
+    "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+    "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+  ],
+  "allHostsUsed": true,
+  "passed": 22,
+  "failed": 0,
+  "results": [
+    {
+      "name": "default",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\default.png",
+      "passed": true,
+      "requests": 139,
+      "artwork": 120,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "hair-coat",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUtYmxvbmRlIiwib3V0ZXJ3ZWFyIjoiY2FzdWFsLWxvbmdjb2F0LWxlYXRoZXItYmxhY2siLCJsb3dlckJvZHkiOiJjYXN1YWwtbG9vc2VqZWFucy1kZW5pbS1kYXJrYmx1ZSIsImZlZXQiOiJjYXN1YWwtdGFsbHNuZWFrZXJzLWNhbnZhcyJ9fQ&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\hair-coat.png",
+      "passed": true,
+      "requests": 161,
+      "artwork": 142,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "mixed-materials",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJ1cHBlckJvZHkiOiJhY3Rpb25oZXJvLXNlbnRpbmVsdG9wLW55bG9uLXllbGxvdyIsImxvd2VyQm9keSI6ImFjdGlvbmhlcm8tc2VudGluZWxwYW50cy1ueWxvbi15ZWxsb3ciLCJlYXJyaW5ncyI6ImJvZHljb3NtZXRpY3MtZWFycmluZ3MtYmVldGxlZ29sZC0wMSIsImV5ZXdlYXIiOiJhdHRhY2htZW50LTNkcGFwZXJnbGFzc2VzLXBhcGVyIiwiZmVldCI6ImNhc3VhbC10YWxsc25lYWtlcnMtY2FudmFzIn19&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\mixed-materials.png",
+      "passed": true,
+      "requests": 162,
+      "artwork": 143,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "coverage-accessories-nails",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJzdHJlZXR3ZWFyLXRpZ2h0c2luZ2xldC1jb3R0b24tZW5vcmlubyIsImxvd2VyQm9keSI6ImNhc3VhbC1sb29zZWplYW5zLWRlbmltLWRhcmtibHVlIiwiZmVldCI6ImNhc3VhbC10YWxsc25lYWtlcnMtY2FudmFzIiwiZWFycmluZ3MiOiJib2R5Y29zbWV0aWNzLWVhcnJpbmdzLWNoYWluLTAxLWdvbGQiLCJsb3dlckJhY2siOiJhdHRhY2htZW50LWJvb21ib3gtMDEtZmluYWxzLWx1bWJhciIsIm5haWxQb2xpc2giOiJib2R5Y29zbWV0aWNzLW5haWxzLWNyb3NzZXMtMDEifX0&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\coverage-accessories-nails.png",
+      "passed": true,
+      "requests": 172,
+      "artwork": 153,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "ordinary-accessory",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJmYWNld2VhciI6ImF0dGFjaG1lbnQtYXNpYW5tYXNrIiwidXBwZXJCb2R5IjoiY2FzdWFsLWJhc2ljdHNoaXJ0LWNvdHRvbi1hbGZhYWN0YSIsImxvd2VyQm9keSI6ImNhc3VhbC1sb29zZWplYW5zLWRlbmltLWRhcmtibHVlIiwiZmVldCI6ImNhc3VhbC10YWxsc25lYWtlcnMtY2FudmFzIn19&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\ordinary-accessory.png",
+      "passed": true,
+      "requests": 159,
+      "artwork": 140,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "body-paint",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJib2R5UGFpbnQiOiJib2R5Y29zbWV0aWNzLWJvZHlwYWludC1ib2R5dGlnaHQtMDEifX0&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\body-paint.png",
+      "passed": true,
+      "requests": 106,
+      "artwork": 87,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "new-turtleneck",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJjYXN1YWwtdHVydGxlbmVjay1jb3R0b24teWVsbG93IiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMifX0&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\new-turtleneck.png",
+      "passed": true,
+      "requests": 149,
+      "artwork": 130,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "multipart-hoodie-and-shoes",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJjYXN1YWwtaG9vZGllemlwdXAtY290dG9uLWVub3Jpbm8iLCJsb3dlckJvZHkiOiJjYXN1YWwtbG9vc2VqZWFucy1kZW5pbS1kYXJrYmx1ZSIsImZlZXQiOiJmYW5jeWRyZXNzLWRyZXNzc2hvZXMtbGVhdGhlciJ9fQ&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\multipart-hoodie-and-shoes.png",
+      "passed": true,
+      "requests": 181,
+      "artwork": 162,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "hood-earring-identity-offset",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJzdHJlZXR3ZWFyLXRlY2hob29kaWUtY290dG9uLWJsYWNrIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJlYXJyaW5ncyI6ImJvZHljb3NtZXRpY3MtZWFycmluZ3MtY2hhaW4tMDEtZ29sZCJ9fQ&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\hood-earring-identity-offset.png",
+      "passed": true,
+      "requests": 146,
+      "artwork": 127,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "legacy",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?reconstructed=0&surface=normal&isolate=1",
+      "source": false,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\legacy.png",
+      "passed": true,
+      "requests": 74,
+      "artwork": 49,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "eyes-emissivegreen03-face01",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJjYXN1YWwtYmFzaWN0c2hpcnQtY290dG9uLWFsZmFhY3RhIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJleWVzIjoiYm9keWNvc21ldGljcy1leWVzLWVtaXNzaXZlZ3JlZW4tMDMifX0&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\eyes-emissivegreen03-face01.png",
+      "passed": true,
+      "requests": 151,
+      "artwork": 132,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "headwrap-beardfull",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJjYXN1YWwtYmFzaWN0c2hpcnQtY290dG9uLWFsZmFhY3RhIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJmYWNpYWxIYWlyIjoiZmFjaWFsaGFpcnMtYmVhcmRmdWxsLWJsYWNrIn19&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\headwrap-beardfull.png",
+      "passed": true,
+      "requests": 161,
+      "artwork": 142,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "headwrap-balaclava",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJjYXN1YWwtYmFzaWN0c2hpcnQtY290dG9uLWFsZmFhY3RhIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJmYWNld2VhciI6InN0cmVldHdlYXItYmFsYWNsYXZhLWNvdHRvbi13aGl0ZSJ9fQ&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\headwrap-balaclava.png",
+      "passed": true,
+      "requests": 160,
+      "artwork": 141,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "plasticsheet-phantommask",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJjYXN1YWwtYmFzaWN0c2hpcnQtY290dG9uLWFsZmFhY3RhIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJmYWNld2VhciI6InNjaWZpLXBoYW50b21tYXNrLW1ldGFsIn19&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\plasticsheet-phantommask.png",
+      "passed": true,
+      "requests": 168,
+      "artwork": 149,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "glass-footballhelmet",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJjYXN1YWwtYmFzaWN0c2hpcnQtY290dG9uLWFsZmFhY3RhIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJoZWFkd2VhciI6InNwb3J0LWZvb3RiYWxsaGVsbWV0LXBsYXN0aWMifX0&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\glass-footballhelmet.png",
+      "passed": true,
+      "requests": 166,
+      "artwork": 147,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "hat-over-hair-fedora",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJjYXN1YWwtYmFzaWN0c2hpcnQtY290dG9uLWFsZmFhY3RhIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJoZWFkd2VhciI6ImF0dGFjaG1lbnQtZmVkb3JhLXdvb2wifX0&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\hat-over-hair-fedora.png",
+      "passed": true,
+      "requests": 166,
+      "artwork": 147,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "wristband-punk",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJjYXN1YWwtYmFzaWN0c2hpcnQtY290dG9uLWFsZmFhY3RhIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJ3cmlzdCI6ImNhc3VhbC1wdW5rd3Jpc3RiYW5kLWxlYXRoZXIifX0&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\wristband-punk.png",
+      "passed": true,
+      "requests": 165,
+      "artwork": 146,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "multitag-ponytaillow",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtcG9ueXRhaWxsb3ciLCJ1cHBlckJvZHkiOiJjYXN1YWwtYmFzaWN0c2hpcnQtY290dG9uLWFsZmFhY3RhIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMifX0&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\multitag-ponytaillow.png",
+      "passed": true,
+      "requests": 152,
+      "artwork": 133,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "s12-batchA-techcrop-bangles",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJzdHJlZXR3ZWFyLXRlY2hjcm9wdG9wLW55bG9uLWl2YWRhIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJ1cHBlckJhY2siOiJ0cmFkaXRpb25hbC1jbG91ZGJhZy1kYXJrIiwid3Jpc3QiOiJjYXN1YWwtYmFuZ2xlcy1tZXRhbC1nb2xkIn19&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\s12-batchA-techcrop-bangles.png",
+      "passed": true,
+      "requests": 183,
+      "artwork": 164,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "s12-v10c-clothtop-dadjeans",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJzYW11cmFpLWNsb3RodG9wLWxpbmVuLWJsdWUiLCJsb3dlckJvZHkiOiJzdHJlZXR3ZWFyLWRhZGplYW5zLWRlbmltLWJsYWNrY25zIiwiZmVldCI6ImNhc3VhbC10YWxsc25lYWtlcnMtY2FudmFzIiwiaGFuZHMiOiJyb2JvdHMtZGlzY29ib3RnbG92ZXMtbWV0YWwifX0&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\s12-v10c-clothtop-dadjeans.png",
+      "passed": true,
+      "requests": 206,
+      "artwork": 187,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "s12-v10c-pioneer-frogshoes",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTAxLWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJzcGFjZS1waW9uZWVydXBwZXItd2luZGJyZWFrZXIiLCJsb3dlckJvZHkiOiJzdHJlZXR3ZWFyLXRlY2hwYW50cy1ueWxvbi1waGFudG9tIiwiZmVldCI6ImN1dGUtZnJvZ3Nob2VzLWNvdHRvbiJ9fQ&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\s12-v10c-pioneer-frogshoes.png",
+      "passed": true,
+      "requests": 184,
+      "artwork": 165,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    },
+    {
+      "name": "earrings-face09",
+      "url": "http://127.0.0.1:4341/the-finals-outfit/?outfit=1.eyJzbG90cyI6eyJmYWNlIjoiaGVhZC1mYWNlLTA5LWJhc2UiLCJoYWlyIjoiaGFpcnMtYWZyb2ZhZGUiLCJ1cHBlckJvZHkiOiJjYXN1YWwtYmFzaWN0c2hpcnQtY290dG9uLWFsZmFhY3RhIiwibG93ZXJCb2R5IjoiY2FzdWFsLWxvb3NlamVhbnMtZGVuaW0tZGFya2JsdWUiLCJmZWV0IjoiY2FzdWFsLXRhbGxzbmVha2Vycy1jYW52YXMiLCJlYXJyaW5ncyI6ImJvZHljb3NtZXRpY3MtZWFycmluZ3MtYmlndGhpbmhvb3BzIn19&surface=normal&isolate=1",
+      "source": true,
+      "capture": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\hosted-browser-v1\\earrings-face09.png",
+      "passed": true,
+      "requests": 159,
+      "artwork": 140,
+      "hosts": [
+        "https://2cbead71.the-finals-outfit-assets.pages.dev/",
+        "https://709a36ca.the-finals-outfit-assets.pages.dev/",
+        "https://a029b249.the-finals-outfit-assets.pages.dev/",
+        "https://dfe1d5e8.the-finals-outfit-assets.pages.dev/",
+        "https://f1fa60b6.the-finals-outfit-assets.pages.dev/"
+      ]
+    }
+  ]
+}

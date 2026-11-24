@@ -1,0 +1,19 @@
+{
+  "dryRun": false,
+  "output": "E:\\Coding\\the-finals-outfit\\.claude\\worktrees\\loving-napier-b93181\\scripts\\generated\\release-2026-11-23\\_assets-upload\\v18-release-20261123-reconstruction-002",
+  "shard": "reconstruction-002",
+  "files": 8142,
+  "bytes": 3832370190,
+  "rewrittenIndices": [],
+  "manifestSha256": "c0a6a093b60c6b7f5b8e4701e3ac16a25176c1ea38fe201cb09873915dea2af7",
+  "linkedFromPrevious": 8133,
+  "encodedFresh": 6,
+  "fresh": [
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_Cowboy_WranglerBandolier_M.bodymask.png",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_Samurai_ClothTop_M.bodymask.png",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_SciFi_Gloves_M.bodymask.png",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_Streetwear_TechCropTopNoBags_M.bodymask.png",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_Streetwear_TechCropTop_M.bodymask.png",
+    "models/s12-refresh-tier2-v1/coverage-s12/SK_Traditional_CloudBag_M.bodymask.png"
+  ]
+}
