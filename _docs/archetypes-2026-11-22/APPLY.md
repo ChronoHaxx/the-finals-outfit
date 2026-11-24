@@ -98,5 +98,10 @@ On active `assets.json` `b4f28192ced46b8d445bfc988b2779066e9f5f038e28d73beb475e7
 - **3 of the 28 refusals become skips** for the same reason (`CrossPromo_NRSuit_L`, `Space_AstroPilotGloves_H`,
   `Streetwear_BoilerSuitTorso_L`), so refused falls to 25.
 
-The old builder gave the same `assets.json` and publish list, without the skip record. If the run on the apply day
+The old builder gave the same `assets.json` and publish list, without the skip record.
+
+**Later applies (Light already in the index).** Before 23 Nov's fix, a run on an index that already carried Light
+refused the class ("class body not proven"), because `SK_Body_L` was skipped as already indexed, and dropped every new
+Light mesh with it. The builder now re-proves the applied body and reports `classes.light.alreadyApplied: true`. On
+`b164180c…` such a run is a no-op: its `assets.json` is byte-identical to the active one. If the run on the apply day
 differs from these values, the active index has moved again: re-plan from there.

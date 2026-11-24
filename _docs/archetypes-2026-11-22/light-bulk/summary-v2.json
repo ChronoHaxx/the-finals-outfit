@@ -1,0 +1,308 @@
+{
+ "policy": "archetypes-light-bulk-plan-v1",
+ "report": "scripts/generated/archetypes/replan-b164180c-live-equal/report.json (builder --live-equal-medium --proven on active b164180c, 23 Nov 2026)",
+ "activeSha256": "b164180cb6899a9ece4a916bb60bbc2546df9c476aeb90f18ca884108f96ed63",
+ "rows": 852,
+ "byReason": {
+  "medium sibling not staged": 792,
+  "S11 read not proven current": 60
+ },
+ "starterRows": [
+  "SK_Casual_BasicTshirt_L",
+  "SK_Casual_LooseJeans_L",
+  "SK_Casual_TallSneakers_L"
+ ],
+ "batches": 9,
+ "batchSize": 100,
+ "packages": 2554,
+ "heavyRead": true,
+ "earlyWin": {
+  "SK_Casual_LowWedgeHeels_L": {
+   "changedCm": {
+    "medium_female": 0.1563,
+    "medium_male": 0.09
+   },
+   "onlyStaged": [],
+   "onlyLive": []
+  },
+  "SK_CrossPromo_NRSuitBelts_L": {
+   "changedCm": {
+    "medium_female": 1.3863
+   },
+   "onlyStaged": [],
+   "onlyLive": []
+  },
+  "SK_Military_PantsWithHolsterPouch_L": {
+   "changedCm": {
+    "medium_female": 1.3161
+   },
+   "onlyStaged": [],
+   "onlyLive": []
+  }
+ },
+ "followups": {
+  "count": 45,
+  "byReason": {
+   "medium changed in the game: indices": 27,
+   "live Medium reweighted: joint indices": 3,
+   "medium changed in the game: skin joint names or order": 10,
+   "medium changed in the game: inverse-bind matrices": 1,
+   "medium changed in the game: positions": 3,
+   "live Medium reweighted: weights": 1
+  },
+  "servedFromS12Refresh": 15,
+  "starter": [
+   "SK_Casual_BasicTshirt_L"
+  ]
+ },
+ "coverage": {
+  "now": {
+   "items": 960,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 6,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 6,
+    "1": 9,
+    "2": 35,
+    "3": 79,
+    "4": 122,
+    "5+": 101
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 1135,
+    "Light mesh refused by a proof": 148,
+    "Light mesh skipped: medium changed in the game": 42,
+    "Light mesh skipped: live Medium reweighted": 5,
+    "Light mesh skipped: not named": 4,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch01": {
+   "items": 1742,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 49,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 49,
+    "1": 64,
+    "2": 85,
+    "3": 85,
+    "4": 46,
+    "5+": 23
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 632,
+    "Light mesh refused by a proof": 109,
+    "Light mesh skipped: medium changed in the game": 43,
+    "Light mesh skipped: live Medium reweighted": 5,
+    "Light offset rule": 3,
+    "Light mesh skipped: medium not in the active index": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch02": {
+   "items": 2035,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 80,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 80,
+    "1": 95,
+    "2": 76,
+    "3": 56,
+    "4": 33,
+    "5+": 12
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 454,
+    "Light mesh refused by a proof": 98,
+    "Light mesh skipped: medium changed in the game": 43,
+    "Light mesh skipped: live Medium reweighted": 5,
+    "Light offset rule": 3,
+    "Light mesh skipped: medium not in the active index": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch03": {
+   "items": 2150,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 109,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 109,
+    "1": 96,
+    "2": 71,
+    "3": 48,
+    "4": 25,
+    "5+": 3
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 352,
+    "Light mesh refused by a proof": 90,
+    "Light mesh skipped: medium changed in the game": 43,
+    "Light mesh skipped: live Medium reweighted": 5,
+    "Light offset rule": 3,
+    "Light mesh skipped: medium not in the active index": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch04": {
+   "items": 2376,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 142,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 142,
+    "1": 101,
+    "2": 55,
+    "3": 39,
+    "4": 13,
+    "5+": 2
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 253,
+    "Light mesh refused by a proof": 81,
+    "Light mesh skipped: medium changed in the game": 43,
+    "Light mesh skipped: live Medium reweighted": 5,
+    "Light mesh skipped: medium not in the active index": 4,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch05": {
+   "items": 2445,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 170,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 170,
+    "1": 99,
+    "2": 41,
+    "3": 30,
+    "4": 10,
+    "5+": 2
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 184,
+    "Light mesh refused by a proof": 81,
+    "Light mesh skipped: medium changed in the game": 43,
+    "Light mesh skipped: live Medium reweighted": 5,
+    "Light mesh skipped: medium not in the active index": 4,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch06": {
+   "items": 2514,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 196,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 196,
+    "1": 97,
+    "2": 31,
+    "3": 21,
+    "4": 5,
+    "5+": 2
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 115,
+    "Light mesh refused by a proof": 80,
+    "Light mesh skipped: medium changed in the game": 44,
+    "Light mesh skipped: live Medium reweighted": 5,
+    "Light mesh skipped: medium not in the active index": 4,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch07": {
+   "items": 2587,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 225,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 225,
+    "1": 90,
+    "2": 24,
+    "3": 11,
+    "4": 2
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh refused by a proof": 66,
+    "Light mesh planned here": 53,
+    "Light mesh skipped: medium changed in the game": 46,
+    "Light mesh skipped: live Medium reweighted": 5,
+    "Light mesh skipped: medium not in the active index": 5,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch08": {
+   "items": 2695,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 258,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 258,
+    "1": 72,
+    "2": 14,
+    "3": 7,
+    "4": 1
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh refused by a proof": 63,
+    "Light mesh skipped: medium changed in the game": 47,
+    "Light mesh skipped: medium not in the active index": 6,
+    "Light mesh skipped: live Medium reweighted": 5,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "ifPlanLands": {
+   "items": 2740,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 258,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 258,
+    "1": 72,
+    "2": 14,
+    "3": 7,
+    "4": 1
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh refused by a proof": 63,
+    "Light mesh skipped: medium changed in the game": 47,
+    "Light mesh skipped: medium not in the active index": 6,
+    "Light mesh skipped: live Medium reweighted": 5,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  }
+ },
+ "byLiveFolderTop": {
+  "s12-bodytype-refresh-v1": 274,
+  "reconstructed-w170-clothsim-v1": 36,
+  "reconstructed-w121-transfer-t1": 36,
+  "reconstructed-w76-s12-wave-a-v3": 30,
+  "reconstructed-meshes-batch-01": 29,
+  "reconstructed-w80-wrap-w1-v2": 22,
+  "reconstructed-w152-backfill-v4": 16,
+  "reconstructed-w89-da-b1-v6": 12,
+  "reconstructed-w139-parthide-p2b": 10,
+  "reconstructed-w84-led-head-b1-v3": 9,
+  "reconstructed-w115-fur-b3": 8,
+  "reconstructed-w125-resweep-t3": 8
+ }
+}

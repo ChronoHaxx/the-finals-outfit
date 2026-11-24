@@ -17,7 +17,13 @@ Every class mesh the item definitions name ends in exactly one of three lists, n
            active index serves another build of the Medium mesh than the staged one, e.g. an S12 refresh), "medium
            sibling not staged", "medium not in the active index", "medium not skeletal in the active index", "swap
            conflict" (one Medium mesh swapped for different class meshes), "already in the active index", or "class
-           body not proven" (the mesh passed, but its class cannot be built).
+           body not proven" (the mesh passed, but its class cannot be built). With --live-equal-medium (proof 1',
+           below), "medium changed in the game" (the staged Medium's surface is not the live one's), "live Medium
+           reweighted" (only the skin weights differ: our own rework) or "live Medium file missing".
+
+Proof 1' (--live-equal-medium, proposed 23 Nov 2026; use it only with the coordinator's approval): where no staged
+Medium is byte-identical to the live one, one that matches it on everything the class mesh inherits stands in (see
+live_equal). Fresh reads of today's containers come in through --staging (scripts/archetypes/run-light-bulk.py).
 
 A class mesh joins the index only with proof, never by approximation:
   1. Same build: its Medium sibling's staged GLB is byte-identical (sha256) to the mesh the active index serves, so the
@@ -33,7 +39,9 @@ the 22 Nov census shows is impossible (_docs/archetypes-2026-11-22/README.md).
 
 The class bodies (SK_Body_L/H) take the same proofs plus a skeleton proof: every bone translation is the class scale of
 Medium's and every rotation equal. Their skin-material bounds origin is the class scale of the Medium body's (a pure
-scale moves the bounds centre by exactly that factor).
+scale moves the bounds centre by exactly that factor). A class the active index already carries (an earlier apply) is
+re-proven the same way from its staged body, which must be the bytes the index serves beside a Medium body that still
+matches; its `archetypes` record is kept either way, so a later run only ever adds.
 
 With --proven (scripts/archetypes/prove-nov17.py's proof.json), a sixth proof: the class mesh's package is byte-identical
 in today's game containers (rewritten 17 Nov 2026), since the staged meshes were read before that update.
@@ -158,6 +166,106 @@ def prove(medium, cls, scale, object_path, index_slots):
     return not problems, r
 
 
+# Proof 1' tolerances (approved by the coordinator 23 Nov 2026, with these stated): what a class mesh inherits from the
+# live Medium entry must be the same mesh, up to float noise from a re-read or re-convert.
+LIVE_EQUAL = {
+    "positionM": 1e-5,          # vertex positions, metres
+    "uv": 1e-6,                 # every UV set
+    "normal": 1e-4,             # unit normals, per component
+    "inverseBind": 1e-5,        # inverse-bind matrix elements (covers last-digit rotation noise of a re-convert)
+    "weightQuantization": 65535,  # weights compared exactly as normalized UNSIGNED_SHORT; joint indices exactly
+}
+
+
+def skin_detail(path):
+    """What proof 1' compares beyond mesh_data: per primitive the normals, the JOINTS_n index sets, the WEIGHTS_n sets
+    quantized to normalized u16, and the morph targets by name (POSITION deltas); the skin's joint names in order and
+    its inverse-bind matrices."""
+    j, bin_ = glb(path)
+    skin = j["skins"][0] if j.get("skins") else None
+    names = [j["nodes"][i].get("name") for i in skin["joints"]] if skin else []
+    ibm = accessor(j, bin_, skin["inverseBindMatrices"]).astype(np.float64) if skin else np.zeros((0, 16))
+    prims = []
+    for m in j["meshes"]:
+        targets = m.get("extras", {}).get("targetNames", [])
+        for p in m["primitives"]:
+            at = p["attributes"]
+            normals = accessor(j, bin_, at["NORMAL"]).astype(np.float64) if "NORMAL" in at else None
+            joints, weights = [], []
+            for key in sorted(k for k in at if k.startswith("JOINTS_")):
+                joints.append(accessor(j, bin_, at[key]).astype(np.int64))
+                wkey = "WEIGHTS_" + key[len("JOINTS_"):]
+                w = accessor(j, bin_, at[wkey]).astype(np.float64)
+                w /= {5121: 255.0, 5123: 65535.0}.get(j["accessors"][at[wkey]]["componentType"], 1.0)
+                weights.append(np.rint(w * LIVE_EQUAL["weightQuantization"]).astype(np.int64))
+            morphs = {name: accessor(j, bin_, t["POSITION"]).astype(np.float64)
+                      for name, t in zip(targets, p.get("targets", [])) if "POSITION" in t}
+            prims.append({"normals": normals, "joints": joints, "weights": weights, "morphs": morphs})
+    return {"jointNames": names, "inverseBind": ibm, "prims": prims}
+
+
+def morph_diff(da, db):
+    """Morph targets that differ between the staged and the live Medium: allowed by proof 1', but recorded (they say
+    the live Medium is behind the game, for a later Medium refresh). Max delta difference in cm per changed target."""
+    changed, only_staged, only_live = {}, set(), set()
+    for pa, pb in zip(da["prims"], db["prims"]):
+        only_staged |= set(pa["morphs"]) - set(pb["morphs"])
+        only_live |= set(pb["morphs"]) - set(pa["morphs"])
+        for name in set(pa["morphs"]) & set(pb["morphs"]):
+            x, y = pa["morphs"][name], pb["morphs"][name]
+            d = float(np.abs(x - y).max() * 100) if x.shape == y.shape else float("inf")
+            if d > 1e-4:
+                changed[name] = max(changed.get(name, 0.0), round(d, 4))
+    return {"changedCm": dict(sorted(changed.items())), "onlyStaged": sorted(only_staged), "onlyLive": sorted(only_live)}
+
+
+def live_equal(staged_path, live_path):
+    """Proof 1' ("live-equal Medium", approved 23 Nov 2026): the Medium read beside a class mesh is the live Medium GLB
+    up to float noise, on everything the class mesh inherits from the index entry (tolerances: LIVE_EQUAL):
+      primitive and vertex counts, indices (exact); positions, every UV set, normals (within epsilon); material slot
+      names in order (exact); skin joint names in order (exact); inverse-bind matrices (within epsilon); joint index
+      sets (exact) and weights after u16 quantization (exact).
+    Morph targets may differ; morph_diff records them. Returns (ok, reason, detail). The reason is "medium changed in
+    the game" for any surface, slot or skeleton difference, "live Medium reweighted" when only the skin weights or
+    their joint indices differ (our own rework, or the game's); there is no fallback for a failing row."""
+    a, b = mesh_data(staged_path), mesh_data(live_path)
+    da, db = skin_detail(staged_path), skin_detail(live_path)
+    pa, pb = a["prims"], b["prims"]
+
+    def changed(what, **extra):
+        return False, "medium changed in the game", {"differs": what, **extra}
+    if len(pa) != len(pb) or any(len(x["pos"]) != len(y["pos"]) for x, y in zip(pa, pb)):
+        return changed("primitives or vertex counts")
+    for i, (x, y, nx, ny) in enumerate(zip(pa, pb, da["prims"], db["prims"])):
+        if (x["idx"] is None) != (y["idx"] is None) or (x["idx"] is not None and not np.array_equal(x["idx"], y["idx"])):
+            return changed("indices", primitive=i)
+        if np.abs(x["pos"] - y["pos"]).max() > LIVE_EQUAL["positionM"]:
+            return changed("positions", primitive=i, maxM=float(np.abs(x["pos"] - y["pos"]).max()))
+        if len(x["uvs"]) != len(y["uvs"]) or any(np.abs(u - v).max() > LIVE_EQUAL["uv"] for u, v in zip(x["uvs"], y["uvs"])):
+            return changed("UVs", primitive=i)
+        if (nx["normals"] is None) != (ny["normals"] is None) or (
+                nx["normals"] is not None and np.abs(nx["normals"] - ny["normals"]).max() > LIVE_EQUAL["normal"]):
+            return changed("normals", primitive=i)
+    if [x["slot"] for x in pa] != [y["slot"] for y in pb]:
+        return changed("material slots", staged=[x["slot"] for x in pa], live=[y["slot"] for y in pb])
+    if da["jointNames"] != db["jointNames"]:
+        return changed("skin joint names or order")
+    if da["inverseBind"].shape != db["inverseBind"].shape or (
+            len(da["inverseBind"]) and np.abs(da["inverseBind"] - db["inverseBind"]).max() > LIVE_EQUAL["inverseBind"]):
+        return changed("inverse-bind matrices", maxDiff=float(np.abs(da["inverseBind"] - db["inverseBind"]).max())
+                       if da["inverseBind"].shape == db["inverseBind"].shape else None)
+    morphs = morph_diff(da, db)
+    for i, (nx, ny) in enumerate(zip(da["prims"], db["prims"])):
+        if len(nx["joints"]) != len(ny["joints"]) or any(not np.array_equal(u, v) for u, v in zip(nx["joints"], ny["joints"])):
+            return False, "live Medium reweighted", {"differs": "joint indices", "primitive": i, "morphs": morphs}
+        bad = [int((u != v).any(axis=1).sum()) for u, v in zip(nx["weights"], ny["weights"])]
+        if any(bad):
+            worst = max(int(np.abs(u - v).max()) for u, v in zip(nx["weights"], ny["weights"]))
+            return False, "live Medium reweighted", {"differs": "weights", "primitive": i, "vertices": sum(bad),
+                                                     "maxU16Steps": worst, "morphs": morphs}
+    return True, None, {"morphs": morphs}
+
+
 def skeleton_scale(medium_json, cls_json, scale):
     """The class skeleton against Medium: the median translation ratio, the largest translation residual (metres) from
     the exact `scale`, and the largest quaternion component difference."""
@@ -187,6 +295,14 @@ def main():
     # --proven <proof.json from prove-nov17.py>: also require each class mesh's package to be byte-identical in today's
     # containers (the coordinator's rule for pre-update data, 22 Nov). A mesh the proof refused or never read is refused.
     ap.add_argument("--proven")
+    # --staging <run dir> (repeatable): a fresh read of today's containers (scripts/archetypes/run-light-bulk.sh), its
+    # GLBs in <run dir>/source-glb, searched before the S11 folders. Its run record (<run dir>/run.json) is the currency
+    # proof: every batch read with the pinned map and passed the usmap window guard. With --staging, a mesh from the
+    # S11 folders (read before 17 Nov) still needs --proven.
+    ap.add_argument("--staging", action="append", default=[])
+    # --live-equal-medium: proof 1' (see live_equal) where the staged Medium is not byte-identical to the live one.
+    # Proposed 23 Nov 2026; use it only with the coordinator's approval of that rule.
+    ap.add_argument("--live-equal-medium", action="store_true")
     args = ap.parse_args()
     current = None
     if args.proven:
@@ -205,7 +321,7 @@ def main():
     skin_pairs = json.loads((index_dir / "skin-pairs.json").read_text(encoding="utf-8"))
     report = {"activeSha256": sha256(index_dir / "assets.json"), "skinPairsSha256": sha256(index_dir / "skin-pairs.json"),
               "currentProof": {k: current[k] for k in ("file", "sha256", "containers")} if current else None,
-              "classes": {}, "meshes": {}, "refused": {}, "skipped": {}}
+              "classes": {}, "meshes": {}, "refused": {}, "skipped": {}, "proof1Prime": {}}
 
     # The Archetype mesh swaps the definitions author: Medium skeletal mesh -> class mesh. Every class mesh named here
     # ends in exactly one of report["meshes"] (added), report["refused"] (a proof failed) or report["skipped"] (never
@@ -248,7 +364,24 @@ def main():
                 elif entry.get("kind") != "skeletal":
                     skip(target, cls, medium_path, "medium not skeletal in the active index")
 
-    staged = {}
+    staged, fresh = {}, set()
+    report["stagingRuns"] = []
+    for run in map(Path, args.staging):
+        record = json.loads((run / "run.json").read_text(encoding="utf-8"))
+        if record.get("policy") != "archetypes-light-bulk-run-v1":
+            sys.exit(f"{run / 'run.json'} is not a run-light-bulk.sh record")
+        bad = {b: r for b, r in record.get("batches", {}).items()
+               if r.get("guard", {}).get("exitCode") != 0 or r.get("mappingSha256", "").lower() != record["usmapSha256"].lower()
+               or r.get("missing")}
+        if not record.get("control", {}).get("ok"):
+            sys.exit(f"{run}: the control (the patched map re-reads unchanged meshes byte for byte) has not passed")
+        if not record.get("batches") or bad:
+            sys.exit(f"{run}: batches without a clean read (guard, pinned map, every package): {sorted(bad) or 'none run'}")
+        report["stagingRuns"].append({"dir": str(run), "runSha256": sha256(run / "run.json"),
+                                      "usmapSha256": record["usmapSha256"], "batches": sorted(record["batches"])})
+        for f in sorted((run / "source-glb").glob("*.glb")):
+            staged.setdefault(f.name, []).append(f)
+            fresh.add(f)
     for folder in STAGING:
         for f in (models / folder / "source-glb").glob("*.glb"):
             staged.setdefault(f.name, []).append(f)
@@ -266,6 +399,27 @@ def main():
         name = medium_path.rsplit(".", 1)[-1]
         candidates = staged.get(name + ".glb", [])
         match = [f for f in candidates if staged_sha(f) == entry.get("sha256")]
+        proof1 = {"proof1": "bytes"}
+        wanted = [swaps[c].get(medium_path) for c in CLASSES]
+        if not match and args.live_equal_medium and candidates and any(t and t not in assets["meshes"] for t in wanted):
+            # Proof 1' on one staged copy: today's read when there is one (candidates list --staging first), else the
+            # newest S11 read. No fallback to another copy: a failing row is skipped and listed.
+            live_file = (index_dir / entry["url"]).resolve()
+            f = candidates[0]
+            ok, why, detail = live_equal(f, live_file) if live_file.is_file() else (False, "live Medium file missing", {})
+            report["proof1Prime"][medium_path] = {
+                "verdict": "pass" if ok else why, "stagedFile": os.path.relpath(f, models).replace(os.sep, "/"),
+                "liveUrl": entry.get("url"), "targets": {c: swaps[c].get(medium_path) for c in CLASSES}, **detail}
+            if ok:
+                match = [f]
+                proof1 = {"proof1": "live-equal", "morphs": detail["morphs"]}
+            else:
+                for cls in CLASSES:
+                    target = swaps[cls].get(medium_path)
+                    if target and target not in assets["meshes"]:
+                        skip(target, cls, medium_path, why, liveUrl=entry.get("url"),
+                             stagedFile=os.path.relpath(f, models).replace(os.sep, "/"), **detail)
+                continue
         if not match:
             # Proof 1 (same build) cannot hold: the staged class meshes belong to another Medium build, or to none.
             for cls in CLASSES:
@@ -290,12 +444,17 @@ def main():
                 report["refused"][target] = ["not staged beside its Medium sibling"]
                 continue
             ok, proof = prove(medium, mesh_data(file), scale, target, entry["slots"])
-            proof.update({"class": cls, "medium": medium_path, "file": str(file.relative_to(models)).replace(os.sep, "/"),
-                          "sha256": staged_sha(file), "mediumSha256": entry["sha256"]})
+            proof.update({"class": cls, "medium": medium_path, "file": os.path.relpath(file, models).replace(os.sep, "/"),
+                          "sha256": staged_sha(file), "mediumSha256": entry["sha256"], **proof1})
             if not ok:
                 report["refused"][target] = proof["problems"]
                 continue
-            if current is not None:
+            if file in fresh:
+                proof["currency"] = "read from today's containers (stagingRuns)"
+            elif args.staging and current is None:
+                report["refused"][target] = ["read before the 17 Nov update, and no --proven proof given"]
+                continue
+            elif current is not None:
                 package = "Discovery/Content/" + target.split(".")[0][len("/Game/"):] + ".uasset"
                 proof["containers17Nov"] = current["packages"].get(package)
                 if target not in current["proven"]:
@@ -304,7 +463,7 @@ def main():
                     continue
             new = {k: v for k, v in entry.items() if k not in ("url", "sha256")}
             hosted = models / args.publish_dir / "meshes" / file.name if args.publish_dir else file
-            proof["publish"] = str(hosted.relative_to(models)).replace(os.sep, "/")
+            proof["publish"] = os.path.relpath(hosted, models).replace(os.sep, "/")
             new["url"] = os.path.relpath(hosted, index_dir).replace(os.sep, "/")
             new["sha256"] = proof["sha256"]
             added[target] = new
@@ -324,20 +483,35 @@ def main():
                        if staged_sha(f) == assets["meshes"][medium_body]["sha256"]]
     for cls, (tag, scale) in CLASSES.items():
         target = swaps[cls].get(medium_body)
-        if not target or target not in added or not medium_body_glb:
+        applied = (assets.get("archetypes") or {}).get(cls)
+        body_file = None
+        if target in added:
+            body_file = models / report["meshes"][target]["file"]
+        elif target in assets["meshes"] and applied and applied.get("body") == target and medium_body_glb:
+            # Applied earlier (23 Nov 2026: Light). Re-prove it against today's Medium body, so that a later run on the
+            # applied index keeps the class (its new meshes need it) only while the Medium body is still the one it was
+            # proven against: the staged class body must be the bytes the index serves, beside the matching Medium.
+            staged_body = medium_body_glb[0].parent / (target.rsplit(".", 1)[-1] + ".glb")
+            if staged_body.exists() and staged_sha(staged_body) == assets["meshes"][target].get("sha256"):
+                body_file = staged_body
+        if not target or body_file is None or not medium_body_glb:
             report["classes"][cls] = {"refused": "class body not proven"}
             continue
         mj, _ = glb(medium_body_glb[0])
-        cj, _ = glb(models / report["meshes"][target]["file"])
+        cj, _ = glb(body_file)
         measured, residual, rotation = skeleton_scale(mj, cj, scale)
         # 1e-5 m (a hundredth of a millimetre) and 1e-5 per quaternion component: float32 rounding, nothing more.
         if abs(measured - scale) > 1e-5 or residual > 1e-5 or rotation > 1e-5:
             report["classes"][cls] = {"refused": f"skeleton is not a x{scale} scale ({measured}, residual {residual} m, rot {rotation})"}
             continue
-        archetypes[cls] = {"body": target, "skeletonScale": scale,
-                           "boundsOrigin": [round(v * scale, 6) for v in medium_origin]}
+        record = {"body": target, "skeletonScale": scale, "boundsOrigin": [round(v * scale, 6) for v in medium_origin]}
+        if applied and target not in added and applied != record:
+            report["classes"][cls] = {"refused": f"the applied record {applied} is not today's proof {record}"}
+            continue
+        archetypes[cls] = record
         report["classes"][cls] = {"body": target, "skeletonScale": scale, "measuredScale": measured,
-                                  "translationResidualMaxM": residual, "rotationMaxDiff": rotation}
+                                  "translationResidualMaxM": residual, "rotationMaxDiff": rotation,
+                                  "alreadyApplied": target not in added}
 
     # A class without a proven body cannot be built, so none of its meshes join (with neither, the index is unchanged).
     for k in sorted(added):
@@ -367,7 +541,8 @@ def main():
                                    for k in [*assets.get("itemBodyMasks", {}),
                                              *sorted(set(item_masks) - set(assets.get("itemBodyMasks", {})))]}
     if archetypes:
-        result["archetypes"] = archetypes
+        # Additive: a class applied earlier keeps its record even when this run cannot re-prove it.
+        result["archetypes"] = {**(assets.get("archetypes") or {}), **archetypes}
     (out / "assets.json").write_text(json.dumps(result, separators=(",", ":")), encoding="utf-8")
     (out / "skin-pairs.json").write_text(json.dumps(skin_pairs, separators=(",", ":")), encoding="utf-8")
     report["added"] = {cls: sorted(k for k, v in report["meshes"].items() if v["class"] == cls and k in added) for cls in CLASSES}
@@ -376,6 +551,18 @@ def main():
     (out / "publish-list.tsv").write_text("".join(
         f"{report['meshes'][k]['file']}\t{report['meshes'][k]['publish']}\t{report['meshes'][k]['sha256']}\n"
         for k in sorted(added)), encoding="utf-8")
+    # Every proof 1' comparison, passing or not, with the morph targets that differ (the row table's morph columns).
+    def morph_cells(m):
+        m = m or {}
+        return ("; ".join(f"{k}:{v}" for k, v in (m.get("changedCm") or {}).items()),
+                "; ".join(m.get("onlyStaged") or []), "; ".join(m.get("onlyLive") or []))
+    tab = "\t"
+    (out / "proof1-prime.tsv").write_text(
+        tab.join(["medium", "light", "heavy", "verdict", "differs", "morphsChangedCm", "morphsOnlyStaged",
+                  "morphsOnlyLive"]) + "\n" + "".join(
+            tab.join([k, v["targets"].get("light") or "", v["targets"].get("heavy") or "", v["verdict"],
+                      str(v.get("differs", "")), *morph_cells(v.get("morphs"))]) + "\n"
+            for k, v in sorted(report["proof1Prime"].items())), encoding="utf-8")
     # class mesh <TAB> class <TAB> reason <TAB> the Medium mesh that names it: the apply record copies this list.
     (out / "skipped.tsv").write_text("".join(
         f"{k}\t{row['class']}\t{r['reason']}\t{r['medium']}\n"

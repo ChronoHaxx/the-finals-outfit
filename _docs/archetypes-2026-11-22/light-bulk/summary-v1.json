@@ -1,0 +1,266 @@
+{
+ "policy": "archetypes-light-bulk-plan-v1",
+ "report": "scripts/generated/archetypes/replan-b164180c-fix/report.json (builder on active b164180c, 23 Nov 2026)",
+ "activeSha256": "b164180cb6899a9ece4a916bb60bbc2546df9c476aeb90f18ca884108f96ed63",
+ "rows": 907,
+ "byReason": {
+  "medium sibling not staged": 792,
+  "medium sibling repointed": 115
+ },
+ "starterRows": [
+  "SK_Casual_BasicTshirt_L",
+  "SK_Casual_LooseJeans_L",
+  "SK_Casual_TallSneakers_L"
+ ],
+ "batches": 10,
+ "batchSize": 100,
+ "packages": 2719,
+ "heavyRead": true,
+ "coverage": {
+  "now": {
+   "items": 960,
+   "itemsOf": 2953,
+   "starterWhole": false,
+   "presetsWhole": 6,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 6,
+    "1": 9,
+    "2": 35,
+    "3": 79,
+    "4": 122,
+    "5+": 101
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 1285,
+    "Light mesh refused by a proof": 49,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch01": {
+   "items": 1782,
+   "itemsOf": 2953,
+   "starterWhole": true,
+   "presetsWhole": 48,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 48,
+    "1": 65,
+    "2": 87,
+    "3": 83,
+    "4": 45,
+    "5+": 24
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 740,
+    "Light mesh refused by a proof": 49,
+    "Light offset rule": 3,
+    "Light mesh skipped: medium not in the active index": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch02": {
+   "items": 2089,
+   "itemsOf": 2953,
+   "starterWhole": true,
+   "presetsWhole": 74,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 74,
+    "1": 110,
+    "2": 76,
+    "3": 51,
+    "4": 30,
+    "5+": 11
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 534,
+    "Light mesh refused by a proof": 49,
+    "Light offset rule": 3,
+    "Light mesh skipped: medium not in the active index": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch03": {
+   "items": 2200,
+   "itemsOf": 2953,
+   "starterWhole": true,
+   "presetsWhole": 106,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 106,
+    "1": 105,
+    "2": 68,
+    "3": 47,
+    "4": 20,
+    "5+": 6
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 436,
+    "Light mesh refused by a proof": 49,
+    "Light offset rule": 3,
+    "Light mesh skipped: medium not in the active index": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch04": {
+   "items": 2437,
+   "itemsOf": 2953,
+   "starterWhole": true,
+   "presetsWhole": 151,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 151,
+    "1": 100,
+    "2": 56,
+    "3": 30,
+    "4": 13,
+    "5+": 2
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 306,
+    "Light mesh refused by a proof": 50,
+    "Light mesh skipped: medium not in the active index": 4,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch05": {
+   "items": 2523,
+   "itemsOf": 2953,
+   "starterWhole": true,
+   "presetsWhole": 183,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 183,
+    "1": 92,
+    "2": 42,
+    "3": 24,
+    "4": 10,
+    "5+": 1
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 235,
+    "Light mesh refused by a proof": 50,
+    "Light mesh skipped: medium not in the active index": 4,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch06": {
+   "items": 2592,
+   "itemsOf": 2953,
+   "starterWhole": true,
+   "presetsWhole": 210,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 210,
+    "1": 88,
+    "2": 33,
+    "3": 15,
+    "4": 5,
+    "5+": 1
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 165,
+    "Light mesh refused by a proof": 51,
+    "Light mesh skipped: medium not in the active index": 4,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch07": {
+   "items": 2667,
+   "itemsOf": 2953,
+   "starterWhole": true,
+   "presetsWhole": 244,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 244,
+    "1": 81,
+    "2": 16,
+    "3": 8,
+    "4": 3
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh planned here": 89,
+    "Light mesh refused by a proof": 51,
+    "Light mesh skipped: medium not in the active index": 5,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch08": {
+   "items": 2738,
+   "itemsOf": 2953,
+   "starterWhole": true,
+   "presetsWhole": 287,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 287,
+    "1": 55,
+    "2": 7,
+    "3": 3
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh refused by a proof": 51,
+    "Light mesh planned here": 18,
+    "Light mesh skipped: medium not in the active index": 5,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "throughBatch09": {
+   "items": 2869,
+   "itemsOf": 2953,
+   "starterWhole": true,
+   "presetsWhole": 298,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 298,
+    "1": 49,
+    "2": 3,
+    "3": 2
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh refused by a proof": 51,
+    "Light mesh skipped: medium not in the active index": 6,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  },
+  "ifPlanLands": {
+   "items": 2874,
+   "itemsOf": 2953,
+   "starterWhole": true,
+   "presetsWhole": 298,
+   "presetsOf": 352,
+   "presetsLeftOff": {
+    "0": 298,
+    "1": 49,
+    "2": 3,
+    "3": 2
+   },
+   "presetPiecesLeftOffBy": {
+    "Light mesh refused by a proof": 51,
+    "Light mesh skipped: medium not in the active index": 6,
+    "Light offset rule": 3,
+    "Light mesh skipped: swap conflict": 1
+   }
+  }
+ },
+ "byLiveFolderTop": {
+  "s12-bodytype-refresh-v1": 297,
+  "reconstructed-w170-clothsim-v1": 38,
+  "reconstructed-w121-transfer-t1": 38,
+  "reconstructed-w76-s12-wave-a-v3": 30,
+  "reconstructed-meshes-batch-01": 29,
+  "reconstructed-w80-wrap-w1-v2": 23,
+  "reconstructed-w84-led-head-b1-v3": 18,
+  "reconstructed-w152-backfill-v4": 16,
+  "reconstructed-w89-da-b1-v6": 12,
+  "reconstructed-w139-parthide-p2b": 12,
+  "reconstructed-w125-resweep-t2": 11,
+  "reconstructed-w139-parthide-p1b": 10
+ }
+}
