@@ -372,7 +372,7 @@ def main():
             sys.exit(f"{run / 'run.json'} is not a run-light-bulk.sh record")
         bad = {b: r for b, r in record.get("batches", {}).items()
                if r.get("guard", {}).get("exitCode") != 0 or r.get("mappingSha256", "").lower() != record["usmapSha256"].lower()
-               or r.get("missing")}
+               or r.get("missing") or not isinstance(r.get("glb"), dict) or r["glb"].get("exit") != 0}
         if not record.get("control", {}).get("ok"):
             sys.exit(f"{run}: the control (the patched map re-reads unchanged meshes byte for byte) has not passed")
         if not record.get("batches") or bad:

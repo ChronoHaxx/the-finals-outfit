@@ -147,6 +147,10 @@ def batch(args):
     entry.update(source_run(read))
     entry["guard"] = guard([f for f in folders if f.is_dir()])
     ok = entry["mappingSha256"] == USMAP_SHA256 and entry["guard"]["exitCode"] == 0 and not entry["missing"]
+    # Record the read before converting: an interrupted conversion leaves "glb": "pending", which the builder refuses.
+    entry["glb"] = "pending" if ok else "not converted"
+    record["batches"][nn] = entry
+    save(run, record)
     if ok:
         jobs = run / f"jobs-{nn}.json"
         for i, folder in enumerate(f for f in folders if f.is_dir()):
@@ -163,10 +167,11 @@ def batch(args):
                         "failed": [r["name"] for r in report if r["status"] != "converted"]}
     record["batches"][nn] = entry
     save(run, record)
+    glb = entry["glb"] if isinstance(entry["glb"], dict) else {}
     print(json.dumps({k: entry.get(k) for k in ("requested", "missing", "probeExit", "mappingSha256")}),
-          "guard", entry["guard"]["exitCode"], "glb", entry.get("glb", {}).get("jobs"), "failed",
-          len(entry.get("glb", {}).get("failed", [])) if ok else "not converted")
-    sys.exit(0 if ok and not entry["glb"]["failed"] else 1)
+          "guard", entry["guard"]["exitCode"], "glb", glb.get("jobs"), "failed",
+          len(glb.get("failed", [])) if ok else "not converted")
+    sys.exit(0 if ok and glb and not glb["failed"] else 1)
 
 
 def main():
