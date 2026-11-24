@@ -20,7 +20,7 @@ Usage (Git Bash, any folder; the main checkout must hold the tools):
   python -I scripts/archetypes/run-light-bulk.py control --run <run dir> --proof <prove-nov17 proof.json>
   python -I scripts/archetypes/run-light-bulk.py batch --run <run dir> --plan <plan dir> --batch 01
 """
-import argparse, hashlib, importlib.util, json, os, subprocess, sys
+import argparse, glob, hashlib, importlib.util, json, os, subprocess, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -59,6 +59,21 @@ def probe(out, requests, log):
     with open(log, "w", encoding="utf-8") as f:
         return subprocess.call([str(p17.TOOLS["dotnet"][0]), str(p17.TOOLS["probe"][0]), "assets", p17.PAKS, str(USMAP),
                                 p17.OODLE, str(out), str(requests), p17.SETTINGS], stdout=f, stderr=subprocess.STDOUT)
+
+
+def read_rows(folder):
+    """The probe's rows under folder, by lower-case package path, and the packages it reported as absent from today's
+    containers (error rows "Expected one package; found 0", 24 Nov 2026: SK_Sport_Glasses_M/L/H)."""
+    rows, absent = {}, {}
+    for f in glob.glob(str(Path(folder) / "**" / "assets.json"), recursive=True):
+        for r in json.loads(Path(f).read_text(encoding="utf-8-sig")):
+            if "path" in r:
+                rows[r["path"].lower()] = dict(r, folder=str(Path(f).parent))
+            elif "found 0" in (r.get("error") or ""):
+                absent[r["request"].lower()] = r["error"].splitlines()[0]
+            else:
+                sys.exit(f"unexpected probe row in {f}: {json.dumps(r)[:300]}")
+    return rows, absent
 
 
 def run_record(run):
@@ -133,17 +148,26 @@ def batch(args):
     if not wanted:
         sys.exit(f"{requests} requests nothing")
     read = run / f"read-{nn}"
-    entry = {"requests": str(requests), "requestsSha256": sha(requests), "requested": len(wanted),
-             "probeExit": probe(read, requests, run / f"read-{nn}.log")}
-    got = p17.rows(read)
-    missing = [p for p in wanted if p.lower() not in got]
+    entry = {"requests": str(requests), "requestsSha256": sha(requests), "requested": len(wanted)}
+    if read.is_dir() and (read / "source-run.json").is_file():
+        # A finished read that was never recorded (the run stopped before its record): reuse it, never re-read over it.
+        entry.update({"probeExit": None, "resumedRead": True})
+    else:
+        entry["probeExit"] = probe(read, requests, run / f"read-{nn}.log")
+    got, absent = read_rows(read)
+    missing = [p for p in wanted if p.lower() not in got and p.lower() not in absent]
     for i, p in enumerate(missing):
         single = run / f"read-{nn}-single-{i:03d}"
-        (run / f"read-{nn}-single-{i:03d}.json").write_text(json.dumps([p]) + "\n", encoding="utf-8")
-        probe(single, run / f"read-{nn}-single-{i:03d}.json", run / f"read-{nn}-single-{i:03d}.log")
-        got.update(p17.rows(single))
+        if not single.is_dir():
+            (run / f"read-{nn}-single-{i:03d}.json").write_text(json.dumps([p]) + "\n", encoding="utf-8")
+            probe(single, run / f"read-{nn}-single-{i:03d}.json", run / f"read-{nn}-single-{i:03d}.log")
+        more, gone = read_rows(single)
+        got.update(more)
+        absent.update(gone)
     folders = [read] + sorted(run.glob(f"read-{nn}-single-*/"))
-    entry["missing"] = [p for p in wanted if p.lower() not in got]
+    # Packages today's containers do not have are recorded, not read: their rows skip in the builder with a reason.
+    entry["notInGame"] = {p: absent[p.lower()] for p in wanted if p.lower() in absent and p.lower() not in got}
+    entry["missing"] = [p for p in wanted if p.lower() not in got and p not in entry["notInGame"]]
     entry.update(source_run(read))
     entry["guard"] = guard([f for f in folders if f.is_dir()])
     ok = entry["mappingSha256"] == USMAP_SHA256 and entry["guard"]["exitCode"] == 0 and not entry["missing"]
