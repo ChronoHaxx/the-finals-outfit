@@ -34,6 +34,12 @@ It mirrors `build-preview-index.py` exactly: the same admitted, stale, kept and 
 unlock counts are upper bounds.
 
 - 2,074 items show a body-type mesh. **1,423 are Season 12 throughout now.**
+- **Only 1,232 of those are current with the 17 Nov build.** 93 meshes the item rule counts as Season 12 had their
+  package changed on 17 Nov. They count because their live file matches the 6 Nov (12.00) read (the 22 Nov rule).
+  A 17 Nov read (the Light bulk run's proof 1′ rows, `5e8bc00`) shows:
+  - 32 match the live mesh: current;
+  - 61 are not proven current. They form wave U below. TallSneakers, from the starting outfit, is among them, with new
+    UVs.
 - Batch C on the active index: **72 meshes**. By surface class:
   - UVs changed: 54;
   - UV sets differ: 10;
@@ -49,16 +55,20 @@ unlock counts are upper bounds.
 
 ## Waves
 
-| Wave | Meshes | Material reads (meshes / MIs / textures) | Mesh reads | Unlocks | S12 items after |
-|---|---:|---|---:|---:|---:|
-| now | | | | | 1,423 |
-| **C0** T-shirt | 1 | 1 / 43 / 58 | 0 | **43** | 1,466 |
-| **C1** cluster | 67 | 6 / 52 / 59 | 16 | **183** | 1,649 |
-| C2 | 5 | 5 / 100 / 87 | 0 | 92 | 1,741 |
-| C3 | 25 | 25 / 99 / 252 | 1 | 95 | 1,836 |
-| C4 | 35 | 35 / 45 / 247 | 1 | 90 | 1,926 |
-| R mesh reads | 49 | 0 | 49 | 96 | 2,022 |
-| still mixed | | | | | 52 items |
+| Wave | Meshes | Material reads (meshes / MIs / textures) | Mesh reads | Unlocks | S12 items after | Current with 17 Nov after |
+|---|---:|---|---:|---:|---:|---:|
+| now | | | | | 1,423 | 1,232 |
+| **C0** T-shirt | 1 | 1 / 43 / 58 | 0 | **43** | 1,466 | 1,275 |
+| **C1** cluster | 67 | 6 / 52 / 59 | 16 | **183** | 1,649 | 1,444 |
+| C2 | 5 | 5 / 100 / 87 | 0 | 92 | 1,741 | 1,536 |
+| C3 | 25 | 25 / 99 / 252 | 1 | 95 | 1,836 | 1,629 |
+| C4 | 35 | 35 / 45 / 247 | 1 | 90 | 1,926 | 1,719 |
+| R mesh reads | 49 | 0 | 49 | 96 | 2,022 | 1,813 |
+| U 17 Nov changes | 61 | 9 / 78 / 113 | 61 (25 not yet read) | 0 | 2,022 | 2,022 |
+| still mixed | | | | | 52 items | |
+
+"Mesh reads" counts packages that need a 17 Nov read; the Light bulk run has already read most of them (see "Reads
+already done"). Wave U changes no item's Season 12 status. It makes the counted ones current.
 
 **C0, `SK_Casual_BasicTshirt_M`** (the starting outfit's T-shirt, 43 items). Its mesh package is byte-identical to the
 6 Nov read, so the Season 12 GLB from `s12-bodytype-refresh-v1` stands. It needs 43 material instances and 58 garment
@@ -83,6 +93,23 @@ textures from 17 Nov. No Light sibling is applied.
   swap.
 - The cloth-sim and proxy meshes (w170 and others) carry our own processing. If one differs, its processing must be
   redone on Season 12 data. That is not this route; the owner is still open.
+
+**U: what the 17 Nov update changed in meshes counted as Season 12** (added 25 Nov). 61 meshes, shown by 200 items.
+- **New UVs (9): the batch C route,** with materials, textures and the mesh from 17 Nov:
+  - TacticalBoots 22 items, TacticalGloves 20, BaseTankTop 19, TacticalHelmet 13, **TallSneakers 10** (starting
+    outfit), TacticalVest 4, LanyardBracelet 3, TacticalGlasses 2, KneeSocks 1;
+  - 78 MIs and 113 textures, all layered, so the View gate is expected to pass them.
+  - **Recommended: pull TallSneakers into C0 beside the T-shirt.** It has the same route and is the same starting
+    outfit. Its Light sibling also waits on it (the Light session's verdict).
+- **Other geometry changed (9):** indices, joint names or order, positions. These take the mesh route, with masks
+  regenerated:
+  - TacticalTrousers, Streetwear Jacket, TacticalHeadphones, FancyDress Gloves, Pirate SeaBandolier;
+  - HeadscarfStraps, KnightCape, ChainBelt, SportyRobotLegs. Their live Mediums are our own fix-wave builds, so the
+    difference may be our processing. Compare against the pre-processing source first.
+- **Live Medium reweighted (18):** our own weight transfer differs from any game read by design. Compare the 17 Nov read
+  with the transfer's source instead. If that matches, the mesh is current.
+- **No 17 Nov read (25):** beards and moustaches, mouth scarves, skirts, the face mask and others. These are not in the
+  Light bulk run because most have no Light sibling; they need a read.
 
 ## The route for a batch C wave
 
@@ -177,9 +204,13 @@ The Light session's follow-up rows:
   - 25 already count as Season 12 here. Their live Medium is our own fix-wave build (wraps, resweeps, LED, transfer,
     part-hide), so this route never repoints them. Their Light path needs that processing applied to `_L`. No owner yet.
   - 2 (RetroRobotHands and RetroRobotLegs, w139 part-hide) have no Season 12 proof row.
-- **Starting outfit on Light:** the sneakers already count as Season 12. The jeans go Season 12 only in C1. The Light
-  session's build is deciding the Light jeans now, by proof 1′ against the live pre-Season 12 jeans: they join now if
-  Season 12 changed only morphs, otherwise after C1.
+- **Starting outfit on Light** (the Light session's verdicts, 25 Nov):
+  - LooseJeans_L **joined**. Today's jeans match the live jeans except for body-type morphs (up to 1.24 cm), so proof
+    1′ passes.
+  - TallSneakers_L and BasicTshirt_L wait for their Mediums: the sneakers changed UVs on 17 Nov, the T-shirt changed
+    indices.
+  - The Light build re-proves each `_L` once C0 (and TallSneakers, from U or pulled into C0) applies.
+  - On Medium, the jeans become Season 12 throughout in C1, and the sneakers current in U.
 
 ## Held (not planned)
 

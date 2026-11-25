@@ -9,6 +9,19 @@
  },
  "itemsWithBodyTypeMeshes": 2074,
  "s12ItemsNow": 1423,
+ "currentItemsNow": 1232,
+ "staleCountedS12": {
+  "meshes": 93,
+  "byNov17Verdict": {
+   "pass": 32,
+   "no 17 Nov read": 25,
+   "medium changed in the game UVs": 9,
+   "live Medium reweighted joint indices": 18,
+   "medium changed in the game indices": 5,
+   "medium changed in the game skin joint names or order": 3,
+   "medium changed in the game positions": 1
+  }
+ },
  "groups": {
   "batchC": 72,
   "stalePackagesOutsideC": 14,
@@ -27,9 +40,9 @@
  },
  "clusterByGroup": {
   "admitted, held by the item rule": 45,
-  "stale package": 4,
   "never read for S12": 12,
-  "batch C": 6
+  "batch C": 6,
+  "stale package": 4
  },
  "waves": [
   {
@@ -37,6 +50,7 @@
    "meshes": 1,
    "s12ItemsAfter": 1466,
    "unlocks": 43,
+   "currentItemsAfter": 1275,
    "needsMaterialRead": 1,
    "needsMeshRead": 0,
    "materialInstances": 43,
@@ -48,6 +62,7 @@
    "meshes": 67,
    "s12ItemsAfter": 1649,
    "unlocks": 183,
+   "currentItemsAfter": 1444,
    "needsMaterialRead": 6,
    "needsMeshRead": 16,
    "materialInstances": 52,
@@ -59,6 +74,7 @@
    "meshes": 5,
    "s12ItemsAfter": 1741,
    "unlocks": 92,
+   "currentItemsAfter": 1536,
    "needsMaterialRead": 5,
    "needsMeshRead": 0,
    "materialInstances": 100,
@@ -70,6 +86,7 @@
    "meshes": 25,
    "s12ItemsAfter": 1836,
    "unlocks": 95,
+   "currentItemsAfter": 1629,
    "needsMaterialRead": 25,
    "needsMeshRead": 1,
    "materialInstances": 99,
@@ -81,6 +98,7 @@
    "meshes": 35,
    "s12ItemsAfter": 1926,
    "unlocks": 90,
+   "currentItemsAfter": 1719,
    "needsMaterialRead": 35,
    "needsMeshRead": 1,
    "materialInstances": 45,
@@ -92,11 +110,24 @@
    "meshes": 49,
    "s12ItemsAfter": 2022,
    "unlocks": 96,
+   "currentItemsAfter": 1813,
    "needsMaterialRead": 0,
    "needsMeshRead": 49,
    "materialInstances": 0,
    "garmentTextures": 0,
    "itemsShowing": 59
+  },
+  {
+   "wave": "U",
+   "meshes": 61,
+   "s12ItemsAfter": 2022,
+   "unlocks": 0,
+   "currentItemsAfter": 2022,
+   "needsMaterialRead": 9,
+   "needsMeshRead": 61,
+   "materialInstances": 78,
+   "garmentTextures": 113,
+   "itemsShowing": 200
   }
  ],
  "holds": {

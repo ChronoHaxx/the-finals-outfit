@@ -24,6 +24,8 @@ Status (23 Nov):
   - C2–C4, the rest of batch C: +277;
   - R, mesh-only reads: +96.
   That is 1,423 → 2,022 items Season 12 throughout as an upper bound.
+  - Wave U (25 Nov): 61 meshes the rule counts as Season 12 changed on 17 Nov. Only 1,232 items are current with the
+    17 Nov build today.
 - Nothing here touches the active index, the main checkout or a host.
 
 ## 1. Inputs (pinned, read-only)
