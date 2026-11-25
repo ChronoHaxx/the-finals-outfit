@@ -13,7 +13,8 @@ import { fileURLToPath } from "node:url";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "../..");
-const OUT = resolve(ROOT, "visual-diff/out");
+// VDIFF_OUT (25 Nov 2026, C0b review): the visual-diff folder to write into (default <repo>/visual-diff).
+const OUT = resolve(process.env.VDIFF_OUT ?? resolve(ROOT, "visual-diff"), "out");
 const BASE = process.env.VDIFF_BASE ?? "http://localhost:5173";
 const ALBEDO = process.argv.includes("--albedo");
 // --nobaked forces the legacy region-tint path (?nobaked=1) and writes <id>.flat.png — for
@@ -70,7 +71,10 @@ for (const c of cases) {
     const url =
       `${BASE}/?outfit=${outfit}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a` +
       (variant === "albedo" ? "&debugAlbedo=1" : "") +
-      (NOBAKED ? "&nobaked=1" : "");
+      (NOBAKED ? "&nobaked=1" : "") +
+      // VDIFF_QUERY (25 Nov 2026, C0b review): extra viewer switches, e.g. "reconstructed=1" for the source-assembly
+      // route that reads the reconstructed index (without it the page draws the older cosmetics route).
+      (process.env.VDIFF_QUERY ? `&${process.env.VDIFF_QUERY}` : "");
     await page.goto(url, { waitUntil: "networkidle" });
     const canvas = page.locator("canvas").first();
     await canvas.waitFor({ state: "visible", timeout: 20000 });

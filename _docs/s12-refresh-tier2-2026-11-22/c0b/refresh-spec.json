@@ -1,0 +1,8 @@
+{
+ "note": "C0b (25 Nov 2026): TallSneakers Medium onto the game-faithful 17 Nov mesh (raw UV tiles and UV1; light-bulk-v2 source GLB cff3a74c). A correction of the defective live mesh (wrapped UV0, no UV1); the body mask stays (its regeneration is byte-identical). Review: C0b.md.",
+ "meshes": {
+  "/Game/Discovery/Characters/Casual/Assets/TallSneakers/SK_Casual_TallSneakers_M.SK_Casual_TallSneakers_M": {
+   "toUrl": "../s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb"
+  }
+ }
+}

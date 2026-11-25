@@ -14,7 +14,10 @@ import sharp from "sharp";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "../..");
-const OUT = resolve(ROOT, "visual-diff");
+// VDIFF_OUT / VDIFF_PUBLIC (25 Nov 2026, C0b review): the visual-diff folder (default <repo>/visual-diff) and the
+// public/ folder holding the icons (default <repo>/public; a worktree has none, the root checkout does).
+const OUT = resolve(process.env.VDIFF_OUT ?? resolve(ROOT, "visual-diff"));
+const PUBLIC = resolve(process.env.VDIFF_PUBLIC ?? resolve(ROOT, "public"));
 const RENDERS = join(OUT, "out");
 
 const { defaults, cases } = JSON.parse(readFileSync(join(SCRIPT_DIR, "cases.json"), "utf8"));
@@ -101,7 +104,7 @@ for (const c of cases) {
   const item = byId.get(c.id);
   const renderPath = join(RENDERS, `${c.id}.png`);
   if (!item || !existsSync(renderPath)) continue;
-  const iconPath = resolve(ROOT, "public", item.imageUrl);
+  const iconPath = resolve(PUBLIC, item.imageUrl);
   if (!existsSync(iconPath)) continue;
   const probes = c.probes ?? defaults.probes[item.slot] ?? [];
   const probeResults = [];
