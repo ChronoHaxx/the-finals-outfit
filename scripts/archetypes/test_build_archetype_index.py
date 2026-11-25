@@ -316,7 +316,7 @@ class FreshReadsAndLiveEqualMedium(unittest.TestCase):
         items = models / 'reconstructed-assembly-v2' / 'items'
         items.mkdir(parents=True)
         (items / 'DA_Test.json').write_text(json.dumps({'properties': {'VisualParts': parts}}), encoding='utf-8')
-        self.write_run({'b01': {'guard': {'exitCode': 0}, 'mappingSha256': 'F36B', 'missing': []}})
+        self.write_run({'b01': {'guard': {'exitCode': 0}, 'mappingSha256': 'F36B', 'missing': [], 'glb': {'exit': 0}}})
 
     def write_run(self, batches, control_ok=True):
         record = {'policy': 'archetypes-light-bulk-run-v1', 'usmapSha256': 'f36b', 'control': {'ok': control_ok},
@@ -363,11 +363,12 @@ class FreshReadsAndLiveEqualMedium(unittest.TestCase):
     def test_a_run_with_a_guard_refusal_or_a_missing_package_is_not_used(self):
         for bad in ({'guard': {'exitCode': 1}, 'mappingSha256': 'f36b', 'missing': []},
                     {'guard': {'exitCode': 0}, 'mappingSha256': 'e5b2', 'missing': []},
-                    {'guard': {'exitCode': 0}, 'mappingSha256': 'f36b', 'missing': ['X.uasset']}):
+                    {'guard': {'exitCode': 0}, 'mappingSha256': 'f36b', 'missing': ['X.uasset']},
+                    {'guard': {'exitCode': 0}, 'mappingSha256': 'f36b', 'missing': [], 'glb': 'pending'}):
             self.write_run({'b01': bad})
             with self.assertRaises(SystemExit):
                 self.build('--live-equal-medium', '--staging', str(self.run_dir))
-        self.write_run({'b01': {'guard': {'exitCode': 0}, 'mappingSha256': 'f36b', 'missing': []}}, control_ok=False)
+        self.write_run({'b01': {'guard': {'exitCode': 0}, 'mappingSha256': 'f36b', 'missing': [], 'glb': {'exit': 0}}}, control_ok=False)
         with self.assertRaises(SystemExit):
             self.build('--live-equal-medium', '--staging', str(self.run_dir))
 

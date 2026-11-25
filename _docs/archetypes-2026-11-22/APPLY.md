@@ -1,5 +1,81 @@
 # Applying the archetype index (Light) — for the main-folder session the coordinator assigns
 
+## Bulk apply, 538 Light meshes (decided 25 Nov 2026)
+
+**Decision (coordinator, 25 Nov):** one apply of the whole Light bulk build. It replaces the planned waves W1–W3.
+- **Order:** after w177's apply, before S12 batch C's C0.
+- **Light stays behind the flag** (`?archetypes=on`).
+- **Hosting** goes with the release the coordinator plans after C0.
+
+Run record: [light-bulk/run-2026-11-25/README.md](light-bulk/run-2026-11-25/README.md).
+
+| Pin | sha256 |
+| --- | --- |
+| Reviewed active `assets.json`, kept as `scripts/generated/archetypes/bulk-v2-build/reviewed-active.json` | `b164180cb6899a9ece4a916bb60bbc2546df9c476aeb90f18ca884108f96ed63` |
+| Active `skin-pairs.json` (not written by this apply) | `f15a73a2a5dfc2f61c3bbd20bf1ea4b9c9e735a64f856ba12310f1e50e1c00a4` |
+| Reviewed result `bulk-v2-build/assets.json` | `7ee6ef155f6f9dc01777784e0ebd70a144673d86ebc91916cd30eced6f02020d` |
+| `bulk-v2-build/publish-list.tsv` (538 rows, 336.2 MB) | `01538d4744d92d63131e53acdf8164662c9dc1fc5d2c0bea1998186dcfffea8c` |
+| Run record `light-bulk-v2/run.json` | `2d8b294691e4b33620ceed31521385633ca7d342a258d74e67fdd67eb30d52aa` |
+| 17 Nov proof `light-bulk-v2/inputs/nov17-proof-v1.json` | `6406580f9ebb433936f0629a0d7157e412a9a1e40061ec1a9bd5c1e8055d8615` |
+
+**What review covered:** the change from `b164180c` to `7ee6ef15`, all additive:
+- +538 mesh entries;
+- `_L` mask keys for 147 items;
+- 3,367 new leaves, nothing altered or removed (`compare-apply-delta.py`).
+
+w177's apply moves the active index first, so the result sha cannot repeat. What must repeat is the change.
+
+Run in Git Bash from the main checkout, using `scripts/archetypes` from `main` once the run-record PR has merged. No
+batch or other apply may be running. `M=scripts/generated/archetypes`.
+
+1. **Check the inputs.** Run `sha256sum $M/light-bulk-v2/run.json $M/light-bulk-v2/inputs/nov17-proof-v1.json $M/bulk-v2-build/reviewed-active.json $M/bulk-v2-build/assets.json $M/bulk-v2-build/publish-list.tsv`.
+   Each must equal its pin above. Then record the sha of the active `assets.json`; call it the new active.
+2. **Rebuild on the active index:**
+
+   ```
+   python -I scripts/archetypes/build-archetype-index.py --staging $M/light-bulk-v2 --live-equal-medium --proven $M/light-bulk-v2/inputs/nov17-proof-v1.json --out $M/bulk-v2-apply --publish-dir reconstructed-archetypes-v1
+   ```
+
+   - On `b164180c` it prints `{"light": 538, "heavy": 0} class meshes; 418 refused; 1206 skipped; classes: ['light']`
+     and reproduces `7ee6ef15` byte for byte.
+   - On a moved index the counts may only move where the other apply touched a Light mesh's Medium. Step 3 decides.
+3. **Check the change, then the publish list:**
+
+   ```
+   python -I scripts/archetypes/compare-apply-delta.py $M/bulk-v2-build/reviewed-active.json $M/bulk-v2-build/assets.json public/models/reconstructed-assemblies-v1/assets.json $M/bulk-v2-apply/assets.json
+   sha256sum $M/bulk-v2-apply/publish-list.tsv
+   ```
+
+   - Expect `"ok": true` with `"meshesAdded": 538`, and the publish list equal to `01538d47…`. The list does not
+     depend on the active index.
+   - Anything else: stop and send the coordinator the checker's output. A mismatch means the other apply touched a
+     Medium the Light build depends on, so that row needs review before it ships.
+4. **Back up, copy, check, write.** Steps 3–5 of the list below:
+   - back up the active `assets.json` and `skin-pairs.json` into `before/`;
+   - copy the 538 publish-list rows into `public/models/reconstructed-archetypes-v1/meshes/` and check every sha256;
+   - write `$M/bulk-v2-apply/assets.json` as the new active `assets.json`.
+
+   **Do not copy the build's `skin-pairs.json`:** it is a re-serialized copy of the active one (`4d167fb8…`, same
+   content).
+5. **Record the apply.** Add a dated section here with:
+   - the new active sha and the result sha;
+   - the checker's output;
+   - the apply's `skipped.tsv`, copied as `apply-<date>-skipped.tsv`.
+6. **Check in the app** with `?archetypes=on`:
+   - the Light picker loads `SK_Body_L`;
+   - the starting outfit wears the Light jeans, while the Light sneakers and T-shirt are still missing (expected);
+   - a few full-size `capture-classes.mjs --classes light,medium` shots of items that gained `_L` meshes.
+7. **Hosting and the share Worker's `ar` deploy** go with the coordinator's release, as in steps 6–7 below.
+
+**Expected afterwards on Light:**
+- items 960 → 1,974 of 2,953;
+- presets whole 6 → 32;
+- presets losing at most one piece 15 → 147, of 352.
+
+The flag stays on until the bar is met.
+
+## History: the 23 Nov apply (done; Light is in the active index since then)
+
 **Status:** approved in principle by the coordinator (23 Nov) as a routine step for the user. It is queued after
 UsmapGen and run one apply at a time, together with S12 tier-2 batch A, which touches the same `assets.json`. Only
 the main-folder session writes `public/models`.
