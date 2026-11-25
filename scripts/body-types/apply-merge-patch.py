@@ -19,7 +19,9 @@ Modes (exactly one):
 Guards: the active assets.json and skin-pairs.json must hash to the patch's pins; every patched entry must still hold
 its "from" URL and sha256; only url and sha256 change, plus bodyMaskUrl where the patch carries a bodyMask change
 (tier 2, 23 Nov 2026): the entry must still name the old mask, and the new mask file must already be in place,
-resolved from ACTIVE_DIR, with the patch's sha256. Files are read, changed and written back whole, keeping every
+resolved from ACTIVE_DIR, with the patch's sha256. A "materials" section (batch C, 25 Nov 2026) repoints
+assets.materials[source] the same way: the entry must still name the old file, the new one must be in place with its
+sha256, and a source with materialVariants is refused. Files are read, changed and written back whole, keeping every
 field and the source formatting, so nothing but the repointed values changes. Two formats are known: 2-space JSON with
 CRLF (the diff is exactly the repointed lines) and compact JSON on one line (23 Nov 2026: the Light apply writes the
 index that way); a file in any other format is refused.
@@ -108,6 +110,22 @@ def main(argv):
         entry['bodyMaskUrl'] = change['toUrl']
         masks += 1
 
+    materials = 0
+    variant_recipients = {json.loads(k)[0] for k in assets.get('materialVariants', {})}
+    for source, change in patch.get('materials', {}).items():
+        # Batch C (25 Nov 2026): a garment whose Season 12 UVs changed takes its 17 Nov material too. The entry must still
+        # name the old material file, and the new one must already be in place with the patch's sha256. A parameter
+        # variant built on the old material would keep the old layout, so a recipient with variants is refused.
+        if assets.get('materials', {}).get(source) != change['fromUrl']:
+            raise SystemExit(f'{source}: its material no longer matches the patch; rebuild the patch')
+        if source in variant_recipients:
+            raise SystemExit(f'{source}: has material variants, which this patch does not rebuild')
+        target = active_dir / change['toUrl']
+        if not target.is_file() or sha(target) != change['toSha256']:
+            raise SystemExit(f'{source}: the new material {target} is missing or differs; copy the batch C data first')
+        assets['materials'][source] = change['toUrl']
+        materials += 1
+
     body_pairs = 0
     if body_url is not None:
         attachment = assets['attachmentBody']
@@ -129,7 +147,7 @@ def main(argv):
     (out_dir / 'assets.json').write_bytes(dump(assets, assets_fmt))
     (out_dir / 'skin-pairs.json').write_bytes(dump(pairs, pairs_fmt) if body_pairs else pairs_path.read_bytes())
     print(json.dumps({'mode': 'garments-only' if garments_only else 'with-body', 'meshesRepointed': applied,
-                      'bodyMasksRepointed': masks,
+                      'bodyMasksRepointed': masks, 'materialsRepointed': materials,
                       'skinPairsRewritten': body_pairs, 'assetsFormat': assets_fmt, 'out': str(out_dir),
                       'assetsSha256': sha(out_dir / 'assets.json'),
                       'skinPairsSha256': sha(out_dir / 'skin-pairs.json')}, indent=1))
