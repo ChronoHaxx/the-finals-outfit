@@ -61,3 +61,24 @@ On the reconstructed route the viewer runs its temporal accumulator, so captures
 
 The body-type and refresh reviews never had this problem: `scripts/body-types/capture-review.mjs` always passes
 `reconstructed=1`.
+
+## Cosmetics-route history: the census ledger and the June cluster map
+
+These two records were judged on the older cosmetics route, before the site drew the reconstructed one. They are
+history, not the state of the site. A 30-item re-score on 25 Nov 2026 flipped 18 of their verdicts (all fail to
+pass) on the route the site draws (`_docs/visual-diff-route-audit-2026-11-25/README.md`).
+
+- **`verdicts.generated.json`**: 239 census verdicts (`rev` `census` and `census-r2`), judged 5 to 11 Jul 2026 on
+  `verify-render2.mjs` renders. Its shape is unchanged on purpose: `merge-verdicts.mjs`, `next-batch.mjs` and
+  `verify.mjs --seed-census` treat every top-level key as an item id, so the label lives here, not in the file.
+  - Don't read its scores or categories as the current state.
+  - Don't seed new verification marks from it with `--seed-census`.
+  - Judge again on the reconstructed route instead.
+- **The June 2026 catalog-audit cluster map**: the 82 items in `audit-list.json`, judged with
+  `audit-judge.workflow.js` on `verify-render2.mjs` renders in the root checkout's `visual-diff/audit/`. Its clusters
+  were "glass lenses", "metal grey", "colours too light", "wrong mesh", "decals" and "framing". In the re-score, the
+  first four each had sampled items that pass on the reconstructed route: three tinted glasses, the gold Namatama,
+  two yellow garments, the hacker goggles and the brass hannya. Decals and framing were not sampled.
+
+A new census on the reconstructed route starts from a fresh ledger: render with the current `verify-render2.mjs`
+(reconstructed by default), then judge.
