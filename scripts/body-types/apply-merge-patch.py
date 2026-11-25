@@ -57,21 +57,11 @@ def load_exact(path):
     raise SystemExit(f'{path} does not round-trip byte-exactly in a known format; refusing to rewrite it')
 
 
-def main(argv):
-    garments_only = '--garments-only' in argv
-    if garments_only:
-        argv.remove('--garments-only')
-    body_url = None
-    if '--body-url' in argv:
-        i = argv.index('--body-url')
-        body_url = argv[i + 1]
-        del argv[i:i + 2]
-    if garments_only == (body_url is not None) or len(argv) != 3:
-        raise SystemExit(__doc__)
-    patch_json, active_dir, out_dir = map(Path, argv)
-    if out_dir.exists():
-        raise SystemExit(f'Preserve existing {out_dir}')
-    patch = json.loads(patch_json.read_text(encoding='utf-8'))
+def apply(patch, active_dir, body_url=None):
+    """Check PATCH against the index in ACTIVE_DIR and apply it in memory (garments only unless body_url is given).
+    Returns (assets bytes, skin-pairs bytes, counts), each file in its source format. Every stale or unexpected value
+    raises SystemExit and nothing is written. make-refresh-patch.py calls this to state the expected result."""
+    active_dir = Path(active_dir)
     assets_path, pairs_path = active_dir / 'assets.json', active_dir / 'skin-pairs.json'
     if sha(assets_path) != patch['activeIndexSha256']:
         raise SystemExit(f'{assets_path} moved since the patch was built; rebuild the candidate (HANDOFF.md)')
@@ -143,13 +133,32 @@ def main(argv):
             row['body']['url'] = body_url
             body_pairs += 1
 
+    counts = {'mode': 'with-body' if body_url is not None else 'garments-only', 'meshesRepointed': applied,
+              'bodyMasksRepointed': masks, 'materialsRepointed': materials, 'skinPairsRewritten': body_pairs,
+              'assetsFormat': assets_fmt}
+    return dump(assets, assets_fmt), (dump(pairs, pairs_fmt) if body_pairs else pairs_path.read_bytes()), counts
+
+
+def main(argv):
+    garments_only = '--garments-only' in argv
+    if garments_only:
+        argv.remove('--garments-only')
+    body_url = None
+    if '--body-url' in argv:
+        i = argv.index('--body-url')
+        body_url = argv[i + 1]
+        del argv[i:i + 2]
+    if garments_only == (body_url is not None) or len(argv) != 3:
+        raise SystemExit(__doc__)
+    patch_json, active_dir, out_dir = map(Path, argv)
+    if out_dir.exists():
+        raise SystemExit(f'Preserve existing {out_dir}')
+    patch = json.loads(patch_json.read_text(encoding='utf-8'))
+    assets_bytes, pairs_bytes, counts = apply(patch, active_dir, body_url)
     out_dir.mkdir(parents=True)
-    (out_dir / 'assets.json').write_bytes(dump(assets, assets_fmt))
-    (out_dir / 'skin-pairs.json').write_bytes(dump(pairs, pairs_fmt) if body_pairs else pairs_path.read_bytes())
-    print(json.dumps({'mode': 'garments-only' if garments_only else 'with-body', 'meshesRepointed': applied,
-                      'bodyMasksRepointed': masks, 'materialsRepointed': materials,
-                      'skinPairsRewritten': body_pairs, 'assetsFormat': assets_fmt, 'out': str(out_dir),
-                      'assetsSha256': sha(out_dir / 'assets.json'),
+    (out_dir / 'assets.json').write_bytes(assets_bytes)
+    (out_dir / 'skin-pairs.json').write_bytes(pairs_bytes)
+    print(json.dumps({**counts, 'out': str(out_dir), 'assetsSha256': sha(out_dir / 'assets.json'),
                       'skinPairsSha256': sha(out_dir / 'skin-pairs.json')}, indent=1))
 
 

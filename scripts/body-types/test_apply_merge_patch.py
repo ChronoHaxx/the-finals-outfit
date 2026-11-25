@@ -205,18 +205,34 @@ maker = importlib.util.module_from_spec(maker_spec)
 maker_spec.loader.exec_module(maker)
 
 
+MI_DEFAULT = '/Game/Items/MI_Tee_Default.MI_Tee_Default'
+
+
+def fake_glb(slots):
+    """A GLB header and JSON chunk carrying only the material slot extras glb_slots reads."""
+    doc = json.dumps({'asset': {'version': '2.0'}, 'materials': [
+        {'extras': {'sourceSlot': {'MaterialSlotName': s['slot']}, 'sourceMaterial': s['material']}} for s in slots]}).encode()
+    doc += b' ' * (-len(doc) % 4)
+    return (b'glTF' + (2).to_bytes(4, 'little') + (20 + len(doc)).to_bytes(4, 'little')
+            + len(doc).to_bytes(4, 'little') + b'JSON' + doc)
+
+
 class RefreshPatch(Fixture):
-    """make-refresh-patch.py reads every "from" and sha256 itself; its patch must apply cleanly and only to that index."""
+    """make-refresh-patch.py reads every "from" and sha256 itself; its patch must apply cleanly and only to that index,
+    and it states the apply's exact result and the files to publish."""
 
     def setUp(self):
         super().setUp()
         self.mi = '/Game/Items/MI_Tee_Black.MI_Tee_Black'
+        self.slots = [{'slot': 'Tee', 'material': MI_DEFAULT}]
         assets = json.loads((self.active / 'assets.json').read_bytes())
         assets['meshes'][TEE]['bodyMaskUrl'] = '../live/SK_Tee_M.bodymask.png'
+        assets['meshes'][TEE]['slots'] = self.slots
         assets['materials'] = {self.mi: '../live/tee-black.json'}
         (self.active / 'assets.json').write_bytes(tool.dump(assets))
         (self.tmp / 'c0').mkdir()
-        for name, data in (('SK_Tee_M.glb', b'glb'), ('SK_Tee_M.bodymask.png', b'mask'), ('tee-black.json', b'{}')):
+        for name, data in (('SK_Tee_M.glb', fake_glb(self.slots)), ('SK_Tee_M.bodymask.png', b'mask'),
+                           ('tee-black.json', b'{}')):
             (self.tmp / 'c0' / name).write_bytes(data)
         self.spec = {'note': 'C0.', 'meshes': {TEE: {'toUrl': '../c0/SK_Tee_M.glb',
                                                      'bodyMask': {'toUrl': '../c0/SK_Tee_M.bodymask.png'}}},
@@ -227,17 +243,97 @@ class RefreshPatch(Fixture):
         maker.main(str(self.active), str(self.tmp / 'spec.json'), str(self.tmp / out))
         return json.loads((self.tmp / out).read_text(encoding='utf-8'))
 
+    def outputs(self, out='refresh.json'):
+        stem = self.tmp / out
+        expected = json.loads(stem.with_suffix('.expected.json').read_text(encoding='utf-8'))
+        listed = {(Path.cwd() / line).resolve() for line in
+                  stem.with_suffix('.publish.txt').read_text(encoding='utf-8').splitlines()}
+        return expected, listed
+
     def test_the_patch_applies_mesh_mask_and_material(self):
         self.patch = self.make()
         self.assertEqual(self.patch['meshes'][TEE]['fromSha256'], 't0')
-        self.assertEqual(self.patch['meshes'][TEE]['toSha256'], hashlib.sha256(b'glb').hexdigest())
+        self.assertEqual(self.patch['meshes'][TEE]['toSha256'], hashlib.sha256(fake_glb(self.slots)).hexdigest())
         out, _ = self.run_tool('--garments-only')
         self.assertEqual(out['meshes'][TEE]['url'], '../c0/SK_Tee_M.glb')
         self.assertEqual(out['meshes'][TEE]['bodyMaskUrl'], '../c0/SK_Tee_M.bodymask.png')
         self.assertEqual(out['materials'][self.mi], '../c0/tee-black.json')
         self.assertEqual(out['meshes'][BODY], {'url': LIVE_BODY, 'sha256': 'b0', 'kind': 'skeletal'})
+        self.assertEqual(out['unknownField'], {'kept': True})
         self.assertEqual((self.tmp / 'out' / 'skin-pairs.json').read_bytes(),
                          (self.active / 'skin-pairs.json').read_bytes())
+
+    def test_the_expected_sha_is_what_the_apply_writes(self):
+        self.patch = self.make()
+        expected, _ = self.outputs()
+        self.run_tool('--garments-only')
+        self.assertEqual(expected['expectedAssetsSha256'], tool.sha(self.tmp / 'out' / 'assets.json'))
+        self.assertEqual(expected['skinPairsSha256'], tool.sha(self.active / 'skin-pairs.json'))
+        self.assertEqual(expected['patchSha256'], tool.sha(self.tmp / 'refresh.json'))
+        self.assertEqual((expected['meshesRepointed'], expected['bodyMasksRepointed'], expected['materialsRepointed']),
+                         (1, 1, 1))
+
+    def test_the_publish_list_names_every_new_file_and_material_dependency(self):
+        c0 = self.tmp / 'c0'
+        (c0 / 'tee-black.json').write_text(json.dumps({'shader': 'tee-black.glsl', 'coverageShader': 'tee-cov.glsl',
+                                                       'textures': [{'file': 'aa.rgba.gz.bin'}]}), encoding='utf-8')
+        for name in ('tee-black.glsl', 'tee-cov.glsl', 'aa.rgba.gz.bin'):
+            (c0 / name).write_bytes(b'x')
+        self.make()
+        expected, listed = self.outputs()
+        names = ('SK_Tee_M.glb', 'SK_Tee_M.bodymask.png', 'tee-black.json', 'tee-black.glsl', 'tee-cov.glsl', 'aa.rgba.gz.bin')
+        self.assertEqual(listed, {(c0 / n).resolve() for n in names})
+        self.assertEqual(expected['publishFiles'], 6)
+
+    def test_refuses_a_material_whose_texture_is_missing(self):
+        (self.tmp / 'c0' / 'tee-black.json').write_text(json.dumps({'textures': [{'file': 'gone.bin'}]}), encoding='utf-8')
+        with self.assertRaises(SystemExit):
+            self.make()
+        self.assertFalse((self.tmp / 'refresh.json').exists())
+
+    def test_refuses_a_glb_with_other_slots(self):
+        (self.tmp / 'c0' / 'SK_Tee_M.glb').write_bytes(fake_glb([{'slot': 'Tee', 'material': self.mi}]))
+        with self.assertRaises(SystemExit):
+            self.make()
+
+    def test_refuses_an_unexpected_existing_entry(self):
+        # A target another live entry already references (a real file, so only this guard can refuse it): a refresh
+        # target is always a new file.
+        assets = json.loads((self.active / 'assets.json').read_bytes())
+        assets['materials']['/Game/Items/MI_Hat.MI_Hat'] = '../live/hat.json'
+        (self.active / 'assets.json').write_bytes(tool.dump(assets))
+        (self.tmp / 'live').mkdir()
+        (self.tmp / 'live' / 'hat.json').write_bytes(b'{}')
+        self.spec['materials'] = {self.mi: {'toUrl': '../live/hat.json'}}
+        with self.assertRaises(SystemExit):
+            self.make('r1.json')
+        self.assertFalse((self.tmp / 'r1.json').exists())
+        # The live material entry moved after the patch was built (re-pinned so only the entry guard can see it):
+        # the apply refuses and writes nothing.
+        self.spec['materials'] = {self.mi: {'toUrl': '../c0/tee-black.json'}}
+        self.patch = self.make('r2.json')
+        assets = json.loads((self.active / 'assets.json').read_bytes())
+        assets['materials'][self.mi] = '../elsewhere/tee-black.json'
+        (self.active / 'assets.json').write_bytes(tool.dump(assets))
+        self.patch['activeIndexSha256'] = tool.sha(self.active / 'assets.json')
+        with self.assertRaises(SystemExit):
+            self.run_tool('--garments-only')
+        self.assertFalse((self.tmp / 'out').exists())
+
+    def test_rebound_materials_come_from_the_runner_preview(self):
+        preview = self.tmp / 'preview'
+        preview.mkdir()
+        rows = {self.mi: {'from': '../live/tee-black.json', 'to': '../c0/tee-black.json', 'readyRows': ['tee-black']}}
+        (preview / 'preview.json').write_text(json.dumps({'reboundMaterials': rows}), encoding='utf-8')
+        self.spec.pop('materials')
+        self.spec['reboundMaterialsFrom'] = str(preview / 'preview.json')
+        patch = self.make('r1.json')
+        self.assertEqual(patch['materials'][self.mi]['toUrl'], '../c0/tee-black.json')
+        self.assertEqual(patch['materials'][self.mi]['fromUrl'], '../live/tee-black.json')
+        rows[self.mi]['from'] = '../older/tee-black.json'
+        (preview / 'preview.json').write_text(json.dumps({'reboundMaterials': rows}), encoding='utf-8')
+        with self.assertRaises(SystemExit):
+            self.make('r2.json')
 
     def test_refuses_the_body_a_missing_file_and_a_new_material(self):
         self.spec['meshes'] = {BODY: {'toUrl': '../c0/SK_Tee_M.glb'}}
@@ -249,6 +345,13 @@ class RefreshPatch(Fixture):
         self.spec['meshes'], self.spec['materials'] = {}, {'/Game/Items/MI_New.MI_New': {'toUrl': '../c0/tee-black.json'}}
         with self.assertRaises(SystemExit):
             self.make('r3.json')
+
+    def test_refuses_existing_outputs(self):
+        (self.tmp / 'refresh.publish.txt').write_text('kept', encoding='utf-8')
+        with self.assertRaises(SystemExit):
+            self.make()
+        self.assertEqual((self.tmp / 'refresh.publish.txt').read_text(encoding='utf-8'), 'kept')
+        self.assertFalse((self.tmp / 'refresh.json').exists())
 
 
 if __name__ == '__main__':
