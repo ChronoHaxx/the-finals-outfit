@@ -1,4 +1,41 @@
-# Light rows behind fix-wave Mediums: plan (25 Nov 2026), not run
+# Light rows behind fix-wave Mediums: plan (25 Nov 2026), approved, not run
+
+## Decisions (coordinator, 25 Nov)
+
+**Order:** bulk apply → C0 → b10 → proof 1″ and u8 → the processing waves.
+
+0. **b10 fresh read: yes.** Read-only, same runner and pins (map v1 plus the window guard).
+   - Run it when the root runner is free: after the bulk apply, and never overlapping the main-folder session's w177
+     or C0 runs.
+   - The slot is agreed with that session.
+1. **Proof 1″, "permutation-equal": yes, on these conditions.**
+   - **Bijection:** every vertex is matched exactly once. Ties between identical vertices (same position, UVs, normal
+     and weights) are broken deterministically, and the matched multisets must be equal.
+   - **Triangles under the mapping:** an equal multiset of mapped index triples, not two lists compared separately.
+   - **Morph targets** are compared under the same permutation, as in 1′: differences are recorded, not refused.
+   - **Joint-list order is freed only through the by-name skin match.** Joint names, inverse binds and the weight per
+     (vertex, joint name) stay exact, under 1′'s epsilons.
+     - **Reading to confirm:** "joint names" means the joints that carry weight on either side. They must be the same
+       set, each with an inverse bind within 1e-5.
+     - Entries that carry no weight on either side are recorded per row, not compared. Measured on 25 Nov:
+       KnightNeckCloth lists 14 vs 92 joints and RetroRobotHands 59 vs 62. Neither's extra live entries carry any
+       weight, and the shared names' binds agree within 6e-7.
+     - Under a full-list reading these 2 rows skip.
+   - **Record** each row's permutation hash.
+   - **Negative tests** must fail on:
+     - a moved triangle;
+     - a weight swapped between two joints;
+     - a morph delta on one vertex. This is recorded as a morph difference, so the test checks it is recorded,
+       never silently passed;
+     - an extra duplicate vertex.
+   - **No vertex-indexed runtime data.** Rows whose items carry any are refused (evidence in the next section).
+     1″ refuses a Medium named in any per-vertex registry, such as `head-wraps.json`.
+2. **The two 8-bit rows: yes.**
+   - Quantize the fresh weights to u8 the same way the live converter does, then require an exact match.
+   - This applies only to rows whose live copy stores u8 weights, and each such row is recorded.
+   - The implementation must take the quantization from the converter that built those copies (w139 `p?b`, w84
+     `led-head-b1-v3`), not assume it.
+3. **Per-wave weight processing on `_L`,** only for rows b10 shows are ours. Approved as planned, with the idle review.
 
 **Asked by:** the coordinator, 25 Nov. The 25 Light rows whose live Medium is one of our own fix-wave builds are to be
 planned with proof 1′, sized per fix wave. They come after the bulk apply and C0.
@@ -29,12 +66,17 @@ The staged Medium is the 18 Oct read, because none of these rows was in the bulk
 | **reweighted** | 8 | w84 ×4, w80, w82, w121, w125 | Same geometry, different skin on 28 to 1,229 vertices. Either the game changed the weights after 18 Oct, or our wave did (w121 and the w125 t-batch are proxy weight transfers). |
 | **geometry** | 5 | C0, w170 ×2, w80, w125 | Vertex sets differ: a different read, or processing that moved vertices. |
 
-**Nothing at runtime indexes these Mediums' vertices, so a reorder is harmless there.** Checked against the code and
-the wave records:
-- w139 part-hide masks are body-UV textures (`build-part-hide-masks.py`), not garment data;
-- w80 wraps are a preflight gate with no runtime data (the resolver skins the part on its own skinning);
-- w84's LED work lives in the materials, by slot;
-- mesh entries carry only url, sha256, slots, kind and the body-mask fields.
+**Nothing at runtime indexes these Mediums' vertices, so a reorder is harmless there.** Checked against the code, the
+active index and the wave records on 25 Nov:
+- **w139 part-hide:** body-UV textures. `scripts/shader-probe/build-part-hide-masks.py` bakes them; it is in the main
+  checkout's working tree, not tracked. The runtime reads them per item and mesh through `itemBodyMasks`
+  (`src/rig/SourceAssembly.ts:1219`). It never reads garment vertex ids.
+- **w80 wraps:** a preflight gate only (`_docs/goal-100-2026-10-11/w80-wrap-preflight/probe.py`, main checkout,
+  untracked). `src/` has no proxy-wrap runtime, and the resolver skins a wrapped part on its own skinning.
+- **w84 LED:** in the materials, by slot (`src/rig/ReconstructedMaterial.ts` emission paths).
+- **Mesh entries** carry only url, sha256, slots, kind and the body-mask fields.
+- **The one per-vertex registry** in the active folder is `head-wraps.json` (head-component wraps, `src/rig/HeadWrap.ts`).
+  It names none of the 30 Mediums. Only `supported-items.json` names them, as the item catalog.
 
 So the "same processing on `_L`" premise holds only for the weight rows. Half the list needs an equality rule, not
 processing.
@@ -84,9 +126,4 @@ Run in order. Nothing writes the index; applies go through the main-folder sessi
 **Value:** about 37 items beyond the T-shirt. Step 1 gives the most for the least: 19–21 items for one rule with tests,
 in the same build as step 0's read. Steps 2–3 cost per wave and give 15 items.
 
-**Asking the coordinator:**
-- go for step 0 (read-only);
-- yes or no on proof 1″;
-- yes or no on the 8-bit precision.
-
-Order as you set it: after the bulk apply and C0.
+Decided 25 Nov: see "Decisions" at the top. The conditions there take precedence over the step 1–2 sketches above.
