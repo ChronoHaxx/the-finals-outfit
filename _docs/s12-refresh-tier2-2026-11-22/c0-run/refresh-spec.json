@@ -1,0 +1,10 @@
+{
+ "note": "Batch C wave C0 (25 Nov 2026): the Season 12 BasicTshirt (package byte-identical on 17 Nov), its Season 12 body mask (9ff2ed9b) and its 43 material instances rebuilt from the 17 Nov build by s12-c0 v1 (rebindKeptMaterials).",
+ "meshes": {
+  "/Game/Discovery/Characters/Casual/Assets/BasicTshirt/SK_Casual_BasicTshirt_M.SK_Casual_BasicTshirt_M": {
+   "toUrl": "../s12-bodytype-refresh-v1/meshes/SK_Casual_BasicTshirt_M.glb",
+   "bodyMask": {"toUrl": "../s12-refresh-tier2-v1/coverage-s12/SK_Casual_BasicTshirt_M.bodymask.png"}
+  }
+ },
+ "reboundMaterialsFrom": "public/models/reconstructed-s12-c0-preview-v1/preview.json"
+}
