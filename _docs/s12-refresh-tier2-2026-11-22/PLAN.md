@@ -17,7 +17,13 @@ Status (23 Nov):
   - SuitJacket (a w161 part-hide mask);
   - CropTopHoodie and PopGothShoes (review defects);
   - stale packages.
-- C waits for a 17 Nov mapping.
+- C was waiting for a 17 Nov mapping. Patched map v1 (23 Nov) unblocks it. The plan is `BATCH-C-PLAN.md` (24 Nov,
+  not run):
+  - C0, the starting outfit's T-shirt: +43 items;
+  - C1, the 67-mesh shared-item cluster: +183;
+  - C2–C4, the rest of batch C: +277;
+  - R, mesh-only reads: +96.
+  That is 1,423 → 2,022 items Season 12 throughout as an upper bound.
 - Nothing here touches the active index, the main checkout or a host.
 
 ## 1. Inputs (pinned, read-only)
