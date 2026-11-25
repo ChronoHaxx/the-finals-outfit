@@ -125,8 +125,16 @@ need.
 - No variant regresses: no smear, no colour shift.
 - No triangle spans tiles, so a tile edge can't smear inside a triangle.
 - Alliance improves.
-- The camo's placement change is the correction, by construction. Its icon check is inconclusive; that is the
-  coordinator's call.
+
+**CamoEnoRino: icon-inconclusive, accepted by construction (non-integer tiling × whole-tile shift).** The coordinator
+approved C0b with the camo included on 25 Nov, after looking at `side-canvas-camoenorino.png` and
+`icon-camo-near-shoe.png`:
+- live and C0b are equally clean, with the same palette and edge sharpness, no smear, and ΔE −0.05;
+- only the blob placement differs, and C0b samples at the game's own coordinates.
+
+Recheck it if a better in-game reference turns up.
+
+The `reconstructed=1` trap found here dates earlier visual-diff runs; see `scripts/visual-diff/README.md`.
 
 ## Apply (after C0, through the main-folder session)
 
