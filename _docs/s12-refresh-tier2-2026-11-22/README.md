@@ -9,6 +9,7 @@ index is `APPLY.md`. This file records what was built, the review, and what is l
 | File | What |
 |---|---|
 | `PLAN.md` | inputs, census, route stages, batches A/B/C |
+| `BATCH-C-PLAN.md` | batch C on map v1 (24 Nov, not run): waves C0 (T-shirt) → C1 (cluster) → C2–C4 → R, gates, Light siblings, holds; snapshot in `batchC-plan/` |
 | `APPLY.md` | v10c (batch B + mask-only fixes for batch A): the merge recipe for a main-folder session, publish list, checks, rollback. Batch A v8 was applied on 23 Nov. |
 | `replan.sh` | re-plan on whatever index is active: census, proofs, admission lists, build, patch (Git Bash) |
 | `index-diff.py` | what changed between two `assets.json` files, by mesh and field (the index is one compact line now) |
@@ -28,6 +29,9 @@ Data (ignored, this worktree): `scripts/generated/s12-refresh-tier2-v1/` — pro
 - `build-preview-index.py`: `settle()` (the fixpoint, shared), `--admit-surface`, `--admit-rework`,
   `--package-proof`, a material-slot guard; `--mask-proof` and `--ship-s12-masks` (v10, below). 19 tests.
 - `package-proof.py` (new): per mesh, the package sha256 on 6 Nov and today.
+- `plan-batch-c.py` (new, 24 Nov): batch C waves on the active index through the builder's own sets and item rule.
+  It is checked against a builder run's `effective` set. Per mesh it writes material scope, package status, a View-gate
+  forecast and Light siblings. 4 tests.
 - `mask-proof.py` (new): judges every mask that names a mesh from live and S12 regenerations (unchanged,
   body-changed, unproven).
 - `make-merge-patch.py` / `apply-merge-patch.py`: carry and verify body mask repoints, with the mesh or mask only. The

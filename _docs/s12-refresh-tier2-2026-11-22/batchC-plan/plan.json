@@ -1,0 +1,211 @@
+{
+ "note": "Upper bounds: every planned mesh is assumed to pass its proofs and review.",
+ "inputs": {
+  "active": "b164180cb6899a9ece4a916bb60bbc2546df9c476aeb90f18ca884108f96ed63",
+  "morph": "121cc67e9d4c1bdba3259eb73abf3ee7b1b1fb87602cc64c8f91ff6217746729",
+  "surface": "83fc4cf2d97d9b01e5bb05216b093e250213514384cd89856901c834e35b3be7",
+  "census": "f26415438a66719d11584cd7e4c8b89f35538e8f532eeded0cfc4990b682844b",
+  "builder": "e5b3e19126027747e860c3339a5a0d22f76ad13d4ad8fa83e8c7b22ef72c4451"
+ },
+ "itemsWithBodyTypeMeshes": 2074,
+ "s12ItemsNow": 1423,
+ "groups": {
+  "batchC": 72,
+  "stalePackagesOutsideC": 14,
+  "neverRead": 51,
+  "otherRefused": 110,
+  "cluster": 67,
+  "clusterSeeds": [
+   "SK_Medieval_DemonPants_M",
+   "SK_Medieval_JesterJacket_M",
+   "SK_Medieval_TacticalKnightBracers_M",
+   "SK_Streetwear_ChainNecklace_M",
+   "SK_Streetwear_CroppedTshirtOversize_M",
+   "SK_Streetwear_PopLanyardArmbandLeft_M",
+   "SK_Streetwear_PopLanyardArmbandRight_M"
+  ]
+ },
+ "clusterByGroup": {
+  "admitted, held by the item rule": 45,
+  "stale package": 4,
+  "never read for S12": 12,
+  "batch C": 6
+ },
+ "waves": [
+  {
+   "wave": "C0",
+   "meshes": 1,
+   "s12ItemsAfter": 1466,
+   "unlocks": 43,
+   "needsMaterialRead": 1,
+   "needsMeshRead": 0,
+   "materialInstances": 43,
+   "garmentTextures": 58,
+   "itemsShowing": 43
+  },
+  {
+   "wave": "C1",
+   "meshes": 67,
+   "s12ItemsAfter": 1649,
+   "unlocks": 183,
+   "needsMaterialRead": 6,
+   "needsMeshRead": 16,
+   "materialInstances": 52,
+   "garmentTextures": 59,
+   "itemsShowing": 176
+  },
+  {
+   "wave": "C2",
+   "meshes": 5,
+   "s12ItemsAfter": 1741,
+   "unlocks": 92,
+   "needsMaterialRead": 5,
+   "needsMeshRead": 0,
+   "materialInstances": 100,
+   "garmentTextures": 87,
+   "itemsShowing": 113
+  },
+  {
+   "wave": "C3",
+   "meshes": 25,
+   "s12ItemsAfter": 1836,
+   "unlocks": 95,
+   "needsMaterialRead": 25,
+   "needsMeshRead": 1,
+   "materialInstances": 99,
+   "garmentTextures": 252,
+   "itemsShowing": 108
+  },
+  {
+   "wave": "C4",
+   "meshes": 35,
+   "s12ItemsAfter": 1926,
+   "unlocks": 90,
+   "needsMaterialRead": 35,
+   "needsMeshRead": 1,
+   "materialInstances": 45,
+   "garmentTextures": 247,
+   "itemsShowing": 43
+  },
+  {
+   "wave": "R",
+   "meshes": 49,
+   "s12ItemsAfter": 2022,
+   "unlocks": 96,
+   "needsMaterialRead": 0,
+   "needsMeshRead": 49,
+   "materialInstances": 0,
+   "garmentTextures": 0,
+   "itemsShowing": 59
+  }
+ ],
+ "holds": {
+  "SK_Streetwear_CropTopHoodie_M": "held: the game's own S12 weights are defective",
+  "SK_Streetwear_PopGothShoes_M": "held: the game's own S12 weights are defective",
+  "SK_FancyDress_SuitJacket_M": "held: w161 part-hide mask needs tooling",
+  "SK_Traditional_LunarDressTop_M": "held: legacy mask with no generation record"
+ },
+ "itemsStillMixed": 52,
+ "topBlockersAfterAllWaves": [
+  [
+   "SK_Streetwear_TightSinglet_M",
+   22
+  ],
+  [
+   "SK_Streetwear_TechHoodie_M",
+   10
+  ],
+  [
+   "SK_FancyDress_SuitJacket_M",
+   7
+  ],
+  [
+   "SK_Casual_ShirtRolledUpSleeves_M",
+   5
+  ],
+  [
+   "SK_Military_SWATVest_M",
+   4
+  ],
+  [
+   "SK_Military_SpecialistHarness_M",
+   3
+  ],
+  [
+   "SK_Cowboy_CrossBandolier_M",
+   3
+  ],
+  [
+   "SK_Sport_LargeWristband_M",
+   3
+  ],
+  [
+   "SK_Streetwear_UncappedOversizedJacket_M",
+   2
+  ],
+  [
+   "SK_Mexico_AncientArmDetails_M",
+   2
+  ],
+  [
+   "SK_Traditional_LunarBoleroShortSleeve_M",
+   2
+  ],
+  [
+   "SK_Traditional_LunarDressTop_M",
+   2
+  ],
+  [
+   "SK_Traditional_LunarDress_M",
+   2
+  ],
+  [
+   "SK_Traditional_LunarLegCover_M",
+   2
+  ],
+  [
+   "SK_Streetwear_CropTopHoodie_M",
+   1
+  ],
+  [
+   "SK_Streetwear_PopGothShoes_M",
+   1
+  ],
+  [
+   "SK_Military_SWATShirt_M",
+   1
+  ],
+  [
+   "SK_Casual_OneStrapOveralls_M",
+   1
+  ],
+  [
+   "SK_Military_CardboardCombatVest_M",
+   1
+  ],
+  [
+   "SK_Hologram_EngimoJacketHologram_M",
+   1
+  ],
+  [
+   "SK_Space_BountyHunterPants_M",
+   1
+  ],
+  [
+   "SK_Sport_BaseballJersey_M",
+   1
+  ],
+  [
+   "SK_Sport_SingleSleeve_M",
+   1
+  ],
+  [
+   "SK_Historic_AnubisJewelry_M",
+   1
+  ],
+  [
+   "SK_Mexico_AncientNecklace_M",
+   1
+  ]
+ ]
+}
