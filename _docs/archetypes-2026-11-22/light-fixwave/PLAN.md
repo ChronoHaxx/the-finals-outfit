@@ -12,15 +12,31 @@
    - **Bijection:** every vertex is matched exactly once. Ties between identical vertices (same position, UVs, normal
      and weights) are broken deterministically, and the matched multisets must be equal.
    - **Triangles under the mapping:** an equal multiset of mapped index triples, not two lists compared separately.
-   - **Morph targets** are compared under the same permutation, as in 1′: differences are recorded, not refused.
+   - **Morph targets** are compared under the same permutation, as in 1′: differences are recorded, not refused
+     (confirmed).
    - **Joint-list order is freed only through the by-name skin match.** Joint names, inverse binds and the weight per
      (vertex, joint name) stay exact, under 1′'s epsilons.
-     - **Reading to confirm:** "joint names" means the joints that carry weight on either side. They must be the same
-       set, each with an inverse bind within 1e-5.
-     - Entries that carry no weight on either side are recorded per row, not compared. Measured on 25 Nov:
-       KnightNeckCloth lists 14 vs 92 joints and RetroRobotHands 59 vs 62. Neither's extra live entries carry any
-       weight, and the shared names' binds agree within 6e-7.
-     - Under a full-list reading these 2 rows skip.
+     - **Confirmed (coordinator, 25 Nov):** the **weighted** joint set must be identical by name: joints that carry
+       weight on either side. Each needs an inverse bind within 1e-5, and the weights must match exactly per (vertex,
+       joint name).
+     - List entries with no weight on either side are recorded per row, not compared.
+   - **Extra check before admitting a row:** nothing at runtime may refer to its extra unweighted joints. That covers
+     sockets and attachment frames, cloth-proxy and wrap lookups, and emote-prop bones. If anything does, the row is
+     refused.
+     - **What the runtime does with an extra joint.** The rebind looks up every cosmetic bone by name
+       (`src/rig/CharacterRig.ts:880`):
+       - a body-skeleton bone maps onto the body's own bone, so an unweighted one is invisible;
+       - a bone the body lacks is grafted as a branch under its anchor (`CharacterRig.ts:519–532`). `jj` bones are
+         also found by name as spring chains (`src/rig/SpringBones.ts:15`).
+     - **So the implementation admits unweighted extras only if every one is a body-skeleton bone.** It also refuses
+       a row if the mesh is named in `attachmentBody`, `attachmentFrames`, `head-wraps.json` or another side registry.
+     - **Results, 25 Nov:**
+       - **KnightNeckCloth: admit.** The live copy lists 92 joints against 14. The 78 extras are exactly the rest of the
+         92-joint body skeleton, all unweighted, and no cloth or extra bones. No index section or side registry names
+         the mesh. The shared names' binds agree within 3e-7.
+       - **RetroRobotHands: refuse.** Its 3 extras are `headAntennaUlti{Center,Left,Right}_jjr`, antenna spring bones
+         that are not in the body skeleton. The runtime grafts those and finds them as spring chains. The row also has
+         no S12 proof row. This leaves **14 rows** for 1″.
    - **Record** each row's permutation hash.
    - **Negative tests** must fail on:
      - a moved triangle;
@@ -105,7 +121,7 @@ Run in order. Nothing writes the index; applies go through the main-folder sessi
 
    The Light mesh still has to pass proofs 3–5 against the staged Medium, unchanged. Tests come in pairs, positive and
    negative: reorder only; one triangle flipped; one weight off by one step; a joint renamed; slot order swapped.
-   - **Yield:** 15 rows, 19 items, 18 preset uses.
+   - **Yield:** 14 rows, 17 items, 16 preset uses. RetroRobotHands is refused by the extra-joint check above.
    - **Optional, also your call:** the two 8-bit rows join if 1″ compares weights at the live file's stored precision
      (one u8 step). That adds 2 rows and 2 items.
 2. **Weight rows (8), after b10.**
@@ -123,7 +139,7 @@ Run in order. Nothing writes the index; applies go through the main-folder sessi
    - BasicTshirt: C0 refreshes its Medium; the next Light build proves it. Nothing to do here.
    - SpacePilotJacket and its Ultimate (w170): parked behind S12's R read and the cloth-sim decision #18. 3 items.
 
-**Value:** about 37 items beyond the T-shirt. Step 1 gives the most for the least: 19–21 items for one rule with tests,
+**Value:** about 37 items beyond the T-shirt. Step 1 gives the most for the least: 17–19 items for one rule with tests,
 in the same build as step 0's read. Steps 2–3 cost per wave and give 15 items.
 
 Decided 25 Nov: see "Decisions" at the top. The conditions there take precedence over the step 1–2 sketches above.
