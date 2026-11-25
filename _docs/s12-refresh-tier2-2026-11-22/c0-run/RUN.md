@@ -52,10 +52,17 @@ bash $C/run-v1.sh > $C/run-v1.out 2>&1; echo "c0 v1 exit $?"; cat $C/run-v1.out
 
 If a number differs, stop there and send the tier-2 session the step's `.out` file; don't adjust and rerun.
 
-Written: `scripts/generated/shader-probe/s12-c0-v1`, `public/models/reconstructed-s12-c0-v1`,
-`public/models/reconstructed-s12-c0-preview-v1`, and the logs in this folder. In w177 the auto-mode permission check
-refused the index stage because it writes under `public/models`. Here, too, it writes only the preview folder above.
-If it is refused again, run `bash $C/run-v1.sh index` once the user allows it.
+What it writes:
+- `scripts/generated/shader-probe/s12-c0-v1` (the source stage onward);
+- under `public/models`:
+  - step 2: the one mask file;
+  - build: `reconstructed-s12-c0-v1/staging`;
+  - index: `reconstructed-s12-c0-v1/meshes` and `materials`, and `reconstructed-s12-c0-preview-v1`;
+- the logs in this folder.
+
+All of these are new paths; the active folder is never written. In w177 the auto-mode permission check refused the
+index stage because it writes under `public/models`. If a step is refused here, stop and ask the user. A stopped
+stage reruns alone (`bash $C/run-v1.sh index`).
 
 ## After the run (tier-2 session)
 
