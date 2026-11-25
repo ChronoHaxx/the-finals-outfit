@@ -51,6 +51,10 @@ the cosmetics route: `render` (until `VDIFF_QUERY`), `build-garment-masks`, `coa
 `material-ab-render`, `material-bindings`, `orbit`, `render-hairs`, `render-hairs-ctx`, `streak-sweep`, `sweep`,
 `verify-render` and `verify-render2`.
 
+What relied on those runs, and a 30-item re-score on both routes: `_docs/visual-diff-route-audit-2026-11-25/README.md`.
+In short, no decision in the window used an affected run. But the older verdict ledger and the June cluster map
+describe the cosmetics route, and 18 of 30 sampled verdicts flip on the route the site draws.
+
 On the reconstructed route the viewer runs its temporal accumulator, so captures now wait at least 2.5 s after
 `window.__rigIdle` (`settleMs`, the wait `capture-review.mjs` uses). The cosmetics route keeps each script's old wait.
 `--albedo` still works there (it draws the base colour view); `--nobaked` only means something on the cosmetics route.
