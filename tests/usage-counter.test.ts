@@ -218,3 +218,36 @@ test("WuWa VR's events are accepted in its column layout, and its hash differs f
   assert.equal(e.EVENTS.rows.length, 0);
   assert.equal((await send([{ e: "app_loaded", p: { page: "index", lang: "en" } }], "https://evil.example")).status, 403);
 });
+
+test("WuWa Studio's events are accepted from its own origin only, with the Resonator in the first property column", async () => {
+  const e = env();
+  const STUDIO = "https://wuwa-studio.pages.dev";
+  const body = (events: unknown[]) => JSON.stringify({ app: "wuwa-studio", schema: 1, form_factor: "desktop", build: "b36e7f2", events });
+  const send = (events: unknown[], origin = STUDIO) => collect(new Request("https://x.example/e", { method: "POST", body: body(events),
+    headers: { Origin: origin, "User-Agent": CHROME, "CF-Connecting-IP": "203.0.113.7" } }), e, NOON);
+  await send([
+    { e: "app_loaded" },
+    { e: "character_selected", p: { character: "cartethyia", via: "link", built: true } },
+    { e: "outfit_equipped", p: { character: "changli", outfit: "changli-laurel-nymph" } },
+    { e: "form_switched", p: { character: "cartethyia", form: "cartethyia-fleurdelys" } },
+    { e: "animation_played", p: { character: "changli", pose: "pose_1", via: "menu" } },
+    { e: "download_mode_chosen", p: { mode: "ask", via: "first_visit" } },
+    { e: "feature_exposed", p: { feature: "photo_mode", via: "screen" } },
+    { e: "feature_used", p: { feature: "list_search" } },
+    { e: "error_occurred", p: { kind: "caught", what: "clip" } },
+    // Dropped, each on its own: free text, a missing property, a value outside a list.
+    { e: "feature_used", p: { feature: "Changli search" } },
+    { e: "character_selected", p: { character: "changli", via: "list" } },
+    { e: "studio_opened", p: { via: "keyboard shortcut" } },
+  ]);
+  assert.deepEqual(e.EVENTS.rows.map(row => row.blobs![0]), ["app_loaded", "character_selected", "outfit_equipped", "form_switched",
+    "animation_played", "download_mode_chosen", "feature_exposed", "feature_used", "error_occurred"]);
+  assert.match(e.EVENTS.rows[0].blobs![3], /^[0-9a-f]{16}$/, "app_loaded carries the day's visitor hash");
+  assert.deepEqual(e.EVENTS.rows[1].blobs, ["character_selected", "desktop", "b36e7f2", "", "cartethyia", "link", "true"]);
+  assert.deepEqual(e.EVENTS.rows[2].blobs, ["outfit_equipped", "desktop", "b36e7f2", "", "changli", "changli-laurel-nymph"]);
+  // The outfit builder's origin may not send for it, and a preview deployment's address is not its origin.
+  e.EVENTS.rows = [];
+  assert.equal((await send([{ e: "app_loaded" }], ORIGIN)).status, 403);
+  assert.equal((await send([{ e: "app_loaded" }], "https://6bd17241.wuwa-studio.pages.dev")).status, 403);
+  assert.equal(e.EVENTS.rows.length, 0);
+});
