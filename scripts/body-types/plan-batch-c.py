@@ -14,10 +14,12 @@ pass every proof and review, so its unlock counts are upper bounds.
   python -X utf8 -I scripts/body-types/plan-batch-c.py --active ASSETS_JSON --custom CUSTOMIZATION_JSON \
       --census MORPH_CENSUS_JSON --morph MORPH_ONLY_PROOF_JSON --surface SURFACE_PROOF_JSON \
       --builder BUILDER_INDEX_JSON --mask-proof MASK_PROOF_JSON[,...] --view-lanes VIEW_LAYOUT_JSON [--followups LIGHT_FOLLOWUPS_TSV] \
-      [--hold NAME=REASON ...] --out OUT_DIR
+      [--nov17-proof PROOF1_PRIME_TSV] [--hold NAME=REASON ...] --out OUT_DIR
 
-Writes OUT_DIR/plan.json, rows.tsv (one row per planned mesh) and items.tsv (each item and the wave that makes it
-Season 12 throughout). Read-only on every input; refuses an existing OUT_DIR.
+Writes OUT_DIR/plan.json, rows.tsv (one row per planned mesh) and items.tsv (each item, the wave that makes it
+Season 12 throughout, and the wave that also makes it current with the 17 Nov build). Wave U lists the stale packages
+the item rule counts as Season 12 that no 17 Nov read has proven current (--nov17-proof: 'pass' rows).
+Read-only on every input; refuses an existing OUT_DIR.
 """
 import argparse
 import collections
@@ -70,6 +72,11 @@ def component(seeds, by_item, effective, body):
                     seen.add(other)
                     todo.append(other)
     return seen
+
+
+def current_items(s12_items, by_item, unproven):
+    """Season 12 items that show no mesh changed by the 17 Nov update and not yet proven current."""
+    return {i for i in s12_items if not (by_item[i] & unproven)}
 
 
 class Rule:
@@ -153,6 +160,8 @@ def main():
     for flag in ('active', 'custom', 'census', 'morph', 'surface', 'builder', 'mask-proof', 'view-lanes', 'out'):
         ap.add_argument('--' + flag, required=True)
     ap.add_argument('--followups')
+    ap.add_argument('--nov17-proof', help='TSV (medium, verdict, differs): 17 Nov Medium reads vs the live Medium; '
+                    "'pass' proves a stale mesh the item rule counts as Season 12 current")
     ap.add_argument('--hold', action='append', default=[], help='NAME=REASON: a mesh no wave may admit')
     a = ap.parse_args()
     out = Path(a.out)
@@ -193,6 +202,15 @@ def main():
     stale_held = ((stale - effective0) - c_sources) & shown   # the package proof also lists meshes no item shows
     other_held = (shown - effective0) - c_sources - no_read - stale_held
     held_sources = {by_name[n] for n in holds if n in by_name}
+    # Stale packages the item rule still counts as Season 12: their live file matches the 6 Nov (12.00) read, but the
+    # 17 Nov update changed the package. Only a 17 Nov read proves them current (wave U).
+    nov17 = {}
+    if a.nov17_proof:
+        with open(a.nov17_proof, encoding='utf-8') as f:
+            nov17 = {r['medium']: (r['verdict'], r.get('differs', '')) for r in csv.DictReader(f, delimiter='\t')}
+    stale_counted = (stale & effective0) & shown
+    unproven = {s for s in stale_counted if nov17.get(s, ('',))[0] != 'pass'}
+    base_current = current_items(base_items, by_item, unproven)
 
     masks = bpi.load_mask_proof(a.mask_proof)
     seeds = {r['source'] for r in masks.values()} - effective0
@@ -207,6 +225,8 @@ def main():
             return 'stale package'
         if s in no_read:
             return 'never read for S12'
+        if s in stale_counted:
+            return 'changed on 17 Nov, counted S12'
         if s in set(meta['admitted']) or s in held0:
             return 'admitted, held by the item rule'
         return 'refused, other route'
@@ -224,7 +244,7 @@ def main():
     requalified = set(json.loads(Path(a.view_lanes).read_text(encoding='utf-8'))['admittedOffsets'])
     scope = collections.defaultdict(lambda: {'items': set(), 'mis': set(), 'textures': set(),
                                              'roots': collections.Counter(), 'view': set()})
-    scope.update(material_scope(supported['ready'], active.parent, {name_of(s) for s in shown - effective0}, requalified))
+    scope.update(material_scope(supported['ready'], active.parent, {name_of(s) for s in (shown - effective0) | unproven}, requalified))
     rest_c = sorted(c_sources - c1 - {t_shirt} - held_sources,
                     key=lambda s: (-len(scope[name_of(s)]['items']), name_of(s)))
     k, chunk, mis = 2, set(), 0
@@ -239,6 +259,7 @@ def main():
         waves.append((f'C{k}', chunk))
     r_wave = (stale_held | no_read) - c1 - held_sources
     waves.append(('R', r_wave))
+    waves.append(('U', unproven - held_sources))
 
     followups = {}
     if a.followups:
@@ -246,19 +267,29 @@ def main():
             for row in csv.DictReader(f, delimiter='\t'):
                 followups[row['medium']] = row
 
-    added, wave_rows, rows, item_wave = set(), [], [], {}
-    prev = base_items
+    def uv_changed(s):
+        return 'UVs' in nov17.get(s, ('', ''))[1]
+
+    def needs_materials(s):
+        return s in c_sources or (s in unproven and uv_changed(s))
+
+    added, wave_rows, rows, item_wave, item_current = set(), [], [], {}, {}
+    prev, prev_current = base_items, base_current
     for wave, meshes in waves:
         added |= meshes
         now = rule.items(added)
         for item in now - prev:
             item_wave[item] = wave
+        now_current = current_items(now, by_item, unproven - added)
+        for item in now_current - prev_current:
+            item_current[item] = wave
         wave_rows.append({
             'wave': wave, 'meshes': len(meshes), 's12ItemsAfter': len(now), 'unlocks': len(now - prev),
-            'needsMaterialRead': sum(1 for s in meshes if s in c_sources),
+            'currentItemsAfter': len(now_current),
+            'needsMaterialRead': sum(1 for s in meshes if needs_materials(s)),
             'needsMeshRead': sum(1 for s in meshes if s in stale or s in no_read),
-            'materialInstances': len(set().union(*[scope[name_of(s)]['mis'] for s in meshes if s in c_sources] or [set()])),
-            'garmentTextures': len(set().union(*[scope[name_of(s)]['textures'] for s in meshes if s in c_sources] or [set()])),
+            'materialInstances': len(set().union(*[scope[name_of(s)]['mis'] for s in meshes if needs_materials(s)] or [set()])),
+            'garmentTextures': len(set().union(*[scope[name_of(s)]['textures'] for s in meshes if needs_materials(s)] or [set()])),
             'itemsShowing': len(set().union(*[scope[name_of(s)]['items'] for s in meshes] or [set()]))})
         for s in sorted(meshes, key=lambda s: (-len(scope[name_of(s)]['items']), name_of(s))):
             n = name_of(s)
@@ -272,17 +303,19 @@ def main():
                 'inCluster': 'yes' if s in cluster else '',
                 'items': len(sc['items']), 'materialInstances': len(sc['mis']), 'garmentTextures': len(sc['textures']),
                 'roots': ' '.join(f'{r}:{c}' for r, c in sc['roots'].most_common()),
-                'viewGate': view_verdict(sc['view']) if s in c_sources else '',
+                'viewGate': view_verdict(sc['view']) if needs_materials(s) else '',
                 'lightSiblingInIndex': (light_entry.get('url') or 'yes (no url)') if light_entry else '',
-                'lightFollowup': f"{fu['reason']} ({fu['differs']}; live {fu['liveFolder']})" if fu else ''})
-        prev = now
+                'lightFollowup': f"{fu['reason']} ({fu['differs']}; live {fu['liveFolder']})" if fu else '',
+                'nov17Proof': ' '.join(x for x in nov17[s] if x) if s in nov17 else ''})
+        prev, prev_current = now, now_current
     for n, reason in holds.items():
         s = by_name.get(n)
         if s and s not in effective0:
             rows.append({'wave': 'held', 'mesh': n, 'group': 'held', 'surfaceClass': (surface.get(n) or {}).get('class', ''),
                          'package17Nov': 'changed' if s in stale else 'identical', 'inCluster': 'yes' if s in cluster else '',
                          'items': len(scope.get(n, {'items': ()})['items']), 'materialInstances': '', 'garmentTextures': '',
-                         'roots': '', 'viewGate': '', 'lightSiblingInIndex': '', 'lightFollowup': reason})
+                         'roots': '', 'viewGate': '', 'lightSiblingInIndex': '', 'lightFollowup': reason,
+                         'nov17Proof': ' '.join(x for x in nov17[s] if x) if s in nov17 else ''})
     final = rule.items(added)
     still = {i: sorted(name_of(m) for m in by_item[i] - rule.settle(added)[0]) for i in by_item if i not in final}
     blockers = collections.Counter(m for ms in still.values() for m in ms)
@@ -292,7 +325,9 @@ def main():
         'note': 'Upper bounds: every planned mesh is assumed to pass its proofs and review.',
         'inputs': {k: sha(v) for k, v in (('active', a.active), ('morph', a.morph), ('surface', a.surface),
                                            ('census', a.census), ('builder', a.builder))},
-        'itemsWithBodyTypeMeshes': len(by_item), 's12ItemsNow': len(base_items),
+        'itemsWithBodyTypeMeshes': len(by_item), 's12ItemsNow': len(base_items), 'currentItemsNow': len(base_current),
+        'staleCountedS12': {'meshes': len(stale_counted), 'byNov17Verdict': dict(collections.Counter(
+            ' '.join(x for x in nov17[s] if x) if s in nov17 else 'no 17 Nov read' for s in stale_counted))},
         'groups': {'batchC': len(c_sources), 'stalePackagesOutsideC': len(stale_held), 'neverRead': len(no_read),
                    'otherRefused': len(other_held), 'cluster': len(cluster), 'clusterSeeds': sorted(map(name_of, seeds))},
         'clusterByGroup': dict(collections.Counter(group(s) for s in cluster)),
@@ -304,10 +339,12 @@ def main():
         w.writeheader()
         w.writerows(rows)
     with open(out / 'items.tsv', 'w', encoding='utf-8', newline='') as f:
-        f.write('item\twave\tblockedBy\n')
+        f.write('item\twave\tcurrentAfter\tblockedBy\n')
         for i in sorted(by_item):
-            f.write(f"{i}\t{'now' if i in base_items else item_wave.get(i, 'not planned')}\t{' '.join(still.get(i, []))}\n")
-    print(json.dumps({k: plan[k] for k in ('s12ItemsNow', 'groups', 'clusterByGroup', 'waves', 'itemsStillMixed')}, indent=1))
+            f.write(f"{i}\t{'now' if i in base_items else item_wave.get(i, 'not planned')}\t"
+                    f"{'now' if i in base_current else item_current.get(i, 'not planned')}\t{' '.join(still.get(i, []))}\n")
+    print(json.dumps({k: plan[k] for k in ('s12ItemsNow', 'currentItemsNow', 'staleCountedS12', 'groups',
+                                           'clusterByGroup', 'waves', 'itemsStillMixed')}, indent=1))
 
 
 if __name__ == '__main__':

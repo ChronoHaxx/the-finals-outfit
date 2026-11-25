@@ -1,187 +1,248 @@
-wave	mesh	group	surfaceClass	package17Nov	inCluster	items	materialInstances	garmentTextures	roots	viewGate	lightSiblingInIndex	lightFollowup
-C0	SK_Casual_BasicTshirt_M	batch C	reworked: UVs changed, geometry moved	identical		43	43	58	M_Character_Layered:42 (no root recorded):1	no root recorded (older material file): the rebuild decides		medium changed in the game (indices; live reconstructed-meshes-v2)
-C1	SK_Streetwear_Hoodie_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical	yes	38	38	24	M_Character_8Layers_Master:32 M_Character_LeopardPrint:4 M_Character_8Layers_AnimatedPattern_Master:2	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Streetwear_Hoodie_L.glb	
-C1	SK_Casual_Shorts_M	admitted, held by the item rule		identical	yes	26	7	10	M_Character_8Layers_Master:24 M_Character_HolographicMaterial:1 M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Casual_Shorts_L.glb	
-C1	SK_Ballerina_BallerinaTights_M	admitted, held by the item rule		identical	yes	16	13	11	M_Character_8Layers_Master:12 M_Character_LeopardPrint:2 M_Character_PlasticSheet:2		../reconstructed-archetypes-v1/meshes/SK_Ballerina_BallerinaTights_L.glb	
-C1	SK_Casual_BasicShorts_M	admitted, held by the item rule		identical	yes	15	15	17	M_Character_8Layers_Master:9 M_Character_Layered:3 M_Character_LeopardPrint:2 M_Character_HolographicMaterial:1		../reconstructed-archetypes-v1/meshes/SK_Casual_BasicShorts_L.glb	
-C1	SK_Streetwear_TrackSuitPants_M	admitted, held by the item rule		identical	yes	14	14	27	M_Character_8Layers_Master:11 M_Character_Layered:2 M_CharacterLayered_TeamColor_01:1			
-C1	SK_Streetwear_UtilityBelt_M	batch C	reworked: UVs changed, geometry moved	identical	yes	12	10	13	M_Character_8Layers_Master:12	layered only: passes (layered View reads are requalified or dead)		
-C1	SK_Winter_SkiPants_M	admitted, held by the item rule		identical	yes	12	12	26	M_Character_Layered:7 M_Character_8Layers_Master:4 M_Character_HolographicMaterial:1		../reconstructed-archetypes-v1/meshes/SK_Winter_SkiPants_L.glb	
-C1	SK_Casual_ShortDress_M	admitted, held by the item rule		identical	yes	10	10	25	M_Character_Layered:6 M_Character_HolographicMaterial:2 M_Character_PlasticSheet:2		../reconstructed-archetypes-v1/meshes/SK_Casual_ShortDress_L.glb	
-C1	SK_Military_DoubleHolsterPants_M	admitted, held by the item rule	permuted+morph set	identical	yes	10	10	22	M_Character_Layered:10			
-C1	SK_Casual_TubeTop_M	admitted, held by the item rule		identical	yes	8	8	9	M_Character_Layered:7 (no root recorded):1			
-C1	SK_Streetwear_ChainNecklace_M	admitted, held by the item rule		identical	yes	8	1	5	(no root recorded):8		../reconstructed-archetypes-v1/meshes/SK_Streetwear_ChainNecklace_L.glb	
-C1	SK_Casual_LongCoat_M	stale package		changed	yes	7	7	13	M_Character_Layered:4 (no root recorded):3			
-C1	SK_Casual_LooseJeans_M	admitted, held by the item rule		identical	yes	7	7	14	M_Character_8Layers_Master:6 M_Character_Layered:1			
-C1	SK_Casual_ShortDressSkirt_M	admitted, held by the item rule		identical	yes	6	6	10	M_Character_Layered:2 M_Character_HolographicMaterial:2 M_Character_PlasticSheet:2		../reconstructed-archetypes-v1/meshes/SK_Casual_ShortDressSkirt_L.glb	
-C1	SK_Casual_HalterTop_M	admitted, held by the item rule		identical	yes	5	5	14	M_Character_Layered:5			
-C1	SK_Gothic_SkullNecklaces_M	admitted, held by the item rule		identical	yes	5	2	11	M_Character_8Layers_Master:5		../reconstructed-archetypes-v1/meshes/SK_Gothic_SkullNecklaces_L.glb	
-C1	SK_Monsters_EasternDemonBelt_M	admitted, held by the item rule		identical	yes	5	4	13	M_Character_Layered:3 (no root recorded):2			
-C1	SK_Casual_BikerVest_M	admitted, held by the item rule		identical	yes	4	4	14	M_Character_Layered:4			
-C1	SK_FancyDress_LawyerSuitJacket_M	admitted, held by the item rule		identical	yes	4	4	14	M_Character_Layered:3 (no root recorded):1			
-C1	SK_FancyDress_WeddingNecklace_M	admitted, held by the item rule		identical	yes	4	4	4	M_Character_8Layers_Master:5 M_CharacterGemstones:3			
-C1	SK_Streetwear_HeartNecklace_M	admitted, held by the item rule		identical	yes	4	1	5	(no root recorded):4		../reconstructed-archetypes-v1/meshes/SK_Streetwear_HeartNecklace_L.glb	
-C1	SK_Monsters_EasternDemonPants_M	admitted, held by the item rule		identical	yes	3	3	13	M_Character_Layered:3			
-C1	SK_Monsters_EasternDemonSkirt_M	stale package		changed	yes	3	3	13	M_Character_Layered:3			
-C1	SK_Casual_BikerVestDetailsPunk_M	admitted, held by the item rule		identical	yes	2	2	10	(no root recorded):1 M_Character_Layered:1			
-C1	SK_Casual_SleeveDetailsPunk_M	admitted, held by the item rule		identical	yes	2	1	6	(no root recorded):2			
-C1	SK_Hologram_VaiiyaPantsHologram_M	admitted, held by the item rule		identical	yes	2	1	1	M_FloatingHologram:2			
-C1	SK_Medieval_DemonPants_M	admitted, held by the item rule		identical	yes	2	2	9	(no root recorded):2			
-C1	SK_Medieval_JesterJacket_M	admitted, held by the item rule		identical	yes	2	2	15	M_Character_Layered:2			
-C1	SK_Medieval_JesterSkirt_M	stale package		changed	yes	2	2	15	M_Character_Layered:2			
-C1	SK_Medieval_TacticalKnightBracers_M	admitted, held by the item rule		identical	yes	2	2	11	(no root recorded):1 M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Medieval_TacticalKnightBracers_L.glb	
-C1	SK_Medieval_TacticalKnightTop_M	batch C	reworked: UVs changed, geometry moved	identical	yes	2	1	7	(no root recorded):2	no root recorded (older material file): the rebuild decides		
-C1	SK_SciFi_Jacket_M	admitted, held by the item rule		identical	yes	2	2	9	M_Character_Layered:2			
-C1	SK_SciFi_MuscleSuitUpper_M	admitted, held by the item rule		identical	yes	2	2	8	M_Character_Layered:2			
-C1	SK_Streetwear_PopLanyardArmbandRight_M	admitted, held by the item rule		identical	yes	2	1	5	(no root recorded):2			
-C1	SK_Streetwear_ShortDressSleeves_M	admitted, held by the item rule		identical	yes	2	1	1	M_CharacterDetailAlpha:2			
-C1	SK_Casual_BandagedTankTop_M	admitted, held by the item rule		identical	yes	1	1	7	(no root recorded):1			
-C1	SK_Casual_CropTopUndershirt_M	admitted, held by the item rule		identical	yes	1	1	7	M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Casual_CropTopUndershirt_L.glb	
-C1	SK_Casual_PunkCropTshirt_M	admitted, held by the item rule		identical	yes	1	1	5	M_Character_Layered:1			
-C1	SK_Casual_PunkTshirt_M	admitted, held by the item rule		identical	yes	1	2	6	M_CharacterDetailAlpha:1 M_Character_Layered:1			
-C1	SK_FancyDress_ArmGuard_M	never read for S12		no S12 read	yes	1	1	7	M_Character_Layered:1			
-C1	SK_FancyDress_Bolero_M	never read for S12		no S12 read	yes	1	1	2	M_Feather:1			
-C1	SK_FancyDress_UltimateNecklace_M	never read for S12		no S12 read	yes	1	1	5	M_Character_Layered:1			
-C1	SK_Gothic_BikerJacketChain_M	admitted, held by the item rule		identical	yes	1	1	7	M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Gothic_BikerJacketChain_L.glb	
-C1	SK_Gothic_BikerJacketRivets_M	admitted, held by the item rule		identical	yes	1	1	7	M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Gothic_BikerJacketRivets_L.glb	
-C1	SK_Gothic_BikerJacket_M	admitted, held by the item rule		identical	yes	1	1	7	M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Gothic_BikerJacket_L.glb	
-C1	SK_Gothic_LooseJacket_M	admitted, held by the item rule		identical	yes	1	1	8	M_Character_8Layers_Master:1			
-C1	SK_Halloween_VampireCapelet_M	never read for S12		no S12 read	yes	1	1	6	M_Character_Layered:1			
-C1	SK_Halloween_VampireDress_M	never read for S12		no S12 read	yes	1	1	7	M_Character_Layered:2			
-C1	SK_Halloween_VampireFur_M	never read for S12		no S12 read	yes	1	1	1	M_FurShells:1			
-C1	SK_Halloween_VampireSkirt_M	never read for S12		no S12 read	yes	1	1	6	M_Character_Layered:1			
-C1	SK_Hologram_HoltowPantsHologramS8_M	admitted, held by the item rule		identical	yes	1	1	1	M_FloatingHologram:1			
-C1	SK_Hologram_IseultSkiPantsHologram_M	admitted, held by the item rule		identical	yes	1	1	1	M_FloatingHologram:1			
-C1	SK_Hologram_TrackSuitPantsHologram_M	admitted, held by the item rule		identical	yes	1	1	1	M_FloatingHologram:1			
-C1	SK_Medieval_JesterNeckCape_M	stale package		changed	yes	1	1	8	M_Character_Layered:1			
-C1	SK_Medieval_PeasantSkirtTop_M	never read for S12		no S12 read	yes	1	1	8	M_Character_Layered:1			
-C1	SK_Medieval_PeasantSkirt_M	never read for S12		no S12 read	yes	1	1	8	M_Character_Layered:1			
-C1	SK_Medieval_TacticalKnightBelt_M	batch C	reworked: UVs changed, geometry within 1 mm	identical	yes	1	1	6	(no root recorded):1	no root recorded (older material file): the rebuild decides		
-C1	SK_Medieval_TacticalKnightShoulderpads_M	admitted, held by the item rule		identical	yes	1	1	5	(no root recorded):1			
-C1	SK_Military_AssaultPantsNoKneepad_M	batch C	reworked: UVs changed, geometry moved	identical	yes	1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C1	SK_Military_CardboardPants_M	batch C	reworked: geometry moved too far to judge UVs	identical	yes	1	1	2	M_CharacterAttachment:1	non-layered root: check against the gate		
-C1	SK_Sport_ElbowPadsInsideJacket_M	admitted, held by the item rule		identical	yes	1	1	7	M_Character_Layered:1			
-C1	SK_Streetwear_CroppedTshirtOversize_M	admitted, held by the item rule		identical	yes	1	1	5	(no root recorded):1			
-C1	SK_Streetwear_PopLanyardArmbandLeft_M	admitted, held by the item rule		identical	yes	1	1	5	(no root recorded):1			
-C1	SK_Streetwear_UncappedPleatedSkirt_M	admitted, held by the item rule		identical	yes	1	1	1	M_Character_PlasticSheet:1			
-C1	SK_Traditional_GeishaGothDress_M	never read for S12		no S12 read	yes	1	1	8	M_Character_Layered:2			
-C1	SK_Traditional_GeishaGothSkirtBack_M	never read for S12		no S12 read	yes	1	1	7	M_Character_Layered:1			
-C1	SK_Traditional_GeishaGothSkirtFront_M	never read for S12		no S12 read	yes	1	1	7	M_Character_Layered:1			
-C2	SK_Shirt_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		47	47	9	M_Character_8Layers_Master:47	layered only: passes (layered View reads are requalified or dead)		
-C2	SK_Socks_Quarter_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		21	8	10	M_Character_8Layers_Master:17 M_Character_Layered:4	layered only: passes (layered View reads are requalified or dead)		
-C2	SK_Pants_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		18	18	20	M_Character_8Layers_Master:12 M_Character_Layered:3 M_Character_LeopardPrint:2 M_CharacterLayered_TeamColor_01:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Pants_L.glb	
-C2	SK_Military_AssaultPants_M	batch C	reworked: UVs changed, geometry moved	identical		16	16	26	M_Character_8Layers_Master:10 M_Character_Layered:6	layered only: passes (layered View reads are requalified or dead)		
-C2	SK_Streetwear_TightTechPants_M	batch C	reworked: UVs changed, geometry moved	identical		11	11	22	M_Character_Layered:6 M_Character_8Layers_Master:4 M_Character_PlasticSheet:1	non-layered root: check against the gate		
-C3	SK_Streetwear_BikerJacketHoodie_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		9	9	15	M_Character_8Layers_Master:8 M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Casual_LongHoodie_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		8	8	18	M_Character_8Layers_Master:7 M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Socks_ThighHigh_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		8	4	6	M_Character_8Layers_Master:8	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_LongCurly_M	batch C	reworked: UVs changed, geometry moved	identical		7	1	4	M_Hair_Metahuman_01:7	reads View fields: check against the gate	../reconstructed-hair-neutral-batch-v1/meshes/SK_LongCurly_L.glb	
-C3	SK_Military_CombatPants_M	batch C	permuted+material slots	changed		7	7	23	M_Character_Layered:6 M_Character_8Layers_Master:1	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Casual_Hoodie_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		6	6	11	M_Character_Layered:6	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_FancyDress_DressShoes_M	batch C	reworked: UVs changed, geometry moved	identical		6	6	6	M_Character_8Layers_Master:6	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Streetwear_PufferVest_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		6	6	16	(no root recorded):2 M_Character_Layered:2 M_Character_HolographicMaterial:1 M_Character_8Layers_Master:1	non-layered root: check against the gate	../reconstructed-archetypes-v1/meshes/SK_Streetwear_PufferVest_L.glb	
-C3	SK_Military_MarinePants_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		5	5	12	M_Character_Layered:5	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Military_MarinePants_L.glb	
-C3	SK_Pirate_CaptainPants_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		5	5	9	M_Character_Layered:5	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Cowboy_JeansJacket_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		4	4	11	M_Character_8Layers_Master:4	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Pirate_CaptainBoots_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		4	4	12	M_Character_Layered:4	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_SciFi_HackerGloves_M	batch C	reworked: UVs changed, geometry moved	identical		4	4	14	M_Character_Layered:4	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_SciFi_HackerGloves_L.glb	
-C3	SK_SciFi_TechBomberJacket_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		4	4	14	M_Character_Layered:4	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Cowboy_LowBoots_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		3	3	7	M_Character_8Layers_Master:3	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Steampunk_VestWithHood_M	batch C	reworked: UVs changed, geometry moved	identical		3	3	8	M_Character_Layered:3	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_WorkUniforms_ShirtRolledUpSleeves_M	batch C	reworked: UVs changed, geometry moved	identical		3	3	6	M_Character_Layered:3	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Casual_WaterproofBoots_M	batch C	reworked: UVs changed, geometry moved	identical		2	2	8	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_FromTencent_AsianSpiritWraps01_M	batch C	reworked: UVs changed, geometry moved	identical		2	2	9	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Hologram_VaiiyaVestHologram_M	batch C	reworked: UVs changed, geometry moved	identical		2	1	1	M_FloatingHologram:2	reads View fields: check against the gate		
-C3	SK_Medieval_ElfPrincessMask_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		2	2	5	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Medieval_JesterHat_M	batch C	reworked: geometry moved too far to judge UVs	identical		2	4	11	M_Character_Layered:4 M_CharacterEmpty:2	non-layered root: check against the gate		
-C3	SK_Medieval_KnightTopPlain_M	batch C	reworked: UVs changed, geometry moved	identical		2	2	12	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Ninja_ShinobiRope_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		2	2	5	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)		
-C3	SK_Pirate_CaptainJacket_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		2	2	9	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Samurai_GetaShoes_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		2	2	9	M_Character_8Layers_Master:1 M_Charachter_CelShaded:1	pins a View lane C838D617 does not requalify: 183		
-C4	SK_Space_PioneerShoes_M	batch C	reworked: UVs changed, geometry moved	identical		2	2	9	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_PioneerShoes_L.glb	
-C4	SK_Space_SpacePilotGloves_M	batch C	reworked: UV1+ changed, geometry within 1 mm	identical		2	2	9	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_SpacePilotGloves_L.glb	
-C4	SK_Streetwear_BandanaCap_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		2	2	8	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Streetwear_BikerJacket_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		2	2	11	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Streetwear_MessengerBag_M	batch C	reworked: UVs changed, geometry within 1 mm	changed		2	2	9	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Streetwear_RingWrapBracelet_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		2	2	6	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Traditional_LunarLegCover_M	batch C	reworked: UVs changed, geometry moved	identical		2	3	13	M_Character_Layered:2 M_CharacterDetailAlpha:2	non-layered root: check against the gate		
-C4	SK_Casual_CropTopCorset_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_FromTencent_MilitaryMonkVest_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_FromTencent_OperaClothingJacket_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	8	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Hologram_HoltowJacketHologram_M	batch C	reworked: geometry moved too far to judge UVs	identical		1	1	1	M_FloatingHologram:1	reads View fields: check against the gate		
-C4	SK_Medieval_WizardParts_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	8	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Military_CardboardCombatVest_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	2	M_CharacterAttachment:1	non-layered root: check against the gate		
-C4	SK_Military_OpenShirtWithDogTag_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	9	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Pirate_CaptainHat_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Pirate_PirateBandolier_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	6	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Robots_DiscoKeychain_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Robots_DiscoKeychain_L.glb	
-C4	SK_Robots_DiscoNecklace_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	5	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Robots_DiscoNecklace_L.glb	
-C4	SK_SciFi_PantsToolBag_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_SciFi_PantsToolBag_L.glb	
-C4	SK_Socks_Crew_M	batch C	reworked: UV sets differ, geometry moved	identical		1	1	6	M_Character_8Layers_Master:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Socks_KneeHigh_M	batch C	reworked: UV sets differ, geometry moved	identical		1	1	5	M_Character_8Layers_Master:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Space_AstronautSuit_M	batch C	reworked: UVs changed, geometry moved	identical		1	2	16	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Space_SpaceBrain_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	9	M_Face:1	reads View fields: check against the gate	../reconstructed-archetypes-v1/meshes/SK_Space_SpaceBrain_L.glb	
-C4	SK_Space_SpaceCombatPouches_M	batch C	reworked: UV1+ changed, geometry within 1 mm	identical		1	1	9	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_SpaceCombatPouches_L.glb	
-C4	SK_Space_SpaceCombatTorso_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	8	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Space_SpaceSuitPantsUltimate_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_SpaceSuitPantsUltimate_L.glb	
-C4	SK_Space_SpaceSuitPants_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_SpaceSuitPants_L.glb	
-C4	SK_Space_SpaceTopVest_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	8	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_SpaceTopVest_L.glb	
-C4	SK_Sport_FencerGlove_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	6	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Streetwear_ChromeJacket_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		1	1	1	M_Character_HolographicMaterial:1	non-layered root: check against the gate		
-C4	SK_Streetwear_CrystalHeadband_M	batch C	reworked: UV1+ changed, geometry within 1 mm	identical		1	1	6	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Streetwear_PopBraceletSet_M	batch C	reworked: UV1+ changed, geometry within 1 mm	identical		1	1	5	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Streetwear_SmartWatch_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	5	M_Character_8Layers_Master:1	layered only: passes (layered View reads are requalified or dead)		
-C4	SK_Traditional_LunarBracelet_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	5	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)		
-R	SK_Streetwear_SkiMask_M	stale package	reworked: same UVs, geometry within 1 mm	changed		11	7	11	M_Character_Layered:11			
-R	SK_Streetwear_HeistBag_M	stale package		changed		7	7	9	M_Character_8Layers_Master:5 M_Character_Layered:2			
-R	SK_FromTencent_AsianSpiritGloves_M	stale package		changed		3	3	10	M_Character_Layered:3			
-R	SK_Military_DrifterCape_M	never read for S12		no S12 read		3	3	14	M_Character_8Layers_Master:4 M_Character_Layered:2			
-R	SK_WorkUniforms_Tie_M	stale package		changed		3	3	7	M_Character_Layered:3			
-R	SK_Medieval_TechJacketHarness_M	never read for S12		no S12 read		2	2	10	M_Character_Layered:4			
-R	SK_SciFi_SciFiKnightBottomArmor_M	never read for S12		no S12 read		2	2	2	M_Character_PlasticSheet:2			
-R	SK_SciFi_SciFiKnightBottom_M	never read for S12		no S12 read		2	2	9	M_Character_Layered:2			
-R	SK_Space_SpacePilotJacket_M	never read for S12		no S12 read		2	2	11	M_Character_Layered:4			medium changed in the game (indices; live reconstructed-w170-clothsim-v1)
-R	SK_Sport_LuchadorCape_M	never read for S12		no S12 read		2	2	5	M_Character_Layered:2			
-R	SK_Sport_LuchadorUpperBody_M	never read for S12		no S12 read		2	2	9	M_Character_Layered:2			
-R	SK_Streetwear_UrbanFaceMask_M	stale package		changed		2	2	7	M_Character_Layered:2			
-R	SK_Traditional_LunarBoleroShortSleeve_M	stale package		changed		2	2	9	M_Character_Layered:2			
-R	SK_Traditional_LunarDress_M	stale package	permuted+weights	changed		2	2	9	(no root recorded):2 M_Character_Layered:2			
-R	SK_Casual_Durag_M	never read for S12		no S12 read		1	1	6	M_Character_Layered:2			
-R	SK_Cowboy_CoatCape_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:2			
-R	SK_Cowboy_SeaBandolierRight_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1			
-R	SK_Cute_BunnyCostumeFur_M	never read for S12		no S12 read		1	3	7	M_FurShells:2 M_Character_8Layers_Master:1 M_FurLOD:1			
-R	SK_Cute_TanukiCostumeFur_M	never read for S12		no S12 read		1	3	8	M_FurShells:2 M_Character_8Layers_Master:1 M_FurLOD:1			
-R	SK_Cute_TanukiFurPlanes_M	never read for S12		no S12 read		1	1	4	M_Hair_Metahuman_01:1			
-R	SK_Halloween_DemonMask_M	never read for S12		no S12 read		1	1	9	M_Character_Layered:1			
-R	SK_Historic_EasternEmperorPlume_M	never read for S12		no S12 read		1	1	4	M_Hair_Metahuman_01:1			
-R	SK_Historic_NeckCape_M	stale package		changed		1	1	6	M_Character_Layered:1			
-R	SK_Medieval_DragonSlayerSkirt_M	stale package	permuted	changed		1	1	8	M_Character_Layered:1			
-R	SK_Medieval_SkeletonWarriorPantsLow_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1			
-R	SK_Medieval_SkeletonWarriorPants_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1			
-R	SK_Mexico_TraditionalPoncho_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:2			
-R	SK_Mexico_VaqueroCape_M	never read for S12		no S12 read		1	1	5	M_Character_Layered:1			
-R	SK_Mexico_VaqueroJacket_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1			
-R	SK_Military_Cape_M	never read for S12		no S12 read		1	1	0	M_Character_VisorGradient:1			
-R	SK_Military_HoodedCape_M	never read for S12		no S12 read		1	1	6	M_Character_Layered:1			
-R	SK_Military_SciFiTorso_M	never read for S12		no S12 read		1	4	10	M_Character_PlasticSheet:2 M_Character_Layered:1 M_CharacterAttachment:1			
-R	SK_Military_SidePouch_M	never read for S12		no S12 read		1	1	5	M_Character_Layered:1			
-R	SK_Military_TacticalPouches_M	never read for S12		no S12 read		1	1	8	M_Character_Layered:1			
-R	SK_Military_TacticalVestSeparated_M	never read for S12		no S12 read		1	1	8	M_Character_Layered:1			
-R	SK_Pirate_PirateCape_M	never read for S12		no S12 read		1	1	5	M_Character_Layered:1			
-R	SK_Robots_RobotWarriorLegs_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1			
-R	SK_Samurai_SwatVestSamurai_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1			
-R	SK_SciFi_CyberCape_M	never read for S12		no S12 read		1	1	6	M_Character_Layered:1			
-R	SK_SciFi_CyberJacketUnderCloth_M	never read for S12		no S12 read		1	1	1	M_CharacterDetailAlpha:1			
-R	SK_SciFi_CyberJacket_M	never read for S12		no S12 read		1	1	9	M_Character_Layered:2			
-R	SK_SciFi_CyberShortsUnderCloth_M	never read for S12		no S12 read		1	1	0	M_CharacterDetailAlpha:1			
-R	SK_SciFi_CyberShorts_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1			
-R	SK_Space_SpacePilotJacketUltimate_M	never read for S12		no S12 read		1	2	9	M_Character_Layered:2 M_LEDScreen_Head:1			medium changed in the game (positions; live reconstructed-w170-clothsim-v1)
-R	SK_Sport_Glasses_M	never read for S12		no S12 read		1	2	6	M_Character_8Layers_Master:1 M_CharacterGlass_02:1			
-R	SK_Streetwear_DemonLedMask_M	never read for S12		no S12 read		1	2	5	M_Character_8Layers_Master:1 M_LEDScreen:1			
-R	SK_Streetwear_OversizedJacket_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:2			
-R	SK_Streetwear_TechJoggers_M	never read for S12		no S12 read		1	1	6	M_Character_8Layers_Master:1			
-R	SK_Traditional_LunarCape_M	stale package		changed		1	1	6	M_Character_Layered:1			
-held	SK_Streetwear_CropTopHoodie_M	held		identical		1						held: the game's own S12 weights are defective
-held	SK_Streetwear_PopGothShoes_M	held	permuted+weights	identical		1						held: the game's own S12 weights are defective
-held	SK_FancyDress_SuitJacket_M	held		identical		7						held: w161 part-hide mask needs tooling
-held	SK_Traditional_LunarDressTop_M	held		identical		2						held: legacy mask with no generation record
+wave	mesh	group	surfaceClass	package17Nov	inCluster	items	materialInstances	garmentTextures	roots	viewGate	lightSiblingInIndex	lightFollowup	nov17Proof
+C0	SK_Casual_BasicTshirt_M	batch C	reworked: UVs changed, geometry moved	identical		43	43	58	M_Character_Layered:42 (no root recorded):1	no root recorded (older material file): the rebuild decides		medium changed in the game (indices; live reconstructed-meshes-v2)	medium changed in the game indices
+C1	SK_Streetwear_Hoodie_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical	yes	38	38	24	M_Character_8Layers_Master:32 M_Character_LeopardPrint:4 M_Character_8Layers_AnimatedPattern_Master:2	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Streetwear_Hoodie_L.glb		
+C1	SK_Casual_Shorts_M	admitted, held by the item rule		identical	yes	26	7	10	M_Character_8Layers_Master:24 M_Character_HolographicMaterial:1 M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Casual_Shorts_L.glb		
+C1	SK_Ballerina_BallerinaTights_M	admitted, held by the item rule		identical	yes	16	13	11	M_Character_8Layers_Master:12 M_Character_LeopardPrint:2 M_Character_PlasticSheet:2		../reconstructed-archetypes-v1/meshes/SK_Ballerina_BallerinaTights_L.glb		
+C1	SK_Casual_BasicShorts_M	admitted, held by the item rule		identical	yes	15	15	17	M_Character_8Layers_Master:9 M_Character_Layered:3 M_Character_LeopardPrint:2 M_Character_HolographicMaterial:1		../reconstructed-archetypes-v1/meshes/SK_Casual_BasicShorts_L.glb		
+C1	SK_Streetwear_TrackSuitPants_M	admitted, held by the item rule		identical	yes	14	14	27	M_Character_8Layers_Master:11 M_Character_Layered:2 M_CharacterLayered_TeamColor_01:1				live Medium reweighted joint indices
+C1	SK_Streetwear_UtilityBelt_M	batch C	reworked: UVs changed, geometry moved	identical	yes	12	10	13	M_Character_8Layers_Master:12	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C1	SK_Winter_SkiPants_M	admitted, held by the item rule		identical	yes	12	12	26	M_Character_Layered:7 M_Character_8Layers_Master:4 M_Character_HolographicMaterial:1		../reconstructed-archetypes-v1/meshes/SK_Winter_SkiPants_L.glb		
+C1	SK_Casual_ShortDress_M	admitted, held by the item rule		identical	yes	10	10	25	M_Character_Layered:6 M_Character_HolographicMaterial:2 M_Character_PlasticSheet:2		../reconstructed-archetypes-v1/meshes/SK_Casual_ShortDress_L.glb		
+C1	SK_Military_DoubleHolsterPants_M	admitted, held by the item rule	permuted+morph set	identical	yes	10	10	22	M_Character_Layered:10				medium changed in the game indices
+C1	SK_Casual_TubeTop_M	admitted, held by the item rule		identical	yes	8	8	9	M_Character_Layered:7 (no root recorded):1				pass
+C1	SK_Streetwear_ChainNecklace_M	admitted, held by the item rule		identical	yes	8	1	5	(no root recorded):8		../reconstructed-archetypes-v1/meshes/SK_Streetwear_ChainNecklace_L.glb		
+C1	SK_Casual_LongCoat_M	stale package		changed	yes	7	7	13	M_Character_Layered:4 (no root recorded):3				live Medium reweighted joint indices
+C1	SK_Casual_LooseJeans_M	admitted, held by the item rule		identical	yes	7	7	14	M_Character_8Layers_Master:6 M_Character_Layered:1				pass
+C1	SK_Casual_ShortDressSkirt_M	admitted, held by the item rule		identical	yes	6	6	10	M_Character_Layered:2 M_Character_HolographicMaterial:2 M_Character_PlasticSheet:2		../reconstructed-archetypes-v1/meshes/SK_Casual_ShortDressSkirt_L.glb		
+C1	SK_Casual_HalterTop_M	admitted, held by the item rule		identical	yes	5	5	14	M_Character_Layered:5				pass
+C1	SK_Gothic_SkullNecklaces_M	admitted, held by the item rule		identical	yes	5	2	11	M_Character_8Layers_Master:5		../reconstructed-archetypes-v1/meshes/SK_Gothic_SkullNecklaces_L.glb		
+C1	SK_Monsters_EasternDemonBelt_M	admitted, held by the item rule		identical	yes	5	4	13	M_Character_Layered:3 (no root recorded):2				pass
+C1	SK_Casual_BikerVest_M	admitted, held by the item rule		identical	yes	4	4	14	M_Character_Layered:4				pass
+C1	SK_FancyDress_LawyerSuitJacket_M	admitted, held by the item rule		identical	yes	4	4	14	M_Character_Layered:3 (no root recorded):1				pass
+C1	SK_FancyDress_WeddingNecklace_M	admitted, held by the item rule		identical	yes	4	4	4	M_Character_8Layers_Master:5 M_CharacterGemstones:3				pass
+C1	SK_Streetwear_HeartNecklace_M	admitted, held by the item rule		identical	yes	4	1	5	(no root recorded):4		../reconstructed-archetypes-v1/meshes/SK_Streetwear_HeartNecklace_L.glb		
+C1	SK_Monsters_EasternDemonPants_M	admitted, held by the item rule		identical	yes	3	3	13	M_Character_Layered:3				pass
+C1	SK_Monsters_EasternDemonSkirt_M	stale package		changed	yes	3	3	13	M_Character_Layered:3				pass
+C1	SK_Casual_BikerVestDetailsPunk_M	admitted, held by the item rule		identical	yes	2	2	10	(no root recorded):1 M_Character_Layered:1				live Medium reweighted joint indices
+C1	SK_Casual_SleeveDetailsPunk_M	admitted, held by the item rule		identical	yes	2	1	6	(no root recorded):2				live Medium reweighted joint indices
+C1	SK_Hologram_VaiiyaPantsHologram_M	admitted, held by the item rule		identical	yes	2	1	1	M_FloatingHologram:2				pass
+C1	SK_Medieval_DemonPants_M	admitted, held by the item rule		identical	yes	2	2	9	(no root recorded):2				live Medium reweighted joint indices
+C1	SK_Medieval_JesterJacket_M	admitted, held by the item rule		identical	yes	2	2	15	M_Character_Layered:2				live Medium reweighted joint indices
+C1	SK_Medieval_JesterSkirt_M	stale package		changed	yes	2	2	15	M_Character_Layered:2				pass
+C1	SK_Medieval_TacticalKnightBracers_M	admitted, held by the item rule		identical	yes	2	2	11	(no root recorded):1 M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Medieval_TacticalKnightBracers_L.glb		
+C1	SK_Medieval_TacticalKnightTop_M	batch C	reworked: UVs changed, geometry moved	identical	yes	2	1	7	(no root recorded):2	no root recorded (older material file): the rebuild decides			medium changed in the game indices
+C1	SK_SciFi_Jacket_M	admitted, held by the item rule		identical	yes	2	2	9	M_Character_Layered:2				pass
+C1	SK_SciFi_MuscleSuitUpper_M	admitted, held by the item rule		identical	yes	2	2	8	M_Character_Layered:2				pass
+C1	SK_Streetwear_PopLanyardArmbandRight_M	admitted, held by the item rule		identical	yes	2	1	5	(no root recorded):2				live Medium reweighted joint indices
+C1	SK_Streetwear_ShortDressSleeves_M	admitted, held by the item rule		identical	yes	2	1	1	M_CharacterDetailAlpha:2				live Medium reweighted joint indices
+C1	SK_Casual_BandagedTankTop_M	admitted, held by the item rule		identical	yes	1	1	7	(no root recorded):1				pass
+C1	SK_Casual_CropTopUndershirt_M	admitted, held by the item rule		identical	yes	1	1	7	M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Casual_CropTopUndershirt_L.glb		
+C1	SK_Casual_PunkCropTshirt_M	admitted, held by the item rule		identical	yes	1	1	5	M_Character_Layered:1				pass
+C1	SK_Casual_PunkTshirt_M	admitted, held by the item rule		identical	yes	1	2	6	M_CharacterDetailAlpha:1 M_Character_Layered:1				pass
+C1	SK_FancyDress_ArmGuard_M	never read for S12		no S12 read	yes	1	1	7	M_Character_Layered:1				pass
+C1	SK_FancyDress_Bolero_M	never read for S12		no S12 read	yes	1	1	2	M_Feather:1				pass
+C1	SK_FancyDress_UltimateNecklace_M	never read for S12		no S12 read	yes	1	1	5	M_Character_Layered:1				pass
+C1	SK_Gothic_BikerJacketChain_M	admitted, held by the item rule		identical	yes	1	1	7	M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Gothic_BikerJacketChain_L.glb		
+C1	SK_Gothic_BikerJacketRivets_M	admitted, held by the item rule		identical	yes	1	1	7	M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Gothic_BikerJacketRivets_L.glb		
+C1	SK_Gothic_BikerJacket_M	admitted, held by the item rule		identical	yes	1	1	7	M_Character_Layered:1		../reconstructed-archetypes-v1/meshes/SK_Gothic_BikerJacket_L.glb		
+C1	SK_Gothic_LooseJacket_M	admitted, held by the item rule		identical	yes	1	1	8	M_Character_8Layers_Master:1				pass
+C1	SK_Halloween_VampireCapelet_M	never read for S12		no S12 read	yes	1	1	6	M_Character_Layered:1				pass
+C1	SK_Halloween_VampireDress_M	never read for S12		no S12 read	yes	1	1	7	M_Character_Layered:2				pass
+C1	SK_Halloween_VampireFur_M	never read for S12		no S12 read	yes	1	1	1	M_FurShells:1				pass
+C1	SK_Halloween_VampireSkirt_M	never read for S12		no S12 read	yes	1	1	6	M_Character_Layered:1				pass
+C1	SK_Hologram_HoltowPantsHologramS8_M	admitted, held by the item rule		identical	yes	1	1	1	M_FloatingHologram:1				pass
+C1	SK_Hologram_IseultSkiPantsHologram_M	admitted, held by the item rule		identical	yes	1	1	1	M_FloatingHologram:1				pass
+C1	SK_Hologram_TrackSuitPantsHologram_M	admitted, held by the item rule		identical	yes	1	1	1	M_FloatingHologram:1				pass
+C1	SK_Medieval_JesterNeckCape_M	stale package		changed	yes	1	1	8	M_Character_Layered:1				pass
+C1	SK_Medieval_PeasantSkirtTop_M	never read for S12		no S12 read	yes	1	1	8	M_Character_Layered:1				pass
+C1	SK_Medieval_PeasantSkirt_M	never read for S12		no S12 read	yes	1	1	8	M_Character_Layered:1				pass
+C1	SK_Medieval_TacticalKnightBelt_M	batch C	reworked: UVs changed, geometry within 1 mm	identical	yes	1	1	6	(no root recorded):1	no root recorded (older material file): the rebuild decides			medium changed in the game indices
+C1	SK_Medieval_TacticalKnightShoulderpads_M	admitted, held by the item rule		identical	yes	1	1	5	(no root recorded):1				pass
+C1	SK_Military_AssaultPantsNoKneepad_M	batch C	reworked: UVs changed, geometry moved	identical	yes	1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C1	SK_Military_CardboardPants_M	batch C	reworked: geometry moved too far to judge UVs	identical	yes	1	1	2	M_CharacterAttachment:1	non-layered root: check against the gate			medium changed in the game primitives or vertex counts
+C1	SK_Sport_ElbowPadsInsideJacket_M	admitted, held by the item rule		identical	yes	1	1	7	M_Character_Layered:1				pass
+C1	SK_Streetwear_CroppedTshirtOversize_M	admitted, held by the item rule		identical	yes	1	1	5	(no root recorded):1				medium changed in the game skin joint names or order
+C1	SK_Streetwear_PopLanyardArmbandLeft_M	admitted, held by the item rule		identical	yes	1	1	5	(no root recorded):1				live Medium reweighted joint indices
+C1	SK_Streetwear_UncappedPleatedSkirt_M	admitted, held by the item rule		identical	yes	1	1	1	M_Character_PlasticSheet:1				medium changed in the game skin joint names or order
+C1	SK_Traditional_GeishaGothDress_M	never read for S12		no S12 read	yes	1	1	8	M_Character_Layered:2				
+C1	SK_Traditional_GeishaGothSkirtBack_M	never read for S12		no S12 read	yes	1	1	7	M_Character_Layered:1				pass
+C1	SK_Traditional_GeishaGothSkirtFront_M	never read for S12		no S12 read	yes	1	1	7	M_Character_Layered:1				pass
+C2	SK_Shirt_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		47	47	9	M_Character_8Layers_Master:47	layered only: passes (layered View reads are requalified or dead)			medium changed in the game primitives or vertex counts
+C2	SK_Socks_Quarter_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		21	8	10	M_Character_8Layers_Master:17 M_Character_Layered:4	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C2	SK_Pants_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		18	18	20	M_Character_8Layers_Master:12 M_Character_Layered:3 M_Character_LeopardPrint:2 M_CharacterLayered_TeamColor_01:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Pants_L.glb		
+C2	SK_Military_AssaultPants_M	batch C	reworked: UVs changed, geometry moved	identical		16	16	26	M_Character_8Layers_Master:10 M_Character_Layered:6	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C2	SK_Streetwear_TightTechPants_M	batch C	reworked: UVs changed, geometry moved	identical		11	11	22	M_Character_Layered:6 M_Character_8Layers_Master:4 M_Character_PlasticSheet:1	non-layered root: check against the gate			medium changed in the game indices
+C3	SK_Streetwear_BikerJacketHoodie_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		9	9	15	M_Character_8Layers_Master:8 M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C3	SK_Casual_LongHoodie_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		8	8	18	M_Character_8Layers_Master:7 M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C3	SK_Socks_ThighHigh_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		8	4	6	M_Character_8Layers_Master:8	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C3	SK_LongCurly_M	batch C	reworked: UVs changed, geometry moved	identical		7	1	4	M_Hair_Metahuman_01:7	reads View fields: check against the gate	../reconstructed-hair-neutral-batch-v1/meshes/SK_LongCurly_L.glb		
+C3	SK_Military_CombatPants_M	batch C	permuted+material slots	changed		7	7	23	M_Character_Layered:6 M_Character_8Layers_Master:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game primitives or vertex counts
+C3	SK_Casual_Hoodie_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		6	6	11	M_Character_Layered:6	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C3	SK_FancyDress_DressShoes_M	batch C	reworked: UVs changed, geometry moved	identical		6	6	6	M_Character_8Layers_Master:6	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C3	SK_Streetwear_PufferVest_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		6	6	16	(no root recorded):2 M_Character_Layered:2 M_Character_HolographicMaterial:1 M_Character_8Layers_Master:1	non-layered root: check against the gate	../reconstructed-archetypes-v1/meshes/SK_Streetwear_PufferVest_L.glb		
+C3	SK_Military_MarinePants_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		5	5	12	M_Character_Layered:5	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Military_MarinePants_L.glb		
+C3	SK_Pirate_CaptainPants_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		5	5	9	M_Character_Layered:5	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C3	SK_Cowboy_JeansJacket_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		4	4	11	M_Character_8Layers_Master:4	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C3	SK_Pirate_CaptainBoots_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		4	4	12	M_Character_Layered:4	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C3	SK_SciFi_HackerGloves_M	batch C	reworked: UVs changed, geometry moved	identical		4	4	14	M_Character_Layered:4	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_SciFi_HackerGloves_L.glb		
+C3	SK_SciFi_TechBomberJacket_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		4	4	14	M_Character_Layered:4	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C3	SK_Cowboy_LowBoots_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		3	3	7	M_Character_8Layers_Master:3	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C3	SK_Steampunk_VestWithHood_M	batch C	reworked: UVs changed, geometry moved	identical		3	3	8	M_Character_Layered:3	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C3	SK_WorkUniforms_ShirtRolledUpSleeves_M	batch C	reworked: UVs changed, geometry moved	identical		3	3	6	M_Character_Layered:3	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C3	SK_Casual_WaterproofBoots_M	batch C	reworked: UVs changed, geometry moved	identical		2	2	8	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C3	SK_FromTencent_AsianSpiritWraps01_M	batch C	reworked: UVs changed, geometry moved	identical		2	2	9	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game primitives or vertex counts
+C3	SK_Hologram_VaiiyaVestHologram_M	batch C	reworked: UVs changed, geometry moved	identical		2	1	1	M_FloatingHologram:2	reads View fields: check against the gate			medium changed in the game primitives or vertex counts
+C3	SK_Medieval_ElfPrincessMask_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		2	2	5	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game primitives or vertex counts
+C3	SK_Medieval_JesterHat_M	batch C	reworked: geometry moved too far to judge UVs	identical		2	4	11	M_Character_Layered:4 M_CharacterEmpty:2	non-layered root: check against the gate			medium changed in the game primitives or vertex counts
+C3	SK_Medieval_KnightTopPlain_M	batch C	reworked: UVs changed, geometry moved	identical		2	2	12	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C3	SK_Ninja_ShinobiRope_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		2	2	5	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C3	SK_Pirate_CaptainJacket_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		2	2	9	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C4	SK_Samurai_GetaShoes_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		2	2	9	M_Character_8Layers_Master:1 M_Charachter_CelShaded:1	pins a View lane C838D617 does not requalify: 183			medium changed in the game indices
+C4	SK_Space_PioneerShoes_M	batch C	reworked: UVs changed, geometry moved	identical		2	2	9	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_PioneerShoes_L.glb		
+C4	SK_Space_SpacePilotGloves_M	batch C	reworked: UV1+ changed, geometry within 1 mm	identical		2	2	9	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_SpacePilotGloves_L.glb		
+C4	SK_Streetwear_BandanaCap_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		2	2	8	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C4	SK_Streetwear_BikerJacket_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		2	2	11	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C4	SK_Streetwear_MessengerBag_M	batch C	reworked: UVs changed, geometry within 1 mm	changed		2	2	9	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)			
+C4	SK_Streetwear_RingWrapBracelet_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		2	2	6	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C4	SK_Traditional_LunarLegCover_M	batch C	reworked: UVs changed, geometry moved	identical		2	3	13	M_Character_Layered:2 M_CharacterDetailAlpha:2	non-layered root: check against the gate			medium changed in the game indices
+C4	SK_Casual_CropTopCorset_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C4	SK_FromTencent_MilitaryMonkVest_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game primitives or vertex counts
+C4	SK_FromTencent_OperaClothingJacket_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	8	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game primitives or vertex counts
+C4	SK_Hologram_HoltowJacketHologram_M	batch C	reworked: geometry moved too far to judge UVs	identical		1	1	1	M_FloatingHologram:1	reads View fields: check against the gate			medium changed in the game primitives or vertex counts
+C4	SK_Medieval_WizardParts_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	8	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game primitives or vertex counts
+C4	SK_Military_CardboardCombatVest_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	2	M_CharacterAttachment:1	non-layered root: check against the gate			medium changed in the game positions
+C4	SK_Military_OpenShirtWithDogTag_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	9	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C4	SK_Pirate_CaptainHat_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C4	SK_Pirate_PirateBandolier_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	6	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C4	SK_Robots_DiscoKeychain_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Robots_DiscoKeychain_L.glb		
+C4	SK_Robots_DiscoNecklace_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	5	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Robots_DiscoNecklace_L.glb		
+C4	SK_SciFi_PantsToolBag_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_SciFi_PantsToolBag_L.glb		
+C4	SK_Socks_Crew_M	batch C	reworked: UV sets differ, geometry moved	identical		1	1	6	M_Character_8Layers_Master:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C4	SK_Socks_KneeHigh_M	batch C	reworked: UV sets differ, geometry moved	identical		1	1	5	M_Character_8Layers_Master:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C4	SK_Space_AstronautSuit_M	batch C	reworked: UVs changed, geometry moved	identical		1	2	16	M_Character_Layered:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game positions
+C4	SK_Space_SpaceBrain_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	9	M_Face:1	reads View fields: check against the gate	../reconstructed-archetypes-v1/meshes/SK_Space_SpaceBrain_L.glb		
+C4	SK_Space_SpaceCombatPouches_M	batch C	reworked: UV1+ changed, geometry within 1 mm	identical		1	1	9	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_SpaceCombatPouches_L.glb		
+C4	SK_Space_SpaceCombatTorso_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	8	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			
+C4	SK_Space_SpaceSuitPantsUltimate_M	batch C	reworked: UVs changed, geometry within 1 mm	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_SpaceSuitPantsUltimate_L.glb		
+C4	SK_Space_SpaceSuitPants_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_SpaceSuitPants_L.glb		
+C4	SK_Space_SpaceTopVest_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	8	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)	../reconstructed-archetypes-v1/meshes/SK_Space_SpaceTopVest_L.glb		
+C4	SK_Sport_FencerGlove_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	6	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C4	SK_Streetwear_ChromeJacket_M	batch C	reworked: UV sets differ, geometry within 1 mm	identical		1	1	1	M_Character_HolographicMaterial:1	non-layered root: check against the gate			medium changed in the game indices
+C4	SK_Streetwear_CrystalHeadband_M	batch C	reworked: UV1+ changed, geometry within 1 mm	identical		1	1	6	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C4	SK_Streetwear_PopBraceletSet_M	batch C	reworked: UV1+ changed, geometry within 1 mm	identical		1	1	5	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+C4	SK_Streetwear_SmartWatch_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	5	M_Character_8Layers_Master:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game indices
+C4	SK_Traditional_LunarBracelet_M	batch C	reworked: UVs changed, geometry moved	identical		1	1	5	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game primitives or vertex counts
+R	SK_Streetwear_SkiMask_M	stale package	reworked: same UVs, geometry within 1 mm	changed		11	7	11	M_Character_Layered:11				
+R	SK_Streetwear_HeistBag_M	stale package		changed		7	7	9	M_Character_8Layers_Master:5 M_Character_Layered:2				medium changed in the game indices
+R	SK_FromTencent_AsianSpiritGloves_M	stale package		changed		3	3	10	M_Character_Layered:3				medium changed in the game primitives or vertex counts
+R	SK_Military_DrifterCape_M	never read for S12		no S12 read		3	3	14	M_Character_8Layers_Master:4 M_Character_Layered:2				medium changed in the game inverse-bind matrices
+R	SK_WorkUniforms_Tie_M	stale package		changed		3	3	7	M_Character_Layered:3				medium changed in the game normals
+R	SK_Medieval_TechJacketHarness_M	never read for S12		no S12 read		2	2	10	M_Character_Layered:4				
+R	SK_SciFi_SciFiKnightBottomArmor_M	never read for S12		no S12 read		2	2	2	M_Character_PlasticSheet:2				pass
+R	SK_SciFi_SciFiKnightBottom_M	never read for S12		no S12 read		2	2	9	M_Character_Layered:2				pass
+R	SK_Space_SpacePilotJacket_M	never read for S12		no S12 read		2	2	11	M_Character_Layered:4			medium changed in the game (indices; live reconstructed-w170-clothsim-v1)	medium changed in the game indices
+R	SK_Sport_LuchadorCape_M	never read for S12		no S12 read		2	2	5	M_Character_Layered:2				
+R	SK_Sport_LuchadorUpperBody_M	never read for S12		no S12 read		2	2	9	M_Character_Layered:2				pass
+R	SK_Streetwear_UrbanFaceMask_M	stale package		changed		2	2	7	M_Character_Layered:2				pass
+R	SK_Traditional_LunarBoleroShortSleeve_M	stale package		changed		2	2	9	M_Character_Layered:2				live Medium reweighted joint indices
+R	SK_Traditional_LunarDress_M	stale package	permuted+weights	changed		2	2	9	(no root recorded):2 M_Character_Layered:2				medium changed in the game positions
+R	SK_Casual_Durag_M	never read for S12		no S12 read		1	1	6	M_Character_Layered:2				
+R	SK_Cowboy_CoatCape_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:2				pass
+R	SK_Cowboy_SeaBandolierRight_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1				pass
+R	SK_Cute_BunnyCostumeFur_M	never read for S12		no S12 read		1	3	7	M_FurShells:2 M_Character_8Layers_Master:1 M_FurLOD:1				pass
+R	SK_Cute_TanukiCostumeFur_M	never read for S12		no S12 read		1	3	8	M_FurShells:2 M_Character_8Layers_Master:1 M_FurLOD:1				pass
+R	SK_Cute_TanukiFurPlanes_M	never read for S12		no S12 read		1	1	4	M_Hair_Metahuman_01:1				pass
+R	SK_Halloween_DemonMask_M	never read for S12		no S12 read		1	1	9	M_Character_Layered:1				pass
+R	SK_Historic_EasternEmperorPlume_M	never read for S12		no S12 read		1	1	4	M_Hair_Metahuman_01:1				
+R	SK_Historic_NeckCape_M	stale package		changed		1	1	6	M_Character_Layered:1				live Medium reweighted weights
+R	SK_Medieval_DragonSlayerSkirt_M	stale package	permuted	changed		1	1	8	M_Character_Layered:1				medium changed in the game indices
+R	SK_Medieval_SkeletonWarriorPantsLow_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1				pass
+R	SK_Medieval_SkeletonWarriorPants_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1				pass
+R	SK_Mexico_TraditionalPoncho_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:2				medium changed in the game indices
+R	SK_Mexico_VaqueroCape_M	never read for S12		no S12 read		1	1	5	M_Character_Layered:1				pass
+R	SK_Mexico_VaqueroJacket_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1				pass
+R	SK_Military_Cape_M	never read for S12		no S12 read		1	1	0	M_Character_VisorGradient:1				
+R	SK_Military_HoodedCape_M	never read for S12		no S12 read		1	1	6	M_Character_Layered:1				
+R	SK_Military_SciFiTorso_M	never read for S12		no S12 read		1	4	10	M_Character_PlasticSheet:2 M_Character_Layered:1 M_CharacterAttachment:1				pass
+R	SK_Military_SidePouch_M	never read for S12		no S12 read		1	1	5	M_Character_Layered:1				
+R	SK_Military_TacticalPouches_M	never read for S12		no S12 read		1	1	8	M_Character_Layered:1				
+R	SK_Military_TacticalVestSeparated_M	never read for S12		no S12 read		1	1	8	M_Character_Layered:1				pass
+R	SK_Pirate_PirateCape_M	never read for S12		no S12 read		1	1	5	M_Character_Layered:1				pass
+R	SK_Robots_RobotWarriorLegs_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1				pass
+R	SK_Samurai_SwatVestSamurai_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1				pass
+R	SK_SciFi_CyberCape_M	never read for S12		no S12 read		1	1	6	M_Character_Layered:1				pass
+R	SK_SciFi_CyberJacketUnderCloth_M	never read for S12		no S12 read		1	1	1	M_CharacterDetailAlpha:1				pass
+R	SK_SciFi_CyberJacket_M	never read for S12		no S12 read		1	1	9	M_Character_Layered:2				pass
+R	SK_SciFi_CyberShortsUnderCloth_M	never read for S12		no S12 read		1	1	0	M_CharacterDetailAlpha:1				pass
+R	SK_SciFi_CyberShorts_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:1				pass
+R	SK_Space_SpacePilotJacketUltimate_M	never read for S12		no S12 read		1	2	9	M_Character_Layered:2 M_LEDScreen_Head:1			medium changed in the game (positions; live reconstructed-w170-clothsim-v1)	medium changed in the game positions
+R	SK_Sport_Glasses_M	never read for S12		no S12 read		1	2	6	M_Character_8Layers_Master:1 M_CharacterGlass_02:1				
+R	SK_Streetwear_DemonLedMask_M	never read for S12		no S12 read		1	2	5	M_Character_8Layers_Master:1 M_LEDScreen:1				
+R	SK_Streetwear_OversizedJacket_M	never read for S12		no S12 read		1	1	7	M_Character_Layered:2				pass
+R	SK_Streetwear_TechJoggers_M	never read for S12		no S12 read		1	1	6	M_Character_8Layers_Master:1				pass
+R	SK_Traditional_LunarCape_M	stale package		changed		1	1	6	M_Character_Layered:1				medium changed in the game skin joint names or order
+U	SK_Military_TacticalBoots_M	changed on 17 Nov, counted S12		changed		22	22	20	M_Character_8Layers_Master:22	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+U	SK_Military_TacticalGloves_M	changed on 17 Nov, counted S12		changed		20	20	25	M_Character_8Layers_Master:19 M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+U	SK_Streetwear_BaseTankTop_M	changed on 17 Nov, counted S12		changed		19	5	10	M_Character_8Layers_Master:19	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+U	SK_Military_TacticalHelmet_M	changed on 17 Nov, counted S12		changed		13	11	14	M_Character_8Layers_Master:13	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+U	SK_Casual_TallSneakers_M	changed on 17 Nov, counted S12		changed		10	10	11	M_Character_8Layers_Master:9 M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+U	SK_Military_TacticalTrousers_M	changed on 17 Nov, counted S12		changed		9	9	14	M_Character_8Layers_Master:9				medium changed in the game indices
+U	SK_Streetwear_Jacket_M	changed on 17 Nov, counted S12		changed		9	9	16	M_Character_8Layers_Master:9				medium changed in the game indices
+U	SK_Casual_ShortSkirt_M	changed on 17 Nov, counted S12		changed		8	8	20	M_Character_Layered:7 M_Character_PlasticSheet:1				
+U	SK_Cowboy_MouthScarf_M	changed on 17 Nov, counted S12		changed		8	8	16	M_Character_8Layers_Master:8				
+U	SK_BeardAnchorHalf_M	changed on 17 Nov, counted S12	permuted+attribute sets differ: ['COLOR_0']	changed		7	1	4	M_Hair_Metahuman_01:7				
+U	SK_BeardFull_M	changed on 17 Nov, counted S12	permuted+attribute sets differ: ['COLOR_0']	changed		7	1	4	M_Hair_Metahuman_01:7				
+U	SK_Steampunk_Skirt_M	changed on 17 Nov, counted S12		changed		5	5	8	M_Character_Layered:3 M_Character_PlasticSheet:2				
+U	SK_Winter_MouthScarf_M	changed on 17 Nov, counted S12		changed		5	3	5	M_Character_8Layers_Master:5				
+U	SK_Historic_VikingCloak_M	changed on 17 Nov, counted S12		changed		4	4	12	M_Character_Layered:4				live Medium reweighted joint indices
+U	SK_Military_TacticalVest_M	changed on 17 Nov, counted S12		changed		4	4	13	M_Character_8Layers_Master:4	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+U	SK_Streetwear_FaceMaskFull_M	changed on 17 Nov, counted S12		changed		4	4	8	M_Character_Layered:4				
+U	SK_Casual_HeadscarfStraps_M	changed on 17 Nov, counted S12		changed		3	2	8	M_Character_Layered:3			medium changed in the game (indices; live reconstructed-w80-wrap-w1-v2)	medium changed in the game indices
+U	SK_Military_LanyardBracelet_M	changed on 17 Nov, counted S12		changed		3	3	7	M_Character_8Layers_Master:3	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+U	SK_Military_TacticalHeadphones_M	changed on 17 Nov, counted S12		changed		3	3	10	M_Character_8Layers_Master:3				medium changed in the game indices
+U	SK_Military_TigerWarriorArmour_M	changed on 17 Nov, counted S12		changed		3	3	10	M_Character_Layered:6				live Medium reweighted joint indices
+U	SK_Casual_NecklaceWithRing_M	changed on 17 Nov, counted S12		changed		2	2	11	M_Character_Layered:2				
+U	SK_Cowboy_Coat_M	changed on 17 Nov, counted S12		changed		2	2	10	M_Character_8Layers_Master:4				live Medium reweighted joint indices
+U	SK_Cowboy_DusterCoat_M	changed on 17 Nov, counted S12		changed		2	2	13	M_Character_Layered:2				live Medium reweighted joint indices
+U	SK_Cowboy_Poncho_M	changed on 17 Nov, counted S12		changed		2	2	9	M_Character_8Layers_Master:1 M_Character_HolographicMaterial:1				live Medium reweighted joint indices
+U	SK_FancyDress_Gloves_M	changed on 17 Nov, counted S12		changed		2	2	11	M_Character_Layered:2				medium changed in the game skin joint names or order
+U	SK_FancyDress_Harness_M	changed on 17 Nov, counted S12		changed		2	2	11	M_Character_Layered:4				live Medium reweighted joint indices
+U	SK_Historic_EasternEmperorBelt_M	changed on 17 Nov, counted S12		changed		2	2	14	M_Character_Layered:2				
+U	SK_Historic_EasternEmperorLoinArmor_M	changed on 17 Nov, counted S12		changed		2	3	18	M_Character_Layered:2 M_Hair_Metahuman_01:2				
+U	SK_Medieval_KnightCape_M	changed on 17 Nov, counted S12		changed		2	2	7	M_Character_Layered:2			medium changed in the game (skin joint names or order; live reconstructed-w82-sweep-g1-v4)	medium changed in the game skin joint names or order
+U	SK_Medieval_KnightSkirt_M	changed on 17 Nov, counted S12		changed		2	2	8	(no root recorded):1 M_Character_Layered:1				
+U	SK_Military_TacticalGlasses_M	changed on 17 Nov, counted S12		changed		2	2	6	M_Character_8Layers_Master:2	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+U	SK_Robots_SportyRobotLegs_M	changed on 17 Nov, counted S12		changed		2	2	13	M_Character_Layered:2			medium changed in the game (positions; live reconstructed-w125-resweep-s3)	medium changed in the game positions
+U	SK_SciFi_SmallCamoCape_M	changed on 17 Nov, counted S12		changed		2	2	10	M_Character_Layered:2				
+U	SK_Sport_LuchadorFaceMask_M	changed on 17 Nov, counted S12		changed		2	2	7	M_Character_Layered:2				
+U	SK_BeardSanta_M	changed on 17 Nov, counted S12		changed		1	1	4	M_Hair_Metahuman_01:2				
+U	SK_Casual_ChainBelt_M	changed on 17 Nov, counted S12		changed		1	1	5	(no root recorded):1			medium changed in the game (indices; live reconstructed-w80-wrap-w2-v1)	medium changed in the game indices
+U	SK_Casual_FrontTieCropTopSleeves_M	changed on 17 Nov, counted S12		changed		1	1	7	M_Character_Layered:1			live Medium reweighted (joint indices; live reconstructed-w121-transfer-t1)	live Medium reweighted joint indices
+U	SK_Casual_WinterScarf_M	changed on 17 Nov, counted S12		changed		1	1	6	M_Character_Layered:1				live Medium reweighted joint indices
+U	SK_Gothic_ChainmailSideSkirt_M	changed on 17 Nov, counted S12		changed		1	1	6	M_Character_Layered:1				
+U	SK_Historic_EasternEmperorCape_M	changed on 17 Nov, counted S12		changed		1	1	8	M_Character_Layered:1				live Medium reweighted joint indices
+U	SK_Historic_EasternEmperorUpperBodyUltimate_M	changed on 17 Nov, counted S12		changed		1	2	13	M_Character_Layered:2 M_Hair_Metahuman_01:1				live Medium reweighted joint indices
+U	SK_Medieval_ElegantKnightBelts_M	changed on 17 Nov, counted S12		changed		1	1	8	M_Character_Layered:1				
+U	SK_Medieval_ElegantKnightWrap_M	changed on 17 Nov, counted S12		changed		1	1	6	M_Character_Layered:1				
+U	SK_Medieval_JesterTornNeckCape_M	changed on 17 Nov, counted S12		changed		1	1	8	M_Character_Layered:1				live Medium reweighted joint indices
+U	SK_Medieval_KnightArmCloths_M	changed on 17 Nov, counted S12		changed		1	1	6	M_Character_Layered:1				live Medium reweighted joint indices
+U	SK_Medieval_RoyalSkirt_M	changed on 17 Nov, counted S12		changed		1	1	8	M_Character_Layered:1				
+U	SK_Military_RiotMedievalLowerJacket_M	changed on 17 Nov, counted S12		changed		1	1	8	M_Character_Layered:1				
+U	SK_Military_RiotMedievalStrap_M	changed on 17 Nov, counted S12		changed		1	1	8	M_Character_Layered:1				
+U	SK_Military_SciFiTacticalPantsStraps_M	changed on 17 Nov, counted S12		changed		1	1	5	M_Character_Layered:1				
+U	SK_MustacheFluffy_M	changed on 17 Nov, counted S12		changed		1	1	4	M_Hair_Metahuman_01:1				
+U	SK_MustacheHandlebar_M	changed on 17 Nov, counted S12		changed		1	1	4	M_Hair_Metahuman_01:1				
+U	SK_MustacheHorseshoe_M	changed on 17 Nov, counted S12		changed		1	1	4	M_Hair_Metahuman_01:2				
+U	SK_Pirate_CaptainCape_M	changed on 17 Nov, counted S12		changed		1	1	6	M_Character_Layered:1				live Medium reweighted joint indices
+U	SK_Pirate_SeaBandolier_M	changed on 17 Nov, counted S12		changed		1	1	8	M_Character_Layered:1				medium changed in the game skin joint names or order
+U	SK_SciFi_TigerRobotBomberJacketStraps_M	changed on 17 Nov, counted S12		changed		1	1	7	M_Character_Layered:1				live Medium reweighted joint indices
+U	SK_SciFi_UrbanTechVest_M	changed on 17 Nov, counted S12		changed		1	1	8	M_Character_Layered:2				live Medium reweighted joint indices
+U	SK_Space_SpaceCape_M	changed on 17 Nov, counted S12		changed		1	1	5	M_Character_Layered:1			live Medium reweighted (joint indices; live reconstructed-w125-resweep-t2)	live Medium reweighted joint indices
+U	SK_Streetwear_KneeSocks_M	changed on 17 Nov, counted S12		changed		1	1	7	M_Character_Layered:1	layered only: passes (layered View reads are requalified or dead)			medium changed in the game UVs
+U	SK_WorkUniforms_Apron_M	changed on 17 Nov, counted S12		changed		1	1	7	M_Character_Layered:2				live Medium reweighted joint indices
+U	SK_WorkUniforms_CuteDressTop_M	changed on 17 Nov, counted S12		changed		1	2	9	M_Character_Layered:2				live Medium reweighted joint indices
+U	SK_Beard_UnderMask_M	changed on 17 Nov, counted S12		changed		0	0	0					
+held	SK_Streetwear_CropTopHoodie_M	held		identical		1						held: the game's own S12 weights are defective	live Medium reweighted joint indices
+held	SK_Streetwear_PopGothShoes_M	held	permuted+weights	identical		1						held: the game's own S12 weights are defective	medium changed in the game indices
+held	SK_FancyDress_SuitJacket_M	held		identical		7						held: w161 part-hide mask needs tooling	live Medium reweighted joint indices
+held	SK_Traditional_LunarDressTop_M	held		identical		2						held: legacy mask with no generation record	live Medium reweighted joint indices
