@@ -11,6 +11,7 @@ import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "../..");
@@ -69,15 +70,17 @@ for (let i = 0; i < N; i++) {
   const deg = (360 / N) * i;
   const a = (deg * Math.PI) / 180;
   const pos = [TARGET[0] + R * Math.sin(a), H, TARGET[2] + R * Math.cos(a)];
-  const url =
-    `${BASE}/?outfit=${outfit}&cam=${[...pos, ...TARGET].join(",")}&fov=${FOV}&pose=a` +
-    (ALBEDO ? "&debugAlbedo=1" : "") +
-    (NOBAKED ? "&nobaked=1" : "");
+  const url = viewerUrl(
+    BASE,
+    `outfit=${outfit}&cam=${[...pos, ...TARGET].join(",")}&fov=${FOV}&pose=a` +
+      (ALBEDO ? "&debugAlbedo=1" : "") +
+      (NOBAKED ? "&nobaked=1" : ""),
+  );
   await page.goto(url, { waitUntil: "networkidle" });
   const canvas = page.locator("canvas").first();
   await canvas.waitFor({ state: "visible", timeout: 20000 });
   await page.waitForFunction("window.__rigIdle === true", null, { timeout: 30000 }).catch(() => {});
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(settleMs(500));
   const box = await canvas.boundingBox();
   const buf = await page.screenshot({ clip: box });
   tiles.push(await sharp(buf).resize(300, 400, { fit: "contain", background: "#bcc6d2" }).removeAlpha().toBuffer());

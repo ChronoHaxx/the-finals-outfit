@@ -14,6 +14,7 @@ import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
 import sharp from "sharp";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "../..");
@@ -258,7 +259,7 @@ for (const item of targets) {
   const slots = cam.withFace
     ? { face: "head-face-03-base", [item.slot]: item.id }
     : { [item.slot]: item.id };
-  const url = `${BASE}/?outfit=${encodeOutfit(slots)}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a`;
+  const url = viewerUrl(BASE, `outfit=${encodeOutfit(slots)}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a`);
   pageErrors = [];
   const rec = { id: item.id, slot: item.slot, name: item.name };
   try {
@@ -279,7 +280,7 @@ for (const item of targets) {
     pageErrors = []; // drop noise from failed attempts
     await page.locator("canvas").first().waitFor({ state: "visible", timeout: 15000 });
     await page.waitForFunction("window.__rigIdle === true", null, { timeout: 25000 });
-    await page.waitForTimeout(450);
+    await page.waitForTimeout(settleMs(450));
     const box = await page.locator("canvas").first().boundingBox();
     const shotPath = join(OUT, `${item.id}.png`);
     await page.screenshot({ path: shotPath, clip: box });

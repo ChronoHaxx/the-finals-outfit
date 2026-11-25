@@ -2,6 +2,7 @@ import { chromium } from "playwright-core";
 import { mkdirSync, readFileSync, copyFileSync, existsSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "../..");
 const OUT = resolve(ROOT, "visual-diff/verify");
@@ -23,10 +24,10 @@ mkdirSync(OUT,{recursive:true});
 let n=0;
 for(const [id,slot] of list){
   const it=byId.get(id); const cam=cams[slot];
-  await page.goto(`http://localhost:5173/?outfit=${enc({[slot]:id})}&cam=${[...cam.pos,...cam.t].join(",")}&fov=${cam.fov}&pose=a`,{waitUntil:"networkidle"});
+  await page.goto(viewerUrl(process.env.VDIFF_BASE ?? "http://localhost:5173", `outfit=${enc({[slot]:id})}&cam=${[...cam.pos,...cam.t].join(",")}&fov=${cam.fov}&pose=a`),{waitUntil:"networkidle"});
   await page.locator("canvas").first().waitFor({state:"visible",timeout:20000});
   await page.waitForFunction("window.__rigIdle === true",null,{timeout:30000});
-  await page.waitForTimeout(650);
+  await page.waitForTimeout(settleMs(650));
   await page.screenshot({path:join(OUT,`${id}.render.png`),clip:await page.locator("canvas").first().boundingBox()});
   // copy the icon next to it for the judges
   const icon=resolve(ROOT,"public",it.imageUrl);

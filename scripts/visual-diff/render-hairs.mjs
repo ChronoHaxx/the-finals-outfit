@@ -2,6 +2,7 @@ import { chromium } from "playwright-core";
 import { mkdirSync, readFileSync, copyFileSync, existsSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 const SD = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SD, "../..");
 const OUT = resolve(ROOT, "visual-diff/hairs");
@@ -35,14 +36,14 @@ for (const id of ids) {
     continue;
   }
   await page.goto(
-    `http://localhost:5173/?outfit=${enc({ hair: id })}&cam=${[...cam.pos, ...cam.t].join(",")}&fov=${cam.fov}&pose=a`,
+    viewerUrl(process.env.VDIFF_BASE ?? "http://localhost:5173", `outfit=${enc({ hair: id })}&cam=${[...cam.pos, ...cam.t].join(",")}&fov=${cam.fov}&pose=a`),
     { waitUntil: "networkidle" },
   );
   try {
     await page.locator("canvas").first().waitFor({ state: "visible", timeout: 20000 });
     await page.waitForFunction("window.__rigIdle === true", null, { timeout: 30000 });
   } catch {}
-  await page.waitForTimeout(700);
+  await page.waitForTimeout(settleMs(700));
   await page.screenshot({
     path: join(OUT, `${id}.render.png`),
     clip: await page.locator("canvas").first().boundingBox(),

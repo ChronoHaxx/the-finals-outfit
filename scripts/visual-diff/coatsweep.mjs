@@ -5,6 +5,7 @@ import { chromium } from "playwright-core";
 import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "../..");
@@ -34,12 +35,12 @@ page.on("pageerror", (e) => console.warn("  pageerror:", String(e).slice(0, 160)
 mkdirSync(OUT, { recursive: true });
 
 for (const it of ow) {
-  const url = `${BASE}/?outfit=${enc({ outerwear: it.id })}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a`;
+  const url = viewerUrl(BASE, `outfit=${enc({ outerwear: it.id })}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a`);
   await page.goto(url, { waitUntil: "networkidle" });
   const canvas = page.locator("canvas").first();
   await canvas.waitFor({ state: "visible", timeout: 20000 });
   await page.waitForFunction("window.__rigIdle === true", null, { timeout: 30000 });
-  await page.waitForTimeout(700);
+  await page.waitForTimeout(settleMs(700));
   const box = await canvas.boundingBox();
   await page.screenshot({ path: join(OUT, `sweep-${it.id}.png`), clip: box });
   console.log("rendered", it.id);

@@ -2,6 +2,7 @@ import { chromium } from "playwright-core";
 import { mkdirSync, readFileSync, copyFileSync, existsSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 const SD=dirname(fileURLToPath(import.meta.url)); const ROOT=resolve(SD,"../.."); const OUT=resolve(ROOT, process.env.VOUT ?? "visual-diff/verify2");
 const list=JSON.parse(readFileSync(resolve(SD, process.env.VLIST ?? "verify-list2.json"),"utf8"));
 const items=JSON.parse(readFileSync(resolve(ROOT,"src/data/items.json"),"utf8")); const byId=new Map(items.map(i=>[i.id,i]));
@@ -51,9 +52,9 @@ for(const [id,slot] of list){const it=byId.get(id); const cam=cams[slot]||cams.u
   if(SKIP&&existsSync(dst)){continue;}
   if(!it){failed.push([id,"not in items.json"]);continue;}
   try{
-    await page.goto(`http://localhost:5173/?outfit=${enc(outfitFor(id,slot))}&cam=${[...cam.pos,...cam.t].join(",")}&fov=${cam.fov}&pose=a`,{waitUntil:"networkidle",timeout:45000});
+    await page.goto(viewerUrl(process.env.VDIFF_BASE ?? "http://localhost:5173", `outfit=${enc(outfitFor(id,slot))}&cam=${[...cam.pos,...cam.t].join(",")}&fov=${cam.fov}&pose=a`),{waitUntil:"networkidle",timeout:45000});
     try{await page.locator("canvas").first().waitFor({state:"visible",timeout:20000}); await page.waitForFunction("window.__rigIdle === true",null,{timeout:30000});}catch{}
-    await page.waitForTimeout(600);
+    await page.waitForTimeout(settleMs(600));
     await page.screenshot({path:dst,clip:await page.locator("canvas").first().boundingBox()});
     const icon=resolve(ROOT,"public",it.imageUrl); if(existsSync(icon))copyFileSync(icon,join(OUT,`${id}.icon.webp`));
     console.log(`[${n}/${list.length}] ${id}`);

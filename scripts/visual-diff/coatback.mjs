@@ -6,6 +6,7 @@ import { chromium } from "playwright-core";
 import { mkdirSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "../..");
@@ -50,12 +51,12 @@ mkdirSync(OUT, { recursive: true });
 for (const coat of COATS) {
   const outfit = encodeOutfit({ outerwear: coat }); // upperBody intentionally empty
   for (const [view, cam] of Object.entries(VIEWS)) {
-    const url = `${BASE}/?outfit=${outfit}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a`;
+    const url = viewerUrl(BASE, `outfit=${outfit}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a`);
     await page.goto(url, { waitUntil: "networkidle" });
     const canvas = page.locator("canvas").first();
     await canvas.waitFor({ state: "visible", timeout: 20000 });
     await page.waitForFunction("window.__rigIdle === true", null, { timeout: 30000 });
-    await page.waitForTimeout(800);
+    await page.waitForTimeout(settleMs(800));
     const box = await canvas.boundingBox();
     const path = join(OUT, `coat-${coat.replace(/^casual-longcoat-/, "")}-${view}.png`);
     await page.screenshot({ path, clip: box });

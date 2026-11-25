@@ -4,6 +4,7 @@ import { chromium } from "playwright-core";
 import { mkdirSync, readFileSync, copyFileSync, existsSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 const SD = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SD, "../..");
 const OUT = resolve(ROOT, "visual-diff/hairs");
@@ -26,14 +27,14 @@ for (const id of process.argv.slice(2)) {
   const it = byId.get(id);
   if (!it) { console.log("MISSING", id); continue; }
   await page.goto(
-    `http://localhost:5173/?outfit=${enc({ ...base, hair: id })}&cam=${[...cam.pos, ...cam.t].join(",")}&fov=${cam.fov}&pose=a`,
+    viewerUrl(process.env.VDIFF_BASE ?? "http://localhost:5173", `outfit=${enc({ ...base, hair: id })}&cam=${[...cam.pos, ...cam.t].join(",")}&fov=${cam.fov}&pose=a`),
     { waitUntil: "networkidle" },
   );
   try {
     await page.locator("canvas").first().waitFor({ state: "visible", timeout: 20000 });
     await page.waitForFunction("window.__rigIdle === true", null, { timeout: 30000 });
   } catch {}
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(settleMs(800));
   await page.screenshot({ path: join(OUT, `${id}.ctx.png`), clip: await page.locator("canvas").first().boundingBox() });
   const icon = resolve(ROOT, "public", it.imageUrl);
   if (existsSync(icon)) copyFileSync(icon, join(OUT, `${id}.icon.webp`));

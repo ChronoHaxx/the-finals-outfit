@@ -2,6 +2,7 @@ import { chromium } from "playwright-core";
 import { readFileSync, mkdirSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const root = resolve(scriptDir, "../..");
@@ -39,11 +40,11 @@ for (const entry of cohort) {
     : headSlots.has(item.slot)
       ? { face: "head-face-23-base", [item.slot]: item.id }
       : { [item.slot]: item.id };
-  const url = `http://127.0.0.1:5173/?outfit=${encode(outfit)}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a`;
+  const url = viewerUrl(process.env.VDIFF_BASE ?? "http://127.0.0.1:5173", `outfit=${encode(outfit)}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a`);
   await page.goto(url, { waitUntil: "networkidle", timeout: 45000 });
   await page.locator("canvas").first().waitFor({ state: "visible", timeout: 20000 });
   await page.waitForFunction("window.__rigIdle === true", null, { timeout: 30000 });
-  await page.waitForTimeout(700);
+  await page.waitForTimeout(settleMs(700));
   const box = await page.locator("canvas").first().boundingBox();
   await page.screenshot({ path: join(out, `${entry.id}.${side}.png`), clip: box });
   console.log(`${side}: ${entry.id}`);

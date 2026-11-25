@@ -13,6 +13,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "../..");
@@ -58,11 +59,11 @@ for (const item of pieces) {
   done++;
   try {
     await page.goto(
-      `${BASE}/?outfit=${encodeOutfit({ [item.slot]: item.id })}&pose=a&cam=0,1.1,3,0,1,0&fov=30`,
+      viewerUrl(BASE, `outfit=${encodeOutfit({ [item.slot]: item.id })}&pose=a&cam=0,1.1,3,0,1,0&fov=30`),
       { waitUntil: "networkidle", timeout: 30000 },
     );
     await page.waitForFunction("window.__rigIdle === true", null, { timeout: 25000 });
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(settleMs(250));
     const r = await page.evaluate((slot) => {
       const THREE = window.__THREE;
       let body = null;

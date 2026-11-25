@@ -5,6 +5,7 @@ import { chromium } from "playwright-core";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const args = Object.fromEntries(process.argv.slice(2).map((arg) => arg.replace(/^--/, "").split("=")));
@@ -57,7 +58,7 @@ try {
     if (["headwear", "hair"].includes(item.slot)) slots.face = "head-face-23-base";
     const outfit = "1." + Buffer.from(JSON.stringify({ slots })).toString("base64url");
     const camera = cameras[item.slot];
-    const url = `${process.env.VDIFF_BASE ?? "http://127.0.0.1:5173"}/?outfit=${outfit}&cam=${camera.slice(0, 6)}&fov=${camera[6]}&pose=a`;
+    const url = viewerUrl(process.env.VDIFF_BASE ?? "http://127.0.0.1:5173", `outfit=${outfit}&cam=${camera.slice(0, 6)}&fov=${camera[6]}&pose=a`);
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
     // An equip error is caught by the viewer, so idle alone can photograph a bare
     // body and report success. Require every expected surface to be present too.
@@ -69,7 +70,7 @@ try {
       });
       return expected.every((name) => names.has(name));
     }, expectedMaterials, { timeout: 60000 });
-    await page.waitForTimeout(800);
+    await page.waitForTimeout(settleMs(800));
     await page.locator("canvas").first().screenshot({ path: join(OUT, `${id}.png`) });
     const materials = await page.evaluate(() => {
       const result = [];
