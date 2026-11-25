@@ -6,10 +6,14 @@
 // Requires `npm run dev` to be serving (override with VDIFF_BASE). --albedo additionally
 // renders each case with ?debugAlbedo=1 (unlit albedo, NoToneMapping) for color
 // calibration. Output: visual-diff/out/<id>.png (+ <id>.albedo.png).
+// Route: the reconstructed route the site draws, unless VDIFF_ROUTE=cosmetics (viewer-url.mjs).
 import { chromium } from "playwright-core";
 import { mkdirSync, readFileSync } from "node:fs";
 import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { viewerUrl, routeFromEnv, SETTLE_MS } from "./viewer-url.mjs";
+
+const ROUTE = routeFromEnv();
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "../..");
@@ -68,18 +72,19 @@ for (const c of cases) {
   }
   const outfit = encodeOutfit({ [item.slot]: item.id });
   for (const variant of ALBEDO ? ["lit", "albedo"] : ["lit"]) {
-    const url =
-      `${BASE}/?outfit=${outfit}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a` +
-      (variant === "albedo" ? "&debugAlbedo=1" : "") +
-      (NOBAKED ? "&nobaked=1" : "") +
-      // VDIFF_QUERY (25 Nov 2026, C0b review): extra viewer switches, e.g. "reconstructed=1" for the source-assembly
-      // route that reads the reconstructed index (without it the page draws the older cosmetics route).
-      (process.env.VDIFF_QUERY ? `&${process.env.VDIFF_QUERY}` : "");
+    // viewerUrl adds the route switch (VDIFF_ROUTE, default reconstructed=1) and any VDIFF_QUERY switches.
+    const url = viewerUrl(
+      BASE,
+      `outfit=${outfit}&cam=${[...cam.pos, ...cam.target].join(",")}&fov=${cam.fov}&pose=a` +
+        (variant === "albedo" ? "&debugAlbedo=1" : "") +
+        (NOBAKED ? "&nobaked=1" : ""),
+    );
     await page.goto(url, { waitUntil: "networkidle" });
     const canvas = page.locator("canvas").first();
     await canvas.waitFor({ state: "visible", timeout: 20000 });
     await page.waitForFunction("window.__rigIdle === true", null, { timeout: 30000 });
-    await page.waitForTimeout(700); // a few frames: env compile, contact shadow settle
+    // env compile, contact shadow settle; on the reconstructed route also the temporal accumulator
+    await page.waitForTimeout(SETTLE_MS[ROUTE]);
     const box = await canvas.boundingBox();
     const suffix = (NOBAKED ? ".flat" : "") + (variant === "albedo" ? ".albedo" : "");
     await page.screenshot({ path: join(OUT, `${c.id}${suffix}.png`), clip: box });

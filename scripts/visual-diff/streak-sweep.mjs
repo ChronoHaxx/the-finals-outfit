@@ -10,6 +10,7 @@ import { spawnSync } from "node:child_process";
 import sharp from "sharp";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { viewerUrl, settleMs } from "./viewer-url.mjs";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "../..");
@@ -72,10 +73,10 @@ for (const v of VALUES) {
   const browser = await chromium.launch({ channel: "chrome", headless: true });
   const page = await browser.newPage({ viewport: { width: 560, height: 840 }, deviceScaleFactor: 1.5 });
   page.on("pageerror", () => {});
-  await page.goto(`${BASE}/?outfit=${outfit}&cam=${CAM}&fov=34&pose=a`, { waitUntil: "networkidle" });
+  await page.goto(viewerUrl(BASE, `outfit=${outfit}&cam=${CAM}&fov=34&pose=a`), { waitUntil: "networkidle" });
   await page.locator("canvas").first().waitFor({ state: "visible", timeout: 20000 });
   await page.waitForFunction("window.__rigIdle === true", null, { timeout: 30000 }).catch(() => {});
-  await page.waitForTimeout(700);
+  await page.waitForTimeout(settleMs(700));
   const box = await page.locator("canvas").first().boundingBox();
   const shot = await page.screenshot({ clip: box });
   await browser.close();
