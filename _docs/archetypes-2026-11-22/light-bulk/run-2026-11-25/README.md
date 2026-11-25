@@ -59,18 +59,41 @@ proof 1′ skips.
 
 **Starting outfit:**
 - Jeans: added.
-- Sneakers: skipped. Today's `SK_Casual_TallSneakers_M` has new UVs, but the index still serves the pre-S12 copy
-  (`reconstructed-meshes-v2`).
-- T-shirt: a Medium-refresh follow-up, same cause (S12 batch C0).
+- Sneakers: skipped on UVs. The UVs are not new: see the next section. The live Medium (`reconstructed-meshes-v2`)
+  is an older build with U wrapped into 0–1 and no second UV set, so proof 1′ cannot call it the same build.
+- T-shirt: its Medium changed in the game (indices); S12 batch C0 refreshes it.
 
-So a whole Light starting outfit waits on S12 batch C for the T-shirt and the sneakers.
+So a whole Light starting outfit waits on C0 for the T-shirt, and on a refresh of the sneakers' Medium from the 17 Nov
+read (recommended by the S12 tier-2 session for C0 too; the coordinator decides).
+
+### The 27 "UVs" skips are mostly an older wrap convention (measured 25 Nov)
+
+The first version of this record called the sneakers' UVs new. Measured against the live Medium
+([uv-skips-census.tsv](uv-skips-census.tsv)):
+- **18 are the same UVs with whole tiles removed:**
+  - positions and indices are identical;
+  - UV0 differs only by whole-number shifts (−2 to +2), with at most one half-float step (2⁻¹⁰) left over;
+  - the live Mediums come from older pipelines that wrapped U into 0–1. Today's converter keeps the game's raw tiles,
+    and 12 of the 18 live copies also lack the second UV set the game has.
+
+  The sneakers are among them, along with 6 of the S12 wave U "new UVs" meshes: TacticalBoots, TacticalGloves,
+  TacticalHelmet, TacticalVest, LanyardBracelet and BaseTankTop.
+- **3 are probably the same** at a coarser step (2⁻⁹, consistent with |u| ≥ 2): CaptainBoots, CaptainHat and Sneakers.
+  TacticalGlasses (0.0019) is borderline.
+- **4 are real UV changes:** KneeSocks, ShinobiRope, PopBraceletSet and CrystalHeadband.
+- **LongHoodie:** the live copy has a second UV set that today's read lacks.
+
+**Proof 1′ is left strict on purpose.** A wrap-equal rule would pair raw-tile Light meshes with wrapped Mediums. The
+game's own samplers repeat (`ReconstructedMaterial.ts`), so that would render correctly there. But the legacy paths
+clamp: baked sets, binding textures, garment decals and hair masks (`CharacterRig.ts`). On those paths the Light piece
+would smear wherever its UVs leave 0–1. Every one of the 538 added meshes has UVs equal to its live Medium's, so this
+cannot happen to them. Changing the rule is the coordinator's call.
 
 ## Next
 
-1. **Apply** (main-folder session, after the release is live): `bulk-v2-build` by APPLY.md, with the pins above.
-   - This one build holds every batch, so its 538 meshes can go in one apply instead of the three planned waves. That
-     is the coordinator's call.
-   - Record `skipped.tsv` in the apply record (already copied here).
+1. **Apply** (main-folder session): one apply of all 538, replacing W1–W3 (coordinator, 25 Nov). It goes after
+   w177's apply and before S12 C0, and follows [APPLY.md](../../APPLY.md), "Bulk apply". The rebuild on the moved index
+   must make exactly the reviewed change, which `scripts/archetypes/compare-apply-delta.py` checks.
 2. **The 15 rows "served from the S12 refresh":** read their Medium, Light and Heavy in an extra batch and prove 1′
    against the live S12 Medium. Agreed with the S12 tier-2 session, 25 Nov.
 3. **Follow-ups for other owners:**

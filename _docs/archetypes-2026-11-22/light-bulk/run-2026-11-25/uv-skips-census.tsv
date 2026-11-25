@@ -1,0 +1,28 @@
+medium	verdict	maxResidualAfterWholeTiles	uvSetsToday	uvSetsLive	liveUrl
+SK_Military_TacticalGlasses_M	UVs differ beyond a whole-tile shift	0.001862	[2]	[1]	../reconstructed-family-batch24-military-tactical-glasses-v1/meshes/SK_Military_TacticalGlasses_M.glb
+SK_Ninja_ShinobiRope_M	UVs differ beyond a whole-tile shift	0.475098	[1]	[1]	../reconstructed-family-batch21-ninja-shinobi-rope-v1/meshes/SK_Ninja_ShinobiRope_M.glb
+SK_Pirate_CaptainBoots_M	UVs differ beyond a whole-tile shift	0.001953	[2]	[2]	../reconstructed-family-batch12-captain-boots-v1/meshes/SK_Pirate_CaptainBoots_M.glb
+SK_Pirate_CaptainHat_M	UVs differ beyond a whole-tile shift	0.001953	[2]	[2]	../reconstructed-family-batch24-pirate-captain-hat-v1/meshes/SK_Pirate_CaptainHat_M.glb
+SK_Sneakers_M	UVs differ beyond a whole-tile shift	0.001953	[2]	[2]	../reconstructed-starter-sneakers-v1/meshes/SK_Sneakers_M.glb
+SK_Streetwear_CrystalHeadband_M	UVs differ beyond a whole-tile shift	0.012695	[2]	[2]	../reconstructed-family-batch24-streetwear-crystal-headband-v1/meshes/SK_Streetwear_CrystalHeadband_M.glb
+SK_Streetwear_KneeSocks_M	UVs differ beyond a whole-tile shift	0.5	[2]	[1]	../reconstructed-w80-wrap-w2-v1/meshes/SK_Streetwear_KneeSocks_M.glb
+SK_Streetwear_PopBraceletSet_M	UVs differ beyond a whole-tile shift	0.388809	[2]	[2]	../reconstructed-family-batch24-streetwear-pop-bracelet-set-r2-v1/meshes/SK_Streetwear_PopBraceletSet_M.glb
+SK_Casual_LongHoodie_M	live has more UV sets	0.0	[1]	[2]	../reconstructed-family-batch05-long-hoodies-v1/meshes/SK_Casual_LongHoodie_M.glb
+SK_Casual_TallSneakers_M	whole-tile wrap only	0.000977	[2]	[1]	../reconstructed-meshes-v2/SK_Casual_TallSneakers_M.glb
+SK_Casual_WaterproofGloves_M	whole-tile wrap only	0.000488	[1]	[1]	../reconstructed-family-batch21-casual-waterproof-gloves-v1/meshes/SK_Casual_WaterproofGloves_M.glb
+SK_Cowboy_CasualPants_M	whole-tile wrap only	0.000977	[2]	[1]	../reconstructed-family-batch21-cowboy-casual-pants-v1/meshes/SK_Cowboy_CasualPants_M.glb
+SK_Military_LanyardBracelet_M	whole-tile wrap only	0.000854	[2]	[1]	../reconstructed-family-batch24-military-lanyard-bracelet-r2-v1/meshes/SK_Military_LanyardBracelet_M.glb
+SK_Military_TacticalBoots_M	whole-tile wrap only	0.000977	[2]	[1]	../reconstructed-tactical-boots-v1/meshes/SK_Military_TacticalBoots_M.glb
+SK_Military_TacticalGloves_M	whole-tile wrap only	0.000977	[2]	[1]	../reconstructed-tactical-gloves-v1/meshes/SK_Military_TacticalGloves_M.glb
+SK_Military_TacticalHelmet_M	whole-tile wrap only	0.000977	[2]	[1]	../reconstructed-attached-b1p1-v1/meshes/SK_Military_TacticalHelmet_M.glb
+SK_Military_TacticalVest_M	whole-tile wrap only	0.000977	[2]	[1]	../reconstructed-family-batch21-military-tactical-vest-v1/meshes/SK_Military_TacticalVest_M.glb
+SK_Pirate_CaptainPants_M	whole-tile wrap only	8e-06	[2]	[2]	../reconstructed-family-batch11-captain-pants-v1/meshes/SK_Pirate_CaptainPants_M.glb
+SK_Pirate_PirateBandolier_M	whole-tile wrap only	0.000488	[2]	[2]	../reconstructed-family-batch21-pirate-pirate-bandolier-v1/meshes/SK_Pirate_PirateBandolier_M.glb
+SK_Socks_Quarter_M	whole-tile wrap only	0.000916	[2]	[1]	../reconstructed-multipart-dress-shoes-v1/meshes/SK_Socks_Quarter_M.glb
+SK_Socks_ThighHigh_M	whole-tile wrap only	0.000977	[2]	[1]	../reconstructed-multipart-batch02-sport-cleats-v1/meshes/SK_Socks_ThighHigh_M.glb
+SK_Space_PioneerTechConsole_M	whole-tile wrap only	0.000488	[2]	[2]	../s12-bodytype-refresh-v1/meshes/SK_Space_PioneerTechConsole_M.glb
+SK_Streetwear_BandanaCap_M	whole-tile wrap only	0.000977	[2]	[1]	../reconstructed-family-batch24-streetwear-bandana-cap-v1/meshes/SK_Streetwear_BandanaCap_M.glb
+SK_Streetwear_BaseTankTop_M	whole-tile wrap only	0.000488	[1]	[1]	../reconstructed-multipart-batch02-streetwear-jacket-v1/meshes/SK_Streetwear_BaseTankTop_M.glb
+SK_Streetwear_BikerJacketHoodie_M	whole-tile wrap only	0.000977	[2]	[1]	../reconstructed-family-batch03-biker-jacket-hoodies-v1/meshes/SK_Streetwear_BikerJacketHoodie_M.glb
+SK_Streetwear_BikerJacket_M	whole-tile wrap only	0.000977	[2]	[1]	../reconstructed-family-batch21-streetwear-biker-jacket-v1/meshes/SK_Streetwear_BikerJacket_M.glb
+SK_Streetwear_RingWrapBracelet_M	whole-tile wrap only	6.1e-05	[1]	[1]	../reconstructed-family-batch24-streetwear-ring-wrap-bracelet-r2-v1/meshes/SK_Streetwear_RingWrapBracelet_M.glb
