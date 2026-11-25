@@ -1,0 +1,205 @@
+light	problems
+SK_ActionHero_SentinelTop_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_AlfaActa_FurHat_L	slots ['FurHat'] do not match the index's ['FurHat', 'FurHat_LOD']
+SK_AlfaActa_FurTail_L	slots ['FurHatTail'] do not match the index's ['FurHatTail', 'FurHatTail_LOD']
+SK_AmericanFootballPlushie_L	primitive 0: vertex count differs
+SK_AmmoBackpack_L	primitive 0: vertex count differs; primitive 1: vertex count differs
+SK_Ballerina_TutuSkirt_L	primitive 0: UVs differ
+SK_Casual_ChristmasLights_L	skin joints differ
+SK_Casual_ComfyBoots_L	primitive 0: UVs differ; primitive 1: indices differ; primitive 1: UVs differ; primitive 2: UVs differ
+SK_Casual_HeadPhonesAntennaPart_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Casual_HippieNecklaceChainLong_L	primitive 0: indices differ
+SK_Casual_ShortSkirt_L	not current in the 17 Nov containers: package bytes differ
+SK_Casual_Sweater_L	skin joints differ
+SK_Christmas_ChristmasAntlers_L	primitive 0: indices differ; primitive 0: UVs differ; skin is not bound to the x0.85 skeleton (max 0.00116 m)
+SK_Christmas_ElfDress_L	slots ['ElfDress_Fur', 'ElfDress', 'FurDressBase'] do not match the index's ['ElfDress_Fur', 'ElfDress', 'FurDressBase', 'ElfCotFurLod']
+SK_Christmas_ElfMantle_L	primitive 0: UVs differ; primitive 1: indices differ; primitive 1: UVs differ; primitive 1: material slot differs; primitive 2: indices differ; primitive 2: UVs differ; primitive 2: material slot differs; slots ['ElfMantle', 'FurMantleBase', 'ElfMantle_Fur'] do not match the index's ['ElfMantle', 'ElfMantle_Fur', 'FurMantleBase', 'ElfCotFurLod']
+SK_Christmas_ElfTop_L	primitive 0: indices differ; primitive 0: UVs differ; primitive 0: material slot differs; primitive 1: indices differ; primitive 1: UVs differ; primitive 1: material slot differs; primitive 2: UVs differ; slots ['ElfTop', 'FurTopBase', 'ElfCoatFur'] do not match the index's ['FurTopBase', 'ElfTop', 'ElfCoatFur', 'ElfCotFurLod']
+SK_CowMascotHead_L	skin joints differ
+SK_Cowboy_BandolierCowboy_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Cowboy_Bandolier_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Cowboy_CoatCape_L	primitive 0: indices differ; primitive 0: UVs differ; primitive 1: UVs differ
+SK_Cowboy_JeansJacketNeon_L	primitive 0: vertex count differs; skin joints differ
+SK_Cowboy_JeansNeon_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Cowboy_SpurBootsNeon_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Cowboy_WranglerBandolier_L	skin joints differ
+SK_CrossPromo_NRSuit_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Cute_BunnyCostumeFur_L	slots ['BunnyCostumeFabric', 'BunnyCostumeFur', 'BunnyCostumeFurPlanes'] do not match the index's ['BunnyCostumeFabric', 'BunnyCostumeFur', 'BunnyCostumeFurPlanes', 'BunnyCostumeFur_LOD']
+SK_Cute_CuteHeadphones_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Cute_FrogShoes_L	primitive 0: UVs differ
+SK_Cute_ORFBag_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Cute_TailBow_L	primitive 0: UVs differ
+SK_Cute_TailRounded_L	slots ['TailFurPlanes', 'TailRounded', 'TailRoundedFurPlanes'] do not match the index's ['TailFurPlanes', 'TailRounded', 'TailRoundedFurPlanes', 'TailRoundedFur_LOD']
+SK_Cute_TanukiCostumeFur_L	slots ['TanukiCostumeFabric', 'TanukiCostumeFur', 'TanukiCostumeFurPlanes'] do not match the index's ['TanukiCostumeFabric', 'TanukiCostumeFur', 'TanukiCostumeFurPlanes', 'TanukiCostumeFur_LOD']
+SK_Cute_TanukiFurPlanes_L	primitive 0: vertex count differs; skin joints differ
+SK_FancyDress_MilitaryDress_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_FancyDress_WeddingDressGown_L	primitive 0: indices differ; primitive 0: UVs differ; primitive 1: UVs differ; primitive 2: UVs differ; primitive 3: UVs differ
+SK_FancyDress_WeddingNecklace_L	primitive 0: vertex count differs; primitive 1: vertex count differs
+SK_FromTencent_AsianSpiritBelt_L	primitive 0: vertex count differs; primitive 1: vertex count differs
+SK_FromTencent_MonkPants_L	primitive 0: vertex count differs
+SK_FromTencent_OperaClothingPant_L	primitive 0: vertex count differs
+SK_GeishaHairAccessories_01_A_L	primitive 0: vertex count differs
+SK_Gothic_LooseJacket_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_HalloweenHeadband2025_L	primitive 0: vertex count differs
+SK_Halloween_BellSleeves_L	primitive 0: indices differ; primitive 0: UVs differ; primitive 1: indices differ; primitive 1: UVs differ
+SK_Halloween_LowHeels_L	slots ['LowHeels'] do not match the index's ['LowHeels', 'LowHeelsTights']
+SK_Halloween_OpenTop_L	primitive 0: indices differ
+SK_Halloween_Tights_L	primitive 0: material slot differs; slots ['Tights'] do not match the index's ['Fishnet']; skin joints differ
+SK_Halloween_VampireBoots_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Halloween_VampireCapelet_L	skin joints differ
+SK_Halloween_VampireFur_L	primitive count differs
+SK_Halloween_WitchDressTop_L	primitive 0: indices differ; primitive 0: UVs differ; primitive 1: UVs differ; primitive 2: UVs differ; primitive 3: UVs differ
+SK_HighPonytail_Tail_L	not current in the 17 Nov containers: package bytes differ
+SK_Historic_AnubisMaskRegular_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Historic_EasternEmperorBelt_L	primitive 0: indices differ; primitive 0: UVs differ; skin joints differ
+SK_Historic_EasternEmperorGauntletUltimate_L	skin joints differ
+SK_Historic_EasternEmperorGauntlet_L	skin joints differ
+SK_Historic_EasternEmperorLoinArmor_L	skin joints differ
+SK_Historic_EasternEmperorPants_L	primitive 0: indices differ; primitive 0: UVs differ; skin joints differ
+SK_Historic_EasternEmperorPlume_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Historic_EasternEmperorShoes_L	skin joints differ
+SK_Historic_EasternEmperorUpperBody_L	primitive 0: indices differ; primitive 0: UVs differ; primitive 1: indices differ; primitive 1: UVs differ; skin joints differ
+SK_Historic_EmpressShoes_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Historic_VikingBoots_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Historic_VikingLoincloth_L	skin joints differ
+SK_Historic_VikingPants_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Historic_VikingShoulderFur_L	primitive count differs
+SK_Historic_VikingTrinkets_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Historic_VikingTunic_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Hologram_CombatVestSamuraiHologram_L	skin joints differ
+SK_Hologram_DissunJacketHologram_L	skin joints differ
+SK_Hologram_EngimoJacketHologram02_L	skin joints differ
+SK_Hologram_EngimoPantsHologram02_L	skin joints differ
+SK_Hologram_EngimoPantsHologram_L	skin joints differ
+SK_Hologram_HoltowGlovesHologramS8_L	primitive 0: material slot differs; slots ['HologramS8'] do not match the index's ['HoltowGlovesHologramS8']
+SK_Hologram_HoltowPantsHologram_L	skin joints differ
+SK_Hologram_IseultPufferJacketHologram_L	skin joints differ
+SK_Medieval_DemonCorset_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Medieval_DemonFishnet_L	primitive 0: UVs differ
+SK_Medieval_DragonSlayerTorso_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Medieval_ElegantKnightHood_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Medieval_ElfPrincessLegCoversUltimate_L	primitive 0: vertex count differs
+SK_Medieval_KnightArmsPlain_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Medieval_KnightLeftPauldronUltimate_L	skin joints differ
+SK_Medieval_KnightTop_L	primitive 0: indices differ
+SK_Medieval_NecromancerParts_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Medieval_PeasantHipBelt_L	skin joints differ
+SK_Medieval_PeasantShoulderBag_L	primitive 0: vertex count differs
+SK_Medieval_PeasantSkirt_L	skin joints differ
+SK_Medieval_RoyalGloves_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Medieval_RoyalTop_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Medieval_SkeletonWarriorBracers_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Medieval_SkeletonWarriorChainmailSleeves_L	primitive 0: vertex count differs
+SK_Medieval_SkeletonWarriorParts_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Medieval_SkeletonWarriorTorso_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Medieval_TechJacketHarness_L	not current in the 17 Nov containers: package bytes differ
+SK_Medieval_TechKnightTorso_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Mexico_RancheroHolster_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Mexico_RancheroJacket_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Mexico_VaqueroCape_L	primitive 0: indices differ
+SK_Mexico_VaqueroJacket_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_AcePilotTop_L	skin joints differ
+SK_Military_AssaultVest_L	primitive 0: vertex count differs
+SK_Military_BulletBandolier_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_DedeHeadphones_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_DedeVest_L	primitive 0: vertex count differs
+SK_Military_DoubleBeltParts_L	skin joints differ
+SK_Military_DoubleBelt_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_MarineBoots_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_MarineVest_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_MilitaryMechanicJacketNoTshirt_L	primitive 0: vertex count differs
+SK_Military_MilitaryMechanicJacket_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_OperatorHarnessParts_L	primitive 0: vertex count differs
+SK_Military_RiotMedievalLowerJacket_L	primitive 0: indices differ
+SK_Military_RiotMedievalPants_L	primitive 0: vertex count differs
+SK_Military_SciFiGloves_L	primitive 0: UVs differ; primitive 1: UVs differ; primitive 2: UVs differ
+SK_Military_SniperBoots_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_TacticalHarness_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_TacticalTrousersNoPouch_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_TacticalVestMagBandolier_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Military_TacticalVestSeparated_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Monsters_BigFootCostumeFeetFur_L	primitive 0: UVs differ; primitive 1: UVs differ; primitive 2: UVs differ; slots ['HairCards', 'BigFootCostumeFeetFurPlanes', 'BigFootCostumeFeetFur'] do not match the index's ['HairCards', 'BigFootCostumeFeetFurPlanes', 'BigFootCostumeFeetFur', 'BigFootCostumeFeetFur_LOD']
+SK_Monsters_BigFootCostumeFur_L	primitive 0: UVs differ; primitive 1: UVs differ; primitive 2: UVs differ; slots ['BigFootCostumeFur', 'BigFootCostumeFurPlanes', 'BigFootCostumeFurCards'] do not match the index's ['BigFootCostumeFur', 'BigFootCostumeFurPlanes', 'BigFootCostumeFurCards', 'BigFootCostumeFur_LOD']
+SK_Monsters_BigFootCostumeHands_L	slots ['BigFootCostumeHands'] do not match the index's ['BigFootCostumeHands', 'BigFootCostumeHandsFurCards', 'BigFootCostumeHandsFur', 'BigFootCostumeHandsFurPlanes']
+SK_Monsters_EasternDemonGauntlet_L	skin joints differ
+SK_Monsters_KaijuBody_L	primitive 0: indices differ; primitive 0: UVs differ; skin joints differ
+SK_Monsters_KaijuFeet_L	skin joints differ
+SK_NewYearHeadband_L	primitive 0: vertex count differs
+SK_Ninja_ShinobiJacket_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Ninja_ShinobiPants_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Ninja_ShinobiRopeUpperBack_L	primitive 0: UVs differ
+SK_Pirate_PirateCape_L	primitive 0: indices differ; primitive 0: UVs differ; skin joints differ
+SK_Pirate_PoetShirtWithVest_L	primitive 0: vertex count differs
+SK_PonytailLow_02_L	skin joints differ
+SK_PonytailLow_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Racing_Gloves_L	primitive 0: indices differ
+SK_Racing_Helmet_L	primitive 0: vertex count differs; primitive 1: vertex count differs
+SK_Retro_CordBracelet_L	primitive 0: vertex count differs
+SK_RoboticOrbNeck_L	primitive 0: vertex count differs
+SK_Robots_ConicalHatSciFi_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Robots_CordBelt_L	skin joints differ
+SK_Robots_RobotWarriorLegs_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Robots_RobotWarriorTop_L	primitive 0: vertex count differs; fitting morphs differ: ['bandolier_squeeze']
+SK_Robots_SynthHelmetAntenna_L	primitive 0: vertex count differs
+SK_Robots_SynthHelmet_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Samurai_ClothTopNoBandage_L	skin joints differ
+SK_Samurai_ClothTop_L	primitive 0: indices differ; primitive 0: UVs differ; skin joints differ
+SK_Samurai_Pants02_L	primitive 0: vertex count differs
+SK_Samurai_SwatVestSamurai_L	primitive 0: UVs differ
+SK_Samurai_UpperBody02_L	primitive 0: indices differ
+SK_Samurai_WornCape_L	primitive 0: material slot differs; primitive 1: material slot differs
+SK_SciFiHelmet_L	primitive 0: vertex count differs
+SK_SciFi_CyberBoots_L	skin joints differ
+SK_SciFi_CyberCape_L	skin joints differ
+SK_SciFi_FoxTail_L	skin joints differ
+SK_SciFi_MuscleSuitUpperNoSleeves_L	primitive 0: indices differ
+SK_SciFi_MuscleSuitUpper_L	primitive 0: indices differ
+SK_SciFi_PantswithStraps_L	skin joints differ
+SK_SciFi_SciFiKnightBottom_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_SciFi_SciFiKnightHeadwearHead_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_SciFi_SciFiKnightTop_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_SciFi_UrbanTechSleeves_L	primitive 0: UVs differ
+SK_Space_AstronautHelmet_L	primitive 0: indices differ
+SK_Space_SpaceCombatTorso_L	not current in the 17 Nov containers: package bytes differ
+SK_Sport_ClimbingBandolier_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Sport_FencerShoes_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Sport_PaddedPants_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Sport_UmpireMask_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_StarterSet_TShirt_L	primitive 0: UVs differ; skin joints differ
+SK_Streetwear_AviatorJacket_L	primitive 0: indices differ
+SK_Streetwear_BraidedBraceletSet_L	primitive 0: UVs differ
+SK_Streetwear_ClosedRainJacket_L	primitive 0: indices differ; primitive 0: UVs differ; skin joints differ
+SK_Streetwear_CombinedStockings_L	primitive 0: indices differ; primitive 0: UVs differ; primitive 1: UVs differ
+SK_Streetwear_ConsoleBackpack_L	primitive 0: indices differ; primitive 0: UVs differ; primitive 1: UVs differ
+SK_Streetwear_Crown_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Streetwear_CuteJacket_L	skin joints differ
+SK_Streetwear_HalfFingerGloves_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Streetwear_HeistHelmet_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Streetwear_KandiBracelet_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Streetwear_MessengerBag_L	not current in the 17 Nov containers: package bytes differ
+SK_Streetwear_OpenJacket_L	primitive 0: indices differ; primitive 0: UVs differ; skin joints differ
+SK_Streetwear_OversizedJacket_L	primitive 0: vertex count differs; primitive 1: vertex count differs
+SK_Streetwear_PopMic_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Streetwear_ShoulderBag_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Streetwear_SingleSleeveTop_L	skin joints differ
+SK_Streetwear_SkeletalFingers_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Streetwear_SkiMask_L	not current in the 17 Nov containers: package bytes differ
+SK_Streetwear_SkirtHipChain_L	primitive 0: vertex count differs
+SK_Streetwear_StockingsSocks_L	primitive 0: indices differ; primitive 0: UVs differ; primitive 1: indices differ; primitive 1: UVs differ
+SK_Streetwear_TacticalBandolier_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Streetwear_TacticalVestPolo_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Streetwear_TechBoots_L	skin joints differ
+SK_Streetwear_TechCropTop_L	primitive 0: indices differ; primitive 0: UVs differ; skin joints differ; fitting morphs differ: ['shrink_under_vest']
+SK_Streetwear_TechGloves_L	skin joints differ
+SK_Streetwear_TechPants_L	skin joints differ
+SK_Streetwear_VarsityJacket_L	primitive 0: indices differ
+SK_Traditional_CloudBag_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Traditional_GeishaGothSkirtBack_L	skin joints differ
+SK_Traditional_LunarBoots_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Traditional_LunarRings_L	primitive 0: indices differ; primitive 0: UVs differ; skin joints differ
+SK_Traditional_RabbitMask_L	primitive 0: indices differ; primitive 0: UVs differ; skin joints differ
+SK_Traditional_UrbanWarriorPants_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Winter_CroppedPufferJacket_L	primitive 0: indices differ; primitive 0: UVs differ
+SK_Winter_HoodWrap_L	primitive 0: UVs differ
+SK_Winter_PenguinHat_L	primitive 0: indices differ
+SK_WorkUniforms_CatEars_L	primitive 0: indices differ; primitive 0: UVs differ
