@@ -44,7 +44,11 @@ const ALL_CAMERAS = { front: "0,1.25,1.9,0,1.25,0", side: "1.9,1.25,0,0,1.25,0",
   waist: "0,1.0,1.5,0,1.0,0", waistback: "0,1.0,-1.5,0,1.0,0", back: "0,1.25,-1.9,0,1.25,0",
   sideleft: "-1.9,1.25,0,0,1.25,0",
   // Feet cameras (tier 2, 23 Nov 2026): the others frame head to thigh, so footwear was never in view.
-  feet: "0,0.45,1.3,0,0.2,0", feetback: "0,0.45,-1.3,0,0.2,0", feetside: "-1.3,0.45,0,0,0.2,0" };
+  feet: "0,0.45,1.3,0,0.2,0", feetback: "0,0.45,-1.3,0,0.2,0", feetside: "-1.3,0.45,0,0,0.2,0",
+  // The right foot's outer side (C0b review, 25 Nov 2026): sneaker prints sit on both outer sides.
+  feetright: "1.3,0.45,0,0,0.2,0",
+  // Close on the right shoe's outer side, a little from the front and above, like the feet icons.
+  shoeright: "-0.86,0.35,0.25,-0.11,0.1,0.05" };
 const CAMERAS = Object.fromEntries(Object.entries(ALL_CAMERAS)
   .filter(([name]) => (option("--cameras") ?? "front,side,full").split(",").includes(name)));
 // --query "anim=outfit-idle&animTime=6&sway=0": extra viewer switches for every shot. Main plays the outfit idle by
