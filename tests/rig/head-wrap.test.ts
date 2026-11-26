@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { applyHeadWrap, bindHeadWrap, headWrapInputs, type HeadWrapData } from "../../src/rig/HeadWrap.ts";
+import { applyHeadWrap, bindHeadWrap, headWrapInputs, overHead, type HeadWrapData } from "../../src/rig/HeadWrap.ts";
 
 // Two triangles of a small cage patch and a few points above, beside and below them.
 const CAGE = [0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0.2];
@@ -75,4 +75,15 @@ test("malformed cage morphs are refused", () => {
   assert.throws(() => headWrapInputs(data({ vertices: [1], deltas: [0, 0] }), "mesh", "head", ["default_ears"]), /Invalid head wrap morph/);
   // An inactive malformed morph is not read.
   assert.doesNotThrow(() => headWrapInputs(data({ vertices: [4], deltas: [0] }), "mesh", "head", []));
+});
+
+test("a part vertex lies over the head only outside its cage triangle and facing out of it (the rest contact's lining)", () => {
+  // Above the cage facing out (the knit over the face); above facing in (rolled in at an opening); below facing out (the
+  // lining inside the head).
+  const points = [0.2, 0.2, 0.05, 0.3, 0.2, 0.05, 0.2, 0.3, -0.03];
+  const normals = [0, 0, 1, 0, 0, -1, 0, 0, 1];
+  assert.deepEqual([...overHead(bindHeadWrap(points, CAGE, TRIS), normals, CAGE, TRIS)], [1, 0, 0]);
+  // Normals interleaved with another direction (`stride`).
+  const wide = [0, 0, 1, 9, 0, 0, -1, 9, 0, 0, 1, 9];
+  assert.deepEqual([...overHead(bindHeadWrap(points, CAGE, TRIS), wide, CAGE, TRIS, 4)], [1, 0, 0]);
 });

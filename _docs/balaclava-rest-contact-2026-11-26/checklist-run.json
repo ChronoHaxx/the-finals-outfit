@@ -1,0 +1,214 @@
+{
+ "revision": "claude/balaclava-rest-contact-2026-11-26 working tree (code as committed)",
+ "server": "vite dev, live hosts, reconstructed=1, headless Chrome 1280x900",
+ "shots": [
+  {
+   "name": "c1-f32-black-front",
+   "idle": true,
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 3.74,
+     "visible": true
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "c2-f32-black-side",
+   "idle": true,
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 3.74,
+     "visible": true
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "c2-f32-black-below",
+   "idle": true,
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 3.74,
+     "visible": true
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "c3-f23-leopard-front",
+   "idle": true,
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 1.5,
+     "visible": true
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "c3-f30-leopard-front",
+   "idle": true,
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 2.24,
+     "visible": true
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "c4-f32-black-androgynous",
+   "idle": true,
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 5.79,
+     "visible": true
+    }
+   ],
+   "errors": [],
+   "url": "?look=2.nadia-leon--32gn.balaclava-cotton-black--6ag&bt=a&view=0_1.700_0.420_0_1.690_0&reconstructed=1",
+   "bodyType": "androgynous",
+   "note": "rerun from a buildShareUrl names link: the legacy outfit= parameter does not read bt"
+  },
+  {
+   "name": "c6-f32-black-carrot-1.47s",
+   "idle": true,
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 3.74,
+     "visible": true
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "c7-f01-black-front",
+   "idle": true,
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 0,
+     "visible": true
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "c7-f23-beard-scarf-front",
+   "idle": true,
+   "parts": [
+    {
+     "mesh": "SK_Cowboy_MouthScarf_M",
+     "pushMm": 0,
+     "visible": true
+    }
+   ],
+   "errors": []
+  }
+ ],
+ "step5Transitions": [
+  {
+   "name": "t1-face32",
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 3.74,
+     "version": 2,
+     "morphs": [
+      "default_ears",
+      "head_neck_match"
+     ]
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "t2-face01",
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 0,
+     "version": 0,
+     "morphs": [
+      "default_ears",
+      "head_neck_match"
+     ]
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "t3-face32-again",
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 3.74,
+     "version": 7,
+     "morphs": [
+      "default_ears",
+      "head_neck_match"
+     ]
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "t4-androgynous",
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 5.79,
+     "version": 10,
+     "morphs": [
+      "default_ears",
+      "head_neck_match"
+     ]
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "t5-masculine",
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 3.74,
+     "version": 13,
+     "morphs": [
+      "default_ears",
+      "head_neck_match"
+     ]
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "t6-balaclava-off",
+   "parts": [],
+   "errors": []
+  },
+  {
+   "name": "t7-balaclava-on",
+   "parts": [
+    {
+     "mesh": "SK_Streetwear_Balaclava_M",
+     "pushMm": 3.74,
+     "version": 17,
+     "morphs": [
+      "default_ears",
+      "head_neck_match"
+     ]
+    }
+   ],
+   "errors": []
+  }
+ ]
+}

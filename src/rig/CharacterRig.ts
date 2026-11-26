@@ -15,8 +15,8 @@ import { bodyTypeOffsetMatrix, type BodyTypePreview } from "./BodyTypePreview";
 import { mediumAsClassRests, scaleSkeletonTranslations, sourceBindBasis, type RigArchetype } from "./Archetype";
 import { multiplySourceMatrices, type SourceMatrix } from "./SourceTransform";
 import { LEGACY_EQUIVALENT_HEAD_BASELINE, type SourceRigPart, type SourceSkinPair, type SourceSkinPart } from "./SourceAssembly";
-import { applyHeadWrap, bindHeadWrap, headWrapInputs, type HeadWrapBinding, type HeadWrapData } from "./HeadWrap";
-import type { CageDisplace, FaceWrapPart, StillWrap } from "./FaceWrap";
+import { applyHeadWrap, bindHeadWrap, headWrapInputs, overHead, type HeadWrapBinding, type HeadWrapData } from "./HeadWrap";
+import { addRestPush, restContact, takesRestContact, type CageDisplace, type FaceWrapPart, type StillWrap } from "./FaceWrap";
 import { installSkeletonUpdateMemo } from "./SkeletonUpdateMemo";
 
 export type { RigDecal } from "./BodyDecals";
@@ -420,6 +420,19 @@ export class CharacterRig {
       // A head-wrapped part follows the worn cage, which takes the same fitting morphs as the head.
       if (mesh.isMesh) rewrapToSourceHead(mesh, names);
     });
+    this.refreshRestContacts();
+  }
+
+  /** (26 Nov 2026) Re-measures every head-wrapped part's rest contact against the worn head as it now stands (its
+   *  sections and morphs): after an outfit commits and after the fitting morphs change. Viewer-side, not game data
+   *  (FaceWrap.ts restContact). */
+  private refreshRestContacts(): void {
+    // The head's skin sections only: eyes, lashes and teeth sit in the part's openings or behind the lips.
+    const head = this.faceMeshes().filter(mesh =>
+      (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).some(m => headDecalRole(m) === "head"));
+    const parts: THREE.Mesh[] = [];
+    this.root.traverse(o => { if ((o as THREE.Mesh).isMesh && headWrapStates.has(o as THREE.Mesh)) parts.push(o as THREE.Mesh); });
+    for (const mesh of parts) refreshRestContact(mesh, head);
   }
 
   whenBodyHidesReady(): Promise<void> {
@@ -1073,6 +1086,7 @@ export class CharacterRig {
       // No await between commits: a rendered frame sees either complete appearance.
       removals.forEach(slot => this.unequip(slot));
       stages.forEach(stage => stage.commit());
+      this.refreshRestContacts();
       return true;
     } };
   }
@@ -2573,6 +2587,7 @@ export class CharacterRig {
     }
     this.forgetInspectorOverrides(handle.scene);
     this.equipped.delete(slot);
+    if (slot === "face") this.refreshRestContacts(); // no worn head: no rest contact
   }
 
   // Report live objects for the dev inspector, including the resolved material maps and
@@ -2748,6 +2763,16 @@ interface HeadWrapState {
   attributes: THREE.BufferAttribute[]; rest: Float32Array[]; morphs: string;
   /** The face pose the part is wrapped for (FaceWrap token), undefined on the still cage. */
   face?: number;
+  /** (26 Nov 2026) The rest contact's push per vertex along its normal (FaceWrap.ts restContact; viewer-side, not game
+   *  data), added after every wrap; undefined when the still face pokes through the part nowhere. */
+  restPush?: Float32Array;
+}
+
+/** Adds the part's rest-contact push, if any, to its geometry just wrapped (along the wrapped normals). */
+function addStateRestPush(state: HeadWrapState, mesh: THREE.Mesh): void {
+  const normal = mesh.geometry.attributes.normal as THREE.BufferAttribute | undefined;
+  if (!state.restPush || !normal || !state.attributes.includes(normal)) return;
+  addRestPush(state.restPush, state.attributes[0].array as Float32Array, normal.array as ArrayLike<number>, normal.itemSize);
 }
 // The unwrapped rest attributes and binding of each head-wrapped mesh, so a fitting change can re-wrap it.
 const headWrapStates = new WeakMap<THREE.Mesh, HeadWrapState>();
@@ -2815,6 +2840,7 @@ function rewrapToSourceHead(mesh: THREE.Mesh, morphs: ReadonlySet<string>, force
   state.attributes.forEach((a, i) => (a.array as Float32Array).set(state.rest[i]));
   applyHeadWrap(state.binding, target, reference, triangles, position.array as Float32Array,
     directions.map(a => a.array as Float32Array), directions.map(a => a.itemSize));
+  addStateRestPush(state, mesh);
   state.attributes.forEach(a => { a.needsUpdate = true; });
   state.morphs = key;
   state.face = undefined;
@@ -2844,14 +2870,16 @@ function rewrapOnMovedCage(mesh: THREE.Mesh, displace: CageDisplace | null, toke
   state.attributes.forEach((a, i) => (a.array as Float32Array).set(state.rest[i]));
   applyHeadWrap(state.binding, moved, reference, triangles, position.array as Float32Array,
     directions.map(a => a.array as Float32Array), directions.map(a => a.itemSize));
+  addStateRestPush(state, mesh);
   state.attributes.forEach(a => { a.needsUpdate = true; });
   state.face = token;
   return true;
 }
 
 /** (Face contact, FaceWrap.ts) A head-wrapped mesh as wrapped on its still cage, with the fitting morphs of its last
- *  still wrap: positions and normals in its geometry space, computed aside (the mesh is left as it is). */
-function stillWrap(mesh: THREE.Mesh): StillWrap | null {
+ *  still wrap: positions and normals in its geometry space, computed aside (the mesh is left as it is). With its rest
+ *  contact's push (as drawn) unless `withRest` is false (what the rest contact itself is measured against). */
+function stillWrap(mesh: THREE.Mesh, withRest = true): StillWrap | null {
   const state = headWrapStates.get(mesh), normal = mesh.geometry.attributes.normal;
   const slot = state ? state.attributes.indexOf(normal as THREE.BufferAttribute) : -1;
   if (!state || slot < 1 || normal.itemSize !== 3) return null;
@@ -2859,5 +2887,37 @@ function stillWrap(mesh: THREE.Mesh): StillWrap | null {
   const { reference, target, triangles } = headWrapInputs(state.data, state.source, state.head, morphs);
   const positions = state.rest[0].slice(), normals = state.rest[slot].slice();
   applyHeadWrap(state.binding, target, reference, triangles, positions, [normals], [3]);
+  if (withRest && state.restPush) addRestPush(state.restPush, positions, normals);
   return { positions, normals };
+}
+
+let restContactVersion = 0;
+
+/** The part vertices that lie over the head on the game's own wrap (HeadWrap.ts overHead), from the part's rest normals;
+ *  undefined for a part without normals. */
+function restOver(state: HeadWrapState, mesh: THREE.Mesh): Uint8Array | undefined {
+  const i = state.attributes.indexOf(mesh.geometry.attributes.normal as THREE.BufferAttribute);
+  if (i < 1) return undefined;
+  const { reference, triangles } = headWrapInputs(state.data, state.source, state.head);
+  return overHead(state.binding, state.rest[i], reference, triangles, state.attributes[i].itemSize);
+}
+
+/** (26 Nov 2026) Measures a head-wrapped mesh's rest contact against the worn head's sections (FaceWrap.ts restContact;
+ *  viewer-side, not game data) and re-wraps it on its still cage with the push. No head, or a hair-card part, clears
+ *  it. Records `restContactMaxPush` (metres) and a version FaceAnimator keys its face contact by. */
+function refreshRestContact(mesh: THREE.Mesh, head: readonly THREE.Mesh[]): void {
+  const state = headWrapStates.get(mesh);
+  if (!state) return;
+  let result: ReturnType<typeof restContact> = null;
+  if (head.length && takesRestContact(mesh)) {
+    try {
+      const still = stillWrap(mesh, false), over = restOver(state, mesh);
+      result = still && over ? restContact(mesh, still, head, over) : null;
+    } catch (error) { console.warn(`${mesh.name}: no rest contact:`, error); }
+  }
+  if (!result && !state.restPush) return;
+  state.restPush = result?.push;
+  mesh.userData.restContactMaxPush = result?.maxPush ?? 0;
+  mesh.userData.restContactVersion = ++restContactVersion;
+  rewrapToSourceHead(mesh, new Set<string>(mesh.userData.headWrapMorphs ?? []), true);
 }

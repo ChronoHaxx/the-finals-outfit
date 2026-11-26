@@ -492,7 +492,10 @@ export class FaceAnimator {
     const contact = part.contact, head = this.head, rest = this.rest;
     if (!contact || !head || !rest) return;
     const { mesh } = contact, influences = (m: THREE.Mesh) => (m.morphTargetInfluences ?? []).map(w => w.toFixed(4)).join(",");
-    const key = [this.bindRequest, ...this.meshes.map(influences), influences(mesh), ...(mesh.userData.headWrapMorphs ?? [])].join(";");
+    // (26 Nov 2026) and the part's rest contact (CharacterRig refreshRestContact): the face contact binds to the part as
+    // the rest contact left it
+    const key = [this.bindRequest, ...this.meshes.map(influences), influences(mesh), ...(mesh.userData.headWrapMorphs ?? []),
+      `rest:${mesh.userData.restContactVersion ?? 0}`].join(";");
     let entry = this.contacts.get(mesh);
     if (entry?.key !== key) {
       entry = { key, contact: null };

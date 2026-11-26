@@ -1,0 +1,402 @@
+{
+ "pushMmByFace": {
+  "1": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "2": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "3": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "4": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "5": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "6": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "7": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "8": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "9": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "10": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "12": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "13": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "14": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "15": {
+   "m-black": 0.76,
+   "m-leo": 0.76,
+   "a-black": 1.56,
+   "a-leo": 1.56
+  },
+  "16": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "17": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "18": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "19": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "20": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "21": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "22": {
+   "m-black": 1.14,
+   "m-leo": 1.14,
+   "a-black": 1.14,
+   "a-leo": 1.14
+  },
+  "23": {
+   "m-black": 1.5,
+   "m-leo": 1.5,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "24": {
+   "m-black": 1.7,
+   "m-leo": 1.7,
+   "a-black": 1.7,
+   "a-leo": 1.7
+  },
+  "26": {
+   "m-black": 0.75,
+   "m-leo": 0.75,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "27": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "28": {
+   "m-black": 5.84,
+   "m-leo": 5.84,
+   "a-black": 5.84,
+   "a-leo": 5.84
+  },
+  "30": {
+   "m-black": 2.24,
+   "m-leo": 2.24,
+   "a-black": 3.84,
+   "a-leo": 3.84
+  },
+  "31": {
+   "m-black": 0,
+   "m-leo": 0,
+   "a-black": 0,
+   "a-leo": 0
+  },
+  "32": {
+   "m-black": 3.74,
+   "m-leo": 3.74,
+   "a-black": 5.79,
+   "a-leo": 5.79
+  }
+ },
+ "other": [
+  {
+   "name": "beard-f01",
+   "fixPushMm": {
+    "SK_BeardFull_M": 0
+   },
+   "errors": [],
+   "pixelsDiffering": 8755
+  },
+  {
+   "name": "beard-f23",
+   "fixPushMm": {
+    "SK_BeardFull_M": 0
+   },
+   "errors": [],
+   "pixelsDiffering": 26406
+  },
+  {
+   "name": "beard-f32",
+   "fixPushMm": {
+    "SK_BeardFull_M": 0
+   },
+   "errors": [],
+   "pixelsDiffering": 11481
+  },
+  {
+   "name": "beardscarf-f01",
+   "fixPushMm": {
+    "SK_Cowboy_MouthScarf_M": 0
+   },
+   "errors": [],
+   "pixelsDiffering": 157
+  },
+  {
+   "name": "beardscarf-f23",
+   "fixPushMm": {
+    "SK_Cowboy_MouthScarf_M": 0
+   },
+   "errors": [],
+   "pixelsDiffering": 152
+  },
+  {
+   "name": "beardscarf-f32",
+   "fixPushMm": {
+    "SK_Cowboy_MouthScarf_M": 0
+   },
+   "errors": [],
+   "pixelsDiffering": 126
+  },
+  {
+   "name": "cow-f01",
+   "fixPushMm": {
+    "SK_Cowboy_MouthScarf_M": 0
+   },
+   "errors": []
+  },
+  {
+   "name": "cow-f23",
+   "fixPushMm": {
+    "SK_Cowboy_MouthScarf_M": 0
+   },
+   "errors": []
+  },
+  {
+   "name": "cow-f28",
+   "fixPushMm": {
+    "SK_Cowboy_MouthScarf_M": 0
+   },
+   "errors": []
+  },
+  {
+   "name": "cow-f30",
+   "fixPushMm": {
+    "SK_Cowboy_MouthScarf_M": 0
+   },
+   "errors": []
+  },
+  {
+   "name": "cow-f32",
+   "fixPushMm": {
+    "SK_Cowboy_MouthScarf_M": 0
+   },
+   "errors": []
+  },
+  {
+   "name": "jaw-f01",
+   "fixPushMm": {
+    "SK_Streetwear_Balaclava_M": 0
+   },
+   "errors": [],
+   "pixelsDiffering": 54
+  },
+  {
+   "name": "jaw-f23",
+   "fixPushMm": {
+    "SK_Streetwear_Balaclava_M": 1.5
+   },
+   "errors": [],
+   "pixelsDiffering": 254
+  },
+  {
+   "name": "jaw-f30",
+   "fixPushMm": {
+    "SK_Streetwear_Balaclava_M": 2.24
+   },
+   "errors": [],
+   "pixelsDiffering": 402
+  },
+  {
+   "name": "jaw-f32",
+   "fixPushMm": {
+    "SK_Streetwear_Balaclava_M": 3.74
+   },
+   "errors": [],
+   "pixelsDiffering": 2280
+  },
+  {
+   "name": "jawc-f01",
+   "fixPushMm": {
+    "SK_Streetwear_Balaclava_M": 0
+   },
+   "errors": [],
+   "pixelsDiffering": 0
+  },
+  {
+   "name": "jawc-f23",
+   "fixPushMm": {
+    "SK_Streetwear_Balaclava_M": 1.5
+   },
+   "errors": [],
+   "pixelsDiffering": 0
+  },
+  {
+   "name": "jawc-f30",
+   "fixPushMm": {
+    "SK_Streetwear_Balaclava_M": 2.24
+   },
+   "errors": [],
+   "pixelsDiffering": 0
+  },
+  {
+   "name": "jawc-f32",
+   "fixPushMm": {
+    "SK_Streetwear_Balaclava_M": 3.74
+   },
+   "errors": [],
+   "pixelsDiffering": 0
+  },
+  {
+   "name": "lucha-f01",
+   "fixPushMm": {
+    "SK_Sport_LuchadorFaceMask_M": 0
+   },
+   "errors": []
+  },
+  {
+   "name": "lucha-f23",
+   "fixPushMm": {
+    "SK_Sport_LuchadorFaceMask_M": 0
+   },
+   "errors": []
+  },
+  {
+   "name": "lucha-f28",
+   "fixPushMm": {
+    "SK_Sport_LuchadorFaceMask_M": 0
+   },
+   "errors": []
+  },
+  {
+   "name": "lucha-f30",
+   "fixPushMm": {
+    "SK_Sport_LuchadorFaceMask_M": 0
+   },
+   "errors": []
+  },
+  {
+   "name": "lucha-f32",
+   "fixPushMm": {
+    "SK_Sport_LuchadorFaceMask_M": 0
+   },
+   "errors": []
+  },
+  {
+   "name": "win-f01",
+   "fixPushMm": {
+    "SK_Winter_MouthScarf_M": 0.81
+   },
+   "errors": [],
+   "pixelsDiffering": 172
+  },
+  {
+   "name": "win-f23",
+   "fixPushMm": {
+    "SK_Winter_MouthScarf_M": 0.92
+   },
+   "errors": [],
+   "pixelsDiffering": 175
+  },
+  {
+   "name": "win-f28",
+   "fixPushMm": {
+    "SK_Winter_MouthScarf_M": 2.28
+   },
+   "errors": [],
+   "pixelsDiffering": 145
+  },
+  {
+   "name": "win-f30",
+   "fixPushMm": {
+    "SK_Winter_MouthScarf_M": 0.81
+   },
+   "errors": [],
+   "pixelsDiffering": 755
+  },
+  {
+   "name": "win-f32",
+   "fixPushMm": {
+    "SK_Winter_MouthScarf_M": 0.96
+   },
+   "errors": [],
+   "pixelsDiffering": 1076
+  }
+ ]
+}

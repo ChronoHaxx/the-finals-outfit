@@ -3,7 +3,7 @@ import test from "node:test";
 import * as THREE from "three";
 import { bindHead, convertRotation, convertTranslation, headKey, maskWeights, poseHead, poseWeights, recordRest,
   sampleCurve, type FaceCurves } from "../../src/rig/FaceAnimator.ts";
-import { FaceCage, FaceContact, type FaceWrapSkin } from "../../src/rig/FaceWrap.ts";
+import { addRestPush, FaceCage, FaceContact, REST_GAP, restContact, takesRestContact, type FaceWrapSkin } from "../../src/rig/FaceWrap.ts";
 import { applyHeadWrap, bindHeadWrap } from "../../src/rig/HeadWrap.ts";
 
 // Facial animation (12 Nov 2026): the maths of FaceAnimator.ts / FaceWrap.ts against hand-computed results.
@@ -249,4 +249,50 @@ test("the face contact pushes a part back out where the face moves into it, and 
   positions.set(square(0.0005));
   assert.equal(contact.apply(positions, still.normals), true);
   assert.deepEqual(z(), [0.001, 0.001, 0.001, 0.001]);
+});
+
+test("the rest contact pushes a part out only where the still face pokes through it, to just under it", () => {
+  // A flat head patch with one raised vertex 2 mm up (a nose tip), under a part 1 mm above the patch: the tip pokes
+  // 1 mm through. The tip sits inside the part's triangle 0-1-2, away from its edges.
+  const xs = [-0.01, 0.003, 0.01], ys = [-0.01, -0.002, 0.01];
+  const grid = ys.flatMap(y => xs.flatMap(x => [x, y, x === 0.003 && y === -0.002 ? 0.002 : 0]));
+  const head = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial());
+  head.geometry.setAttribute("position", new THREE.Float32BufferAttribute(grid, 3));
+  head.geometry.setAttribute("normal", new THREE.Float32BufferAttribute(Array.from({ length: 9 }, () => [0, 0, 1]).flat(), 3));
+  head.geometry.setIndex([0, 1, 4, 0, 4, 3, 1, 2, 5, 1, 5, 4, 3, 4, 7, 3, 7, 6, 4, 5, 8, 4, 8, 7]);
+  const square = (z: number) => [-0.01, -0.01, z, 0.01, -0.01, z, 0.01, 0.01, z, -0.01, 0.01, z];
+  const up = [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1];
+  const part = (z: number, normals = up) => {
+    const mesh = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshBasicMaterial());
+    mesh.geometry.setAttribute("position", new THREE.Float32BufferAttribute(square(z), 3));
+    mesh.geometry.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
+    mesh.geometry.setIndex([0, 1, 2, 0, 2, 3]);
+    return { mesh, still: { positions: new Float32Array(square(z)), normals: new Float32Array(normals) } };
+  };
+  const { mesh, still } = part(0.001);
+  const result = restContact(mesh, still, [head]);
+  assert.ok(result, "the poking tip is held");
+  assert.equal(result.held, 1);
+  // Only the corners of the triangle over the tip move, outwards; the far corner stays.
+  const positions = still.positions.slice();
+  addRestPush(result.push, positions, still.normals);
+  assert.equal(result.push[3], 0);
+  assert.ok([0, 1, 2].every(v => result.push[v] > 0) && result.maxPush < 0.003, JSON.stringify([...result.push]));
+  // The tip ends up REST_GAP inside the part: (0.003, -0.002) is 0.35, 0.25, 0.4 of corners 0, 1, 2.
+  const z = 0.35 * positions[2] + 0.25 * positions[5] + 0.4 * positions[8];
+  assert.ok(z >= 0.002 + REST_GAP - 1e-6 && z <= 0.002 + REST_GAP + 2e-4, String(z));
+  // A part the face does not poke through takes no push, nor does one 0.3 mm clear of the tip.
+  assert.equal(restContact(part(0.004).mesh, part(0.004).still, [head]), null);
+  assert.equal(restContact(part(0.0023).mesh, part(0.0023).still, [head]), null);
+  // The lining of an opening (a corner not over the head, HeadWrap.ts overHead) holds nothing, nor does a part
+  // facing into the head (rolled in).
+  assert.equal(restContact(mesh, still, [head], [0, 1, 1, 1]), null);
+  assert.ok(restContact(mesh, still, [head], [1, 1, 1, 0]), "a lining corner off the triangle over the tip changes nothing");
+  const down = up.map(v => -v);
+  assert.equal(restContact(part(0.001, down).mesh, part(0.001, down).still, [head]), null);
+  // Hair cards (beards, brows) take none.
+  assert.equal(takesRestContact(mesh), true);
+  const beard = new THREE.Mesh(mesh.geometry, new THREE.MeshBasicMaterial());
+  beard.material.userData.surfaceKind = "hair";
+  assert.equal(takesRestContact(beard), false);
 });

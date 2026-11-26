@@ -1,0 +1,71 @@
+[
+ {
+  "name": "c1-f32-black-front",
+  "slots": {
+   "face": "head-face-32-base",
+   "facewear": "streetwear-balaclava-cotton-black"
+  }
+ },
+ {
+  "name": "c2-f32-black-side",
+  "slots": {
+   "face": "head-face-32-base",
+   "facewear": "streetwear-balaclava-cotton-black"
+  },
+  "view": "0.400_1.700_0.160_0_1.690_0.050"
+ },
+ {
+  "name": "c2-f32-black-below",
+  "slots": {
+   "face": "head-face-32-base",
+   "facewear": "streetwear-balaclava-cotton-black"
+  },
+  "view": "0.080_1.520_0.380_0_1.650_0.050"
+ },
+ {
+  "name": "c3-f23-leopard-front",
+  "slots": {
+   "face": "head-face-23-base",
+   "facewear": "streetwear-balaclava-leopard"
+  }
+ },
+ {
+  "name": "c3-f30-leopard-front",
+  "slots": {
+   "face": "head-face-30-base",
+   "facewear": "streetwear-balaclava-leopard"
+  }
+ },
+ {
+  "name": "c4-f32-black-androgynous",
+  "slots": {
+   "face": "head-face-32-base",
+   "facewear": "streetwear-balaclava-cotton-black"
+  },
+  "extra": "bt=a"
+ },
+ {
+  "name": "c6-f32-black-carrot-1.47s",
+  "slots": {
+   "face": "head-face-32-base",
+   "facewear": "streetwear-balaclava-cotton-black"
+  },
+  "view": "0.400_1.420_0.300_0.010_1.460_0.190",
+  "extra": "emote=rabbit-carrot&t=1.47&paused=1"
+ },
+ {
+  "name": "c7-f01-black-front",
+  "slots": {
+   "face": "head-face-01-base",
+   "facewear": "streetwear-balaclava-cotton-black"
+  }
+ },
+ {
+  "name": "c7-f23-beard-scarf-front",
+  "slots": {
+   "face": "head-face-23-base",
+   "facialHair": "facialhairs-beardfull-black",
+   "facewear": "cowboy-mouthscarf-cotton-bandit"
+  }
+ }
+]

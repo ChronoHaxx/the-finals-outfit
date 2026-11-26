@@ -1,0 +1,2877 @@
+{
+ "meaning": "per part and face: max displacement (mm) the cage medium_male morph would add to the wrap, by height band of the part vertex (GLB y, metres); and the part's own medium_male morph there",
+ "faces": {
+  "Face 01": {
+   "cage": "SK_Head_Face_01_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.12,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 3.88
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.84,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.48
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.94,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.89,
+     "jaw 1.62-1.66": 6.99,
+     "neck y<=1.62": 23.94
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.94,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.37,
+     "jaw 1.62-1.66": 6.83,
+     "neck y<=1.62": 22.1
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.97,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.69,
+     "neck y<=1.62": 8.97
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 13.95
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.98,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.6,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.98
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.17
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.86,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.72,
+     "jaw 1.62-1.66": 8.75,
+     "neck y<=1.62": 15.86
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 9.93
+    }
+   }
+  },
+  "Face 02": {
+   "cage": "SK_Head_Face_02_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.14,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.04
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.92,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.48
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.81,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.83,
+     "jaw 1.62-1.66": 7.0,
+     "neck y<=1.62": 23.81
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.31,
+     "jaw 1.62-1.66": 6.84,
+     "neck y<=1.62": 21.91
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.98,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.77,
+     "neck y<=1.62": 8.98
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 13.97
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.94,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.67,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.94
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.35
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.86,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.13,
+     "jaw 1.62-1.66": 8.75,
+     "neck y<=1.62": 15.86
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.02
+    }
+   }
+  },
+  "Face 03": {
+   "cage": "SK_Head_Face_03_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.44,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.02
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.53,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.55
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 22.61,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 3.01,
+     "jaw 1.62-1.66": 7.16,
+     "neck y<=1.62": 22.61
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.93,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.49,
+     "jaw 1.62-1.66": 7.0,
+     "neck y<=1.62": 20.9
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.99,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.75,
+     "neck y<=1.62": 8.99
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 14.01
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.97,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.72,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.97
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 11.23
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.84,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.09,
+     "jaw 1.62-1.66": 8.74,
+     "neck y<=1.62": 15.84
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.53
+    }
+   }
+  },
+  "Face 04": {
+   "cage": "SK_Head_Face_04_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.16,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.01
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.81,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.49
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.81,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.79,
+     "jaw 1.62-1.66": 7.03,
+     "neck y<=1.62": 23.81
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.27,
+     "jaw 1.62-1.66": 6.87,
+     "neck y<=1.62": 21.91
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.98,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.74,
+     "neck y<=1.62": 8.98
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 13.98
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.94,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.6,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.94
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.59
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.86,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.94,
+     "jaw 1.62-1.66": 8.75,
+     "neck y<=1.62": 15.86
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.15
+    }
+   }
+  },
+  "Face 05": {
+   "cage": "SK_Head_Face_05_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 5.92,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 3.97
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.07,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.49
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.81,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.74,
+     "jaw 1.62-1.66": 7.06,
+     "neck y<=1.62": 23.81
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.23,
+     "jaw 1.62-1.66": 6.9,
+     "neck y<=1.62": 21.91
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.98,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.76,
+     "neck y<=1.62": 8.98
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 13.96
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.94,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.63,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.94
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.24
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.86,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.02,
+     "jaw 1.62-1.66": 8.74,
+     "neck y<=1.62": 15.86
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.0
+    }
+   }
+  },
+  "Face 06": {
+   "cage": "SK_Head_Face_06_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.31,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.02
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.58,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.53
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.81,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.86,
+     "jaw 1.62-1.66": 7.12,
+     "neck y<=1.62": 23.81
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.34,
+     "jaw 1.62-1.66": 6.96,
+     "neck y<=1.62": 21.91
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.98,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.73,
+     "neck y<=1.62": 8.98
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 13.99
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.94,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.6,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.94
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.91
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.86,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.9,
+     "jaw 1.62-1.66": 8.74,
+     "neck y<=1.62": 15.86
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.34
+    }
+   }
+  },
+  "Face 07": {
+   "cage": "SK_Head_Face_07_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.39,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 3.95
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.62,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.5
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.9,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.86,
+     "jaw 1.62-1.66": 7.09,
+     "neck y<=1.62": 23.9
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.94,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.34,
+     "jaw 1.62-1.66": 6.93,
+     "neck y<=1.62": 22.05
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.98,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.73,
+     "neck y<=1.62": 8.98
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 13.97
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.98,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.6,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.98
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.02
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.86,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.86,
+     "jaw 1.62-1.66": 8.75,
+     "neck y<=1.62": 15.86
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 9.88
+    }
+   }
+  },
+  "Face 08": {
+   "cage": "SK_Head_Face_08_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.36,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.17
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.52,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.62
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.81,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.89,
+     "jaw 1.62-1.66": 7.08,
+     "neck y<=1.62": 23.81
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.37,
+     "jaw 1.62-1.66": 6.92,
+     "neck y<=1.62": 21.91
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.97,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.7,
+     "neck y<=1.62": 8.97
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 14.0
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.94,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.6,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.94
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.65
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.86,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.77,
+     "jaw 1.62-1.66": 8.74,
+     "neck y<=1.62": 15.86
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.19
+    }
+   }
+  },
+  "Face 09": {
+   "cage": "SK_Head_Face_09_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 5.91,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 3.98
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.08,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.41
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.9,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.96,
+     "jaw 1.62-1.66": 6.97,
+     "neck y<=1.62": 23.9
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.94,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.43,
+     "jaw 1.62-1.66": 6.81,
+     "neck y<=1.62": 22.05
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.99,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.74,
+     "neck y<=1.62": 8.99
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 13.96
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.98,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.75,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.98
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 9.91
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.86,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.12,
+     "jaw 1.62-1.66": 8.75,
+     "neck y<=1.62": 15.86
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 9.78
+    }
+   }
+  },
+  "Face 10": {
+   "cage": "SK_Head_Face_10_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.47,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.06
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.51,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.51
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.72,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.85,
+     "jaw 1.62-1.66": 7.0,
+     "neck y<=1.62": 23.72
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.94,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.33,
+     "jaw 1.62-1.66": 6.84,
+     "neck y<=1.62": 21.9
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.98,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.73,
+     "neck y<=1.62": 8.98
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 13.99
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.96,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.6,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.96
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.71
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.86,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.94,
+     "jaw 1.62-1.66": 8.75,
+     "neck y<=1.62": 15.86
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.2
+    }
+   }
+  },
+  "Face 12": {
+   "cage": "SK_Head_Face_12_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.57,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 3.97
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.51,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.45
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.5,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.69,
+     "jaw 1.62-1.66": 7.07,
+     "neck y<=1.62": 23.5
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.17,
+     "jaw 1.62-1.66": 6.91,
+     "neck y<=1.62": 21.56
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.96,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.76,
+     "neck y<=1.62": 8.96
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.97
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.95,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.95
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.81
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.88,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.63,
+     "jaw 1.62-1.66": 8.74,
+     "neck y<=1.62": 15.88
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.29
+    }
+   }
+  },
+  "Face 13": {
+   "cage": "SK_Head_Face_13_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.04,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 3.93
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.0,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.49
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.15,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.8,
+     "jaw 1.62-1.66": 7.13,
+     "neck y<=1.62": 23.15
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.28,
+     "jaw 1.62-1.66": 6.97,
+     "neck y<=1.62": 21.08
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.98,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.76,
+     "neck y<=1.62": 8.98
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.88,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.95
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.99,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.6,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.99
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 9.43
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.88,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.94,
+     "jaw 1.62-1.66": 8.73,
+     "neck y<=1.62": 15.88
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 9.69
+    }
+   }
+  },
+  "Face 14": {
+   "cage": "SK_Head_Face_14_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.26,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 3.93
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.62,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.56
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.99,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.66,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 23.99
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.16,
+     "jaw 1.62-1.66": 6.95,
+     "neck y<=1.62": 21.9
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.97,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.74,
+     "neck y<=1.62": 8.97
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.88,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.96
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.96,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.96
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.49
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.91,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.84,
+     "jaw 1.62-1.66": 8.73,
+     "neck y<=1.62": 15.91
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.12
+    }
+   }
+  },
+  "Face 15": {
+   "cage": "SK_Head_Face_15_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 19.1,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.45,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.91
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.51,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.22
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 17.18,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.36,
+     "jaw 1.62-1.66": 6.88,
+     "neck y<=1.62": 17.18
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 1.0,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 1.86,
+     "jaw 1.62-1.66": 5.14,
+     "neck y<=1.62": 15.3
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 9.0,
+    "at": [
+     0.0676,
+     1.5999,
+     -0.0242
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.78,
+     "neck y<=1.62": 9.0
+    },
+    "ownMaleAtMaxMm": 7.69,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.88,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.93
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 15.51,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.9,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 15.51
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 8.25
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 12.52,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.38,
+     "jaw 1.62-1.66": 8.73,
+     "neck y<=1.62": 12.52
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 9.1
+    }
+   }
+  },
+  "Face 16": {
+   "cage": "SK_Head_Face_16_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.26,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 3.98
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.69,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.54
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 24.72,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.72,
+     "jaw 1.62-1.66": 7.07,
+     "neck y<=1.62": 24.72
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.21,
+     "jaw 1.62-1.66": 6.91,
+     "neck y<=1.62": 22.67
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.99,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.81,
+     "neck y<=1.62": 8.99
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.88,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.96
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.97,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.85,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.97
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.62
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.9,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.39,
+     "jaw 1.62-1.66": 8.74,
+     "neck y<=1.62": 15.9
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.16
+    }
+   }
+  },
+  "Face 17": {
+   "cage": "SK_Head_Face_03_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.44,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.02
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.53,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.55
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 22.61,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 3.01,
+     "jaw 1.62-1.66": 7.16,
+     "neck y<=1.62": 22.61
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.93,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.49,
+     "jaw 1.62-1.66": 7.0,
+     "neck y<=1.62": 20.9
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.99,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.75,
+     "neck y<=1.62": 8.99
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.66,
+     "neck y<=1.62": 14.01
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.97,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.72,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.97
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 11.23
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.84,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.09,
+     "jaw 1.62-1.66": 8.74,
+     "neck y<=1.62": 15.84
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.53
+    }
+   }
+  },
+  "Face 18": {
+   "cage": "SK_Head_Face_15_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 19.1,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.45,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.91
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.51,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.22
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 17.18,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.36,
+     "jaw 1.62-1.66": 6.88,
+     "neck y<=1.62": 17.18
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 1.0,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 1.86,
+     "jaw 1.62-1.66": 5.14,
+     "neck y<=1.62": 15.3
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 9.0,
+    "at": [
+     0.0676,
+     1.5999,
+     -0.0242
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.78,
+     "neck y<=1.62": 9.0
+    },
+    "ownMaleAtMaxMm": 7.69,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.88,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.93
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 15.51,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.9,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 15.51
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 8.25
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 12.52,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.38,
+     "jaw 1.62-1.66": 8.73,
+     "neck y<=1.62": 12.52
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 9.1
+    }
+   }
+  },
+  "Face 19": {
+   "cage": "SK_Head_Face_19_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.59,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.11
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.51,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.46
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 24.69,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 3.04,
+     "jaw 1.62-1.66": 6.97,
+     "neck y<=1.62": 24.69
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.92,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.5,
+     "jaw 1.62-1.66": 6.81,
+     "neck y<=1.62": 23.06
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.99,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.73,
+     "neck y<=1.62": 8.99
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.98
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.89,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.71,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.89
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.99
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.81,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.07,
+     "jaw 1.62-1.66": 8.73,
+     "neck y<=1.62": 15.81
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.35
+    }
+   }
+  },
+  "Face 20": {
+   "cage": "SK_Head_Face_20_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.88,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.12
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.51,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.59
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 22.66,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.74,
+     "jaw 1.62-1.66": 7.02,
+     "neck y<=1.62": 22.66
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.22,
+     "jaw 1.62-1.66": 6.85,
+     "neck y<=1.62": 20.76
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.96,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.71,
+     "neck y<=1.62": 8.96
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 14.01
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.98,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.6,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.98
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 11.35
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.89,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.63,
+     "jaw 1.62-1.66": 8.73,
+     "neck y<=1.62": 15.89
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.54
+    }
+   }
+  },
+  "Face 21": {
+   "cage": "SK_Head_Face_21_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.73,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 3.84
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.52,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.59
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 24.24,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.47,
+     "jaw 1.62-1.66": 7.02,
+     "neck y<=1.62": 24.24
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 1.96,
+     "jaw 1.62-1.66": 6.86,
+     "neck y<=1.62": 22.19
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 9.01,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.84,
+     "neck y<=1.62": 9.01
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.91,
+     "jaw 1.62-1.66": 10.51,
+     "neck y<=1.62": 13.92
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 17.08,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.65,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 17.08
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.71,
+     "jaw 1.62-1.66": 9.33,
+     "neck y<=1.62": 9.39
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.99,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.81,
+     "jaw 1.62-1.66": 8.86,
+     "neck y<=1.62": 15.99
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.8,
+     "jaw 1.62-1.66": 8.75,
+     "neck y<=1.62": 9.7
+    }
+   }
+  },
+  "Face 22": {
+   "cage": "SK_Head_Face_22_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.13,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.59,
+     "jaw 1.62-1.66": 7.13,
+     "neck y<=1.62": 3.85
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.52,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.57
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 24.03,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.47,
+     "jaw 1.62-1.66": 7.02,
+     "neck y<=1.62": 24.03
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 1.96,
+     "jaw 1.62-1.66": 6.86,
+     "neck y<=1.62": 21.96
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 9.02,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.66,
+     "jaw 1.62-1.66": 6.85,
+     "neck y<=1.62": 9.02
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.96,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.89
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.99,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 7.27,
+     "neck y<=1.62": 16.99
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.38,
+     "neck y<=1.62": 9.53
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.93,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.83,
+     "jaw 1.62-1.66": 8.95,
+     "neck y<=1.62": 15.93
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.78,
+     "jaw 1.62-1.66": 8.73,
+     "neck y<=1.62": 9.69
+    }
+   }
+  },
+  "Face 23": {
+   "cage": "SK_Head_Face_23_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.79,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.11
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.51,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.56
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.9,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.92,
+     "jaw 1.62-1.66": 7.07,
+     "neck y<=1.62": 23.9
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.39,
+     "jaw 1.62-1.66": 6.91,
+     "neck y<=1.62": 21.91
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.98,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.75,
+     "neck y<=1.62": 8.98
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.88,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.98
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.88,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.64,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.88
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 10.99
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.84,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.03,
+     "jaw 1.62-1.66": 8.73,
+     "neck y<=1.62": 15.84
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.37
+    }
+   }
+  },
+  "Face 24": {
+   "cage": "SK_Head_Face_24_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.76,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.13
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.51,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.52
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 22.99,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.84,
+     "jaw 1.62-1.66": 6.94,
+     "neck y<=1.62": 22.99
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.94,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.32,
+     "jaw 1.62-1.66": 6.77,
+     "neck y<=1.62": 21.13
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.98,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.77,
+     "neck y<=1.62": 8.98
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.89,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.98
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 16.92,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 16.92
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 11.14
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.85,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.97,
+     "jaw 1.62-1.66": 8.72,
+     "neck y<=1.62": 15.85
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.42
+    }
+   }
+  },
+  "Face 26": {
+   "cage": "SK_Head_Face_26_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.25,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.11,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.3,
+     "jaw 1.62-1.66": 7.11,
+     "neck y<=1.62": 4.03
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.66,
+     "jaw 1.62-1.66": 9.47,
+     "neck y<=1.62": 6.47
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.44,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.82,
+     "jaw 1.62-1.66": 6.94,
+     "neck y<=1.62": 23.44
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.91,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.3,
+     "jaw 1.62-1.66": 6.68,
+     "neck y<=1.62": 21.9
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.98,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 6.75,
+     "neck y<=1.62": 8.98
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.96,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.88,
+     "jaw 1.62-1.66": 10.65,
+     "neck y<=1.62": 13.98
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 17.02,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.61,
+     "jaw 1.62-1.66": 7.24,
+     "neck y<=1.62": 17.02
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.72,
+     "jaw 1.62-1.66": 9.35,
+     "neck y<=1.62": 11.51
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.88,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.83,
+     "jaw 1.62-1.66": 8.73,
+     "neck y<=1.62": 15.88
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.76,
+     "jaw 1.62-1.66": 8.7,
+     "neck y<=1.62": 10.57
+    }
+   }
+  },
+  "Face 27": {
+   "cage": "SK_Head_Face_27_Base_Wraps",
+   "skipped": "reordered"
+  },
+  "Face 28": {
+   "cage": "SK_Head_Face_28_Base_Wraps",
+   "skipped": "reordered"
+  },
+  "Face 30": {
+   "cage": "SK_Head_Face_30_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 20.26,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 7.12,
+    "at": [
+     -0.0535,
+     1.6301,
+     -0.0369
+    ],
+    "bands": {
+     "face y>1.66": 6.26,
+     "jaw 1.62-1.66": 7.12,
+     "neck y<=1.62": 3.94
+    },
+    "ownMaleAtMaxMm": 6.59,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.63,
+     "jaw 1.62-1.66": 9.48,
+     "neck y<=1.62": 6.54
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 23.77,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 2.83,
+     "jaw 1.62-1.66": 6.94,
+     "neck y<=1.62": 23.77
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 2.38,
+     "jaw 1.62-1.66": 6.73,
+     "neck y<=1.62": 21.88
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 8.92,
+    "at": [
+     0.0672,
+     1.6015,
+     -0.0251
+    ],
+    "bands": {
+     "face y>1.66": 3.65,
+     "jaw 1.62-1.66": 6.75,
+     "neck y<=1.62": 8.92
+    },
+    "ownMaleAtMaxMm": 7.66,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.95,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 9.92,
+     "jaw 1.62-1.66": 10.64,
+     "neck y<=1.62": 13.98
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 17.09,
+    "at": [
+     -0.0011,
+     1.5836,
+     0.0186
+    ],
+    "bands": {
+     "face y>1.66": 3.89,
+     "jaw 1.62-1.66": 7.22,
+     "neck y<=1.62": 17.09
+    },
+    "ownMaleAtMaxMm": 15.51,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.74,
+     "jaw 1.62-1.66": 9.34,
+     "neck y<=1.62": 10.22
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 15.9,
+    "at": [
+     0.0007,
+     1.5994,
+     0.0251
+    ],
+    "bands": {
+     "face y>1.66": 4.3,
+     "jaw 1.62-1.66": 9.08,
+     "neck y<=1.62": 15.9
+    },
+    "ownMaleAtMaxMm": 17.2,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.98,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.78,
+     "jaw 1.62-1.66": 8.71,
+     "neck y<=1.62": 10.0
+    }
+   }
+  },
+  "Face 31": {
+   "cage": "SK_Head_Face_31_Base_Wraps",
+   "skipped": "reordered"
+  },
+  "Face 32": {
+   "cage": "SK_Head_Face_32_Base_Wraps",
+   "cageMatchMaxM": 5.00000000069889e-07,
+   "cageMaleMaxMm": 24.28,
+   "SK_Streetwear_Balaclava_M": {
+    "maxMm": 10.62,
+    "at": [
+     0.0004,
+     1.6655,
+     0.0023
+    ],
+    "bands": {
+     "face y>1.66": 10.62,
+     "jaw 1.62-1.66": 5.22,
+     "neck y<=1.62": 4.6
+    },
+    "ownMaleAtMaxMm": 11.63,
+    "ownMaleMaxMm": 11.63,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 5.41,
+     "jaw 1.62-1.66": 8.35,
+     "neck y<=1.62": 6.44
+    }
+   },
+   "SK_BeardFull_M": {
+    "maxMm": 22.43,
+    "at": [
+     -0.0007,
+     1.5817,
+     0.0471
+    ],
+    "bands": {
+     "face y>1.66": 1.7,
+     "jaw 1.62-1.66": 9.44,
+     "neck y<=1.62": 22.43
+    },
+    "ownMaleAtMaxMm": 8.47,
+    "ownMaleMaxMm": 10.17,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 1.24,
+     "jaw 1.62-1.66": 9.28,
+     "neck y<=1.62": 20.12
+    }
+   },
+   "SK_Cowboy_MouthScarf_M": {
+    "maxMm": 7.45,
+    "at": [
+     0.0676,
+     1.5999,
+     -0.0242
+    ],
+    "bands": {
+     "face y>1.66": 2.01,
+     "jaw 1.62-1.66": 5.65,
+     "neck y<=1.62": 7.45
+    },
+    "ownMaleAtMaxMm": 7.69,
+    "ownMaleMaxMm": 15.42,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.64,
+     "jaw 1.62-1.66": 9.09,
+     "neck y<=1.62": 13.96
+    }
+   },
+   "SK_Winter_MouthScarf_M": {
+    "maxMm": 22.81,
+    "at": [
+     -0.0006,
+     1.605,
+     0.0345
+    ],
+    "bands": {
+     "face y>1.66": 1.36,
+     "jaw 1.62-1.66": 6.25,
+     "neck y<=1.62": 22.81
+    },
+    "ownMaleAtMaxMm": 14.49,
+    "ownMaleMaxMm": 16.04,
+    "dot": 0.97,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 6.41,
+     "jaw 1.62-1.66": 8.28,
+     "neck y<=1.62": 11.78
+    }
+   },
+   "SK_Sport_LuchadorFaceMask_M": {
+    "maxMm": 20.98,
+    "at": [
+     -0.0026,
+     1.6051,
+     0.0364
+    ],
+    "bands": {
+     "face y>1.66": 1.29,
+     "jaw 1.62-1.66": 6.04,
+     "neck y<=1.62": 20.98
+    },
+    "ownMaleAtMaxMm": 14.13,
+    "ownMaleMaxMm": 17.2,
+    "dot": 0.99,
+    "cageInsteadOfOwnMaxMm": {
+     "face y>1.66": 8.27,
+     "jaw 1.62-1.66": 7.72,
+     "neck y<=1.62": 9.97
+    }
+   }
+  }
+ }
+}
