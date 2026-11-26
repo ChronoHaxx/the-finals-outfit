@@ -65,5 +65,14 @@ class RuleTest(unittest.TestCase):
         self.assertEqual(self.rule.items({src('SK_Tee'), src('SK_Cape')}), {'pants', 'tee', 'cape', 'outfit'})
 
 
+class CurrentTest(unittest.TestCase):
+    def test_an_item_is_current_only_when_it_shows_no_unproven_17_nov_change(self):
+        # Boots: a stale package the item rule counts as Season 12, with no 17 Nov read proving it current yet.
+        by_item = {'boots': {src('Boots')}, 'outfit': {src('Boots'), src('Pants')}, 'pants': {src('Pants')}}
+        s12 = {'boots', 'outfit', 'pants'}
+        self.assertEqual(plan.current_items(s12, by_item, {src('Boots')}), {'pants'})
+        self.assertEqual(plan.current_items(s12, by_item, set()), s12)
+
+
 if __name__ == '__main__':
     unittest.main()
