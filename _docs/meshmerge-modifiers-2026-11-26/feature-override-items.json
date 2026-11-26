@@ -1,0 +1,752 @@
+{
+ "note": "17 Nov 2026 build (32 containers; 399699 files), probe properties mode, usmap f36b7c4f. Every DA carrying a TagOverride with MatchingTags [Customization.Feature.MeshMergeModifiers]. In all 105 the rule is mesh-only (bOverrideMesh true, bOverrideMaterials false, bOffsetTransform false, no wrap override) and is the LAST TagOverride, after the Archetype.Light and Archetype.Heavy rules.",
+ "byBase": {
+  "SK_Streetwear_Hoodie_M": 38,
+  "SK_StarterSet_TShirt_M": 13,
+  "SK_Casual_OversizedSweater_M": 5,
+  "SK_Historic_AnubisJewelry_M": 3,
+  "SK_Pants_M": 18,
+  "SK_Streetwear_BikerJacketHoodie_M": 9,
+  "SK_Streetwear_BikerJacket_M": 2,
+  "SK_Streetwear_TankTop_M": 4,
+  "SK_Streetwear_TightSingletSportEvent_M": 1,
+  "SK_Streetwear_VarsityJacket_M": 12
+ },
+ "items": [
+  {
+   "da": "DA_Casual_BikerVest_Leather",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Casual_BikerVest_Leather_USA",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Casual_BikerVest_Nylon",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Casual_OversizedSweater_Cotton_Halloween2025",
+   "base": "SK_Casual_OversizedSweater_M",
+   "featureMesh": "SK_Casual_OversizedSweater",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Casual_OversizedSweater_Cotton_Halloween2026",
+   "base": "SK_Casual_OversizedSweater_M",
+   "featureMesh": "SK_Casual_OversizedSweater",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Casual_OversizedSweater_Cotton_NamaHug",
+   "base": "SK_Casual_OversizedSweater_M",
+   "featureMesh": "SK_Casual_OversizedSweater",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Casual_OversizedSweater_Cotton_ORF",
+   "base": "SK_Casual_OversizedSweater_M",
+   "featureMesh": "SK_Casual_OversizedSweater",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Casual_OversizedSweater_Cotton_Winter",
+   "base": "SK_Casual_OversizedSweater_M",
+   "featureMesh": "SK_Casual_OversizedSweater",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Historic_AnubisCollar_Gold",
+   "base": "SK_Historic_AnubisJewelry_M",
+   "featureMesh": "SK_Historic_AnubisJewelry",
+   "ruleIndex": 12,
+   "ruleCount": 13
+  },
+  {
+   "da": "DA_Historic_AnubisMask_Gold",
+   "base": "SK_Historic_AnubisJewelry_M",
+   "featureMesh": "SK_Historic_AnubisJewelry",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_CarbonFibre",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cashball_LTM",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_Black",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_BlackYellow",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_CamoEnoRino",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_CuteSkeleton",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_GrayWhite",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_RedClosedBeta",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_RedPanda",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_WhiteBlack",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_WhiteBlue",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_WhiteRed",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Cotton_Yellow",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Nylon",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Nylon_BlackGreen",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Nylon_Cometa",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Tiger",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_Pants_Tiger_TeamLTM",
+   "base": "SK_Pants_M",
+   "featureMesh": "SK_Pants",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_Anniversary24",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_Black",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_ClosedBeta",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_DeathByRhodent",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_Halloween2024",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_Halloween2026",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_Valentines2025PlayerOne",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_Valentines2025PlayerTwo",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_WhiteBlack",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_WhiteBlue",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_WhiteRed",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_StarterSet_TShirt_Cotton_Yellow",
+   "base": "SK_StarterSet_TShirt_M",
+   "featureMesh": "SK_StarterSet_TShirt",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacketHoodie_Leather",
+   "base": "SK_Streetwear_BikerJacketHoodie_M",
+   "featureMesh": "SK_Streetwear_BikerJacketHoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacketHoodie_Leather_Black",
+   "base": "SK_Streetwear_BikerJacketHoodie_M",
+   "featureMesh": "SK_Streetwear_BikerJacketHoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacketHoodie_Leather_BlackFinals",
+   "base": "SK_Streetwear_BikerJacketHoodie_M",
+   "featureMesh": "SK_Streetwear_BikerJacketHoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacketHoodie_Leather_YellowScribbles",
+   "base": "SK_Streetwear_BikerJacketHoodie_M",
+   "featureMesh": "SK_Streetwear_BikerJacketHoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacketHoodie_Nylon",
+   "base": "SK_Streetwear_BikerJacketHoodie_M",
+   "featureMesh": "SK_Streetwear_BikerJacketHoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacketHoodie_Nylon_Holtow",
+   "base": "SK_Streetwear_BikerJacketHoodie_M",
+   "featureMesh": "SK_Streetwear_BikerJacketHoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacketHoodie_Nylon_ORF",
+   "base": "SK_Streetwear_BikerJacketHoodie_M",
+   "featureMesh": "SK_Streetwear_BikerJacketHoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacketHoodie_Nylon_White",
+   "base": "SK_Streetwear_BikerJacketHoodie_M",
+   "featureMesh": "SK_Streetwear_BikerJacketHoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacketHoodie_WornLeather_Halloween",
+   "base": "SK_Streetwear_BikerJacketHoodie_M",
+   "featureMesh": "SK_Streetwear_BikerJacketHoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacket_Leather_BrownGreen",
+   "base": "SK_Streetwear_BikerJacket_M",
+   "featureMesh": "SK_Streetwear_BikerJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_BikerJacket_WornLeather_Dissun",
+   "base": "SK_Streetwear_BikerJacket_M",
+   "featureMesh": "SK_Streetwear_BikerJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_CarbonFibre",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_AlienPrint",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_BlackFinals",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_CB2A",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_CuteSkeleton",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_EmbarkBlack",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_EmbarkPartner",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_GrayWhite",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_Holtow",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_OpenBetaOSPUZE",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_Panda",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_Pink",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_RedPanda",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_SnowballBlitz",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_VaiiyaWhite",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_Valentines2025",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_VintageStripes",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_WhiteTrentila",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_Yellow",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Cotton_YellowFinals",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Leopard",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_ALFAACTAWinners6",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_DISSUNWinnerS5",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_ENGIMOWinners10",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_ENGIMOWinners6",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_EngimoWinnerS4",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_HoltowWinnerS4",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_ISEULTWinnerS4",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_ISEULTWinnerS5",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_Nylon_TRENTILAWinnerS8",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_OSPUZEWinners6",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Nylon_VAIIYAWinnerS5",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Tiger",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Tiger_TeamLTM",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_WindBreaker_AlfaActa",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_Hoodie_Zebra",
+   "base": "SK_Streetwear_Hoodie_M",
+   "featureMesh": "SK_Streetwear_Hoodie",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_TankTop_Holographic",
+   "base": "SK_Streetwear_TankTop_M",
+   "featureMesh": "SK_Streetwear_TankTop",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_TankTop_Synthetic_BlackWhite",
+   "base": "SK_Streetwear_TankTop_M",
+   "featureMesh": "SK_Streetwear_TankTop",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_TankTop_Synthetic_CB2B",
+   "base": "SK_Streetwear_TankTop_M",
+   "featureMesh": "SK_Streetwear_TankTop",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_TankTop_Synthetic_ORF",
+   "base": "SK_Streetwear_TankTop_M",
+   "featureMesh": "SK_Streetwear_TankTop",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_TightSingletSportEvent_Cotton",
+   "base": "SK_Streetwear_TightSingletSportEvent_M",
+   "featureMesh": "SK_Streetwear_TightSingletSportEvent",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_TightSinglet_Cotton_Anubis",
+   "base": "SK_Historic_AnubisJewelry_M",
+   "featureMesh": "SK_Historic_AnubisJewelry",
+   "ruleIndex": 12,
+   "ruleCount": 13
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_Absorbe",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_Jersey",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_Leopard",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_Nylon_Kawaii",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_SatinCotton_ClosedBeta",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_SatinCotton_Season6",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_SatinCotton_Season7",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_SatinCotton_Season8",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_Satin_Gangnam",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_ShinyNylon",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_ShinyNylon_EngimoDragonfly",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  },
+  {
+   "da": "DA_Streetwear_VarsityJacket_Zebra",
+   "base": "SK_Streetwear_VarsityJacket_M",
+   "featureMesh": "SK_Streetwear_VarsityJacket",
+   "ruleIndex": 2,
+   "ruleCount": 3
+  }
+ ]
+}
