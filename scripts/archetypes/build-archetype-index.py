@@ -25,6 +25,12 @@ Proof 1' (--live-equal-medium, proposed 23 Nov 2026; use it only with the coordi
 Medium is byte-identical to the live one, one that matches it on everything the class mesh inherits stands in (see
 live_equal). Fresh reads of today's containers come in through --staging (scripts/archetypes/run-light-bulk.py).
 
+Proof 3' (--same-surface-permuted, approved 26 Nov 2026): where proof 3 fails only on vertex order (indices, UVs or
+the skin's joint list), the class mesh may still be its Medium sibling's surface, exported with its vertices in another
+order and a few quads split along the other diagonal. surface_permuted re-proves proofs 3-5 under a vertex bijection,
+with the tolerances in SURFACE_PERMUTED; a mesh a side registry names is refused. report.json "proof3Prime" and
+proof3-prime.tsv record every attempt.
+
 A class mesh joins the index only with proof, never by approximation:
   1. Same build: its Medium sibling's staged GLB is byte-identical (sha256) to the mesh the active index serves, so the
      staged Light/Heavy GLBs come from the same extraction as the live Medium mesh.
@@ -50,7 +56,8 @@ Usage (Git Bash, from the worktree root):
   python scripts/archetypes/build-archetype-index.py --out scripts/generated/archetypes/preview-v2 \\
       --proven scripts/generated/archetypes/nov17-proof-v1/proof.json
 """
-import argparse, gzip, hashlib, json, os, struct, sys
+import argparse, gzip, hashlib, json, os, re, struct, sys
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
@@ -266,6 +273,231 @@ def live_equal(staged_path, live_path):
     return True, None, {"morphs": morphs}
 
 
+# Proof 3' tolerances (approved by the coordinator 26 Nov 2026, with these stated): a class mesh that is its Medium
+# sibling's surface at the class scale, but whose vertices come in another order (and whose few quads may be split along
+# the other diagonal), as when the game exported the class mesh separately.
+SURFACE_PERMUTED = {
+    "uv0": 1e-6,                # UV0 per matched vertex: the bijection's key
+    "uv": 1e-6,                 # UV sets after UV1
+    "uv1": 1 / 128,             # UV1 (0.0078125): it drives body-hide masks, so its largest difference is recorded
+    "positionM": 1e-5,          # class vertex vs the class-scaled Medium vertex, metres (proof 5 under the mapping)
+    "normal": 1e-4,             # unit normals, per component
+    "flippedFraction": 0.05,    # triangles split along the other diagonal, of all triangles
+    "quadGapM": 1e-4,           # 0.1 mm: a flipped quad's two diagonals may pass no further apart, at either bind pose
+}
+# Per-mesh registries: a mesh they name may carry data tied to its vertex order, so proof 3' refuses it.
+SIDE_REGISTRY_SECTIONS = ("attachmentBody", "attachmentFrames", "glitchOverlayMeshes", "meshPartEffects",
+                          "activatedEffectParts", "mergedPartTransforms", "attachmentMirroredScale", "hairOverridePrecedence")
+SIDE_REGISTRY_FILES = ("head-wraps.json", "face-cosmetics.json", "derived-coverage.json")
+# Proof 3 failures that only a reordering can explain; any other problem keeps the row refused without trying 3'.
+PERMUTABLE = ("indices differ", "UVs differ", "skin joints differ")
+
+
+def _rotation(t):
+    """A triangle as its vertex cycle starting at the smallest id: winding kept, start vertex normalised."""
+    t = tuple(int(v) for v in t)
+    return min(t, t[1:] + t[:1], t[2:] + t[:2])
+
+
+def _weights_by_name(d, i):
+    """Per vertex of primitive i: {joint name: u16 weight}, zero weights dropped (skin_detail's quantization)."""
+    p, names = d["prims"][i], d["jointNames"]
+    n = len(p["joints"][0]) if p["joints"] else 0
+    out = [dict() for _ in range(n)]
+    for J, W in zip(p["joints"], p["weights"]):
+        for v in range(n):
+            for j, w in zip(J[v], W[v]):
+                if w:
+                    out[v][names[j]] = out[v].get(names[j], 0) + int(w)
+    return out
+
+
+def _segment_gap(p1, p2, q1, q2):
+    """Closest distance between segments p1p2 and q1q2 (Ericson, Real-Time Collision Detection 5.1.9)."""
+    d1, d2, r = p2 - p1, q2 - q1, p1 - q1
+    a, e, f, c, b = d1 @ d1, d2 @ d2, d2 @ r, d1 @ r, d1 @ d2
+    den = a * e - b * b
+    s = float(np.clip((b * f - c * e) / den, 0, 1)) if den > 1e-18 else 0.0
+    t = (b * s + f) / e if e > 1e-18 else 0.0
+    if t < 0:
+        t, s = 0.0, float(np.clip(-c / a, 0, 1)) if a > 1e-18 else 0.0
+    elif t > 1:
+        t, s = 1.0, float(np.clip((b - c) / a, 0, 1)) if a > 1e-18 else 0.0
+    return float(np.linalg.norm((p1 + d1 * s) - (q1 + d2 * t)))
+
+
+def _flipped_quads(only_cls, only_med, pos_med, pos_cls):
+    """The class triangles missing from the Medium (and the reverse), both in Medium vertex ids, must form quads that
+    the two meshes split along opposite diagonals. Each unmatched class triangle pairs with exactly one neighbour (a
+    shared edge, the class diagonal) so that the pair covers the same four vertices as a Medium pair split along the
+    other diagonal; the Medium pairs are used once each and all of them. Winding: the quad's directed boundary edges are
+    the same in both. Returns (ok, reason, max diagonal gap in metres over both bind poses, quads)."""
+    def edges(t):
+        return [(t[0], t[1]), (t[1], t[2]), (t[2], t[0])]
+
+    def pairs_by_edge(tris):
+        by = {}
+        for n, t in enumerate(tris):
+            for u, v in edges(t):
+                by.setdefault(frozenset((u, v)), []).append(n)
+        return by
+
+    def boundary(t1, t2, diagonal):
+        return sorted(e for e in edges(t1) + edges(t2) if frozenset(e) != diagonal)
+
+    med_by_edge = pairs_by_edge(only_med)
+    med_quads = {}                                   # (quad vertices, diagonal) -> (Medium triangle numbers)
+    for diagonal, ns in med_by_edge.items():
+        if len(ns) == 2:
+            quad = frozenset(only_med[ns[0]]) | frozenset(only_med[ns[1]])
+            if len(quad) == 4:
+                med_quads[(quad, diagonal)] = tuple(ns)
+    cls_by_edge = pairs_by_edge(only_cls)
+    partner, gap, quads = {}, 0.0, 0
+    for n, t in enumerate(only_cls):
+        valid = []
+        for u, v in edges(t):
+            diagonal = frozenset((u, v))
+            for m in cls_by_edge[diagonal]:
+                if m == n:
+                    continue
+                quad = frozenset(t) | frozenset(only_cls[m])
+                other = quad - diagonal
+                if len(quad) == 4 and (quad, other) in med_quads:
+                    valid.append((m, diagonal, quad, other))
+        if len(valid) != 1:
+            return False, f"an unmatched triangle has {len(valid)} quad partners, not exactly one", gap, quads
+        partner[n] = valid[0]
+    used = set()
+    for n, (m, diagonal, quad, other) in partner.items():
+        if partner.get(m, (None,))[0] != n:
+            return False, "unmatched triangles do not pair mutually", gap, quads
+        if n > m:
+            continue
+        med_pair = med_quads[(quad, other)]
+        if med_pair in used:
+            return False, "a Medium quad is matched twice", gap, quads
+        used.add(med_pair)
+        if boundary(only_cls[n], only_cls[m], diagonal) != boundary(only_med[med_pair[0]], only_med[med_pair[1]], other):
+            return False, "a flipped quad changes winding", gap, quads
+        a, b = sorted(diagonal)
+        c, d = sorted(other)
+        for pos in (pos_med, pos_cls):
+            gap = max(gap, _segment_gap(pos[a], pos[b], pos[c], pos[d]))
+        quads += 1
+    if 2 * len(used) != len(only_med):
+        return False, "Medium triangles left unpaired", gap, quads
+    return True, None, gap, quads
+
+
+def surface_permuted(medium_path, cls_path, scale, body_bones):
+    """Proof 3' ("same surface up to vertex order", approved 26 Nov 2026), used where proof 3 fails only on indices,
+    UVs or the skin's joint list. Under a deterministic vertex bijection (UV0, then the class-scaled position: ties are
+    identical vertices) the class mesh must be its Medium sibling at the class scale (tolerances: SURFACE_PERMUTED):
+      same primitives, vertex counts and material slots in order; per matched vertex UV0, positions (x scale), normals,
+      UV1 (1/128, recorded) and other UV sets, and the weight per (vertex, joint name), exact after u16 quantization;
+      the same weighted joints by name, at the class scale (proof 4); joints only one side lists carry no weight and
+      must be body-skeleton bones; triangles equal under the mapping except quads split along the other diagonal
+      (_flipped_quads), at most 5% of all, each diagonal gap at most 0.1 mm.
+    Fitting-morph deltas are compared under the mapping and recorded, never refused (as in proof 1'). The caller refuses
+    a mesh any side registry names. Returns (ok, reason, detail); detail records the permutation hash, UV1, the
+    flipped fraction and the largest quad gap."""
+    T = SURFACE_PERMUTED
+    a, c = mesh_data(medium_path), mesh_data(cls_path)
+    da, dc = skin_detail(medium_path), skin_detail(cls_path)
+    detail = {"uv1MaxDiff": 0.0, "positionMaxM": 0.0, "normalMax": 0.0, "triangles": 0, "flippedTriangles": 0,
+              "flippedQuads": 0, "flippedFraction": 0.0, "quadGapMaxM": 0.0}
+
+    def fail(why, **extra):
+        return False, why, {**detail, **extra}
+    pa, pc = a["prims"], c["prims"]
+    if len(pa) != len(pc) or any(len(x["pos"]) != len(y["pos"]) for x, y in zip(pa, pc)):
+        return fail("primitives or vertex counts differ")
+    if [(x["slot"], x["material"]) for x in pa] != [(y["slot"], y["material"]) for y in pc]:
+        return fail("material slots differ")
+    digest = hashlib.sha256()
+    weighted_a, weighted_c, morphs = set(), set(), {}
+    for i, (x, y, nx, ny) in enumerate(zip(pa, pc, da["prims"], dc["prims"])):
+        if not x["uvs"] or len(x["uvs"]) != len(y["uvs"]) or x["idx"] is None or y["idx"] is None:
+            return fail("UV sets or indices missing or differ in number", primitive=i)
+        med_scaled = x["pos"] * scale
+        om = np.lexsort((med_scaled[:, 2], med_scaled[:, 1], med_scaled[:, 0], x["uvs"][0][:, 1], x["uvs"][0][:, 0]))
+        oc = np.lexsort((y["pos"][:, 2], y["pos"][:, 1], y["pos"][:, 0], y["uvs"][0][:, 1], y["uvs"][0][:, 0]))
+        perm = np.empty(len(oc), dtype=np.int64)
+        perm[oc] = om                                       # class vertex -> Medium vertex
+        digest.update(perm.astype("<u4").tobytes())
+        if float(np.abs(y["uvs"][0] - x["uvs"][0][perm]).max()) > T["uv0"]:
+            return fail("no vertex bijection on UV0", primitive=i)
+        d = float(np.linalg.norm(y["pos"] - med_scaled[perm], axis=1).max())
+        detail["positionMaxM"] = max(detail["positionMaxM"], d)
+        if d > T["positionM"]:
+            return fail(f"positions are not the x{scale} Medium's under the mapping (max {d * 1000:.4f} mm)", primitive=i)
+        for k in range(1, len(x["uvs"])):
+            d = float(np.abs(y["uvs"][k] - x["uvs"][k][perm]).max())
+            if k == 1:
+                detail["uv1MaxDiff"] = max(detail["uv1MaxDiff"], d)
+            if d > (T["uv1"] if k == 1 else T["uv"]):
+                return fail(f"UV{k} differs under the mapping (max {d:.6f})", primitive=i)
+        if (nx["normals"] is None) != (ny["normals"] is None):
+            return fail("normals present on one side only", primitive=i)
+        if nx["normals"] is not None:
+            d = float(np.abs(ny["normals"] - nx["normals"][perm]).max())
+            detail["normalMax"] = max(detail["normalMax"], d)
+            if d > T["normal"]:
+                return fail(f"normals differ under the mapping (max {d:.6f})", primitive=i)
+        wa, wc = _weights_by_name(da, i), _weights_by_name(dc, i)
+        bad = [v for v, m in enumerate(perm) if wc[v] != wa[m]] if len(wa) == len(wc) else list(range(len(perm)))
+        if bad:
+            return fail("weights differ by joint name under the mapping", primitive=i, vertices=len(bad))
+        for e in wa:
+            weighted_a |= set(e)
+        for e in wc:
+            weighted_c |= set(e)
+        for name in set(nx["morphs"]) & set(ny["morphs"]):
+            d = float(np.abs(ny["morphs"][name] - scale * nx["morphs"][name][perm]).max() * 100)
+            if d > 1e-4:
+                morphs[name] = max(morphs.get(name, 0.0), round(d, 4))
+        tri_m = x["idx"].reshape(-1, 3).astype(np.int64)
+        tri_c = perm[y["idx"].reshape(-1, 3).astype(np.int64)]
+        cm = Counter(_rotation(t) for t in tri_m)
+        cc = Counter(_rotation(t) for t in tri_c)
+        only_c, only_m = list((cc - cm).elements()), list((cm - cc).elements())
+        detail["triangles"] += len(tri_c)
+        detail["flippedTriangles"] += len(only_c)
+        if len(only_c) != len(only_m):
+            return fail("triangle counts under the mapping differ", primitive=i)
+        if only_c:
+            inverse = np.empty_like(perm)
+            inverse[perm] = np.arange(len(perm))           # Medium vertex -> class vertex
+            ok, why, gap, quads = _flipped_quads(only_c, only_m, x["pos"], y["pos"][inverse])
+            detail["quadGapMaxM"] = max(detail["quadGapMaxM"], gap)
+            detail["flippedQuads"] += quads
+            if not ok:
+                return fail(why, primitive=i)
+            if gap > T["quadGapM"]:
+                return fail(f"a flipped quad is not planar (diagonal gap {gap * 1000:.4f} mm)", primitive=i)
+    detail["flippedFraction"] = detail["flippedTriangles"] / max(1, detail["triangles"])
+    if detail["flippedFraction"] > T["flippedFraction"]:
+        return fail(f"{detail['flippedFraction']:.2%} of triangles split the other way")
+    if weighted_a != weighted_c:
+        return fail("weighted joints differ by name", onlyMedium=sorted(weighted_a - weighted_c),
+                    onlyClass=sorted(weighted_c - weighted_a))
+    ja, jc = a["joints"] or {}, c["joints"] or {}
+    one_side = sorted(set(ja) ^ set(jc))
+    outside = [n for n in one_side if n not in body_bones]
+    if outside:
+        return fail("joints listed on one side only are not body-skeleton bones", joints=outside)
+    missing = sorted(n for n in weighted_a if n not in ja or n not in jc)
+    if missing:
+        return fail("weighted joints missing from a skin", joints=missing)
+    residual = max((float(np.linalg.norm(jc[n] - scale * ja[n])) for n in weighted_a), default=0.0)
+    if residual > JOINT_TOLERANCE:
+        return fail(f"weighted joints are not at the x{scale} skeleton (max {residual:.5f} m)")
+    detail.update({"permutationSha256": digest.hexdigest(), "jointResidualMaxM": residual,
+                   "unweightedJointsOneSide": one_side, "morphs": dict(sorted(morphs.items()))})
+    return True, None, detail
+
+
 def skeleton_scale(medium_json, cls_json, scale):
     """The class skeleton against Medium: the median translation ratio, the largest translation residual (metres) from
     the exact `scale`, and the largest quaternion component difference."""
@@ -303,6 +535,9 @@ def main():
     # --live-equal-medium: proof 1' (see live_equal) where the staged Medium is not byte-identical to the live one.
     # Proposed 23 Nov 2026; use it only with the coordinator's approval of that rule.
     ap.add_argument("--live-equal-medium", action="store_true")
+    # --same-surface-permuted: proof 3' (see surface_permuted) where proof 3 fails only on vertex order. Approved by the
+    # coordinator 26 Nov 2026 with the tolerances in SURFACE_PERMUTED.
+    ap.add_argument("--same-surface-permuted", action="store_true")
     args = ap.parse_args()
     current = None
     if args.proven:
@@ -321,7 +556,7 @@ def main():
     skin_pairs = json.loads((index_dir / "skin-pairs.json").read_text(encoding="utf-8"))
     report = {"activeSha256": sha256(index_dir / "assets.json"), "skinPairsSha256": sha256(index_dir / "skin-pairs.json"),
               "currentProof": {k: current[k] for k in ("file", "sha256", "containers")} if current else None,
-              "classes": {}, "meshes": {}, "refused": {}, "skipped": {}, "proof1Prime": {}}
+              "classes": {}, "meshes": {}, "refused": {}, "skipped": {}, "proof1Prime": {}, "proof3Prime": {}}
 
     # The Archetype mesh swaps the definitions author: Medium skeletal mesh -> class mesh. Every class mesh named here
     # ends in exactly one of report["meshes"] (added), report["refused"] (a proof failed) or report["skipped"] (never
@@ -393,6 +628,21 @@ def main():
 
     added, item_masks = {}, {}
     medium_body = assets["attachmentBody"]["source"]
+    body_bones, registries = set(), {}
+    if args.same_surface_permuted:
+        # Proof 3' needs the body skeleton's bone names (joints a skin lists on one side only must be among them) and the
+        # side registries (a mesh they name is refused).
+        body_glb = [f for f in staged.get(medium_body.rsplit(".", 1)[-1] + ".glb", [])
+                    if staged_sha(f) == assets["meshes"][medium_body]["sha256"]]
+        if not body_glb:
+            sys.exit("--same-surface-permuted: the Medium body the index serves is not staged, so its bones are unknown")
+        bj, _ = glb(body_glb[0])
+        body_bones = {bj["nodes"][i].get("name") for i in bj["skins"][0]["joints"]}
+        registries = {f"assets.json {s}": json.dumps(assets[s]) for s in SIDE_REGISTRY_SECTIONS if s in assets}
+        registries.update({f: (index_dir / f).read_text(encoding="utf-8") for f in SIDE_REGISTRY_FILES
+                           if (index_dir / f).is_file()})
+        report["proof3PrimeRules"] = {"tolerances": SURFACE_PERMUTED, "registries": sorted(registries),
+                                      "bodyBones": len(body_bones), "bodyFile": os.path.relpath(body_glb[0], models)}
     for medium_path, entry in sorted(assets["meshes"].items()):
         if entry.get("kind") != "skeletal" or medium_path in conflicts:
             continue
@@ -444,6 +694,23 @@ def main():
                 report["refused"][target] = ["not staged beside its Medium sibling"]
                 continue
             ok, proof = prove(medium, mesh_data(file), scale, target, entry["slots"])
+            if not ok and args.same_surface_permuted and all(p.endswith(PERMUTABLE) for p in proof["problems"]):
+                # Proof 3': the in-order surface proof failed only on vertex order. Re-prove the whole surface under a
+                # vertex bijection; a mesh a side registry names is refused, whatever the geometry says.
+                names = re.compile("|".join(rf"(?<![\w/]){re.escape(p.rsplit('.', 1)[-1])}(?![\w])"
+                                            for p in (medium_path, target)))
+                named_in = sorted(r for r, text in registries.items() if names.search(text))
+                if named_in:
+                    ok3, why3, detail3 = False, f"named in a side registry: {', '.join(named_in)}", {}
+                else:
+                    ok3, why3, detail3 = surface_permuted(medium_glb, file, scale, body_bones)
+                report["proof3Prime"][target] = {"verdict": "pass" if ok3 else why3, "class": cls, "medium": medium_path,
+                                                 "inOrderProblems": proof["problems"], **detail3}
+                if ok3:
+                    ok, proof["proof3"], proof["proof3Prime"] = True, "permuted", detail3
+                    proof["inOrderProblems"], proof["problems"] = proof["problems"], []
+                else:
+                    proof["problems"] = proof["problems"] + [f"proof 3': {why3}"]
             proof.update({"class": cls, "medium": medium_path, "file": os.path.relpath(file, models).replace(os.sep, "/"),
                           "sha256": staged_sha(file), "mediumSha256": entry["sha256"], **proof1})
             if not ok:
@@ -563,6 +830,16 @@ def main():
             tab.join([k, v["targets"].get("light") or "", v["targets"].get("heavy") or "", v["verdict"],
                       str(v.get("differs", "")), *morph_cells(v.get("morphs"))]) + "\n"
             for k, v in sorted(report["proof1Prime"].items())), encoding="utf-8")
+    # Every proof 3' attempt, passing or not: the recorded UV1 difference, flipped fraction, quad gap and permutation.
+    if args.same_surface_permuted:
+        cols = ["uv1MaxDiff", "positionMaxM", "normalMax", "flippedTriangles", "triangles", "flippedFraction",
+                "quadGapMaxM", "permutationSha256"]
+        (out / "proof3-prime.tsv").write_text(
+            tab.join(["class mesh", "class", "medium", "verdict", *cols]) + "\n" + "".join(
+                tab.join([k, v["class"], v["medium"], v["verdict"], *(str(v.get(c, "")) for c in cols)]) + "\n"
+                for k, v in sorted(report["proof3Prime"].items())), encoding="utf-8")
+        passed = sum(v["verdict"] == "pass" for v in report["proof3Prime"].values())
+        print(f"  proof 3': {passed} of {len(report['proof3Prime'])} attempts pass")
     # class mesh <TAB> class <TAB> reason <TAB> the Medium mesh that names it: the apply record copies this list.
     (out / "skipped.tsv").write_text("".join(
         f"{k}\t{row['class']}\t{r['reason']}\t{r['medium']}\n"
