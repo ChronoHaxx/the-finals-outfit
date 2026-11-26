@@ -31,7 +31,7 @@ def mesh_ref(name):
 class ItemRule(unittest.TestCase):
     def build(self, items, proof, morphs, changed_only=False, census=True, admit=None, admit_only=None,
               admit_reviewed=None, surface=None, admit_rework=None, masked=(), package=None, masks=None, ship_masks=None,
-              s12_live=(), item_masked=()):
+              s12_live=(), item_masked=(), allow_mixed=None):
         """items: {item: [mesh names]}; proof: {mesh: (status, morphsChanged, problems)}; morphs: {mesh: [names]};
         admit: {mesh: (skin-proof class, admissible)} written as a skin-by-name proof (tier 1, 12 Nov 2026);
         surface: {mesh: surface-proof class} written as a surface-match proof (tier 2, 22 Nov 2026), for meshes whose
@@ -115,7 +115,7 @@ class ItemRule(unittest.TestCase):
                   admit_json=str(skin_proof) if skin_proof else None, admit_only=admit_only, admit_reviewed=admit_reviewed,
                   surface_json=str(surface_proof) if surface_proof else None, admit_rework=admit_rework,
                   package_json=str(package_proof) if package_proof else None,
-                  mask_json=str(mask_proof) if mask_proof else None, ship_masks=ship_masks)
+                  mask_json=str(mask_proof) if mask_proof else None, ship_masks=ship_masks, allow_mixed=allow_mixed)
         self.out_assets = json.loads(out.read_text(encoding='utf-8'))
         return json.loads(out.read_text(encoding='utf-8'))['s12BodyTypePreview']
 
@@ -395,6 +395,33 @@ class ItemRule(unittest.TestCase):
         self.assertEqual(meta['held'][path('Top')]['items'], ['outfit'])
         meta = self.build(items, proof, morphs, package={'Top': True, 'Skirt': True, 'Tee': True})
         self.assertEqual(set(meta['swapped']), {path('Top'), path('Skirt'), path('Tee')})
+
+    # The mixed-item exception through main (26 Nov 2026): the tee must really be held live, not merely unproven.
+    TEE, NECK = 'SK_Streetwear_CroppedTshirtOversize_M', 'SK_Streetwear_ChainNecklace_M'
+    TEE_ITEM = 'streetwear-croppedtshirtoversize-cotton-red'
+
+    def test_a_kept_tee_is_refused_by_the_mixed_item_exception(self):
+        # A kept mesh already counts as Season 12 (the item rule treats it as effective), so excusing it would let the
+        # exception through for an item that is not mixed. Both routes to "kept": a refusal without moved vertices or
+        # changed morphs, and a stale package whose morphs equal the read's.
+        items = {self.TEE_ITEM: [self.TEE, self.NECK], 'necklace': [self.NECK]}
+        morphs = {self.TEE: self.SHAPED, self.NECK: self.SHAPED}
+        neck = ('morph-only', self.CHANGED, None)
+        for tee, package in ((('refused', {}, ['WEIGHTS_0 differs']), None),
+                             (('morph-only', {}, None), {self.TEE: False, self.NECK: True})):
+            with self.subTest(tee=tee), self.assertRaisesRegex(SystemExit, 'must be held live'):
+                self.build(items, {self.TEE: tee, self.NECK: neck}, morphs, package=package,
+                           allow_mixed=[self.TEE_ITEM])
+
+    def test_a_held_live_tee_still_goes_mixed_through_main(self):
+        items = {self.TEE_ITEM: [self.TEE, self.NECK], 'necklace': [self.NECK]}
+        morphs = {self.TEE: self.SHAPED, self.NECK: self.SHAPED}
+        proof = {self.TEE: ('refused', {}, ['POSITION differs']), self.NECK: ('morph-only', self.CHANGED, None)}
+        self.assertIn(path(self.NECK), self.build(items, proof, morphs)['held'])   # without the exception
+        meta = self.build(items, proof, morphs, allow_mixed=[self.TEE_ITEM])
+        self.assertEqual(set(meta['swapped']), {path(self.NECK)})
+        self.assertNotIn(path(self.TEE), meta['effective'])
+        self.assertEqual(list(meta['mixedItemExceptions']), [self.TEE_ITEM])
 
     def test_a_census_from_another_index_is_refused(self):
         tmp = Path(tempfile.mkdtemp())
