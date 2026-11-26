@@ -64,6 +64,17 @@ class RuleTest(unittest.TestCase):
         # Re-reading the cape as well releases every item.
         self.assertEqual(self.rule.items({src('SK_Tee'), src('SK_Cape')}), {'pants', 'tee', 'cape', 'outfit'})
 
+    def test_a_held_mesh_is_never_admitted_even_when_an_admission_list_names_it(self):
+        # The tee is review-admitted, then held after a later review: no wave may release it, so every item that shows
+        # it stays live, and the outfit's other meshes are held with it: the cape, its morphs changed, leaves the
+        # effective set, so the cape item goes too; the pants (morphs unchanged) stay Season 12-shaped.
+        held = plan.Rule(self.rule_proof, {src('SK_Tee')}, set(), self.users, BODY, self.by_item, held={src('SK_Tee')})
+        self.assertEqual(held.items(), {'pants'})
+        self.assertEqual(held.items({src('SK_Tee')}), {'pants'})
+        # Without the hold, the admission releases every item.
+        admitted = plan.Rule(self.rule_proof, {src('SK_Tee')}, set(), self.users, BODY, self.by_item)
+        self.assertEqual(admitted.items(), {'pants', 'tee', 'cape', 'outfit'})
+
 
 class CurrentTest(unittest.TestCase):
     def test_an_item_is_current_only_when_it_shows_no_unproven_17_nov_change(self):
@@ -72,6 +83,41 @@ class CurrentTest(unittest.TestCase):
         s12 = {'boots', 'outfit', 'pants'}
         self.assertEqual(plan.current_items(s12, by_item, {src('Boots')}), {'pants'})
         self.assertEqual(plan.current_items(s12, by_item, set()), s12)
+
+
+class MixedItemTest(unittest.TestCase):
+    """The approved mixed-item exception (option (c), 26 Nov 2026) in the planner's item rule."""
+    def setUp(self):
+        # Tee held live (excused for 'outfit' only), Hood held live with no exception; Cape and Belt morph-only with
+        # changed morphs. 'outfit' shows Tee and Cape, 'hood-set' shows Hood and Belt.
+        names = ('SK_Tee', 'SK_Hood', 'SK_Cape', 'SK_Belt')
+        self.proof = {'SK_Tee': row('SK_Tee', 'refused', problems=['POSITION differs']),
+                      'SK_Hood': row('SK_Hood', 'refused', problems=['POSITION differs']),
+                      'SK_Cape': row('SK_Cape', 'morph-only'), 'SK_Belt': row('SK_Belt', 'morph-only')}
+        self.by_item = {'outfit': {src('SK_Tee'), src('SK_Cape')}, 'hood-set': {src('SK_Hood'), src('SK_Belt')},
+                        'tee': {src('SK_Tee')}, 'cape': {src('SK_Cape')}, 'belt': {src('SK_Belt')}}
+        self.users = {}
+        for item, meshes in self.by_item.items():
+            for m in meshes:
+                self.users.setdefault(m, []).append((item, meshes))
+        self.held = {src('SK_Tee'), src('SK_Hood')}
+        self.rule = plan.Rule(self.proof, {src('SK_Tee'), src('SK_Hood')}, set(), self.users, BODY, self.by_item,
+                              held=self.held, excused={('outfit', src('SK_Tee'))})
+
+    def test_the_excused_item_releases_its_other_meshes_but_never_counts_as_season_12(self):
+        effective, _ = self.rule.settle()
+        self.assertIn(src('SK_Cape'), effective)
+        self.assertNotIn('outfit', self.rule.items())
+
+    def test_a_second_held_mesh_without_an_exception_still_holds_its_items(self):
+        effective, _ = self.rule.settle()
+        self.assertNotIn(src('SK_Belt'), effective)
+        self.assertEqual(self.rule.items(), {'cape'})
+
+    def test_the_tee_hold_still_blocks_the_tee_mesh(self):
+        for added in (frozenset(), {src('SK_Tee')}, {src('SK_Tee'), src('SK_Hood')}):
+            self.assertNotIn(src('SK_Tee'), self.rule.settle(added)[0])
+            self.assertFalse({'tee', 'outfit'} & self.rule.items(added))
 
 
 if __name__ == '__main__':

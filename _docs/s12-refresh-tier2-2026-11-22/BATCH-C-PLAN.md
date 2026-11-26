@@ -220,8 +220,18 @@ The Light session's follow-up rows:
 | `SK_Streetwear_PopGothShoes_M` | 1 | the same |
 | `SK_FancyDress_SuitJacket_M` | 7 | w161 part-hide mask needs tooling |
 | `SK_Traditional_LunarDressTop_M` | 2 | legacy mask with no generation record |
+| `SK_Streetwear_CroppedTshirtOversize_M` | 1, mixed by exception | arms-out underarm wedge in the S12 mesh; the game's own weights, inverse binds verified (C1.md) |
 
-After every wave, **52 items stay mixed.** Their blockers are refused on other routes (loader refusals, vertex colour,
+**The cropped tee's hold has a mixed-item exception** (coordinator, 26 Nov, C1 option c).
+- Its one item, `streetwear-croppedtshirtoversize-cotton-red`, may go mixed: the live tee with the Season 12
+  ChainNecklace and PopLanyard armbands. Captures show no clipping (C1.md).
+- Without the exception, the hold keeps those three meshes live and holds 167 C1 items.
+- The exception is the only entry in `MIXED_ITEM_EXCEPTIONS` (`build-preview-index.py`). The builder and the planner
+  take it with `--allow-mixed-item` and refuse any other item or mesh.
+- Replan `batchC-plan-v9` (active `e7cd0b2f`): C1 becomes 66 meshes and 182 items, and every later count drops by
+  that one item (2,022 at the end).
+
+After every wave, **52 items stay mixed** in this snapshot (53 with the tee's item). Their blockers are refused on other routes (loader refusals, vertex colour,
 our own processing), plus the holds above. Largest:
 
 | Mesh | Items held |

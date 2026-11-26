@@ -82,22 +82,29 @@ def current_items(s12_items, by_item, unproven):
 class Rule:
     """build-preview-index.py's sets and item rule on one index, for any set of meshes a wave adds."""
 
-    def __init__(self, proof, admitted, stale, users, body, by_item):
+    def __init__(self, proof, admitted, stale, users, body, by_item, held=frozenset(), excused=frozenset()):
         self.morph_only = {r['source'] for r in proof.values() if r.get('status') == 'morph-only'}
         self.unchanged = {r['source'] for r in proof.values()
                           if r.get('status') == 'morph-only' and not r['morphsChanged']}
         self.kept = {r['source'] for r in proof.values() if r.get('status') == 'refused' and not r['morphsChanged']
                      and not any(bpi.GEOMETRY_PROBLEM.match(p) for p in r['problems'])}
-        self.admitted, self.stale, self.users, self.body, self.by_item = set(admitted), set(stale), users, body, by_item
+        # A held mesh (--hold) is never admitted, even when an admission list names it (a review-admitted mesh held
+        # after a later review, 26 Nov): it stays live, and the item rule holds every item that shows it.
+        self.held = set(held)
+        # (item, mesh) pairs from --allow-mixed-item (bpi.mixed_item_excuses): that held mesh does not hold the item's
+        # other meshes; the item itself never counts as Season 12, since it still shows the held mesh.
+        self.excused = set(excused)
+        self.admitted, self.stale, self.users, self.body, self.by_item = (set(admitted) - self.held, set(stale), users,
+                                                                          body, by_item)
 
     def settle(self, added=frozenset()):
         """(effective, held) when the meshes in `added` are read fresh and pass (a stale package re-read is current)."""
-        admitted = self.admitted | set(added)
+        admitted = self.admitted | (set(added) - self.held)
         stale = self.stale - set(added)
         admitted -= stale
         proven = (self.morph_only | admitted) - stale
         kept = (self.kept - admitted) | (stale & self.unchanged)
-        return bpi.settle(proven, kept, self.unchanged, self.users, self.body)
+        return bpi.settle(proven, kept, self.unchanged, self.users, self.body, self.excused)
 
     def items(self, added=frozenset()):
         effective, _ = self.settle(added)
@@ -163,6 +170,8 @@ def main():
     ap.add_argument('--nov17-proof', help='TSV (medium, verdict, differs): 17 Nov Medium reads vs the live Medium; '
                     "'pass' proves a stale mesh the item rule counts as Season 12 current")
     ap.add_argument('--hold', action='append', default=[], help='NAME=REASON: a mesh no wave may admit')
+    ap.add_argument('--allow-mixed-item', action='append', default=[],
+                    help='ITEM: an approved exception (build-preview-index.MIXED_ITEM_EXCEPTIONS) whose mesh is --hold')
     a = ap.parse_args()
     out = Path(a.out)
     if out.exists():
@@ -187,13 +196,18 @@ def main():
             users.setdefault(m, []).append((item, meshes & shaped))
     by_item = {i: (m & shaped) - {body} for i, m in items_all.items() if (m & shaped) - {body}}
     stale = set(meta.get('stalePackages', []))
-    rule = Rule(proof, set(meta['admitted']), stale, users, body, by_item)
+    by_name = {name_of(s): s for s in assets['meshes']}
+    held_sources = {by_name[n] for n in holds if n in by_name}
+    if set(meta['effective']) & held_sources:
+        raise SystemExit('A held mesh is already Season 12 in the builder run: '
+                         + ', '.join(sorted(name_of(s) for s in set(meta['effective']) & held_sources)))
+    excused = bpi.mixed_item_excuses(a.allow_mixed_item, by_name, held_sources, users)
+    rule = Rule(proof, set(meta['admitted']), stale, users, body, by_item, held=held_sources, excused=excused)
     effective0, held0 = rule.settle()
     if effective0 != set(meta['effective']):
         raise SystemExit(f'Item rule mismatch with the builder run: {len(effective0 ^ set(meta["effective"]))} meshes')
     base_items = rule.items()
 
-    by_name = {name_of(s): s for s in assets['meshes']}
     proof_sources = {r['source'] for r in proof.values()}
     shown = set().union(*by_item.values())
     c_sources = {r['source'] for n, r in surface.items()
@@ -201,7 +215,6 @@ def main():
     no_read = shown - proof_sources - effective0
     stale_held = ((stale - effective0) - c_sources) & shown   # the package proof also lists meshes no item shows
     other_held = (shown - effective0) - c_sources - no_read - stale_held
-    held_sources = {by_name[n] for n in holds if n in by_name}
     # Stale packages the item rule still counts as Season 12: their live file matches the 6 Nov (12.00) read, but the
     # 17 Nov update changed the package. Only a 17 Nov read proves them current (wave U).
     nov17 = {}
@@ -332,6 +345,7 @@ def main():
                    'otherRefused': len(other_held), 'cluster': len(cluster), 'clusterSeeds': sorted(map(name_of, seeds))},
         'clusterByGroup': dict(collections.Counter(group(s) for s in cluster)),
         'waves': wave_rows, 'holds': holds,
+        **({'mixedItemExceptions': {i: bpi.MIXED_ITEM_EXCEPTIONS[i] for i, _ in sorted(excused)}} if excused else {}),
         'itemsStillMixed': len(still), 'topBlockersAfterAllWaves': blockers.most_common(25)}
     (out / 'plan.json').write_text(json.dumps(plan, indent=1) + '\n', encoding='utf-8')
     with open(out / 'rows.tsv', 'w', encoding='utf-8', newline='') as f:

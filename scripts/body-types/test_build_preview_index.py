@@ -404,5 +404,47 @@ class ItemRule(unittest.TestCase):
             tool.body_type_meshes(tmp / 'census.json', {path('A'): {'url': '../y/A.glb'}})
 
 
+class MixedItemException(unittest.TestCase):
+    """Option (c), tier 2 C1 (26 Nov 2026): exactly one item may go mixed because exactly one of its meshes is held."""
+    TEE, NECK = 'SK_Streetwear_CroppedTshirtOversize_M', 'SK_Streetwear_ChainNecklace_M'
+    ITEM = 'streetwear-croppedtshirtoversize-cotton-red'
+
+    def setUp(self):
+        self.by_name = {n: path(n) for n in (self.TEE, self.NECK, 'SK_Dress_M')}
+        tee_item = {path(self.TEE), path(self.NECK)}
+        dress_item = {path('SK_Dress_M'), path(self.NECK)}
+        self.users = {}
+        for item, meshes in ((self.ITEM, tee_item), ('dress', dress_item), ('necklace', {path(self.NECK)})):
+            for m in meshes:
+                self.users.setdefault(m, []).append((item, meshes))
+
+    def test_the_approved_list_is_one_item_and_one_mesh(self):
+        self.assertEqual({i: e['mesh'] for i, e in tool.MIXED_ITEM_EXCEPTIONS.items()}, {self.ITEM: self.TEE})
+
+    def test_any_other_item_is_refused(self):
+        with self.assertRaisesRegex(SystemExit, 'not an approved exception'):
+            tool.mixed_item_excuses(['dress'], self.by_name, {path('SK_Dress_M')}, self.users)
+
+    def test_the_tee_must_be_held_live(self):
+        with self.assertRaisesRegex(SystemExit, 'must be held live'):
+            tool.mixed_item_excuses([self.ITEM], self.by_name, set(), self.users)
+
+    def test_an_index_without_the_mesh_is_refused(self):
+        with self.assertRaisesRegex(SystemExit, 'does not hold'):
+            tool.mixed_item_excuses([self.ITEM], {}, set(), self.users)
+
+    def test_the_held_tee_no_longer_holds_its_items_other_meshes(self):
+        excused = tool.mixed_item_excuses([self.ITEM], self.by_name, {path(self.TEE)}, self.users)
+        self.assertEqual(excused, {(self.ITEM, path(self.TEE))})
+        proven = {path(self.NECK), path('SK_Dress_M')}
+        # Without the exception the live tee holds the necklace (morphs changed), which then holds the dress.
+        effective, held = tool.settle(proven, set(), set(), self.users, BODY)
+        self.assertEqual(effective, set())
+        # With it the necklace and dress move; the tee stays live, so the tee's item stays mixed (never Season 12).
+        effective, held = tool.settle(proven, set(), set(), self.users, BODY, excused)
+        self.assertEqual(effective, proven)
+        self.assertNotIn(path(self.TEE), effective)
+
+
 if __name__ == '__main__':
     unittest.main()
