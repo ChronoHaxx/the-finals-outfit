@@ -1,0 +1,7 @@
+[
+ {"name": "face23-masculine", "slots": {"face": "head-face-23-base", "facewear": "streetwear-balaclava-cotton-black"}},
+ {"name": "face23-androgynous", "slots": {"face": "head-face-23-base", "facewear": "streetwear-balaclava-cotton-black"}, "query": "bodyType=androgynous"},
+ {"name": "face30-masculine", "slots": {"face": "head-face-30-base", "facewear": "streetwear-balaclava-cotton-black"}},
+ {"name": "face32-masculine", "slots": {"face": "head-face-32-base", "facewear": "streetwear-balaclava-cotton-black"}},
+ {"name": "face01-masculine", "slots": {"face": "head-face-01-base", "facewear": "streetwear-balaclava-cotton-black"}}
+]

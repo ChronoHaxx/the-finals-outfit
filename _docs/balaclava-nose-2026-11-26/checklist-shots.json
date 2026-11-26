@@ -1,0 +1,10 @@
+[
+ {"name":"c1-f23-black-front","slots":{"face":"head-face-23-base","facewear":"streetwear-balaclava-cotton-black"}},
+ {"name":"c2-f23-black-side","slots":{"face":"head-face-23-base","facewear":"streetwear-balaclava-cotton-black"},"view":"0.400_1.700_0.160_0_1.690_0.050"},
+ {"name":"c3-f23-leopard-front","slots":{"face":"head-face-23-base","facewear":"streetwear-balaclava-leopard"}},
+ {"name":"c3-f23-leopard-side","slots":{"face":"head-face-23-base","facewear":"streetwear-balaclava-leopard"},"view":"0.400_1.700_0.160_0_1.690_0.050"},
+ {"name":"c4-f23-beardfull-front","slots":{"face":"head-face-23-base","facialHair":"facialhairs-beardfull-black"}},
+ {"name":"c4-f01-black-front","slots":{"face":"head-face-01-base","facewear":"streetwear-balaclava-cotton-black"}},
+ {"name":"c4-blankface-black-front","slots":{"face":"head-blankface","facewear":"streetwear-balaclava-cotton-black"}},
+ {"name":"c5-f23-black-carrot-1.47s","slots":{"face":"head-face-23-base","facewear":"streetwear-balaclava-cotton-black"},"view":"0.250_1.650_0.900_0_1.600_0","extra":"emote=rabbit-carrot&t=1.47&paused=1"}
+]
