@@ -1,0 +1,109 @@
+{
+ "about": "wave 137 live check (26 Nov 2026): the two merged w177 rows through the ACTIVE index (1d778be3) on current main 963d906, same views as the v4 review; plus two pair-census failing pairs (partner CNS glitch overlay mesh absent).",
+ "sheetColumns": 4,
+ "casesPerSheet": 1,
+ "width": 900,
+ "height": 1000,
+ "cases": [
+  {
+   "id": "jacket",
+   "slots": {
+    "face": "head-face-01-base",
+    "hair": "hairs-afrofade",
+    "upperBody": "streetwear-sportsjacket-translucentospuze",
+    "lowerBody": "casual-loosejeans-denim-darkblue",
+    "feet": "casual-tallsneakers-canvas"
+   },
+   "icon": "public/items/upperBody/streetwear-sportsjacket-translucentospuze.webp",
+   "views": [
+    {
+     "name": "a",
+     "cam": "0,1.2,2.6,0,1.2,0",
+     "angles": 4
+    },
+    {
+     "name": "idle",
+     "pose": "idle",
+     "cam": "0,1.2,2.6,0,1.2,0"
+    },
+    {
+     "name": "hem-close",
+     "cam": "0,1.0,1.0,0,1.0,0"
+    },
+    {
+     "name": "hem-close-34",
+     "cam": "0.55,1.0,0.85,0,1.0,0"
+    }
+   ]
+  },
+  {
+   "id": "glasses",
+   "slots": {
+    "face": "head-face-01-base",
+    "hair": "hairs-afrofade",
+    "upperBody": "casual-basictshirt-cotton-alfaacta",
+    "lowerBody": "casual-loosejeans-denim-darkblue",
+    "feet": "casual-tallsneakers-canvas",
+    "eyewear": "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   },
+   "icon": "public/items/eyewear/streetwear-vaporwaveglasses-plastic-cnss7sp.webp",
+   "views": [
+    {
+     "name": "a",
+     "cam": "0,1.6,1.2,0,1.6,0",
+     "angles": 4
+    },
+    {
+     "name": "idle",
+     "pose": "idle",
+     "cam": "0,1.6,1.2,0,1.6,0"
+    },
+    {
+     "name": "lens-close",
+     "cam": "0,1.64,0.45,0,1.64,0"
+    },
+    {
+     "name": "lens-close-34",
+     "cam": "0.3,1.65,0.38,0,1.64,0"
+    }
+   ]
+  },
+  {
+   "id": "pair-jacket-techjoggers-cnsglitch",
+   "slots": {
+    "face": "head-face-01-base",
+    "hair": "hairs-afrofade",
+    "upperBody": "streetwear-sportsjacket-translucentospuze",
+    "lowerBody": "streetwear-techjoggers-nylon-cnsglitch",
+    "feet": "casual-tallsneakers-canvas"
+   },
+   "icon": "public/items/upperBody/streetwear-sportsjacket-translucentospuze.webp",
+   "views": [
+    {
+     "name": "full",
+     "cam": "0,0.9,4.2,0,0.9,0",
+     "angles": 4
+    }
+   ]
+  },
+  {
+   "id": "pair-glasses-longhoodie-cns",
+   "slots": {
+    "face": "head-face-01-base",
+    "hair": "hairs-afrofade",
+    "upperBody": "casual-longhoodie-cottonsmooth-cns",
+    "lowerBody": "casual-loosejeans-denim-darkblue",
+    "feet": "casual-tallsneakers-canvas",
+    "eyewear": "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   },
+   "icon": "public/items/eyewear/streetwear-vaporwaveglasses-plastic-cnss7sp.webp",
+   "views": [
+    {
+     "name": "bust",
+     "cam": "0,1.4,2.4,0,1.4,0",
+     "angles": 4
+    }
+   ]
+  }
+ ]
+}

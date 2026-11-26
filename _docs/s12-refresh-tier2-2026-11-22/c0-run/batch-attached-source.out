@@ -1,0 +1,6 @@
+{"at": "2026-11-26T13:05:52Z", "mode": "shaders", "folder": "materials-01", "count": 43, "exitCode": 0, "seconds": 19.89}
+{"at": "2026-11-26T13:05:53Z", "mode": "shaders", "folder": "parents-01", "count": 1, "exitCode": 0, "seconds": 1.306}
+{"at": "2026-11-26T13:05:55Z", "mode": "shaders", "folder": "parents-02", "count": 1, "exitCode": 0, "seconds": 1.427}
+{"usmapWindowGuard": {"mapping": "f36b7c4f27182664ee0ff6dd175d1ed854f3e00b4184607c8599d319502c0c3c", "window": [146, 148], "materialsChecked": 1, "refused": {}, "skipped": []}}
+{"at": "2026-11-26T13:06:10Z", "mode": "textures", "folder": "textures-extract-01", "count": 114, "exitCode": 0, "seconds": 4.858}
+Source: 43 choices, 43 default materials (43 extracted, 0 reused), 0 reused packages, 0 meshes extracted, 114 textures (114 extracted); unresolved: []

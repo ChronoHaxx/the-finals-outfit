@@ -75,3 +75,19 @@ Read-only on the root:
 4. Send the coordinator the sha and the publish list.
 
 The apply follows the batch A/B route (`../APPLY.md`) through the queue.
+
+
+## Run, 26 Nov 2026 (main-folder session)
+
+Run after w177 (wave 137) and the Light bulk apply. All steps matched the table above; logs are in this folder.
+
+| Step | Result |
+|---|---|
+| 2 | mask staged, `9ff2ed9bb3cf9b1b` |
+| 3 | `"rows": 43`, `"skipped": []`, `"withParameters": []`, `"rebindKeptMaterials": 43`; `activeAssetsSha256` `d750614d…` (the post-Light index) |
+| source | exit 0; 43 choices, 43 default materials, 0 meshes, 114 textures; the usmap window guard refused none; nothing unresolved |
+| build | exit 0; `built` 43, `buildErrors` {}, `cpuPassed` 43, `auditBlockers` {} |
+| gpu | exit 0 on attempt 1; 43 materials, 516 cases, max error 2.38e-07, 0 failed |
+| index | exit 0; 43 implemented, `addedMeshes` 0, `addedMaterials` 43; `preview.json` lists 43 `reboundMaterials` |
+
+Handed to the tier-2 session for the post-run steps; C0b applies after C0's apply.

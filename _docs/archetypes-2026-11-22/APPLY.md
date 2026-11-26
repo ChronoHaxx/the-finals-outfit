@@ -74,6 +74,34 @@ batch or other apply may be running. `M=scripts/generated/archetypes`.
 
 The flag stays on until the bar is met.
 
+### Applied 26 Nov 2026 (main-folder session)
+
+Record: [light-bulk-apply-2026-11-26.md](light-bulk-apply-2026-11-26.md). The checker output is
+`light-bulk-apply-2026-11-26.delta.json`, and the skips are `apply-2026-11-26-skipped.tsv`.
+
+- **Re-pin:** the active index had moved b164180c → `1d778be3` with w177 (wave 137, two rows). Coordinator rule,
+  case 1: proceed if the change is the reviewed one and no Light row touches the w177 items.
+- **Rebuild on `1d778be3`:** `{"light": 538, "heavy": 0} class meshes; 418 refused; 1206 skipped`, the same counts as
+  on b164180c.
+- **Checker:**
+  - `ok: true`, `meshesAdded 538`; 3,367 added on both sides; 0 altered or removed; onlyReviewed, onlyNew and
+    valueDiffers all 0.
+  - The publish list is `01538d47…`, equal to its pin.
+- **Apply:**
+  - Idle check: IDLE.
+  - Backup: `before-2026-11-26/` (hashes in `before-2026-11-26.SHA256SUMS`).
+  - 538 meshes copied, 336,179,404 bytes, 0 sha mismatches, nothing overwritten.
+- **Active `assets.json`:** `1d778be3…` → `d750614d23b33b80…`. skin-pairs `f15a73a2…` is unchanged and not copied;
+  supported-items `54e8789c…` is unchanged.
+- **App check (step 6):**
+  - `capture-classes.mjs --classes light,medium --cameras full --query archetypes=on` on current main:
+    `SK_Body_L` with the light morphs and `_L` garments, 0 errors
+    (`light-bulk-apply-2026-11-26-captures.summary.json`).
+  - Unflag bar: [light-unflag-bar-2026-11-26.md](light-unflag-bar-2026-11-26.md). **Not met.** The starting outfit
+    misses its Light T-shirt and sneakers. Of 5 presets, 3 lose at most one piece and 2 lose four. There is no
+    clipping. Light stays flagged.
+- Hosting goes with the coordinator's release after C0.
+
 ## History: the 23 Nov apply (done; Light is in the active index since then)
 
 **Status:** approved in principle by the coordinator (23 Nov) as a routine step for the user. It is queued after

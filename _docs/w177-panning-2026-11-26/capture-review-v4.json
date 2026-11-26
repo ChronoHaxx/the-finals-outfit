@@ -1,0 +1,73 @@
+{
+ "about": "w177 step 4 review (26 Nov 2026): both items through the v4 staged preview (provenance-fixed rebuild), Studio default, face 01; four sides, idle, and close-ups of the panning surfaces (jacket hem tabs, glasses lens).",
+ "preview": "public/models/reconstructed-w177-panning-preview-v4",
+ "sheetColumns": 4,
+ "casesPerSheet": 1,
+ "width": 900,
+ "height": 1000,
+ "cases": [
+  {
+   "id": "jacket",
+   "slots": {
+    "face": "head-face-01-base",
+    "hair": "hairs-afrofade",
+    "upperBody": "streetwear-sportsjacket-translucentospuze",
+    "lowerBody": "casual-loosejeans-denim-darkblue",
+    "feet": "casual-tallsneakers-canvas"
+   },
+   "icon": "public/items/upperBody/streetwear-sportsjacket-translucentospuze.webp",
+   "views": [
+    {
+     "name": "a",
+     "cam": "0,1.2,2.6,0,1.2,0",
+     "angles": 4
+    },
+    {
+     "name": "idle",
+     "pose": "idle",
+     "cam": "0,1.2,2.6,0,1.2,0"
+    },
+    {
+     "name": "hem-close",
+     "cam": "0,1.0,1.0,0,1.0,0"
+    },
+    {
+     "name": "hem-close-34",
+     "cam": "0.55,1.0,0.85,0,1.0,0"
+    }
+   ]
+  },
+  {
+   "id": "glasses",
+   "slots": {
+    "face": "head-face-01-base",
+    "hair": "hairs-afrofade",
+    "upperBody": "casual-basictshirt-cotton-alfaacta",
+    "lowerBody": "casual-loosejeans-denim-darkblue",
+    "feet": "casual-tallsneakers-canvas",
+    "eyewear": "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   },
+   "icon": "public/items/eyewear/streetwear-vaporwaveglasses-plastic-cnss7sp.webp",
+   "views": [
+    {
+     "name": "a",
+     "cam": "0,1.6,1.2,0,1.6,0",
+     "angles": 4
+    },
+    {
+     "name": "idle",
+     "pose": "idle",
+     "cam": "0,1.6,1.2,0,1.6,0"
+    },
+    {
+     "name": "lens-close",
+     "cam": "0,1.64,0.45,0,1.64,0"
+    },
+    {
+     "name": "lens-close-34",
+     "cam": "0.3,1.65,0.38,0,1.64,0"
+    }
+   ]
+  }
+ ]
+}

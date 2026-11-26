@@ -1,0 +1,467 @@
+{
+ "at": "2026-11-26T12:39:22.721Z",
+ "config": "_docs/goal-100-2026-10-11/w177-panning-contract/capture-review-v4.json",
+ "base": "http://127.0.0.1:5175/thesecret-dev-mode-ganyu-only",
+ "preview": "public/models/reconstructed-w177-panning-preview-v4",
+ "catalogOverride": null,
+ "cases": [
+  {
+   "id": "jacket",
+   "slots": {
+    "face": "head-face-01-base",
+    "hair": "hairs-afrofade",
+    "upperBody": "streetwear-sportsjacket-translucentospuze",
+    "lowerBody": "casual-loosejeans-denim-darkblue",
+    "feet": "casual-tallsneakers-canvas"
+   },
+   "views": [
+    {
+     "name": "a-0",
+     "file": "jacket.a-0.png"
+    },
+    {
+     "name": "a-90",
+     "file": "jacket.a-90.png"
+    },
+    {
+     "name": "a-180",
+     "file": "jacket.a-180.png"
+    },
+    {
+     "name": "a-270",
+     "file": "jacket.a-270.png"
+    },
+    {
+     "name": "idle",
+     "file": "jacket.idle.png"
+    },
+    {
+     "name": "hem-close",
+     "file": "jacket.hem-close.png"
+    },
+    {
+     "name": "hem-close-34",
+     "file": "jacket.hem-close-34.png"
+    }
+   ],
+   "error": null,
+   "errors": [],
+   "failedRequests": [],
+   "supersededLoads": [],
+   "completedRequests": 1680,
+   "observedRequests": 1680,
+   "rig": {
+    "assemblies": [
+     {
+      "id": "hairs-afrofade",
+      "sourceAssembly": true,
+      "sourceSkinPair": false,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Hairs/AfroFade/SM_AfroFade.SM_AfroFade",
+        "materials": [
+         {
+          "name": "hair-afrofade:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Hairs/AfroFade/MI_AfroFade_Black.MI_AfroFade_Black",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 1,
+      "hiddenMeshes": 0,
+      "groupVisible": true
+     },
+     {
+      "id": "head-face-01-base",
+      "sourceAssembly": false,
+      "sourceSkinPair": true,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+        "materials": [
+         {
+          "name": "head-face-01-afrofade:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_Head.MI_Head_Face_01_Base_Head",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "teeth-headmaster:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/HeadMaster/Base/MI_Head_HeadMaster_Base_Teeth.MI_Head_HeadMaster_Base_Teeth",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "eyes-face-01:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_Eyes.MI_Head_Face_01_Base_Eyes",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "eyes-face-01:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_Eyes.MI_Head_Face_01_Base_Eyes",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "MI_Head_Face_01_Base_EyeShell",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_EyeShell.MI_Head_Face_01_Base_EyeShell",
+          "reconstructed": false,
+          "visible": false
+         },
+         {
+          "name": "eyelashes-face-01:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_Eyelashes.MI_Head_Face_01_Base_Eyelashes",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "MI_Head_Face_01_Base_EyeEdge",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_EyeEdge.MI_Head_Face_01_Base_EyeEdge",
+          "reconstructed": false,
+          "visible": false
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 5,
+      "hiddenMeshes": 2,
+      "groupVisible": true
+     },
+     {
+      "id": "streetwear-sportsjacket-translucentospuze",
+      "sourceAssembly": true,
+      "sourceSkinPair": false,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Streetwear/Assets/SportsJacket/SK_Streetwear_SportsJacket_M.SK_Streetwear_SportsJacket_M",
+        "materials": [
+         {
+          "name": "mi-sportsjacket-sportsjacket-translucentospuze:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Streetwear/Assets/SportsJacket/Skins/TranslucentOspUze/MI_SportsJacket_SportsJacket_TranslucentOspUze.MI_SportsJacket_SportsJacket_TranslucentOspUze",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       },
+       {
+        "sourceIndex": 1,
+        "sourceMesh": "/Game/Discovery/Characters/Casual/Assets/SlimTankTop/SK_Casual_SlimTankTop_M.SK_Casual_SlimTankTop_M",
+        "materials": [
+         {
+          "name": "mi-casual-slimtanktop-nylonemissive-ospuze:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Casual/Assets/SlimTankTop/Skins/NylonEmissive_OspUze/MI_Casual_SlimTankTop_NylonEmissive_OspUze.MI_Casual_SlimTankTop_NylonEmissive_OspUze",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       },
+       {
+        "sourceIndex": 2,
+        "sourceMesh": "/Game/Discovery/Characters/Streetwear/Assets/SportsJacketHologramStrip/SK_Streetwear_SportsJacketHologramStrip_M.SK_Streetwear_SportsJacketHologramStrip_M",
+        "materials": [
+         {
+          "name": "mi-character-panninghologram-ospuze:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Streetwear/Assets/SportsJacketHologramStrip/MI_Character_PanningHologram_Ospuze.MI_Character_PanningHologram_Ospuze",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 3,
+      "hiddenMeshes": 0,
+      "groupVisible": true
+     },
+     {
+      "id": "casual-loosejeans-denim-darkblue",
+      "sourceAssembly": true,
+      "sourceSkinPair": false,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Casual/Assets/LooseJeans/SK_Casual_LooseJeans_M.SK_Casual_LooseJeans_M",
+        "materials": [
+         {
+          "name": "casual-loosejeans-denim-darkblue:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Casual/Assets/LooseJeans/Skins/Denim_DarkBlue/MI_Casual_LooseJeans_Denim_DarkBlue.MI_Casual_LooseJeans_Denim_DarkBlue",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 1,
+      "hiddenMeshes": 0,
+      "groupVisible": true
+     },
+     {
+      "id": "casual-tallsneakers-canvas",
+      "sourceAssembly": true,
+      "sourceSkinPair": false,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Casual/Assets/TallSneakers/SK_Casual_TallSneakers_M.SK_Casual_TallSneakers_M",
+        "materials": [
+         {
+          "name": "casual-tallsneakers-canvas:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Casual/Assets/TallSneakers/Skins/Canvas/MI_Casual_TallSneakers_Canvas.MI_Casual_TallSneakers_Canvas",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 1,
+      "hiddenMeshes": 0,
+      "groupVisible": true
+     }
+    ],
+    "other": [
+     {
+      "visibleMeshes": 1,
+      "groupVisible": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "glasses",
+   "slots": {
+    "face": "head-face-01-base",
+    "hair": "hairs-afrofade",
+    "upperBody": "casual-basictshirt-cotton-alfaacta",
+    "lowerBody": "casual-loosejeans-denim-darkblue",
+    "feet": "casual-tallsneakers-canvas",
+    "eyewear": "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   },
+   "views": [
+    {
+     "name": "a-0",
+     "file": "glasses.a-0.png"
+    },
+    {
+     "name": "a-90",
+     "file": "glasses.a-90.png"
+    },
+    {
+     "name": "a-180",
+     "file": "glasses.a-180.png"
+    },
+    {
+     "name": "a-270",
+     "file": "glasses.a-270.png"
+    },
+    {
+     "name": "idle",
+     "file": "glasses.idle.png"
+    },
+    {
+     "name": "lens-close",
+     "file": "glasses.lens-close.png"
+    },
+    {
+     "name": "lens-close-34",
+     "file": "glasses.lens-close-34.png"
+    }
+   ],
+   "error": null,
+   "errors": [],
+   "failedRequests": [],
+   "supersededLoads": [],
+   "completedRequests": 1708,
+   "observedRequests": 1708,
+   "rig": {
+    "assemblies": [
+     {
+      "id": "hairs-afrofade",
+      "sourceAssembly": true,
+      "sourceSkinPair": false,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Hairs/AfroFade/SM_AfroFade.SM_AfroFade",
+        "materials": [
+         {
+          "name": "hair-afrofade:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Hairs/AfroFade/MI_AfroFade_Black.MI_AfroFade_Black",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 1,
+      "hiddenMeshes": 0,
+      "groupVisible": true
+     },
+     {
+      "id": "head-face-01-base",
+      "sourceAssembly": false,
+      "sourceSkinPair": true,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+        "materials": [
+         {
+          "name": "head-face-01-afrofade:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_Head.MI_Head_Face_01_Base_Head",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "teeth-headmaster:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/HeadMaster/Base/MI_Head_HeadMaster_Base_Teeth.MI_Head_HeadMaster_Base_Teeth",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "eyes-face-01:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_Eyes.MI_Head_Face_01_Base_Eyes",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "eyes-face-01:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_Eyes.MI_Head_Face_01_Base_Eyes",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "MI_Head_Face_01_Base_EyeShell",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_EyeShell.MI_Head_Face_01_Base_EyeShell",
+          "reconstructed": false,
+          "visible": false
+         },
+         {
+          "name": "eyelashes-face-01:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_Eyelashes.MI_Head_Face_01_Base_Eyelashes",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "MI_Head_Face_01_Base_EyeEdge",
+          "sourceMaterial": "/Game/Discovery/Characters/Heads/Face_01/Base/MI_Head_Face_01_Base_EyeEdge.MI_Head_Face_01_Base_EyeEdge",
+          "reconstructed": false,
+          "visible": false
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 5,
+      "hiddenMeshes": 2,
+      "groupVisible": true
+     },
+     {
+      "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+      "sourceAssembly": true,
+      "sourceSkinPair": false,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Streetwear/Assets/VaporWaveGlasses/SM_VaporWaveGlasses.SM_VaporWaveGlasses",
+        "materials": [
+         {
+          "name": "mi-character-panninghologram-vaporwavevisor-cns:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Streetwear/Assets/VaporWaveGlasses/Skins/Plastic_CNSS7SP/MI_Character_PanningHologram_VaporWaveVisor_CNS.MI_Character_PanningHologram_VaporWaveVisor_CNS",
+          "reconstructed": true,
+          "visible": true
+         },
+         {
+          "name": "mi-streetwear-vaporwaveglasses-plastic-cnss7sp:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Streetwear/Assets/VaporWaveGlasses/Skins/Plastic_CNSS7SP/MI_Streetwear_VaporWaveGlasses_Plastic_CNSS7SP.MI_Streetwear_VaporWaveGlasses_Plastic_CNSS7SP",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 2,
+      "hiddenMeshes": 0,
+      "groupVisible": true
+     },
+     {
+      "id": "casual-basictshirt-cotton-alfaacta",
+      "sourceAssembly": true,
+      "sourceSkinPair": false,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Casual/Assets/BasicTshirt/SK_Casual_BasicTshirt_M.SK_Casual_BasicTshirt_M",
+        "materials": [
+         {
+          "name": "casual-basictshirt-cotton-alfaacta-63a5c1e1e1:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Casual/Assets/BasicTshirt/Skins/Cotton_AlfaActa/MI_Casual_BasicTshirt_Cotton_AlfaActa.MI_Casual_BasicTshirt_Cotton_AlfaActa",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 1,
+      "hiddenMeshes": 0,
+      "groupVisible": true
+     },
+     {
+      "id": "casual-loosejeans-denim-darkblue",
+      "sourceAssembly": true,
+      "sourceSkinPair": false,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Casual/Assets/LooseJeans/SK_Casual_LooseJeans_M.SK_Casual_LooseJeans_M",
+        "materials": [
+         {
+          "name": "casual-loosejeans-denim-darkblue:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Casual/Assets/LooseJeans/Skins/Denim_DarkBlue/MI_Casual_LooseJeans_Denim_DarkBlue.MI_Casual_LooseJeans_Denim_DarkBlue",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 1,
+      "hiddenMeshes": 0,
+      "groupVisible": true
+     },
+     {
+      "id": "casual-tallsneakers-canvas",
+      "sourceAssembly": true,
+      "sourceSkinPair": false,
+      "parts": [
+       {
+        "sourceIndex": 0,
+        "sourceMesh": "/Game/Discovery/Characters/Casual/Assets/TallSneakers/SK_Casual_TallSneakers_M.SK_Casual_TallSneakers_M",
+        "materials": [
+         {
+          "name": "casual-tallsneakers-canvas:recovered",
+          "sourceMaterial": "/Game/Discovery/Characters/Casual/Assets/TallSneakers/Skins/Canvas/MI_Casual_TallSneakers_Canvas.MI_Casual_TallSneakers_Canvas",
+          "reconstructed": true,
+          "visible": true
+         }
+        ]
+       }
+      ],
+      "visibleMeshes": 1,
+      "hiddenMeshes": 0,
+      "groupVisible": true
+     }
+    ],
+    "other": [
+     {
+      "visibleMeshes": 1,
+      "groupVisible": true
+     }
+    ]
+   }
+  }
+ ],
+ "seconds": 38.339
+}

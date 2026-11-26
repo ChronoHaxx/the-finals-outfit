@@ -1,0 +1,14 @@
+{
+  "at": "2026-11-26T12:47:36.126702+00:00",
+  "added": 2,
+  "advertisedBefore": 2953,
+  "advertised": 2955,
+  "humanAcceptance": "pending",
+  "published": false,
+  "rollback": "_docs/goal-100-2026-10-11/wave137-w177-panning/activation-before",
+  "hashes": {
+    "assets.json": "1d778be378326c344c63f21a48a0d5c23f9526ba3981216d488f251f16e629a2",
+    "skin-pairs.json": "f15a73a2a5dfc2f61c3bbd20bf1ea4b9c9e735a64f856ba12310f1e50e1c00a4",
+    "supported-items.json": "54e8789c8ab1cc4bc16465ba02b7833887158b99a43327d22e406d990ade1d8b"
+  }
+}

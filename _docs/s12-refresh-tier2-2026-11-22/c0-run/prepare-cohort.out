@@ -1,0 +1,9 @@
+{
+ "batch": "s12-c0",
+ "rows": 43,
+ "withParameters": [],
+ "batchIds": 43,
+ "rebindKeptMaterials": 43,
+ "activeAssetsSha256": "d750614d23b33b80d96472d262cbb264a4ef64819da0e5ddb2c7bd9c5149c7b5",
+ "skipped": []
+}
