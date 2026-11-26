@@ -1,0 +1,6 @@
+{"base": "https://chronohaxx.github.io/the-finals-outfit",
+ "cases": [
+  {"name": "holster_masc_idle", "codes": ["a1b6"], "bt": "", "view": "0.75_0.8_1.55_0_0.68_0", "emote": "outfit-idle", "t": "1", "deformOff": true},
+  {"name": "steamskirt_masc_idle", "codes": ["a1ed"], "bt": "", "view": "0.75_0.8_1.55_0_0.68_0", "emote": "outfit-idle", "t": "1", "deformOff": true},
+  {"name": "holster_masc_squat", "codes": ["a1b6"], "bt": "", "view": "1.1_0.7_1.7_0_0.38_0", "emote": "frog", "t": "3.6", "deformOff": true}
+ ]}

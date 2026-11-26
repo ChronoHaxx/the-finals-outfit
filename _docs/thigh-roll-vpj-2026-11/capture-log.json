@@ -1,0 +1,470 @@
+{
+ "base": "https://chronohaxx.github.io/the-finals-outfit",
+ "at": "2026-11-26T22:44:55.589Z",
+ "results": [
+  {
+   "name": "shorts_masc_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a170&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 10724,
+   "parts": [
+    "/Game/Discovery/Characters/Casual/Assets/BasicShorts/SK_Casual_BasicShorts_M.SK_Casual_BasicShorts_M",
+    "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_M.SK_Ballerina_BallerinaTights_M"
+   ],
+   "log": [],
+   "ownbind": {
+    "replaced": [
+     "SK_Casual_BasicShorts_M:knee_vpj_l",
+     "SK_Casual_BasicShorts_M:thigh_roll_vpj_l",
+     "SK_Casual_BasicShorts_M:thigh_roll_vpj_r",
+     "SK_Casual_BasicShorts_M:thigh_volume_vpj_r"
+    ]
+   }
+  },
+  {
+   "name": "shorts_masc_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a170&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 8586,
+   "parts": [
+    "/Game/Discovery/Characters/Casual/Assets/BasicShorts/SK_Casual_BasicShorts_M.SK_Casual_BasicShorts_M",
+    "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_M.SK_Ballerina_BallerinaTights_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "shorts_masc_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a170&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8591,
+   "parts": [
+    "/Game/Discovery/Characters/Casual/Assets/BasicShorts/SK_Casual_BasicShorts_M.SK_Casual_BasicShorts_M",
+    "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_M.SK_Ballerina_BallerinaTights_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "holster_masc_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1b6&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 9661,
+   "parts": [
+    "/Game/Discovery/Characters/Military/Assets/DoubleHolsterPants/SK_Military_DoubleHolsterPants_M.SK_Military_DoubleHolsterPants_M"
+   ],
+   "log": [],
+   "ownbind": {
+    "replaced": [
+     "SK_Military_DoubleHolsterPants_M:knee_vpj_l",
+     "SK_Military_DoubleHolsterPants_M:thigh_roll_vpj_l",
+     "SK_Military_DoubleHolsterPants_M:knee_vpj_r",
+     "SK_Military_DoubleHolsterPants_M:thigh_roll_vpj_r",
+     "SK_Military_DoubleHolsterPants_M:thigh_volume_vpj_r"
+    ]
+   }
+  },
+  {
+   "name": "holster_masc_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1b6&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 8955,
+   "parts": [
+    "/Game/Discovery/Characters/Military/Assets/DoubleHolsterPants/SK_Military_DoubleHolsterPants_M.SK_Military_DoubleHolsterPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "holster_masc_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1b6&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 9027,
+   "parts": [
+    "/Game/Discovery/Characters/Military/Assets/DoubleHolsterPants/SK_Military_DoubleHolsterPants_M.SK_Military_DoubleHolsterPants_M"
+   ],
+   "log": [],
+   "ownbind": {
+    "replaced": [
+     "SK_Military_DoubleHolsterPants_M:knee_vpj_l",
+     "SK_Military_DoubleHolsterPants_M:thigh_roll_vpj_l",
+     "SK_Military_DoubleHolsterPants_M:knee_vpj_r",
+     "SK_Military_DoubleHolsterPants_M:thigh_roll_vpj_r",
+     "SK_Military_DoubleHolsterPants_M:thigh_volume_vpj_r"
+    ]
+   }
+  },
+  {
+   "name": "ski_masc_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1hq&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 9165,
+   "parts": [
+    "/Game/Discovery/Characters/Winter/Assets/SkiPants/SK_Winter_SkiPants_M.SK_Winter_SkiPants_M"
+   ],
+   "log": [],
+   "ownbind": {
+    "replaced": [
+     "SK_Winter_SkiPants_M:knee_vpj_l",
+     "SK_Winter_SkiPants_M:thigh_roll_vpj_l",
+     "SK_Winter_SkiPants_M:knee_vpj_r",
+     "SK_Winter_SkiPants_M:thigh_roll_vpj_r",
+     "SK_Winter_SkiPants_M:thigh_volume_vpj_r"
+    ]
+   }
+  },
+  {
+   "name": "ski_masc_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1hq&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 8690,
+   "parts": [
+    "/Game/Discovery/Characters/Winter/Assets/SkiPants/SK_Winter_SkiPants_M.SK_Winter_SkiPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "ski_masc_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1hq&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8307,
+   "parts": [
+    "/Game/Discovery/Characters/Winter/Assets/SkiPants/SK_Winter_SkiPants_M.SK_Winter_SkiPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "tracksuit_masc_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1h8&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 8892,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitPants/SK_Streetwear_TrackSuitPants_M.SK_Streetwear_TrackSuitPants_M"
+   ],
+   "log": [],
+   "ownbind": {
+    "replaced": [
+     "SK_Streetwear_TrackSuitPants_M:knee_vpj_l",
+     "SK_Streetwear_TrackSuitPants_M:thigh_roll_vpj_l",
+     "SK_Streetwear_TrackSuitPants_M:knee_vpj_r",
+     "SK_Streetwear_TrackSuitPants_M:thigh_roll_vpj_r",
+     "SK_Streetwear_TrackSuitPants_M:thigh_volume_vpj_r"
+    ]
+   }
+  },
+  {
+   "name": "tracksuit_masc_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1h8&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 8890,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitPants/SK_Streetwear_TrackSuitPants_M.SK_Streetwear_TrackSuitPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "tracksuit_masc_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1h8&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8549,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitPants/SK_Streetwear_TrackSuitPants_M.SK_Streetwear_TrackSuitPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "pleated_masc_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1fr&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 9008,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PleatedSkirt/SK_Streetwear_PleatedSkirt_M.SK_Streetwear_PleatedSkirt_M"
+   ],
+   "log": [],
+   "ownbind": {
+    "replaced": [
+     "SK_Streetwear_PleatedSkirt_M:knee_vpj_l",
+     "SK_Streetwear_PleatedSkirt_M:thigh_roll_vpj_l",
+     "SK_Streetwear_PleatedSkirt_M:knee_vpj_r",
+     "SK_Streetwear_PleatedSkirt_M:thigh_roll_vpj_r",
+     "SK_Streetwear_PleatedSkirt_M:thigh_volume_vpj_r"
+    ]
+   }
+  },
+  {
+   "name": "pleated_masc_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1fr&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 8372,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PleatedSkirt/SK_Streetwear_PleatedSkirt_M.SK_Streetwear_PleatedSkirt_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "pleated_masc_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1fr&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8421,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PleatedSkirt/SK_Streetwear_PleatedSkirt_M.SK_Streetwear_PleatedSkirt_M"
+   ],
+   "log": [],
+   "ownbind": {
+    "replaced": [
+     "SK_Streetwear_PleatedSkirt_M:knee_vpj_l",
+     "SK_Streetwear_PleatedSkirt_M:thigh_roll_vpj_l",
+     "SK_Streetwear_PleatedSkirt_M:knee_vpj_r",
+     "SK_Streetwear_PleatedSkirt_M:thigh_roll_vpj_r",
+     "SK_Streetwear_PleatedSkirt_M:thigh_volume_vpj_r"
+    ]
+   }
+  },
+  {
+   "name": "steamskirt_masc_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1ed&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 11473,
+   "parts": [
+    "/Game/Discovery/Characters/Steampunk/Assets/Skirt/SK_Steampunk_Skirt_M.SK_Steampunk_Skirt_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessLegCoversUltimate/SK_Medieval_ElfPrincessLegCoversUltimate_M.SK_Medieval_ElfPrincessLegCoversUltimate_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessShorts/SK_Medieval_ElfPrincessShorts_M.SK_Medieval_ElfPrincessShorts_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfSkirtBelt/SK_Medieval_ElfSkirtBelt_M.SK_Medieval_ElfSkirtBelt_M"
+   ],
+   "log": [],
+   "ownbind": {
+    "replaced": [
+     "SK_Steampunk_Skirt_M:knee_vpj_l",
+     "SK_Steampunk_Skirt_M:thigh_roll_vpj_l",
+     "SK_Steampunk_Skirt_M:knee_vpj_r",
+     "SK_Steampunk_Skirt_M:thigh_roll_vpj_r",
+     "SK_Steampunk_Skirt_M:thigh_volume_vpj_r"
+    ]
+   }
+  },
+  {
+   "name": "steamskirt_masc_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1ed&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 9494,
+   "parts": [
+    "/Game/Discovery/Characters/Steampunk/Assets/Skirt/SK_Steampunk_Skirt_M.SK_Steampunk_Skirt_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessLegCoversUltimate/SK_Medieval_ElfPrincessLegCoversUltimate_M.SK_Medieval_ElfPrincessLegCoversUltimate_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessShorts/SK_Medieval_ElfPrincessShorts_M.SK_Medieval_ElfPrincessShorts_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfSkirtBelt/SK_Medieval_ElfSkirtBelt_M.SK_Medieval_ElfSkirtBelt_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "steamskirt_masc_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1ed&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8898,
+   "parts": [
+    "/Game/Discovery/Characters/Steampunk/Assets/Skirt/SK_Steampunk_Skirt_M.SK_Steampunk_Skirt_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessLegCoversUltimate/SK_Medieval_ElfPrincessLegCoversUltimate_M.SK_Medieval_ElfPrincessLegCoversUltimate_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessShorts/SK_Medieval_ElfPrincessShorts_M.SK_Medieval_ElfPrincessShorts_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfSkirtBelt/SK_Medieval_ElfSkirtBelt_M.SK_Medieval_ElfSkirtBelt_M"
+   ],
+   "log": [],
+   "ownbind": {
+    "replaced": [
+     "SK_Steampunk_Skirt_M:knee_vpj_l",
+     "SK_Steampunk_Skirt_M:thigh_roll_vpj_l",
+     "SK_Steampunk_Skirt_M:knee_vpj_r",
+     "SK_Steampunk_Skirt_M:thigh_roll_vpj_r",
+     "SK_Steampunk_Skirt_M:thigh_volume_vpj_r"
+    ]
+   }
+  },
+  {
+   "name": "shorts_andro_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a170&bt=a&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 8969,
+   "parts": [
+    "/Game/Discovery/Characters/Casual/Assets/BasicShorts/SK_Casual_BasicShorts_M.SK_Casual_BasicShorts_M",
+    "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_M.SK_Ballerina_BallerinaTights_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "shorts_andro_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a170&bt=a&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 8737,
+   "parts": [
+    "/Game/Discovery/Characters/Casual/Assets/BasicShorts/SK_Casual_BasicShorts_M.SK_Casual_BasicShorts_M",
+    "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_M.SK_Ballerina_BallerinaTights_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "shorts_andro_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a170&bt=a&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8348,
+   "parts": [
+    "/Game/Discovery/Characters/Casual/Assets/BasicShorts/SK_Casual_BasicShorts_M.SK_Casual_BasicShorts_M",
+    "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_M.SK_Ballerina_BallerinaTights_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "holster_andro_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1b6&bt=a&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 8804,
+   "parts": [
+    "/Game/Discovery/Characters/Military/Assets/DoubleHolsterPants/SK_Military_DoubleHolsterPants_M.SK_Military_DoubleHolsterPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "holster_andro_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1b6&bt=a&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 8841,
+   "parts": [
+    "/Game/Discovery/Characters/Military/Assets/DoubleHolsterPants/SK_Military_DoubleHolsterPants_M.SK_Military_DoubleHolsterPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "holster_andro_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1b6&bt=a&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8701,
+   "parts": [
+    "/Game/Discovery/Characters/Military/Assets/DoubleHolsterPants/SK_Military_DoubleHolsterPants_M.SK_Military_DoubleHolsterPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "ski_andro_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1hq&bt=a&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 8566,
+   "parts": [
+    "/Game/Discovery/Characters/Winter/Assets/SkiPants/SK_Winter_SkiPants_M.SK_Winter_SkiPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "ski_andro_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1hq&bt=a&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 8609,
+   "parts": [
+    "/Game/Discovery/Characters/Winter/Assets/SkiPants/SK_Winter_SkiPants_M.SK_Winter_SkiPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "ski_andro_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1hq&bt=a&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8376,
+   "parts": [
+    "/Game/Discovery/Characters/Winter/Assets/SkiPants/SK_Winter_SkiPants_M.SK_Winter_SkiPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "tracksuit_andro_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1h8&bt=a&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 8481,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitPants/SK_Streetwear_TrackSuitPants_M.SK_Streetwear_TrackSuitPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "tracksuit_andro_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1h8&bt=a&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 8598,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitPants/SK_Streetwear_TrackSuitPants_M.SK_Streetwear_TrackSuitPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "tracksuit_andro_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1h8&bt=a&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8627,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitPants/SK_Streetwear_TrackSuitPants_M.SK_Streetwear_TrackSuitPants_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "pleated_andro_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1fr&bt=a&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 8745,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PleatedSkirt/SK_Streetwear_PleatedSkirt_M.SK_Streetwear_PleatedSkirt_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "pleated_andro_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1fr&bt=a&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 8503,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PleatedSkirt/SK_Streetwear_PleatedSkirt_M.SK_Streetwear_PleatedSkirt_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "pleated_andro_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1fr&bt=a&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8626,
+   "parts": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PleatedSkirt/SK_Streetwear_PleatedSkirt_M.SK_Streetwear_PleatedSkirt_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "steamskirt_andro_still",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1ed&bt=a&view=0.75_0.8_1.55_0_0.68_0",
+   "idle": true,
+   "ms": 8787,
+   "parts": [
+    "/Game/Discovery/Characters/Steampunk/Assets/Skirt/SK_Steampunk_Skirt_M.SK_Steampunk_Skirt_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessLegCoversUltimate/SK_Medieval_ElfPrincessLegCoversUltimate_M.SK_Medieval_ElfPrincessLegCoversUltimate_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessShorts/SK_Medieval_ElfPrincessShorts_M.SK_Medieval_ElfPrincessShorts_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfSkirtBelt/SK_Medieval_ElfSkirtBelt_M.SK_Medieval_ElfSkirtBelt_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "steamskirt_andro_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1ed&bt=a&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 9133,
+   "parts": [
+    "/Game/Discovery/Characters/Steampunk/Assets/Skirt/SK_Steampunk_Skirt_M.SK_Steampunk_Skirt_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessLegCoversUltimate/SK_Medieval_ElfPrincessLegCoversUltimate_M.SK_Medieval_ElfPrincessLegCoversUltimate_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessShorts/SK_Medieval_ElfPrincessShorts_M.SK_Medieval_ElfPrincessShorts_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfSkirtBelt/SK_Medieval_ElfSkirtBelt_M.SK_Medieval_ElfSkirtBelt_M"
+   ],
+   "log": []
+  },
+  {
+   "name": "steamskirt_andro_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1ed&bt=a&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8882,
+   "parts": [
+    "/Game/Discovery/Characters/Steampunk/Assets/Skirt/SK_Steampunk_Skirt_M.SK_Steampunk_Skirt_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessLegCoversUltimate/SK_Medieval_ElfPrincessLegCoversUltimate_M.SK_Medieval_ElfPrincessLegCoversUltimate_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessShorts/SK_Medieval_ElfPrincessShorts_M.SK_Medieval_ElfPrincessShorts_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfSkirtBelt/SK_Medieval_ElfSkirtBelt_M.SK_Medieval_ElfSkirtBelt_M"
+   ],
+   "log": []
+  }
+ ]
+}

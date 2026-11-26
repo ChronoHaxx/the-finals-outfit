@@ -1,0 +1,93 @@
+{
+ "base": "https://chronohaxx.github.io/the-finals-outfit",
+ "at": "2026-11-26T22:45:49.320Z",
+ "results": [
+  {
+   "name": "holster_masc_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1b6&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 9917,
+   "parts": [
+    "/Game/Discovery/Characters/Military/Assets/DoubleHolsterPants/SK_Military_DoubleHolsterPants_M.SK_Military_DoubleHolsterPants_M"
+   ],
+   "log": [],
+   "rollAngles": {
+    "deformOn": {
+     "thigh_roll_vpj_l": 32.36,
+     "thigh_roll_vpj_r": 15.19,
+     "knee_vpj_l": 0,
+     "knee_vpj_r": 0,
+     "thigh_front_vpj_l": 11.57,
+     "thigh_back_vpj_l": 6.57
+    },
+    "deformOff": {
+     "thigh_roll_vpj_l": 0.02,
+     "thigh_roll_vpj_r": 0,
+     "knee_vpj_l": 0,
+     "knee_vpj_r": 0,
+     "thigh_front_vpj_l": 0.02,
+     "thigh_back_vpj_l": 0
+    }
+   }
+  },
+  {
+   "name": "steamskirt_masc_idle",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1ed&view=0.75_0.8_1.55_0_0.68_0&emote=outfit-idle&t=1&paused=1",
+   "idle": true,
+   "ms": 11079,
+   "parts": [
+    "/Game/Discovery/Characters/Steampunk/Assets/Skirt/SK_Steampunk_Skirt_M.SK_Steampunk_Skirt_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessLegCoversUltimate/SK_Medieval_ElfPrincessLegCoversUltimate_M.SK_Medieval_ElfPrincessLegCoversUltimate_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfPrincessShorts/SK_Medieval_ElfPrincessShorts_M.SK_Medieval_ElfPrincessShorts_M",
+    "/Game/Discovery/Characters/Medieval/Assets/ElfSkirtBelt/SK_Medieval_ElfSkirtBelt_M.SK_Medieval_ElfSkirtBelt_M"
+   ],
+   "log": [],
+   "rollAngles": {
+    "deformOn": {
+     "thigh_roll_vpj_l": 32.36,
+     "thigh_roll_vpj_r": 15.19,
+     "knee_vpj_l": 0,
+     "knee_vpj_r": 0,
+     "thigh_front_vpj_l": 11.57,
+     "thigh_back_vpj_l": 6.57
+    },
+    "deformOff": {
+     "thigh_roll_vpj_l": 0.02,
+     "thigh_roll_vpj_r": 0,
+     "knee_vpj_l": 0,
+     "knee_vpj_r": 0,
+     "thigh_front_vpj_l": 0.02,
+     "thigh_back_vpj_l": 0
+    }
+   }
+  },
+  {
+   "name": "holster_masc_squat",
+   "url": "https://chronohaxx.github.io/the-finals-outfit/?reconstructed=1#/?o=2.a1b6&view=1.1_0.7_1.7_0_0.38_0&emote=frog&t=3.6&paused=1",
+   "idle": true,
+   "ms": 8734,
+   "parts": [
+    "/Game/Discovery/Characters/Military/Assets/DoubleHolsterPants/SK_Military_DoubleHolsterPants_M.SK_Military_DoubleHolsterPants_M"
+   ],
+   "log": [],
+   "rollAngles": {
+    "deformOn": {
+     "thigh_roll_vpj_l": 7.42,
+     "thigh_roll_vpj_r": 10.56,
+     "knee_vpj_l": 0,
+     "knee_vpj_r": 0,
+     "thigh_front_vpj_l": 90.52,
+     "thigh_back_vpj_l": 24.67
+    },
+    "deformOff": {
+     "thigh_roll_vpj_l": 0.02,
+     "thigh_roll_vpj_r": 0,
+     "knee_vpj_l": 0,
+     "knee_vpj_r": 0,
+     "thigh_front_vpj_l": 0.02,
+     "thigh_back_vpj_l": 0
+    }
+   }
+  }
+ ]
+}
