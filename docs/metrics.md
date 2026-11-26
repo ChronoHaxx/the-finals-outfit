@@ -19,8 +19,16 @@ counts that are only minimums. Where other events were sampled, the snapshot say
 ## Metrics snapshot
 
 No snapshot yet. Events started on 26 Nov 2026 at 16:37 UTC. Until the collector gave page loads an index of their
-own (date in `workers/usage-counter/README.md`, "Sampling"), their rows could be sampled, so visitor counts before
-then are minimums, and the script refuses any period whose page loads were sampled (26 Nov was, for both apps). Start
-the first snapshot on or after that date. Agent test
-rows are in the dataset from 23 Nov (one) and 26 Nov 16:43–16:44 UTC (five); they cannot be deleted, so leave those
-days out or subtract them. Figures here are copied from the report's output, never estimated.
+own, on 26 Nov 2026 at 23:56:47 UTC (`workers/usage-counter/README.md`, "Sampling"), their rows could be sampled, so
+visitor counts before then are minimums, and the script refuses any period whose page loads were sampled (26 Nov was,
+for both apps). Start the first snapshot on 27 Nov 2026 or later.
+
+Agent test rows are in the dataset and cannot be deleted, so leave those days out or subtract them. All are desktop:
+
+- 23 Nov: one `outfit` `app_loaded` (build `dev`).
+- 26 Nov 16:43–16:44 UTC: five, the post-merge live check. `outfit`: `app_loaded` and `tour_offered`. `wuwa-vr`: two
+  `app_loaded` and one `guide_section_reached`.
+- 26 Nov 23:57–23:58 UTC: five, the check after the visit-index deploy. The same events, with `app_loaded` now under
+  `outfit:app_loaded` and `wuwa-vr:app_loaded`.
+
+Figures here are copied from the report's output, never estimated.

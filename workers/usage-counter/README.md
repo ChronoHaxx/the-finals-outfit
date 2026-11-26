@@ -80,7 +80,9 @@ At first every row used the app's name as its index, so a page load's burst of e
 - **Before the switch, visitor counts are minimums.** The report refuses any period whose page loads were sampled
   (`summarise()` in `scripts/lib/usage-report.mjs`), so report from the switch onward.
 - **Other events can still be sampled.** The report then prints them as weighted estimates and says so.
-- **Deployed:** not yet. This line gets the deploy's UTC time and version when the change goes live.
+- **Deployed:** 26 Nov 2026 at 23:56:47 UTC, version `e123f942-b098-401f-b420-baf0eb87e4c7` (from commit `95e0037`,
+  PR #121). 27 Nov 2026 is the first full UTC day with page loads on their own index. A check right after the deploy
+  wrote each `app_loaded` under `outfit:app_loaded` or `wuwa-vr:app_loaded` with `_sample_interval` 1.
 
 ## Adding an app
 
