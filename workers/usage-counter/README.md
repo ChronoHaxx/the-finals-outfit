@@ -41,7 +41,7 @@ Every app's rows have the same layout, so one query shape fits all:
 
 | Column | Holds |
 | --- | --- |
-| `index1` | app |
+| `index1` | app; for the app's `visitorEvent` row, `<app>:<visitorEvent>` (for example `outfit:app_loaded`) |
 | `blob1` | event |
 | `blob2` | form factor: `phone`, `tablet`, `desktop` |
 | `blob3` | build (7-character commit, or `dev`) |
@@ -50,16 +50,37 @@ Every app's rows have the same layout, so one query shape fits all:
 | `double1` | 1 |
 
 Count with `SUM(_sample_interval)`, never `count()`: Analytics Engine samples heavy traffic and records how much.
+Read an app with both its index values, `IN ('<app>', '<app>:app_loaded')`. Each row is written once, under one of
+them, so nothing is counted twice, and periods before and after the visit index read the same way.
 
 ```sql
 -- Page loads and daily visitors for one app
 SELECT toStartOfInterval(timestamp, INTERVAL '1' DAY) AS day,
        SUM(_sample_interval) AS page_loads, count(DISTINCT blob4) AS visitors
-FROM usage_events WHERE index1 = 'outfit' AND blob1 = 'app_loaded' AND timestamp > NOW() - INTERVAL '30' DAY
+FROM usage_events WHERE index1 IN ('outfit', 'outfit:app_loaded') AND blob1 = 'app_loaded'
+  AND timestamp > NOW() - INTERVAL '30' DAY
 GROUP BY day ORDER BY day
 ```
 
 `scripts/usage-report.mjs` runs the monthly queries and prints the metrics snapshot.
+
+## Sampling
+
+Analytics Engine samples at write time, separately for each index value, and is quickest to when one request writes
+many points to the same one ([sampling](https://developers.cloudflare.com/analytics/analytics-engine/sampling/),
+[FAQ](https://developers.cloudflare.com/analytics/faq/wae-faqs/)). A sampled row stands for `_sample_interval` rows,
+so weighted sums stay fair estimates. A distinct count does not: a page load whose row was dropped takes its visitor
+hash with it.
+
+At first every row used the app's name as its index, so a page load's burst of exposures could sample away its
+`app_loaded` row. On 26 Nov 2026, with a few dozen rows, the outfit builder's only stored `app_loaded` row stood for
+4 page loads, and WuWa VR's for up to 2. Since then each app's `visitorEvent` row is written under its own index
+(`visitIndex()` in `src/index.ts`), one row per page load, never in a crowd.
+
+- **Before the switch, visitor counts are minimums.** The report refuses any period whose page loads were sampled
+  (`summarise()` in `scripts/lib/usage-report.mjs`), so report from the switch onward.
+- **Other events can still be sampled.** The report then prints them as weighted estimates and says so.
+- **Deployed:** not yet. This line gets the deploy's UTC time and version when the change goes live.
 
 ## Adding an app
 
@@ -67,7 +88,9 @@ GROUP BY day ORDER BY day
    first; `null` if its privacy promise rules out any visitor hash, so it counts page loads only), `envelope` (`"full"` or `"minimal"`), and its events, each with its properties in column order. Put
    properties every event shares (such as `page` and `lang`) first, so they land in the same columns.
    Use the shared naming scheme: `object_action`, snake_case, no app name in the event.
-2. Add a test, redeploy, then ship the app's sender. Its batches must use the same envelope.
+2. Add a test, redeploy, then ship the app's sender. Its batches must use the same envelope. The report names one
+   visitor event, `app_loaded`, for every app; a test fails if an app's `visitorEvent` differs, because the report
+   would then miss its page loads.
 
 ## Deploy (account-side; the maintainer runs these)
 

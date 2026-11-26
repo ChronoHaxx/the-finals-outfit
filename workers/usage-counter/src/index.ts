@@ -71,11 +71,19 @@ export async function visitorHash(salt: string, app: string, ip: string, userAge
   return hex(digest).slice(0, 16);
 }
 
+/** The index of an app's visitor event, e.g. "outfit:app_loaded". Analytics Engine samples at write time per index
+ *  value, and is quickest to when one request writes many points to the same one. Before this index every row used the
+ *  app's name, so a page load's burst of exposures could sample away its app_loaded row, and its visitor hash with it
+ *  (README.md, "Sampling", has the date it changed). With an index of its own, the one visitor row per page load is
+ *  never in a crowd. */
+export const visitIndex = (app: string, visitorEvent: string) => `${app}:${visitorEvent}`;
+
 /** One dataset row. Fixed columns, so every app's rows query the same way:
- *  index1 app · blob1 event · blob2 form factor · blob3 build (both empty for a "minimal" app) · blob4 visitor (the
- *  app's visitor event only) · blob5-8 properties. */
-export function row(envelope: Envelope, event: CheckedEvent, visitor: string): DataPoint {
-  return { indexes: [envelope.app], blobs: [event.event, envelope.form_factor, envelope.build, visitor, ...event.values], doubles: [1] };
+ *  index1 app, or visitIndex() for the app's visitor event · blob1 event · blob2 form factor · blob3 build (both empty
+ *  for a "minimal" app) · blob4 visitor (the app's visitor event only) · blob5-8 properties. */
+export function row(envelope: Envelope, event: CheckedEvent, visitor: string, visit = false): DataPoint {
+  return { indexes: [visit ? visitIndex(envelope.app, event.event) : envelope.app],
+    blobs: [event.event, envelope.form_factor, envelope.build, visitor, ...event.values], doubles: [1] };
 }
 
 const empty = (status: number) => new Response(null, { status, headers: { "Cache-Control": "no-store" } });
@@ -106,7 +114,10 @@ export async function collect(request: Request, env: Env, now = Date.now()): Pro
   let visitor = "";
   if (visitorEvent && checked.some(e => e.event === visitorEvent) && ip)
     visitor = await visitorHash(await saltFor(env, utcDay(now)), envelope.app, ip, userAgent);
-  for (const event of checked) env.EVENTS.writeDataPoint(row(envelope, event, event.event === visitorEvent ? visitor : ""));
+  for (const event of checked) {
+    const visit = event.event === visitorEvent;
+    env.EVENTS.writeDataPoint(row(envelope, event, visit ? visitor : "", visit));
+  }
   return empty(204);
 }
 

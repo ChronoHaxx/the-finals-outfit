@@ -13,9 +13,14 @@ CF_ACCOUNT_ID=... CF_ANALYTICS_TOKEN=... node --import tsx scripts/usage-report.
 ```
 
 The token needs **Account Analytics: Read** only and stays in your shell. Paste the output under "Metrics snapshot"
-below, newest first, unedited. The script refuses a sampled period rather than print unreliable visitor counts.
+below, newest first, unedited. The script refuses a period whose page loads were sampled rather than print visitor
+counts that are only minimums. Where other events were sampled, the snapshot says those figures are weighted estimates.
 
 ## Metrics snapshot
 
-No data yet. Events start once the collector is deployed and `EVENTS_URL` is set in
-`.github/workflows/deploy.yml`. Figures here are copied from the report's output, never estimated.
+No snapshot yet. Events started on 26 Nov 2026 at 16:37 UTC. Until the collector gave page loads an index of their
+own (date in `workers/usage-counter/README.md`, "Sampling"), their rows could be sampled, so visitor counts before
+then are minimums, and the script refuses any period whose page loads were sampled (26 Nov was, for both apps). Start
+the first snapshot on or after that date. Agent test
+rows are in the dataset from 23 Nov (one) and 26 Nov 16:43–16:44 UTC (five); they cannot be deleted, so leave those
+days out or subtract them. Figures here are copied from the report's output, never estimated.
