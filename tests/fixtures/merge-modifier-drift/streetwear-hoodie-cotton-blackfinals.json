@@ -1,0 +1,406 @@
+{
+ "$doc": "Real 17 Nov 2026 drift (S12 batch C wave C1, 26 Nov): the stored definition of one Hoodie item and its customization DA properties read from the 17 Nov build with map v1 (s12-definition-drift.py). They differ only by one TagOverride appended to the Hoodie part, matching Customization.Feature.MeshMergeModifiers.",
+ "id": "streetwear-hoodie-cotton-blackfinals",
+ "stored": {
+  "formatVersion": 1,
+  "id": "streetwear-hoodie-cotton-blackfinals",
+  "source": "Discovery/Content/Discovery/Characters/Streetwear/Assets/Hoodie/Skins/Cotton_BlackFinals/DA_Streetwear_Hoodie_Cotton_BlackFinals.uasset",
+  "sourceSha256": "449A1A7769C8E1F8DCF3D7C7EECAA2D02E33A946C9B7A1337DB0A1B1B825A797",
+  "propertiesSha256": "bdef18f2babbf573b4e6a8d768eb460265833ee2f90cd03ea26f913b97a27538",
+  "properties": {
+   "AssetTags": [
+    "Customization.Theme.Streetwear",
+    "Customization.Slot.BodyUpper",
+    "Online.Season.1"
+   ],
+   "VisualParts": [
+    {
+     "StaticMesh": {
+      "AssetPathName": "",
+      "SubPathString": ""
+     },
+     "SkeletalMesh": {
+      "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_M.SK_Streetwear_Hoodie_M",
+      "SubPathString": ""
+     },
+     "Effect": {
+      "AssetPathName": "",
+      "SubPathString": ""
+     },
+     "bVisibleInFirstPerson": true,
+     "bCanBeMerged": true,
+     "bIsHeadMesh": false,
+     "OptionalHeadWrapMesh": {
+      "AssetPathName": "",
+      "SubPathString": ""
+     },
+     "bIsAttached": false,
+     "bAttachToHeadMesh": false,
+     "OptionalAttachmentMesh": {
+      "AssetPathName": "",
+      "SubPathString": ""
+     },
+     "AttachmentSocket": "None",
+     "bLimitMergedLod": false,
+     "MaxMergedLodIndex": 3,
+     "LocalPosition": {
+      "X": 0.0,
+      "Y": 0.0,
+      "Z": 0.0
+     },
+     "LocalRotation": {
+      "Pitch": 0.0,
+      "Yaw": 0.0,
+      "Roll": 0.0
+     },
+     "LocalScale": {
+      "X": 1.0,
+      "Y": 1.0,
+      "Z": 1.0
+     },
+     "TagOverrides": [
+      {
+       "MatchingTags": [
+        "Customization.Archetype.Light"
+       ],
+       "bOffsetTransform": false,
+       "OffsetPosition": {
+        "X": 0.0,
+        "Y": 0.0,
+        "Z": 0.0
+       },
+       "OffsetRotation": {
+        "Pitch": 0.0,
+        "Yaw": 0.0,
+        "Roll": 0.0
+       },
+       "OffsetScale": {
+        "X": 1.0,
+        "Y": 1.0,
+        "Z": 1.0
+       },
+       "bOverrideMesh": true,
+       "ReplacementStaticMesh": {
+        "AssetPathName": "",
+        "SubPathString": ""
+       },
+       "ReplacementSkeletalMesh": {
+        "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_L.SK_Streetwear_Hoodie_L",
+        "SubPathString": ""
+       },
+       "bOverrideEffect": false,
+       "ReplacementEffect": {
+        "AssetPathName": "",
+        "SubPathString": ""
+       },
+       "bOverrideMaterials": false,
+       "MaterialOverrides": [],
+       "bAddLogicModules": false,
+       "LogicModules": [],
+       "OptionalWrapDeformerMeshOverride": {
+        "AssetPathName": "",
+        "SubPathString": ""
+       }
+      },
+      {
+       "MatchingTags": [
+        "Customization.Archetype.Heavy"
+       ],
+       "bOffsetTransform": false,
+       "OffsetPosition": {
+        "X": 0.0,
+        "Y": 0.0,
+        "Z": 0.0
+       },
+       "OffsetRotation": {
+        "Pitch": 0.0,
+        "Yaw": 0.0,
+        "Roll": 0.0
+       },
+       "OffsetScale": {
+        "X": 1.0,
+        "Y": 1.0,
+        "Z": 1.0
+       },
+       "bOverrideMesh": true,
+       "ReplacementStaticMesh": {
+        "AssetPathName": "",
+        "SubPathString": ""
+       },
+       "ReplacementSkeletalMesh": {
+        "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_H.SK_Streetwear_Hoodie_H",
+        "SubPathString": ""
+       },
+       "bOverrideEffect": false,
+       "ReplacementEffect": {
+        "AssetPathName": "",
+        "SubPathString": ""
+       },
+       "bOverrideMaterials": false,
+       "MaterialOverrides": [],
+       "bAddLogicModules": false,
+       "LogicModules": [],
+       "OptionalWrapDeformerMeshOverride": {
+        "AssetPathName": "",
+        "SubPathString": ""
+       }
+      }
+     ],
+     "LogicModules": [],
+     "WrapDeformation": {
+      "bIsWrapDeformed": false,
+      "bIsWrapDeformedByHeadComponent": false,
+      "DisabledByTags": [],
+      "OptionalWrapDeformerMesh": {
+       "AssetPathName": "",
+       "SubPathString": ""
+      }
+     }
+    }
+   ],
+   "MaterialOverrides": [
+    {
+     "Key": "Hoodie",
+     "Value": {
+      "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/Skins/Cotton_BlackFinals/MI_Streetwear_Hoodie_Cotton_BlackFinals.MI_Streetwear_Hoodie_Cotton_BlackFinals",
+      "SubPathString": ""
+     }
+    }
+   ],
+   "Slots": [
+    "EBodySlot::BodyUpper"
+   ],
+   "ActivatesTags": [
+    "Customization.Shape.PushInsideClothes.push_torso",
+    "Customization.Shape.PushInsideClothes.push_upper_sleeves",
+    "Customization.Shape.PushInsideClothes.push_hair_in_back",
+    "Customization.HideMesh.WearingLongJacket"
+   ],
+   "PersistenceDataAsset": {
+    "ObjectName": "PersistenceDataAsset'DA_Persistence_Streetwear_Hoodie_Cotton_BlackFinals'",
+    "ObjectPath": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/Skins/Cotton_BlackFinals/DA_Persistence_Streetwear_Hoodie_Cotton_BlackFinals.0"
+   },
+   "DevelopmentAvailability": "EDevelopmentAvailability::UserFacing",
+   "Rarity": "EItemRarity::Rare"
+  }
+ },
+ "nov17Properties": {
+  "AssetTags": [
+   "Customization.Theme.Streetwear",
+   "Customization.Slot.BodyUpper",
+   "Online.Season.1"
+  ],
+  "VisualParts": [
+   {
+    "StaticMesh": {
+     "AssetPathName": "",
+     "SubPathString": ""
+    },
+    "SkeletalMesh": {
+     "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_M.SK_Streetwear_Hoodie_M",
+     "SubPathString": ""
+    },
+    "Effect": {
+     "AssetPathName": "",
+     "SubPathString": ""
+    },
+    "bVisibleInFirstPerson": true,
+    "bCanBeMerged": true,
+    "bIsHeadMesh": false,
+    "OptionalHeadWrapMesh": {
+     "AssetPathName": "",
+     "SubPathString": ""
+    },
+    "bIsAttached": false,
+    "bAttachToHeadMesh": false,
+    "OptionalAttachmentMesh": {
+     "AssetPathName": "",
+     "SubPathString": ""
+    },
+    "AttachmentSocket": "None",
+    "bLimitMergedLod": false,
+    "MaxMergedLodIndex": 3,
+    "LocalPosition": {
+     "X": 0.0,
+     "Y": 0.0,
+     "Z": 0.0
+    },
+    "LocalRotation": {
+     "Pitch": 0.0,
+     "Yaw": 0.0,
+     "Roll": 0.0
+    },
+    "LocalScale": {
+     "X": 1.0,
+     "Y": 1.0,
+     "Z": 1.0
+    },
+    "TagOverrides": [
+     {
+      "MatchingTags": [
+       "Customization.Archetype.Light"
+      ],
+      "bOffsetTransform": false,
+      "OffsetPosition": {
+       "X": 0.0,
+       "Y": 0.0,
+       "Z": 0.0
+      },
+      "OffsetRotation": {
+       "Pitch": 0.0,
+       "Yaw": 0.0,
+       "Roll": 0.0
+      },
+      "OffsetScale": {
+       "X": 1.0,
+       "Y": 1.0,
+       "Z": 1.0
+      },
+      "bOverrideMesh": true,
+      "ReplacementStaticMesh": {
+       "AssetPathName": "",
+       "SubPathString": ""
+      },
+      "ReplacementSkeletalMesh": {
+       "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_L.SK_Streetwear_Hoodie_L",
+       "SubPathString": ""
+      },
+      "bOverrideEffect": false,
+      "ReplacementEffect": {
+       "AssetPathName": "",
+       "SubPathString": ""
+      },
+      "bOverrideMaterials": false,
+      "MaterialOverrides": [],
+      "bAddLogicModules": false,
+      "LogicModules": [],
+      "OptionalWrapDeformerMeshOverride": {
+       "AssetPathName": "",
+       "SubPathString": ""
+      }
+     },
+     {
+      "MatchingTags": [
+       "Customization.Archetype.Heavy"
+      ],
+      "bOffsetTransform": false,
+      "OffsetPosition": {
+       "X": 0.0,
+       "Y": 0.0,
+       "Z": 0.0
+      },
+      "OffsetRotation": {
+       "Pitch": 0.0,
+       "Yaw": 0.0,
+       "Roll": 0.0
+      },
+      "OffsetScale": {
+       "X": 1.0,
+       "Y": 1.0,
+       "Z": 1.0
+      },
+      "bOverrideMesh": true,
+      "ReplacementStaticMesh": {
+       "AssetPathName": "",
+       "SubPathString": ""
+      },
+      "ReplacementSkeletalMesh": {
+       "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_H.SK_Streetwear_Hoodie_H",
+       "SubPathString": ""
+      },
+      "bOverrideEffect": false,
+      "ReplacementEffect": {
+       "AssetPathName": "",
+       "SubPathString": ""
+      },
+      "bOverrideMaterials": false,
+      "MaterialOverrides": [],
+      "bAddLogicModules": false,
+      "LogicModules": [],
+      "OptionalWrapDeformerMeshOverride": {
+       "AssetPathName": "",
+       "SubPathString": ""
+      }
+     },
+     {
+      "MatchingTags": [
+       "Customization.Feature.MeshMergeModifiers"
+      ],
+      "bOffsetTransform": false,
+      "OffsetPosition": {
+       "X": 0.0,
+       "Y": 0.0,
+       "Z": 0.0
+      },
+      "OffsetRotation": {
+       "Pitch": 0.0,
+       "Yaw": 0.0,
+       "Roll": 0.0
+      },
+      "OffsetScale": {
+       "X": 1.0,
+       "Y": 1.0,
+       "Z": 1.0
+      },
+      "bOverrideMesh": true,
+      "ReplacementStaticMesh": {
+       "AssetPathName": "",
+       "SubPathString": ""
+      },
+      "ReplacementSkeletalMesh": {
+       "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie.SK_Streetwear_Hoodie",
+       "SubPathString": ""
+      },
+      "bOverrideEffect": false,
+      "ReplacementEffect": {
+       "AssetPathName": "",
+       "SubPathString": ""
+      },
+      "bOverrideMaterials": false,
+      "MaterialOverrides": [],
+      "bAddLogicModules": false,
+      "LogicModules": [],
+      "OptionalWrapDeformerMeshOverride": {
+       "AssetPathName": "",
+       "SubPathString": ""
+      }
+     }
+    ],
+    "LogicModules": [],
+    "WrapDeformation": {
+     "bIsWrapDeformed": false,
+     "bIsWrapDeformedByHeadComponent": false,
+     "DisabledByTags": [],
+     "OptionalWrapDeformerMesh": {
+      "AssetPathName": "",
+      "SubPathString": ""
+     }
+    }
+   }
+  ],
+  "MaterialOverrides": [
+   {
+    "Key": "Hoodie",
+    "Value": {
+     "AssetPathName": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/Skins/Cotton_BlackFinals/MI_Streetwear_Hoodie_Cotton_BlackFinals.MI_Streetwear_Hoodie_Cotton_BlackFinals",
+     "SubPathString": ""
+    }
+   }
+  ],
+  "Slots": [
+   "EBodySlot::BodyUpper"
+  ],
+  "ActivatesTags": [
+   "Customization.Shape.PushInsideClothes.push_torso",
+   "Customization.Shape.PushInsideClothes.push_upper_sleeves",
+   "Customization.Shape.PushInsideClothes.push_hair_in_back",
+   "Customization.HideMesh.WearingLongJacket"
+  ],
+  "PersistenceDataAsset": {
+   "ObjectName": "PersistenceDataAsset'DA_Persistence_Streetwear_Hoodie_Cotton_BlackFinals'",
+   "ObjectPath": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/Skins/Cotton_BlackFinals/DA_Persistence_Streetwear_Hoodie_Cotton_BlackFinals.0"
+  },
+  "DevelopmentAvailability": "EDevelopmentAvailability::UserFacing",
+  "Rarity": "EItemRarity::Rare"
+ }
+}
