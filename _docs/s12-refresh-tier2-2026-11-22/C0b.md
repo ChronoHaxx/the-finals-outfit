@@ -180,3 +180,9 @@ Checks:
   `s12t2-c0b/`, the release from the spec's path. Body, materials and skin pairs are the same.
 
 The root still needs step 1: stage the GLB as a new file at the publish-list path (`cff3a74c…`) before the apply.
+
+**Applied 26 Nov** by the main-folder session: active `441eff47…` → **`9e2fe5d3…`**, the sha the patch expected. Its
+index-diff shows only `SK_Casual_TallSneakers_M` (`9998730a` → `cff3a74c`), mask unchanged. App check: 4 shots
+(front, side, back, feet), 0 errors. Record: `c0-run/C0B-APPLY-2026-11-26.md` in the root. Checked from this session:
+the root's `assets.json` is `9e2fe5d3…`, skin pairs `f15a73a2…`, the staged GLB `cff3a74c…`, and the entry's
+`bodyMaskUrl` is unchanged. Next: the L/H session re-proves `TallSneakers_L` (proof 1′).
