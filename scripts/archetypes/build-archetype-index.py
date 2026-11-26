@@ -31,6 +31,18 @@ order and a few quads split along the other diagonal. surface_permuted re-proves
 with the tolerances in SURFACE_PERMUTED; a mesh a side registry names is refused. report.json "proof3Prime" and
 proof3-prime.tsv record every attempt.
 
+The reshaped route (--reshaped NAME[,NAME], approved 26 Nov 2026 for SK_Casual_BasicTshirt_L): a class mesh the game
+authored with its own shape and skin (the Light T-shirt: a lower hem, its own weights) fails proofs 3 and 5, because
+the Medium's body mask was projected from another shape. Only the listed class meshes may take this route, never
+automatically. For them, proof 3 becomes "the materials apply" and proof 5 becomes "its own body mask" (materials_apply
+and the mask record below); proofs 1, 2, 4 and 6, the material slots, the fitting-morph names and the side-registry
+refusal stay. Without --reshaped-masks a row that passes everything else is refused and written to
+reshaped-preview/assets.json, an index for the mask generator only (scripts/shader-probe/build-companion-masks.mjs
+--models-url ... --archetype), never to apply. With --reshaped-masks <that run's derived-coverage.json> and
+--reshaped-mask-check <the same generator's Medium run, which must regenerate the Medium's published mask byte for
+byte> it joins with its own bodyMaskUrl, published beside the meshes under <publish dir>/coverage/. report.json
+"reshaped" and reshaped.tsv record every attempt.
+
 A class mesh joins the index only with proof, never by approximation:
   1. Same build: its Medium sibling's staged GLB is byte-identical (sha256) to the mesh the active index serves, so the
      staged Light/Heavy GLBs come from the same extraction as the live Medium mesh.
@@ -291,6 +303,18 @@ SIDE_REGISTRY_SECTIONS = ("attachmentBody", "attachmentFrames", "glitchOverlayMe
 SIDE_REGISTRY_FILES = ("head-wraps.json", "face-cosmetics.json", "derived-coverage.json")
 # Proof 3 failures that only a reordering can explain; any other problem keeps the row refused without trying 3'.
 PERMUTABLE = ("indices differ", "UVs differ", "skin joints differ")
+# The reshaped route (approved by the coordinator 26 Nov 2026): "the materials apply" in place of proof 3, and the mesh's
+# own body mask in place of proof 5. Positions, triangles and weights are the game's own: recorded, not gated.
+RESHAPED = {
+    "uv0": 1e-6,                # UV0 per matched vertex: the bijection's key, so every texture lands as on Medium
+    "uv": 1e-6,                 # UV sets after UV1
+    "uv1": 1 / 128,             # UV1, as in proof 3' (recorded)
+    "wrongFileCapM": 0.01,      # 1 cm: no vertex further from the class-scaled Medium (a wrong-file guard, not a fit)
+    "jointM": 1e-4,             # weighted joints at the class scale of the Medium skin's (proof 4)
+}
+# What the reshaped route may replace: proof 3's in-order problems, the pure-scale bind and the proof 3' refusal.
+RESHAPED_REPLACES = PERMUTABLE + ("proof 3':",)
+RESHAPED_BIND = "bind is not a pure"
 
 
 def _rotation(t):
@@ -498,6 +522,126 @@ def surface_permuted(medium_path, cls_path, scale, body_bones):
     return True, None, detail
 
 
+def _uv_order(prim, pos):
+    """Vertex order by UV0, then the other UV sets, then position (ties: identical texture coordinates, e.g. mirrored
+    islands, where the pairing cannot change what the materials see)."""
+    keys = [pos[:, 2], pos[:, 1], pos[:, 0]]
+    for uv in reversed(prim["uvs"]):
+        keys += [uv[:, 1], uv[:, 0]]
+    return np.lexsort(keys)
+
+
+def materials_apply(medium_path, cls_path, scale, body_bones):
+    """The reshaped route's surface proof (approved 26 Nov 2026), in place of proof 3 for a listed class mesh the game
+    authored with its own shape and skin: the Medium's materials still apply unchanged when every vertex keeps its
+    texture coordinates. Under a bijection on UV0 (ties broken by the other UV sets, then the class-scaled position):
+      same primitives, vertex counts and material slots in order; UV0 within 1e-6, UV1 within 1/128, other UV sets
+      within 1e-6; every joint the class skin lists is a body-skeleton bone or listed by the Medium skin too (a joint
+      neither is would be grafted at runtime); every weighted class joint is listed by the Medium skin at the class scale
+      (proof 4); no vertex further than 1 cm from the class-scaled Medium (a wrong-file guard).
+    The class mesh's positions, triangles and weights are the game's own: their differences from the class-scaled
+    Medium are recorded (largest and median offset, vertices over 1 mm, triangles not in the Medium's set under the
+    mapping, vertices reweighted by joint name), never gated. Returns (ok, reason, detail)."""
+    T = RESHAPED
+    a, c = mesh_data(medium_path), mesh_data(cls_path)
+    da, dc = skin_detail(medium_path), skin_detail(cls_path)
+    detail = {"uv1MaxDiff": 0.0, "positionMaxM": 0.0, "positionMedianM": 0.0, "verticesOver1mm": 0, "vertices": 0,
+              "triangles": 0, "trianglesNotInMedium": 0, "verticesReweighted": 0}
+
+    def fail(why, **extra):
+        return False, why, {**detail, **extra}
+    pa, pc = a["prims"], c["prims"]
+    if len(pa) != len(pc) or any(len(x["pos"]) != len(y["pos"]) for x, y in zip(pa, pc)):
+        return fail("primitives or vertex counts differ")
+    if [(x["slot"], x["material"]) for x in pa] != [(y["slot"], y["material"]) for y in pc]:
+        return fail("material slots differ")
+    digest, offsets = hashlib.sha256(), []
+    weighted_a, weighted_c = set(), set()
+    for i, (x, y) in enumerate(zip(pa, pc)):
+        if not x["uvs"] or len(x["uvs"]) != len(y["uvs"]) or x["idx"] is None or y["idx"] is None:
+            return fail("UV sets or indices missing or differ in number", primitive=i)
+        med_scaled = x["pos"] * scale
+        perm = np.empty(len(y["pos"]), dtype=np.int64)
+        perm[_uv_order(y, y["pos"])] = _uv_order(x, med_scaled)     # class vertex -> Medium vertex
+        digest.update(perm.astype("<u4").tobytes())
+        for k in range(len(x["uvs"])):
+            d = float(np.abs(y["uvs"][k] - x["uvs"][k][perm]).max())
+            if k == 1:
+                detail["uv1MaxDiff"] = max(detail["uv1MaxDiff"], d)
+            if d > (T["uv0"] if k == 0 else T["uv1"] if k == 1 else T["uv"]):
+                return fail("no vertex bijection on UV0" if k == 0 else f"UV{k} differs under the mapping (max {d:.6f})",
+                            primitive=i)
+        offsets.append(np.linalg.norm(y["pos"] - med_scaled[perm], axis=1))
+        tri_m = Counter(_rotation(t) for t in x["idx"].reshape(-1, 3).astype(np.int64))
+        tri_c = Counter(_rotation(t) for t in perm[y["idx"].reshape(-1, 3).astype(np.int64)])
+        detail["triangles"] += sum(tri_c.values())
+        detail["trianglesNotInMedium"] += sum((tri_c - tri_m).values())
+        wa, wc = _weights_by_name(da, i), _weights_by_name(dc, i)
+        detail["verticesReweighted"] += sum(wc[v] != wa[m] for v, m in enumerate(perm))
+        for e in wa:
+            weighted_a |= set(e)
+        for e in wc:
+            weighted_c |= set(e)
+    off = np.concatenate(offsets)
+    detail.update({"vertices": int(len(off)), "positionMaxM": float(off.max()), "positionMedianM": float(np.median(off)),
+                   "verticesOver1mm": int((off > 1e-3).sum()), "permutationSha256": digest.hexdigest(),
+                   "weightedOnlyMedium": sorted(weighted_a - weighted_c), "weightedOnlyClass": sorted(weighted_c - weighted_a)})
+    if detail["positionMaxM"] > T["wrongFileCapM"]:
+        return fail(f"a vertex is {detail['positionMaxM'] * 100:.2f} cm from the x{scale} Medium (over the 1 cm cap)")
+    ja, jc = a["joints"] or {}, c["joints"] or {}
+    grafted = sorted(n for n in jc if n not in body_bones and n not in ja)
+    if grafted:
+        return fail("joints the class skin lists are neither body-skeleton bones nor listed by the Medium skin",
+                    joints=grafted)
+    unlisted = sorted(n for n in weighted_c if n not in ja or n not in jc)
+    if unlisted:
+        return fail("weighted class joints the Medium skin does not list", joints=unlisted)
+    residual = max((float(np.linalg.norm(jc[n] - scale * ja[n])) for n in weighted_c), default=0.0)
+    detail["jointResidualMaxM"] = residual
+    if residual > T["jointM"]:
+        return fail(f"weighted joints are not at the x{scale} skeleton (max {residual:.5f} m)")
+    return True, None, detail
+
+
+def reshaped_mask(coverage, coverage_dir, check, target, medium_path, cls, cls_sha, class_body_sha, medium_entry,
+                  published_sha):
+    """The body mask a reshaped class mesh brings (approved 26 Nov 2026: "the Medium mask's own policy, and only after
+    the generator reproduces it"). Two runs of build-companion-masks.mjs --models-url: `check`, a Medium run that must
+    regenerate the Medium's published mask byte for byte (published_sha), and `coverage`, the --archetype run, made by
+    the same generator (sha256) with the same method and shared-UV policy, no fitted occlusion. Its one record for this
+    mesh must be projected from this staged GLB (its sha256) onto the class body the index serves (its sha256), in the
+    Medium mask's body UV tiles, with its PNG beside it as recorded. Returns (record, png path, None) or (None, None,
+    reason)."""
+    if coverage.get("formatVersion") != 1 or coverage.get("archetype") != cls:
+        return None, None, f"the mask run is not a {cls} run (archetype {coverage.get('archetype')!r})"
+    if check.get("formatVersion") != 1 or check.get("archetype") is not None:
+        return None, None, "the check run is not a Medium run"
+    if "occlusionPolicy" in coverage or "occlusionPolicy" in check:
+        return None, None, "fitted occlusion is not part of the reshaped route's policy"
+    if (not coverage.get("generatorSha256") or coverage.get("generatorSha256") != check.get("generatorSha256")
+            or coverage.get("method") != check.get("method") or coverage.get("sharedUvPolicy") != check.get("sharedUvPolicy")):
+        return None, None, "the mask and its check were not made by the same generator and policy"
+    checks = [r for r in check.get("records", []) if r.get("source") == medium_path]
+    if published_sha is None:
+        return None, None, "the Medium's published mask is not on disk to check against"
+    if len(checks) != 1 or checks[0].get("sha256") != published_sha:
+        return None, None, "the check run does not reproduce the Medium's published mask"
+    if coverage.get("bodySha256") != class_body_sha:
+        return None, None, f"the mask was projected onto another body ({str(coverage.get('bodySha256'))[:8]})"
+    records = [r for r in coverage.get("records", []) if r.get("source") == target]
+    if len(records) != 1:
+        return None, None, f"the mask run has {len(records)} records for this mesh"
+    record = records[0]
+    if record.get("meshSha256") != cls_sha:
+        return None, None, "the mask was projected from another file of this mesh"
+    if record.get("uvTiles") != medium_entry.get("bodyMaskUvTiles"):
+        return None, None, f"the mask's UV tiles {record.get('uvTiles')} are not the Medium mask's"
+    png = Path(coverage_dir) / record["file"]
+    if not png.is_file() or sha256(png) != record.get("sha256"):
+        return None, None, f"the mask file {record['file']} is missing or not the recorded one"
+    return record, png, None
+
+
 def skeleton_scale(medium_json, cls_json, scale):
     """The class skeleton against Medium: the median translation ratio, the largest translation residual (metres) from
     the exact `scale`, and the largest quaternion component difference."""
@@ -538,7 +682,23 @@ def main():
     # --same-surface-permuted: proof 3' (see surface_permuted) where proof 3 fails only on vertex order. Approved by the
     # coordinator 26 Nov 2026 with the tolerances in SURFACE_PERMUTED.
     ap.add_argument("--same-surface-permuted", action="store_true")
+    # --reshaped NAME[,NAME] (repeatable): class meshes (short names, e.g. SK_Casual_BasicTshirt_L) that may take the
+    # reshaped route (see materials_apply); approved by the coordinator 26 Nov 2026. Never automatic: only listed rows.
+    # --reshaped-masks <derived-coverage.json from build-companion-masks.mjs --archetype>: their own body masks, and
+    # --reshaped-mask-check <derived-coverage.json of the same generator's Medium run>: it must regenerate each listed
+    # row's Medium mask byte for byte, so the class masks were made with the Medium masks' own policy.
+    ap.add_argument("--reshaped", action="append", default=[])
+    ap.add_argument("--reshaped-masks")
+    ap.add_argument("--reshaped-mask-check")
     args = ap.parse_args()
+    reshaped_names = {n.strip() for arg in args.reshaped for n in arg.split(",") if n.strip()}
+    if (args.reshaped_masks or args.reshaped_mask_check) and not reshaped_names:
+        sys.exit("--reshaped-masks and --reshaped-mask-check need --reshaped")
+    if bool(args.reshaped_masks) != bool(args.reshaped_mask_check):
+        sys.exit("--reshaped-masks and --reshaped-mask-check go together")
+    load_json = lambda p: json.loads(Path(p).read_text(encoding="utf-8"))
+    coverage = load_json(args.reshaped_masks) if args.reshaped_masks else None
+    mask_check = load_json(args.reshaped_mask_check) if args.reshaped_mask_check else None
     current = None
     if args.proven:
         proof17 = json.loads(Path(args.proven).read_text(encoding="utf-8"))
@@ -556,7 +716,8 @@ def main():
     skin_pairs = json.loads((index_dir / "skin-pairs.json").read_text(encoding="utf-8"))
     report = {"activeSha256": sha256(index_dir / "assets.json"), "skinPairsSha256": sha256(index_dir / "skin-pairs.json"),
               "currentProof": {k: current[k] for k in ("file", "sha256", "containers")} if current else None,
-              "classes": {}, "meshes": {}, "refused": {}, "skipped": {}, "proof1Prime": {}, "proof3Prime": {}}
+              "classes": {}, "meshes": {}, "refused": {}, "skipped": {}, "proof1Prime": {}, "proof3Prime": {},
+              "reshaped": {}}
 
     # The Archetype mesh swaps the definitions author: Medium skeletal mesh -> class mesh. Every class mesh named here
     # ends in exactly one of report["meshes"] (added), report["refused"] (a proof failed) or report["skipped"] (never
@@ -627,15 +788,16 @@ def main():
         return by_sha[f]
 
     added, item_masks = {}, {}
+    masks_added, preview = {}, {}  # reshaped rows: their own mask (png, publish path, sha); preview entries (no mask yet)
     medium_body = assets["attachmentBody"]["source"]
     body_bones, registries = set(), {}
-    if args.same_surface_permuted:
-        # Proof 3' needs the body skeleton's bone names (joints a skin lists on one side only must be among them) and the
-        # side registries (a mesh they name is refused).
+    if args.same_surface_permuted or reshaped_names:
+        # Proof 3' and the reshaped route need the body skeleton's bone names (joints a skin lists on one side only must
+        # be among them) and the side registries (a mesh they name is refused).
         body_glb = [f for f in staged.get(medium_body.rsplit(".", 1)[-1] + ".glb", [])
                     if staged_sha(f) == assets["meshes"][medium_body]["sha256"]]
         if not body_glb:
-            sys.exit("--same-surface-permuted: the Medium body the index serves is not staged, so its bones are unknown")
+            sys.exit("proof 3' / reshaped route: the Medium body the index serves is not staged, so its bones are unknown")
         bj, _ = glb(body_glb[0])
         body_bones = {bj["nodes"][i].get("name") for i in bj["skins"][0]["joints"]}
         registries = {f"assets.json {s}": json.dumps(assets[s]) for s in SIDE_REGISTRY_SECTIONS if s in assets}
@@ -711,6 +873,49 @@ def main():
                     proof["inOrderProblems"], proof["problems"] = proof["problems"], []
                 else:
                     proof["problems"] = proof["problems"] + [f"proof 3': {why3}"]
+            if not ok and target.rsplit(".", 1)[-1] in reshaped_names:
+                # The reshaped route (approved 26 Nov 2026), only for listed rows: proof 3 becomes "the materials apply",
+                # proof 5 the mesh's own body mask. Every other proof problem keeps the row refused.
+                other = [p for p in proof["problems"] if not (p.endswith(PERMUTABLE) or p.startswith(RESHAPED_REPLACES[-1])
+                                                              or p.startswith(RESHAPED_BIND))]
+                names = re.compile("|".join(rf"(?<![\w/]){re.escape(p.rsplit('.', 1)[-1])}(?![\w])"
+                                            for p in (medium_path, target)))
+                named_in = sorted(r for r, text in registries.items() if names.search(text))
+                applied_body = ((assets.get("archetypes") or {}).get(cls) or {}).get("body")
+                detail_r, record, png = {}, None, None
+                if other:
+                    why_r = "; ".join(other)
+                elif named_in:
+                    why_r = f"named in a side registry: {', '.join(named_in)}"
+                elif any(medium_path in masks for masks in assets.get("itemBodyMasks", {}).values()):
+                    why_r = "the Medium carries item masks, which would need their own class masks too"
+                elif not entry.get("bodyMaskUrl"):
+                    why_r = "the Medium has no body mask for this one to replace"
+                elif not applied_body or applied_body not in assets["meshes"]:
+                    why_r = f"the {cls} body is not applied in the active index (the mask is projected onto it)"
+                else:
+                    ok_r, why_r, detail_r = materials_apply(medium_glb, file, scale, body_bones)
+                    if ok_r and coverage is not None:
+                        published = (index_dir / entry["bodyMaskUrl"]).resolve()
+                        record, png, why_r = reshaped_mask(
+                            coverage, Path(args.reshaped_masks).parent, mask_check, target, medium_path, cls,
+                            staged_sha(file), assets["meshes"][applied_body]["sha256"], entry,
+                            sha256(published) if published.is_file() else None)
+                report["reshaped"][target] = {"verdict": why_r or ("pass" if record else "pass, mask pending"),
+                                              "class": cls, "medium": medium_path, "inOrderProblems": proof["problems"],
+                                              **detail_r, **({"mask": record["file"], "maskSha256": record["sha256"]}
+                                                             if record else {})}
+                if why_r is None:
+                    ok, proof["proof3"], proof["reshaped"] = True, "reshaped", detail_r
+                    proof["inOrderProblems"], proof["problems"] = proof["problems"], []
+                    if record:
+                        proof["mask"] = {"file": record["file"], "sha256": record["sha256"], "uvTiles": record["uvTiles"],
+                                         "coverage": str(args.reshaped_masks), "coverageSha256": sha256(args.reshaped_masks),
+                                         "png": png}
+                    else:
+                        proof["previewOnly"] = True
+                else:
+                    proof["problems"] = proof["problems"] + [f"reshaped route: {why_r}"]
             proof.update({"class": cls, "medium": medium_path, "file": os.path.relpath(file, models).replace(os.sep, "/"),
                           "sha256": staged_sha(file), "mediumSha256": entry["sha256"], **proof1})
             if not ok:
@@ -733,6 +938,23 @@ def main():
             proof["publish"] = os.path.relpath(hosted, models).replace(os.sep, "/")
             new["url"] = os.path.relpath(hosted, index_dir).replace(os.sep, "/")
             new["sha256"] = proof["sha256"]
+            if proof.get("proof3") == "reshaped":
+                # Its own body mask, never the Medium's (whose shape and skin it was projected from).
+                for k in ("bodyMaskUrl", "bodyMaskUvTiles", "coverageSource"):
+                    new.pop(k, None)
+                if proof.pop("previewOnly", False):
+                    # No mask yet: the generator's preview index only, never the result.
+                    preview[target] = (new, proof)
+                    report["refused"][target] = ["reshaped route: needs its own body mask (--reshaped-masks); "
+                                                 "written to reshaped-preview/ for the mask generator"]
+                    continue
+                png = proof["mask"].pop("png")
+                mask_hosted = models / args.publish_dir / "coverage" / png.name if args.publish_dir else png
+                proof["mask"]["publish"] = os.path.relpath(mask_hosted, models).replace(os.sep, "/")
+                new.update({"bodyMaskUrl": os.path.relpath(mask_hosted, index_dir).replace(os.sep, "/"),
+                            "bodyMaskUvTiles": proof["mask"]["uvTiles"], "coverageSource": "derived-projection"})
+                masks_added[target] = (os.path.relpath(png, models).replace(os.sep, "/"), proof["mask"]["publish"],
+                                       proof["mask"]["sha256"])
             added[target] = new
             report["meshes"][target] = proof
             for source, masks in assets.get("itemBodyMasks", {}).items():
@@ -813,11 +1035,35 @@ def main():
     (out / "assets.json").write_text(json.dumps(result, separators=(",", ":")), encoding="utf-8")
     (out / "skin-pairs.json").write_text(json.dumps(skin_pairs, separators=(",", ":")), encoding="utf-8")
     report["added"] = {cls: sorted(k for k, v in report["meshes"].items() if v["class"] == cls and k in added) for cls in CLASSES}
+    if reshaped_names:
+        report["reshapedRules"] = {"tolerances": RESHAPED, "listed": sorted(reshaped_names),
+                                   "masks": str(args.reshaped_masks) if coverage is not None else None,
+                                   "masksSha256": sha256(args.reshaped_masks) if coverage is not None else None,
+                                   "maskCheck": str(args.reshaped_mask_check) if mask_check is not None else None,
+                                   "maskCheckSha256": sha256(args.reshaped_mask_check) if mask_check is not None else None,
+                                   "maskPolicy": {k: (coverage or {}).get(k) for k in ("method", "sharedUvPolicy",
+                                                                                      "generatorSha256")},
+                                   "notTried": sorted(reshaped_names - {k.rsplit(".", 1)[-1] for k in report["reshaped"]})}
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     # source (models-relative) <TAB> where the index expects it <TAB> sha256: the apply copies, then checks the sha256.
+    # A reshaped row's own body mask follows its mesh.
     (out / "publish-list.tsv").write_text("".join(
         f"{report['meshes'][k]['file']}\t{report['meshes'][k]['publish']}\t{report['meshes'][k]['sha256']}\n"
+        + ("\t".join(masks_added[k]) + "\n" if k in masks_added else "")
         for k in sorted(added)), encoding="utf-8")
+    if preview:
+        # Reshaped rows that passed everything but their own mask: an index for the mask generator only (it resolves the
+        # class mesh from an index), never to apply. Same publish-list form, so a preview server can serve the GLBs.
+        prev = out / "reshaped-preview"
+        prev.mkdir(exist_ok=True)
+        shown = {k: v for k, (v, p) in preview.items() if p["class"] in archetypes}
+        (prev / "assets.json").write_text(json.dumps({**result, "meshes": {**result["meshes"], **shown}},
+                                                     separators=(",", ":")), encoding="utf-8")
+        (prev / "publish-list.tsv").write_text("".join(f"{p['file']}\t{p['publish']}\t{p['sha256']}\n"
+                                                       for k, (v, p) in sorted(preview.items()) if k in shown),
+                                               encoding="utf-8")
+        (prev / "README.txt").write_text("Preview index for build-companion-masks.mjs --archetype only. Never apply it: "
+                                         "its reshaped rows have no body mask yet.\n", encoding="utf-8")
     # Every proof 1' comparison, passing or not, with the morph targets that differ (the row table's morph columns).
     def morph_cells(m):
         m = m or {}
@@ -840,6 +1086,19 @@ def main():
                 for k, v in sorted(report["proof3Prime"].items())), encoding="utf-8")
         passed = sum(v["verdict"] == "pass" for v in report["proof3Prime"].values())
         print(f"  proof 3': {passed} of {len(report['proof3Prime'])} attempts pass")
+    # Every reshaped-route attempt: what it replaced, the recorded differences and its mask.
+    if reshaped_names:
+        cols = ["uv1MaxDiff", "positionMaxM", "positionMedianM", "verticesOver1mm", "vertices", "trianglesNotInMedium",
+                "triangles", "verticesReweighted", "jointResidualMaxM", "permutationSha256", "mask", "maskSha256"]
+        (out / "reshaped.tsv").write_text(
+            tab.join(["class mesh", "class", "medium", "verdict", *cols]) + "\n" + "".join(
+                tab.join([k, v["class"], v["medium"], v["verdict"], *(str(v.get(c, "")) for c in cols)]) + "\n"
+                for k, v in sorted(report["reshaped"].items())), encoding="utf-8")
+        for k, v in sorted(report["reshaped"].items()):
+            print(f"  reshaped route: {k.rsplit('.', 1)[-1]}: {v['verdict']}")
+        if report["reshapedRules"]["notTried"]:
+            print("  reshaped route: not tried (no failing proof row reached it): "
+                  + ", ".join(report["reshapedRules"]["notTried"]))
     # class mesh <TAB> class <TAB> reason <TAB> the Medium mesh that names it: the apply record copies this list.
     (out / "skipped.tsv").write_text("".join(
         f"{k}\t{row['class']}\t{r['reason']}\t{r['medium']}\n"

@@ -21,10 +21,27 @@ if (legacy && (!all || !selectedIds)) throw new Error("--legacy requires --all a
 // Existing published masks and the default generation policy remain unchanged.
 const conservativeSharedUv = process.argv.includes("--conservative-shared-uv");
 if (conservativeSharedUv && (!all || !selectedIds)) throw new Error("--conservative-shared-uv requires --all and explicit --items");
+// (26 Nov 2026, archetypes) --models-url <http://127.0.0.1:PORT/models>: load every model and the index from this local
+// server instead of the app's own /models (a read-only overlay serving an index that is not applied); the output then
+// goes under scripts/generated/, into a new folder. --archetype light|heavy (needs --models-url): project each item's
+// class meshes onto the class body, built as the viewer builds a Light or Heavy contestant (rig/Archetype.ts indexClass,
+// loadSourceOutfit under the class tag), for the reshaped route (scripts/archetypes/build-archetype-index.py
+// --reshaped). Every garment part must resolve to a class mesh: one that keeps its Medium mesh is refused.
+const modelsUrlArg = process.argv.indexOf("--models-url");
+const modelsUrl = modelsUrlArg < 0 ? null : (process.argv[modelsUrlArg + 1] ?? "").replace(/\/$/, "");
+const archetypeArg = process.argv.indexOf("--archetype");
+const archetype = archetypeArg < 0 ? null : process.argv[archetypeArg + 1];
+if (archetype !== null && !["light", "heavy"].includes(archetype)) throw new Error("--archetype must be light or heavy");
+if (archetype && !modelsUrl) throw new Error("--archetype requires --models-url (its class meshes are not in the active index)");
+if (modelsUrl !== null) {
+  const u = new URL(modelsUrl);
+  if (!["127.0.0.1", "localhost", "[::1]"].includes(u.hostname) || u.protocol !== "http:" || !u.pathname.endsWith("/models"))
+    throw new Error("--models-url must be a local http URL ending in /models");
+}
 const outputArg = process.argv.indexOf("--output");
 const output = outputArg < 0 ? "public/models/reconstructed-assemblies-v1" : process.argv[outputArg + 1];
-if (!output?.replaceAll("\\", "/").startsWith("public/models/") || output.split(/[\\/]/).includes(".."))
-  throw new Error("Coverage outputs must stay in public/models");
+if (!output?.replaceAll("\\", "/").startsWith(modelsUrl ? "scripts/generated/" : "public/models/") || output.split(/[\\/]/).includes(".."))
+  throw new Error(modelsUrl ? "With --models-url, coverage outputs go under scripts/generated" : "Coverage outputs must stay in public/models");
 if (legacy && (outputArg < 0 || ["public/models/cosmetics", "public/models/reconstructed-assemblies-v1"].includes(output.replaceAll("\\", "/").replace(/\/$/, ""))))
   throw new Error("Legacy coverage requires a separate explicit preview output folder");
 // Opt in for reviewed previews (see coverage-projection.mjs): the existing policy is computed
@@ -45,6 +62,12 @@ if (fittedOcclusion && (outputArg < 0 || ["public/models/cosmetics", "public/mod
 // Every candidate is kept: any existing path, including an earlier occlusion candidate or a failed run, is refused.
 if (fittedOcclusion && existsSync(output))
   throw new Error("--fitted-occlusion never writes into an existing output path; choose a new versioned folder");
+// The policy (--conservative-shared-uv or not) is the caller's: the Medium mask's own, proven by regenerating it.
+if (modelsUrl && (!all || !selectedIds || legacy || fittedOcclusion))
+  throw new Error("--models-url requires --all and explicit --items, without --legacy or --fitted-occlusion");
+// Every candidate is kept: an existing output folder is refused.
+if (modelsUrl && existsSync(output))
+  throw new Error("--models-url never writes into an existing output path; choose a new folder");
 const occlusionFile = new URL("./coverage-projection.mjs", import.meta.url);
 const occlusionSource = fittedOcclusion ? readFileSync(occlusionFile, "utf8") : null;
 const occlusionModule = fittedOcclusion ? await import(occlusionFile.href) : null;
@@ -53,12 +76,21 @@ const indexArg = process.argv.indexOf("--index");
 const indexFolder = indexArg < 0 ? "public/models/reconstructed-assemblies-v1" : process.argv[indexArg + 1];
 if (!indexFolder?.replaceAll("\\", "/").startsWith("public/models/") || indexFolder.split(/[\\/]/).includes(".."))
   throw new Error("Coverage index must stay in public/models");
-const indexUrl = "/" + relative(resolve("public"), resolve(indexFolder)).replaceAll("\\", "/");
-const index = JSON.parse(readFileSync(`${indexFolder}/assets.json`, "utf8"));
+const indexUrl = modelsUrl ? `${modelsUrl}/${relative(resolve("public/models"), resolve(indexFolder)).replaceAll("\\", "/")}`
+  : "/" + relative(resolve("public"), resolve(indexFolder)).replaceAll("\\", "/");
+// With --models-url the index, the item list and every hashed file come from that server, not this checkout's disk.
+const fetchBytes = async url => {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+  return Buffer.from(await response.arrayBuffer());
+};
+const fetchJson = async url => JSON.parse((await fetchBytes(url)).toString("utf8"));
+const index = modelsUrl ? await fetchJson(`${indexUrl}/assets.json`) : JSON.parse(readFileSync(`${indexFolder}/assets.json`, "utf8"));
 let items = legacy ? JSON.parse(readFileSync("src/data/items.json", "utf8"))
     .filter(item => selectedIds.has(item.id) && item.model?.gltfPath)
     .map(item => ({ id: item.id, slot: item.slot, legacyMesh: item.model.gltfPath }))
-  : all ? JSON.parse(readFileSync(`${indexFolder}/supported-items.json`, "utf8")).ready
+  : all ? (modelsUrl ? await fetchJson(`${indexUrl}/supported-items.json`)
+    : JSON.parse(readFileSync(`${indexFolder}/supported-items.json`, "utf8"))).ready
   : ["leather-black", "satin", "leather-camo"].map(suffix => ({ id: `casual-longcoat-${suffix}`, slot: "outerwear" }));
 if (selectedIds) {
   items = items.filter(item => selectedIds.has(item.id));
@@ -84,7 +116,7 @@ try {
   await page.waitForFunction(() => !!window.__coverage);
   if (fittedOcclusion) await page.evaluate(policy => { window.__coveragePolicy = policy; },
     { source: occlusionSource, fittingTags, settings: { ...occlusionModule.OCCLUSION_DEFAULTS } });
-  const result = await page.evaluate(async ({ items, all, bodyFile, indexUrl, conservativeSharedUv }) => {
+  const result = await page.evaluate(async ({ items, all, bodyFile, indexUrl, conservativeSharedUv, modelsBase, archetype }) => {
     const { THREE: T, MeshBVH } = window.__coverage;
     // Set only by --fitted-occlusion; the helper arrives as source, so APP_ROOT may be another worktree.
     const occlusionPolicy = window.__coveragePolicy ?? null;
@@ -94,8 +126,23 @@ try {
     const { createGltfLoader } = await import("/src/rig/loaders.ts");
     const { loadSourceOutfit, loadSourceRigParts } = await import("/src/rig/SourceAssembly.ts");
     const rig = new CharacterRig(createGltfLoader());
-    await rig.loadBody("/models/body/SK_Body_M.glb", all ? "/" + bodyFile : undefined);
+    // --archetype: the class body and skeleton exactly as the viewer builds them (rig/Archetype.ts), from the index.
+    let classRig;
+    if (archetype) {
+      const { indexClass } = await import("/src/rig/Archetype.ts");
+      const { loadSourceAssemblyAssets } = await import("/src/rig/SourceAssembly.ts");
+      classRig = indexClass(await loadSourceAssemblyAssets(indexUrl), archetype,
+        path => new URL(path, new URL(indexUrl + "/", window.location.href)).href)?.rig;
+      if (!classRig) throw new Error(`--archetype: the index has no ${archetype} class`);
+      window.__coverageClassBody = classRig.bodyUrl;
+    }
+    await rig.loadBody(`${modelsBase}/body/SK_Body_M.glb`,
+      classRig ? classRig.bodyUrl : all ? `${modelsBase}/${bodyFile.slice("models/".length)}` : undefined, classRig);
     const body = rig.bodyScene.getObjectsByProperty("isSkinnedMesh", true)[0];
+    if (archetype) {
+      const size = new T.Box3().setFromObject(body).getSize(new T.Vector3());
+      console.log(`COVERAGE body ${classRig.bodySource.split(".").at(-1)}: bind height ${size.y.toFixed(4)} m`);
+    }
     const makeGeometry = mesh => {
       const g = mesh.geometry.clone(), p = new Float32Array(g.attributes.position.count * 3), v = new T.Vector3();
       for (let i = 0; i < p.length / 3; i++) mesh.getVertexPosition(i, v).applyMatrix4(mesh.matrixWorld).toArray(p, i * 3);
@@ -112,8 +159,15 @@ try {
         if (meshes.length !== 1) throw new Error(`Legacy coverage requires one skinned mesh: ${id} has ${meshes.length}`);
         meshes[0].userData.sourceMesh = legacyMesh; // provenance key in this disposable rig only
       } else {
-        const outfit = await loadSourceOutfit([id], "/models/reconstructed-assembly-v2");
+        const outfit = await loadSourceOutfit([id], `${modelsBase}/reconstructed-assembly-v2`, [], {}, archetype ?? "medium");
         const parts = await loadSourceRigParts(outfit.items[id], indexUrl);
+        if (archetype) {
+          // A part that resolves to the same mesh on Medium kept its Medium geometry: never projected as a class mesh.
+          const medium = await loadSourceOutfit([id], `${modelsBase}/reconstructed-assembly-v2`);
+          const mediumMeshes = new Set((await loadSourceRigParts(medium.items[id], indexUrl)).map(p => p.sourceMesh));
+          const kept = parts.filter(p => mediumMeshes.has(p.sourceMesh)).map(p => p.sourceMesh);
+          if (kept.length) throw new Error(`--archetype: ${id} keeps Medium meshes on ${archetype}: ${kept.join(", ")}`);
+        }
         await rig.equip({ id, slot, url: "unused.glb", sourceParts: parts });
       }
       const garments = rig.root.getObjectsByProperty("isSkinnedMesh", true)
@@ -248,7 +302,8 @@ try {
       rig.unequip(slot);
     }
     rig.dispose(); return results;
-  }, { items, all, bodyFile, indexUrl, conservativeSharedUv });
+  }, { items, all, bodyFile, indexUrl, conservativeSharedUv, modelsBase: modelsUrl ?? "/models", archetype });
+  const classBodyUrl = archetype ? await page.evaluate(() => window.__coverageClassBody) : null;
   const hashes = bytes => createHash("sha256").update(bytes).digest("hex");
   const records = [];
   for (const { png, ...record } of result) {
@@ -257,16 +312,24 @@ try {
     if (!record.coveredPixels) { console.log(`No body coverage for ${record.source}`); continue; }
     writeFileSync(`${output}/${file}`, bytes);
     records.push({ ...record, file, sha256: hashes(bytes),
-      meshSha256: hashes(readFileSync(legacy ? resolve("public", record.source) : resolve(indexFolder, index.meshes[record.source].url))) });
+      meshSha256: hashes(modelsUrl ? await fetchBytes(new URL(index.meshes[record.source].url, indexUrl + "/").href)
+        : readFileSync(legacy ? resolve("public", record.source) : resolve(indexFolder, index.meshes[record.source].url))) });
     console.log(`${file}: ${record.coveredTriangles} body triangles covered in both poses`);
   }
+  // --archetype: the body is the class body the index serves (its URL and sha256: the reshaped route checks them).
+  const projectedBody = archetype ? { bodyFile: classBodyUrl, bodySha256: hashes(await fetchBytes(classBodyUrl)) }
+    : { bodyFile, bodySha256: hashes(modelsUrl ? await fetchBytes(`${modelsUrl}/${bodyFile.slice("models/".length)}`)
+      : readFileSync(`public/${bodyFile}`)) };
   writeFileSync(`${output}/derived-coverage.json`, JSON.stringify({ formatVersion: 1,
     method: "Bidirectional surface projection; 4 cm each direction; seven samples per body triangle plus per-texel projection at partial boundaries; normal alignment > .25; intersection of A and idle coverage"
       + (conservativeSharedUv ? "; texels shared with any uncovered body surface remain visible" : ""),
     ...(conservativeSharedUv ? { sharedUvPolicy: "all-surfaces-covered" } : {}),
-    source: "Derived preview coverage, not recovered game rules. Specific to the recorded medium-body geometry, zero fitting weights and supported poses.",
+    source: `Derived preview coverage, not recovered game rules. Specific to the recorded ${archetype ?? "medium"}-body geometry, zero fitting weights and supported poses.`,
     geometryMode: legacy ? "legacy" : "source", indexFolder: legacy ? null : indexFolder,
-    bodyFile, bodySha256: hashes(readFileSync(`public/${bodyFile}`)), records }, null, 2));
+    // The reshaped route pairs an --archetype run with a Medium run of the same generator and policy (its check).
+    ...(archetype ? { archetype } : {}),
+    ...(modelsUrl ? { modelsUrl, generatorSha256: hashes(readFileSync(new URL(import.meta.url))) } : {}),
+    ...projectedBody, records }, null, 2));
   if (fittedOcclusion) {
     const extras = await page.evaluate(() => window.__coverageOcclusion ?? {});
     const coverage = JSON.parse(readFileSync(`${output}/derived-coverage.json`, "utf8"));

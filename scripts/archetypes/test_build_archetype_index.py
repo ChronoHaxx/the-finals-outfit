@@ -432,13 +432,15 @@ def grid_vertex(i, j):
 
 
 def write_grid_glb(file, name, scale=1.0, permute=False, flip=(), reverse_flip=False, lift=0.0, uv1_shift=0.0,
-                   slot='Main', weight_swap=False, duplicate=False, extra_joint=None, morph_vertex=None, move=0.0):
+                   slot='Main', weight_swap=False, duplicate=False, extra_joint=None, morph_vertex=None, move=0.0,
+                   uv0_shift=0.0, extra_weight=False):
     """A skinned quad grid for proof 3' (26 Nov 2026), at `scale`. Medium quads split along a-c; `flip` lists quads
     (i, j) split along b-d instead (`reverse_flip` also reverses their winding); `permute` shuffles the vertex and
     triangle order (indices remapped: the same surface); `lift` raises vertex (2, 2) out of the plane before scaling (a
     non-planar quad); `uv1_shift` moves one vertex's UV1; `weight_swap` swaps one vertex's two joint weights; `duplicate`
     appends a copy of vertex 0; `extra_joint` lists one more, unweighted joint; `morph_vertex` changes one vertex's
-    fitting-morph delta; `move` displaces one vertex (not the scaled Medium's)."""
+    fitting-morph delta; `move` displaces one vertex (not the scaled Medium's). For the reshaped route: `uv0_shift`
+    moves one vertex's UV0; `extra_weight` gives vertex 7's spine weight to `extra_joint` instead."""
     n = GRID * GRID
     ij = np.array([(i, j) for i in range(GRID) for j in range(GRID)], dtype=np.float64)
     pos = np.zeros((n, 3))
@@ -449,12 +451,15 @@ def write_grid_glb(file, name, scale=1.0, permute=False, flip=(), reverse_flip=F
     uv0 = ij / (GRID - 1)
     uv1 = uv0.copy()
     uv1[7, 0] += uv1_shift
+    uv0[7, 0] += uv0_shift
     normals = np.tile([0.0, 0.0, 1.0], (n, 1))
     spine = np.where(ij[:, 1] < 3, 0.25, 0.75)
     weights = np.stack([1 - spine, spine, np.zeros(n), np.zeros(n)], axis=1)
     if weight_swap:
         weights[7, :2] = weights[7, 1::-1]
     joints = np.tile([0, 1, 0, 0], (n, 1))
+    if extra_weight:
+        joints[7, 1] = 2
     deltas = np.zeros((n, 3))
     deltas[:, 2] = 0.001 * scale
     if morph_vertex is not None:
@@ -657,6 +662,249 @@ class SameSurfacePermutedInTheBuilder(unittest.TestCase):
         self.assertEqual(report['proof3PrimeRules']['bodyBones'], 2)
 
 
+class ReshapedRouteRule(unittest.TestCase):
+    """materials_apply, the reshaped route's surface proof (approved 26 Nov 2026): a listed class mesh with its own
+    shape, skin and triangulation passes when every vertex keeps its texture coordinates, and its differences are
+    recorded; a moved UV0, UV1 over 1/128, a renamed slot, an extra vertex, a vertex over the 1 cm cap, a weighted joint
+    the Medium skin does not list, or a listed joint outside the body skeleton fails."""
+    BODY_BONES = {'root', 'spine', 'clavicle_l'}
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp)
+
+    def compare(self, **light):
+        m, c = self.tmp / 'SK_Grid_M.glb', self.tmp / 'SK_Grid_L.glb'
+        write_grid_glb(m, 'SK_Grid_M')
+        write_grid_glb(c, 'SK_Grid_L', scale=SCALES['L'], **light)
+        return tool.materials_apply(m, c, SCALES['L'], self.BODY_BONES)
+
+    def test_its_own_shape_skin_and_triangles_pass_and_are_recorded(self):
+        # Moved 3 mm, a corner lifted, one vertex reweighted, two quads split the other way (one of them not flat), an
+        # unweighted body bone listed: the game's own Light mesh, as the T-shirt is.
+        ok, why, d = self.compare(permute=True, move=0.003, lift=0.002, weight_swap=True, flip=[(1, 1), (3, 3)],
+                                  extra_joint='clavicle_l')
+        self.assertTrue(ok, (why, d))
+        self.assertAlmostEqual(d['positionMaxM'], 0.003, places=6)
+        self.assertEqual((d['verticesOver1mm'], d['vertices']), (2, 36))
+        self.assertEqual((d['trianglesNotInMedium'], d['triangles']), (4, 50))
+        self.assertEqual(d['verticesReweighted'], 1)
+        self.assertEqual(len(d['permutationSha256']), 64)
+
+    def test_a_moved_uv0_fails(self):
+        self.assertEqual(self.compare(permute=True, uv0_shift=0.01)[:2], (False, 'no vertex bijection on UV0'))
+
+    def test_uv1_over_1_over_128_fails(self):
+        ok, why, _ = self.compare(permute=True, uv1_shift=0.01)
+        self.assertFalse(ok)
+        self.assertTrue(why.startswith('UV1 differs'), why)
+
+    def test_a_renamed_slot_fails(self):
+        self.assertEqual(self.compare(slot='Trim')[:2], (False, 'material slots differ'))
+
+    def test_an_extra_vertex_fails(self):
+        self.assertEqual(self.compare(duplicate=True)[:2], (False, 'primitives or vertex counts differ'))
+
+    def test_a_vertex_over_the_1_cm_cap_fails(self):
+        ok, why, d = self.compare(move=0.02)
+        self.assertFalse(ok)
+        self.assertIn('over the 1 cm cap', why)
+        self.assertAlmostEqual(d['positionMaxM'], 0.02, places=6)
+
+    def test_a_weighted_joint_the_medium_skin_does_not_list_fails(self):
+        ok, why, d = self.compare(extra_joint='clavicle_l', extra_weight=True)
+        self.assertEqual((ok, why, d['joints']),
+                         (False, 'weighted class joints the Medium skin does not list', ['clavicle_l']))
+
+    def test_a_listed_joint_outside_the_body_skeleton_fails(self):
+        ok, why, d = self.compare(extra_joint='cape_jjr')
+        self.assertFalse(ok)
+        self.assertTrue(why.startswith('joints the class skin lists are neither'), why)
+        self.assertEqual(d['joints'], ['cape_jjr'])
+
+
+class ReshapedMaskRecord(unittest.TestCase):
+    """reshaped_mask: the class mesh's own body mask must be one record of a Light (or Heavy) run of the generator,
+    paired with a Medium check run of the same generator, method and shared-UV policy that regenerates the Medium's
+    published mask byte for byte (the Medium mask's own policy, proven); projected from this staged file onto the class
+    body the index serves, in the Medium mask's UV tiles, with its PNG as recorded. No fitted occlusion."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp)
+        png = self.tmp / 'SK_Grid_L.bodymask.png'
+        png.write_bytes(b'not really a png')
+        self.record = {'source': path('SK_Grid_L'), 'file': png.name, 'sha256': tool.sha256(png),
+                       'meshSha256': 'class-glb', 'uvTiles': [2, 1]}
+
+    def check(self, record=None, mask_check=None, published='medium-mask', **over):
+        run = {'formatVersion': 1, 'method': 'projection', 'generatorSha256': 'generator'}
+        coverage = {**run, 'archetype': 'light', 'bodySha256': 'light-body', 'records': [record or self.record], **over}
+        medium = {**run, 'records': [{'source': path('SK_Grid_M'), 'sha256': 'medium-mask'}], **(mask_check or {})}
+        return tool.reshaped_mask(coverage, self.tmp, medium, path('SK_Grid_L'), path('SK_Grid_M'), 'light', 'class-glb',
+                                  'light-body', {'bodyMaskUvTiles': [2, 1]}, published)
+
+    def test_the_matching_record_passes(self):
+        record, png, why = self.check()
+        self.assertEqual((record, png.name, why), (self.record, 'SK_Grid_L.bodymask.png', None))
+
+    def test_another_class_fitted_occlusion_or_a_class_check_run_fails(self):
+        self.assertIn('not a light run', self.check(archetype='heavy')[2])
+        self.assertIn('not a light run', self.check(archetype=None)[2])
+        self.assertIn('fitted occlusion', self.check(occlusionPolicy={'name': 'fitted'})[2])
+        self.assertEqual(self.check(mask_check={'archetype': 'light'})[2], 'the check run is not a Medium run')
+
+    def test_a_check_run_of_another_generator_or_policy_or_that_misses_the_published_mask_fails(self):
+        same = 'the mask and its check were not made by the same generator and policy'
+        self.assertEqual(self.check(mask_check={'generatorSha256': 'edited'})[2], same)
+        self.assertEqual(self.check(sharedUvPolicy='all-surfaces-covered')[2], same)
+        self.assertEqual(self.check(mask_check={'method': 'other'})[2], same)
+        self.assertEqual(self.check(generatorSha256=None, mask_check={'generatorSha256': None})[2], same)
+        self.assertEqual(self.check(published='other-medium-mask')[2],
+                         "the check run does not reproduce the Medium's published mask")
+        self.assertEqual(self.check(published=None)[2], "the Medium's published mask is not on disk to check against")
+
+    def test_another_body_file_tiles_or_png_fails(self):
+        self.assertIn('another body', self.check(bodySha256='medium-body')[2])
+        self.assertIn('another file', self.check({**self.record, 'meshSha256': 'other-read'})[2])
+        self.assertIn('UV tiles', self.check({**self.record, 'uvTiles': [1, 1]})[2])
+        self.assertIn('0 records', self.check({**self.record, 'source': path('SK_Other_L')})[2])
+        (self.tmp / 'SK_Grid_L.bodymask.png').write_bytes(b'changed')
+        self.assertIn('not the recorded one', self.check()[2])
+
+
+class ReshapedRouteInTheBuilder(unittest.TestCase):
+    """--reshaped end to end, on an index where Light is applied: a listed reshaped mesh is refused by proof 3 without
+    the flag; with it and no mask it stays refused but reaches the generator's preview index; with its own mask it joins,
+    pointing at that mask (published beside the meshes), never the Medium's. An unlisted reshaped mesh, a listed one a
+    side registry names and a listed one whose Medium carries item masks stay refused; a mask from another file or body
+    is refused."""
+
+    def setUp(self):
+        self.tmp = tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        self.models = models = tmp / 'models'
+        self.s11 = s11 = models / STAGING / 'source-glb'
+        meshes, parts = {}, []
+        meshes[path('SK_Body_M')] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/SK_Body_M.glb',
+                                     'sha256': write_glb(s11 / 'SK_Body_M.glb', 'SK_Body_M'), 'slots': [{'slot': 'Main'}]}
+        self.body_l = write_glb(s11 / 'SK_Body_L.glb', 'SK_Body_L', scale=SCALES['L'])
+        meshes[path('SK_Body_L')] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/SK_Body_L.glb',
+                                     'sha256': self.body_l, 'slots': [{'slot': 'Main'}]}
+        # The applied Light body is re-proven from its swap, so the definitions name it too.
+        parts.append({'SkeletalMesh': {'AssetPathName': path('SK_Body_M')}, 'TagOverrides': [
+            {'MatchingTags': ['Customization.Archetype.Light'], 'bOverrideMesh': True,
+             'ReplacementSkeletalMesh': {'AssetPathName': path('SK_Body_L')}}]})
+        for medium in ('SK_Shirt_M', 'SK_Plain_M', 'SK_Named_M', 'SK_Masked_M'):
+            light = medium[:-2] + '_L'
+            sha = write_grid_glb(s11 / f'{medium}.glb', medium)
+            write_grid_glb(s11 / f'{light}.glb', light, scale=SCALES['L'], permute=True, move=0.003, weight_swap=True)
+            meshes[path(medium)] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/{medium}.glb', 'sha256': sha,
+                                    'slots': [{'slot': 'Main'}], 'bodyMaskUrl': f'../coverage/{medium}.bodymask.png',
+                                    'bodyMaskUvTiles': [2, 1], 'coverageSource': 'derived-projection'}
+            parts.append({'SkeletalMesh': {'AssetPathName': path(medium)}, 'TagOverrides': [
+                {'MatchingTags': ['Customization.Archetype.Light'], 'bOverrideMesh': True,
+                 'ReplacementSkeletalMesh': {'AssetPathName': path(light)}}]})
+        index = models / 'reconstructed-assemblies-v1'
+        index.mkdir(parents=True)
+        assets = {'attachmentBody': {'source': path('SK_Body_M')}, 'meshes': meshes,
+                  'archetypes': {'light': {'body': path('SK_Body_L'), 'skeletonScale': 0.85, 'boundsOrigin': [0.0, 0.0, 0.85]}},
+                  'attachmentFrames': {path('SK_Named_M'): {'socket': 'spine'}},
+                  'itemBodyMasks': {'DA_Masked': {path('SK_Masked_M'): {'url': '../coverage/masked.png'}}}}
+        (index / 'assets.json').write_text(json.dumps(assets), encoding='utf-8')
+        pairs = {'items': {'Face_1': {'body': {'sourceMesh': path('SK_Body_M'), 'boundsOrigin': [0.0, 0.0, 1.0]}}}}
+        (index / 'skin-pairs.json').write_text(json.dumps(pairs), encoding='utf-8')
+        items = models / 'reconstructed-assembly-v2' / 'items'
+        items.mkdir(parents=True)
+        (items / 'DA_Test.json').write_text(json.dumps({'properties': {'VisualParts': parts}}), encoding='utf-8')
+        self.listed = ['--reshaped', 'SK_Shirt_L,SK_Named_L', '--reshaped', 'SK_Masked_L']
+        published = models / 'coverage' / 'SK_Shirt_M.bodymask.png'    # the Medium's published mask (its bodyMaskUrl)
+        published.parent.mkdir(parents=True)
+        published.write_bytes(b'medium shirt mask')
+        self.published = tool.sha256(published)
+
+    def build(self, *flags):
+        out = self.tmp / f'out-{len(list(self.tmp.glob("out-*")))}'
+        with mock.patch.object(sys, 'argv', ['build', '--models', str(self.models), '--out', str(out), *flags]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            tool.main()
+        return out, json.loads((out / 'report.json').read_text(encoding='utf-8'))
+
+    def mask_run(self, check_sha=None, **over):
+        """The generator's two runs for SK_Shirt_L, each in a folder of its own: the Medium check run (it regenerates the
+        published SK_Shirt_M mask) and the Light run (derived-coverage.json and its PNG). Returns both flags."""
+        folder = self.tmp / f'masks-{len(list(self.tmp.glob("masks-*")))}'
+        (folder / 'light').mkdir(parents=True)
+        (folder / 'medium').mkdir()
+        png = folder / 'light' / 'SK_Shirt_L.bodymask.png'
+        png.write_bytes(b'shirt mask')
+        run = {'formatVersion': 1, 'method': 'projection', 'generatorSha256': 'generator'}
+        record = {'source': path('SK_Shirt_L'), 'file': png.name, 'sha256': tool.sha256(png),
+                  'meshSha256': tool.sha256(self.s11 / 'SK_Shirt_L.glb'), 'uvTiles': [2, 1], **over.pop('record', {})}
+        coverage = {**run, 'archetype': 'light', 'bodySha256': self.body_l, 'records': [record], **over}
+        check = {**run, 'records': [{'source': path('SK_Shirt_M'), 'sha256': check_sha or self.published}]}
+        (folder / 'light' / 'derived-coverage.json').write_text(json.dumps(coverage), encoding='utf-8')
+        (folder / 'medium' / 'derived-coverage.json').write_text(json.dumps(check), encoding='utf-8')
+        return ['--reshaped-masks', str(folder / 'light' / 'derived-coverage.json'),
+                '--reshaped-mask-check', str(folder / 'medium' / 'derived-coverage.json')]
+
+    def test_without_the_flag_a_reshaped_mesh_stays_refused(self):
+        _, report = self.build()
+        self.assertEqual(report['refused'][path('SK_Shirt_L')], ['primitive 0: indices differ', 'primitive 0: UVs differ'])
+        self.assertEqual(report['reshaped'], {})
+
+    def test_listed_without_its_mask_it_is_refused_and_previewed_for_the_generator(self):
+        out, report = self.build(*self.listed)
+        self.assertEqual(report['refused'][path('SK_Shirt_L')],
+                         ['reshaped route: needs its own body mask (--reshaped-masks); '
+                          'written to reshaped-preview/ for the mask generator'])
+        self.assertEqual(report['reshaped'][path('SK_Shirt_L')]['verdict'], 'pass, mask pending')
+        result = json.loads((out / 'assets.json').read_text(encoding='utf-8'))
+        preview = json.loads((out / 'reshaped-preview' / 'assets.json').read_text(encoding='utf-8'))
+        self.assertNotIn(path('SK_Shirt_L'), result['meshes'])
+        entry = preview['meshes'][path('SK_Shirt_L')]
+        self.assertNotIn('bodyMaskUrl', entry)
+        self.assertEqual(entry['sha256'], tool.sha256(self.s11 / 'SK_Shirt_L.glb'))
+        self.assertEqual(len((out / 'reshaped-preview' / 'publish-list.tsv').read_text(encoding='utf-8').splitlines()), 1)
+        self.assertEqual(report['refused'][path('SK_Plain_L')], ['primitive 0: indices differ', 'primitive 0: UVs differ'])
+        self.assertEqual(report['refused'][path('SK_Named_L')][-1],
+                         'reshaped route: named in a side registry: assets.json attachmentFrames')
+        self.assertTrue(report['refused'][path('SK_Masked_L')][-1].startswith(
+            'reshaped route: the Medium carries item masks'))
+
+    def test_listed_with_its_own_mask_it_joins_pointing_at_that_mask(self):
+        masks = self.mask_run()
+        cov = Path(masks[1])
+        out, report = self.build(*self.listed, *masks, '--publish-dir', 'reconstructed-archetypes-v1')
+        self.assertIn(path('SK_Shirt_L'), report['added']['light'])
+        entry = json.loads((out / 'assets.json').read_text(encoding='utf-8'))['meshes'][path('SK_Shirt_L')]
+        self.assertEqual((entry['bodyMaskUrl'], entry['bodyMaskUvTiles'], entry['coverageSource']),
+                         ('../reconstructed-archetypes-v1/coverage/SK_Shirt_L.bodymask.png', [2, 1], 'derived-projection'))
+        row = report['meshes'][path('SK_Shirt_L')]
+        self.assertEqual((row['proof3'], row['reshaped']['verticesReweighted']), ('reshaped', 1))
+        self.assertAlmostEqual(row['reshaped']['positionMaxM'], 0.003, places=6)
+        publish = [line.split('\t') for line in (out / 'publish-list.tsv').read_text(encoding='utf-8').splitlines()]
+        self.assertEqual([p[1] for p in publish], ['reconstructed-archetypes-v1/meshes/SK_Shirt_L.glb',
+                                                    'reconstructed-archetypes-v1/coverage/SK_Shirt_L.bodymask.png'])
+        self.assertEqual(publish[1][2], tool.sha256(cov.parent / 'SK_Shirt_L.bodymask.png'))
+        self.assertFalse((out / 'reshaped-preview').exists())
+        tsv = (out / 'reshaped.tsv').read_text(encoding='utf-8').splitlines()
+        self.assertEqual(len(tsv), 1 + 3)
+        self.assertIn(path('SK_Plain_L'), report['refused'])
+
+    def test_a_mask_from_another_file_or_body_or_an_unproven_policy_is_refused(self):
+        _, report = self.build(*self.listed, *self.mask_run(record={'meshSha256': 'x'}))
+        self.assertEqual(report['refused'][path('SK_Shirt_L')][-1],
+                         'reshaped route: the mask was projected from another file of this mesh')
+        medium_body = tool.sha256(self.s11 / 'SK_Body_M.glb')
+        _, report = self.build(*self.listed, *self.mask_run(bodySha256=medium_body))
+        self.assertTrue(report['refused'][path('SK_Shirt_L')][-1].startswith(
+            'reshaped route: the mask was projected onto another body'))
+        _, report = self.build(*self.listed, *self.mask_run(check_sha='another policy'))
+        self.assertEqual(report['refused'][path('SK_Shirt_L')][-1],
+                         "reshaped route: the check run does not reproduce the Medium's published mask")
+
+
 REAL = Path('E:/Coding/the-finals-outfit')
 REAL_GLBS = [REAL / 'scripts/generated/archetypes/light-bulk-v2/source-glb', REAL / f'public/models/{STAGING}/source-glb']
 
@@ -696,6 +944,20 @@ class SameSurfacePermutedOnRealMeshes(unittest.TestCase):
         self.assertFalse(ok)
         self.assertIn('not planar', why)
         self.assertGreater(detail['quadGapMaxM'], 1e-4)
+
+    def test_the_light_tshirt_takes_the_reshaped_route_and_frog_shoes_do_not(self):
+        # Measured 26 Nov 2026: the same 1,662 vertices and UV0, its own hem (up to 3.1 mm), 38 triangles split the other
+        # way, 1,546 vertices reweighted. FrogShoes_L has no UV0 bijection to its Medium: a really reshaped surface.
+        ok, why, d = tool.materials_apply(real_glb('SK_Casual_BasicTshirt_M'), real_glb('SK_Casual_BasicTshirt_L'),
+                                          SCALES['L'], self.bones)
+        self.assertTrue(ok, why)
+        self.assertEqual((d['vertices'], d['trianglesNotInMedium'], d['verticesReweighted'], d['verticesOver1mm']),
+                         (1662, 38, 1546, 38))
+        self.assertAlmostEqual(d['positionMaxM'], 0.0030973, places=6)
+        self.assertLessEqual(d['uv1MaxDiff'], 1 / 128)
+        ok, why, _ = tool.materials_apply(real_glb('SK_Cute_FrogShoes_M'), real_glb('SK_Cute_FrogShoes_L'),
+                                          SCALES['L'], self.bones)
+        self.assertEqual((ok, why), (False, 'no vertex bijection on UV0'))
 
 
 OCT_READ = REAL / 'scripts/generated/shader-probe/season11-staging-20261018/meshes-raw'
