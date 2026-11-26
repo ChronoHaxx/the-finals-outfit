@@ -20,6 +20,11 @@ index records its class and hashes.
 With CUSTOMIZATION_JSON (reconstructed-assembly-v2/customization.json) a mesh is swapped only when every supported
 item that can show it is proven whole (see item consistency below); without it, every proven mesh is swapped.
 
+--allow-mixed-item ITEM,... (tier 2 C1, 26 Nov 2026) names approved exceptions from MIXED_ITEM_EXCEPTIONS only: the
+item may go mixed because its one listed mesh stays live, so that mesh no longer holds the item's other meshes. Any
+other item, a listed mesh that is admitted or proven, or an item that does not show it is refused. The output records
+each exception with its reason.
+
 With --census (morph-census.mjs over the same active index; whole-catalogue refresh, 6 Nov 2026) the item rule looks
 only at body-type meshes: the meshes that carry medium_male or medium_female. A mesh without either morph (statics,
 most hairs) has the same shape in every Medium body type, and a mesh the active index does not hold is never shown, so
@@ -230,11 +235,47 @@ def stale_packages(package_json, proof):
     return {row['source'] for name, row in proof.items() if name not in identical}
 
 
-def settle(proven, kept, unchanged, users, body):
+# Mixed-item exceptions (tier 2 C1, coordinator, 26 Nov 2026, option (c)). Each entry lets exactly one item go mixed
+# because exactly one of its meshes is held live: the item rule then ignores that mesh when it judges the item's other
+# meshes, so they can still move to Season 12, while the item itself (showing a live mesh) never counts as Season 12.
+# Nothing else may be named: mixed_item_excuses refuses any other item, any other mesh, and a mesh that is not held.
+MIXED_ITEM_EXCEPTIONS = {
+    'streetwear-croppedtshirtoversize-cotton-red': {
+        'mesh': 'SK_Streetwear_CroppedTshirtOversize_M',
+        'reason': 'the S12 mesh bridges torso and sleeve with a flat stretched wedge in the arms-out pose (both body '
+                  'types); the game\'s own weights, inverse binds verified against the rig rest '
+                  '(scripts/generated/s12-refresh-tier2-v1/c1-vpj-binds/vpj-binds.json). Holding the item instead would '
+                  'keep ChainNecklace and the PopLanyard armbands live and hold 167 C1 items.',
+        'decided': 'coordinator, 26 Nov 2026 (C1 option c)'},
+}
+
+
+def mixed_item_excuses(items, by_name, live_sources, users):
+    """{(item, mesh source)} for the named exception items, refusing anything outside MIXED_ITEM_EXCEPTIONS: an item
+    that is not listed, a listed mesh the index does not hold, a mesh that is not kept live (`live_sources`: held or
+    never admitted), or an item that does not show its mesh."""
+    excused = set()
+    for item in items:
+        exception = MIXED_ITEM_EXCEPTIONS.get(item)
+        if exception is None:
+            raise SystemExit(f'--allow-mixed-item {item}: not an approved exception ({sorted(MIXED_ITEM_EXCEPTIONS)})')
+        source = by_name.get(exception['mesh'])
+        if source is None:
+            raise SystemExit(f'--allow-mixed-item {item}: the index does not hold {exception["mesh"]}')
+        if source not in live_sources:
+            raise SystemExit(f'--allow-mixed-item {item}: {exception["mesh"]} must be held live for the item to go mixed')
+        if not any(i == item for i, _ in users.get(source, [])):
+            raise SystemExit(f'--allow-mixed-item {item}: the item does not show {exception["mesh"]}')
+        excused.add((item, source))
+    return excused
+
+
+def settle(proven, kept, unchanged, users, body, excused=frozenset()):
     """The item rule to its fixpoint: (effective S12 set, held {source: reason}).
 
     A proven mesh is held when an item that shows it also shows a mesh outside the effective set; a held mesh with
-    changed morphs leaves the effective set, which can hold others."""
+    changed morphs leaves the effective set, which can hold others. `excused` holds (item, mesh) pairs from
+    mixed_item_excuses: that mesh does not make that item hold its other meshes."""
     effective = set(proven) | kept
     while True:
         held = {}
@@ -243,7 +284,8 @@ def settle(proven, kept, unchanged, users, body):
             # shows it "mixed" and name those as the reason (6 Nov 2026, loose jeans). The swap set is the same either
             # way, since the effective set only shrinks; the recorded reasons are the root ones.
             mixed = sorted({item for item, meshes in users.get(source, [])
-                            if any(m not in effective and m != body and m != source for m in meshes)})
+                            if any(m not in effective and m != body and m != source and (item, m) not in excused
+                                   for m in meshes)})
             if mixed:
                 held[source] = {'reason': 'an item that shows it also shows a mesh the preview keeps pre-S12',
                                 'items': mixed[:20], 'itemCount': len(mixed)}
@@ -255,7 +297,7 @@ def settle(proven, kept, unchanged, users, body):
 
 def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None, census_json=None, changed_only=False,
          admit_json=None, admit_only=None, admit_reviewed=None, surface_json=None, admit_rework=None, package_json=None,
-         mask_json=None, ship_masks=None):
+         mask_json=None, ship_masks=None, allow_mixed=None):
     out = Path(out_json)
     if out.exists():
         raise SystemExit(f'Preserve existing {out}')
@@ -307,7 +349,9 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     # changed morphs it is a pre-S12 mesh and holds them (tier 2, 23 Nov 2026).
     kept |= stale & unchanged
     assert not set(admitted) & unchanged
-    effective, held = settle(proven, kept, unchanged, users, body)
+    by_name = {source.rsplit('.', 1)[-1]: source for source in assets['meshes']}
+    excused = mixed_item_excuses(allow_mixed or [], by_name, set(assets['meshes']) - proven, users)
+    effective, held = settle(proven, kept, unchanged, users, body, excused)
     for name, row in sorted(proof.items()):
         admission = admitted.get(row.get('source'))
         if (row.get('status') != 'morph-only' and not admission) or row['source'] in held or row['source'] in stale:
@@ -375,6 +419,7 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
             'stalePackages': sorted(stale)} if package_json else {}),
         **({'maskProofSha256': {f: hashlib.sha256(Path(f).read_bytes()).hexdigest() for f in mask_json.split(',')},
             'maskRepoints': mask_repoints, **({'maskHeld': mask_held} if mask_held else {})} if mask_json else {}),
+        **({'mixedItemExceptions': {item: MIXED_ITEM_EXCEPTIONS[item] for item, _ in sorted(excused)}} if excused else {}),
         'swapped': swapped, 'held': held,
         'keptUnchanged': sorted(kept),
         'effective': sorted(effective)}
@@ -398,7 +443,8 @@ if __name__ == '__main__':
     for flag, key, split in (('--admit', 'admit_json', False), ('--admit-only', 'admit_only', True),
                              ('--admit-reviewed', 'admit_reviewed', True), ('--admit-surface', 'surface_json', False),
                              ('--admit-rework', 'admit_rework', True), ('--package-proof', 'package_json', False),
-                             ('--mask-proof', 'mask_json', False), ('--ship-s12-masks', 'ship_masks', True)):
+                             ('--mask-proof', 'mask_json', False), ('--ship-s12-masks', 'ship_masks', True),
+                             ('--allow-mixed-item', 'allow_mixed', True)):
         if flag in argv:
             i = argv.index(flag)
             options[key] = argv[i + 1].split(',') if split else argv[i + 1]
