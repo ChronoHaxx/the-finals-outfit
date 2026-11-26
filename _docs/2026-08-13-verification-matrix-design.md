@@ -1,5 +1,7 @@
 # Per-item verification matrix — design
 
+> **25 Nov 2026:** the census figures below (239 verdicts, mean 60.6, category counts) were judged on the older cosmetics route. They are history, not the state of the site; see `scripts/visual-diff/README.md`, "Cosmetics-route history".
+
 Status: **approved in conversation 2026-08-13**; implemented as
 `2026-08-13-verification-matrix-plan.md`, with one deliberate deviation below
 (the store is path-keyed, not hash-keyed) amended into this design by the
