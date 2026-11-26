@@ -136,20 +136,27 @@ It retries for about 10 minutes before failing, which covers a check that lands 
 failure to whoever last changed the workflow's schedule. Run it locally with `npm run check:site -- --once`
 (`PRODUCTION_URL` checks another site). It does not render the outfit; the release browser scenarios do that.
 
-**Visitor analytics** use Cloudflare Web Analytics (`src/lib/analytics.ts`) on the production site only. They do
-not run on localhost, forks, UI previews, the developer catalogue or in automated browsers, nor for visitors
-whose browser sends Global Privacy Control or Do Not Track. The beacon sets no cookies and stores nothing in the
-browser. Each page load sends:
+**Visitor analytics** are cookie-free and run on the production site only. They never run on localhost, forks, UI
+previews, the developer catalogue or in automated browsers. They also never run for a visitor whose browser sends
+Global Privacy Control or Do Not Track, or who switched them off in the in-app privacy note (Guide → Privacy).
+Nothing in the browser identifies a visitor. The only stored value is that opt-out: `finals-outfit.analytics` =
+`"off"`.
 
-- the page address without its query string or `#` fragment, so outfit codes stay private;
-- the referrer;
-- the browser engine and OS versions;
-- load timings and Core Web Vitals, naming the page element they measured (for example an item icon's URL).
+- **Page views** go to Cloudflare Web Analytics (`src/lib/analytics.ts`). Each page load sends the page address
+  without its query string or `#` fragment, so outfit codes stay private. It also sends the referrer, the browser
+  engine and OS versions, and load timings and Core Web Vitals, naming the element each one measured. Route changes
+  inside the app are not reported (`spa: false`). The dashboard is Cloudflare → Web Analytics →
+  `chronohaxx.github.io`.
+- **Product events** (which features are found and used, which items and emotes are picked, shares and exports) go
+  through `src/lib/track.ts` to the shared `usage-counter` Worker (`workers/usage-counter`), which writes them to
+  Workers Analytics Engine for 3 months. Every event, its reason and how to report the numbers honestly are in
+  [`docs/analytics-tracking-plan.md`](docs/analytics-tracking-plan.md). Daily visitors come from a hash the Worker
+  makes with a salt that is deleted the next day; IP addresses are never stored. The events are off until
+  `EVENTS_URL` is set in `deploy.yml`.
 
-Cloudflare also sees the request's IP address and user agent, as with any request. Route changes inside the app
-are not reported (`spa: false`): the address the beacon sends is the same on every route, so they would only
-repeat the page view. Blocking the beacon changes nothing in the app. The dashboard is Cloudflare →
-Web Analytics → `chronohaxx.github.io`.
+Cloudflare also sees each request's IP address and user agent, as with any request. Blocking either tool changes
+nothing in the app. `docs/metrics.md` holds the monthly totals: run `node scripts/usage-report.mjs` on the first of
+each month, before Analytics Engine's 3 months run out.
 
 ## Contributing catalog entries
 

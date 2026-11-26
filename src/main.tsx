@@ -10,16 +10,25 @@ import { ReconstructionProgressProvider } from "./context/ReconstructionProgress
 import { loadCatalog } from "./lib/catalog-load";
 import IntroDialog from "./components/IntroDialog";
 import FeatureGuide from "./components/FeatureGuide";
+import PrivacyNote from "./components/PrivacyNote";
 import Discovery from "./components/Discovery";
 import { startAnalytics } from "./lib/analytics";
+import { startTracking, track, trackError } from "./lib/track";
+import { startFeatureExposure } from "./lib/feature-exposure";
+import { sharedLinkProps } from "./lib/share-open";
 import { startSavedOutfits } from "./store/useSavedOutfits";
 import { openLink } from "./store/open-link";
 
 // The squad page (multi-character preview, behind a flag): its own chunk, loaded only when opened.
 const Squad = lazy(() => import("./pages/Squad"));
 
-// Before the catalog: a visit whose catalog fails to load is the one worth counting. No-op outside production.
-if (import.meta.env.PROD) startAnalytics();
+// Before the catalog: a visit whose catalog fails to load is the one worth counting. No-op outside production, and for
+// visitors who opted out or send GPC or DNT (lib/analytics.ts). Product events (lib/track.ts) start the same way.
+if (import.meta.env.PROD) {
+  startAnalytics();
+  startTracking();
+  track("app_loaded");
+}
 
 // The catalog getters are synchronous, so nothing renders until the catalog is in.
 // Until then the static shell in index.html stays on screen. Saved outfits open alongside; that
@@ -29,6 +38,7 @@ Promise.all([loadCatalog(), startSavedOutfits().catch(error => console.error("[s
 
 function showCatalogFailure(error: unknown) {
   console.error("[catalog] could not load", error);
+  trackError();
   const status = document.getElementById("boot-status");
   if (!status) return;
   // The shell's loading bar would otherwise keep sweeping under a failure message.
@@ -43,6 +53,9 @@ function showCatalogFailure(error: unknown) {
 }
 
 function mount() {
+  // Before openLink, which may tidy the link out of the address bar.
+  const shared = sharedLinkProps(window.location.href);
+  if (shared) track("share_link_opened", shared);
   // Put the saved (or linked) outfit on before the first render, so the viewer never starts loading the
   // starting look first. Builder runs the same call again; it is idempotent.
   try { openLink(window.location.href); } catch (error) { console.error("[saved outfits]", error); }
@@ -66,10 +79,12 @@ function mount() {
           </Routes>
           <IntroDialog />
           <FeatureGuide />
+          <PrivacyNote />
           {/* Callouts, the tour and Show me (one layer over every route; quiet under automation). */}
           <Discovery />
         </ReconstructionProgressProvider>
       </HashRouter>
     </StrictMode>,
   );
+  startFeatureExposure();
 }

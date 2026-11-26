@@ -10,6 +10,10 @@ interface ImportMetaEnv {
   readonly VITE_RECONSTRUCTION_ROUTES?: string;
   // Optional origin of the link-preview Worker (workers/share-preview). Unset turns preview links off.
   readonly VITE_SHARE_PREVIEW_BASE?: string;
+  // Product analytics (src/lib/track.ts, docs/analytics-tracking-plan.md): the usage-counter collector's URL. Unset
+  // turns events off. VITE_BUILD is the deployed commit, sent with each batch.
+  readonly VITE_EVENTS_URL?: string;
+  readonly VITE_BUILD?: string;
   // Gated meshes (workers/site): every .glb is fetched from here, normally "/m/" on the site's own origin, after a
   // Turnstile check with this site key. Unset leaves meshes on the public hosts above.
   readonly VITE_MESH_BASE?: string;

@@ -12,6 +12,7 @@ import {
 } from "../lib/preset-outfits";
 import type { Item } from "../lib/item";
 import { CloseIcon, HangerIcon, SearchIcon } from "./Icons";
+import { track } from "../lib/track";
 
 // The game's own outfits, as one tap each. Putting one on opens it as an unsaved draft beside your saved outfits
 // (store/useSavedOutfits openPreset): nothing saved changes until you edit it or press Save.
@@ -124,7 +125,7 @@ function OutfitDetail({ outfit, onClose }: { outfit: PresetOutfit; onClose: () =
     // into the outfit on screen.
     const result = openPreset(outfit.name, presetSlots(outfit, useBuildStore.getState().build));
     if (result === "same") setAlready(true);
-    else if (result !== "declined") onClose();
+    else if (result !== "declined") { track("in_game_outfit_equipped", { outfit_id: outfit.id }); onClose(); }
   };
 
   // A click on the backdrop lands on the <dialog> itself; clicks on the content land on its children. The close event

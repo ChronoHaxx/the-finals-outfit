@@ -1,4 +1,4 @@
-import { memo, useDeferredValue, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useDeferredValue, useMemo, useRef, useState } from "react";
 import { useFeature } from "../lib/discovery";
 import { SLOTS, SLOT_LABELS, type Slot } from "../lib/slots";
 import { getBrowseItem, getBrowseItemsBySlot as getItemsBySlot } from "../lib/browse-catalog";
@@ -11,6 +11,7 @@ import { getReconstructionReview, REVIEW_LABELS, REVIEW_STYLES, type ReviewStatu
 import { CheckIcon, HangerIcon, SearchIcon } from "./Icons";
 import { hideBroken } from "../lib/hide-broken";
 import PresetOutfits from "./PresetOutfits";
+import { track } from "../lib/track";
 
 // Wardrobe order, head to toe. A slot missing from these lists still appears, under "More".
 const GROUPS: { label: string; slots: readonly Slot[] }[] = [
@@ -153,6 +154,12 @@ export default function SlotPicker() {
   const { workedOn, state: progressState } = useReconstructionProgress();
   const equippedId = useBuildStore((s) => s.build[slot]);
   const toggle = useBuildStore((s) => s.toggle);
+  // A pick in the picker is the one deliberate choice worth counting (not randomise, presets or opened links). Stable,
+  // so the memoised tiles stay memoised.
+  const pick = useCallback((item: Item) => {
+    if (useBuildStore.getState().build[item.slot] !== item.id) track("item_equipped", { slot: item.slot, item_id: item.id });
+    toggle(item);
+  }, [toggle]);
   const section = useRef<HTMLDivElement>(null);
   const grid = useRef<HTMLDivElement>(null);
 
@@ -224,7 +231,7 @@ export default function SlotPicker() {
           {items.map((item, i) => {
             const { status, note } = getReconstructionReview(item, workedOn, progressState);
             return <Tile key={item.id} item={item} equipped={equippedId === item.id} status={status} note={note}
-              renderable={isRenderable(item, workedOn)} eager={i < 20} onToggle={toggle} />;
+              renderable={isRenderable(item, workedOn)} eager={i < 20} onToggle={pick} />;
           })}
         </div>
         <p className="hud shrink-0 px-3 pb-4 text-fg-dim lg:hidden">{items.length} {items.length === 1 ? "item" : "items"} in {SLOT_LABELS[slot]}</p>

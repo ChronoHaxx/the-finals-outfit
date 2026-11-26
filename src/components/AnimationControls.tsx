@@ -13,6 +13,8 @@ import { savedFace, savedSpeed, setFacialAnimation } from "../lib/emote-playback
 import { useFeature } from "../lib/discovery";
 import { EmoteIcon, PauseIcon, PlayIcon } from "./Icons";
 import { VIEWER_BUTTON } from "./ViewerPanel";
+import { track } from "../lib/track";
+import { isChinalsClip } from "../lib/site-mode";
 
 // Showcase animation UI (5 Nov 2026): Animate / Static toggle, pause, and the emote picker (EmotePicker.tsx: every
 // emote with its icon, plus outfit-screen reactions and idles). Hidden unless the deployment publishes a clip manifest
@@ -125,6 +127,10 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
   const state = useAnimatorState(animator);
   // The rig-side bookkeeping for this character (useAnimationBinding.ts); the builder's is the primary one.
   const { play, stop } = useAnimationBinding({ animator, rig, ready, busy, primary: true });
+  const playPicked = (id: string) => {
+    track("emote_played", { emote_id: id, mode: isChinalsClip(id) ? "chinals" : "standard" });
+    play(id);
+  };
   const [picking, setPicking] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const controls = useRef<HTMLDivElement>(null);
@@ -171,7 +177,7 @@ export function AnimationControls({ animator, rig, ready, busy, studio }: {
           : <EmoteIcon size={14} />}
         <span className="truncate">{emote ? emote.label : "Emotes"}</span>
       </button>
-      {picking && <EmotePicker animator={animator} state={state} onPlay={play} onClose={closePicker}
+      {picking && <EmotePicker animator={animator} state={state} onPlay={playPicked} onClose={closePicker}
         anchor={controls.current?.closest<HTMLElement>("[data-viewer]") ?? null} />}
       {missing && !picking && (
         <span className={`hud max-w-56 px-1 text-right normal-case tracking-[0.04em] ${studio ? "text-ink-700" : "text-fg-muted"}`}>{missing}</span>

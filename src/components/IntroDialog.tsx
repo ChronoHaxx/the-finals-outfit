@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { trackOnce } from "../lib/track";
 import { CHANGELOG, LATEST_CHANGELOG_ID } from "../data/changelog";
 import { CATALOG_UPDATE } from "../data/catalog-update";
 import { getBrowseItems, getBrowseItemsBySlot } from "../lib/browse-catalog";
@@ -14,6 +15,7 @@ import { TOUR_TEXT } from "../data/feature-guide";
 import PatchNotes from "./PatchNotes";
 import { startTour } from "./Discovery";
 import { ArrowIcon, CloseIcon, ViewfinderIcon } from "./Icons";
+import { usePrivacyStore } from "../store/usePrivacyStore";
 
 const SEEN_KEY = "tfo:patch-notes-seen";
 // Storage can be missing or throw (private windows, blocked site data); the dialog then simply
@@ -47,12 +49,16 @@ export default function IntroDialog() {
 
 function IntroContent({ fresh }: { fresh: number }) {
   const hide = useIntroStore(s => s.hide);
+  const showPrivacy = usePrivacyStore(s => s.show);
   const tour = useTour();
   const dialog = useRef<HTMLDialogElement>(null);
   const cta = useRef<HTMLButtonElement>(null);
   const [closing, setClosing] = useState(false);
   const shared = useMemo(() => { try { return !!readOutfitLink(window.location.href); } catch { return false; } }, []);
   const stats = catalogStats();
+
+  // The welcome screen always offers the tour: with tour_started from here, how many decline it.
+  useEffect(() => trackOnce("tour-offered", "tour_offered"), []);
 
   // showModal() gives the real modal behaviour: the page behind becomes inert, focus is held
   // inside, Escape fires `cancel`, and focus returns to the opener on close.
@@ -128,11 +134,14 @@ function IntroContent({ fresh }: { fresh: number }) {
                 <ArrowIcon size={20} className="transition-transform duration-200 group-hover:translate-x-1" />
               </button>
               {/* The tour frames the builder's controls one by one, on the real page; it resumes where it was left. */}
-              <button type="button" onClick={() => close(() => startTour("resume"))}
+              <button type="button" onClick={() => close(() => startTour("resume", "welcome"))}
                 className="hud flex h-14 items-center gap-2 border border-ink-600 px-4 text-fg transition-colors hover:border-fg hover:bg-ink-900">
                 <ViewfinderIcon size={15} />{tour.status === "paused" ? TOUR_TEXT.resume : tour.status === "done" ? TOUR_TEXT.replay : TOUR_TEXT.start}
               </button>
               <span className="hud hidden text-fg-dim sm:block">or press Esc</span>
+              {/* Opens over this screen; closing it comes back here. */}
+              <button type="button" onClick={showPrivacy}
+                className="text-xs text-fg-dim underline underline-offset-2 transition-colors hover:text-fg">Privacy</button>
             </div>
 
             <section aria-labelledby="intro-tags" className="mt-12 max-w-lg animate-rise [animation-delay:250ms]">
