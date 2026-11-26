@@ -1,0 +1,6 @@
+visual-diff route: reconstructed (reconstructed=1)
+face23-masculine     through  40/175  minGapMm -0.67  head morphs ['default_ears', 'head_neck_match', 'medium_male']
+face23-androgynous   through   0/175  minGapMm +0.25  head morphs ['default_ears', 'head_neck_match']
+face30-masculine     through  54/138  minGapMm -1.50  head morphs ['default_ears', 'head_neck_match', 'medium_male']
+face32-masculine     through 170/235  minGapMm -2.34  head morphs ['default_ears', 'head_neck_match', 'medium_male']
+face01-masculine     through   0/550  minGapMm +1.91  head morphs ['default_ears', 'head_neck_match', 'medium_male']
