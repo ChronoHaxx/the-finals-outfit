@@ -1,0 +1,484 @@
+{
+ "note": "Decoded with the probe (properties/assets mode) and the pinned map f36b7c4f. WMD_HoudiniWrapMesh has 0 tagged properties: its 1,391,782-byte export is native payload (see README).",
+ "stacks": {
+  "MMS_BasicWrap": [
+   {
+    "type": "EmbarkMeshMergeModifierStack",
+    "name": "MMS_BasicWrap",
+    "properties": {
+     "Modifiers": [
+      {
+       "ObjectName": "EmbarkMeshMergeModifierWrapMorph'MMS_BasicWrap:EmbarkMeshMergeModifierWrapMorph_0'",
+       "ObjectPath": "/Game/Discovery/Characters/Avatar/MeshMerge/MMS_BasicWrap.2"
+      },
+      {
+       "ObjectName": "EmbarkMeshMergeModifierUniformScale'MMS_BasicWrap:EmbarkMeshMergeModifierUniformScale_0'",
+       "ObjectPath": "/Game/Discovery/Characters/Avatar/MeshMerge/MMS_BasicWrap.1"
+      }
+     ]
+    }
+   },
+   {
+    "type": "EmbarkMeshMergeModifierUniformScale",
+    "name": "EmbarkMeshMergeModifierUniformScale_0",
+    "properties": {
+     "ScaleRules": [
+      {
+       "Scale": 1.15,
+       "ActivationTags": [
+        "Customization.Archetype.Heavy"
+       ]
+      },
+      {
+       "Scale": 0.85,
+       "ActivationTags": [
+        "Customization.Archetype.Light"
+       ]
+      }
+     ],
+     "AuthoredId": "3A7D0AB7-4A4373A0-7F12E8A6-42DBE046"
+    }
+   },
+   {
+    "type": "EmbarkMeshMergeModifierWrapMorph",
+    "name": "EmbarkMeshMergeModifierWrapMorph_0",
+    "properties": {
+     "Driver": {
+      "ObjectName": "EmbarkMeshMergeWrapMorphDriver'WMD_HoudiniWrapMesh'",
+      "ObjectPath": "/Game/Discovery/Characters/WrapMeshes/WMD_HoudiniWrapMesh.0"
+     },
+     "MorphRules": [
+      {
+       "MorphName": "heavy_female",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Heavy",
+        "Customization.BodyType.Androgynous"
+       ]
+      },
+      {
+       "MorphName": "heavy_female",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Heavy",
+        "Customization.BodyType.Feminine"
+       ]
+      },
+      {
+       "MorphName": "heavy_female_muscular",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Heavy",
+        "Customization.BodyType.FeminineMuscular"
+       ]
+      },
+      {
+       "MorphName": "heavy_male",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Heavy",
+        "Customization.BodyType.Masculine"
+       ]
+      },
+      {
+       "MorphName": "heavy_male_muscular",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Heavy",
+        "Customization.BodyType.MasculineMuscular"
+       ]
+      },
+      {
+       "MorphName": "medium_female",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.BodyType.Feminine",
+        "Customization.Archetype.Medium"
+       ]
+      },
+      {
+       "MorphName": "medium_female",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Medium",
+        "Customization.BodyType.FeminineMuscular"
+       ]
+      },
+      {
+       "MorphName": "medium_male",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Medium",
+        "Customization.BodyType.Masculine"
+       ]
+      },
+      {
+       "MorphName": "medium_male",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Medium",
+        "Customization.BodyType.MasculineMuscular"
+       ]
+      },
+      {
+       "MorphName": "light_female",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.BodyType.Androgynous",
+        "Customization.Archetype.Light"
+       ]
+      },
+      {
+       "MorphName": "light_female",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Light",
+        "Customization.BodyType.Feminine"
+       ]
+      },
+      {
+       "MorphName": "light_female",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Light",
+        "Customization.BodyType.FeminineMuscular"
+       ]
+      },
+      {
+       "MorphName": "light_male",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.Archetype.Light",
+        "Customization.BodyType.MasculineMuscular"
+       ]
+      },
+      {
+       "MorphName": "light_male",
+       "Inflate": 0.0,
+       "ActivationTags": [
+        "Customization.BodyType.Masculine",
+        "Customization.Archetype.Light"
+       ]
+      }
+     ],
+     "AuthoredId": "FB73E261-4252ABF3-8B40A381-A027EAEF"
+    }
+   }
+  ],
+  "MMS_JacketWristCompatability": [
+   {
+    "type": "EmbarkMeshMergeModifierLocalBoneDeform",
+    "name": "EmbarkMeshMergeModifierLocalBoneDeform_0",
+    "properties": {
+     "Deforms": [
+      {
+       "BoneName": "lowerarm_l",
+       "BoneDelta": {
+        "Rotation": {
+         "X": 0.0,
+         "Y": -0.0,
+         "Z": 0.0,
+         "W": 1.0,
+         "IsNormalized": true,
+         "Size": 1.0,
+         "SizeSquared": 1.0
+        },
+        "Translation": {
+         "X": 0.0,
+         "Y": 0.0,
+         "Z": 0.0
+        },
+        "Scale3D": {
+         "X": 0.85,
+         "Y": 1.0,
+         "Z": 1.0
+        }
+       },
+       "bIncludeDescendantBones": true,
+       "ActivationTags": [
+        "Customization.Slot.Wrists"
+       ]
+      }
+     ],
+     "AuthoredId": "7EBD494A-4EA7DF4D-6EDD09A2-F4F00BD3"
+    }
+   },
+   {
+    "type": "EmbarkMeshMergeModifierSkinningTransfer",
+    "name": "EmbarkMeshMergeModifierSkinningTransfer_0",
+    "properties": {
+     "Transfers": [
+      {
+       "FromBones": [
+        "lowerarm_vpj_03_l",
+        "lowerarm_vpj_04_l",
+        "hand_l"
+       ],
+       "ToBone": "lowerarm_vpj_02_l",
+       "bIncludeDescendantBones": true,
+       "ActivationTags": [
+        "Customization.Slot.Wrists"
+       ]
+      }
+     ],
+     "AuthoredId": "6DA263F0-4D77D061-316BE890-3CD55A9A"
+    }
+   },
+   {
+    "type": "EmbarkMeshMergeModifierStack",
+    "name": "MMS_JacketWristCompatability",
+    "properties": {
+     "Modifiers": [
+      {
+       "ObjectName": "EmbarkMeshMergeModifierSkinningTransfer'MMS_JacketWristCompatability:EmbarkMeshMergeModifierSkinningTransfer_0'",
+       "ObjectPath": "/Game/Discovery/Characters/Avatar/MeshMerge/MMS_JacketWristCompatability.1"
+      },
+      {
+       "ObjectName": "EmbarkMeshMergeModifierLocalBoneDeform'MMS_JacketWristCompatability:EmbarkMeshMergeModifierLocalBoneDeform_0'",
+       "ObjectPath": "/Game/Discovery/Characters/Avatar/MeshMerge/MMS_JacketWristCompatability.0"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "bodyTypeMorphTables": {
+  "DA_BodyType_Androgynous": {
+   "ActivatesLightMorphTargets": [
+    "light_female"
+   ],
+   "ActivatesMediumMorphTargets": null,
+   "ActivatesHeavyMorphTargets": [
+    "heavy_female"
+   ],
+   "ActivatesCustomizationTag": {
+    "TagName": "Customization.BodyType.Androgynous"
+   },
+   "SupportedArchetypes": [
+    "EArchetypeSize::Medium"
+   ]
+  },
+  "DA_BodyType_Feminine": {
+   "ActivatesLightMorphTargets": [
+    "light_female"
+   ],
+   "ActivatesMediumMorphTargets": [
+    "medium_female"
+   ],
+   "ActivatesHeavyMorphTargets": [
+    "heavy_female"
+   ],
+   "ActivatesCustomizationTag": {
+    "TagName": "Customization.BodyType.Feminine"
+   },
+   "SupportedArchetypes": null
+  },
+  "DA_BodyType_FeminineMuscular": {
+   "ActivatesLightMorphTargets": [
+    "light_female"
+   ],
+   "ActivatesMediumMorphTargets": [
+    "medium_female"
+   ],
+   "ActivatesHeavyMorphTargets": [
+    "heavy_female_muscular"
+   ],
+   "ActivatesCustomizationTag": {
+    "TagName": "Customization.BodyType.FeminineMuscular"
+   },
+   "SupportedArchetypes": [
+    "EArchetypeSize::Heavy"
+   ]
+  },
+  "DA_BodyType_Masculine": {
+   "ActivatesLightMorphTargets": [
+    "light_male"
+   ],
+   "ActivatesMediumMorphTargets": [
+    "medium_male"
+   ],
+   "ActivatesHeavyMorphTargets": [
+    "heavy_male"
+   ],
+   "ActivatesCustomizationTag": {
+    "TagName": "Customization.BodyType.Masculine"
+   },
+   "SupportedArchetypes": null
+  },
+  "DA_BodyType_MasculineMuscular": {
+   "ActivatesLightMorphTargets": [
+    "light_male"
+   ],
+   "ActivatesMediumMorphTargets": [
+    "medium_male"
+   ],
+   "ActivatesHeavyMorphTargets": [
+    "heavy_male_muscular"
+   ],
+   "ActivatesCustomizationTag": {
+    "TagName": "Customization.BodyType.MasculineMuscular"
+   },
+   "SupportedArchetypes": [
+    "EArchetypeSize::Heavy"
+   ]
+  }
+ },
+ "SK_Streetwear_Hoodie.userData": [
+  {
+   "type": "EmbarkMeshMergeModifierUserData",
+   "name": "EmbarkMeshMergeModifierUserData_0",
+   "properties": {
+    "ModifierStack": {
+     "ObjectName": "EmbarkMeshMergeModifierStack'MMS_BasicWrap'",
+     "ObjectPath": "/Game/Discovery/Characters/Avatar/MeshMerge/MMS_BasicWrap.0"
+    },
+    "StackBakes": [
+     {
+      "Key": "FB73E261-4252ABF3-8B40A381-A027EAEF",
+      "Value": {
+       "ObjectName": "EmbarkMeshMergeModifierWrapMorph'SK_Streetwear_Hoodie:EmbarkMeshMergeModifierUserData_0.EmbarkMeshMergeModifierWrapMorph_0'",
+       "ObjectPath": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie.2"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "type": "EmbarkMeshMergeModifierWrapMorph",
+   "name": "EmbarkMeshMergeModifierWrapMorph_0",
+   "properties": {
+    "Driver": {
+     "ObjectName": "EmbarkMeshMergeWrapMorphDriver'WMD_HoudiniWrapMesh'",
+     "ObjectPath": "/Game/Discovery/Characters/WrapMeshes/WMD_HoudiniWrapMesh.0"
+    },
+    "MorphRules": [
+     {
+      "MorphName": "heavy_female",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Heavy",
+       "Customization.BodyType.Androgynous"
+      ]
+     },
+     {
+      "MorphName": "heavy_female",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Heavy",
+       "Customization.BodyType.Feminine"
+      ]
+     },
+     {
+      "MorphName": "heavy_female_muscular",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Heavy",
+       "Customization.BodyType.FeminineMuscular"
+      ]
+     },
+     {
+      "MorphName": "heavy_male",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Heavy",
+       "Customization.BodyType.Masculine"
+      ]
+     },
+     {
+      "MorphName": "heavy_male_muscular",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Heavy",
+       "Customization.BodyType.MasculineMuscular"
+      ]
+     },
+     {
+      "MorphName": "medium_female",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.BodyType.Feminine",
+       "Customization.Archetype.Medium"
+      ]
+     },
+     {
+      "MorphName": "medium_female",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Medium",
+       "Customization.BodyType.FeminineMuscular"
+      ]
+     },
+     {
+      "MorphName": "medium_male",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Medium",
+       "Customization.BodyType.Masculine"
+      ]
+     },
+     {
+      "MorphName": "medium_male",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Medium",
+       "Customization.BodyType.MasculineMuscular"
+      ]
+     },
+     {
+      "MorphName": "light_female",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.BodyType.Androgynous",
+       "Customization.Archetype.Light"
+      ]
+     },
+     {
+      "MorphName": "light_female",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Light",
+       "Customization.BodyType.Feminine"
+      ]
+     },
+     {
+      "MorphName": "light_female",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Light",
+       "Customization.BodyType.FeminineMuscular"
+      ]
+     },
+     {
+      "MorphName": "light_male",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.Archetype.Light",
+       "Customization.BodyType.MasculineMuscular"
+      ]
+     },
+     {
+      "MorphName": "light_male",
+      "Inflate": 0.0,
+      "ActivationTags": [
+       "Customization.BodyType.Masculine",
+       "Customization.Archetype.Light"
+      ]
+     }
+    ],
+    "AuthoredId": "FB73E261-4252ABF3-8B40A381-A027EAEF"
+   }
+  }
+ ],
+ "SK_Space_AstronautSuit_M.userData": [
+  {
+   "type": "EmbarkMeshMergeModifierUserData",
+   "name": "EmbarkMeshMergeModifierUserData_0",
+   "properties": {
+    "ModifierStack": {
+     "ObjectName": "EmbarkMeshMergeModifierStack'MMS_JacketWristCompatability'",
+     "ObjectPath": "/Game/Discovery/Characters/Avatar/MeshMerge/MMS_JacketWristCompatability.2"
+    }
+   }
+  }
+ ]
+}

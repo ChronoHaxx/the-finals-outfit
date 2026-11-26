@@ -1,0 +1,94 @@
+{
+ "build": "Mounted 32 containers; 399699 files (17 Nov 2026 build, 12.03.x). Only the 32 IoStore .utoc containers mount with the saved key; the legacy .pak files (Config/*.ini, script caches, AssetRegistry) do not.",
+ "method": "Raw package bytes (Zen header incl. name map + export data) searched for byte strings, ASCII and UTF-16LE. Gameplay tag values serialize as FNames, so a package that sets the tag anywhere carries it in its name map. Property NAMES are not stored in unversioned packages, so only tag values are searchable.",
+ "scans": {
+  "dataAndBlueprints": {
+   "packages": 61389,
+   "bytes": 211511381,
+   "selection": "every .uasset whose name prefix is DA, BP, WBP, DT, ABP, WABP, MABP, C, CT, B, UI, ST, GE, GA, GC, PDA, MMS, DR, CR, (no underscore), 1P, 3P, Character, Weapon",
+   "needles": [
+    "MeshMergeModifier",
+    "Customization.Feature",
+    "EmbarkMeshMerge",
+    "MMS_"
+   ],
+   "packagesWithCustomizationFeature": 105,
+   "nonItemPackagesWithMeshMergeModifier": [
+    "Discovery/Content/Discovery/Characters/Avatar/MeshMerge/MMS_BasicWrap.uasset",
+    "Discovery/Content/Discovery/Characters/Avatar/MeshMerge/MMS_JacketWristCompatability.uasset"
+   ]
+  },
+  "frontendMaps": {
+   "packages": 512,
+   "bytes": 138512810,
+   "selection": "Maps/Frontend|Menu|Lobby|Boot|PracticeRange|Tutorial and capture maps (41 .umap + 471 .uasset)",
+   "needles": [
+    "MeshMergeModifier",
+    "Customization.Feature",
+    "EmbarkMeshMerge",
+    "FeatureFlag"
+   ],
+   "hits": 0
+  },
+  "caseVariants": {
+   "packages": 61785,
+   "needles": [
+    "meshmerge",
+    "MeshMerge",
+    "mesh_merge",
+    "MESH_MERGE",
+    "Mesh Merge",
+    "Meshmerge",
+    "WrapMorph",
+    "wrapmorph",
+    "Feature.Mesh",
+    "feature.mesh",
+    "MergeModifier",
+    "mergemodifier"
+   ],
+   "note": "only item DAs, the two MMS stacks, and asset-path references to Characters/Avatar/MeshMerge/ (attachment meshes, MABP) matched; no flag string"
+  },
+  "characterSkeletalMeshes": {
+   "packages": 3804,
+   "bytes": 4908428598,
+   "needles": [
+    "EmbarkMeshMergeModifier",
+    "MMS_",
+    "WMD_"
+   ],
+   "packagesWithModifierUserData": [
+    "SK_Casual_OversizedSweater.uasset",
+    "SK_Historic_AnubisJewelry.uasset",
+    "SK_Pants.uasset",
+    "SK_Space_AstronautSuit_H.uasset",
+    "SK_Space_AstronautSuit_L.uasset",
+    "SK_Space_AstronautSuit_M.uasset",
+    "SK_StarterSet_TShirt.uasset",
+    "SK_Streetwear_BikerJacket.uasset",
+    "SK_Streetwear_BikerJacketHoodie.uasset",
+    "SK_Streetwear_Hoodie.uasset",
+    "SK_Streetwear_TankTop.uasset",
+    "SK_Streetwear_TightSingletSportEvent.uasset",
+    "SK_Streetwear_VarsityJacket.uasset"
+   ]
+  },
+  "otherContextTags": {
+   "packages": 61785,
+   "needles": [
+    "Customization.Quality",
+    "Customization.FirstPerson",
+    "Customization.Frontend",
+    "Customization.Randomizer",
+    "ActorTagOverrides"
+   ],
+   "note": "Customization.FirstPerson (35 DAs), Customization.Quality.Frontend (43), Customization.Frontend.LocalPlayer/SkipRarity (2) appear only in item DAs as conditions; no data package grants them. Same pattern as Customization.Feature.MeshMergeModifiers."
+  }
+ },
+ "daTagCensus": {
+  "packages": 44942,
+  "distinctCustomizationTags": 225,
+  "customizationFeatureTags": {
+   "Customization.Feature.MeshMergeModifiers": 105
+  }
+ }
+}

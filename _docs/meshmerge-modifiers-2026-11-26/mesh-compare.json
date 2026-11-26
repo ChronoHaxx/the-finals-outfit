@@ -1,0 +1,1628 @@
+{
+ "note": "LOD0 only (the probe assets mode exports EMeshQuality.Highest); cooked LOD count from colour evidence parsedLodCount. posMaxDelta in cm, index-aligned. \"*0.85 vs _L\" scales positions and bone translations of the left mesh.",
+ "families": [
+  {
+   "base": "SK_Casual_OversizedSweater",
+   "(none)": {
+    "v": 3015,
+    "t": 5304,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_OversizedSweater_OversizedSweater"
+    ],
+    "bones": 55,
+    "bonesSha": "874adea0fa6e",
+    "lods": 5,
+    "skel": "SK_Casual_OversizedSweater_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "bandolier_squeeze",
+     "first_person"
+    ],
+    "stack": [
+     "EmbarkMeshMergeModifierStack'MMS_BasicWrap'"
+    ],
+    "bakes": [
+     "WrapMorph:FB73E261"
+    ]
+   },
+   "_M": {
+    "v": 3015,
+    "t": 5304,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_OversizedSweater_OversizedSweater"
+    ],
+    "bones": 55,
+    "bonesSha": "874adea0fa6e",
+    "lods": 5,
+    "skel": "SK_Casual_OversizedSweater_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "bandolier_squeeze",
+     "first_person",
+     "medium_female",
+     "medium_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_L": {
+    "v": 3015,
+    "t": 5304,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_OversizedSweater_OversizedSweater"
+    ],
+    "bones": 55,
+    "bonesSha": "874adea0fa6e",
+    "lods": 5,
+    "skel": "SK_Casual_OversizedSweater_L_Skeleton",
+    "phys": null,
+    "morphs": [
+     "bandolier_squeeze",
+     "first_person",
+     "light_female",
+     "light_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_H": {
+    "v": 3015,
+    "t": 5304,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_OversizedSweater_OversizedSweater"
+    ],
+    "bones": 55,
+    "bonesSha": "874adea0fa6e",
+    "lods": 5,
+    "skel": "SK_Casual_OversizedSweater_H_Skeleton",
+    "phys": null,
+    "morphs": [
+     "bandolier_squeeze",
+     "first_person",
+     "heavy_female",
+     "heavy_female_muscular",
+     "heavy_male",
+     "heavy_male_muscular"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "cmp": {
+    "SK_Casual_OversizedSweater vs SK_Casual_OversizedSweater_M (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Casual_OversizedSweater vs SK_Casual_OversizedSweater_L (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 24.2957,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Casual_OversizedSweater vs SK_Casual_OversizedSweater_H (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 24.2957,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Casual_OversizedSweater*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Casual_OversizedSweater*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    }
+   }
+  },
+  {
+   "base": "SK_Historic_AnubisJewelry",
+   "(none)": {
+    "v": 1291,
+    "t": 2304,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_AnubisJewelry_AnubisJewelry"
+    ],
+    "bones": 21,
+    "bonesSha": "8b25f9188d9a",
+    "lods": 5,
+    "skel": "SK_Historic_AnubisJewelry_M_Skeleton",
+    "phys": null,
+    "morphs": [],
+    "stack": [
+     "EmbarkMeshMergeModifierStack'MMS_BasicWrap'"
+    ],
+    "bakes": [
+     "WrapMorph:FB73E261"
+    ]
+   },
+   "_M": {
+    "v": 1291,
+    "t": 2304,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_AnubisJewelry_AnubisJewelry"
+    ],
+    "bones": 21,
+    "bonesSha": "8b25f9188d9a",
+    "lods": 5,
+    "skel": "SK_Historic_AnubisJewelry_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "medium_female",
+     "medium_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_L": {
+    "v": 1291,
+    "t": 2304,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_AnubisJewelry_AnubisJewelry"
+    ],
+    "bones": 21,
+    "bonesSha": "8b25f9188d9a",
+    "lods": 5,
+    "skel": "SK_Historic_AnubisJewelry_L_Skeleton",
+    "phys": null,
+    "morphs": [
+     "light_female",
+     "light_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_H": {
+    "v": 1291,
+    "t": 2304,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_AnubisJewelry_AnubisJewelry"
+    ],
+    "bones": 21,
+    "bonesSha": "8b25f9188d9a",
+    "lods": 5,
+    "skel": "SK_Historic_AnubisJewelry_H_Skeleton",
+    "phys": null,
+    "morphs": [
+     "heavy_female",
+     "heavy_female_muscular",
+     "heavy_male",
+     "heavy_male_muscular"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "cmp": {
+    "SK_Historic_AnubisJewelry vs SK_Historic_AnubisJewelry_M (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": false,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Historic_AnubisJewelry vs SK_Historic_AnubisJewelry_L (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 21.7045,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Historic_AnubisJewelry vs SK_Historic_AnubisJewelry_H (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 21.7045,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Historic_AnubisJewelry*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Historic_AnubisJewelry*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": false,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": false,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    }
+   }
+  },
+  {
+   "base": "SK_Pants",
+   "(none)": {
+    "v": 2357,
+    "t": 4024,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_Pants_Pants"
+    ],
+    "bones": 31,
+    "bonesSha": "48dc1b2c1393",
+    "lods": 5,
+    "skel": "SK_Pants_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "shrink_pants_in_lowboots",
+     "shrink_pants_in_tallboots"
+    ],
+    "stack": [
+     "EmbarkMeshMergeModifierStack'MMS_BasicWrap'"
+    ],
+    "bakes": [
+     "WrapMorph:FB73E261"
+    ]
+   },
+   "_M": {
+    "v": 2357,
+    "t": 4024,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_Pants_Pants"
+    ],
+    "bones": 31,
+    "bonesSha": "48dc1b2c1393",
+    "lods": 5,
+    "skel": "SK_Pants_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "medium_female",
+     "medium_male",
+     "shrink_pants_in_lowboots",
+     "shrink_pants_in_tallboots"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_L": {
+    "v": 2357,
+    "t": 4024,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_Pants_Pants"
+    ],
+    "bones": 31,
+    "bonesSha": "48dc1b2c1393",
+    "lods": 5,
+    "skel": "SK_Pants_L_Skeleton",
+    "phys": null,
+    "morphs": [
+     "light_female",
+     "light_male",
+     "shrink_pants_in_lowboots",
+     "shrink_pants_in_tallboots"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_H": {
+    "v": 2357,
+    "t": 4024,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_Pants_Pants"
+    ],
+    "bones": 31,
+    "bonesSha": "48dc1b2c1393",
+    "lods": 5,
+    "skel": "SK_Pants_H_Skeleton",
+    "phys": null,
+    "morphs": [
+     "heavy_female",
+     "heavy_female_muscular",
+     "heavy_male",
+     "heavy_male_muscular",
+     "shrink_pants_in_lowboots",
+     "shrink_pants_in_tallboots"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "cmp": {
+    "SK_Pants vs SK_Pants_M (x1)": {
+     "sameIndices": false,
+     "posMaxDelta": 10.7779,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Pants vs SK_Pants_L (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 16.6592,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Pants vs SK_Pants_H (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 16.6592,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Pants*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Pants*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*0.85 vs _L": {
+     "sameIndices": false,
+     "posMaxDelta": 9.1612,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*1.15 vs _H": {
+     "sameIndices": false,
+     "posMaxDelta": 12.3945,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    }
+   }
+  },
+  {
+   "base": "SK_StarterSet_TShirt",
+   "(none)": {
+    "v": 1761,
+    "t": 2778,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_TShirt_TShirt"
+    ],
+    "bones": 31,
+    "bonesSha": "916fbee5ad21",
+    "lods": 5,
+    "skel": "SK_StarterSet_TShirt_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "shrink_under_vest"
+    ],
+    "stack": [
+     "EmbarkMeshMergeModifierStack'MMS_BasicWrap'"
+    ],
+    "bakes": [
+     "WrapMorph:FB73E261"
+    ]
+   },
+   "_M": {
+    "v": 1761,
+    "t": 2778,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_TShirt_TShirt"
+    ],
+    "bones": 27,
+    "bonesSha": "8cb7a327ee4f",
+    "lods": 5,
+    "skel": "SK_StarterSet_TShirt_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "medium_female",
+     "medium_male",
+     "shrink_under_vest"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_L": {
+    "v": 1761,
+    "t": 2778,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_TShirt_TShirt"
+    ],
+    "bones": 31,
+    "bonesSha": "916fbee5ad21",
+    "lods": 5,
+    "skel": "SK_StarterSet_TShirt_L_Skeleton",
+    "phys": null,
+    "morphs": [
+     "light_female",
+     "light_male",
+     "shrink_under_vest"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_H": {
+    "v": 1761,
+    "t": 2778,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_TShirt_TShirt"
+    ],
+    "bones": 31,
+    "bonesSha": "916fbee5ad21",
+    "lods": 5,
+    "skel": "SK_StarterSet_TShirt_H_Skeleton",
+    "phys": null,
+    "morphs": [
+     "heavy_female",
+     "heavy_female_muscular",
+     "heavy_male",
+     "heavy_male_muscular",
+     "shrink_under_vest"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "cmp": {
+    "SK_StarterSet_TShirt vs SK_StarterSet_TShirt_M (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": false
+    },
+    "SK_StarterSet_TShirt vs SK_StarterSet_TShirt_L (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 23.9667,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_StarterSet_TShirt vs SK_StarterSet_TShirt_H (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 23.9667,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_StarterSet_TShirt*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_StarterSet_TShirt*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": false
+    },
+    "_M*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0001,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": false
+    }
+   }
+  },
+  {
+   "base": "SK_Streetwear_BikerJacket",
+   "(none)": {
+    "v": 5694,
+    "t": 9358,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_BikerJacket_BikerJacket"
+    ],
+    "bones": 53,
+    "bonesSha": "e48e81372b72",
+    "lods": 5,
+    "skel": "SK_Streetwear_BikerJacket_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "bandolier_squeeze",
+     "shrink_under_vest"
+    ],
+    "stack": [
+     "EmbarkMeshMergeModifierStack'MMS_BasicWrap'"
+    ],
+    "bakes": [
+     "WrapMorph:FB73E261"
+    ]
+   },
+   "_M": {
+    "v": 5694,
+    "t": 9358,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_BikerJacket_BikerJacket"
+    ],
+    "bones": 53,
+    "bonesSha": "e48e81372b72",
+    "lods": 5,
+    "skel": "SK_Streetwear_BikerJacket_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "bandolier_squeeze",
+     "medium_female",
+     "medium_male",
+     "shrink_under_vest"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_L": {
+    "v": 5694,
+    "t": 9358,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_BikerJacket_BikerJacket"
+    ],
+    "bones": 53,
+    "bonesSha": "e48e81372b72",
+    "lods": 5,
+    "skel": "SK_Streetwear_BikerJacket_L_Skeleton",
+    "phys": null,
+    "morphs": [
+     "bandolier_squeeze",
+     "light_female",
+     "light_male",
+     "shrink_under_vest"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_H": {
+    "v": 5694,
+    "t": 9358,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_BikerJacket_BikerJacket"
+    ],
+    "bones": 53,
+    "bonesSha": "e48e81372b72",
+    "lods": 5,
+    "skel": "SK_Streetwear_BikerJacket_H_Skeleton",
+    "phys": null,
+    "morphs": [
+     "bandolier_squeeze",
+     "heavy_female",
+     "heavy_female_muscular",
+     "heavy_male",
+     "heavy_male_muscular",
+     "shrink_under_vest"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "cmp": {
+    "SK_Streetwear_BikerJacket vs SK_Streetwear_BikerJacket_M (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_BikerJacket vs SK_Streetwear_BikerJacket_L (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 24.5709,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_BikerJacket vs SK_Streetwear_BikerJacket_H (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 24.5709,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_BikerJacket*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_BikerJacket*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    }
+   }
+  },
+  {
+   "base": "SK_Streetwear_BikerJacketHoodie",
+   "(none)": {
+    "v": 6740,
+    "t": 11317,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_BikerJacketHoodie_BikerJacketHoodie"
+    ],
+    "bones": 53,
+    "bonesSha": "e48e81372b72",
+    "lods": 5,
+    "skel": "SK_Streetwear_BikerJacketHoodie_M_Skeleton",
+    "phys": "SK_Streetwear_BikerJacketHoodie_M_Physics",
+    "morphs": [
+     "bandolier_squeeze"
+    ],
+    "stack": [
+     "EmbarkMeshMergeModifierStack'MMS_BasicWrap'"
+    ],
+    "bakes": [
+     "WrapMorph:FB73E261"
+    ]
+   },
+   "_M": {
+    "v": 6740,
+    "t": 11317,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_BikerJacketHoodie_BikerJacketHoodie"
+    ],
+    "bones": 53,
+    "bonesSha": "e48e81372b72",
+    "lods": 5,
+    "skel": "SK_Streetwear_BikerJacketHoodie_M_Skeleton",
+    "phys": "SK_Streetwear_BikerJacketHoodie_M_Physics",
+    "morphs": [
+     "bandolier_squeeze",
+     "medium_female",
+     "medium_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_L": {
+    "v": 6740,
+    "t": 11317,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_BikerJacketHoodie_BikerJacketHoodie"
+    ],
+    "bones": 53,
+    "bonesSha": "e48e81372b72",
+    "lods": 5,
+    "skel": "SK_Streetwear_BikerJacketHoodie_L_Skeleton",
+    "phys": "SK_Streetwear_BikerJacketHoodie_L_Physics",
+    "morphs": [
+     "bandolier_squeeze",
+     "light_female",
+     "light_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_H": {
+    "v": 6740,
+    "t": 11317,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_BikerJacketHoodie_BikerJacketHoodie"
+    ],
+    "bones": 53,
+    "bonesSha": "e48e81372b72",
+    "lods": 5,
+    "skel": "SK_Streetwear_BikerJacketHoodie_H_Skeleton",
+    "phys": "SK_Streetwear_BikerJacketHoodie_H_Physics",
+    "morphs": [
+     "bandolier_squeeze",
+     "heavy_female",
+     "heavy_female_muscular",
+     "heavy_male",
+     "heavy_male_muscular"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "cmp": {
+    "SK_Streetwear_BikerJacketHoodie vs SK_Streetwear_BikerJacketHoodie_M (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_BikerJacketHoodie vs SK_Streetwear_BikerJacketHoodie_L (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 24.779,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_BikerJacketHoodie vs SK_Streetwear_BikerJacketHoodie_H (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 24.779,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_BikerJacketHoodie*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_BikerJacketHoodie*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    }
+   }
+  },
+  {
+   "base": "SK_Streetwear_Hoodie",
+   "(none)": {
+    "v": 4182,
+    "t": 7298,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_Hoodie_Hoodie"
+    ],
+    "bones": 40,
+    "bonesSha": "3a27e07cd3fa",
+    "lods": 5,
+    "skel": "SK_Streetwear_Hoodie_M_Skeleton",
+    "phys": "SK_Streetwear_Hoodie_M_Physics",
+    "morphs": [
+     "shrink_under_vest"
+    ],
+    "stack": [
+     "EmbarkMeshMergeModifierStack'MMS_BasicWrap'"
+    ],
+    "bakes": [
+     "WrapMorph:FB73E261"
+    ]
+   },
+   "_M": {
+    "v": 4182,
+    "t": 7298,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_Hoodie_Hoodie"
+    ],
+    "bones": 40,
+    "bonesSha": "3a27e07cd3fa",
+    "lods": 5,
+    "skel": "SK_Streetwear_Hoodie_M_Skeleton",
+    "phys": "SK_Streetwear_Hoodie_M_Physics",
+    "morphs": [
+     "medium_female",
+     "medium_male",
+     "shrink_under_vest"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_L": {
+    "v": 4182,
+    "t": 7298,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_Hoodie_Hoodie"
+    ],
+    "bones": 40,
+    "bonesSha": "3a27e07cd3fa",
+    "lods": 5,
+    "skel": "SK_Streetwear_Hoodie_L_Skeleton",
+    "phys": "SK_Streetwear_Hoodie_L_Physics",
+    "morphs": [
+     "light_female",
+     "light_male",
+     "shrink_under_vest"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_H": {
+    "v": 4182,
+    "t": 7298,
+    "sec": 1,
+    "uv": 1,
+    "mats": [
+     "MI_Hoodie_Hoodie"
+    ],
+    "bones": 40,
+    "bonesSha": "3a27e07cd3fa",
+    "lods": 5,
+    "skel": "SK_Streetwear_Hoodie_H_Skeleton",
+    "phys": "SK_Streetwear_Hoodie_H_Physics",
+    "morphs": [
+     "heavy_female",
+     "heavy_female_muscular",
+     "heavy_male",
+     "heavy_male_muscular",
+     "shrink_under_vest"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "cmp": {
+    "SK_Streetwear_Hoodie vs SK_Streetwear_Hoodie_M (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_Hoodie vs SK_Streetwear_Hoodie_L (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 24.4776,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_Hoodie vs SK_Streetwear_Hoodie_H (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 24.4776,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_Hoodie*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_Hoodie*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": false,
+     "sameUvAll": false,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    }
+   }
+  },
+  {
+   "base": "SK_Streetwear_TankTop",
+   "(none)": {
+    "v": 2545,
+    "t": 4378,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_TankTop_TankTop"
+    ],
+    "bones": 38,
+    "bonesSha": "4eb06afc2fe3",
+    "lods": 5,
+    "skel": "SK_Streetwear_TankTop_M_Skeleton",
+    "phys": null,
+    "morphs": [],
+    "stack": [
+     "EmbarkMeshMergeModifierStack'MMS_BasicWrap'"
+    ],
+    "bakes": [
+     "WrapMorph:FB73E261"
+    ]
+   },
+   "_M": {
+    "v": 2545,
+    "t": 4378,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_TankTop_TankTop"
+    ],
+    "bones": 38,
+    "bonesSha": "4eb06afc2fe3",
+    "lods": 5,
+    "skel": "SK_Streetwear_TankTop_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "medium_female",
+     "medium_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_L": {
+    "v": 2545,
+    "t": 4378,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_TankTop_TankTop"
+    ],
+    "bones": 38,
+    "bonesSha": "4eb06afc2fe3",
+    "lods": 5,
+    "skel": "SK_Streetwear_TankTop_L_Skeleton",
+    "phys": null,
+    "morphs": [
+     "light_female",
+     "light_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_H": {
+    "v": 2545,
+    "t": 4378,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_TankTop_TankTop"
+    ],
+    "bones": 38,
+    "bonesSha": "4eb06afc2fe3",
+    "lods": 5,
+    "skel": "SK_Streetwear_TankTop_H_Skeleton",
+    "phys": null,
+    "morphs": [
+     "heavy_female",
+     "heavy_female_muscular",
+     "heavy_male",
+     "heavy_male_muscular"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "cmp": {
+    "SK_Streetwear_TankTop vs SK_Streetwear_TankTop_M (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_TankTop vs SK_Streetwear_TankTop_L (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 23.682,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_TankTop vs SK_Streetwear_TankTop_H (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 23.682,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_TankTop*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_TankTop*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    }
+   }
+  },
+  {
+   "base": "SK_Streetwear_TightSingletSportEvent",
+   "(none)": {
+    "v": 1412,
+    "t": 2310,
+    "sec": 2,
+    "uv": 1,
+    "mats": [
+     "MI_TightSingletSportEvent_CoatName_Black",
+     "MI_TightSingletSportEvent_TightSingletSportEvent"
+    ],
+    "bones": 19,
+    "bonesSha": "052520960ed1",
+    "lods": 5,
+    "skel": "SK_Streetwear_TightSingletSportEvent_M_Skeleton",
+    "phys": null,
+    "morphs": [],
+    "stack": [
+     "EmbarkMeshMergeModifierStack'MMS_BasicWrap'"
+    ],
+    "bakes": [
+     "WrapMorph:FB73E261"
+    ]
+   },
+   "_M": {
+    "v": 1412,
+    "t": 2310,
+    "sec": 2,
+    "uv": 1,
+    "mats": [
+     "MI_TightSingletSportEvent_CoatName_Black",
+     "MI_TightSingletSportEvent_TightSingletSportEvent"
+    ],
+    "bones": 19,
+    "bonesSha": "052520960ed1",
+    "lods": 5,
+    "skel": "SK_Streetwear_TightSingletSportEvent_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "medium_female",
+     "medium_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_L": {
+    "v": 1412,
+    "t": 2310,
+    "sec": 2,
+    "uv": 1,
+    "mats": [
+     "MI_TightSingletSportEvent_CoatName_Black",
+     "MI_TightSingletSportEvent_TightSingletSportEvent"
+    ],
+    "bones": 19,
+    "bonesSha": "052520960ed1",
+    "lods": 5,
+    "skel": "SK_Streetwear_TightSingletSportEvent_L_Skeleton",
+    "phys": null,
+    "morphs": [
+     "light_female",
+     "light_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_H": {
+    "v": 1412,
+    "t": 2310,
+    "sec": 2,
+    "uv": 1,
+    "mats": [
+     "MI_TightSingletSportEvent_CoatName_Black",
+     "MI_TightSingletSportEvent_TightSingletSportEvent"
+    ],
+    "bones": 19,
+    "bonesSha": "052520960ed1",
+    "lods": 5,
+    "skel": "SK_Streetwear_TightSingletSportEvent_H_Skeleton",
+    "phys": null,
+    "morphs": [
+     "heavy_female",
+     "heavy_female_muscular",
+     "heavy_male",
+     "heavy_male_muscular"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "cmp": {
+    "SK_Streetwear_TightSingletSportEvent vs SK_Streetwear_TightSingletSportEvent_M (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_TightSingletSportEvent vs SK_Streetwear_TightSingletSportEvent_L (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 23.682,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_TightSingletSportEvent vs SK_Streetwear_TightSingletSportEvent_H (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 23.682,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_TightSingletSportEvent*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_TightSingletSportEvent*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*0.85 vs _L": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*1.15 vs _H": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    }
+   }
+  },
+  {
+   "base": "SK_Streetwear_VarsityJacket",
+   "(none)": {
+    "v": 4804,
+    "t": 8404,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_VarsityJacket_VarsityJacket"
+    ],
+    "bones": 37,
+    "bonesSha": "23e8cf135c8d",
+    "lods": 5,
+    "skel": "SK_Streetwear_VarsityJacket_M_Skeleton",
+    "phys": null,
+    "morphs": [],
+    "stack": [
+     "EmbarkMeshMergeModifierStack'MMS_BasicWrap'"
+    ],
+    "bakes": [
+     "WrapMorph:FB73E261"
+    ]
+   },
+   "_M": {
+    "v": 4804,
+    "t": 8404,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_VarsityJacket_VarsityJacket"
+    ],
+    "bones": 37,
+    "bonesSha": "23e8cf135c8d",
+    "lods": 5,
+    "skel": "SK_Streetwear_VarsityJacket_M_Skeleton",
+    "phys": null,
+    "morphs": [
+     "medium_female",
+     "medium_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_L": {
+    "v": 4804,
+    "t": 8404,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_VarsityJacket_VarsityJacket"
+    ],
+    "bones": 37,
+    "bonesSha": "23e8cf135c8d",
+    "lods": 5,
+    "skel": "SK_Streetwear_VarsityJacket_L_Skeleton",
+    "phys": null,
+    "morphs": [
+     "light_female",
+     "light_male"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "_H": {
+    "v": 4804,
+    "t": 8404,
+    "sec": 1,
+    "uv": 2,
+    "mats": [
+     "MI_VarsityJacket_VarsityJacket"
+    ],
+    "bones": 37,
+    "bonesSha": "23e8cf135c8d",
+    "lods": 5,
+    "skel": "SK_Streetwear_VarsityJacket_H_Skeleton",
+    "phys": null,
+    "morphs": [
+     "heavy_female",
+     "heavy_female_muscular",
+     "heavy_male",
+     "heavy_male_muscular"
+    ],
+    "stack": [],
+    "bakes": []
+   },
+   "cmp": {
+    "SK_Streetwear_VarsityJacket vs SK_Streetwear_VarsityJacket_M (x1)": {
+     "sameIndices": true,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_VarsityJacket vs SK_Streetwear_VarsityJacket_L (x1)": {
+     "sameIndices": false,
+     "posMaxDelta": 24.5376,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_VarsityJacket vs SK_Streetwear_VarsityJacket_H (x1)": {
+     "sameIndices": false,
+     "posMaxDelta": 24.5376,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 14.6223
+    },
+    "SK_Streetwear_VarsityJacket*0.85 vs _L": {
+     "sameIndices": false,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "SK_Streetwear_VarsityJacket*1.15 vs _H": {
+     "sameIndices": false,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": true,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*0.85 vs _L": {
+     "sameIndices": false,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    },
+    "_M*1.15 vs _H": {
+     "sameIndices": false,
+     "posMaxDelta": 0.0,
+     "sameUv0": true,
+     "sameUvAll": true,
+     "sameInfluences": false,
+     "sameColours": true,
+     "sameBones": true,
+     "boneTranslationMaxDelta": 0.0
+    }
+   }
+  }
+ ]
+}

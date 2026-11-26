@@ -1,0 +1,1057 @@
+{
+ "AssetReplicatorId_CharacterCustomizationItem": {
+  "super": "AssetReplicatorIdBase",
+  "props": []
+ },
+ "EmbarkMeshMergeDesc": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "Skeleton",
+    "Object"
+   ],
+   [
+    1,
+    "RootMesh",
+    "Object"
+   ],
+   [
+    2,
+    "MeshesToMerge",
+    "Array<Object>"
+   ],
+   [
+    3,
+    "AttachedStaticMeshes",
+    "Array<Struct<EmbarkAttachedStaticMeshDesc>>"
+   ],
+   [
+    4,
+    "MorphTargetsToMerge",
+    "Array<Name>"
+   ],
+   [
+    5,
+    "MorphTargetsToWriteStencil",
+    "Array<Name>"
+   ],
+   [
+    6,
+    "DisableClothIndices",
+    "Array<Int>"
+   ],
+   [
+    7,
+    "PhysicsAsset",
+    "Object"
+   ],
+   [
+    8,
+    "PostProcessAnim",
+    "Object"
+   ],
+   [
+    9,
+    "MaxNumLODsToMerge",
+    "Int"
+   ],
+   [
+    10,
+    "MinLODIndexToMerge",
+    "Int"
+   ],
+   [
+    11,
+    "MergedForcedLODCount",
+    "Int"
+   ],
+   [
+    12,
+    "Scale",
+    "Float"
+   ],
+   [
+    13,
+    "bPreMergeSkeleton",
+    "Bool"
+   ],
+   [
+    14,
+    "bMergeDisabledSections",
+    "Bool"
+   ],
+   [
+    15,
+    "LODScreenSizes",
+    "Array<Float>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeFunctionLibrary": {
+  "super": "BlueprintFunctionLibrary",
+  "props": []
+ },
+ "DiscoCharacterCustomizationItem": {
+  "super": "DiscoCharacterCustomizationItemUnified",
+  "props": []
+ },
+ "EmbarkMeshMergeModifierEntry": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "ActivationTags",
+    "Struct<GameplayTagContainer>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeLocalBoneDeformEntry": {
+  "super": "EmbarkMeshMergeModifierEntry",
+  "props": [
+   [
+    0,
+    "BoneName",
+    "Name"
+   ],
+   [
+    1,
+    "BoneDelta",
+    "Struct<Transform>"
+   ],
+   [
+    2,
+    "bIncludeDescendantBones",
+    "Bool"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeSkinningTransferEntry": {
+  "super": "EmbarkMeshMergeModifierEntry",
+  "props": [
+   [
+    0,
+    "FromBones",
+    "Array<Name>"
+   ],
+   [
+    1,
+    "ToBone",
+    "Name"
+   ],
+   [
+    2,
+    "bIncludeDescendantBones",
+    "Bool"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeUniformScaleEntry": {
+  "super": "EmbarkMeshMergeModifierEntry",
+  "props": [
+   [
+    0,
+    "Scale",
+    "Float"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeWrapMorphEntry": {
+  "super": "EmbarkMeshMergeModifierEntry",
+  "props": [
+   [
+    0,
+    "MorphName",
+    "Name"
+   ],
+   [
+    1,
+    "Inflate",
+    "Float"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeRequest": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "Skeleton",
+    "Object"
+   ],
+   [
+    1,
+    "RootMesh",
+    "Object"
+   ],
+   [
+    2,
+    "MeshesToMerge",
+    "Array<Struct<EmbarkSkeletalMeshDesc>>"
+   ],
+   [
+    3,
+    "AttachedStaticMeshes",
+    "Array<Struct<EmbarkAttachedStaticMeshDesc>>"
+   ],
+   [
+    4,
+    "MorphTargetsToMerge",
+    "Array<Name>"
+   ],
+   [
+    5,
+    "MorphTargetsToWriteStencil",
+    "Array<Name>"
+   ],
+   [
+    6,
+    "DisableClothIndices",
+    "Array<Int>"
+   ],
+   [
+    7,
+    "PhysicsAsset",
+    "Object"
+   ],
+   [
+    8,
+    "PostProcessAnim",
+    "Object"
+   ],
+   [
+    9,
+    "MaxNumLODsToMerge",
+    "Int"
+   ],
+   [
+    10,
+    "MinLODIndexToMerge",
+    "Int"
+   ],
+   [
+    11,
+    "MergedForcedLODCount",
+    "Int"
+   ],
+   [
+    12,
+    "Scale",
+    "Float"
+   ],
+   [
+    13,
+    "LODScreenSizes",
+    "Array<Float>"
+   ],
+   [
+    14,
+    "bMergeDisabledSections",
+    "Bool"
+   ],
+   [
+    15,
+    "ActivationTags",
+    "Struct<GameplayTagContainer>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeWrapMorphBuildSettings": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "WeldThreshold",
+    "Float"
+   ],
+   [
+    1,
+    "NormalSmoothingIterations",
+    "Int"
+   ],
+   [
+    2,
+    "RotorSmoothingIterations",
+    "Int"
+   ],
+   [
+    3,
+    "RotorDeadbandRadians",
+    "Float"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeWrapMorphBuildStats": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "BuiltAt",
+    "Struct<DateTime>"
+   ],
+   [
+    1,
+    "SourceRenderVertices",
+    "Int"
+   ],
+   [
+    2,
+    "WeldedVertices",
+    "Int"
+   ],
+   [
+    3,
+    "Triangles",
+    "Int"
+   ],
+   [
+    4,
+    "Morphs",
+    "Int"
+   ],
+   [
+    5,
+    "RotatingTriangles",
+    "Int"
+   ],
+   [
+    6,
+    "DeadbandedTriangles",
+    "Int"
+   ],
+   [
+    7,
+    "PayloadMegabytes",
+    "Float"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeModifier": {
+  "super": "Object",
+  "props": [
+   [
+    0,
+    "AuthoredId",
+    "Struct<Guid>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeModifierUserData": {
+  "super": "AssetUserData",
+  "props": [
+   [
+    0,
+    "Modifiers",
+    "Array<Object>"
+   ],
+   [
+    1,
+    "ModifierStack",
+    "Object"
+   ],
+   [
+    2,
+    "StackBakes",
+    "Map<Struct<Guid>,Object>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeModifierLocalBoneDeform": {
+  "super": "EmbarkMeshMergeModifier",
+  "props": [
+   [
+    0,
+    "Deforms",
+    "Array<Struct<EmbarkMeshMergeLocalBoneDeformEntry>>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeModifierSkinningTransfer": {
+  "super": "EmbarkMeshMergeModifier",
+  "props": [
+   [
+    0,
+    "Transfers",
+    "Array<Struct<EmbarkMeshMergeSkinningTransferEntry>>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeModifierStack": {
+  "super": "DataAsset",
+  "props": [
+   [
+    0,
+    "Modifiers",
+    "Array<Object>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeModifierUniformScale": {
+  "super": "EmbarkMeshMergeModifier",
+  "props": [
+   [
+    0,
+    "ScaleRules",
+    "Array<Struct<EmbarkMeshMergeUniformScaleEntry>>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeModifierWrapMorph": {
+  "super": "EmbarkMeshMergeModifier",
+  "props": [
+   [
+    0,
+    "Driver",
+    "Object"
+   ],
+   [
+    1,
+    "MorphRules",
+    "Array<Struct<EmbarkMeshMergeWrapMorphEntry>>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergePlugin": {
+  "super": "BlueprintFunctionLibrary",
+  "props": []
+ },
+ "EmbarkMeshMergeSubsystem": {
+  "super": "GameInstanceSubsystem",
+  "props": [
+   [
+    0,
+    "MergedMeshes",
+    "Map<UInt32,Struct<MergeMeshSaveData>>"
+   ],
+   [
+    1,
+    "MergeRequestQueue",
+    "Array<Struct<MergeMeshQueueEntry>>"
+   ]
+  ]
+ },
+ "EmbarkMeshMergeWrapMorphDriver": {
+  "super": "Object",
+  "props": []
+ },
+ "CustomizationItemTagOverrides": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "MatchingTags",
+    "Struct<GameplayTagContainer>"
+   ],
+   [
+    1,
+    "bOffsetTransform",
+    "Bool"
+   ],
+   [
+    2,
+    "OffsetPosition",
+    "Struct<Vector>"
+   ],
+   [
+    3,
+    "OffsetRotation",
+    "Struct<Rotator>"
+   ],
+   [
+    4,
+    "OffsetScale",
+    "Struct<Vector>"
+   ],
+   [
+    5,
+    "bOverrideMesh",
+    "Bool"
+   ],
+   [
+    6,
+    "ReplacementStaticMesh",
+    "SoftObject"
+   ],
+   [
+    7,
+    "ReplacementSkeletalMesh",
+    "SoftObject"
+   ],
+   [
+    8,
+    "bOverrideEffect",
+    "Bool"
+   ],
+   [
+    9,
+    "ReplacementEffect",
+    "SoftObject"
+   ],
+   [
+    10,
+    "bOverrideMaterials",
+    "Bool"
+   ],
+   [
+    11,
+    "MaterialOverrides",
+    "Map<Name,SoftObject>"
+   ],
+   [
+    12,
+    "bAddLogicModules",
+    "Bool"
+   ],
+   [
+    13,
+    "LogicModules",
+    "Array<SoftObject>"
+   ],
+   [
+    14,
+    "OptionalWrapDeformerMeshOverride",
+    "SoftObject"
+   ]
+  ]
+ },
+ "CustomizationItemWrapDeformation": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "bIsWrapDeformed",
+    "Bool"
+   ],
+   [
+    1,
+    "bIsWrapDeformedByHeadComponent",
+    "Bool"
+   ],
+   [
+    2,
+    "DisabledByTags",
+    "Struct<GameplayTagContainer>"
+   ],
+   [
+    3,
+    "OptionalWrapDeformerMesh",
+    "SoftObject"
+   ]
+  ]
+ },
+ "CustomizationItemVisualPart": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "StaticMesh",
+    "SoftObject"
+   ],
+   [
+    1,
+    "SkeletalMesh",
+    "SoftObject"
+   ],
+   [
+    2,
+    "Effect",
+    "SoftObject"
+   ],
+   [
+    3,
+    "bVisibleInFirstPerson",
+    "Bool"
+   ],
+   [
+    4,
+    "bCanBeMerged",
+    "Bool"
+   ],
+   [
+    5,
+    "bIsHeadMesh",
+    "Bool"
+   ],
+   [
+    6,
+    "OptionalHeadWrapMesh",
+    "SoftObject"
+   ],
+   [
+    7,
+    "bIsAttached",
+    "Bool"
+   ],
+   [
+    8,
+    "bAttachToHeadMesh",
+    "Bool"
+   ],
+   [
+    9,
+    "OptionalAttachmentMesh",
+    "SoftObject"
+   ],
+   [
+    10,
+    "AttachmentSocket",
+    "Name"
+   ],
+   [
+    11,
+    "bLimitMergedLod",
+    "Bool"
+   ],
+   [
+    12,
+    "MaxMergedLodIndex",
+    "Int"
+   ],
+   [
+    13,
+    "LocalPosition",
+    "Struct<Vector>"
+   ],
+   [
+    14,
+    "LocalRotation",
+    "Struct<Rotator>"
+   ],
+   [
+    15,
+    "LocalScale",
+    "Struct<Vector>"
+   ],
+   [
+    16,
+    "TagOverrides",
+    "Array<Struct<CustomizationItemTagOverrides>>"
+   ],
+   [
+    17,
+    "LogicModules",
+    "Array<SoftObject>"
+   ],
+   [
+    18,
+    "WrapDeformation",
+    "Struct<CustomizationItemWrapDeformation>"
+   ]
+  ]
+ },
+ "CharacterItemCaptureVisualPartOverrides": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "PartData",
+    "Struct<CustomizationItemVisualPart>"
+   ],
+   [
+    1,
+    "AnimationInstance",
+    "SoftObject"
+   ],
+   [
+    2,
+    "Animation",
+    "SoftObject"
+   ],
+   [
+    3,
+    "AnimationTime",
+    "Double"
+   ]
+  ]
+ },
+ "OnlineConfigurationStartingBodyTypeItem": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "Asset",
+    "Object"
+   ],
+   [
+    1,
+    "Amount",
+    "Int64"
+   ]
+  ]
+ },
+ "InstalledWeaponVisualPart": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "AttachmentSocket",
+    "Name"
+   ],
+   [
+    1,
+    "Mesh",
+    "Object"
+   ],
+   [
+    2,
+    "MeshComponent",
+    "Object"
+   ],
+   [
+    3,
+    "Tags",
+    "Struct<GameplayTagContainer>"
+   ]
+  ]
+ },
+ "WeaponVisualPart": {
+  "super": null,
+  "props": [
+   [
+    0,
+    "bUseSkeletalMesh",
+    "Bool"
+   ],
+   [
+    1,
+    "Mesh",
+    "Object"
+   ],
+   [
+    2,
+    "bCanBeSpawnedDynamically",
+    "Bool"
+   ],
+   [
+    3,
+    "SkeletalMesh",
+    "Object"
+   ],
+   [
+    4,
+    "SkeletalMeshAnimClass",
+    "Object"
+   ],
+   [
+    5,
+    "AttachmentSocket",
+    "Name"
+   ],
+   [
+    6,
+    "LocalOffset",
+    "Struct<Vector>"
+   ],
+   [
+    7,
+    "LocalRotation",
+    "Struct<Rotator>"
+   ],
+   [
+    8,
+    "LocalScale",
+    "Struct<Vector>"
+   ],
+   [
+    9,
+    "Rarity",
+    "Int"
+   ],
+   [
+    10,
+    "Tags",
+    "Struct<GameplayTagContainer>"
+   ],
+   [
+    11,
+    "RequiredTags",
+    "Struct<GameplayTagContainer>"
+   ],
+   [
+    12,
+    "ReplacesPartUsingTags",
+    "Struct<GameplayTagContainer>"
+   ],
+   [
+    13,
+    "bCastShadow",
+    "Bool"
+   ],
+   [
+    14,
+    "bCastContactShadow",
+    "Bool"
+   ],
+   [
+    15,
+    "bCanBeMerged",
+    "Bool"
+   ],
+   [
+    16,
+    "bLimitMergedLod",
+    "Bool"
+   ],
+   [
+    17,
+    "MaxMergedLodIndex",
+    "Int"
+   ]
+  ]
+ },
+ "CharacterCustomizationComponent": {
+  "super": "ActorComponent",
+  "props": [
+   [
+    0,
+    "ReplicatedCustomization",
+    "Struct<ReplicatedCharacterCustomization>"
+   ],
+   [
+    1,
+    "MergedMeshTargetSkeleton",
+    "Object"
+   ],
+   [
+    2,
+    "MergedMeshAnimBlueprint",
+    "Object"
+   ],
+   [
+    3,
+    "MergedMeshPhysicsAnimBlueprint",
+    "Object"
+   ],
+   [
+    4,
+    "MergedHeadAnimBlueprint",
+    "Object"
+   ],
+   [
+    5,
+    "bRegisterWithBudgetAllocator",
+    "Bool"
+   ],
+   [
+    6,
+    "bDistanceCullMeshComponents",
+    "Bool"
+   ],
+   [
+    7,
+    "ActorTagOverrides",
+    "Struct<GameplayTagContainer>"
+   ],
+   [
+    8,
+    "bIsVisualizedInEditorPreview",
+    "Bool"
+   ],
+   [
+    9,
+    "bShowMeshesInPathTracing",
+    "Bool"
+   ],
+   [
+    10,
+    "bRenderFirstPersonInForeground",
+    "Bool"
+   ]
+  ]
+ },
+ "BodyTypeList": {
+  "super": "DataAsset",
+  "props": [
+   [
+    0,
+    "BodyTypes",
+    "Array<Object>"
+   ]
+  ]
+ },
+ "BodyType": {
+  "super": "DataAsset",
+  "props": [
+   [
+    0,
+    "PersistenceDataAsset",
+    "Object"
+   ],
+   [
+    1,
+    "BodyTypeId",
+    "Enum<EBodyType:Byte>"
+   ],
+   [
+    2,
+    "ActivatesLightMorphTargets",
+    "Array<Name>"
+   ],
+   [
+    3,
+    "ActivatesMediumMorphTargets",
+    "Array<Name>"
+   ],
+   [
+    4,
+    "ActivatesHeavyMorphTargets",
+    "Array<Name>"
+   ],
+   [
+    5,
+    "ActivatesCustomizationTag",
+    "Struct<GameplayTag>"
+   ],
+   [
+    6,
+    "SupportedArchetypes",
+    "Array<Enum<EArchetypeSize:Byte>>"
+   ],
+   [
+    7,
+    "ActivatesMaterialParameters",
+    "Array<Struct<CustomizationMaterialParameters>>"
+   ],
+   [
+    8,
+    "AttachmentSocketData",
+    "Struct<CharacterAttachmentSocketBodyInfo>"
+   ]
+  ]
+ },
+ "CharacterCustomizationItem": {
+  "super": "CustomizationDataAsset",
+  "props": [
+   [
+    0,
+    "AssetTags",
+    "Struct<GameplayTagContainer>"
+   ],
+   [
+    1,
+    "VisualParts",
+    "Array<Struct<CustomizationItemVisualPart>>"
+   ],
+   [
+    2,
+    "MaterialOverrides",
+    "Map<Name,SoftObject>"
+   ],
+   [
+    3,
+    "Slots",
+    "Array<Enum<EBodySlot:Byte>>"
+   ],
+   [
+    4,
+    "bIsShoulderPet",
+    "Bool"
+   ],
+   [
+    5,
+    "ShoulderPetLeanData",
+    "Object"
+   ],
+   [
+    6,
+    "ActivatesTags",
+    "Struct<GameplayTagContainer>"
+   ],
+   [
+    7,
+    "LogicModules",
+    "Array<SoftObject>"
+   ],
+   [
+    8,
+    "ActivatesMaterialParameters",
+    "Array<Struct<CustomizationMaterialParameters>>"
+   ],
+   [
+    9,
+    "FaceRigPoseAsset",
+    "SoftObject"
+   ],
+   [
+    10,
+    "bMaskOutFacialAnimation",
+    "Bool"
+   ],
+   [
+    11,
+    "bDisableAllFacialAnimation",
+    "Bool"
+   ],
+   [
+    12,
+    "FaceAnimationWeights",
+    "SoftObject"
+   ],
+   [
+    13,
+    "bClampHeadRotation",
+    "Bool"
+   ],
+   [
+    14,
+    "bUseSafeWeaponFrontendPose",
+    "Bool"
+   ],
+   [
+    15,
+    "CustomizationAnimations",
+    "SoftObject"
+   ],
+   [
+    16,
+    "AudioTags",
+    "Struct<GameplayTagContainer>"
+   ]
+  ]
+ },
+ "DiscoveryItemCustomizationSettings": {
+  "super": "DeveloperSettings",
+  "props": [
+   [
+    0,
+    "RandomizerSkinId",
+    "Int64"
+   ],
+   [
+    1,
+    "RandomizerMaterial",
+    "SoftObject"
+   ]
+  ]
+ },
+ "BodyTypeMetaDataItem": {
+  "super": "UIMetaDataItem",
+  "props": [
+   [
+    0,
+    "BodyType",
+    "Enum<EBodyType:Byte>"
+   ],
+   [
+    1,
+    "PrettyName",
+    "Text"
+   ],
+   [
+    2,
+    "Image",
+    "Object"
+   ]
+  ]
+ },
+ "WeaponVisualPartSettings": {
+  "super": "DeveloperSettings",
+  "props": [
+   [
+    0,
+    "UnmergablePartTags",
+    "Struct<GameplayTagContainer>"
+   ]
+  ]
+ }
+}
