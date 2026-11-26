@@ -4,7 +4,9 @@
 with its own body mask from the Light mesh, gated as the fix-wave rows are. Send its shas separately so it can apply on
 its own.
 
-**Status:** plan only. Nothing is built, staged or applied, and nothing here writes `public/models`.
+**Status:** approved on all five points (26 Nov). The code, dry runs and captures are in [README.md](README.md), which
+also records one correction: the Medium mask's policy is not the conservative shared-UV one, so it is proved by a
+check run. Nothing is applied, and nothing here writes `public/models`.
 
 ## What the Light T-shirt is (measured read-only, 26 Nov)
 
