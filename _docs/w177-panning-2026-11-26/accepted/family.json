@@ -1,0 +1,6 @@
+{
+ "note": "w177 (26 Nov 2026): ACCEPT both PanningHologram rows from public/models/reconstructed-w177-panning-preview-v4 (provenance-fixed rebuild: hologramProgram.rawSha256 ab1af562 = the 17 Nov wrapper admitted, qualifiedRawSha256 c2bad042). Reviewed full size on current main 963d906 (../review-v4-captures-main): the sports jacket matches its icon at every angle and its Ospuze hem tabs read as the PopPour decal with no pixel grid; the vaporwave glasses CNS lens pans its rainbow gradient through fine scanlines, 20x BaseIntensity does not clip white (more saturated than the icon's pastel: recorded, not tuned). merge.py spec suffix :../review-v4-captures-main.",
+ "paths": {
+  "preview": "public/models/reconstructed-w177-panning-preview-v4"
+ }
+}

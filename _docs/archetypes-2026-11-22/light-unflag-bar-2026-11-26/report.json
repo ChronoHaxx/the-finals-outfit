@@ -1,0 +1,255 @@
+[
+ {
+  "id": "starting-outfit",
+  "name": "Starting outfit",
+  "season": null,
+  "archetype": "light",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-canvas"
+  },
+  "pieces": 4,
+  "notOnClass": [
+   "SPECTATOR STANDARD",
+   "CANVAS SHOES"
+  ],
+  "notice": "Not on Light yet: SPECTATOR STANDARD, CANVAS SHOES. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "starting-outfit.light.png"
+ },
+ {
+  "id": "starting-outfit",
+  "name": "Starting outfit",
+  "season": null,
+  "archetype": "medium",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-canvas"
+  },
+  "pieces": 4,
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "starting-outfit.medium.png"
+ },
+ {
+  "id": "arcadefighter",
+  "name": "ARCH ARCADIAN",
+  "season": 12,
+  "archetype": "light",
+  "slots": {
+   "face": "head-face-01-base",
+   "headwear": "scifi-arcadefighterheadphones-metal",
+   "facewear": "scifi-arcadefightervisor-metal",
+   "upperBody": "scifi-arcadefighterbomberjacket-nylon",
+   "lowerBody": "scifi-arcadefighterjeans-denim",
+   "hands": "scifi-arcadefighterrobotgloves-metal",
+   "feet": "scifi-arcadefightershoes-leather",
+   "hair": "hairs-sideshavedmedium-black"
+  },
+  "pieces": 8,
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "arcadefighter.light.png"
+ },
+ {
+  "id": "arcadefighter",
+  "name": "ARCH ARCADIAN",
+  "season": 12,
+  "archetype": "medium",
+  "slots": {
+   "face": "head-face-01-base",
+   "headwear": "scifi-arcadefighterheadphones-metal",
+   "facewear": "scifi-arcadefightervisor-metal",
+   "upperBody": "scifi-arcadefighterbomberjacket-nylon",
+   "lowerBody": "scifi-arcadefighterjeans-denim",
+   "hands": "scifi-arcadefighterrobotgloves-metal",
+   "feet": "scifi-arcadefightershoes-leather",
+   "hair": "hairs-sideshavedmedium-black"
+  },
+  "pieces": 8,
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "arcadefighter.medium.png"
+ },
+ {
+  "id": "medievalbot",
+  "name": "Bull's Eye Barrel",
+  "season": 10,
+  "archetype": "light",
+  "slots": {
+   "face": "meta-bothead-wood",
+   "upperBody": "meta-bottorso-wood",
+   "lowerBody": "meta-botlegs-wood",
+   "feet": "meta-botshoes-wood",
+   "headwear": "attachments-bucketwooden-01",
+   "upperBack": "attachments-arrowmedieval-01"
+  },
+  "pieces": 6,
+  "notOnClass": [
+   "CENTER OF ATTENTION",
+   "OAKBOUND STRIDE",
+   "SPLINTER SPRINTERS",
+   "MISSED THE MARK"
+  ],
+  "notice": "Not on Light yet: CENTER OF ATTENTION, OAKBOUND STRIDE, SPLINTER SPRINTERS, MISSED THE MARK. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "medievalbot.light.png"
+ },
+ {
+  "id": "medievalbot",
+  "name": "Bull's Eye Barrel",
+  "season": 10,
+  "archetype": "medium",
+  "slots": {
+   "face": "meta-bothead-wood",
+   "upperBody": "meta-bottorso-wood",
+   "lowerBody": "meta-botlegs-wood",
+   "feet": "meta-botshoes-wood",
+   "headwear": "attachments-bucketwooden-01",
+   "upperBack": "attachments-arrowmedieval-01"
+  },
+  "pieces": 6,
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "medievalbot.medium.png"
+ },
+ {
+  "id": "alliancefencer",
+  "name": "ALLIANCE Outfit",
+  "season": 8,
+  "archetype": "light",
+  "slots": {
+   "face": "head-face-01-base",
+   "facewear": "sport-fencermask-led-alliance",
+   "upperBody": "sport-fencerjacket-cotton-alliance",
+   "lowerBody": "streetwear-tighttechpants-polyester-alliance",
+   "hands": "racing-gloves-nylon-alliance",
+   "feet": "casual-tallsneakers-alliance",
+   "upperBack": "military-claviclegun-steel-alliance"
+  },
+  "pieces": 7,
+  "notOnClass": [
+   "ALLIANCE Helmet",
+   "ALLIANCE CARGOS",
+   "ALLIANCE GLOVES",
+   "ALLIANCE SNEAKERS"
+  ],
+  "notice": "Not on Light yet: ALLIANCE Helmet, ALLIANCE CARGOS, ALLIANCE GLOVES, ALLIANCE SNEAKERS. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "alliancefencer.light.png"
+ },
+ {
+  "id": "alliancefencer",
+  "name": "ALLIANCE Outfit",
+  "season": 8,
+  "archetype": "medium",
+  "slots": {
+   "face": "head-face-01-base",
+   "facewear": "sport-fencermask-led-alliance",
+   "upperBody": "sport-fencerjacket-cotton-alliance",
+   "lowerBody": "streetwear-tighttechpants-polyester-alliance",
+   "hands": "racing-gloves-nylon-alliance",
+   "feet": "casual-tallsneakers-alliance",
+   "upperBack": "military-claviclegun-steel-alliance"
+  },
+  "pieces": 7,
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "alliancefencer.medium.png"
+ },
+ {
+  "id": "cupid",
+  "name": "Arena Amorator",
+  "season": 5,
+  "archetype": "light",
+  "slots": {
+   "face": "head-face-01-base",
+   "hair": "hairs-bobstraight-white",
+   "eyewear": "attachments-retroroundglasses-metallic-vale-9917",
+   "upperBody": "sport-fencerjacket-satin-valentines",
+   "lowerBody": "winter-skipants-nylon-valentines",
+   "feet": "military-combatboots-nylon-valentines",
+   "hands": "sport-archeryglove-nylon-valentines",
+   "upperBack": "ballerina-wings-valentines"
+  },
+  "pieces": 8,
+  "notOnClass": [
+   "LOVESTRIKER TIGHTS"
+  ],
+  "notice": "Not on Light yet: LOVESTRIKER TIGHTS. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "cupid.light.png"
+ },
+ {
+  "id": "cupid",
+  "name": "Arena Amorator",
+  "season": 5,
+  "archetype": "medium",
+  "slots": {
+   "face": "head-face-01-base",
+   "hair": "hairs-bobstraight-white",
+   "eyewear": "attachments-retroroundglasses-metallic-vale-9917",
+   "upperBody": "sport-fencerjacket-satin-valentines",
+   "lowerBody": "winter-skipants-nylon-valentines",
+   "feet": "military-combatboots-nylon-valentines",
+   "hands": "sport-archeryglove-nylon-valentines",
+   "upperBack": "ballerina-wings-valentines"
+  },
+  "pieces": 8,
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "cupid.medium.png"
+ },
+ {
+  "id": "ftue-01-arenaready",
+  "name": "Arena Ready",
+  "season": 1,
+  "archetype": "light",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "streetwear-tanktop-synthetic-blackwhite",
+   "lowerBody": "streetwear-pleatedskirt-base-blackfinals",
+   "upperBack": "streetwear-multipocketsling-nylon-blackwhite",
+   "headwear": "streetwear-beanie-cotton-blackwhite",
+   "wrist": "streetwear-wristband-nylon-enorino",
+   "feet": "starterset-sneakers-leather-blackyellow"
+  },
+  "pieces": 7,
+  "notOnClass": [
+   "LOW SNEAKERS"
+  ],
+  "notice": "Not on Light yet: LOW SNEAKERS. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "ftue-01-arenaready.light.png"
+ },
+ {
+  "id": "ftue-01-arenaready",
+  "name": "Arena Ready",
+  "season": 1,
+  "archetype": "medium",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "streetwear-tanktop-synthetic-blackwhite",
+   "lowerBody": "streetwear-pleatedskirt-base-blackfinals",
+   "upperBack": "streetwear-multipocketsling-nylon-blackwhite",
+   "headwear": "streetwear-beanie-cotton-blackwhite",
+   "wrist": "streetwear-wristband-nylon-enorino",
+   "feet": "starterset-sneakers-leather-blackyellow"
+  },
+  "pieces": 7,
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "ftue-01-arenaready.medium.png"
+ }
+]

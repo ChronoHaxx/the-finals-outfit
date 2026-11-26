@@ -1,0 +1,341 @@
+{
+ "at": "2026-11-26T12:50:52.794Z",
+ "ids": [
+  "streetwear-sportsjacket-translucentospuze",
+  "streetwear-vaporwaveglasses-plastic-cnss7sp"
+ ],
+ "pairs": 5214,
+ "failingPairs": 26,
+ "byMesh": {
+  "/Game/Discovery/Characters/FancyDress/Assets/HelmetMask/SM_FancyDress_HelmetMaskGlitch.SM_FancyDress_HelmetMaskGlitch": {
+   "newItems": [
+    "streetwear-sportsjacket-translucentospuze",
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 4
+  },
+  "/Game/Discovery/Characters/Military/Assets/SniperBootsGlitch/SK_Military_SniperBootsGlitch_M.SK_Military_SniperBootsGlitch_M": {
+   "newItems": [
+    "streetwear-sportsjacket-translucentospuze",
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 2
+  },
+  "/Game/Discovery/Characters/Samurai/Assets/FaceMask/SM_Samurai_FaceMaskGlitch.SM_Samurai_FaceMaskGlitch": {
+   "newItems": [
+    "streetwear-sportsjacket-translucentospuze",
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 4
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/SlingBagGlitch/SK_Streetwear_SlingBagGlitch_M.SK_Streetwear_SlingBagGlitch_M": {
+   "newItems": [
+    "streetwear-sportsjacket-translucentospuze",
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 2
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/SneakersUntiedGlitch/SK_Streetwear_SneakersUntiedGlitch_M.SK_Streetwear_SneakersUntiedGlitch_M": {
+   "newItems": [
+    "streetwear-sportsjacket-translucentospuze",
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 2
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/TechJoggersGlitchCNS/SK_Streetwear_TechJoggersGlitchCNS_M.SK_Streetwear_TechJoggersGlitchCNS_M": {
+   "newItems": [
+    "streetwear-sportsjacket-translucentospuze",
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 2
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/TechJoggersGlitch/SK_Streetwear_TechJoggersGlitch_M.SK_Streetwear_TechJoggersGlitch_M": {
+   "newItems": [
+    "streetwear-sportsjacket-translucentospuze",
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 2
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitPantsGlitch/SK_Streetwear_TrackSuitPantsGlitch_M.SK_Streetwear_TrackSuitPantsGlitch_M": {
+   "newItems": [
+    "streetwear-sportsjacket-translucentospuze",
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 2
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/WristbandGlitch/SK_Streetwear_WristbandGlitch_M.SK_Streetwear_WristbandGlitch_M": {
+   "newItems": [
+    "streetwear-sportsjacket-translucentospuze",
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 2
+  },
+  "/Game/Discovery/Characters/Casual/Assets/LongHoodieGlitch/SK_Casual_LongHoodieGlitch_M.SK_Casual_LongHoodieGlitch_M": {
+   "newItems": [
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 1
+  },
+  "/Game/Discovery/Characters/Samurai/Assets/SwatVestSamuraiGlitch/SK_Samurai_SwatVestSamuraiGlitch_M.SK_Samurai_SwatVestSamuraiGlitch_M": {
+   "newItems": [
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 1
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/PufferVestGlitch/SK_Streetwear_PufferVestGlitch_M.SK_Streetwear_PufferVestGlitch_M": {
+   "newItems": [
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 1
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/FaceGlitch/SK_Streetwear_FaceGlitch_M.SK_Streetwear_FaceGlitch_M": {
+   "newItems": [
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 1
+  },
+  "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitTorsoGlitch/SK_Streetwear_TrackSuitTorsoGlitch_M.SK_Streetwear_TrackSuitTorsoGlitch_M": {
+   "newItems": [
+    "streetwear-vaporwaveglasses-plastic-cnss7sp"
+   ],
+   "partners": 1
+  }
+ },
+ "rows": [
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "fancydress-helmetmask-brass-cnspurple",
+   "otherSlot": "facewear",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/FancyDress/Assets/HelmetMask/SM_FancyDress_HelmetMaskGlitch.SM_FancyDress_HelmetMaskGlitch"
+   ]
+  },
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "military-sniperboots-leather-cnsglitch",
+   "otherSlot": "feet",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Military/Assets/SniperBootsGlitch/SK_Military_SniperBootsGlitch_M.SK_Military_SniperBootsGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "samurai-facemask-base-cnspurple",
+   "otherSlot": "facewear",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Samurai/Assets/FaceMask/SM_Samurai_FaceMaskGlitch.SM_Samurai_FaceMaskGlitch"
+   ]
+  },
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "streetwear-slingbag-canvas-cnsglitch",
+   "otherSlot": "upperBack",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/SlingBagGlitch/SK_Streetwear_SlingBagGlitch_M.SK_Streetwear_SlingBagGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "streetwear-sneakersuntied-base-glitch",
+   "otherSlot": "feet",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/SneakersUntiedGlitch/SK_Streetwear_SneakersUntiedGlitch_M.SK_Streetwear_SneakersUntiedGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "streetwear-techjoggers-nylon-cnsglitch",
+   "otherSlot": "lowerBody",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TechJoggersGlitchCNS/SK_Streetwear_TechJoggersGlitchCNS_M.SK_Streetwear_TechJoggersGlitchCNS_M"
+   ]
+  },
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "streetwear-tighttechpants-nylon-glitch",
+   "otherSlot": "lowerBody",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TechJoggersGlitch/SK_Streetwear_TechJoggersGlitch_M.SK_Streetwear_TechJoggersGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "streetwear-tracksuitpants-nylon-cnsglitch",
+   "otherSlot": "lowerBody",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitPantsGlitch/SK_Streetwear_TrackSuitPantsGlitch_M.SK_Streetwear_TrackSuitPantsGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "streetwear-wristband-cotton-cns",
+   "otherSlot": "wrist",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/WristbandGlitch/SK_Streetwear_WristbandGlitch_M.SK_Streetwear_WristbandGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "fancydress-helmetmask-brass-cns",
+   "otherSlot": "facewear",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/FancyDress/Assets/HelmetMask/SM_FancyDress_HelmetMaskGlitch.SM_FancyDress_HelmetMaskGlitch"
+   ]
+  },
+  {
+   "id": "streetwear-sportsjacket-translucentospuze",
+   "other": "samurai-facemask-base-cns",
+   "otherSlot": "facewear",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Samurai/Assets/FaceMask/SM_Samurai_FaceMaskGlitch.SM_Samurai_FaceMaskGlitch"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "casual-longhoodie-cottonsmooth-cns",
+   "otherSlot": "upperBody",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Casual/Assets/LongHoodieGlitch/SK_Casual_LongHoodieGlitch_M.SK_Casual_LongHoodieGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "fancydress-helmetmask-brass-cnspurple",
+   "otherSlot": "facewear",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/FancyDress/Assets/HelmetMask/SM_FancyDress_HelmetMaskGlitch.SM_FancyDress_HelmetMaskGlitch"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "military-sniperboots-leather-cnsglitch",
+   "otherSlot": "feet",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Military/Assets/SniperBootsGlitch/SK_Military_SniperBootsGlitch_M.SK_Military_SniperBootsGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "samurai-facemask-base-cnspurple",
+   "otherSlot": "facewear",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Samurai/Assets/FaceMask/SM_Samurai_FaceMaskGlitch.SM_Samurai_FaceMaskGlitch"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "samurai-swatvestsamurai-polyester-cnsglitch",
+   "otherSlot": "upperBody",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Samurai/Assets/SwatVestSamuraiGlitch/SK_Samurai_SwatVestSamuraiGlitch_M.SK_Samurai_SwatVestSamuraiGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "streetwear-puffervest-nylon-glitch",
+   "otherSlot": "upperBody",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/PufferVestGlitch/SK_Streetwear_PufferVestGlitch_M.SK_Streetwear_PufferVestGlitch_M",
+    "/Game/Discovery/Characters/Streetwear/Assets/FaceGlitch/SK_Streetwear_FaceGlitch_M.SK_Streetwear_FaceGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "streetwear-slingbag-canvas-cnsglitch",
+   "otherSlot": "upperBack",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/SlingBagGlitch/SK_Streetwear_SlingBagGlitch_M.SK_Streetwear_SlingBagGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "streetwear-sneakersuntied-base-glitch",
+   "otherSlot": "feet",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/SneakersUntiedGlitch/SK_Streetwear_SneakersUntiedGlitch_M.SK_Streetwear_SneakersUntiedGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "streetwear-techjoggers-nylon-cnsglitch",
+   "otherSlot": "lowerBody",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TechJoggersGlitchCNS/SK_Streetwear_TechJoggersGlitchCNS_M.SK_Streetwear_TechJoggersGlitchCNS_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "streetwear-tighttechpants-nylon-glitch",
+   "otherSlot": "lowerBody",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TechJoggersGlitch/SK_Streetwear_TechJoggersGlitch_M.SK_Streetwear_TechJoggersGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "streetwear-tracksuitpants-nylon-cnsglitch",
+   "otherSlot": "lowerBody",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitPantsGlitch/SK_Streetwear_TrackSuitPantsGlitch_M.SK_Streetwear_TrackSuitPantsGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "streetwear-tracksuittorso-nylon-cnsglitch",
+   "otherSlot": "upperBody",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/TrackSuitTorsoGlitch/SK_Streetwear_TrackSuitTorsoGlitch_M.SK_Streetwear_TrackSuitTorsoGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "streetwear-wristband-cotton-cns",
+   "otherSlot": "wrist",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Streetwear/Assets/WristbandGlitch/SK_Streetwear_WristbandGlitch_M.SK_Streetwear_WristbandGlitch_M"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "fancydress-helmetmask-brass-cns",
+   "otherSlot": "facewear",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/FancyDress/Assets/HelmetMask/SM_FancyDress_HelmetMaskGlitch.SM_FancyDress_HelmetMaskGlitch"
+   ]
+  },
+  {
+   "id": "streetwear-vaporwaveglasses-plastic-cnss7sp",
+   "other": "samurai-facemask-base-cns",
+   "otherSlot": "facewear",
+   "newItemMissing": [],
+   "otherItemMissing": [
+    "/Game/Discovery/Characters/Samurai/Assets/FaceMask/SM_Samurai_FaceMaskGlitch.SM_Samurai_FaceMaskGlitch"
+   ]
+  }
+ ]
+}

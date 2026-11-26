@@ -1,0 +1,1519 @@
+{
+ "at": "2026-11-26T13:03:49.221Z",
+ "base": "http://127.0.0.1:5175",
+ "shots": [
+  {
+   "outfit": "hoodie",
+   "archetype": "light",
+   "camera": "full",
+   "file": "hoodie/light-full.png",
+   "hud": null,
+   "notice": null,
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "http://127.0.0.1:5175/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+     "morphs": [
+      "head_neck_match",
+      "light_male",
+      "push_full_pants",
+      "push_lower_feet",
+      "push_torso",
+      "push_upper_sleeves"
+     ]
+    },
+    {
+     "name": "SM_AfroFade",
+     "source": "/Game/Discovery/Characters/Hairs/AfroFade/SM_AfroFade.SM_AfroFade",
+     "morphs": []
+    },
+    {
+     "name": "SK_Head_Face_01_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Streetwear_Hoodie_L",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_L.SK_Streetwear_Hoodie_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Military_MarinePants_L",
+     "source": "/Game/Discovery/Characters/Military/Assets/MarinePants/SK_Military_MarinePants_L.SK_Military_MarinePants_L",
+     "morphs": [
+      "light_male",
+      "shrink_pants_in_tallboots"
+     ]
+    },
+    {
+     "name": "SK_Military_AssaultGloves_L",
+     "source": "/Game/Discovery/Characters/Military/Assets/AssaultGloves/SK_Military_AssaultGloves_L.SK_Military_AssaultGloves_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Military_AcePilotBoots_L",
+     "source": "/Game/Discovery/Characters/Military/Assets/AcePilotBoots/SK_Military_AcePilotBoots_L.SK_Military_AcePilotBoots_L",
+     "morphs": [
+      "light_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+    "/models/reconstructed-meshes-v2/SM_AfroFade.glb",
+    "/models/heads/face-01.glb",
+    "/models/reconstructed-meshes-v2/SK_Head_Face_01_Base.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Hoodie_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Military_MarinePants_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Military_AssaultGloves_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Military_AcePilotBoots_L.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "hoodie",
+   "archetype": "medium",
+   "camera": "full",
+   "file": "hoodie/medium-full.png",
+   "hud": null,
+   "notice": null,
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+     "morphs": [
+      "head_neck_match",
+      "medium_male",
+      "push_full_pants",
+      "push_lower_feet",
+      "push_torso",
+      "push_upper_sleeves"
+     ]
+    },
+    {
+     "name": "SM_AfroFade",
+     "source": "/Game/Discovery/Characters/Hairs/AfroFade/SM_AfroFade.SM_AfroFade",
+     "morphs": []
+    },
+    {
+     "name": "SK_Head_Face_01_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Streetwear_Hoodie_M",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_M.SK_Streetwear_Hoodie_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Military_MarinePants_M",
+     "source": "/Game/Discovery/Characters/Military/Assets/MarinePants/SK_Military_MarinePants_M.SK_Military_MarinePants_M",
+     "morphs": [
+      "medium_male",
+      "shrink_pants_in_tallboots"
+     ]
+    },
+    {
+     "name": "SK_Military_AssaultGloves_M",
+     "source": "/Game/Discovery/Characters/Military/Assets/AssaultGloves/SK_Military_AssaultGloves_M.SK_Military_AssaultGloves_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Military_AcePilotBoots_M",
+     "source": "/Game/Discovery/Characters/Military/Assets/AcePilotBoots/SK_Military_AcePilotBoots_M.SK_Military_AcePilotBoots_M",
+     "morphs": [
+      "medium_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+    "/models/reconstructed-meshes-v2/SM_AfroFade.glb",
+    "/models/heads/face-01.glb",
+    "/models/reconstructed-meshes-v2/SK_Head_Face_01_Base.glb",
+    "/models/reconstructed-hoodies-v1/meshes/SK_Streetwear_Hoodie_M.glb",
+    "/models/reconstructed-family-batch11-marine-pants-v1/meshes/SK_Military_MarinePants_M.glb",
+    "/models/reconstructed-assault-gloves-v1/meshes/SK_Military_AssaultGloves_M.glb",
+    "/models/reconstructed-family-batch06-ace-pilot-boots-v1/meshes/SK_Military_AcePilotBoots_M.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "dress",
+   "archetype": "light",
+   "camera": "full",
+   "file": "dress/light-full.png",
+   "hud": null,
+   "notice": "Not on Light yet: GILDED SWIZZLES. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "http://127.0.0.1:5175/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+     "morphs": [
+      "head_neck_match",
+      "light_male",
+      "push_full_pants",
+      "push_heels",
+      "push_upper_sleeves",
+      "push_upper_torso"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SM_RoundSunglasses_1",
+     "source": "/Game/Discovery/Characters/Attachments/RoundSunglasses/SM_RoundSunglasses.SM_RoundSunglasses",
+     "morphs": []
+    },
+    {
+     "name": "SM_RoundSunglasses_2",
+     "source": "/Game/Discovery/Characters/Attachments/RoundSunglasses/SM_RoundSunglasses.SM_RoundSunglasses",
+     "morphs": []
+    },
+    {
+     "name": "SK_Casual_ShortDress_L",
+     "source": "/Game/Discovery/Characters/Casual/Assets/ShortDress/SK_Casual_ShortDress_L.SK_Casual_ShortDress_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Casual_CropTopUndershirt_L",
+     "source": "/Game/Discovery/Characters/Casual/Assets/CropTopUndershirt/SK_Casual_CropTopUndershirt_L.SK_Casual_CropTopUndershirt_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Ballerina_BallerinaTights_L",
+     "source": "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_L.SK_Ballerina_BallerinaTights_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Casual_LowWedgeHeels_L",
+     "source": "/Game/Discovery/Characters/Casual/Assets/LowWedgeHeels/SK_Casual_LowWedgeHeels_L.SK_Casual_LowWedgeHeels_L",
+     "morphs": [
+      "light_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+    "/models/heads/face-03.glb",
+    "/models/reconstructed-face-batch01-v1/meshes/SK_Head_Face_03_Base.glb",
+    "/models/reconstructed-glass-attached-2026-10-07-v1/meshes/SM_RoundSunglasses.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Casual_ShortDress_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Casual_CropTopUndershirt_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Ballerina_BallerinaTights_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Casual_LowWedgeHeels_L.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "dress",
+   "archetype": "medium",
+   "camera": "full",
+   "file": "dress/medium-full.png",
+   "hud": null,
+   "notice": null,
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+     "morphs": [
+      "head_neck_match",
+      "medium_male",
+      "push_full_pants",
+      "push_heels",
+      "push_upper_sleeves",
+      "push_upper_torso"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SM_RoundSunglasses_1",
+     "source": "/Game/Discovery/Characters/Attachments/RoundSunglasses/SM_RoundSunglasses.SM_RoundSunglasses",
+     "morphs": []
+    },
+    {
+     "name": "SM_RoundSunglasses_2",
+     "source": "/Game/Discovery/Characters/Attachments/RoundSunglasses/SM_RoundSunglasses.SM_RoundSunglasses",
+     "morphs": []
+    },
+    {
+     "name": "SK_Casual_ShortDress_M",
+     "source": "/Game/Discovery/Characters/Casual/Assets/ShortDress/SK_Casual_ShortDress_M.SK_Casual_ShortDress_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Casual_CropTopUndershirt_M",
+     "source": "/Game/Discovery/Characters/Casual/Assets/CropTopUndershirt/SK_Casual_CropTopUndershirt_M.SK_Casual_CropTopUndershirt_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Ballerina_BallerinaTights_M",
+     "source": "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_M.SK_Ballerina_BallerinaTights_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Casual_LowWedgeHeels_M",
+     "source": "/Game/Discovery/Characters/Casual/Assets/LowWedgeHeels/SK_Casual_LowWedgeHeels_M.SK_Casual_LowWedgeHeels_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Casual_Bangles_M",
+     "source": "/Game/Discovery/Characters/Casual/Assets/Bangles/SK_Casual_Bangles_M.SK_Casual_Bangles_M",
+     "morphs": [
+      "medium_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+    "/models/heads/face-03.glb",
+    "/models/reconstructed-face-batch01-v1/meshes/SK_Head_Face_03_Base.glb",
+    "/models/reconstructed-glass-attached-2026-10-07-v1/meshes/SM_RoundSunglasses.glb",
+    "/models/reconstructed-meshes-batch-01/SK_Casual_ShortDress_M.glb",
+    "/models/reconstructed-g100-fitmask-reuse-b1-casual-short-dress-v1-v1/meshes/SK_Casual_CropTopUndershirt_M.glb",
+    "/models/reconstructed-multipart-batch02-basic-shorts-tights-v1/meshes/SK_Ballerina_BallerinaTights_M.glb",
+    "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_LowWedgeHeels_M.glb",
+    "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_Bangles_M.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "cap",
+   "archetype": "light",
+   "camera": "full",
+   "file": "cap/light-full.png",
+   "hud": null,
+   "notice": null,
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "http://127.0.0.1:5175/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+     "morphs": [
+      "head_neck_match",
+      "light_male",
+      "push_full_pants",
+      "push_gloves",
+      "push_long_sleeves",
+      "push_lower_feet",
+      "push_lower_torso",
+      "push_torso_arms_armpits",
+      "push_upper_back"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SM_Streetwear_BaseballCap",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/BaseballCap/SM_Streetwear_BaseballCap.SM_Streetwear_BaseballCap",
+     "morphs": []
+    },
+    {
+     "name": "SM_Streetwear_BaseballCap_LEDStrip",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/BaseballCap/SM_Streetwear_BaseballCap_LEDStrip.SM_Streetwear_BaseballCap_LEDStrip",
+     "morphs": []
+    },
+    {
+     "name": "SK_Robots_DiscoJacket_L",
+     "source": "/Game/Discovery/Characters/Robots/Assets/DiscoJacket/SK_Robots_DiscoJacket_L.SK_Robots_DiscoJacket_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Robots_DiscoNecklace_L",
+     "source": "/Game/Discovery/Characters/Robots/Assets/DiscoNecklace/SK_Robots_DiscoNecklace_L.SK_Robots_DiscoNecklace_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Robots_DiscoPants_L",
+     "source": "/Game/Discovery/Characters/Robots/Assets/DiscoPants/SK_Robots_DiscoPants_L.SK_Robots_DiscoPants_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Robots_DiscoKeychain_L",
+     "source": "/Game/Discovery/Characters/Robots/Assets/DiscoKeychain/SK_Robots_DiscoKeychain_L.SK_Robots_DiscoKeychain_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_SciFi_HackerGloves_L",
+     "source": "/Game/Discovery/Characters/SciFi/Assets/HackerGloves/SK_SciFi_HackerGloves_L.SK_SciFi_HackerGloves_L",
+     "morphs": [
+      "light_male",
+      "shrink_gloves_under_jacket"
+     ]
+    },
+    {
+     "name": "SK_Streetwear_Shoes_L",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Shoes/SK_Streetwear_Shoes_L.SK_Streetwear_Shoes_L",
+     "morphs": [
+      "light_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+    "/models/heads/face-05.glb",
+    "/models/reconstructed-face-batch01-v1/meshes/SK_Head_Face_05_Base.glb",
+    "/models/reconstructed-baseball-caps-v1/meshes/SM_Streetwear_BaseballCap.glb",
+    "/models/reconstructed-w84-led-b1-v3/meshes/SM_Streetwear_BaseballCap_LEDStrip.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Robots_DiscoJacket_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Robots_DiscoNecklace_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Robots_DiscoPants_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Robots_DiscoKeychain_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_SciFi_HackerGloves_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Shoes_L.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "cap",
+   "archetype": "medium",
+   "camera": "full",
+   "file": "cap/medium-full.png",
+   "hud": null,
+   "notice": null,
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+     "morphs": [
+      "head_neck_match",
+      "medium_male",
+      "push_full_pants",
+      "push_gloves",
+      "push_long_sleeves",
+      "push_lower_feet",
+      "push_lower_torso",
+      "push_torso_arms_armpits",
+      "push_upper_back"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_05_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_05/Base/SK_Head_Face_05_Base.SK_Head_Face_05_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SM_Streetwear_BaseballCap",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/BaseballCap/SM_Streetwear_BaseballCap.SM_Streetwear_BaseballCap",
+     "morphs": []
+    },
+    {
+     "name": "SM_Streetwear_BaseballCap_LEDStrip",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/BaseballCap/SM_Streetwear_BaseballCap_LEDStrip.SM_Streetwear_BaseballCap_LEDStrip",
+     "morphs": []
+    },
+    {
+     "name": "SK_Robots_DiscoJacket_M",
+     "source": "/Game/Discovery/Characters/Robots/Assets/DiscoJacket/SK_Robots_DiscoJacket_M.SK_Robots_DiscoJacket_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Robots_DiscoNecklace_M",
+     "source": "/Game/Discovery/Characters/Robots/Assets/DiscoNecklace/SK_Robots_DiscoNecklace_M.SK_Robots_DiscoNecklace_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Robots_DiscoPants_M",
+     "source": "/Game/Discovery/Characters/Robots/Assets/DiscoPants/SK_Robots_DiscoPants_M.SK_Robots_DiscoPants_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Robots_DiscoKeychain_M",
+     "source": "/Game/Discovery/Characters/Robots/Assets/DiscoKeychain/SK_Robots_DiscoKeychain_M.SK_Robots_DiscoKeychain_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_SciFi_HackerGloves_M",
+     "source": "/Game/Discovery/Characters/SciFi/Assets/HackerGloves/SK_SciFi_HackerGloves_M.SK_SciFi_HackerGloves_M",
+     "morphs": [
+      "medium_male",
+      "shrink_gloves_under_jacket"
+     ]
+    },
+    {
+     "name": "SK_Streetwear_Shoes_M",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Shoes/SK_Streetwear_Shoes_M.SK_Streetwear_Shoes_M",
+     "morphs": [
+      "medium_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+    "/models/heads/face-05.glb",
+    "/models/reconstructed-face-batch01-v1/meshes/SK_Head_Face_05_Base.glb",
+    "/models/reconstructed-baseball-caps-v1/meshes/SM_Streetwear_BaseballCap.glb",
+    "/models/reconstructed-w84-led-b1-v3/meshes/SM_Streetwear_BaseballCap_LEDStrip.glb",
+    "/models/reconstructed-g100-fresh-b5-robots-disco-jacket-v1-v1/meshes/SK_Robots_DiscoJacket_M.glb",
+    "/models/reconstructed-g100-fresh-b5-robots-disco-jacket-v1-v1/meshes/SK_Robots_DiscoNecklace_M.glb",
+    "/models/reconstructed-g100-fresh-b5-robots-disco-pants-v1-v1/meshes/SK_Robots_DiscoPants_M.glb",
+    "/models/reconstructed-g100-fresh-b5-robots-disco-pants-v1-v1/meshes/SK_Robots_DiscoKeychain_M.glb",
+    "/models/reconstructed-family-batch21-sci-fi-hacker-gloves-v1/meshes/SK_SciFi_HackerGloves_M.glb",
+    "/models/reconstructed-family-batch04-streetwear-shoes-v1/meshes/SK_Streetwear_Shoes_M.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "space",
+   "archetype": "light",
+   "camera": "full",
+   "file": "space/light-full.png",
+   "hud": null,
+   "notice": null,
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "http://127.0.0.1:5175/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+     "morphs": [
+      "head_neck_match",
+      "light_male",
+      "push_full_pants",
+      "push_gloves",
+      "push_lower_feet",
+      "push_lower_torso"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SM_Streetwear_Beanie",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Beanie/SM_Streetwear_Beanie.SM_Streetwear_Beanie",
+     "morphs": []
+    },
+    {
+     "name": "SM_Streetwear_Headphones",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Headphones/SM_Streetwear_Headphones.SM_Streetwear_Headphones",
+     "morphs": []
+    },
+    {
+     "name": "SK_Space_SpaceTopVest_L",
+     "source": "/Game/Discovery/Characters/Space/Assets/SpaceTopVest/SK_Space_SpaceTopVest_L.SK_Space_SpaceTopVest_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Space_SpaceTopVestArmor_L",
+     "source": "/Game/Discovery/Characters/Space/Assets/SpaceTopVestArmor/SK_Space_SpaceTopVestArmor_L.SK_Space_SpaceTopVestArmor_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Space_SpaceSuitPants_L",
+     "source": "/Game/Discovery/Characters/Space/Assets/SpaceSuitPants/SK_Space_SpaceSuitPants_L.SK_Space_SpaceSuitPants_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Space_SpaceCombatGloves_L",
+     "source": "/Game/Discovery/Characters/Space/Assets/SpaceCombatGloves/SK_Space_SpaceCombatGloves_L.SK_Space_SpaceCombatGloves_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Space_PioneerShoes_L",
+     "source": "/Game/Discovery/Characters/Space/Assets/PioneerShoes/SK_Space_PioneerShoes_L.SK_Space_PioneerShoes_L",
+     "morphs": [
+      "light_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+    "/models/heads/face-07.glb",
+    "/models/reconstructed-face-batch01-v1/meshes/SK_Head_Face_07_Base.glb",
+    "/models/reconstructed-attached-b1p1-v1/meshes/SM_Streetwear_Beanie.glb",
+    "/models/reconstructed-attached-b1p1-v1/meshes/SM_Streetwear_Headphones.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceTopVest_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceTopVestArmor_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceSuitPants_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceCombatGloves_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Space_PioneerShoes_L.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "space",
+   "archetype": "medium",
+   "camera": "full",
+   "file": "space/medium-full.png",
+   "hud": null,
+   "notice": null,
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+     "morphs": [
+      "head_neck_match",
+      "medium_male",
+      "push_full_pants",
+      "push_gloves",
+      "push_lower_feet",
+      "push_lower_torso"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_07_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_07/Base/SK_Head_Face_07_Base.SK_Head_Face_07_Base",
+     "morphs": [
+      "default_ears",
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SM_Streetwear_Beanie",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Beanie/SM_Streetwear_Beanie.SM_Streetwear_Beanie",
+     "morphs": []
+    },
+    {
+     "name": "SM_Streetwear_Headphones",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Headphones/SM_Streetwear_Headphones.SM_Streetwear_Headphones",
+     "morphs": []
+    },
+    {
+     "name": "SK_Space_SpaceTopVest_M",
+     "source": "/Game/Discovery/Characters/Space/Assets/SpaceTopVest/SK_Space_SpaceTopVest_M.SK_Space_SpaceTopVest_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Space_SpaceTopVestArmor_M",
+     "source": "/Game/Discovery/Characters/Space/Assets/SpaceTopVestArmor/SK_Space_SpaceTopVestArmor_M.SK_Space_SpaceTopVestArmor_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Space_SpaceSuitPants_M",
+     "source": "/Game/Discovery/Characters/Space/Assets/SpaceSuitPants/SK_Space_SpaceSuitPants_M.SK_Space_SpaceSuitPants_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Space_SpaceCombatGloves_M",
+     "source": "/Game/Discovery/Characters/Space/Assets/SpaceCombatGloves/SK_Space_SpaceCombatGloves_M.SK_Space_SpaceCombatGloves_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Space_PioneerShoes_M",
+     "source": "/Game/Discovery/Characters/Space/Assets/PioneerShoes/SK_Space_PioneerShoes_M.SK_Space_PioneerShoes_M",
+     "morphs": [
+      "medium_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+    "/models/heads/face-07.glb",
+    "/models/reconstructed-face-batch01-v1/meshes/SK_Head_Face_07_Base.glb",
+    "/models/reconstructed-attached-b1p1-v1/meshes/SM_Streetwear_Beanie.glb",
+    "/models/reconstructed-attached-b1p1-v1/meshes/SM_Streetwear_Headphones.glb",
+    "/models/reconstructed-g100-w41c-topvest-multipart-b2-space-space-top-vest-v1-v1/meshes/SK_Space_SpaceTopVest_M.glb",
+    "/models/reconstructed-g100-w41c-topvest-multipart-b2-space-space-top-vest-v1-v1/meshes/SK_Space_SpaceTopVestArmor_M.glb",
+    "/models/reconstructed-g100-fsingle2-space-space-suit-pants-v1-v1/meshes/SK_Space_SpaceSuitPants_M.glb",
+    "/models/reconstructed-g100-fsingle2-space-space-combat-gloves-v1-v1/meshes/SK_Space_SpaceCombatGloves_M.glb",
+    "/models/reconstructed-g100-fsingle2-space-pioneer-shoes-g2-v1-v1/meshes/SK_Space_PioneerShoes_M.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "bare",
+   "archetype": "light",
+   "camera": "full",
+   "file": "bare/light-full.png",
+   "hud": null,
+   "notice": null,
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "http://127.0.0.1:5175/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+     "morphs": [
+      "head_neck_match",
+      "light_male",
+      "push_crotch",
+      "push_full_pants"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Casual_BasicShorts_L",
+     "source": "/Game/Discovery/Characters/Casual/Assets/BasicShorts/SK_Casual_BasicShorts_L.SK_Casual_BasicShorts_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Ballerina_BallerinaTights_L",
+     "source": "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_L.SK_Ballerina_BallerinaTights_L",
+     "morphs": [
+      "light_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+    "/models/heads/face-01.glb",
+    "/models/reconstructed-meshes-v2/SK_Head_Face_01_Base.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Casual_BasicShorts_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Ballerina_BallerinaTights_L.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "bare",
+   "archetype": "medium",
+   "camera": "full",
+   "file": "bare/medium-full.png",
+   "hud": null,
+   "notice": null,
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+     "morphs": [
+      "head_neck_match",
+      "medium_male",
+      "push_crotch",
+      "push_full_pants"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_01_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_01/Base/SK_Head_Face_01_Base.SK_Head_Face_01_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Casual_BasicShorts_M",
+     "source": "/Game/Discovery/Characters/Casual/Assets/BasicShorts/SK_Casual_BasicShorts_M.SK_Casual_BasicShorts_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Ballerina_BallerinaTights_M",
+     "source": "/Game/Discovery/Characters/Ballerina/Assets/BallerinaTights/SK_Ballerina_BallerinaTights_M.SK_Ballerina_BallerinaTights_M",
+     "morphs": [
+      "medium_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+    "/models/heads/face-01.glb",
+    "/models/reconstructed-meshes-v2/SK_Head_Face_01_Base.glb",
+    "/models/reconstructed-multipart-batch02-basic-shorts-tights-v1/meshes/SK_Casual_BasicShorts_M.glb",
+    "/models/reconstructed-multipart-batch02-basic-shorts-tights-v1/meshes/SK_Ballerina_BallerinaTights_M.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "skirt",
+   "archetype": "light",
+   "camera": "full",
+   "file": "skirt/light-full.png",
+   "hud": null,
+   "notice": "Not on Light yet: DEPARTURE DAY SKIRT. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "http://127.0.0.1:5175/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+     "morphs": [
+      "head_neck_match",
+      "light_male",
+      "push_lower_feet",
+      "push_torso",
+      "push_upper_sleeves"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Streetwear_Hoodie_L",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_L.SK_Streetwear_Hoodie_L",
+     "morphs": [
+      "light_male"
+     ]
+    },
+    {
+     "name": "SK_Streetwear_Shoes_L",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Shoes/SK_Streetwear_Shoes_L.SK_Streetwear_Shoes_L",
+     "morphs": [
+      "light_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Body_L.glb",
+    "/models/heads/face-03.glb",
+    "/models/reconstructed-face-batch01-v1/meshes/SK_Head_Face_03_Base.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Hoodie_L.glb",
+    "/models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Shoes_L.glb"
+   ],
+   "errors": []
+  },
+  {
+   "outfit": "skirt",
+   "archetype": "medium",
+   "camera": "full",
+   "file": "skirt/medium-full.png",
+   "hud": null,
+   "notice": null,
+   "meshes": [
+    {
+     "name": "SK_Body_M_LOD0",
+     "source": "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+     "morphs": [
+      "head_neck_match",
+      "medium_male",
+      "push_full_pants",
+      "push_lower_feet",
+      "push_torso",
+      "push_upper_sleeves"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_1",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_2",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_3",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_4",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_5",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_6",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Head_Face_03_Base_7",
+     "source": "/Game/Discovery/Characters/Heads/Face_03/Base/SK_Head_Face_03_Base.SK_Head_Face_03_Base",
+     "morphs": [
+      "head_neck_match",
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Streetwear_Hoodie_M",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Hoodie/SK_Streetwear_Hoodie_M.SK_Streetwear_Hoodie_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Casual_ShortSkirt_M",
+     "source": "/Game/Discovery/Characters/Casual/Assets/ShortSkirt/SK_Casual_ShortSkirt_M.SK_Casual_ShortSkirt_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Winter_SkiPants_M",
+     "source": "/Game/Discovery/Characters/Winter/Assets/SkiPants/SK_Winter_SkiPants_M.SK_Winter_SkiPants_M",
+     "morphs": [
+      "medium_male"
+     ]
+    },
+    {
+     "name": "SK_Streetwear_Shoes_M",
+     "source": "/Game/Discovery/Characters/Streetwear/Assets/Shoes/SK_Streetwear_Shoes_M.SK_Streetwear_Shoes_M",
+     "morphs": [
+      "medium_male"
+     ]
+    }
+   ],
+   "meshRequests": [
+    "/models/body/SK_Body_M.glb",
+    "/models/reconstructed-meshes-v2/SK_Body_M.glb",
+    "/models/heads/face-03.glb",
+    "/models/reconstructed-face-batch01-v1/meshes/SK_Head_Face_03_Base.glb",
+    "/models/reconstructed-hoodies-v1/meshes/SK_Streetwear_Hoodie_M.glb",
+    "/models/reconstructed-w80-wrap-w2-v1/meshes/SK_Casual_ShortSkirt_M.glb",
+    "/models/reconstructed-family-batch04-ski-pants-v1/meshes/SK_Winter_SkiPants_M.glb",
+    "/models/reconstructed-family-batch04-streetwear-shoes-v1/meshes/SK_Streetwear_Shoes_M.glb"
+   ],
+   "errors": []
+  }
+ ]
+}
