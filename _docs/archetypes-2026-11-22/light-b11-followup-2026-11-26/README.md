@@ -4,8 +4,9 @@
 so they were read fresh from the 17 Nov containers (b11) and given a small follow-up patch after 3′.
 
 **Status:**
-- The +2 patch is built and reviewed on the post-3′ index. The coordinator chose to apply it now (option a); the
-  main-folder session applies it.
+- The +2 patch was built and reviewed on the post-3′ index, and applied on 26 Nov by the main-folder session
+  (`20092d96…` → `49134266…`; its record is `light-b11-plus2-apply-2026-11-26/` in the root), as the coordinator chose
+  (option a).
 - `SK_Racing_Gloves_L` (the Alliance fencer's gloves) needs the fresh-pair rule in this PR. Once it is merged, the
   gloves go as a 1-row patch on the index active then.
 - Nothing here writes `public/models`.
