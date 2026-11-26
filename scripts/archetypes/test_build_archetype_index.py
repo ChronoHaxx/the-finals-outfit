@@ -424,7 +424,280 @@ class LiveEqualMediumRule(unittest.TestCase):
         self.assertEqual((ok, why, detail['differs']), (False, 'medium changed in the game', 'material slots'))
 
 
+GRID = 6   # 6 x 6 vertices: 25 quads, 50 triangles, so one flipped quad is 4% (under proof 3's 5%)
+
+
+def grid_vertex(i, j):
+    return i * GRID + j
+
+
+def write_grid_glb(file, name, scale=1.0, permute=False, flip=(), reverse_flip=False, lift=0.0, uv1_shift=0.0,
+                   slot='Main', weight_swap=False, duplicate=False, extra_joint=None, morph_vertex=None, move=0.0):
+    """A skinned quad grid for proof 3' (26 Nov 2026), at `scale`. Medium quads split along a-c; `flip` lists quads
+    (i, j) split along b-d instead (`reverse_flip` also reverses their winding); `permute` shuffles the vertex and
+    triangle order (indices remapped: the same surface); `lift` raises vertex (2, 2) out of the plane before scaling (a
+    non-planar quad); `uv1_shift` moves one vertex's UV1; `weight_swap` swaps one vertex's two joint weights; `duplicate`
+    appends a copy of vertex 0; `extra_joint` lists one more, unweighted joint; `morph_vertex` changes one vertex's
+    fitting-morph delta; `move` displaces one vertex (not the scaled Medium's)."""
+    n = GRID * GRID
+    ij = np.array([(i, j) for i in range(GRID) for j in range(GRID)], dtype=np.float64)
+    pos = np.zeros((n, 3))
+    pos[:, 0], pos[:, 1] = ij[:, 0] * 0.02, 0.4 + ij[:, 1] * 0.02
+    pos[grid_vertex(2, 2), 2] = lift
+    pos *= scale
+    pos[5, 0] += move
+    uv0 = ij / (GRID - 1)
+    uv1 = uv0.copy()
+    uv1[7, 0] += uv1_shift
+    normals = np.tile([0.0, 0.0, 1.0], (n, 1))
+    spine = np.where(ij[:, 1] < 3, 0.25, 0.75)
+    weights = np.stack([1 - spine, spine, np.zeros(n), np.zeros(n)], axis=1)
+    if weight_swap:
+        weights[7, :2] = weights[7, 1::-1]
+    joints = np.tile([0, 1, 0, 0], (n, 1))
+    deltas = np.zeros((n, 3))
+    deltas[:, 2] = 0.001 * scale
+    if morph_vertex is not None:
+        deltas[morph_vertex, 2] += 0.002
+    tris = []
+    for i in range(GRID - 1):
+        for j in range(GRID - 1):
+            a, b, c, d = grid_vertex(i, j), grid_vertex(i + 1, j), grid_vertex(i + 1, j + 1), grid_vertex(i, j + 1)
+            if (i, j) in flip:
+                tris += [(a, d, b), (b, d, c)] if reverse_flip else [(a, b, d), (b, c, d)]
+            else:
+                tris += [(a, b, c), (a, c, d)]
+    tris = np.array(tris)
+    arrays = [pos, uv0, uv1, normals, joints, weights, deltas]
+    if permute:
+        rng = np.random.default_rng(7)
+        order = rng.permutation(n)                       # new vertex k is old vertex order[k]
+        new_id = np.empty(n, dtype=np.int64)
+        new_id[order] = np.arange(n)
+        arrays = [x[order] for x in arrays]
+        tris = new_id[tris][rng.permutation(len(tris))]
+    if duplicate:
+        arrays = [np.concatenate([x, x[:1]]) for x in arrays]
+    pos, uv0, uv1, normals, joints, weights, deltas = arrays
+    names = ['root', 'spine'] + ([extra_joint] if extra_joint else [])
+    jpos = [[0.0, 0.0, 0.0], [0.0, 0.5 * scale, 0.0]] + ([[0.1 * scale, 0.5 * scale, 0.0]] if extra_joint else [])
+    ibm = np.stack([np.eye(4, dtype=np.float32) for _ in names])
+    for m, p in zip(ibm, jpos):
+        m[:3, 3] = -np.array(p)
+    count = len(pos)
+    chunks = [pos.astype('<f4').tobytes(), uv0.astype('<f4').tobytes(), uv1.astype('<f4').tobytes(),
+              normals.astype('<f4').tobytes(), joints.astype('u1').tobytes(), weights.astype('<f4').tobytes(),
+              deltas.astype('<f4').tobytes(), tris.astype('<u2').tobytes(), ibm.transpose(0, 2, 1).tobytes()]
+    views, offset = [], 0
+    for c in chunks:
+        views.append({'buffer': 0, 'byteOffset': offset, 'byteLength': len(c)})
+        offset += len(c) + (-len(c) % 4)
+    body = b''.join(c + b'\0' * (-len(c) % 4) for c in chunks)
+    types = [('VEC3', 5126, count), ('VEC2', 5126, count), ('VEC2', 5126, count), ('VEC3', 5126, count),
+             ('VEC4', 5121, count), ('VEC4', 5126, count), ('VEC3', 5126, count), ('SCALAR', 5123, tris.size),
+             ('MAT4', 5126, len(names))]
+    nodes = [{'name': nm, 'translation': p} for nm, p in zip(names, jpos)] + [{'name': name, 'mesh': 0, 'skin': 0}]
+    j = {'asset': {'version': '2.0'}, 'extras': {'source': tool.package_of(path(name))},
+         'buffers': [{'byteLength': offset}], 'bufferViews': views,
+         'accessors': [{'bufferView': k, 'componentType': ct, 'count': cnt, 'type': t}
+                       for k, (t, ct, cnt) in enumerate(types)],
+         'materials': [{'extras': {'sourceSlot': {'MaterialSlotName': slot}, 'sourceMaterial': 'MI_Main'}}],
+         'meshes': [{'extras': {'targetNames': ['bandolier_squeeze']}, 'primitives': [
+             {'attributes': {'POSITION': 0, 'TEXCOORD_0': 1, 'TEXCOORD_1': 2, 'NORMAL': 3, 'JOINTS_0': 4,
+                             'WEIGHTS_0': 5}, 'indices': 7, 'material': 0, 'targets': [{'POSITION': 6}]}]}],
+         'nodes': nodes, 'skins': [{'joints': list(range(len(names))), 'inverseBindMatrices': 8}]}
+    js = json.dumps(j).encode()
+    js += b' ' * (-len(js) % 4)
+    out = (struct.pack('<III', 0x46546C67, 2, 12 + 8 + len(js) + 8 + len(body))
+           + struct.pack('<I', len(js)) + b'JSON' + js + struct.pack('<I', len(body)) + b'BIN\0' + body)
+    file.parent.mkdir(parents=True, exist_ok=True)
+    file.write_bytes(out)
+    return hashlib.sha256(out).hexdigest()
+
+
+class SameSurfacePermutedRule(unittest.TestCase):
+    """Proof 3' as the coordinator approved it (26 Nov 2026): a class mesh that is the Medium surface at the class scale
+    in another vertex order, with a few planar quads split along the other diagonal, passes and is recorded; a quad over
+    the 0.1 mm gap limit, a winding flip, UV1 over 1/128, a renamed slot, a weight swapped between joints, an extra
+    duplicate vertex, too many flips, a non-body extra joint or a moved vertex fails."""
+    BODY_BONES = {'root', 'spine', 'clavicle_l'}
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp)
+
+    def compare(self, **light):
+        m, c = self.tmp / 'SK_Grid_M.glb', self.tmp / 'SK_Grid_L.glb'
+        write_grid_glb(m, 'SK_Grid_M', lift=light.get('lift', 0.0))     # a non-planar quad is the game's, on both
+        write_grid_glb(c, 'SK_Grid_L', scale=SCALES['L'], **light)
+        return tool.surface_permuted(m, c, SCALES['L'], self.BODY_BONES)
+
+    def test_a_reordered_surface_passes_with_its_permutation_recorded(self):
+        ok, why, detail = self.compare(permute=True)
+        self.assertTrue(ok, (why, detail))
+        self.assertEqual((detail['flippedTriangles'], detail['triangles']), (0, 50))
+        self.assertEqual(len(detail['permutationSha256']), 64)
+
+    def test_a_flipped_planar_quad_passes_and_is_recorded(self):
+        ok, why, detail = self.compare(permute=True, flip=[(1, 1)], lift=0.0001)
+        self.assertTrue(ok, (why, detail))
+        self.assertEqual((detail['flippedTriangles'], detail['flippedQuads']), (2, 1))
+        self.assertAlmostEqual(detail['flippedFraction'], 0.04)
+        self.assertLess(detail['quadGapMaxM'], 1e-4)
+
+    def test_uv1_within_1_over_128_morph_changes_and_unweighted_body_bones_pass_and_are_recorded(self):
+        ok, why, detail = self.compare(permute=True, uv1_shift=0.005, morph_vertex=3, extra_joint='clavicle_l')
+        self.assertTrue(ok, (why, detail))
+        self.assertAlmostEqual(detail['uv1MaxDiff'], 0.005, places=6)
+        self.assertIn('bandolier_squeeze', detail['morphs'])
+        self.assertEqual(detail['unweightedJointsOneSide'], ['clavicle_l'])
+
+    def test_a_flipped_quad_over_the_gap_limit_fails(self):
+        # Vertex (2, 2) raised 0.3 mm: the flipped quad (2, 2)'s diagonals pass 0.15 mm (Medium) and 0.13 mm apart.
+        ok, why, detail = self.compare(permute=True, flip=[(2, 2)], lift=0.0003)
+        self.assertFalse(ok)
+        self.assertIn('not planar', why)
+        self.assertGreater(detail['quadGapMaxM'], 1e-4)
+
+    def test_a_winding_flip_fails(self):
+        ok, why, _ = self.compare(permute=True, flip=[(1, 1)], reverse_flip=True)
+        self.assertEqual((ok, why), (False, 'a flipped quad changes winding'))
+
+    def test_uv1_over_1_over_128_fails(self):
+        ok, why, detail = self.compare(permute=True, uv1_shift=0.01)
+        self.assertFalse(ok)
+        self.assertTrue(why.startswith('UV1 differs'), why)
+
+    def test_a_renamed_slot_fails(self):
+        self.assertEqual(self.compare(permute=True, slot='Trim')[:2], (False, 'material slots differ'))
+
+    def test_a_weight_swapped_between_two_joints_fails(self):
+        ok, why, detail = self.compare(permute=True, weight_swap=True)
+        self.assertEqual((ok, why, detail['vertices']), (False, 'weights differ by joint name under the mapping', 1))
+
+    def test_an_extra_duplicate_vertex_fails(self):
+        self.assertEqual(self.compare(permute=True, duplicate=True)[:2], (False, 'primitives or vertex counts differ'))
+
+    def test_more_than_5_percent_flipped_fails(self):
+        ok, why, _ = self.compare(permute=True, flip=[(0, 0), (2, 2), (4, 4)])
+        self.assertFalse(ok)
+        self.assertIn('split the other way', why)
+
+    def test_an_unweighted_joint_outside_the_body_skeleton_fails(self):
+        ok, why, detail = self.compare(permute=True, extra_joint='cape_jjr')
+        self.assertEqual((ok, why, detail['joints']),
+                         (False, 'joints listed on one side only are not body-skeleton bones', ['cape_jjr']))
+
+    def test_a_moved_vertex_fails(self):
+        ok, why, _ = self.compare(permute=True, move=0.001)
+        self.assertFalse(ok)
+        self.assertIn('positions are not the x0.85', why)
+
+
+class SameSurfacePermutedInTheBuilder(unittest.TestCase):
+    """--same-surface-permuted end to end: a reordered Light mesh that proof 3 refuses joins with proof 3', recorded;
+    the same mesh named in a side registry stays refused."""
+
+    def setUp(self):
+        self.tmp = tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        self.models = models = tmp / 'models'
+        s11 = models / STAGING / 'source-glb'
+        meshes, parts = {}, []
+        # Light not applied yet: the builder proves SK_Body_L itself, beside the indexed Medium body.
+        meshes[path('SK_Body_M')] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/SK_Body_M.glb',
+                                     'sha256': write_glb(s11 / 'SK_Body_M.glb', 'SK_Body_M'), 'slots': [{'slot': 'Main'}]}
+        write_glb(s11 / 'SK_Body_L.glb', 'SK_Body_L', scale=SCALES['L'])
+        for medium in ('SK_Grid_M', 'SK_Named_M', 'SK_Moved_M'):
+            light = medium[:-2] + '_L'
+            sha = write_grid_glb(s11 / f'{medium}.glb', medium)
+            write_grid_glb(s11 / f'{light}.glb', light, scale=SCALES['L'], permute=True,
+                           move=0.001 if medium == 'SK_Moved_M' else 0.0)
+            meshes[path(medium)] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/{medium}.glb', 'sha256': sha,
+                                    'slots': [{'slot': 'Main'}]}
+        for medium in ('SK_Body_M', 'SK_Grid_M', 'SK_Named_M', 'SK_Moved_M'):
+            parts.append({'SkeletalMesh': {'AssetPathName': path(medium)}, 'TagOverrides': [
+                {'MatchingTags': ['Customization.Archetype.Light'], 'bOverrideMesh': True,
+                 'ReplacementSkeletalMesh': {'AssetPathName': path(medium[:-2] + '_L')}}]})
+        index = models / 'reconstructed-assemblies-v1'
+        index.mkdir(parents=True)
+        assets = {'attachmentBody': {'source': path('SK_Body_M')}, 'meshes': meshes,
+                  'attachmentFrames': {path('SK_Named_M'): {'socket': 'spine'}}}
+        (index / 'assets.json').write_text(json.dumps(assets), encoding='utf-8')
+        pairs = {'items': {'Face_1': {'body': {'sourceMesh': path('SK_Body_M'), 'boundsOrigin': [0.0, 0.0, 1.0]}}}}
+        (index / 'skin-pairs.json').write_text(json.dumps(pairs), encoding='utf-8')
+        items = models / 'reconstructed-assembly-v2' / 'items'
+        items.mkdir(parents=True)
+        (items / 'DA_Test.json').write_text(json.dumps({'properties': {'VisualParts': parts}}), encoding='utf-8')
+
+    def build(self, *flags):
+        out = self.tmp / f'out-{len(list(self.tmp.glob("out-*")))}'
+        with mock.patch.object(sys, 'argv', ['build', '--models', str(self.models), '--out', str(out), *flags]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            tool.main()
+        return out, json.loads((out / 'report.json').read_text(encoding='utf-8'))
+
+    def test_without_the_flag_a_reordered_mesh_is_refused_by_proof_3(self):
+        _, report = self.build()
+        self.assertEqual(report['refused'][path('SK_Grid_L')], ['primitive 0: indices differ', 'primitive 0: UVs differ'])
+        self.assertEqual(report['proof3Prime'], {})
+
+    def test_with_the_flag_it_joins_and_every_attempt_is_recorded(self):
+        out, report = self.build('--same-surface-permuted')
+        self.assertIn(path('SK_Grid_L'), report['added']['light'])
+        row = report['meshes'][path('SK_Grid_L')]
+        self.assertEqual((row['proof3'], row['inOrderProblems']),
+                         ('permuted', ['primitive 0: indices differ', 'primitive 0: UVs differ']))
+        self.assertEqual(report['proof3Prime'][path('SK_Grid_L')]['verdict'], 'pass')
+        self.assertEqual(report['refused'][path('SK_Named_L')][-1],
+                         "proof 3': named in a side registry: assets.json attachmentFrames")
+        self.assertTrue(report['refused'][path('SK_Moved_L')][-1].startswith("proof 3': positions are not the x0.85"))
+        tsv = (out / 'proof3-prime.tsv').read_text(encoding='utf-8').splitlines()
+        self.assertEqual(len(tsv), 1 + 3)
+        self.assertEqual(report['proof3PrimeRules']['bodyBones'], 2)
+
+
 REAL = Path('E:/Coding/the-finals-outfit')
+REAL_GLBS = [REAL / 'scripts/generated/archetypes/light-bulk-v2/source-glb', REAL / f'public/models/{STAGING}/source-glb']
+
+
+def real_glb(name):
+    return next((d / f'{name}.glb' for d in REAL_GLBS if (d / f'{name}.glb').is_file()), None)
+
+
+@unittest.skipUnless(real_glb('SK_Body_M') and real_glb('SK_Casual_BasicTshirt_L'), 'needs the local Light bulk reads')
+class SameSurfacePermutedOnRealMeshes(unittest.TestCase):
+    """Real fixtures (26 Nov 2026, the 17 Nov game): three that must pass, two that must fail."""
+
+    @classmethod
+    def setUpClass(cls):
+        j, _ = tool.glb(real_glb('SK_Body_M'))
+        cls.bones = {j['nodes'][i].get('name') for i in j['skins'][0]['joints']}
+
+    def prove(self, stem):
+        return tool.surface_permuted(real_glb(stem + '_M'), real_glb(stem + '_L'), SCALES['L'], self.bones)
+
+    def test_re_exported_light_meshes_pass(self):
+        for stem, flipped in (('SK_Mexico_RancheroJacket', 12), ('SK_Medieval_KnightNeckCloth', 0),
+                              ('SK_Racing_Gloves', 0)):
+            ok, why, detail = self.prove(stem)
+            self.assertTrue(ok, (stem, why))
+            self.assertEqual(detail['flippedTriangles'], flipped, stem)
+
+    def test_the_season_12_light_tshirt_fails_on_its_shape(self):
+        # Same UV0 per vertex, but the Light bind is up to 3.1 mm off 0.85 x Medium and reweighted: a reshaped mesh.
+        ok, why, detail = self.prove('SK_Casual_BasicTshirt')
+        self.assertFalse(ok)
+        self.assertIn('positions are not the x0.85', why)
+        self.assertGreater(detail['positionMaxM'], 3e-3)
+
+    def test_cat_ears_fail_on_a_non_planar_flipped_quad(self):
+        ok, why, detail = self.prove('SK_WorkUniforms_CatEars')
+        self.assertFalse(ok)
+        self.assertIn('not planar', why)
+        self.assertGreater(detail['quadGapMaxM'], 1e-4)
+
+
 OCT_READ = REAL / 'scripts/generated/shader-probe/season11-staging-20261018/meshes-raw'
 OCT_GLB = REAL / 'public/models/season11-staging-20261018/source-glb/SK_Casual_LowWedgeHeels_M.glb'
 CONVERTER = REAL / 'scripts/shader-probe/stage-season-assets.py'
