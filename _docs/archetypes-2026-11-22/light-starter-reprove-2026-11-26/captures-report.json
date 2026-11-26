@@ -1,0 +1,200 @@
+[
+ {
+  "id": "starting-outfit",
+  "archetype": "light",
+  "view": "front",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-canvas"
+  },
+  "notOnClass": [
+   "SPECTATOR STANDARD"
+  ],
+  "notice": "Not on Light yet: SPECTATOR STANDARD. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "starting-outfit.light.front.png"
+ },
+ {
+  "id": "starting-outfit",
+  "archetype": "light",
+  "view": "side",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-canvas"
+  },
+  "notOnClass": [
+   "SPECTATOR STANDARD"
+  ],
+  "notice": "Not on Light yet: SPECTATOR STANDARD. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "starting-outfit.light.side.png"
+ },
+ {
+  "id": "starting-outfit",
+  "archetype": "light",
+  "view": "back",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-canvas"
+  },
+  "notOnClass": [
+   "SPECTATOR STANDARD"
+  ],
+  "notice": "Not on Light yet: SPECTATOR STANDARD. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "starting-outfit.light.back.png"
+ },
+ {
+  "id": "starting-outfit",
+  "archetype": "light",
+  "view": "feet",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-canvas"
+  },
+  "notOnClass": [
+   "SPECTATOR STANDARD"
+  ],
+  "notice": "Not on Light yet: SPECTATOR STANDARD. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "starting-outfit.light.feet.png"
+ },
+ {
+  "id": "starting-outfit",
+  "archetype": "medium",
+  "view": "front",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-canvas"
+  },
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "starting-outfit.medium.front.png"
+ },
+ {
+  "id": "starting-outfit",
+  "archetype": "medium",
+  "view": "feet",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-canvas"
+  },
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "starting-outfit.medium.feet.png"
+ },
+ {
+  "id": "alliance-sneakers",
+  "archetype": "light",
+  "view": "feet",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-alliance"
+  },
+  "notOnClass": [
+   "SPECTATOR STANDARD"
+  ],
+  "notice": "Not on Light yet: SPECTATOR STANDARD. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "alliance-sneakers.light.feet.png"
+ },
+ {
+  "id": "alliance-sneakers",
+  "archetype": "light",
+  "view": "feetSide",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-alliance"
+  },
+  "notOnClass": [
+   "SPECTATOR STANDARD"
+  ],
+  "notice": "Not on Light yet: SPECTATOR STANDARD. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "alliance-sneakers.light.feetSide.png"
+ },
+ {
+  "id": "alliance-sneakers",
+  "archetype": "medium",
+  "view": "feet",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-alliance"
+  },
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "alliance-sneakers.medium.feet.png"
+ },
+ {
+  "id": "alliance-sneakers",
+  "archetype": "medium",
+  "view": "feetSide",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-alliance"
+  },
+  "notOnClass": [],
+  "notice": null,
+  "errors": [
+   "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ],
+  "file": "alliance-sneakers.medium.feetSide.png"
+ },
+ {
+  "id": "handcloth",
+  "archetype": "light",
+  "view": "hands",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-canvas",
+   "hands": "cowboy-handcloth-cotton"
+  },
+  "notOnClass": [
+   "SPECTATOR STANDARD"
+  ],
+  "notice": "Not on Light yet: SPECTATOR STANDARD. Their Light versions aren’t in the viewer yet, so they’re left off; your outfit keeps them.",
+  "errors": [],
+  "file": "handcloth.light.hands.png"
+ },
+ {
+  "id": "handcloth",
+  "archetype": "medium",
+  "view": "hands",
+  "slots": {
+   "face": "head-face-01-base",
+   "upperBody": "casual-basictshirt-cotton-black",
+   "lowerBody": "casual-loosejeans-denim-darkblue",
+   "feet": "casual-tallsneakers-canvas",
+   "hands": "cowboy-handcloth-cotton"
+  },
+  "notOnClass": [],
+  "notice": null,
+  "errors": [],
+  "file": "handcloth.medium.hands.png"
+ }
+]
