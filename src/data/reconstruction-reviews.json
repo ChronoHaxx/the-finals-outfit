@@ -338,5 +338,9 @@
   "samurai-facemask-base-cns": {
     "status": "issue",
     "note": "Known visual difference by decision (11 Nov 2026, decision 5: CNS Glitch items drawn without the glitch effect): the mask renders without its CNS Glitch overlay part (the cyan glitch grid the icon shows). The mask underneath is reconstructed and matches the icon's shape and dark finish. The glitch slot's material is unset in our export, so the glitch binding is shown by the icon and the shared glitch mesh. Evidence: _docs/goal-100-2026-10-11/w175-cns-glitch/promote/ (review-v1, ../cns-sibling-icons.jpg)."
+  },
+  "military-rebreather-rubber-cns": {
+    "status": "polish",
+    "note": "Icon differs by a game change (found 26 Nov 2026): the icon still shows a CNS LED visor, but since Season 12 the game defines this item as the rebreather alone (re-read from the installed 17 Nov build: one visual part). The visor moved to its own eyewear item, Vapor Wave Glasses Plastic CNS, which is not reconstructed yet (its lens is a PanningHologram visor). The rebreather is reconstructed and matches the icon's shape and dark navy finish. Evidence: _docs/cns-emissive-2026-11-26/. Polish: human acceptance pending."
   }
 }
