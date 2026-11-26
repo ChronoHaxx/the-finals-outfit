@@ -1,0 +1,8 @@
+{
+ "note": "SK_Sneakers_M (26 Nov 2026): the low sneakers' Medium onto the game-faithful 17 Nov read (light-bulk-v2 source GLB b292ec21), a C0b-style mesh-only correction. The live mesh's one ankle-collar island sits 4 tiles over in U and carries the old converter's half-float UV steps (2^-9). Topology, positions, joints and UV1 are identical. Review: SNEAKERS.md.",
+ "meshes": {
+  "/Game/Discovery/Characters/StarterSet/Assets/Sneakers/SK_Sneakers_M.SK_Sneakers_M": {
+   "toUrl": "../s12-refresh-tier2-v1/sneakers/SK_Sneakers_M.glb"
+  }
+ }
+}
