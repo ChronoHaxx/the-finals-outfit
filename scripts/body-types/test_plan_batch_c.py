@@ -64,6 +64,17 @@ class RuleTest(unittest.TestCase):
         # Re-reading the cape as well releases every item.
         self.assertEqual(self.rule.items({src('SK_Tee'), src('SK_Cape')}), {'pants', 'tee', 'cape', 'outfit'})
 
+    def test_a_held_mesh_is_never_admitted_even_when_an_admission_list_names_it(self):
+        # The tee is review-admitted, then held after a later review: no wave may release it, so every item that shows
+        # it stays live, and the outfit's other meshes are held with it: the cape, its morphs changed, leaves the
+        # effective set, so the cape item goes too; the pants (morphs unchanged) stay Season 12-shaped.
+        held = plan.Rule(self.rule_proof, {src('SK_Tee')}, set(), self.users, BODY, self.by_item, held={src('SK_Tee')})
+        self.assertEqual(held.items(), {'pants'})
+        self.assertEqual(held.items({src('SK_Tee')}), {'pants'})
+        # Without the hold, the admission releases every item.
+        admitted = plan.Rule(self.rule_proof, {src('SK_Tee')}, set(), self.users, BODY, self.by_item)
+        self.assertEqual(admitted.items(), {'pants', 'tee', 'cape', 'outfit'})
+
 
 class CurrentTest(unittest.TestCase):
     def test_an_item_is_current_only_when_it_shows_no_unproven_17_nov_change(self):
