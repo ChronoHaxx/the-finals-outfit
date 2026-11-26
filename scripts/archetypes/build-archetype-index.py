@@ -25,6 +25,13 @@ Proof 1' (--live-equal-medium, proposed 23 Nov 2026; use it only with the coordi
 Medium is byte-identical to the live one, one that matches it on everything the class mesh inherits stands in (see
 live_equal). Fresh reads of today's containers come in through --staging (scripts/archetypes/run-light-bulk.py).
 
+The fresh-pair rule (with --live-equal-medium and --proven, approved 26 Nov 2026): where the live Medium is
+byte-identical to an older staged read (proof 1 holds) but that read's class sibling is not current in the 17 Nov
+containers, a fresh --staging read of the same Medium stands in only if it is live-equal to the live mesh (proof 1'),
+and the class sibling read beside it then takes every proof. Otherwise the row stays refused for currency. A fresh
+read can never be byte-identical to the live mesh, so proof 1' is the bar. report.json "freshPair" and fresh-pair.tsv
+record every attempt.
+
 Proof 3' (--same-surface-permuted, approved 26 Nov 2026): where proof 3 fails only on vertex order (indices, UVs or
 the skin's joint list), the class mesh may still be its Medium sibling's surface, exported with its vertices in another
 order and a few quads split along the other diagonal. surface_permuted re-proves proofs 3-5 under a vertex bijection,
@@ -283,6 +290,24 @@ def live_equal(staged_path, live_path):
             return False, "live Medium reweighted", {"differs": "weights", "primitive": i, "vertices": sum(bad),
                                                      "maxU16Steps": worst, "morphs": morphs}
     return True, None, {"morphs": morphs}
+
+
+def live_equal_margins(staged_path, live_path):
+    """For a pair live_equal passed: the largest difference it measured on each toleranced quantity, beside its
+    epsilon, so a review sees how close to the line the pair came (indices, slots, joint names and u16 weights are exact
+    by then). Used by the fresh-pair rule's record only."""
+    a, b = mesh_data(staged_path), mesh_data(live_path)
+    da, db = skin_detail(staged_path), skin_detail(live_path)
+    measured = {"positionM": 0.0, "uv": 0.0, "normal": 0.0, "inverseBind": 0.0}
+    for x, y, nx, ny in zip(a["prims"], b["prims"], da["prims"], db["prims"]):
+        measured["positionM"] = max(measured["positionM"], float(np.abs(x["pos"] - y["pos"]).max()))
+        measured["uv"] = max([measured["uv"], *(float(np.abs(u - v).max()) for u, v in zip(x["uvs"], y["uvs"]))])
+        if nx["normals"] is not None:
+            measured["normal"] = max(measured["normal"], float(np.abs(nx["normals"] - ny["normals"]).max()))
+    if len(da["inverseBind"]):
+        measured["inverseBind"] = float(np.abs(da["inverseBind"] - db["inverseBind"]).max())
+    return {k: {"measured": v, "epsilon": LIVE_EQUAL[k], "ofEpsilon": round(v / LIVE_EQUAL[k], 4)}
+            for k, v in measured.items()}
 
 
 # Proof 3' tolerances (approved by the coordinator 26 Nov 2026, with these stated): a class mesh that is its Medium
@@ -717,7 +742,7 @@ def main():
     report = {"activeSha256": sha256(index_dir / "assets.json"), "skinPairsSha256": sha256(index_dir / "skin-pairs.json"),
               "currentProof": {k: current[k] for k in ("file", "sha256", "containers")} if current else None,
               "classes": {}, "meshes": {}, "refused": {}, "skipped": {}, "proof1Prime": {}, "proof3Prime": {},
-              "reshaped": {}}
+              "reshaped": {}, "freshPair": {}}
 
     # The Archetype mesh swaps the definitions author: Medium skeletal mesh -> class mesh. Every class mesh named here
     # ends in exactly one of report["meshes"] (added), report["refused"] (a proof failed) or report["skipped"] (never
@@ -787,6 +812,33 @@ def main():
             by_sha[f] = sha256(f)
         return by_sha[f]
 
+    fresh_medium_checks = {}  # Medium object path -> its fresh read's proof 1' result, shared by its class meshes
+
+    def fresh_pair(medium_path, entry, candidates, target, stale):
+        """The fresh-pair rule (approved 26 Nov 2026). The live Medium is byte-identical to an older staged read, but
+        that read's class sibling `stale` is not current. Returns (the fresh Medium read to use, or None; the record).
+        A fresh read is never byte-identical to the live mesh, so it must be live-equal to it (proof 1', the same
+        tolerances every fresh row meets); its class sibling must be in the same run. Nothing falls back further."""
+        rel = lambda f: os.path.relpath(f, models).replace(os.sep, "/")
+        record = {"byteMatchedMedium": rel(stale.parent / (medium_path.rsplit(".", 1)[-1] + ".glb")),
+                  "staleSibling": rel(stale), "freshMedium": None}
+        fresh_m = next((f for f in candidates if f in fresh), None)
+        if fresh_m is None:
+            return None, {**record, "verdict": "no fresh read of the Medium"}
+        record["freshMedium"] = rel(fresh_m)
+        if medium_path not in fresh_medium_checks:
+            live_file = (index_dir / entry["url"]).resolve()
+            fresh_medium_checks[medium_path] = (live_equal(fresh_m, live_file) if live_file.is_file()
+                                                else (False, "live Medium file missing", {}))
+        ok, why, detail = fresh_medium_checks[medium_path]
+        record.update({"freshMediumSha256": staged_sha(fresh_m), "liveSha256": entry.get("sha256")})
+        if not ok:
+            return None, {**record, "verdict": f"the fresh Medium is not live-equal: {why}", **detail}
+        if not (fresh_m.parent / stale.name).exists():
+            return None, {**record, "verdict": "no fresh read of the class mesh beside the fresh Medium"}
+        return fresh_m, {**record, "verdict": "used", "morphs": detail["morphs"],
+                         "liveEqualMargins": live_equal_margins(fresh_m, (index_dir / entry["url"]).resolve())}
+
     added, item_masks = {}, {}
     masks_added, preview = {}, {}  # reshaped rows: their own mask (png, publish path, sha); preview entries (no mask yet)
     medium_body = assets["attachmentBody"]["source"]
@@ -852,10 +904,26 @@ def main():
             if not target or target in assets["meshes"]:
                 continue
             file = medium_glb.parent / (target.rsplit(".", 1)[-1] + ".glb")
+            pair_glb, pair_medium, pair_proof1 = medium_glb, medium, proof1
+            if (args.live_equal_medium and current is not None and file.exists() and file not in fresh
+                    and target not in current["proven"]):
+                # The fresh-pair rule (26 Nov 2026): the live Medium is byte-identical to an older staged read, but that
+                # read's class sibling is not current. A fresh read of the same Medium stands in only if it is
+                # live-equal (proof 1'); its own class sibling then takes every proof below. Otherwise the row is
+                # refused for currency, as before.
+                used, record = fresh_pair(medium_path, entry, candidates, target, file)
+                report["freshPair"][target] = record
+                if used is not None:
+                    pair_glb, pair_medium = used, mesh_data(used)
+                    pair_proof1 = {"proof1": "live-equal", "morphs": record["morphs"],
+                                   "freshPair": {k: record[k] for k in ("byteMatchedMedium", "staleSibling",
+                                                                         "freshMedium", "freshMediumSha256",
+                                                                         "liveSha256", "liveEqualMargins")}}
+                    file = used.parent / file.name
             if not file.exists():
                 report["refused"][target] = ["not staged beside its Medium sibling"]
                 continue
-            ok, proof = prove(medium, mesh_data(file), scale, target, entry["slots"])
+            ok, proof = prove(pair_medium, mesh_data(file), scale, target, entry["slots"])
             if not ok and args.same_surface_permuted and all(p.endswith(PERMUTABLE) for p in proof["problems"]):
                 # Proof 3': the in-order surface proof failed only on vertex order. Re-prove the whole surface under a
                 # vertex bijection; a mesh a side registry names is refused, whatever the geometry says.
@@ -865,7 +933,7 @@ def main():
                 if named_in:
                     ok3, why3, detail3 = False, f"named in a side registry: {', '.join(named_in)}", {}
                 else:
-                    ok3, why3, detail3 = surface_permuted(medium_glb, file, scale, body_bones)
+                    ok3, why3, detail3 = surface_permuted(pair_glb, file, scale, body_bones)
                 report["proof3Prime"][target] = {"verdict": "pass" if ok3 else why3, "class": cls, "medium": medium_path,
                                                  "inOrderProblems": proof["problems"], **detail3}
                 if ok3:
@@ -894,7 +962,7 @@ def main():
                 elif not applied_body or applied_body not in assets["meshes"]:
                     why_r = f"the {cls} body is not applied in the active index (the mask is projected onto it)"
                 else:
-                    ok_r, why_r, detail_r = materials_apply(medium_glb, file, scale, body_bones)
+                    ok_r, why_r, detail_r = materials_apply(pair_glb, file, scale, body_bones)
                     if ok_r and coverage is not None:
                         published = (index_dir / entry["bodyMaskUrl"]).resolve()
                         record, png, why_r = reshaped_mask(
@@ -917,7 +985,7 @@ def main():
                 else:
                     proof["problems"] = proof["problems"] + [f"reshaped route: {why_r}"]
             proof.update({"class": cls, "medium": medium_path, "file": os.path.relpath(file, models).replace(os.sep, "/"),
-                          "sha256": staged_sha(file), "mediumSha256": entry["sha256"], **proof1})
+                          "sha256": staged_sha(file), "mediumSha256": entry["sha256"], **pair_proof1})
             if not ok:
                 report["refused"][target] = proof["problems"]
                 continue
@@ -1099,6 +1167,18 @@ def main():
         if report["reshapedRules"]["notTried"]:
             print("  reshaped route: not tried (no failing proof row reached it): "
                   + ", ".join(report["reshapedRules"]["notTried"]))
+    # Every fresh-pair attempt: which stale sibling it replaced, and whether the fresh Medium stood in.
+    if report["freshPair"]:
+        cols = ["verdict", "byteMatchedMedium", "staleSibling", "freshMedium", "freshMediumSha256", "liveSha256"]
+        margins = lambda v: ";".join(f"{q}={m['measured']:.3g} ({m['ofEpsilon']:.2%} of eps)"
+                                     for q, m in v.get("liveEqualMargins", {}).items())
+        (out / "fresh-pair.tsv").write_text(
+            tab.join(["class mesh", *cols, "liveEqualMargins", "outcome"]) + "\n" + "".join(
+                tab.join([k, *(str(v.get(c, "")) for c in cols), margins(v),
+                          "added" if k in report["meshes"] else "refused" if k in report["refused"] else "skipped"])
+                + "\n" for k, v in sorted(report["freshPair"].items())), encoding="utf-8")
+        used = sum(v["verdict"] == "used" for v in report["freshPair"].values())
+        print(f"  fresh pair: {used} of {len(report['freshPair'])} stale siblings replaced by a fresh live-equal read")
     # class mesh <TAB> class <TAB> reason <TAB> the Medium mesh that names it: the apply record copies this list.
     (out / "skipped.tsv").write_text("".join(
         f"{k}\t{row['class']}\t{r['reason']}\t{r['medium']}\n"

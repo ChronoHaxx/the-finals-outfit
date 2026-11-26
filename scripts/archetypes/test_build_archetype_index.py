@@ -373,6 +373,148 @@ class FreshReadsAndLiveEqualMedium(unittest.TestCase):
             self.build('--live-equal-medium', '--staging', str(self.run_dir))
 
 
+class FreshPairForAStaleSibling(unittest.TestCase):
+    """The fresh-pair rule (26 Nov 2026, SK_Racing_Gloves_L): the live Medium is byte-identical to the 18 Oct read, whose
+    Light sibling has no 17 Nov proof row. A fresh read of the same Medium stands in only if it is live-equal (proof 1':
+    a fresh read is never byte-identical), and its own Light sibling then takes every proof. Otherwise the row stays
+    refused for currency, exactly as before."""
+
+    def setUp(self):
+        # Resolved, as the builder resolves --models: report paths are relative to it (Windows short names differ).
+        self.tmp = tmp = Path(tempfile.mkdtemp()).resolve()
+        self.addCleanup(shutil.rmtree, tmp)
+        self.models = models = tmp / 'models'
+        s11, self.run_dir = models / STAGING / 'source-glb', tmp / 'run'
+        run = self.run_dir / 'source-glb'
+        meshes, parts, proven = {}, [], []
+
+        def medium(name, current=False, fresh_m=None, fresh_l=None):
+            """A Medium the index serves as the S11 read's own bytes (proof 1 holds), the S11 Light sibling (in the
+            17 Nov proof only if `current`), and optionally a fresh run's Medium (fresh_m kwargs) and Light (fresh_l)."""
+            light = name[:-2] + '_L'
+            meshes[path(name)] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/{name}.glb',
+                                  'slots': [{'slot': 'Main'}], 'sha256': write_glb(s11 / f'{name}.glb', name)}
+            write_glb(s11 / f'{light}.glb', light, scale=SCALES['L'])
+            if current:
+                proven.append(path(light))
+            if fresh_m is not None:
+                write_glb(run / f'{name}.glb', name, **{'tag': 'fresh', **fresh_m})
+            if fresh_l is not None:
+                write_glb(run / f'{light}.glb', light, **{'scale': SCALES['L'], 'tag': 'fresh', **fresh_l})
+            parts.append({'SkeletalMesh': {'AssetPathName': path(name)}, 'TagOverrides': [
+                {'MatchingTags': ['Customization.Archetype.Light'], 'bOverrideMesh': True,
+                 'ReplacementSkeletalMesh': {'AssetPathName': path(light)}}]})
+
+        body_m = write_glb(s11 / 'SK_Body_M.glb', 'SK_Body_M')
+        body_l = write_glb(s11 / 'SK_Body_L.glb', 'SK_Body_L', scale=SCALES['L'])
+        for name, sha in (('SK_Body_M', body_m), ('SK_Body_L', body_l)):
+            meshes[path(name)] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/{name}.glb', 'sha256': sha,
+                                  'slots': [{'slot': 'Main'}]}
+        proven += [path('SK_Body_M'), path('SK_Body_L')]
+        parts.append({'SkeletalMesh': {'AssetPathName': path('SK_Body_M')}, 'TagOverrides': [
+            {'MatchingTags': ['Customization.Archetype.Light'], 'bOverrideMesh': True,
+             'ReplacementSkeletalMesh': {'AssetPathName': path('SK_Body_L')}}]})
+        medium('SK_Current_M', current=True, fresh_m={}, fresh_l={})    # S11 sibling current: unchanged path
+        # The gloves: the fresh pair stands in. Its fitting morph (which proof 1' records and the 18 Oct read lacks)
+        # proves the Light is checked against the fresh Medium, not the byte-matched one.
+        fit = {'morph': ('shrink_under_vest', 0.001)}
+        medium('SK_Stale_M', fresh_m=fit, fresh_l=fit)
+        medium('SK_Changed_M', fresh_m={'shift': 0.01}, fresh_l={})      # the game changed the Medium since 18 Oct
+        medium('SK_NoFresh_M')                                           # no fresh read at all
+        medium('SK_NoFreshLight_M', fresh_m={})                          # a fresh Medium without its Light
+        medium('SK_BadLight_M', fresh_m={}, fresh_l={'slots': ('Other',)})   # the fresh Light fails proof 3
+
+        index = models / 'reconstructed-assemblies-v1'
+        index.mkdir(parents=True)
+        assets = {'attachmentBody': {'source': path('SK_Body_M')}, 'meshes': meshes,
+                  'archetypes': {'light': {'body': path('SK_Body_L'), 'skeletonScale': 0.85,
+                                           'boundsOrigin': [0.0, 0.0, 0.85]}}}
+        (index / 'assets.json').write_text(json.dumps(assets), encoding='utf-8')
+        pairs = {'items': {'Face_1': {'body': {'sourceMesh': path('SK_Body_M'), 'boundsOrigin': [0.0, 0.0, 1.0]}}}}
+        (index / 'skin-pairs.json').write_text(json.dumps(pairs), encoding='utf-8')
+        items = models / 'reconstructed-assembly-v2' / 'items'
+        items.mkdir(parents=True)
+        (items / 'DA_Test.json').write_text(json.dumps({'properties': {'VisualParts': parts}}), encoding='utf-8')
+        record = {'policy': 'archetypes-light-bulk-run-v1', 'usmapSha256': 'f36b', 'control': {'ok': True},
+                  'batches': {'b11': {'guard': {'exitCode': 0}, 'mappingSha256': 'f36b', 'missing': [],
+                                      'glb': {'exit': 0}}}}
+        (self.run_dir / 'run.json').write_text(json.dumps(record), encoding='utf-8')
+        self.proven = tmp / 'nov17-proof.json'
+        self.proven.write_text(json.dumps({'policy': 'archetypes-nov17-proof-v1', 'proven': proven, 'refused': {},
+                                           'packages': {}, 'today': {'containersNewest': 'test'}}), encoding='utf-8')
+
+    def build(self, *flags):
+        out = self.tmp / f'out-{len(list(self.tmp.glob("out-*")))}'
+        with mock.patch.object(sys, 'argv', ['build', '--models', str(self.models), '--out', str(out),
+                                             '--staging', str(self.run_dir), '--proven', str(self.proven), *flags]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            tool.main()
+        return json.loads((out / 'report.json').read_text(encoding='utf-8')), out
+
+    STALE = ['not current in the 17 Nov containers: no proof row']
+
+    def test_the_fresh_live_equal_pair_stands_in_for_a_stale_sibling(self):
+        report, out = self.build('--live-equal-medium')
+        mesh = report['meshes'][path('SK_Stale_L')]
+        self.assertEqual(mesh['file'], '../run/source-glb/SK_Stale_L.glb')
+        self.assertEqual(mesh['proof1'], 'live-equal')
+        self.assertEqual(mesh['currency'], "read from today's containers (stagingRuns)")
+        pair = mesh['freshPair']
+        self.assertEqual({k: pair[k] for k in ('byteMatchedMedium', 'staleSibling', 'freshMedium')},
+                         {'byteMatchedMedium': f'{STAGING}/source-glb/SK_Stale_M.glb',
+                          'staleSibling': f'{STAGING}/source-glb/SK_Stale_L.glb',
+                          'freshMedium': '../run/source-glb/SK_Stale_M.glb'})
+        # The review sees both shas and how close to each proof 1' epsilon the fresh Medium came.
+        live = self.models / STAGING / 'source-glb' / 'SK_Stale_M.glb'
+        self.assertEqual(pair['liveSha256'], hashlib.sha256(live.read_bytes()).hexdigest())
+        self.assertEqual(pair['freshMediumSha256'],
+                         hashlib.sha256((self.run_dir / 'source-glb' / 'SK_Stale_M.glb').read_bytes()).hexdigest())
+        self.assertNotEqual(pair['freshMediumSha256'], pair['liveSha256'])
+        self.assertEqual(set(pair['liveEqualMargins']), {'positionM', 'uv', 'normal', 'inverseBind'})
+        for m in pair['liveEqualMargins'].values():
+            self.assertLessEqual(m['measured'], m['epsilon'])
+        self.assertEqual(report['freshPair'][path('SK_Stale_L')]['verdict'], 'used')
+        self.assertIn('inverseBind=', (out / 'fresh-pair.tsv').read_text(encoding='utf-8'))
+        self.assertTrue(mesh['morphs'], 'the fresh Medium morph difference is recorded')
+        published = (out / 'publish-list.tsv').read_text(encoding='utf-8')
+        self.assertIn('../run/source-glb/SK_Stale_L.glb', published)
+        self.assertNotIn(f'{STAGING}/source-glb/SK_Stale_L.glb', published)
+
+    def test_a_current_sibling_keeps_its_own_read_and_is_not_an_attempt(self):
+        report, _ = self.build('--live-equal-medium')
+        mesh = report['meshes'][path('SK_Current_L')]
+        self.assertEqual(mesh['file'], f'{STAGING}/source-glb/SK_Current_L.glb')
+        self.assertEqual(mesh['proof1'], 'bytes')
+        self.assertNotIn(path('SK_Current_L'), report['freshPair'])
+
+    def test_a_fresh_medium_that_is_not_live_equal_never_pairs(self):
+        report, _ = self.build('--live-equal-medium')
+        self.assertEqual(report['refused'][path('SK_Changed_L')], self.STALE)
+        self.assertEqual(report['freshPair'][path('SK_Changed_L')]['verdict'],
+                         'the fresh Medium is not live-equal: medium changed in the game')
+
+    def test_without_a_fresh_medium_or_its_light_the_currency_refusal_stands(self):
+        report, _ = self.build('--live-equal-medium')
+        self.assertEqual(report['refused'][path('SK_NoFresh_L')], self.STALE)
+        self.assertEqual(report['freshPair'][path('SK_NoFresh_L')]['verdict'], 'no fresh read of the Medium')
+        self.assertEqual(report['refused'][path('SK_NoFreshLight_L')], self.STALE)
+        self.assertEqual(report['freshPair'][path('SK_NoFreshLight_L')]['verdict'],
+                         'no fresh read of the class mesh beside the fresh Medium')
+
+    def test_the_fresh_light_still_takes_every_proof(self):
+        report, _ = self.build('--live-equal-medium')
+        self.assertEqual(report['freshPair'][path('SK_BadLight_L')]['verdict'], 'used')
+        self.assertNotIn(path('SK_BadLight_L'), report['meshes'])
+        problems = report['refused'][path('SK_BadLight_L')]
+        self.assertTrue(problems and not any('current' in p for p in problems), problems)
+
+    def test_without_proof_1_prime_the_rule_is_off(self):
+        report, _ = self.build()
+        self.assertEqual(report['refused'][path('SK_Stale_L')], self.STALE)
+        self.assertEqual(report['freshPair'], {})
+        self.assertIn(path('SK_Current_L'), report['meshes'])
+
+
 class LiveEqualMediumRule(unittest.TestCase):
     """Proof 1' as the coordinator approved it (23 Nov 2026): same mesh up to float noise passes, with any morph
     differences recorded; a different surface, a changed joint order, a weight change beyond u16 quantization or a
