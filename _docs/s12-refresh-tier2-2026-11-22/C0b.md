@@ -149,3 +149,34 @@ built on the index as it stands after C0's apply. Steps:
    backup and swap.
 
 After it applies, the L/H session re-proves `TallSneakers_L` against the new Medium (proof 1′).
+
+## The patch on the post-C0 index (26 Nov 2026)
+
+C0 applied on 26 Nov: active `assets.json` `441eff47…`, skin pairs `f15a73a2…` (main-folder session,
+`c0-run/APPLY-2026-11-26.md` in the root). Step 2 above, re-pinned to that index:
+
+| | |
+|---|---|
+| patch | `scripts/generated/s12-refresh-tier2-v1/c0b-patch-v2/merge-patch-c0b.json`, sha256 `ee51daa9…` |
+| pinned to | `441eff478be00279d78992d46a5e586a14d9e665aa71508818259c17df742b17` |
+| repoints | 1 mesh (`SK_Casual_TallSneakers_M`: `url`, `sha256`); no mask, no material; skin pairs unchanged |
+| expected `assets.json` | **`9e2fe5d329a1744fbcf9f7ffb7c0af841dc5b6622d6f48e21cb1f12bc41e3905`** (compact, as the active file) |
+| publish list | one file, 344,212 bytes: `public/models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb` (`cff3a74c…`) |
+
+How it was built, without writing the root:
+- The active `assets.json` and `skin-pairs.json` were copied into this worktree's ignored `public/models/` (shas
+  checked).
+- The GLB was copied from the root's `light-bulk-v2/source-glb/` to the worktree's
+  `public/models/s12-refresh-tier2-v1/c0b/`, the path the spec names.
+- `make-refresh-patch.py` resolves URLs from the index folder and compares slots with the index's own `slots` field.
+  So the copy gives the same patch the root would, and the same publish-list path.
+
+Checks:
+- `apply-merge-patch.py --garments-only` onto a worktree copy wrote `9e2fe5d3…`.
+- Diffing the indexes: one mesh entry changed (`url` `../reconstructed-meshes-v2/…` → `../s12-refresh-tier2-v1/c0b/…`,
+  `sha256` `9998730a…` → `cff3a74c…`); `bodyMaskUrl`, every other entry and every other block are unchanged.
+- Against the reviewed patch (`c0b-refresh-v1/patch.json`, pinned to `b164180c`), the mesh's `fromSha256` and
+  `toSha256` are the same. Only the pin and the target folder differ: the review served the GLB from
+  `s12t2-c0b/`, the release from the spec's path. Body, materials and skin pairs are the same.
+
+The root still needs step 1: stage the GLB as a new file at the publish-list path (`cff3a74c…`) before the apply.
