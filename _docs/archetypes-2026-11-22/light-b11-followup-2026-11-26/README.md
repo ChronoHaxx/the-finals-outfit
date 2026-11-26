@@ -80,3 +80,27 @@ T-shirt was not on Light yet. Nothing else is left off.
 
 Mutations caught: dropping the live-equal check, dropping the currency condition, or proving the fresh Light against the
 byte-matched Medium each fail a test.
+
+**Record per used pair:** the fresh and live Medium shas, and the largest difference proof 1′ measured on positions, UVs,
+normals and inverse binds beside each epsilon (`report.json` `freshPair`, and the mesh's own `freshPair` block;
+`fresh-pair.tsv`).
+
+## Dry run on the active index (f65f6543, after the +2 and T-shirt_L applies)
+
+Main's builder against this branch, the same flags as the +2 build, outputs diffed (`$M/fresh-pair-baseline`,
+`$M/fresh-pair-dryrun`; read-only, between the main-folder session's E: jobs):
+- **32 fresh-pair attempts; 2 used:** `SK_Racing_Gloves_L` and `_H`.
+  - `_L` is added.
+  - `_H` passes, but its class body is not proven, so it stays skipped.
+- **The other 30 keep their currency refusal:**
+  - 29 have no fresh read of the Medium;
+  - `HeadPhonesAntennaPart_L`'s fresh Medium is not live-equal ("medium changed in the game").
+- **The index changes by exactly one row:** the `SK_Racing_Gloves_L` entry, plus 3 `itemBodyMasks` keys (ArenaSecurity,
+  Holtow, BlackOrange) pointing at their Medium's existing masks, as the 3′ rows do. No other row or section changes.
+- **Margins**, fresh `be1bf1da…` against live `4ef9280b…`: positions 0, UVs 0, normals 0, inverse binds 3.6e-15 (0% of
+  each epsilon). The reads differ only in bytes.
+- **The dry run's pins:**
+  - assets `bea41987f68482854a14b85abf4b430fd64dfd8d78317c8625f4134faa533274`;
+  - publish list `0e08ae763be8b947c8c1027f1e9ce52d580a0d197029e6d03027a45e466f763b`, 1 row: GLB `8017302b…`.
+
+**The 1-row patch:** after this merges, on the index active then, with the same command as the +2 build.
