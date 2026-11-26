@@ -1,0 +1,2156 @@
+{
+ "parents": {
+  "thigh_l": "pelvis",
+  "thigh_roll_vpj_l": "thigh_l",
+  "thigh_front_vpj_l": "pelvis",
+  "thigh_back_vpj_l": "pelvis",
+  "calf_l": "thigh_l",
+  "knee_vpj_l": "thigh_l",
+  "thigh_r": "pelvis",
+  "thigh_roll_vpj_r": "thigh_r",
+  "thigh_front_vpj_r": "pelvis",
+  "thigh_back_vpj_r": "pelvis",
+  "calf_r": "thigh_r",
+  "knee_vpj_r": "thigh_r",
+  "upperarm_vpj_01_l": "upperarm_l",
+  "lowerarm_vpj_01_l": "lowerarm_l"
+ },
+ "local": {
+  "thigh_l": {
+   "body_ibm": {
+    "pos_cm": [
+     -0.31,
+     -13.077,
+     -1.309
+    ],
+    "rot_deg_from_identity": 13.98
+   },
+   "body_nodes": {
+    "pos_cm": [
+     -0.31,
+     -13.077,
+     -1.309
+    ],
+    "rot_deg_from_identity": 13.98
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     -0.31,
+     1.309,
+     -13.077
+    ],
+    "rot_deg_from_identity": 13.98
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     -0.264,
+     -11.116,
+     -1.113
+    ],
+    "rot_deg_from_identity": 13.98
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     -0.31,
+     -13.077,
+     -1.309
+    ],
+    "rot_deg_from_identity": 13.98
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     -0.31,
+     -13.077,
+     -1.309
+    ],
+    "rot_deg_from_identity": 13.98
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     -0.31,
+     1.309,
+     -13.077
+    ],
+    "rot_deg_from_identity": 13.98
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     -0.31,
+     1.309,
+     -13.077
+    ],
+    "rot_deg_from_identity": 13.98
+   }
+  },
+  "thigh_roll_vpj_l": {
+   "body_ibm": {
+    "pos_cm": [
+     -22.597,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 11.132
+   },
+   "body_nodes": {
+    "pos_cm": [
+     -22.597,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 11.132
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     -22.597,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 11.132
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     -19.207,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 11.132
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     -22.597,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 6.988
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     -22.597,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 6.988
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     -22.597,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 11.132
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     -22.597,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 11.132
+   }
+  },
+  "thigh_front_vpj_l": {
+   "body_ibm": {
+    "pos_cm": [
+     22.048,
+     -13.077,
+     2.884
+    ],
+    "rot_deg_from_identity": 174.257
+   },
+   "body_nodes": {
+    "pos_cm": [
+     22.048,
+     -13.077,
+     2.884
+    ],
+    "rot_deg_from_identity": 174.257
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     22.048,
+     -2.884,
+     -13.077
+    ],
+    "rot_deg_from_identity": 174.25
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     18.741,
+     -11.116,
+     2.451
+    ],
+    "rot_deg_from_identity": 174.257
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     22.048,
+     -13.077,
+     2.884
+    ],
+    "rot_deg_from_identity": 174.243
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     22.048,
+     -13.077,
+     2.884
+    ],
+    "rot_deg_from_identity": 174.243
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     22.048,
+     -2.884,
+     -13.077
+    ],
+    "rot_deg_from_identity": 174.25
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     22.048,
+     -2.884,
+     -13.077
+    ],
+    "rot_deg_from_identity": 174.25
+   }
+  },
+  "thigh_back_vpj_l": {
+   "body_ibm": {
+    "pos_cm": [
+     12.712,
+     -10.462,
+     -5.507
+    ],
+    "rot_deg_from_identity": 164.992
+   },
+   "body_nodes": {
+    "pos_cm": [
+     12.712,
+     -10.462,
+     -5.507
+    ],
+    "rot_deg_from_identity": 164.992
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     12.712,
+     5.507,
+     -10.462
+    ],
+    "rot_deg_from_identity": 164.992
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     10.806,
+     -8.893,
+     -4.681
+    ],
+    "rot_deg_from_identity": 164.992
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     12.712,
+     -10.462,
+     -5.507
+    ],
+    "rot_deg_from_identity": 164.984
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     12.712,
+     -10.462,
+     -5.507
+    ],
+    "rot_deg_from_identity": 164.984
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     12.712,
+     5.507,
+     -10.462
+    ],
+    "rot_deg_from_identity": 164.992
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     12.712,
+     5.507,
+     -10.462
+    ],
+    "rot_deg_from_identity": 164.992
+   }
+  },
+  "calf_l": {
+   "body_ibm": {
+    "pos_cm": [
+     -45.193,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "body_nodes": {
+    "pos_cm": [
+     -45.193,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     -45.193,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     -38.414,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     -45.193,
+     0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     -45.193,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     -45.193,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     -45.193,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   }
+  },
+  "knee_vpj_l": {
+   "body_ibm": {
+    "pos_cm": [
+     -45.193,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 8.024
+   },
+   "body_nodes": {
+    "pos_cm": [
+     -45.193,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 8.024
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     -45.193,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 8.024
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     -38.414,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 8.024
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     -45.193,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     -45.193,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     -45.193,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 8.024
+   }
+  },
+  "thigh_r": {
+   "body_ibm": {
+    "pos_cm": [
+     -0.31,
+     13.078,
+     -1.309
+    ],
+    "rot_deg_from_identity": 166.066
+   },
+   "body_nodes": {
+    "pos_cm": [
+     -0.31,
+     13.078,
+     -1.309
+    ],
+    "rot_deg_from_identity": 166.066
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     -0.31,
+     1.309,
+     13.078
+    ],
+    "rot_deg_from_identity": 166.065
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     -0.264,
+     11.116,
+     -1.113
+    ],
+    "rot_deg_from_identity": 166.066
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     -0.31,
+     13.078,
+     -1.309
+    ],
+    "rot_deg_from_identity": 166.066
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     -0.31,
+     13.078,
+     -1.309
+    ],
+    "rot_deg_from_identity": 166.066
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     -0.31,
+     1.309,
+     13.078
+    ],
+    "rot_deg_from_identity": 166.065
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     -0.31,
+     1.309,
+     13.078
+    ],
+    "rot_deg_from_identity": 166.065
+   }
+  },
+  "thigh_roll_vpj_r": {
+   "body_ibm": {
+    "pos_cm": [
+     22.597,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 179.975
+   },
+   "body_nodes": {
+    "pos_cm": [
+     22.597,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 179.974
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     22.597,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 180.0
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     19.207,
+     0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 179.989
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     22.597,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 180.0
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     22.597,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 180.0
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     22.597,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 180.0
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     22.597,
+     0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 180.0
+   }
+  },
+  "thigh_front_vpj_r": {
+   "body_ibm": {
+    "pos_cm": [
+     22.048,
+     13.078,
+     2.884
+    ],
+    "rot_deg_from_identity": 179.542
+   },
+   "body_nodes": {
+    "pos_cm": [
+     22.048,
+     13.078,
+     2.884
+    ],
+    "rot_deg_from_identity": 179.541
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     22.048,
+     -2.884,
+     13.078
+    ],
+    "rot_deg_from_identity": 179.64
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     18.741,
+     11.116,
+     2.451
+    ],
+    "rot_deg_from_identity": 179.541
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     22.048,
+     13.078,
+     2.884
+    ],
+    "rot_deg_from_identity": 179.608
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     22.048,
+     13.078,
+     2.884
+    ],
+    "rot_deg_from_identity": 179.608
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     22.048,
+     -2.884,
+     13.078
+    ],
+    "rot_deg_from_identity": 179.639
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     22.048,
+     -2.884,
+     13.078
+    ],
+    "rot_deg_from_identity": 179.64
+   }
+  },
+  "thigh_back_vpj_r": {
+   "body_ibm": {
+    "pos_cm": [
+     12.712,
+     10.462,
+     -5.507
+    ],
+    "rot_deg_from_identity": 178.728
+   },
+   "body_nodes": {
+    "pos_cm": [
+     12.712,
+     10.462,
+     -5.507
+    ],
+    "rot_deg_from_identity": 178.728
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     12.712,
+     5.507,
+     10.462
+    ],
+    "rot_deg_from_identity": 178.725
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     10.806,
+     8.893,
+     -4.681
+    ],
+    "rot_deg_from_identity": 178.729
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     12.712,
+     10.462,
+     -5.507
+    ],
+    "rot_deg_from_identity": 178.762
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     12.712,
+     10.462,
+     -5.507
+    ],
+    "rot_deg_from_identity": 178.762
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     12.712,
+     5.507,
+     10.462
+    ],
+    "rot_deg_from_identity": 178.725
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     12.712,
+     5.507,
+     10.462
+    ],
+    "rot_deg_from_identity": 178.725
+   }
+  },
+  "calf_r": {
+   "body_ibm": {
+    "pos_cm": [
+     45.193,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "body_nodes": {
+    "pos_cm": [
+     45.193,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     45.193,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     38.414,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     45.193,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     45.193,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     45.193,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     45.193,
+     0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 6.866
+   }
+  },
+  "knee_vpj_r": {
+   "body_ibm": {
+    "pos_cm": [
+     45.193,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 8.024
+   },
+   "body_nodes": {
+    "pos_cm": [
+     45.193,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 8.024
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     45.193,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 8.024
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     38.414,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 8.024
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     45.193,
+     0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 8.024
+   }
+  },
+  "upperarm_vpj_01_l": {
+   "body_ibm": {
+    "pos_cm": [
+     0.0,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 81.611
+   },
+   "body_nodes": {
+    "pos_cm": [
+     0.0,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 81.611
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     -0.0,
+     0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 81.611
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     0.0,
+     -0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 81.611
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 81.611
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     0.0,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 81.611
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     0.0,
+     0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 81.611
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 81.611
+   }
+  },
+  "lowerarm_vpj_01_l": {
+   "body_ibm": {
+    "pos_cm": [
+     10.661,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 19.77
+   },
+   "body_nodes": {
+    "pos_cm": [
+     10.661,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 19.77
+   },
+   "driver_nodes": {
+    "pos_cm": [
+     10.661,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 19.77
+   },
+   "light_body_ibm": {
+    "pos_cm": [
+     9.062,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 19.77
+   },
+   "longcoat_ibm": {
+    "pos_cm": [
+     10.661,
+     0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 19.77
+   },
+   "longcoat_nodes": {
+    "pos_cm": [
+     10.661,
+     0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 19.77
+   },
+   "uskel_body_m": {
+    "pos_cm": [
+     10.661,
+     -0.0,
+     0.0
+    ],
+    "rot_deg_from_identity": 19.77
+   },
+   "uskel_mergetarget": {
+    "pos_cm": [
+     10.661,
+     0.0,
+     -0.0
+    ],
+    "rot_deg_from_identity": 19.77
+   }
+  }
+ },
+ "vs_body_ibm": {
+  "thigh_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.016,
+    "axis_in_parent": [
+     0.076,
+     0.997,
+     -0.01
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 18.587,
+    "drot_deg": 19.685,
+    "axis_in_parent": [
+     0.086,
+     -0.708,
+     0.701
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 1.972,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.016,
+     0.835,
+     0.551
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.975,
+     -0.029,
+     -0.22
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.969,
+     -0.112,
+     -0.219
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 18.587,
+    "drot_deg": 19.685,
+    "axis_in_parent": [
+     0.086,
+     -0.708,
+     0.701
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 18.587,
+    "drot_deg": 19.685,
+    "axis_in_parent": [
+     0.086,
+     -0.708,
+     0.701
+    ]
+   }
+  },
+  "thigh_roll_vpj_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.006,
+    "axis_in_parent": [
+     -0.999,
+     -0.044,
+     -0.002
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.022,
+    "axis_in_parent": [
+     -0.331,
+     0.004,
+     0.944
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 3.39,
+    "drot_deg": 0.027,
+    "axis_in_parent": [
+     -0.162,
+     -0.986,
+     0.036
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 4.145,
+    "axis_in_parent": [
+     -1.0,
+     -0.0,
+     0.0
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 4.145,
+    "axis_in_parent": [
+     -1.0,
+     -0.0,
+     0.0
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.022,
+    "axis_in_parent": [
+     -0.867,
+     0.093,
+     -0.489
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.022,
+    "axis_in_parent": [
+     -1.0,
+     -0.015,
+     0.019
+    ]
+   }
+  },
+  "thigh_front_vpj_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.016,
+    "axis_in_parent": [
+     -0.228,
+     0.971,
+     0.074
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 18.939,
+    "drot_deg": 179.592,
+    "axis_in_parent": [
+     0.997,
+     0.051,
+     -0.05
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 3.869,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.995,
+     -0.002,
+     0.098
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.29,
+    "axis_in_parent": [
+     -0.309,
+     0.344,
+     -0.887
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.289,
+    "axis_in_parent": [
+     -0.309,
+     0.344,
+     -0.887
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 18.939,
+    "drot_deg": 179.592,
+    "axis_in_parent": [
+     0.997,
+     0.051,
+     -0.05
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 18.939,
+    "drot_deg": 179.592,
+    "axis_in_parent": [
+     0.997,
+     0.051,
+     -0.05
+    ]
+   }
+  },
+  "thigh_back_vpj_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.009,
+    "axis_in_parent": [
+     0.927,
+     0.273,
+     -0.259
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 16.72,
+    "drot_deg": 178.033,
+    "axis_in_parent": [
+     0.983,
+     0.151,
+     -0.105
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 2.604,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.924,
+     -0.237,
+     0.299
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.412,
+     0.343,
+     -0.844
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.412,
+     0.343,
+     -0.844
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 16.72,
+    "drot_deg": 178.033,
+    "axis_in_parent": [
+     0.983,
+     0.151,
+     -0.105
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 16.72,
+    "drot_deg": 178.033,
+    "axis_in_parent": [
+     0.983,
+     0.151,
+     -0.105
+    ]
+   }
+  },
+  "calf_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.005,
+    "axis_in_parent": [
+     -0.117,
+     0.993,
+     -0.021
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 9.707,
+    "axis_in_parent": [
+     0.042,
+     0.706,
+     -0.706
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 6.779,
+    "drot_deg": 0.016,
+    "axis_in_parent": [
+     0.013,
+     -1.0,
+     0.006
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.953,
+     0.274,
+     0.128
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.956,
+     0.264,
+     0.129
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 0.0,
+    "drot_deg": 9.707,
+    "axis_in_parent": [
+     0.042,
+     0.706,
+     -0.706
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 0.0,
+    "drot_deg": 9.707,
+    "axis_in_parent": [
+     0.042,
+     0.706,
+     -0.706
+    ]
+   }
+  },
+  "knee_vpj_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.284,
+     -0.921,
+     -0.268
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 9.74,
+    "axis_in_parent": [
+     0.043,
+     0.763,
+     -0.646
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 6.779,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.099,
+     -0.994,
+     -0.047
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 4.122,
+    "axis_in_parent": [
+     -1.0,
+     0.005,
+     0.019
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 4.122,
+    "axis_in_parent": [
+     -1.0,
+     0.005,
+     0.019
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 0.0,
+    "drot_deg": 9.739,
+    "axis_in_parent": [
+     0.043,
+     0.763,
+     -0.646
+    ]
+   }
+  },
+  "thigh_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.016,
+    "axis_in_parent": [
+     -0.227,
+     0.97,
+     0.083
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 18.587,
+    "drot_deg": 178.31,
+    "axis_in_parent": [
+     0.985,
+     0.12,
+     -0.121
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 1.972,
+    "drot_deg": 0.064,
+    "axis_in_parent": [
+     -0.881,
+     -0.458,
+     0.119
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.113,
+    "axis_in_parent": [
+     0.74,
+     -0.657,
+     -0.144
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.113,
+    "axis_in_parent": [
+     0.717,
+     -0.683,
+     -0.139
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 18.587,
+    "drot_deg": 178.31,
+    "axis_in_parent": [
+     0.985,
+     0.12,
+     -0.121
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 18.587,
+    "drot_deg": 178.31,
+    "axis_in_parent": [
+     0.985,
+     0.12,
+     -0.121
+    ]
+   }
+  },
+  "thigh_roll_vpj_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.856,
+     -0.511,
+     0.078
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 179.964,
+    "axis_in_parent": [
+     1.0,
+     0.005,
+     0.001
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 3.39,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.187,
+     -0.455,
+     -0.87
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 3.939,
+    "axis_in_parent": [
+     -1.0,
+     0.0,
+     -0.0
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 3.939,
+    "axis_in_parent": [
+     -1.0,
+     0.0,
+     -0.0
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 0.0,
+    "drot_deg": 179.964,
+    "axis_in_parent": [
+     0.999,
+     0.032,
+     0.005
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 0.0,
+    "drot_deg": 179.964,
+    "axis_in_parent": [
+     -1.0,
+     0.003,
+     0.0
+    ]
+   }
+  },
+  "thigh_front_vpj_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.009,
+    "axis_in_parent": [
+     -0.975,
+     0.035,
+     0.218
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 18.939,
+    "drot_deg": 179.594,
+    "axis_in_parent": [
+     0.997,
+     0.05,
+     -0.051
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 3.869,
+    "drot_deg": 0.002,
+    "axis_in_parent": [
+     0.995,
+     0.012,
+     -0.099
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.291,
+    "axis_in_parent": [
+     0.223,
+     0.264,
+     0.939
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.291,
+    "axis_in_parent": [
+     0.223,
+     0.264,
+     0.939
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 18.939,
+    "drot_deg": 179.594,
+    "axis_in_parent": [
+     0.997,
+     0.05,
+     -0.051
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 18.939,
+    "drot_deg": 179.594,
+    "axis_in_parent": [
+     0.997,
+     0.05,
+     -0.051
+    ]
+   }
+  },
+  "thigh_back_vpj_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.009,
+    "axis_in_parent": [
+     -0.973,
+     0.213,
+     0.088
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 16.72,
+    "drot_deg": 178.034,
+    "axis_in_parent": [
+     0.983,
+     0.105,
+     -0.151
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 2.604,
+    "drot_deg": 0.04,
+    "axis_in_parent": [
+     0.986,
+     -0.166,
+     0.01
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.341,
+     0.263,
+     0.902
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.341,
+     0.263,
+     0.902
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 16.72,
+    "drot_deg": 178.034,
+    "axis_in_parent": [
+     0.983,
+     0.105,
+     -0.151
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 16.72,
+    "drot_deg": 178.034,
+    "axis_in_parent": [
+     0.983,
+     0.105,
+     -0.151
+    ]
+   }
+  },
+  "calf_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.381,
+     -0.924,
+     -0.044
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 9.707,
+    "axis_in_parent": [
+     0.042,
+     0.706,
+     -0.706
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 6.779,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.031,
+     -1.0,
+     0.004
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.012,
+     1.0,
+     0.0
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.013,
+     1.0,
+     0.0
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 0.0,
+    "drot_deg": 9.707,
+    "axis_in_parent": [
+     0.042,
+     0.706,
+     -0.706
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 0.0,
+    "drot_deg": 9.707,
+    "axis_in_parent": [
+     0.042,
+     0.706,
+     -0.706
+    ]
+   }
+  },
+  "knee_vpj_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.49,
+     -0.856,
+     -0.164
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 9.74,
+    "axis_in_parent": [
+     0.043,
+     0.763,
+     -0.646
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 6.779,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.017,
+     -0.997,
+     -0.072
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 0.0,
+    "drot_deg": 9.739,
+    "axis_in_parent": [
+     0.043,
+     0.763,
+     -0.646
+    ]
+   }
+  },
+  "upperarm_vpj_01_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.203,
+     0.025,
+     -0.979
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.363,
+     0.291,
+     0.885
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.029,
+     -0.304,
+     0.952
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.73,
+     -0.47,
+     -0.496
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.72,
+     -0.478,
+     -0.503
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     -0.269,
+     -0.963,
+     -0.004
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.834,
+     -0.363,
+     -0.415
+    ]
+   }
+  },
+  "lowerarm_vpj_01_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0,
+    "axis_in_parent": [
+     0.062,
+     -0.477,
+     0.877
+    ]
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.035,
+    "axis_in_parent": [
+     -0.548,
+     0.421,
+     -0.722
+    ]
+   },
+   "light_body_ibm": {
+    "dpos_cm": 1.599,
+    "drot_deg": 0.019,
+    "axis_in_parent": [
+     -0.43,
+     -0.143,
+     -0.892
+    ]
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.035,
+    "axis_in_parent": [
+     0.949,
+     -0.072,
+     0.309
+    ]
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.033,
+    "axis_in_parent": [
+     0.925,
+     -0.056,
+     0.375
+    ]
+   },
+   "uskel_body_m": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.035,
+    "axis_in_parent": [
+     -0.164,
+     0.424,
+     0.89
+    ]
+   },
+   "uskel_mergetarget": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.035,
+    "axis_in_parent": [
+     0.808,
+     -0.125,
+     0.575
+    ]
+   }
+  }
+ },
+ "world_vs_body_ibm": {
+  "thigh_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.012
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 14.764,
+    "drot_deg": 0.0
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   }
+  },
+  "thigh_roll_vpj_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.013
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 11.42,
+    "drot_deg": 0.017
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 4.145
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 4.145
+   }
+  },
+  "thigh_front_vpj_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.011
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 17.838,
+    "drot_deg": 0.01
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.29
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.29
+   }
+  },
+  "thigh_back_vpj_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 16.759,
+    "drot_deg": 0.0
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   }
+  },
+  "calf_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.013
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 8.114,
+    "drot_deg": 0.0
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   }
+  },
+  "knee_vpj_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 8.114,
+    "drot_deg": 0.0
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 4.122
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 4.122
+   }
+  },
+  "thigh_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.012
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 14.764,
+    "drot_deg": 0.067
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.113
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.114
+   }
+  },
+  "thigh_roll_vpj_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.011
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 11.42,
+    "drot_deg": 0.061
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 3.94
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 3.94
+   }
+  },
+  "thigh_front_vpj_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 17.838,
+    "drot_deg": 0.021
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.291
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.291
+   }
+  },
+  "thigh_back_vpj_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 16.759,
+    "drot_deg": 0.045
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   }
+  },
+  "calf_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.001,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 8.113,
+    "drot_deg": 0.066
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.113
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.113
+   }
+  },
+  "knee_vpj_r": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.001,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 8.113,
+    "drot_deg": 0.066
+   }
+  },
+  "upperarm_vpj_01_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 22.62,
+    "drot_deg": 0.0
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.032
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.031
+   }
+  },
+  "lowerarm_vpj_01_l": {
+   "body_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.0
+   },
+   "driver_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 90.0
+   },
+   "light_body_ibm": {
+    "dpos_cm": 19.67,
+    "drot_deg": 0.0
+   },
+   "longcoat_ibm": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.045
+   },
+   "longcoat_nodes": {
+    "dpos_cm": 0.0,
+    "drot_deg": 0.044
+   }
+  }
+ },
+ "driver_vs_body_ibm_all": {
+  "bones": 92,
+  "worst_rot": [
+   [
+    "ball_r",
+    0.001,
+    90.001
+   ],
+   [
+    "lowerarm_vpj_04_l",
+    0.0,
+    90.0
+   ],
+   [
+    "lowerarm_vpj_03_l",
+    0.0,
+    90.0
+   ],
+   [
+    "lowerarm_vpj_02_l",
+    0.0,
+    90.0
+   ],
+   [
+    "lowerarm_vpj_01_l",
+    0.0,
+    90.0
+   ],
+   [
+    "lowerarm_l",
+    0.0,
+    90.0
+   ],
+   [
+    "hand_r",
+    0.0,
+    90.0
+   ],
+   [
+    "clavicle_r",
+    0.0,
+    90.0
+   ],
+   [
+    "upperarm_vpj_03_l",
+    0.0,
+    90.0
+   ],
+   [
+    "upperarm_vpj_02_l",
+    0.0,
+    90.0
+   ],
+   [
+    "upperarm_vpj_01_l",
+    0.0,
+    90.0
+   ],
+   [
+    "lowerarm_r",
+    0.0,
+    90.0
+   ]
+  ],
+  "max_cm": 0.001
+ }
+}

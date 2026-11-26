@@ -1,0 +1,350 @@
+{
+ "base": "https://chronohaxx.github.io/the-finals-outfit",
+ "cases": [
+  {
+   "name": "shorts_masc_still",
+   "codes": [
+    "a170"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "ownbind": "SK_Casual_BasicShorts_M"
+  },
+  {
+   "name": "shorts_masc_idle",
+   "codes": [
+    "a170"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "shorts_masc_squat",
+   "codes": [
+    "a170"
+   ],
+   "bt": "",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6"
+  },
+  {
+   "name": "holster_masc_still",
+   "codes": [
+    "a1b6"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "ownbind": "SK_Military_DoubleHolsterPants_M"
+  },
+  {
+   "name": "holster_masc_idle",
+   "codes": [
+    "a1b6"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "holster_masc_squat",
+   "codes": [
+    "a1b6"
+   ],
+   "bt": "",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6",
+   "ownbind": "SK_Military_DoubleHolsterPants_M"
+  },
+  {
+   "name": "ski_masc_still",
+   "codes": [
+    "a1hq"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "ownbind": "SK_Winter_SkiPants_M"
+  },
+  {
+   "name": "ski_masc_idle",
+   "codes": [
+    "a1hq"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "ski_masc_squat",
+   "codes": [
+    "a1hq"
+   ],
+   "bt": "",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6"
+  },
+  {
+   "name": "tracksuit_masc_still",
+   "codes": [
+    "a1h8"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "ownbind": "SK_Streetwear_TrackSuitPants_M"
+  },
+  {
+   "name": "tracksuit_masc_idle",
+   "codes": [
+    "a1h8"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "tracksuit_masc_squat",
+   "codes": [
+    "a1h8"
+   ],
+   "bt": "",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6"
+  },
+  {
+   "name": "pleated_masc_still",
+   "codes": [
+    "a1fr"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "ownbind": "SK_Streetwear_PleatedSkirt_M"
+  },
+  {
+   "name": "pleated_masc_idle",
+   "codes": [
+    "a1fr"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "pleated_masc_squat",
+   "codes": [
+    "a1fr"
+   ],
+   "bt": "",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6",
+   "ownbind": "SK_Streetwear_PleatedSkirt_M"
+  },
+  {
+   "name": "steamskirt_masc_still",
+   "codes": [
+    "a1ed"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "ownbind": "SK_Steampunk_Skirt_M"
+  },
+  {
+   "name": "steamskirt_masc_idle",
+   "codes": [
+    "a1ed"
+   ],
+   "bt": "",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "steamskirt_masc_squat",
+   "codes": [
+    "a1ed"
+   ],
+   "bt": "",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6",
+   "ownbind": "SK_Steampunk_Skirt_M"
+  },
+  {
+   "name": "shorts_andro_still",
+   "codes": [
+    "a170"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0"
+  },
+  {
+   "name": "shorts_andro_idle",
+   "codes": [
+    "a170"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "shorts_andro_squat",
+   "codes": [
+    "a170"
+   ],
+   "bt": "a",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6"
+  },
+  {
+   "name": "holster_andro_still",
+   "codes": [
+    "a1b6"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0"
+  },
+  {
+   "name": "holster_andro_idle",
+   "codes": [
+    "a1b6"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "holster_andro_squat",
+   "codes": [
+    "a1b6"
+   ],
+   "bt": "a",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6"
+  },
+  {
+   "name": "ski_andro_still",
+   "codes": [
+    "a1hq"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0"
+  },
+  {
+   "name": "ski_andro_idle",
+   "codes": [
+    "a1hq"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "ski_andro_squat",
+   "codes": [
+    "a1hq"
+   ],
+   "bt": "a",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6"
+  },
+  {
+   "name": "tracksuit_andro_still",
+   "codes": [
+    "a1h8"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0"
+  },
+  {
+   "name": "tracksuit_andro_idle",
+   "codes": [
+    "a1h8"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "tracksuit_andro_squat",
+   "codes": [
+    "a1h8"
+   ],
+   "bt": "a",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6"
+  },
+  {
+   "name": "pleated_andro_still",
+   "codes": [
+    "a1fr"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0"
+  },
+  {
+   "name": "pleated_andro_idle",
+   "codes": [
+    "a1fr"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "pleated_andro_squat",
+   "codes": [
+    "a1fr"
+   ],
+   "bt": "a",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6"
+  },
+  {
+   "name": "steamskirt_andro_still",
+   "codes": [
+    "a1ed"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0"
+  },
+  {
+   "name": "steamskirt_andro_idle",
+   "codes": [
+    "a1ed"
+   ],
+   "bt": "a",
+   "view": "0.75_0.8_1.55_0_0.68_0",
+   "emote": "outfit-idle",
+   "t": "1"
+  },
+  {
+   "name": "steamskirt_andro_squat",
+   "codes": [
+    "a1ed"
+   ],
+   "bt": "a",
+   "view": "1.1_0.7_1.7_0_0.38_0",
+   "emote": "frog",
+   "t": "3.6"
+  }
+ ]
+}
