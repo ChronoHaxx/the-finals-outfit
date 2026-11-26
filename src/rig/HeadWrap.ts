@@ -142,6 +142,21 @@ export function bindHeadWrap(positions: ArrayLike<number>, reference: ArrayLike<
   return { triangle, weights, offset };
 }
 
+/** (26 Nov 2026) Per bound vertex, 1 where the part lies over the head, else 0: outside its cage triangle (above zero
+ *  along the cage normal) and facing out of it (its rest normal, `stride` apart, on the cage normal's side). A
+ *  balaclava's knit rolls in at the eye opening and the hem and runs on inside the head: those vertices fail one test or
+ *  both (FaceWrap.ts restContact). */
+export function overHead(binding: HeadWrapBinding, normals: ArrayLike<number>, reference: ArrayLike<number>,
+  triangles: ArrayLike<number>, stride = 3): Uint8Array {
+  const count = binding.triangle.length, out = new Uint8Array(count);
+  for (let i = 0; i < count; i++) {
+    const n = frame(reference, triangles, binding.triangle[i])[5];
+    const facing = n[0] * normals[i * stride] + n[1] * normals[i * stride + 1] + n[2] * normals[i * stride + 2];
+    out[i] = binding.offset[i * 3 + 2] > 0 && facing > 0 ? 1 : 0;
+  }
+  return out;
+}
+
 /** Every triangle's frame (frame()) packed as a, b, c, e1, e2, n: 18 numbers per triangle. */
 function frames(cage: ArrayLike<number>, triangles: ArrayLike<number>): Float64Array {
   const tris = triangles.length / 3, out = new Float64Array(tris * 18);
