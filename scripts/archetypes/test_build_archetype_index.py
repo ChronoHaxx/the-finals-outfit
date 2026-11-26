@@ -459,10 +459,22 @@ class FreshPairForAStaleSibling(unittest.TestCase):
         self.assertEqual(mesh['file'], '../run/source-glb/SK_Stale_L.glb')
         self.assertEqual(mesh['proof1'], 'live-equal')
         self.assertEqual(mesh['currency'], "read from today's containers (stagingRuns)")
-        self.assertEqual(mesh['freshPair'], {'byteMatchedMedium': f'{STAGING}/source-glb/SK_Stale_M.glb',
-                                             'staleSibling': f'{STAGING}/source-glb/SK_Stale_L.glb',
-                                             'freshMedium': '../run/source-glb/SK_Stale_M.glb'})
+        pair = mesh['freshPair']
+        self.assertEqual({k: pair[k] for k in ('byteMatchedMedium', 'staleSibling', 'freshMedium')},
+                         {'byteMatchedMedium': f'{STAGING}/source-glb/SK_Stale_M.glb',
+                          'staleSibling': f'{STAGING}/source-glb/SK_Stale_L.glb',
+                          'freshMedium': '../run/source-glb/SK_Stale_M.glb'})
+        # The review sees both shas and how close to each proof 1' epsilon the fresh Medium came.
+        live = self.models / STAGING / 'source-glb' / 'SK_Stale_M.glb'
+        self.assertEqual(pair['liveSha256'], hashlib.sha256(live.read_bytes()).hexdigest())
+        self.assertEqual(pair['freshMediumSha256'],
+                         hashlib.sha256((self.run_dir / 'source-glb' / 'SK_Stale_M.glb').read_bytes()).hexdigest())
+        self.assertNotEqual(pair['freshMediumSha256'], pair['liveSha256'])
+        self.assertEqual(set(pair['liveEqualMargins']), {'positionM', 'uv', 'normal', 'inverseBind'})
+        for m in pair['liveEqualMargins'].values():
+            self.assertLessEqual(m['measured'], m['epsilon'])
         self.assertEqual(report['freshPair'][path('SK_Stale_L')]['verdict'], 'used')
+        self.assertIn('inverseBind=', (out / 'fresh-pair.tsv').read_text(encoding='utf-8'))
         self.assertTrue(mesh['morphs'], 'the fresh Medium morph difference is recorded')
         published = (out / 'publish-list.tsv').read_text(encoding='utf-8')
         self.assertIn('../run/source-glb/SK_Stale_L.glb', published)

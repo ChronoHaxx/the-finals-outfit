@@ -292,6 +292,24 @@ def live_equal(staged_path, live_path):
     return True, None, {"morphs": morphs}
 
 
+def live_equal_margins(staged_path, live_path):
+    """For a pair live_equal passed: the largest difference it measured on each toleranced quantity, beside its
+    epsilon, so a review sees how close to the line the pair came (indices, slots, joint names and u16 weights are exact
+    by then). Used by the fresh-pair rule's record only."""
+    a, b = mesh_data(staged_path), mesh_data(live_path)
+    da, db = skin_detail(staged_path), skin_detail(live_path)
+    measured = {"positionM": 0.0, "uv": 0.0, "normal": 0.0, "inverseBind": 0.0}
+    for x, y, nx, ny in zip(a["prims"], b["prims"], da["prims"], db["prims"]):
+        measured["positionM"] = max(measured["positionM"], float(np.abs(x["pos"] - y["pos"]).max()))
+        measured["uv"] = max([measured["uv"], *(float(np.abs(u - v).max()) for u, v in zip(x["uvs"], y["uvs"]))])
+        if nx["normals"] is not None:
+            measured["normal"] = max(measured["normal"], float(np.abs(nx["normals"] - ny["normals"]).max()))
+    if len(da["inverseBind"]):
+        measured["inverseBind"] = float(np.abs(da["inverseBind"] - db["inverseBind"]).max())
+    return {k: {"measured": v, "epsilon": LIVE_EQUAL[k], "ofEpsilon": round(v / LIVE_EQUAL[k], 4)}
+            for k, v in measured.items()}
+
+
 # Proof 3' tolerances (approved by the coordinator 26 Nov 2026, with these stated): a class mesh that is its Medium
 # sibling's surface at the class scale, but whose vertices come in another order (and whose few quads may be split along
 # the other diagonal), as when the game exported the class mesh separately.
@@ -813,11 +831,13 @@ def main():
             fresh_medium_checks[medium_path] = (live_equal(fresh_m, live_file) if live_file.is_file()
                                                 else (False, "live Medium file missing", {}))
         ok, why, detail = fresh_medium_checks[medium_path]
+        record.update({"freshMediumSha256": staged_sha(fresh_m), "liveSha256": entry.get("sha256")})
         if not ok:
             return None, {**record, "verdict": f"the fresh Medium is not live-equal: {why}", **detail}
         if not (fresh_m.parent / stale.name).exists():
             return None, {**record, "verdict": "no fresh read of the class mesh beside the fresh Medium"}
-        return fresh_m, {**record, "verdict": "used", "morphs": detail["morphs"]}
+        return fresh_m, {**record, "verdict": "used", "morphs": detail["morphs"],
+                         "liveEqualMargins": live_equal_margins(fresh_m, (index_dir / entry["url"]).resolve())}
 
     added, item_masks = {}, {}
     masks_added, preview = {}, {}  # reshaped rows: their own mask (png, publish path, sha); preview entries (no mask yet)
@@ -897,7 +917,8 @@ def main():
                     pair_glb, pair_medium = used, mesh_data(used)
                     pair_proof1 = {"proof1": "live-equal", "morphs": record["morphs"],
                                    "freshPair": {k: record[k] for k in ("byteMatchedMedium", "staleSibling",
-                                                                         "freshMedium")}}
+                                                                         "freshMedium", "freshMediumSha256",
+                                                                         "liveSha256", "liveEqualMargins")}}
                     file = used.parent / file.name
             if not file.exists():
                 report["refused"][target] = ["not staged beside its Medium sibling"]
@@ -1148,10 +1169,12 @@ def main():
                   + ", ".join(report["reshapedRules"]["notTried"]))
     # Every fresh-pair attempt: which stale sibling it replaced, and whether the fresh Medium stood in.
     if report["freshPair"]:
-        cols = ["verdict", "byteMatchedMedium", "staleSibling", "freshMedium"]
+        cols = ["verdict", "byteMatchedMedium", "staleSibling", "freshMedium", "freshMediumSha256", "liveSha256"]
+        margins = lambda v: ";".join(f"{q}={m['measured']:.3g} ({m['ofEpsilon']:.2%} of eps)"
+                                     for q, m in v.get("liveEqualMargins", {}).items())
         (out / "fresh-pair.tsv").write_text(
-            tab.join(["class mesh", *cols, "outcome"]) + "\n" + "".join(
-                tab.join([k, *(str(v.get(c, "")) for c in cols),
+            tab.join(["class mesh", *cols, "liveEqualMargins", "outcome"]) + "\n" + "".join(
+                tab.join([k, *(str(v.get(c, "")) for c in cols), margins(v),
                           "added" if k in report["meshes"] else "refused" if k in report["refused"] else "skipped"])
                 + "\n" for k, v in sorted(report["freshPair"].items())), encoding="utf-8")
         used = sum(v["verdict"] == "used" for v in report["freshPair"].values())
