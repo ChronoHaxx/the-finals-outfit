@@ -90,6 +90,30 @@ export const APPS: Readonly<Record<string, AppSpec>> = {
       controls_card_used: [...wuwaPage, ["pad", oneOf("xbox", "ps", "vr", "other")], ["action", oneOf("switched", "saved_image", "other")]],
     },
   },
+  // WuWa Studio, the Wuthering Waves character viewer (private repository ChronoHaxx/wuwa-studio, _docs/tracking-plan.md,
+  // revision 2, signed off 23 Nov 2026). One page, English only, so no page or lang columns. Every event about a Resonator
+  // carries it first (blob5): its list card id. Fixed lists end in "other": the app sends that for a value it does not
+  // know rather than dropping the event.
+  "wuwa-studio": {
+    origins: ["https://wuwa-studio.pages.dev"],
+    visitorEvent: "app_loaded",
+    envelope: "full",
+    events: {
+      app_loaded: [],
+      character_selected: [["character", id], ["via", oneOf("start", "link", "list", "other")], ["built", bool]],
+      form_switched: [["character", id], ["form", id]],
+      outfit_equipped: [["character", id], ["outfit", id]],
+      animation_played: [["character", id], ["pose", id], ["via", oneOf("menu", "studio", "other")]],
+      convene_played: [["character", id]],
+      studio_opened: [["via", oneOf("topbar", "more_poses", "other")]],
+      download_mode_chosen: [["mode", oneOf("auto", "ask", "other")], ["via", oneOf("first_visit", "downloads_button", "other")]],
+      download_prompt_answered: [["character", id], ["answer", oneOf("download", "not_now", "other")]],
+      share_link_opened: [["character", id]],
+      feature_exposed: [["feature", id], ["via", oneOf("screen", "used", "other")]],
+      feature_used: [["feature", id]],
+      error_occurred: [["kind", oneOf("caught", "uncaught", "other")], ["what", oneOf("character", "clip", "cinematic", "stage", "other")]],
+    },
+  },
 };
 
 export interface Envelope { app: string; form_factor: string; build: string }
