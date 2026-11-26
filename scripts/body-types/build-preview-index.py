@@ -252,8 +252,8 @@ MIXED_ITEM_EXCEPTIONS = {
 
 def mixed_item_excuses(items, by_name, live_sources, users):
     """{(item, mesh source)} for the named exception items, refusing anything outside MIXED_ITEM_EXCEPTIONS: an item
-    that is not listed, a listed mesh the index does not hold, a mesh that is not kept live (`live_sources`: held or
-    never admitted), or an item that does not show its mesh."""
+    that is not listed, a listed mesh the index does not hold, a mesh that is not live (`live_sources`: held, or neither
+    proven nor kept; a kept mesh already counts as Season 12), or an item that does not show its mesh."""
     excused = set()
     for item in items:
         exception = MIXED_ITEM_EXCEPTIONS.get(item)
@@ -350,7 +350,8 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     kept |= stale & unchanged
     assert not set(admitted) & unchanged
     by_name = {source.rsplit('.', 1)[-1]: source for source in assets['meshes']}
-    excused = mixed_item_excuses(allow_mixed or [], by_name, set(assets['meshes']) - proven, users)
+    # Live means neither proven nor kept: a kept mesh already counts as Season 12, so its item is not mixed.
+    excused = mixed_item_excuses(allow_mixed or [], by_name, set(assets['meshes']) - proven - kept, users)
     effective, held = settle(proven, kept, unchanged, users, body, excused)
     for name, row in sorted(proof.items()):
         admission = admitted.get(row.get('source'))
