@@ -1,0 +1,176 @@
+item	buildsOnLightBefore	buildsOnLightAfter	newMeshesUsed	stillLacking
+actionhero-sentineltop-mesh	False	True	SK_ActionHero_SentinelTop_L	
+actionhero-sentineltop-nylon-yellow	False	True	SK_ActionHero_SentinelTop_L	
+attachment-cowmascothead-cotton	False	True	SK_CowMascotHead_L	
+casual-bangles-metal-blue	False	True	SK_Casual_Bangles_L	
+casual-bangles-metal-gold	False	True	SK_Casual_Bangles_L	
+casual-bangles-metal-silver	False	True	SK_Casual_Bangles_L	
+casual-longcoat-leather-red	False	False	SK_Military_TacticalVestMagBandolier_L	SK_Casual_LongCoat_L
+casual-sweater-wool-festive	False	False	SK_Casual_ChristmasLights_L	SK_Casual_Sweater_L
+casual-sweater-wool-festiveblue	False	False	SK_Casual_ChristmasLights_L	SK_Casual_Sweater_L
+casual-sweater-wool-raindeer	False	False	SK_Casual_ChristmasLights_L	SK_Casual_Sweater_L
+cowboy-bandoliercowboy-leather-biker	False	True	SK_Cowboy_BandolierCowboy_L	
+cowboy-bandoliercowboy-leather	False	True	SK_Cowboy_BandolierCowboy_L	
+cowboy-basicchaps-leather-brown	False	True	SK_Mexico_RancheroHolster_L	
+cowboy-casualpants-denim-holtow	False	False	SK_Hologram_HoltowPantsHologram_L	SK_Cowboy_CasualPants_L
+crosspromo-nrsuit-nylon	False	False	SK_CrossPromo_NRHarness_L	SK_CrossPromo_NRSuit_L
+cute-cuteheadphones-plastic-pink	False	True	SK_Cute_CuteHeadphones_L	
+cute-orfbag-leather	False	True	SK_Cute_ORFBag_L	
+fancydress-militarydress-wool-pinkblack	False	True	SK_FancyDress_MilitaryDress_L	
+fancydress-suitjacket-cotton-red	False	False	SK_Military_TacticalVestSeparated_L	SK_FancyDress_SuitJacket_L
+gothic-cowboyboots-leather	False	True	SK_Gothic_CowboyBoots_L	
+gothic-loosejacket-nylon	False	True	SK_Gothic_LooseJacket_L	
+halloween-opentop-leather	False	True	SK_Halloween_BellSleeves_L,SK_Halloween_OpenTop_L	
+halloween-vampireboots-leather-black	False	True	SK_Halloween_VampireBoots_L	
+halloween-vampireboots-leather-brown	False	True	SK_Halloween_VampireBoots_L	
+halloween-vampireboots-leather	False	True	SK_Halloween_VampireBoots_L	
+halloween-witchdresstop-satin	False	True	SK_Halloween_WitchDressTop_L	
+historic-anubismaskregular-gold	False	True	SK_Historic_AnubisMaskRegular_L	
+historic-simplebracelet-glowing	False	True	SK_Historic_SimpleBracelet_L	
+historic-simplebracelet-metal	False	True	SK_Historic_SimpleBracelet_L	
+historic-vikingboots-leather-black	False	True	SK_Historic_VikingBoots_L	
+historic-vikingboots-leather-blackivada	False	True	SK_Historic_VikingBoots_L	
+historic-vikingboots-leather-white	False	True	SK_Historic_VikingBoots_L	
+historic-vikingpants-linen-black	False	True	SK_Historic_VikingPants_L	
+historic-vikingpants-linen-white	False	True	SK_Historic_VikingPants_L	
+historic-vikingtunic-linen-black	False	False	SK_Historic_VikingTrinkets_L,SK_Historic_VikingTunic_L	SK_Historic_VikingCloak_L,SK_Historic_VikingLoincloth_L,SK_Historic_VikingShoulderFur_L
+historic-vikingtunic-linen-white	False	False	SK_Historic_VikingTunic_L	SK_Historic_VikingCloak_L,SK_Historic_VikingLoincloth_L,SK_Historic_VikingShoulderFur_L
+medieval-dragonslayerboots-leather	False	True	SK_Historic_VikingBoots_L	
+medieval-dragonslayertorso-bone	False	True	SK_Medieval_DragonSlayerTorso_L	
+medieval-elegantknighttop-steel	False	True	SK_Medieval_ElegantKnightHood_L	
+medieval-knighttop-steel-ultimate	False	False	SK_Medieval_KnightLeftPauldronUltimate_L,SK_Medieval_KnightNeckCloth_L	SK_Medieval_KnightArmsPlain_L,SK_Medieval_KnightCape_L,SK_Medieval_KnightTop_L
+medieval-royalgloves-leather	False	True	SK_Medieval_RoyalGloves_L	
+medieval-royaltop-cotton	False	False	SK_Medieval_RoyalTop_L	SK_Historic_VikingCloak_L
+medieval-skeletonwarriortorso-leather	False	False	SK_Medieval_SkeletonWarriorBracers_L,SK_Medieval_SkeletonWarriorTorso_L	SK_Medieval_SkeletonWarriorChainmailSleeves_L,SK_Medieval_SkeletonWarriorParts_L
+medieval-techknighttorso-plastic	False	False	SK_Medieval_TechKnightTorso_L	SK_Historic_VikingCloak_L
+mexico-rancherojacket-leather	False	True	SK_Mexico_RancheroJacket_L	
+mexico-vaquerojacket-cotton	False	True	SK_Mexico_VaqueroCape_L,SK_Mexico_VaqueroJacket_L	
+military-acepilottop-nylon-valkyr	False	True	SK_Military_AcePilotTop_L	
+military-acepilottop-windbreaker-alfaacta	False	True	SK_Military_AcePilotTop_L	
+military-combatvestsamurai-nylon	False	True	SK_Hologram_CombatVestSamuraiHologram_L	
+military-dedetights-denim-easters6	False	True	SK_Military_DoubleBeltParts_L,SK_Military_DoubleBelt_L	
+military-dedetights-denim	False	True	SK_Military_DoubleBeltParts_L,SK_Military_DoubleBelt_L	
+military-dedetights-nylon-orf	False	True	SK_Military_DoubleBeltParts_L,SK_Military_DoubleBelt_L	
+military-dedetights-nylon-ospuze	False	True	SK_Military_DoubleBeltParts_L,SK_Military_DoubleBelt_L	
+military-dedetights-nylon	False	True	SK_Military_DoubleBeltParts_L,SK_Military_DoubleBelt_L	
+military-dedevest-nylon	False	False	SK_Military_DedeHeadphones_L	SK_Military_DedeVest_L
+military-marineboots-leather-black	False	True	SK_Military_MarineBoots_L	
+military-marineboots-leather-blackwhite	False	True	SK_Military_MarineBoots_L	
+military-marineboots-leather-blackyellow	False	True	SK_Military_MarineBoots_L	
+military-marineboots-leather-blue	False	True	SK_Military_MarineBoots_L	
+military-marineboots-leather-darkgreen	False	True	SK_Military_MarineBoots_L	
+military-marineboots-redbrown	False	True	SK_Military_MarineBoots_L	
+military-marinevest-plastic-black	False	True	SK_Military_MarineVest_L	
+military-marinevest-plastic-blue	False	True	SK_Military_MarineVest_L	
+military-marinevest-plastic-holtow	False	True	SK_Military_MarineVest_L	
+military-militarymechanicjacketnotshirt-lea-57e1	False	False	SK_SciFi_MuscleSuitUpperNoSleeves_L	SK_Military_MilitaryMechanicJacketNoTshirt_L,SK_Streetwear_BaseTankTop_L
+military-riotmedievaljacket-nylon-blackyellow	False	True	SK_Military_RiotMedievalLowerJacket_L	
+military-sniperboots-leather-alfaacta	False	True	SK_Military_SniperBoots_L	
+military-sniperboots-leather-arctic	False	True	SK_Military_SniperBoots_L	
+military-sniperboots-leather-black	False	True	SK_Military_SniperBoots_L	
+military-sniperboots-leather-blackrabbit	False	True	SK_Military_SniperBoots_L	
+military-sniperboots-leather-cnsglitch	False	False	SK_Military_SniperBoots_L	SK_Military_SniperBootsGlitch_L
+military-sniperboots-leather-dede	False	True	SK_Military_SniperBoots_L	
+military-sniperboots-leather-esportkz	False	True	SK_Military_SniperBoots_L	
+military-sniperboots-leather-fivefears	False	True	SK_Military_SniperBoots_L	
+military-sniperboots-leather-gray	False	True	SK_Military_SniperBoots_L	
+military-sniperboots-leather-white	False	True	SK_Military_SniperBoots_L	
+military-sniperboots-leather	False	True	SK_Military_SniperBoots_L	
+military-tacticaltrousersnopouch-canvas-spo-c396	False	True	SK_Military_TacticalTrousersNoPouch_L	
+military-tacticaltrousersnopouch-canvas	False	True	SK_Military_TacticalTrousersNoPouch_L	
+military-tacticaltrousersnopouch-windbreake-f7ac	False	True	SK_Military_TacticalTrousersNoPouch_L	
+monsters-kaijufeet-plastic	False	True	SK_Monsters_KaijuFeet_L	
+municipal-torso-cotton-alfaacta	False	False	SK_Municipal_Torso_l	SK_Municipal_RescueHarness_L
+municipal-torso-cotton-arenasecurity	False	True	SK_Municipal_Torso_l	
+municipal-torso-cotton-black	False	True	SK_Municipal_Torso_l	
+municipal-torso-cotton-camogreenorange	False	True	SK_Municipal_Torso_l	
+municipal-torso-cotton-ospuze	False	False	SK_Municipal_Torso_l	SK_Municipal_RescueHarness_L
+municipal-torso-cotton-ospuzeltm	False	True	SK_Municipal_Torso_l	
+municipal-torso-cotton-ospuzestarterpack	False	True	SK_Municipal_Torso_l	
+municipal-torso-cotton-pink	False	True	SK_Municipal_Torso_l	
+municipal-torso-cotton-rescue	False	False	SK_Municipal_Torso_l	SK_Municipal_RescueHarness_L
+municipal-torso-cotton-rescueospuze	False	False	SK_Municipal_Torso_l	SK_Municipal_RescueHarness_L
+municipal-torso-cotton-vaiiyas7sp	False	False	SK_Municipal_Torso_l	SK_Hologram_VaiiyaVestHologram_L,SK_Municipal_RescueHarness_L
+municipal-torso-cotton-vaiya	False	True	SK_Municipal_Torso_l	
+municipal-torso-polyester-helicoptermedic	False	True	SK_Municipal_Torso_l	
+ninja-shinobijacket-cotton-engimo	False	True	SK_Hologram_EngimoJacketHologram02_L,SK_Ninja_ShinobiJacket_L	
+ninja-shinobijacket-cotton	False	True	SK_Ninja_ShinobiJacket_L	
+ninja-shinobipants-cotton	False	True	SK_Ninja_ShinobiPants_L	
+pirate-scallywagpants-base-blackivada	False	True	SK_Pirate_ScallywagPants_L	
+pirate-scallywagpants-cotton	False	True	SK_Pirate_ScallywagPants_L	
+robots-conicalhatscifi-metal	False	True	SK_Robots_ConicalHatSciFi_L	
+robots-discobotgloves-metal	False	True	SK_Robots_DiscoBotGloves_L	
+robots-retrorobothead-plastic	False	True	SK_Robots_RetroRobotHead_L	
+robots-retrorobottorso-plastic	False	True	SK_Robots_RetroRobotLegs_L	
+robots-robotwarriorlegs-metal	False	True	SK_Robots_RobotWarriorLegs_L	
+robots-synthhelmet-plastic-black	False	False	SK_Robots_SynthHelmet_L	SK_Robots_SynthHelmetAntenna_L
+robots-synthhelmet-plastic-gray	False	True	SK_Robots_SynthHelmet_L	
+samurai-upperbody02-base-black	False	True	SK_Samurai_UpperBody02_L	
+samurai-upperbody02-base-silver	False	True	SK_Samurai_UpperBody02_L	
+samurai-upperbody02-base	False	True	SK_Samurai_UpperBody02_L	
+scifi-musclesuitupper-nylon-green	False	True	SK_SciFi_MuscleSuitUpper_L	
+scifi-musclesuitupper-nylon	False	True	SK_SciFi_MuscleSuitUpper_L	
+scifi-scifiknighttop-plastic-black	False	True	SK_SciFi_SciFiKnightTop_L	
+scifi-scifiknighttop-plastic	False	True	SK_SciFi_SciFiKnightTop_L	
+space-astronauthelmet-plastic	False	True	SK_Space_AstronautHelmet_L	
+space-astronauthelmet-ssgblack	False	True	SK_Space_AstronautHelmet_L	
+space-astropilotgloves-cotton-orange	False	True	SK_Space_AstroPilotGloves_L	
+space-astropilotgloves-cotton-white	False	True	SK_Space_AstroPilotGloves_L	
+space-astropilotgloves-cotton	False	True	SK_Space_AstroPilotGloves_L	
+space-astropilotpants-cotton-green	False	True	SK_Space_AstroPilotGun_L,SK_Space_AstroPilotPants_L	
+space-astropilotpants-cotton	False	True	SK_Space_AstroPilotGun_L,SK_Space_AstroPilotPants_L	
+space-astropilotupper-plastic-engimo	False	True	SK_Space_AstroPilotUpper_L	
+space-astropilotupper-plastic-white	False	True	SK_Space_AstroPilotUpper_L	
+space-astropilotupper-plastic	False	True	SK_Space_AstroPilotUpper_L	
+space-bountyhuntertop-nylon	False	False	SK_Medieval_KnightNeckCloth_L	SK_Medieval_KnightCape_L
+space-planetbracelet-gold	False	True	SK_Historic_SimpleBracelet_L	
+space-spaceheroineshorts-metal	False	True	SK_Space_SpaceHeroineGunHolster_L	
+space-spaceheroinetop-metal	False	True	SK_Space_SpaceHeroineTop_L	
+space-spacesuittop-nylon	False	False	SK_Space_SpaceBelt_L,SK_Space_SpaceBracers_L,SK_Space_SpaceGorget_L,SK_Space_SpaceSuitTop_L	SK_Space_SpaceCape_L
+space-spacesuittopultimate-nylon	False	False	SK_Space_SpaceBeltUltimate_L,SK_Space_SpaceBracersUltimate_L,SK_Space_SpaceSuitTopUltimate_L	SK_Space_SpaceBracerScreen_L
+sport-fencerjacket-cotton-sponsordissun	False	True	SK_Hologram_DissunJacketHologram_L	
+sport-fencershoes-leather-cns	False	True	SK_Sport_FencerShoes_L	
+sport-fencershoes-leather	False	True	SK_Sport_FencerShoes_L	
+sport-paddedpants-cashballvolpe-ltm	False	True	SK_Sport_PaddedPants_L	
+sport-paddedpants-nylon-yellowblack	False	True	SK_Sport_PaddedPants_L	
+sport-paddedpants-nylon	False	True	SK_Sport_PaddedPants_L	
+sport-umpiremask-cashball-ltm	False	True	SK_Sport_UmpireMask_L	
+sport-umpiremask-leather-blackyellow	False	True	SK_Sport_UmpireMask_L	
+sport-umpiremask-leather-vaiiya	False	True	SK_Sport_UmpireMask_L	
+sport-umpiremask-leather	False	True	SK_Sport_UmpireMask_L	
+streetwear-aviatorjacket-leather-spacegame	False	True	SK_Streetwear_AviatorJacket_L	
+streetwear-aviatorjacket-nylon-brown	False	True	SK_Streetwear_AviatorJacket_L	
+streetwear-aviatorjacket-nylon-yellowospuze	False	True	SK_Streetwear_AviatorJacket_L	
+streetwear-closedrainjacket-windbreaker-ssg	False	False	SK_Military_TacticalHarness_L	SK_Streetwear_ClosedRainJacket_L
+streetwear-closedrainjacket-windbreaker	False	False	SK_Military_TacticalHarness_L	SK_Streetwear_ClosedRainJacket_L
+streetwear-consolebackpack-canvas-orf	False	True	SK_Streetwear_ConsoleBackpack_L	
+streetwear-crown-metal	False	True	SK_Streetwear_Crown_L	
+streetwear-cutejacket-canvas-blackwhite	False	True	SK_Streetwear_CuteJacket_L	
+streetwear-cutejacket-canvas-flatearth	False	True	SK_Streetwear_CuteJacket_L	
+streetwear-halffingergloves-leather-blackpurple	False	True	SK_Streetwear_HalfFingerGloves_L	
+streetwear-halffingergloves-leather	False	True	SK_Streetwear_HalfFingerGloves_L	
+streetwear-halffingergloves-polyester	False	True	SK_Streetwear_HalfFingerGloves_L	
+streetwear-heisthelmet-metal	False	True	SK_Streetwear_HeistHelmet_L	
+streetwear-heisthelmet-plastic	False	True	SK_Streetwear_HeistHelmet_L	
+streetwear-kandibracelet-plastic	False	True	SK_Streetwear_KandiBracelet_L	
+streetwear-openjacket-cotton	False	True	SK_Streetwear_OpenJacket_L	
+streetwear-shoulderbag-canvas-whitepink	False	True	SK_Streetwear_ShoulderBag_L	
+streetwear-skeletalfingers-bone	False	True	SK_Streetwear_SkeletalFingers_L	
+streetwear-skeletalfingers-metal-black	False	True	SK_Streetwear_SkeletalFingers_L	
+streetwear-skeletalfingers-metal-gold	False	True	SK_Streetwear_SkeletalFingers_L	
+streetwear-skeletalfingers-metal	False	True	SK_Streetwear_SkeletalFingers_L	
+streetwear-tacticalbandolier-cotton-pulsar	False	True	SK_Streetwear_TacticalBandolier_L	
+streetwear-tacticalbandolier-cotton-vanguard	False	True	SK_Streetwear_TacticalBandolier_L	
+streetwear-tacticalbandolier-cotton	False	True	SK_Streetwear_TacticalBandolier_L	
+streetwear-tacticalbandolier-windbreaker-bl-7bf6	False	True	SK_Streetwear_TacticalBandolier_L	
+streetwear-tacticalbandolier-windbreaker-fi-2d5a	False	True	SK_Streetwear_TacticalBandolier_L	
+streetwear-tacticalbandolier-windbreaker-fnatic	False	True	SK_Streetwear_TacticalBandolier_L	
+streetwear-tacticalbandolier-windbreaker-white	False	True	SK_Streetwear_TacticalBandolier_L	
+streetwear-techjoggerspouch-nylon-engimo	False	True	SK_Hologram_EngimoPantsHologram_L	
+streetwear-techtrousers-polyester-engimo	False	True	SK_Hologram_EngimoPantsHologram02_L	
+traditional-urbanwarriorpants-nylon-black	False	True	SK_Traditional_UrbanWarriorPants_L	
+traditional-urbanwarriorpants-nylon-red	False	True	SK_Traditional_UrbanWarriorPants_L	
+winter-croppedpufferjacket-satin-redvolpe	False	True	SK_Winter_CroppedPufferJacket_L	
+winter-croppedpufferjacket-satin	False	True	SK_Hologram_IseultPufferJacketHologram_L,SK_Winter_CroppedPufferJacket_L	
+winter-hoodwrap-nylon	False	True	SK_Winter_HoodWrap_L	
+winter-penguinhat-wool	False	True	SK_Winter_PenguinHat_L	
