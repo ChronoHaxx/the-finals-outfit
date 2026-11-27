@@ -64,6 +64,15 @@ bash $C/run-v1.sh > $C/run-v1.out 2>&1; echo "c2 v1 exit $?"; cat $C/run-v1.out
   `M_Character_PlasticSheet`. A refusal there is a result: send the `.out` file.
 - If any other number differs, stop and send the tier-2 session the step's `.out` file.
 
+**Run on 26–27 Nov (`PAUSED-2026-11-27.md`, `RUN-RESULT-2026-11-27.md`):** two of these expectations were wrong;
+nothing drifted.
+- "No mesh extracted, nothing unresolved": the source stage resolves every default material of every part. It
+  extracted the TightTechPants glitch overlay (`SK_Streetwear_TechJoggersGlitch_M`, preview only) and left three
+  unresolved: `MI_TechJoggersGlitch` and two hologram slot defaults (EngimoS4, SponsorTrackS6). All three are known
+  gaps that leave live unchanged.
+- "Built 100": the build covers other parts' choice materials too (168). The index rebinds only the 100.
+Accepted by the coordinator; details in `../C2.md`, "After the run".
+
 What it writes:
 - `scripts/generated/shader-probe/s12-c2-v1`;
 - `public/models/reconstructed-s12-c2-v1/` and `public/models/reconstructed-s12-c2-preview-v1/`;
