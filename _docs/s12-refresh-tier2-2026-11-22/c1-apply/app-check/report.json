@@ -1,0 +1,189 @@
+[
+ {
+  "id": "hoodie-valentines2025",
+  "view": "full",
+  "errors": [],
+  "c1Requests": [
+   "/models/reconstructed-s12-c1-v1/materials/223985114e234d41.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/22ee21cf98afc983.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/25cc9954716dc7ce.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/2fde812961c83b89.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/460fdb60bf50f43c.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/69f68c4ee330e736.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/85ca4542bd510cfc.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/9f47123c386e6a06.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/b3ea69b2ad00c617.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/e48287016c8d0f36.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/f0cd2510cf1376d2.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/f652a99df607d5a0.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-valentines2025.glsl",
+   "/models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-valentines2025.json",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_LooseJeans_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_Hoodie_M.glb",
+   "/models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb"
+  ],
+  "file": "hoodie-valentines2025.full.png"
+ },
+ {
+  "id": "hoodie-valentines2025",
+  "view": "torso",
+  "errors": [],
+  "c1Requests": [
+   "/models/reconstructed-s12-c1-v1/materials/223985114e234d41.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/22ee21cf98afc983.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/25cc9954716dc7ce.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/2fde812961c83b89.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/460fdb60bf50f43c.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/69f68c4ee330e736.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/85ca4542bd510cfc.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/9f47123c386e6a06.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/b3ea69b2ad00c617.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/e48287016c8d0f36.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/f0cd2510cf1376d2.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/f652a99df607d5a0.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-valentines2025.glsl",
+   "/models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-valentines2025.json",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_LooseJeans_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_Hoodie_M.glb",
+   "/models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb"
+  ],
+  "file": "hoodie-valentines2025.torso.png"
+ },
+ {
+  "id": "hoodie-valentines2025",
+  "view": "back",
+  "errors": [],
+  "c1Requests": [
+   "/models/reconstructed-s12-c1-v1/materials/223985114e234d41.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/22ee21cf98afc983.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/25cc9954716dc7ce.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/2fde812961c83b89.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/460fdb60bf50f43c.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/69f68c4ee330e736.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/85ca4542bd510cfc.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/9f47123c386e6a06.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/b3ea69b2ad00c617.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/e48287016c8d0f36.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/f0cd2510cf1376d2.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/f652a99df607d5a0.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-valentines2025.glsl",
+   "/models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-valentines2025.json",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_LooseJeans_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_Hoodie_M.glb",
+   "/models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb"
+  ],
+  "file": "hoodie-valentines2025.back.png"
+ },
+ {
+  "id": "cardboardpants",
+  "view": "full",
+  "errors": [],
+  "c1Requests": [
+   "/models/reconstructed-s12-c1-v1/materials/1e6c202ae8ffcf0b.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/2dcecaf07131fe59.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/67aae910bb72acb8.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/8b4fb8bc9f2df9cf.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/9103accdffc05f58.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/9c253b9d9d2614da.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/a449d8f4901fd6a1.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/a8b850da6a34b9d2.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/a9c08f545ec6aba3.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/c91a1ec94a55239b.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/c972e1b1748e3d8a.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/d653b983342d7bd5.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/mi-cardboardcombatpants.glsl",
+   "/models/reconstructed-s12-c1-v1/materials/mi-cardboardcombatpants.json",
+   "/models/reconstructed-s12-c1-v1/materials/mi-military-assaultpantsnokneepad-polyester.glsl",
+   "/models/reconstructed-s12-c1-v1/materials/mi-military-assaultpantsnokneepad-polyester.json",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_BasicTshirt_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Military_AssaultPantsNoKneepad_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Military_CardboardPants_M.glb",
+   "/models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb",
+   "/models/s12-refresh-tier2-v1/coverage-c1/SK_Military_AssaultPantsNoKneepad_M.bodymask.png",
+   "/models/s12-refresh-tier2-v1/coverage-s12/SK_Casual_BasicTshirt_M.bodymask.png"
+  ],
+  "file": "cardboardpants.full.png"
+ },
+ {
+  "id": "cardboardpants",
+  "view": "knee",
+  "errors": [],
+  "c1Requests": [
+   "/models/reconstructed-s12-c1-v1/materials/1e6c202ae8ffcf0b.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/2dcecaf07131fe59.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/67aae910bb72acb8.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/8b4fb8bc9f2df9cf.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/9103accdffc05f58.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/9c253b9d9d2614da.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/a449d8f4901fd6a1.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/a8b850da6a34b9d2.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/a9c08f545ec6aba3.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/c91a1ec94a55239b.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/c972e1b1748e3d8a.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/d653b983342d7bd5.rgba.gz.bin",
+   "/models/reconstructed-s12-c1-v1/materials/mi-cardboardcombatpants.glsl",
+   "/models/reconstructed-s12-c1-v1/materials/mi-cardboardcombatpants.json",
+   "/models/reconstructed-s12-c1-v1/materials/mi-military-assaultpantsnokneepad-polyester.glsl",
+   "/models/reconstructed-s12-c1-v1/materials/mi-military-assaultpantsnokneepad-polyester.json",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_BasicTshirt_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Military_AssaultPantsNoKneepad_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Military_CardboardPants_M.glb",
+   "/models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb",
+   "/models/s12-refresh-tier2-v1/coverage-c1/SK_Military_AssaultPantsNoKneepad_M.bodymask.png",
+   "/models/s12-refresh-tier2-v1/coverage-s12/SK_Casual_BasicTshirt_M.bodymask.png"
+  ],
+  "file": "cardboardpants.knee.png"
+ },
+ {
+  "id": "tracksuit-vaiiya",
+  "view": "full",
+  "errors": [],
+  "c1Requests": [
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_BasicTshirt_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Hologram_VaiiyaPantsHologram_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TrackSuitPants_M.glb",
+   "/models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb",
+   "/models/s12-refresh-tier2-v1/coverage-s12/SK_Casual_BasicTshirt_M.bodymask.png"
+  ],
+  "file": "tracksuit-vaiiya.full.png"
+ },
+ {
+  "id": "tracksuit-vaiiya",
+  "view": "legs",
+  "errors": [],
+  "c1Requests": [
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_BasicTshirt_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Hologram_VaiiyaPantsHologram_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TrackSuitPants_M.glb",
+   "/models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb",
+   "/models/s12-refresh-tier2-v1/coverage-s12/SK_Casual_BasicTshirt_M.bodymask.png"
+  ],
+  "file": "tracksuit-vaiiya.legs.png"
+ },
+ {
+  "id": "longcoat-red",
+  "view": "full",
+  "errors": [],
+  "c1Requests": [
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_LongCoat_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_LooseJeans_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_FancyDress_LawyerSuitJacket_M.glb",
+   "/models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb",
+   "/models/s12-refresh-tier2-v1/coverage-c1/SK_Casual_LongCoat_M.bodymask.png"
+  ],
+  "file": "longcoat-red.full.png"
+ },
+ {
+  "id": "longcoat-red",
+  "view": "back",
+  "errors": [],
+  "c1Requests": [
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_LongCoat_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_Casual_LooseJeans_M.glb",
+   "/models/s12-bodytype-refresh-v1/meshes/SK_FancyDress_LawyerSuitJacket_M.glb",
+   "/models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb",
+   "/models/s12-refresh-tier2-v1/coverage-c1/SK_Casual_LongCoat_M.bodymask.png"
+  ],
+  "file": "longcoat-red.back.png"
+ }
+]
