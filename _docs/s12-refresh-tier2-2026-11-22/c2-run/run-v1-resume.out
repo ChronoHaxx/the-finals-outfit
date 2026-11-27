@@ -1,0 +1,5 @@
+build exit 0: }
+gpu attempt 1 exit 0: GPU: 168 materials matched 3655 cases, max error 1.53e-05; 0 failed (exit 0)
+index exit 0: {"candidates": 113, "implemented": 113, "addedMeshes": 0, "addedMaterials": 100, "supportedItems": 2955}
+s12-c2 v1 done: see public/models/reconstructed-s12-c2-preview-v1/preview.json (reboundMaterials) and scripts/generated/shader-probe/s12-c2-v1/cohort-report.json
+c2 v1 resume exit 0

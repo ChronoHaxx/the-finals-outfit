@@ -1,0 +1,17 @@
+{
+ "batch": "s12-c2",
+ "rows": 113,
+ "driftAdmission": {
+  "identical": 95,
+  "season12-import": 1,
+  "merge-modifier-only": 17
+ },
+ "mergeModifierAdmitted": 17,
+ "proxyWrapKeptSupported": 43,
+ "withParameters": [],
+ "batchIds": 113,
+ "rebindKeptMaterials": 100,
+ "itemsWithOtherParts": 71,
+ "activeAssetsSha256": "32f5b3814520004833731697d440389fbd1bbcaad6961ac4b1173db3db27aa10",
+ "skipped": []
+}

@@ -55,9 +55,13 @@ const CAMERAS = Object.fromEntries(Object.entries(ALL_CAMERAS)
 // default but holds still in automated browsers; ?anim=<clip>&animTime=<s> holds a clip paused at that time, so two
 // servers capture the same frame (AnimationControls.tsx).
 const QUERY = option("--query") ? `&${option("--query")}` : "";
+// --archetype light|heavy (S12 tier 2 C2, 27 Nov 2026): every outfit carries that archetype; pass archetypes=on in
+// --query for the gated preview. The ?outfit= link this tool opens reads the archetype only from the outfit itself:
+// `ar=` belongs to the short links, so `--query "ar=l"` alone still captures Medium.
+const ARCHETYPE = option("--archetype");
 
-const outfitUrl = (base, slots, bodyType, cam) => `${base}/?outfit=1.${Buffer.from(JSON.stringify({ slots }))
-  .toString("base64url")}&reconstructed=1&bodyType=${bodyType}&cam=${cam}&fov=28${QUERY}`;
+const outfitUrl = (base, slots, bodyType, cam) => `${base}/?outfit=1.${Buffer.from(JSON.stringify({ slots,
+  ...(ARCHETYPE ? { archetype: ARCHETYPE } : {}) })).toString("base64url")}&reconstructed=1&bodyType=${bodyType}&cam=${cam}&fov=28${QUERY}`;
 
 const browser = await chromium.launch({ channel: "msedge", headless: true });
 const context = await browser.newContext({ viewport: { width: 1500, height: 1100 }, deviceScaleFactor: 1 });
