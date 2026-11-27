@@ -9,7 +9,12 @@ SPEC_JSON names only the targets; every "from" value and every sha256 is read he
    "meshes": {"/Game/.../SK_X_M.SK_X_M": {"toUrl": "../folder/SK_X_M.glb",
                                           "bodyMask": {"toUrl": "../folder/SK_X_M.bodymask.png"}}},
    "materials": {"/Game/.../MI_X.MI_X": {"toUrl": "../folder/x.json"}},
-   "reboundMaterialsFrom": "public/models/<batch>-preview-v1/preview.json"}
+   "reboundMaterialsFrom": "public/models/<batch>-preview-v1/preview.json",
+   "itemBodyMasks": {"<DA source path>": {"/Game/.../SK_X_M.SK_X_M": {"toUrl": "../folder/SK_X_M.bodymask.png"}}}}
+
+"itemBodyMasks" (tier 2 C2, 27 Nov 2026) repoints an item's own mask (assets.itemBodyMasks[DA][mesh]) regenerated from
+the S12 mesh. The entry must exist (a refresh never adds one) and its mesh must be repointed by this same spec; the
+patch pins the mask's new sha256 and the mesh's new sha256 (meshToSha256). Two items may share one new mask file.
 
 "reboundMaterialsFrom" takes every material an attached batch rebound (prepare-attached-batch.py index with
 rebindKeptMaterials: preview.json "reboundMaterials"), each of whose "from" must be the live entry; its "to" is resolved
@@ -63,6 +68,7 @@ def live_references(assets):
     """Every URL the live index names (meshes, masks, materials, variants, the attachment body)."""
     urls = {m['url'] for m in assets['meshes'].values()} | {m['bodyMaskUrl'] for m in assets['meshes'].values() if 'bodyMaskUrl' in m}
     urls |= set(assets.get('materials', {}).values()) | set(assets.get('materialVariants', {}).values())
+    urls |= {m['url'] for rows in assets.get('itemBodyMasks', {}).values() for m in rows.values()}
     if 'attachmentBody' in assets:
         urls.add(assets['attachmentBody']['url'])
     return urls
@@ -111,7 +117,7 @@ def main(active_dir, spec_json, out_json):
     assets_path = active_dir / 'assets.json'
     assets = json.loads(assets_path.read_text(encoding='utf-8'))
     spec = json.loads(Path(spec_json).read_text(encoding='utf-8'))
-    unknown = set(spec) - {'note', 'meshes', 'materials', 'reboundMaterialsFrom'}
+    unknown = set(spec) - {'note', 'meshes', 'materials', 'reboundMaterialsFrom', 'itemBodyMasks'}
     if unknown:
         raise SystemExit(f'Unknown spec keys {sorted(unknown)}')
     live = assets.get('materials', {})
@@ -151,6 +157,21 @@ def main(active_dir, spec_json, out_json):
                                   'toSha256': new_target(want['bodyMask']['toUrl'], source + ' mask')}
             publish.append(active_dir / want['bodyMask']['toUrl'])
         meshes[source] = change
+    item_masks = {}
+    for da, rows in sorted(spec.get('itemBodyMasks', {}).items()):
+        for source, want in sorted(rows.items()):
+            entry = assets.get('itemBodyMasks', {}).get(da, {}).get(source)
+            if entry is None:
+                raise SystemExit(f'{da} {source}: no live item mask (a refresh never adds one)')
+            if source not in meshes:
+                raise SystemExit(f'{da} {source}: an item mask moves only with its mesh; the spec does not repoint it')
+            if want['toUrl'] == entry['url']:
+                raise SystemExit(f'{da} {source}: toUrl is the live URL')
+            item_masks.setdefault(da, {})[source] = {
+                'fromUrl': entry['url'], 'toUrl': want['toUrl'],
+                'toSha256': new_target(want['toUrl'], f'{da} {source} item mask'),
+                'meshToSha256': meshes[source]['toSha256']}
+            publish.append(active_dir / want['toUrl'])
     variant_recipients = {json.loads(k)[0] for k in assets.get('materialVariants', {})}
     materials = {}
     for source, want in sorted(wanted_materials.items()):
@@ -170,7 +191,8 @@ def main(active_dir, spec_json, out_json):
         'activeSkinPairsSha256': sha(active_dir / 'skin-pairs.json'),
         'body': {'source': body['source'], 'url': body['url'], 'fromSha256': body['sha256'], 'toSha256': body['sha256']},
         'meshes': meshes,
-        'materials': materials}
+        'materials': materials,
+        **({'itemBodyMasks': item_masks} if item_masks else {})}
     # The expected result comes from the apply itself, in memory, so it is exactly what the apply will write.
     assets_bytes, pairs_bytes, counts = applier.apply(patch, active_dir)
     files = sorted({shown(p) for p in publish})
@@ -185,7 +207,7 @@ def main(active_dir, spec_json, out_json):
     expected_path.write_text(json.dumps(expected, indent=1) + '\n', encoding='utf-8')
     publish_path.write_text(''.join(f + '\n' for f in files), encoding='utf-8')
     print(json.dumps({'meshes': len(meshes), 'bodyMasks': sum('bodyMask' in m for m in meshes.values()),
-                      'materials': len(materials), 'expectedAssetsSha256': expected['expectedAssetsSha256'],
+                      'itemBodyMasks': sum(len(rows) for rows in item_masks.values()), 'materials': len(materials), 'expectedAssetsSha256': expected['expectedAssetsSha256'],
                       'publishFiles': len(files), 'publishBytes': expected['publishBytes'], 'out': str(out)}))
 
 
