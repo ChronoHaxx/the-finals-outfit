@@ -25,8 +25,8 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 
 # Roadmap
 
-Last reviewed: 2026-11-23
-Reviewed after patch note: 2026-11-23-season-12-refit
+Last reviewed: 2026-11-27
+Reviewed after patch note: 2026-11-27-season-12-refit-2
 
 The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
 

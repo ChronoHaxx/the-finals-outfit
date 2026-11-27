@@ -1,0 +1,332 @@
+{
+  "shard": "reconstruction-002",
+  "dir": "E:\\Coding\\the-finals-outfit\\scripts\\generated\\release-2026-11-27\\_assets-upload\\v19-release-20261127-reconstruction-002",
+  "checkedAt": "2026-11-27T21:35:56.729Z",
+  "files": 9635,
+  "sizesChecked": 9632,
+  "fresh": 24,
+  "linkedSampled": 25,
+  "gzipRows": 578,
+  "headers": "/*\n  Access-Control-Allow-Origin: *\n  Cache-Control: public, max-age=31536000, immutable\n",
+  "rows": [
+    {
+      "path": "models/s12-refresh-tier2-v1/c0b/SK_Casual_TallSneakers_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_FancyDress_ArmGuard_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_FancyDress_Bolero_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_FancyDress_UltimateNecklace_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_Halloween_VampireCapelet_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_Halloween_VampireDress_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_Halloween_VampireFur_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_Halloween_VampireSkirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_Medieval_PeasantSkirtTop_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_Medieval_PeasantSkirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_Traditional_GeishaGothDress_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_Traditional_GeishaGothSkirtBack_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/c1-reads/SK_Traditional_GeishaGothSkirtFront_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-c1/SK_Casual_LongCoat_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-c1/SK_Medieval_TacticalKnightBracers_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-c1/SK_Medieval_TacticalKnightTop_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-c1/SK_Military_AssaultPantsNoKneepad_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-c2/SK_Military_AssaultPants_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-c2/SK_Shirt_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-c2/SK_Streetwear_TightTechPants_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-c2/items/SK_Military_AssaultPants_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-c2/items/SK_Streetwear_TightTechPants_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/coverage-s12/SK_Casual_BasicTshirt_M.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/s12-refresh-tier2-v1/sneakers/SK_Sneakers_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch21-medieval-jester-shoes-r2-v1/materials/ef45e750549533ee.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-fsingle2-space-space-combat-boots-v1-v1/materials/f7300c3891b51158.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-fresh-b5-robots-disco-pants-v1-v1/materials/a194c874dfb61649.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-item-mask-sport-fencer-jacket-g2-v4/materials/33b9d6de0d2fe98d.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-item-mask-casual-one-strap-overalls-equipment-v1/materials/25cc9954716dc7ce.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-eye-cosmetics-v5/materials/eye-mi-head-face-12-base-eyes--mi-bodycosmetics-eyes-emissiveyellow-02.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch21-streetwear-crop-hoodie-v1/materials/5e8905bb1a250a1c.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w149-static-watches-v2/meshes/SM_SmartStepCounter_01_A.glb",
+      "kind": "linked",
+      "encoding": "gzip",
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-all-reuse-streetwear-dad-jeans-fe53aced-v1-g3/materials/a9e0f026deb2c307.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch06-cowboy-boots-v1/materials/mi-cowboy-boots-nylon.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-sreuse-casual-hoodie-zipup-v1-v1/materials/a449d8f4901fd6a1.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-materials-reference-02/69f68c4ee330e736.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-emissive-fitted-streetwear-sneakersuntied-v1/coverage/SK_Streetwear_SneakersUntied_M.bodymask.png",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch21-streetwear-tech-shinobi-jacket-v1/materials/4ae06f6cc6edce34.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch18-combat-boots-no-tape-v1/materials/81a4fb459457dca4.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w98-cel-garments-b1/meshes/SK_Cute_AnimeArcherTop_M.glb",
+      "kind": "linked",
+      "encoding": "gzip",
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-fsingle2-robots-retro-robot-feet-v1-v1/materials/mi-robots-retrorobotfeet-plastic.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch24-casual-punk-wristband-r2-v1/materials/4839c4e9ef51be0d.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-emissive-fitted-streetwear-largesneakers-emissivenylon-alfaacta-v1/materials/a449d8f4901fd6a1.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-family-batch21-space-astronaut-gloves-g2-v1/materials/92dcc20f10d6e910.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-multipart-batch23-from-tencent-asian-spirit-jacket-v1/materials/mi-fromtencent-asianspiritjacket-silk-whiteblue.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w58-medieval-attached-b2-v1/meshes/SK_Medieval_StrawBoaterHatLaces_M.glb",
+      "kind": "linked",
+      "encoding": "gzip",
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w142-generic-v1/materials/mi-tigerhead-paper.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-reuse-b14-streetwear-heist-pants-v1-v1/materials/f28d06a923b7afa4.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-reuse-b14-racing-gloves-v1-v1/materials/e867d00184dcbcc8.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    }
+  ]
+}

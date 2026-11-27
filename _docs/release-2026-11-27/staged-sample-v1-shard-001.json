@@ -1,0 +1,5126 @@
+{
+  "shard": "reconstruction-001",
+  "dir": "E:\\Coding\\the-finals-outfit\\scripts\\generated\\release-2026-11-27\\_assets-upload\\v19-release-20261127-reconstruction-001",
+  "checkedAt": "2026-11-27T21:32:01.106Z",
+  "files": 20000,
+  "sizesChecked": 19997,
+  "fresh": 823,
+  "linkedSampled": 25,
+  "gzipRows": 963,
+  "headers": "/*\n  Access-Control-Allow-Origin: *\n  Cache-Control: public, max-age=31536000, immutable\n",
+  "rows": [
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/007eda276b04f7f0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/00dcb58529714378.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/04dc62c9c04d9343.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/0a0f4a407f5aac9c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/0ab78c020c3dd0d6.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/0d525bc86f9259e2.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/0f8e9e167bff530b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/1309d486fe0e220a.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/13dfd3b93b4610e9.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/14131e91ffbc9c35.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/17904e59a4040c55.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/179f6c8e5cfe7073.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/199792f270fdba13.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/19a2c750ef703969.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/1cf8af2b0368e0ae.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/1f2faca24f42870b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/2077932d89f61fe8.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/2dcecaf07131fe59.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/2fb1f5ecf23543d6.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/3218be25ca142475.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/365f9d0c393c5b82.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/3b36ff8ed21a1808.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/3c52b6f01690b36c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/4157be80be7384ba.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/4276a648b3b2da81.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/4516b725736dd190.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/4d452c29d06684c0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/5d24c2e68c3eb287.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/619b86dc3dd13f73.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/64255648958c8d61.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/6558a0755520eb80.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/657ff0e711e33993.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/67596ac6af8908db.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/685c72fc678f81ff.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/692a5253de74b014.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/6a172bd9735eee3e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/6a910471d818ddb9.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/6b6fbc92cefe8e32.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/6d9585675ea7f53f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/708faea055d5ee46.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/726726f57e7fdb7f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/791a9502a7c89bfa.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/8bbed1fd8d0ba86f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/8e639f916e7c7793.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/9072915aa584da20.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/9103accdffc05f58.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/913ce0ee1613f019.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/932f21d2f3162b21.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/947d4c6515bdd2ff.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/9482646cd5c33e9c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/956c0ac3921dfc57.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/95a8d6c3f9d2b932.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/9727c56b1572b985.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/9915ce9ceef81670.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/9e53793d7978217e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/a12aa06d187affac.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/a449d8f4901fd6a1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/a6215e5f6150ce7d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/ae46d6e2d6dcb78c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/ae775134369ba093.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/b3b6ebd2658f693b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/b44cb205400477eb.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/b4757a635bb214d8.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/b50b32394a00f486.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/b608ab16823027cd.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/b81d99e6b7c19805.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/ba06d4a6432f1f5d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/ba23cbb8443c4359.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/befa3ada5737c700.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/c00e85657328e956.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/c02075c41668cb78.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/c3709e49eb6b10cb.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/cbb3822f8c7ec39f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/cc093458984d2427.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/ccbe221a65d8eac0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/cdf1dad29c7a1621.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/ce3e5410e2abce1c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/cf19024c41a1c83f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/cfcf43cfd95e4597.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/d27c771d28e24ce7.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/d42b1b3525070b92.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/d59bf45e36dcf0d7.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/d8dc11200431ddb1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/dd52a397f8b50dd5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/df7c27fd49b1fbee.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/e3a277ab7d2a0974.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/e3f77a4640f11ff7.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/e46839f4bfa5f9e6.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/ec32ad764c9367a1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/ed7bd725a5765196.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/f0137a85ab6482bd.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/f1b9b4a58384a9a4.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/f652a99df607d5a0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/f6ff924518687da5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/f795022d01865a59.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/fc1de41e6fef41ba.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/fc3f79b286276c0d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/fe61ba001964b644.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-alfaacta.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-alfaacta.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-alien.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-alien.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-battlepasscnss7.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-battlepasscnss7.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-black.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-black.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-cns.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-cns.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-cnswhite.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-cnswhite.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-cometa.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-cometa.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-dissun.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-dissun.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-engimo-blue.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-engimo-blue.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-engimo.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-engimo.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportalliance.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportalliance.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportapesquad.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportapesquad.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportdrg.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportdrg.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportenvy.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportenvy.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportfivefears.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportfivefears.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportfn.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportfn.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportfnatic.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportfnatic.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportgeng.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportgeng.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportkcp.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportkcp.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportkz.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportkz.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportntmr.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportntmr.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportpulsar.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportpulsar.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportssg.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportssg.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportteamsecret.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportteamsecret.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esporttsm.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esporttsm.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportvanguard.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-esportvanguard.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-fightingfish.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-fightingfish.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-holtow.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-holtow.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-idkwhatimdoing.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-idkwhatimdoing.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-iseult.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-iseult.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-ospuze.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-ospuze.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-sponsoralfaacta.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-sponsoralfaacta.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-sponsoriseult.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-sponsoriseult.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-sponsorospuzeblack.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-sponsorospuzeblack.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-thefinals.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-thefinals.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-thefinalsmerch.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-thefinalsmerch.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-trentila.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-trentila.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-trentilaracing.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-trentilaracing.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-vaiiya.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-vaiiya.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-vaiiyacashball.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-vaiiyacashball.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-vaiiyawhite.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-vaiiyawhite.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-white.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-white.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-yellow.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c0-v1/materials/mi-casual-basictshirt-cotton-yellow.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/01e67d6f78ce7991.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/039ffa9e31698737.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/04ecc3eb9c043bdf.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/0907d90fc1f244a2.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/0ac684987b1e9808.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/0bec6edbed0b3a3d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/0cf9410a0491bb05.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/0e66488d5a2b8bff.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/0f62b0d67c82166e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/1865681dfe1d5fa1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/18fffd251fac3f42.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/19cc5ffcbd51df5c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/1ca9b42e787c87c0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/1e6c202ae8ffcf0b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/223985114e234d41.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/22d29c5e4db9144d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/22ee21cf98afc983.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/242139bfc726e658.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/242a7cc9b4d8ce3a.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/25cc9954716dc7ce.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/2636378a187a7a16.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/2aaec4c72d828d4b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/2c9dfc6dfe2d2680.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/2dcecaf07131fe59.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/2ee5e810d323d88d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/2f58f0692977749b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/2fde812961c83b89.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/30a308cefff2223a.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/3220232c3c7f00cc.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/35aee3f27a85f68e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/411746b7000477a5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/43a76fdf0032c892.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/44bf5097c1d0683c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/45419bbd2e7510fa.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/4602d2b96526bd94.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/460fdb60bf50f43c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/469d6b25f3deb8f5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/46d54caade901f77.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/46db8ac6b3eeddf3.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/5dbb65cc695e696e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/6202cf7e0e03c81e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/65f78ae2b479df43.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/6756cea49e0902aa.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/67aae910bb72acb8.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/6945d093579305fd.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/69f68c4ee330e736.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/766b9d26b92fee6c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/774fcb3f6cdfbe10.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/7ac3ea02dd944c34.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/7c1036ccfc741e12.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/800594c7d60ea92f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/85ca4542bd510cfc.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/87ce71a94dcbc162.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/89a6288f5a27f7d1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/8b4fb8bc9f2df9cf.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/8bf06c2c55d8ca18.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/8f1f328ecd1f770c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/903b9d2b0ede356c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/9045c3771ce0531e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/9103accdffc05f58.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/951ac10b1f40ed3b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/98093e08080112e5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/9a614a8eb28bb53d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/9c253b9d9d2614da.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/9f47123c386e6a06.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/a1f23d67f6f373e5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/a449d8f4901fd6a1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/a513f86ffa4a6849.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/a7eeed85405a57bb.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/a82e4a1b6f503e12.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/a8b850da6a34b9d2.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/a9c08f545ec6aba3.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/aa2e3d1c8fcc8f0c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/aa79b8ceb9060494.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/afdd0145ebeaa09c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/b2ad986dc1a88510.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/b3ea69b2ad00c617.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/b85c1fbd1e5dc96d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/bba30579f478edc7.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/bf05f9348afb37e5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/c00e85657328e956.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/c02075c41668cb78.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/c2afe2ca7ee339cd.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/c91a1ec94a55239b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/c972e1b1748e3d8a.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/ca87dde75896bb58.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/d393f9f3550aefa8.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/d3cc1db40cb75666.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/d653b983342d7bd5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/de02a75db1a82379.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/df23f0f13eecbbfb.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/e11e1a6b0e6632d5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/e48287016c8d0f36.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/e99872843cccfaa1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/f0cd2510cf1376d2.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/f3756107a7dd0f4e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/f652a99df607d5a0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/f9675c57f4e5f4bf.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/fc9ee94860fc7573.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/fd660edbdca3bfb2.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-cardboardcombatpants.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-cardboardcombatpants.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-hoodie-cotton-pink.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-hoodie-cotton-pink.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-medieval-tacticalknightbelt-nylon.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-medieval-tacticalknightbelt-nylon.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-medieval-tacticalknighttop-cotton.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-medieval-tacticalknighttop-cotton.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-military-assaultpantsnokneepad-polyester.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-military-assaultpantsnokneepad-polyester.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-carbonfibre.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-carbonfibre.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-alienprint.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-alienprint.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-biker.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-biker.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-blackfinals.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-blackfinals.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-cb2a.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-cb2a.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-cpop.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-cpop.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-cuteskeleton.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-cuteskeleton.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-embarkblack.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-embarkblack.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-embarkpartner.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-embarkpartner.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-graywhite.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-graywhite.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-holtow.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-holtow.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-openbetaospuze.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-openbetaospuze.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-panda.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-panda.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-redpanda.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-redpanda.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-snowballblitz.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-snowballblitz.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-vaiiyawhite.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-vaiiyawhite.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-valentines2025.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-valentines2025.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-vintagestripes.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-vintagestripes.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-whitetrentila.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-whitetrentila.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-yellow.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-yellow.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-yellowfinals.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-cotton-yellowfinals.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-leopard.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-leopard.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-alfaactawinners6.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-alfaactawinners6.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-dissunwinners5.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-dissunwinners5.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-engimowinners10.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-engimowinners10.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-engimowinners4.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-engimowinners4.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-engimowinners6.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-engimowinners6.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-holtowwinners4.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-holtowwinners4.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-iseultwinners4.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-iseultwinners4.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-iseultwinners5.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-iseultwinners5.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-nylon-trentilawinners8.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-nylon-trentilawinners8.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-ospuzewinners6.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-ospuzewinners6.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-vaiiyawinners5.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-nylon-vaiiyawinners5.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-tiger-teamltm.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-tiger-teamltm.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-tiger.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-tiger.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-windbreaker-alfaacta.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-windbreaker-alfaacta.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-zebra.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-hoodie-zebra.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-canvas-black.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-canvas-black.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-canvas-climber.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-canvas-climber.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-canvas-sponsorengimo.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-canvas-sponsorengimo.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-canvas-vaiiya.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-canvas-vaiiya.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-canvas.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-canvas.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-leather-brownyellowevent.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-leather-brownyellowevent.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-leather.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-leather.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-nylon-alfaacta.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-nylon-alfaacta.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-nylon-vaiiyas7sp.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-nylon-vaiiyas7sp.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-nylon.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c1-v1/materials/mi-streetwear-utilitybelt-nylon.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/01a3b3884dc09b24.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/020767a1835e57a2.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/04ecc3eb9c043bdf.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/0571d06a57fca589.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/079b807182059463.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/081b2ae218bb9cf1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/09cb9624e79a25f9.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/0a1a13add5139916.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/0b0184aae265578c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/0b1fcfc529450342.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/0bec6edbed0b3a3d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/0c5dc726ab6eca3f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/0c7c9223a2eae4e4.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/0d525bc86f9259e2.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/0e9f29dc4d4186b0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/0f62b0d67c82166e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/135b9ad4cf035c00.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/142dcc497e48bead.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/144ec0c500b01480.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/1574ddd6abdf264e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/16018d66eabc57f5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/1649ca509b9c74d6.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/19663b93fc1fc09b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/19deac7c248719e1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/1ae11e472d64fbed.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/1f53eb3a07b96ea1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/24336638d371b1ca.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/244860ce16955ab6.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/25cc9954716dc7ce.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/288c9d977fda1fa1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/2c51be5964282962.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/2cdae28c830cc7f9.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/2dcecaf07131fe59.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/2ee5e810d323d88d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/3835bd7a3c6dd5b9.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/3b36ff8ed21a1808.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/3c59de7487e74aed.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/406c8ebf7f25e5b9.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/42909c1f956e4620.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/42c91615035b0d22.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/444be0dc7db988b4.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/45f0eb351d3da96d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/4830273484407383.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/484e6c118efcf786.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/4f2f8f149ab4c54f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/4f39faf83c263ea9.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/519cd45c7fd1fd7e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/5449badff2377250.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/56b8ac52e9eed424.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/5a8718df088eb62b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/5b2a685bbd623416.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/5c57adc537afd57d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/5e39952c5caea392.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/600eada6e19bff6f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/612d9a4f480e43f3.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/63839429ddb2d227.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/6489238283db82e7.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/679983e52a685a32.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/679a55293b8ad904.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/67c93adb67663ed3.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/69f68c4ee330e736.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/6c94d120d21e2572.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/6f03e23a4950e46f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/6f14c37ad00e5960.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/6f555914e9617470.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/703e49543376a119.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/730a2b9c02d8f2cf.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/74f12fcdf7470f02.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/762647ba51154a0d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/785e4be951f01849.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/78dd249b67055aa7.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/79c83f1ebc015021.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/7d5d7ab970149de2.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/808ba037cc43b8ba.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/80a2e312bea9bdb2.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/82171d1e1ba93953.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/83c4fc326d36385f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/8535cb6cf407bfd1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/883c465f4f988473.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/8b69f1f4bd19c587.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/8df9d5f03fd6370f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/9103accdffc05f58.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/948f36e988c348b6.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/97a786aa20cbe3a0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/98e17cee7816447c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/9a1e3d0b2c3396f3.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/9b93d7e2e4baf5a4.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/9cd9fe5c1350df23.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/9cda3422ef8bc909.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/9f47123c386e6a06.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/a0aae2b48a1b682c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/a449d8f4901fd6a1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/a66e7e706e40bd68.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/a66fe71231ff4970.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/a85e5ca32c4e0db6.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/a9539327964a2c47.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/b0e944c105389c4b.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/b3ea69b2ad00c617.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/b3ee8ba3d6fb6202.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/b55a6ab2b61494df.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/ba68d0af62be3a3d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/bbe1a9c3fdf5784d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/bd1b2146ad7c1da3.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/c00e85657328e956.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/c0b187b9736e55d1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/c66c36d9bdcfd2a8.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/c6c351503e2aeb88.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/c8ea47e662c6f135.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/c99ffb2e59a981ec.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/ca012556f89bf9a4.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/ce479cfef240ca7e.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/cf32cbf815fd6393.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/cffe7da123b4ab52.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/d2e9b0878d5152ac.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/d3adfca4fff0e6e3.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/d5b67a58dc7b968f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/d7e7971be126661a.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/db33633e1a9b43e9.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/de4c372598b20027.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/e24d44fc54cb9c2d.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/e2c2043eb6350eb0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/e48287016c8d0f36.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/e5ceaa42a2c5bca8.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/e6a4fc359858a6ae.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/ea868a10ff12bfc3.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/eae8579aad2721de.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/ed49e7151056e4f4.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/ed5f7c0d83de3b4a.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/f179a1b64f6fbbef.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/f2761dcedfc9b271.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/f469c956a1cbc020.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/f5b32ae3c214a4a5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/f652a99df607d5a0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/f7f90ace99e6326c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/fb8df70319b671b0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/fe6973da03d448e6.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/fe767a54132a77f9.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-characterlayered-teamcolor-cashball-pants.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-characterlayered-teamcolor-cashball-pants.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-canvas-military.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-canvas-military.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-canvas-ospuzestarterpack.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-canvas-ospuzestarterpack.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-canvas-red.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-canvas-red.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-canvas.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-canvas.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-alfaacta.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-alfaacta.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-blackred.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-blackred.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-blackswat.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-blackswat.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-esportkz.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-esportkz.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-fivefears.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-fivefears.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-greencamo.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-greencamo.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-moolahcamo.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-moolahcamo.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-orange.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-orange.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-redblue.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-redblue.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-rescue.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-rescue.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-swat.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-swat.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-yellowospuze.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-military-assaultpants-polyester-yellowospuze.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-black.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-black.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-blackyellow.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-blackyellow.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-camoenorino.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-camoenorino.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-cuteskeleton.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-cuteskeleton.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-graywhite.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-graywhite.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-redclosedbeta.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-redclosedbeta.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-redpanda.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-redpanda.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-whiteblack.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-whiteblack.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-whiteblue.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-whiteblue.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-whitered.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-whitered.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-yellow.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-cotton-yellow.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-nylon-blackgreen.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-nylon-blackgreen.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-nylon-cometa.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-nylon-cometa.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-nylon.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-pants-nylon.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-cotton-blackyellow.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-cotton-blackyellow.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-cotton-red.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-cotton-red.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-cotton-whitered.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-cotton-whitered.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-cotton-yellowblack.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-cotton-yellowblack.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-argentina.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-argentina.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-australia.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-australia.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-austria.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-austria.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-belgium.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-belgium.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-brazil.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-brazil.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-canada.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-canada.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-chile.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-chile.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-china.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-china.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-croatia.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-croatia.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-czechia.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-czechia.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-denmark.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-denmark.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-egypt.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-egypt.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-europe.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-europe.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-finland.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-finland.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-france.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-france.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-germany.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-germany.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-greatbritain.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-greatbritain.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-greece.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-greece.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-iceland.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-iceland.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-india.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-india.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-ireland.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-ireland.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-italy.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-italy.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-ivorycoast.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-ivorycoast.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-jamaica.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-jamaica.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-japan.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-japan.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-lithuania.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-lithuania.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-mexico.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-mexico.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-netherlands.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-netherlands.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-newzealand.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-newzealand.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-nigeria.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-nigeria.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-norway.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-norway.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-peru.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-peru.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-philippines.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-philippines.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-poland.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-poland.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-scotland.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-scotland.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-singapore.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-singapore.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-southkorea.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-southkorea.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-spain.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-spain.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-sweden.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-sweden.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-switzerland.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-switzerland.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-thefinals.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-thefinals.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-usa.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-usa.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-venezuela.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-shirt-flag-venezuela.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton-green.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton-green.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton-grey.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton-grey.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton-navyblue.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton-navyblue.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton-orange.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton-orange.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton-red.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton-red.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-cotton.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-wool-gray.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-wool-gray.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-wool-white.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-socks-quarter-wool-white.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-starterset-pants-carbonfibre.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-starterset-pants-carbonfibre.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-starterset-pants-tiger-teamltm.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-starterset-pants-tiger-teamltm.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-starterset-pants-tiger.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-starterset-pants-tiger.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-newpolyester-ivada.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-newpolyester-ivada.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-newpolyester-volpe.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-newpolyester-volpe.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-nylon-whiteurban.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-nylon-whiteurban.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-nylon.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-nylon.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-polyester-alliance.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-polyester-alliance.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-polyester-blackurban.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-polyester-blackurban.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-polyester-esportdrg.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-polyester-esportdrg.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-polyester-iseult.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-polyester-iseult.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-polyester-tsm.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-polyester-tsm.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-translucent-green.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-translucent-green.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-wool.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-s12-c2-v1/materials/mi-streetwear-tighttechpants-wool.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/0d525bc86f9259e2.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/127685bfb7e00fab.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/148d51a6c5ba39f3.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/190a07ae28b35ff0.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/25ba18969448be6c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/25cc9954716dc7ce.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/2dcecaf07131fe59.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/390e3990cd4c940f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/3b36ff8ed21a1808.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/3e1690bfe194b9f3.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/57b4c20b289466b5.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/646b7078bf5a2d02.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/69f68c4ee330e736.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/740d813d73ffea80.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/801b1277c817a849.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/896731f1b9f1bcb4.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/9103accdffc05f58.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/9f47123c386e6a06.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/a449d8f4901fd6a1.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/b3ea69b2ad00c617.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/b8e47ae42a85cc82.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/c4bd0a2da4de2efa.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/d57b25e0375668bb.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/dcf5a30092eb4702.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/e4e5223b2eb2e8c4.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/f8e5239c04685e1f.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/fe42e9946638a47c.rgba.gz.bin",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/mi-casual-slimtanktop-nylonemissive-ospuze.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/mi-casual-slimtanktop-nylonemissive-ospuze.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/mi-character-panninghologram-ospuze.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/mi-character-panninghologram-ospuze.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/mi-character-panninghologram-vaporwavevisor-cns.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/mi-character-panninghologram-vaporwavevisor-cns.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/mi-sportsjacket-sportsjacket-translucentospuze.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/mi-sportsjacket-sportsjacket-translucentospuze.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/mi-streetwear-vaporwaveglasses-plastic-cnss7sp.glsl",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/materials/mi-streetwear-vaporwaveglasses-plastic-cnss7sp.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w177-panning-v4/meshes/SK_Streetwear_SportsJacketHologramStrip_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Ballerina_BallerinaTights_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_BandagedTankTop_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_BasicShorts_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_BasicTshirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_BikerVestDetailsPunk_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_BikerVest_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_CropTopUndershirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_HalterTop_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_LongCoat_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_LooseJeans_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_PunkCropTshirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_PunkTshirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_ShortDressSkirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_ShortDress_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_Shorts_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_SleeveDetailsPunk_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Casual_TubeTop_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_FancyDress_LawyerSuitJacket_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_FancyDress_WeddingNecklace_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Gothic_BikerJacketChain_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Gothic_BikerJacketRivets_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Gothic_BikerJacket_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Gothic_LooseJacket_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Gothic_SkullNecklaces_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_HoltowPantsHologramS8_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_IseultSkiPantsHologram_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_TrackSuitPantsHologram_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Hologram_VaiiyaPantsHologram_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_DemonPants_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_JesterJacket_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_JesterNeckCape_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_JesterSkirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_TacticalKnightBelt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_TacticalKnightBracers_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_TacticalKnightShoulderpads_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Medieval_TacticalKnightTop_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Military_AssaultPantsNoKneepad_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Military_AssaultPants_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Military_CardboardPants_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Military_DoubleHolsterPants_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Monsters_EasternDemonBelt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Monsters_EasternDemonPants_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Monsters_EasternDemonSkirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Pants_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_SciFi_Jacket_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_SciFi_MuscleSuitUpper_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Shirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Socks_Quarter_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Sport_ElbowPadsInsideJacket_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_ChainNecklace_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_HeartNecklace_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_Hoodie_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_PopLanyardArmbandLeft_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_PopLanyardArmbandRight_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_ShortDressSleeves_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TightTechPants_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TrackSuitPants_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_UncappedPleatedSkirt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_UtilityBelt_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/s12-bodytype-refresh-v1/meshes/SK_Winter_SkiPants_M.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-tactical-boots-v1/materials/mi-military-tacticalboots-base-rescue.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w111-emission-b2/materials/ade65c3b68150dc1.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w157-sss-b5-v1/materials/mi-suitjacket-cotton-gray.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-galaxy-v3/materials/skin-49a6058f642c2b56ade03ef6.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w76-s12-wave-m-v1/materials/4be1acc79b6a7202.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-wrap2-medieval-jester-jacket-g2-v1-v2-mk1/materials/3b36ff8ed21a1808.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-wrap2-historic-empress-armor-v1-v2-mk2/coverage/SK_Historic_EmpressShoulderPads_M.bodymask.png",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-attached-b20-v1/materials/c8ea47e662c6f135.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-wrap-b3-medieval-wizard-skirt-v1-v1/materials/9471a5435548dc76.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-face14-v2/materials/skin-43e7742baa06bc21efb5f599.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-g100-hides-military-dede-tights-v1-v3/materials/0fad79391e8e6074.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-shinysilver-v2/materials/d8af7cc4b67a9061.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w157-sss-b9-v1/materials/c357ce6f7e673942.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-face-batch01-v1/materials/skin-4b29751c231c3f20412e10a9.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-blankface-led-v5/materials/skin-64a8e686f0d24a2091e65738.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-attached-b2-v1/materials/d3ffcf18c2bab433.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w80-wrap-w2-v1/materials/88e546afebbc9f9a.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-all-reuse-municipal-torso-4b0b98ad-v1/materials/f1fdcd5b17a8a03c.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-cosmetic-contracts-v1/bodycosmetics-tattoos-sakurablossom-01-bodyhands_c.png",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-face02-v1/materials/0c8cd6af996ce04f.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-blankface-wv-v2/materials/skin-4d0aacb8edf52063334267cd.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w157-sss-d2-v1/materials/mi-shirt-flag-poland.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-blankface-led-v5/materials/skin-5d9008428152bd979ff58a44.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-galaxy-v3/materials/skin-7cfecdb9afce9dcf6787d92f.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-doublebun-v3/materials/hair-396d1fcc178f9bfb5ec1ff55.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    }
+  ]
+}

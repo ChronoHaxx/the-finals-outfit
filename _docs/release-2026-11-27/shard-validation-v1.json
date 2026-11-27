@@ -1,0 +1,69 @@
+{
+  "planSha256": "de1e8c31b626581dd8802f97581c5cf55b3b1d2efa036354a448d25e73583d66",
+  "verifiedAt": "2026-11-27T21:42:40.553Z",
+  "shards": [
+    {
+      "shard": "reconstruction-000",
+      "baseUrl": "https://4a0f9a72.the-finals-outfit-assets.pages.dev/",
+      "manifestSha256": "22709bdd5fbc95402caa22face3265c78537cb0046d7139338e3a861e955c716",
+      "declaredFiles": 19997,
+      "sampled": [
+        "models/reconstructed-assembly-v2/catalog.json",
+        "models/reconstructed-assemblies-v1/supported-items.json",
+        "models/reconstructed-assemblies-v1/assets.json",
+        "models/reconstructed-assemblies-v1/skin-pairs.json",
+        "models/reconstructed-meshes-v2/SK_Body_M.glb",
+        "models/reconstructed/casual-longcoat-leather-black.json",
+        "models/reconstructed/casual-longcoat-leather-camo.json",
+        "models/reconstructed/casual-longcoat-satin.json",
+        "models/reconstructed-assemblies-v1/face-cosmetics.json",
+        "models/reconstructed-assemblies-v1/head-wraps.json",
+        "models/reconstructed-assemblies-v1/casual-bandagedtanktop-cotton.glsl",
+        "models/reconstructed/casual-longcoat-satin.glsl",
+        "models/reconstructed-assemblies-v1/00ebfab88524ccbb.rgba.gz.bin",
+        "models/reconstructed/fc1c9cebee308bf9.rgba.gz.bin",
+        "models/reconstructed-archetypes-v1/meshes/SK_ActionHero_SentinelBoots_L.glb",
+        "models/reconstructed-w91-v1/meshes/SK_Head_Face_32_Base.glb",
+        "models/reconstructed-archetypes-v1/coverage/SK_Casual_BasicTshirt_L.bodymask.png"
+      ]
+    },
+    {
+      "shard": "reconstruction-001",
+      "baseUrl": "https://e1f6dd73.the-finals-outfit-assets.pages.dev/",
+      "manifestSha256": "57a0c64eb7dc20160015c01c8f1885eac636b52e42f88e928458ba81b82279e2",
+      "declaredFiles": 19997,
+      "sampled": [
+        "models/reconstructed-accessories-v1/materials/mi-asianmask-black.json",
+        "models/reconstructed-w91-shinysilver-v2/materials/skin-ffc13b77887983d1e2927630.json",
+        "models/reconstructed-accessories-v1/materials/mi-asianmask-black.glsl",
+        "models/reconstructed-w91-shinysilver-v2/materials/skin-ffc13b77887983d1e2927630.glsl",
+        "models/reconstructed-accessories-v1/materials/0e49e0ab138efb9c.rgba.gz.bin",
+        "models/reconstructed-w91-shinysilver-v2/materials/f9ec93407ac27bee.rgba.gz.bin",
+        "models/reconstructed-accessories-v1/meshes/SK_CowMascotHead_M.glb",
+        "models/s12-bodytype-refresh-v1/meshes/SK_Winter_SkiPants_M.glb",
+        "models/cosmetics/ballerina-ballerina-top.bodymask.png",
+        "models/reconstructed-tactical-gloves-v1/coverage/SK_Military_TacticalGloves_M.bodymask.png"
+      ]
+    },
+    {
+      "shard": "reconstruction-002",
+      "baseUrl": "https://c18435c2.the-finals-outfit-assets.pages.dev/",
+      "manifestSha256": "ee03f75599cdda3f186cc2a30bdaf36365be1d8f673829d77a3ffad54eb838e7",
+      "declaredFiles": 9632,
+      "sampled": [
+        "models/reconstructed-meshes-v2/SK_Body_M.glb",
+        "models/reconstructed-accessory-defaults-v1/materials/mi-asianspirithorn-asianspirithorn.json",
+        "models/reconstructed-wristbands-v1/materials/mi-wristband-cotton-logoblack.json",
+        "models/reconstructed-accessory-defaults-v1/materials/mi-asianspirithorn-asianspirithorn.glsl",
+        "models/reconstructed-wristbands-v1/materials/mi-wristband-cotton-logoblack.glsl",
+        "models/reconstructed-accessory-defaults-v1/materials/00b362f1b584365c.rgba.gz.bin",
+        "models/reconstructed-wristbands-v1/materials/ee7cc4588d17c0f6.rgba.gz.bin",
+        "models/reconstructed-accessory-defaults-v1/meshes/SM_Earrings_LogoFinals_01_B.glb",
+        "models/s12-refresh-tier2-v1/sneakers/SK_Sneakers_M.glb",
+        "models/heads/blankface.bodymask.png",
+        "models/s12-refresh-tier2-v1/coverage-s12/SK_Traditional_CloudBag_M.bodymask.png"
+      ]
+    }
+  ],
+  "scope": "Exact staged manifest and planned membership/hashes, with downloaded representative files. Not an exhaustive byte download or physical-device acceptance."
+}

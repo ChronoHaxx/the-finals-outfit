@@ -1,0 +1,16 @@
+{
+  "base": "https://4a0f9a72.the-finals-outfit-assets.pages.dev/",
+  "status": 200,
+  "manifestSha256": "22709bdd5fbc95402caa22face3265c78537cb0046d7139338e3a861e955c716",
+  "expected": "22709bdd5fbc95402caa22face3265c78537cb0046d7139338e3a861e955c716",
+  "manifestMatches": true,
+  "cors": "*",
+  "cacheControl": "public, max-age=31536000, immutable",
+  "missingStatus": 404,
+  "manifest": {
+    "version": "v19-release-20261127",
+    "shard": "reconstruction-000",
+    "count": 19997
+  },
+  "ok": true
+}

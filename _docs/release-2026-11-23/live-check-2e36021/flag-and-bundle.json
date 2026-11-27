@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-24T20:22:33.943Z",
+  "site": "https://chronohaxx.github.io/the-finals-outfit/",
+  "bundle": "assets/index-BoiHTMLm.js",
+  "hosts": {
+    "dfe1d5e8": true,
+    "f1fa60b6": true,
+    "709a36ca": true,
+    "a70ffa7f": false,
+    "2026-11-23-season-12-refit": true
+  },
+  "ui": {
+    "masculine": true,
+    "light": false,
+    "medium": false
+  },
+  "pass": true
+}
