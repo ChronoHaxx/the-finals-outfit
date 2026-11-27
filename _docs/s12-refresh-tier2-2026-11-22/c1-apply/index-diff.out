@@ -1,0 +1,86 @@
+{
+ "meshes": [
+  2226,
+  2226
+ ],
+ "added": [],
+ "removed": [],
+ "blocksChanged": [
+  "materials"
+ ],
+ "meshesChanged": 66,
+ "byFields": {
+  "bodyMaskUrl sha256 url": 4,
+  "sha256 url": 61,
+  "url": 1
+ }
+}
+[bodyMaskUrl sha256 url]
+  SK_Casual_LongCoat_M
+  SK_Medieval_TacticalKnightBracers_M
+  SK_Medieval_TacticalKnightTop_M
+  SK_Military_AssaultPantsNoKneepad_M
+[sha256 url]
+  SK_Ballerina_BallerinaTights_M
+  SK_Casual_BandagedTankTop_M
+  SK_Casual_BasicShorts_M
+  SK_Casual_BikerVest_M
+  SK_Casual_BikerVestDetailsPunk_M
+  SK_Casual_CropTopUndershirt_M
+  SK_Casual_HalterTop_M
+  SK_Casual_LooseJeans_M
+  SK_Casual_PunkCropTshirt_M
+  SK_Casual_PunkTshirt_M
+  SK_Casual_ShortDress_M
+  SK_Casual_ShortDressSkirt_M
+  SK_Casual_Shorts_M
+  SK_Casual_SleeveDetailsPunk_M
+  SK_Casual_TubeTop_M
+  SK_FancyDress_ArmGuard_M
+  SK_FancyDress_Bolero_M
+  SK_FancyDress_LawyerSuitJacket_M
+  SK_FancyDress_UltimateNecklace_M
+  SK_FancyDress_WeddingNecklace_M
+  SK_Gothic_BikerJacket_M
+  SK_Gothic_BikerJacketChain_M
+  SK_Gothic_BikerJacketRivets_M
+  SK_Gothic_LooseJacket_M
+  SK_Gothic_SkullNecklaces_M
+  SK_Halloween_VampireCapelet_M
+  SK_Halloween_VampireDress_M
+  SK_Halloween_VampireFur_M
+  SK_Halloween_VampireSkirt_M
+  SK_Hologram_TrackSuitPantsHologram_M
+  SK_Hologram_HoltowPantsHologramS8_M
+  SK_Hologram_IseultSkiPantsHologram_M
+  SK_Hologram_VaiiyaPantsHologram_M
+  SK_Medieval_DemonPants_M
+  SK_Medieval_JesterJacket_M
+  SK_Medieval_JesterNeckCape_M
+  SK_Medieval_JesterSkirt_M
+  SK_Medieval_PeasantSkirt_M
+  SK_Medieval_PeasantSkirtTop_M
+  SK_Medieval_TacticalKnightBelt_M
+  SK_Medieval_TacticalKnightShoulderpads_M
+  SK_Military_CardboardPants_M
+  SK_Military_DoubleHolsterPants_M
+  SK_Monsters_EasternDemonBelt_M
+  SK_Monsters_EasternDemonPants_M
+  SK_Monsters_EasternDemonSkirt_M
+  SK_SciFi_Jacket_M
+  SK_SciFi_MuscleSuitUpper_M
+  SK_Sport_ElbowPadsInsideJacket_M
+  SK_Streetwear_ChainNecklace_M
+  SK_Streetwear_HeartNecklace_M
+  SK_Streetwear_Hoodie_M
+  SK_Streetwear_PopLanyardArmbandLeft_M
+  SK_Streetwear_PopLanyardArmbandRight_M
+  SK_Streetwear_ShortDressSleeves_M
+  SK_Streetwear_TrackSuitPants_M
+  SK_Streetwear_UncappedPleatedSkirt_M
+  SK_Streetwear_UtilityBelt_M
+  SK_Traditional_GeishaGothSkirtBack_M
+  SK_Traditional_GeishaGothSkirtFront_M
+  SK_Winter_SkiPants_M
+[url]
+  SK_Traditional_GeishaGothDress_M
