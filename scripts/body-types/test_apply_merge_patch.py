@@ -19,6 +19,9 @@ BODY = '/Game/Body/SK_Body_M.SK_Body_M'
 TEE = '/Game/Items/SK_Tee_M.SK_Tee_M'
 HAT = '/Game/Items/SK_Hat_M.SK_Hat_M'
 LIVE_BODY = '../reconstructed-meshes-v2/SK_Body_M.glb'
+DA = 'Discovery/Content/Items/Tee/DA_Tee_Black.uasset'
+DA_2 = 'Discovery/Content/Items/Tee/DA_Tee_Red.uasset'
+DA_HAT = 'Discovery/Content/Items/Hat/DA_Hat.uasset'
 
 
 class Fixture(unittest.TestCase):
@@ -114,6 +117,74 @@ class ApplyPatch(Fixture):
         self.patch['bodyMasks'][HAT]['meshSha256'] = 'h-other'
         with self.assertRaises(SystemExit):        # the mesh is not the file the mask was made from
             self.run_tool('--garments-only', out='out-other-mesh')
+
+    def item_mask_fixture(self):
+        """The T-shirt's item mask for one item (DA), and the hat's for another; the patch moves the T-shirt's."""
+        assets = json.loads((self.active / 'assets.json').read_bytes())
+        assets['itemBodyMasks'] = {DA: {TEE: {'url': '../live/tee-item.png', 'uvTiles': [2, 1]}},
+                                   DA_HAT: {HAT: {'url': '../live/hat-item.png', 'uvTiles': [2, 1]}}}
+        (self.active / 'assets.json').write_bytes(tool.dump(assets))
+        self.patch['activeIndexSha256'] = tool.sha(self.active / 'assets.json')
+        self.patch['itemBodyMasks'] = {DA: {TEE: {'fromUrl': '../live/tee-item.png', 'toUrl': '../s12/tee-item.png',
+                                                  'toSha256': hashlib.sha256(b'item').hexdigest(), 'meshToSha256': 't1'}}}
+        (self.tmp / 's12').mkdir()
+        (self.tmp / 's12' / 'tee-item.png').write_bytes(b'item')
+
+    def test_an_item_mask_moves_with_its_mesh(self):
+        # Tier 2 C2 (27 Nov 2026): the item's own mask, regenerated from the S12 mesh, is repointed with that mesh.
+        self.item_mask_fixture()
+        out, _ = self.run_tool('--garments-only')
+        self.assertEqual(out['itemBodyMasks'][DA][TEE], {'url': '../s12/tee-item.png', 'uvTiles': [2, 1]})
+        self.assertEqual(out['itemBodyMasks'][DA_HAT][HAT], {'url': '../live/hat-item.png', 'uvTiles': [2, 1]})
+        self.assertEqual(out['meshes'][TEE]['url'], '../s12/SK_Tee_M.glb')
+        _, _, counts = tool.apply(self.patch, self.active)
+        self.assertEqual(counts['itemBodyMasksRepointed'], 1)
+
+    def test_an_item_mask_whose_entry_moved_is_refused(self):
+        self.item_mask_fixture()
+        self.patch['itemBodyMasks'][DA][TEE]['fromUrl'] = '../live/other-item.png'
+        with self.assertRaises(SystemExit):
+            self.run_tool('--garments-only')
+        self.assertFalse((self.tmp / 'out').exists())
+        self.item_mask_fixture_patch_only()
+        self.patch['itemBodyMasks'] = {'DA_Missing': self.patch['itemBodyMasks'][DA]}
+        with self.assertRaises(SystemExit):        # an item the index has no mask for
+            self.run_tool('--garments-only', out='out-no-da')
+
+    def test_an_item_mask_needs_its_new_file_in_place(self):
+        self.item_mask_fixture()
+        (self.tmp / 's12' / 'tee-item.png').unlink()
+        with self.assertRaises(SystemExit):        # not copied yet
+            self.run_tool('--garments-only', out='out-missing')
+        (self.tmp / 's12' / 'tee-item.png').write_bytes(b'other')
+        with self.assertRaises(SystemExit):        # another file
+            self.run_tool('--garments-only', out='out-other')
+        self.assertFalse((self.tmp / 'out-missing').exists() or (self.tmp / 'out-other').exists())
+
+    def test_an_item_mask_without_its_mesh_in_the_patch_is_refused(self):
+        self.item_mask_fixture()
+        (self.tmp / 's12' / 'hat-item.png').write_bytes(b'hat')
+        self.patch['itemBodyMasks'] = {DA_HAT: {HAT: {'fromUrl': '../live/hat-item.png', 'toUrl': '../s12/hat-item.png',
+                                                      'toSha256': hashlib.sha256(b'hat').hexdigest(), 'meshToSha256': 'h0'}}}
+        with self.assertRaises(SystemExit):        # the hat does not move in this patch
+            self.run_tool('--garments-only', out='out-hat')
+        self.item_mask_fixture_patch_only()
+        self.patch['itemBodyMasks'][DA][TEE]['meshToSha256'] = 't-other'
+        with self.assertRaises(SystemExit):        # the T-shirt moves, but not to the file the mask was made from
+            self.run_tool('--garments-only', out='out-other-mesh')
+
+    def item_mask_fixture_patch_only(self):
+        self.patch['itemBodyMasks'] = {DA: {TEE: {'fromUrl': '../live/tee-item.png', 'toUrl': '../s12/tee-item.png',
+                                                  'toSha256': hashlib.sha256(b'item').hexdigest(), 'meshToSha256': 't1'}}}
+
+    def test_an_unknown_patch_section_is_refused_by_name(self):
+        # 27 Nov 2026: a section the apply does not know (here a misspelt item-mask section) must stop it, never be
+        # dropped while the rest applies.
+        self.patch['itemMasks'] = {DA: {TEE: {'toUrl': '../s12/tee-item.png'}}}
+        with self.assertRaises(SystemExit) as stop:
+            self.run_tool('--garments-only')
+        self.assertIn('itemMasks', str(stop.exception))
+        self.assertFalse((self.tmp / 'out').exists())
 
     def test_a_material_repoint_needs_the_old_entry_and_the_new_file(self):
         # Batch C (25 Nov 2026): the T-shirt's 17 Nov material replaces the live one, by material instance.
@@ -345,6 +416,53 @@ class RefreshPatch(Fixture):
         self.spec['meshes'], self.spec['materials'] = {}, {'/Game/Items/MI_New.MI_New': {'toUrl': '../c0/tee-black.json'}}
         with self.assertRaises(SystemExit):
             self.make('r3.json')
+
+    def item_masks_live(self):
+        assets = json.loads((self.active / 'assets.json').read_bytes())
+        assets['itemBodyMasks'] = {DA: {TEE: {'url': '../live/tee-item.png', 'uvTiles': [2, 1]}},
+                                   DA_2: {TEE: {'url': '../live/tee-item-red.png', 'uvTiles': [2, 1]}},
+                                   DA_HAT: {HAT: {'url': '../live/hat-item.png', 'uvTiles': [2, 1]}}}
+        (self.active / 'assets.json').write_bytes(tool.dump(assets))
+        (self.tmp / 'c0' / 'tee-item.png').write_bytes(b'item')
+
+    def test_item_masks_ride_with_their_mesh(self):
+        # Two items whose masks regenerate identically from the S12 mesh share one new file.
+        self.item_masks_live()
+        self.spec['itemBodyMasks'] = {DA: {TEE: {'toUrl': '../c0/tee-item.png'}}, DA_2: {TEE: {'toUrl': '../c0/tee-item.png'}}}
+        self.patch = self.make()
+        mesh_sha = hashlib.sha256(fake_glb(self.slots)).hexdigest()
+        self.assertEqual(self.patch['itemBodyMasks'][DA_2][TEE], {
+            'fromUrl': '../live/tee-item-red.png', 'toUrl': '../c0/tee-item.png',
+            'toSha256': hashlib.sha256(b'item').hexdigest(), 'meshToSha256': mesh_sha})
+        expected, listed = self.outputs()
+        self.assertIn((self.tmp / 'c0' / 'tee-item.png').resolve(), listed)
+        self.assertEqual(expected['itemBodyMasksRepointed'], 2)
+        out, _ = self.run_tool('--garments-only')
+        self.assertEqual(out['itemBodyMasks'][DA][TEE], {'url': '../c0/tee-item.png', 'uvTiles': [2, 1]})
+        self.assertEqual(out['itemBodyMasks'][DA_2][TEE], {'url': '../c0/tee-item.png', 'uvTiles': [2, 1]})
+        self.assertEqual(out['itemBodyMasks'][DA_HAT][HAT]['url'], '../live/hat-item.png')
+        self.assertEqual(expected['expectedAssetsSha256'], tool.sha(self.tmp / 'out' / 'assets.json'))
+
+    def test_refuses_an_item_mask_without_its_mesh_or_entry(self):
+        self.item_masks_live()
+        (self.tmp / 'c0' / 'hat-item.png').write_bytes(b'hat')
+        self.spec['itemBodyMasks'] = {DA_HAT: {HAT: {'toUrl': '../c0/hat-item.png'}}}
+        with self.assertRaises(SystemExit):        # the hat is not repointed by this spec
+            self.make('r1.json')
+        self.spec['itemBodyMasks'] = {'DA_Missing': {TEE: {'toUrl': '../c0/tee-item.png'}}}
+        with self.assertRaises(SystemExit):        # no live item mask to repoint
+            self.make('r2.json')
+        (self.tmp / 'live').mkdir()
+        (self.tmp / 'live' / 'tee-item-red.png').write_bytes(b'red')   # a real file, so only the live-reference guard refuses
+        self.spec['itemBodyMasks'] = {DA: {TEE: {'toUrl': '../live/tee-item-red.png'}}}
+        with self.assertRaises(SystemExit):        # another live entry's file, not a new one
+            self.make('r3.json')
+        self.assertFalse(any((self.tmp / f'r{i}.json').exists() for i in (1, 2, 3)))
+
+    def test_a_spec_without_item_masks_makes_the_same_patch_as_before(self):
+        # The new section appears only when the spec names item masks, so earlier patches stay byte-identical.
+        self.patch = self.make()
+        self.assertNotIn('itemBodyMasks', self.patch)
 
     def test_refuses_existing_outputs(self):
         (self.tmp / 'refresh.publish.txt').write_text('kept', encoding='utf-8')

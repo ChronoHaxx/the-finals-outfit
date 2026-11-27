@@ -21,7 +21,11 @@ its "from" URL and sha256; only url and sha256 change, plus bodyMaskUrl where th
 (tier 2, 23 Nov 2026): the entry must still name the old mask, and the new mask file must already be in place,
 resolved from ACTIVE_DIR, with the patch's sha256. A "materials" section (batch C, 25 Nov 2026) repoints
 assets.materials[source] the same way: the entry must still name the old file, the new one must be in place with its
-sha256, and a source with materialVariants is refused. Files are read, changed and written back whole, keeping every
+sha256, and a source with materialVariants is refused. An "itemBodyMasks" section (tier 2 C2, 27 Nov 2026) repoints
+assets.itemBodyMasks[DA][mesh].url the same way as a body mask: the entry must still name the old mask, the new file
+must be in place with its sha256, and the mesh must move in the same patch, to the file the mask was made from
+(meshToSha256); the entry's other fields (uvTiles) stay. A patch section this tool does not know is refused by name,
+never dropped. Files are read, changed and written back whole, keeping every
 field and the source formatting, so nothing but the repointed values changes. Two formats are known: 2-space JSON with
 CRLF (the diff is exactly the repointed lines) and compact JSON on one line (23 Nov 2026: the Light apply writes the
 index that way); a file in any other format is refused.
@@ -57,10 +61,20 @@ def load_exact(path):
     raise SystemExit(f'{path} does not round-trip byte-exactly in a known format; refusing to rewrite it')
 
 
+# Every section a patch may carry (make-merge-patch.py, make-refresh-patch.py). Anything else is refused by name: a
+# section this tool does not apply must never be dropped silently (27 Nov 2026, item masks).
+SECTIONS = {'note', 'activeIndexSha256', 'activeSkinPairsSha256', 'candidateAssetsSha256', 'body', 'admitted', 'meshes',
+            'bodyMasks', 'materials', 'itemBodyMasks'}
+
+
 def apply(patch, active_dir, body_url=None):
     """Check PATCH against the index in ACTIVE_DIR and apply it in memory (garments only unless body_url is given).
     Returns (assets bytes, skin-pairs bytes, counts), each file in its source format. Every stale or unexpected value
     raises SystemExit and nothing is written. make-refresh-patch.py calls this to state the expected result."""
+    unknown = sorted(set(patch) - SECTIONS)
+    if unknown:
+        raise SystemExit(f'The patch carries sections this tool does not apply: {unknown}; refusing rather than '
+                         'dropping them')
     active_dir = Path(active_dir)
     assets_path, pairs_path = active_dir / 'assets.json', active_dir / 'skin-pairs.json'
     if sha(assets_path) != patch['activeIndexSha256']:
@@ -100,6 +114,24 @@ def apply(patch, active_dir, body_url=None):
         entry['bodyMaskUrl'] = change['toUrl']
         masks += 1
 
+    item_masks = 0
+    for da, rows in patch.get('itemBodyMasks', {}).items():
+        # Tier 2 C2 (27 Nov 2026): an item's own mask, regenerated from the S12 mesh, moves with that mesh.
+        for key, change in rows.items():
+            entry = assets.get('itemBodyMasks', {}).get(da, {}).get(key)
+            if entry is None or entry.get('url') != change['fromUrl']:
+                raise SystemExit(f'{da} {key}: its item mask no longer matches the patch; rebuild the patch')
+            mesh = patch['meshes'].get(key)
+            if key == body or mesh is None or mesh['toSha256'] != change['meshToSha256']:
+                raise SystemExit(f'{da} {key}: an item mask moves only with its mesh, in the same patch, to the file '
+                                 'the mask was made from')
+            target = active_dir / change['toUrl']
+            if not target.is_file() or sha(target) != change['toSha256']:
+                raise SystemExit(f'{da} {key}: the new item mask {target} is missing or differs; copy the tier-2 data '
+                                 'first')
+            entry['url'] = change['toUrl']
+            item_masks += 1
+
     materials = 0
     variant_recipients = {json.loads(k)[0] for k in assets.get('materialVariants', {})}
     for source, change in patch.get('materials', {}).items():
@@ -134,7 +166,8 @@ def apply(patch, active_dir, body_url=None):
             body_pairs += 1
 
     counts = {'mode': 'with-body' if body_url is not None else 'garments-only', 'meshesRepointed': applied,
-              'bodyMasksRepointed': masks, 'materialsRepointed': materials, 'skinPairsRewritten': body_pairs,
+              'bodyMasksRepointed': masks, 'itemBodyMasksRepointed': item_masks, 'materialsRepointed': materials,
+              'skinPairsRewritten': body_pairs,
               'assetsFormat': assets_fmt}
     return dump(assets, assets_fmt), (dump(pairs, pairs_fmt) if body_pairs else pairs_path.read_bytes()), counts
 
