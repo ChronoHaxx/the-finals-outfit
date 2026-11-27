@@ -3,6 +3,7 @@
   python -X utf8 -I scripts/body-types/test_plan_batch_c.py
 """
 import importlib.util
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -118,6 +119,78 @@ class MixedItemTest(unittest.TestCase):
         for added in (frozenset(), {src('SK_Tee')}, {src('SK_Tee'), src('SK_Hood')}):
             self.assertNotIn(src('SK_Tee'), self.rule.settle(added)[0])
             self.assertFalse({'tee', 'outfit'} & self.rule.items(added))
+
+
+class FreshReadsTest(unittest.TestCase):
+    """--fresh-reads (27 Nov 2026): meshes whose live file is an applied 17 Nov read. C1's 12 never-read meshes had no
+    proof row, so the plan still put them in wave R and their 4 items outside Season 12."""
+    def setUp(self):
+        # Tee: batch C (refused). Cape: morph-only, its package changed on 17 Nov (stale). Dress and Skirt: never read
+        # on 6 Nov, so no proof row. 'dress-set' shows Dress and Skirt; 'mixed' shows Dress and the Tee.
+        self.proof = {'SK_Tee': row('SK_Tee', 'refused', problems=['POSITION differs']),
+                      'SK_Cape': row('SK_Cape', 'morph-only')}
+        self.by_item = {'dress-set': {src('SK_Dress'), src('SK_Skirt')}, 'mixed': {src('SK_Dress'), src('SK_Tee')},
+                        'cape': {src('SK_Cape')}}
+        self.users = {}
+        for item, meshes in self.by_item.items():
+            for m in meshes:
+                self.users.setdefault(m, []).append((item, meshes))
+        self.stale = {src('SK_Cape')}
+
+    def rule(self, applied=frozenset()):
+        return plan.Rule(self.proof, set(), self.stale, self.users, BODY, self.by_item, applied=applied)
+
+    def test_never_read_meshes_live_as_their_17_nov_read_count_as_season_12(self):
+        self.assertNotIn('dress-set', self.rule().items())
+        self.assertIn('dress-set', self.rule({src('SK_Dress'), src('SK_Skirt')}).items())
+
+    def test_one_applied_read_is_not_enough_while_the_item_shows_a_never_read_mesh(self):
+        self.assertNotIn('dress-set', self.rule({src('SK_Dress')}).items())
+
+    def test_an_applied_read_stays_season_12_while_an_item_holds_it(self):
+        # 'mixed' still shows the batch C tee, so it is not Season 12, but the dress is live as its 17 Nov read.
+        rule = self.rule({src('SK_Dress'), src('SK_Skirt')})
+        self.assertIn(src('SK_Dress'), rule.settle()[0])
+        self.assertNotIn('mixed', rule.items())
+
+    def test_an_applied_read_of_a_stale_package_is_season_12_and_current(self):
+        self.assertNotIn('cape', self.rule().items())
+        self.assertIn('cape', self.rule({src('SK_Cape')}).items())
+        self.assertEqual(plan.unproven_stale({src('SK_Cape')}, {}), {src('SK_Cape')})
+        self.assertEqual(plan.unproven_stale({src('SK_Cape')}, {}, {src('SK_Cape')}), set())
+        self.assertEqual(plan.unproven_stale({src('SK_Cape')}, {src('SK_Cape'): ('pass', '')}), set())
+
+    def test_without_applied_reads_the_rule_is_the_builders(self):
+        self.assertEqual(self.rule().settle(), plan.Rule(self.proof, set(), self.stale, self.users, BODY,
+                                                         self.by_item).settle())
+
+
+class AppliedFreshReadsTest(unittest.TestCase):
+    def setUp(self):
+        self.meshes = {src('SK_Dress'): {'sha256': 'a' * 64}, src('SK_Skirt'): {'sha256': 'b' * 64}}
+        self.by_name = {plan.name_of(s): s for s in self.meshes}
+
+    def sums(self, d, text):
+        p = Path(d) / 'meshes.sha256'
+        p.write_text(text, encoding='utf-8')
+        return [str(p)]
+
+    def test_a_read_counts_only_where_the_live_sha_is_the_reads(self):
+        with tempfile.TemporaryDirectory() as d:
+            files = self.sums(d, f"{'a' * 64} *c1-reads-v1/meshes/SK_Dress.glb\n\n"
+                                 f"{'c' * 64} *c1-reads-v1\\meshes\\SK_Skirt.glb\n")
+            applied, not_live = plan.applied_fresh_reads(files, self.meshes, self.by_name)
+        self.assertEqual(applied, {src('SK_Dress')})
+        self.assertEqual(not_live, {'SK_Skirt'})
+
+    def test_a_read_of_a_mesh_the_index_lacks_stops_the_plan(self):
+        with tempfile.TemporaryDirectory() as d:
+            files = self.sums(d, f"{'a' * 64} *meshes/SK_Typo.glb\n")
+            with self.assertRaises(SystemExit):
+                plan.applied_fresh_reads(files, self.meshes, self.by_name)
+
+    def test_no_files_apply_nothing(self):
+        self.assertEqual(plan.applied_fresh_reads([], self.meshes, self.by_name), (set(), set()))
 
 
 if __name__ == '__main__':

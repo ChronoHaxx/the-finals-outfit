@@ -14,11 +14,17 @@ pass every proof and review, so its unlock counts are upper bounds.
   python -X utf8 -I scripts/body-types/plan-batch-c.py --active ASSETS_JSON --custom CUSTOMIZATION_JSON \
       --census MORPH_CENSUS_JSON --morph MORPH_ONLY_PROOF_JSON --surface SURFACE_PROOF_JSON \
       --builder BUILDER_INDEX_JSON --mask-proof MASK_PROOF_JSON[,...] --view-lanes VIEW_LAYOUT_JSON [--followups LIGHT_FOLLOWUPS_TSV] \
-      [--nov17-proof PROOF1_PRIME_TSV] [--hold NAME=REASON ...] --out OUT_DIR
+      [--nov17-proof PROOF1_PRIME_TSV] [--fresh-reads SHA256SUMS[,...]] [--hold NAME=REASON ...] --out OUT_DIR
 
 Writes OUT_DIR/plan.json, rows.tsv (one row per planned mesh) and items.tsv (each item, the wave that makes it
 Season 12 throughout, and the wave that also makes it current with the 17 Nov build). Wave U lists the stale packages
 the item rule counts as Season 12 that no 17 Nov read has proven current (--nov17-proof: 'pass' rows).
+
+--fresh-reads (27 Nov 2026): sha256sum files of 17 Nov mesh reads a refresh wave applied (C1's 16 reads,
+c1-reads-v1/meshes.sha256). The builder's proofs compare the active index with the 6 Nov read, so a mesh never read
+on 6 Nov has no proof row: after C1 went live, its 12 never-read meshes still planned as wave R and their 4 items as
+not Season 12. A read counts only where the active entry's sha256 is the read's: the live file then IS the 17 Nov
+read, so the mesh is Season 12 and current, held or not. The builder check runs before they count.
 Read-only on every input; refuses an existing OUT_DIR.
 """
 import argparse
@@ -79,10 +85,42 @@ def current_items(s12_items, by_item, unproven):
     return {i for i in s12_items if not (by_item[i] & unproven)}
 
 
-class Rule:
-    """build-preview-index.py's sets and item rule on one index, for any set of meshes a wave adds."""
+def unproven_stale(stale_counted, nov17, applied=frozenset()):
+    """Stale packages the item rule counts as Season 12 that nothing proves current: no 'pass' row in --nov17-proof,
+    and no applied 17 Nov read (--fresh-reads: the live file is that read)."""
+    return {s for s in stale_counted if s not in applied and nov17.get(s, ('',))[0] != 'pass'}
 
-    def __init__(self, proof, admitted, stale, users, body, by_item, held=frozenset(), excused=frozenset()):
+
+def applied_fresh_reads(sums_files, meshes, by_name):
+    """(applied sources, names read but not live) from sha256sum files of 17 Nov mesh reads. A read is applied when
+    the active entry's sha256 is the read's. A read naming no mesh of the active index stops the plan."""
+    applied, not_live = set(), set()
+    for path in sums_files:
+        for line in Path(path).read_text(encoding='utf-8').splitlines():
+            if not line.strip():
+                continue
+            digest, file = line.split(None, 1)
+            name = name_of(file.strip().lstrip('*').replace('\\', '/'))
+            source = by_name.get(name)
+            if source is None:
+                raise SystemExit(f'--fresh-reads {path}: {name} is not a mesh of the active index')
+            if meshes[source].get('sha256') == digest.lower():
+                applied.add(source)
+            else:
+                not_live.add(name)
+    return applied, not_live - {name_of(s) for s in applied}
+
+
+class Rule:
+    """build-preview-index.py's sets and item rule on one index, for any set of meshes a wave adds.
+
+    `applied`: meshes whose live file is an applied 17 Nov read (--fresh-reads). They are Season 12 whether or not an
+    item holds them, like the builder's kept meshes, and never stale. The builder knows nothing of them, so a Rule that
+    must reproduce the builder run takes none."""
+
+    def __init__(self, proof, admitted, stale, users, body, by_item, held=frozenset(), excused=frozenset(),
+                 applied=frozenset()):
+        self.applied = set(applied)
         self.morph_only = {r['source'] for r in proof.values() if r.get('status') == 'morph-only'}
         self.unchanged = {r['source'] for r in proof.values()
                           if r.get('status') == 'morph-only' and not r['morphsChanged']}
@@ -100,10 +138,10 @@ class Rule:
     def settle(self, added=frozenset()):
         """(effective, held) when the meshes in `added` are read fresh and pass (a stale package re-read is current)."""
         admitted = self.admitted | (set(added) - self.held)
-        stale = self.stale - set(added)
+        stale = self.stale - set(added) - self.applied
         admitted -= stale
         proven = (self.morph_only | admitted) - stale
-        kept = (self.kept - admitted) | (stale & self.unchanged)
+        kept = (self.kept - admitted) | (stale & self.unchanged) | self.applied
         return bpi.settle(proven, kept, self.unchanged, self.users, self.body, self.excused)
 
     def items(self, added=frozenset()):
@@ -169,6 +207,8 @@ def main():
     ap.add_argument('--followups')
     ap.add_argument('--nov17-proof', help='TSV (medium, verdict, differs): 17 Nov Medium reads vs the live Medium; '
                     "'pass' proves a stale mesh the item rule counts as Season 12 current")
+    ap.add_argument('--fresh-reads', help='sha256sum files (comma-separated) of 17 Nov mesh reads; one whose sha is the '
+                    "active entry's counts as Season 12 and current")
     ap.add_argument('--hold', action='append', default=[], help='NAME=REASON: a mesh no wave may admit')
     ap.add_argument('--allow-mixed-item', action='append', default=[],
                     help='ITEM: an approved exception (build-preview-index.MIXED_ITEM_EXCEPTIONS) whose mesh is --hold')
@@ -202,10 +242,19 @@ def main():
         raise SystemExit('A held mesh is already Season 12 in the builder run: '
                          + ', '.join(sorted(name_of(s) for s in set(meta['effective']) & held_sources)))
     excused = bpi.mixed_item_excuses(a.allow_mixed_item, by_name, held_sources, users)
-    rule = Rule(proof, set(meta['admitted']), stale, users, body, by_item, held=held_sources, excused=excused)
-    effective0, held0 = rule.settle()
+    builder_rule = Rule(proof, set(meta['admitted']), stale, users, body, by_item, held=held_sources, excused=excused)
+    effective0, held0 = builder_rule.settle()
     if effective0 != set(meta['effective']):
         raise SystemExit(f'Item rule mismatch with the builder run: {len(effective0 ^ set(meta["effective"]))} meshes')
+    # Applied 17 Nov reads count only after the builder check: the builder's proofs never see them.
+    fresh_files = [p for p in (a.fresh_reads or '').split(',') if p]
+    fresh, fresh_not_live = applied_fresh_reads(fresh_files, assets['meshes'], by_name)
+    if fresh & held_sources:
+        raise SystemExit('A held mesh is already live as its 17 Nov read: '
+                         + ', '.join(sorted(name_of(s) for s in fresh & held_sources)))
+    rule = Rule(proof, set(meta['admitted']), stale, users, body, by_item, held=held_sources, excused=excused,
+                applied=fresh)
+    effective0, held0 = rule.settle()
     base_items = rule.items()
 
     proof_sources = {r['source'] for r in proof.values()}
@@ -222,7 +271,7 @@ def main():
         with open(a.nov17_proof, encoding='utf-8') as f:
             nov17 = {r['medium']: (r['verdict'], r.get('differs', '')) for r in csv.DictReader(f, delimiter='\t')}
     stale_counted = (stale & effective0) & shown
-    unproven = {s for s in stale_counted if nov17.get(s, ('',))[0] != 'pass'}
+    unproven = unproven_stale(stale_counted, nov17, fresh)
     base_current = current_items(base_items, by_item, unproven)
 
     masks = bpi.load_mask_proof(a.mask_proof)
@@ -336,11 +385,15 @@ def main():
     out.mkdir(parents=True)
     plan = {
         'note': 'Upper bounds: every planned mesh is assumed to pass its proofs and review.',
-        'inputs': {k: sha(v) for k, v in (('active', a.active), ('morph', a.morph), ('surface', a.surface),
-                                           ('census', a.census), ('builder', a.builder))},
+        'inputs': {**{k: sha(v) for k, v in (('active', a.active), ('morph', a.morph), ('surface', a.surface),
+                                              ('census', a.census), ('builder', a.builder))},
+                   **({'freshReads': {p: sha(p) for p in fresh_files}} if fresh_files else {})},
         'itemsWithBodyTypeMeshes': len(by_item), 's12ItemsNow': len(base_items), 'currentItemsNow': len(base_current),
+        **({'freshReads': {'applied': sorted(map(name_of, fresh)), 'notLive': sorted(fresh_not_live),
+                           's12ItemsBuilderRule': len(builder_rule.items())}} if fresh_files else {}),
         'staleCountedS12': {'meshes': len(stale_counted), 'byNov17Verdict': dict(collections.Counter(
-            ' '.join(x for x in nov17[s] if x) if s in nov17 else 'no 17 Nov read' for s in stale_counted))},
+            'applied 17 Nov read' if s in fresh else ' '.join(x for x in nov17[s] if x) if s in nov17
+            else 'no 17 Nov read' for s in stale_counted))},
         'groups': {'batchC': len(c_sources), 'stalePackagesOutsideC': len(stale_held), 'neverRead': len(no_read),
                    'otherRefused': len(other_held), 'cluster': len(cluster), 'clusterSeeds': sorted(map(name_of, seeds))},
         'clusterByGroup': dict(collections.Counter(group(s) for s in cluster)),
@@ -357,8 +410,8 @@ def main():
         for i in sorted(by_item):
             f.write(f"{i}\t{'now' if i in base_items else item_wave.get(i, 'not planned')}\t"
                     f"{'now' if i in base_current else item_current.get(i, 'not planned')}\t{' '.join(still.get(i, []))}\n")
-    print(json.dumps({k: plan[k] for k in ('s12ItemsNow', 'currentItemsNow', 'staleCountedS12', 'groups',
-                                           'clusterByGroup', 'waves', 'itemsStillMixed')}, indent=1))
+    print(json.dumps({k: plan[k] for k in ('s12ItemsNow', 'currentItemsNow', 'freshReads', 'staleCountedS12', 'groups',
+                                           'clusterByGroup', 'waves', 'itemsStillMixed') if k in plan}, indent=1))
 
 
 if __name__ == '__main__':

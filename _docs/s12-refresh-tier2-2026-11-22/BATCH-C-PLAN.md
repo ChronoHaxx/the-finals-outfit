@@ -33,6 +33,12 @@ It mirrors `build-preview-index.py` exactly: the same admitted, stale, kept and 
 (`settle`). Its starting state reproduces the builder's `effective` set. Each wave's meshes are assumed to pass, so
 unlock counts are upper bounds.
 
+Since C1 (27 Nov), pass `--fresh-reads scripts/generated/s12-refresh-tier2-v1/c1-reads-v1/meshes.sha256`.
+- The builder's proofs see only the 6 Nov read, so C1's 12 never-read meshes, live as their 17 Nov reads, still
+  planned as wave R. Their 4 items counted as not Season 12.
+- With the flag, a read whose sha is the live entry's counts as Season 12 and current, after the builder check. On
+  `32f5b381…`, plan v11's 1,644 items become 1,648, wave R loses those 12, and wave U loses LongCoat.
+
 - 2,074 items show a body-type mesh. **1,423 are Season 12 throughout now.**
 - **Only 1,232 of those are current with the 17 Nov build.** 93 meshes the item rule counts as Season 12 had their
   package changed on 17 Nov. They count because their live file matches the 6 Nov (12.00) read (the 22 Nov rule).
