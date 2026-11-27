@@ -31,7 +31,7 @@ def mesh_ref(name):
 class ItemRule(unittest.TestCase):
     def build(self, items, proof, morphs, changed_only=False, census=True, admit=None, admit_only=None,
               admit_reviewed=None, surface=None, admit_rework=None, masked=(), package=None, masks=None, ship_masks=None,
-              s12_live=(), item_masked=(), allow_mixed=None):
+              s12_live=(), item_masked=(), allow_mixed=None, holds=None):
         """items: {item: [mesh names]}; proof: {mesh: (status, morphsChanged, problems)}; morphs: {mesh: [names]};
         admit: {mesh: (skin-proof class, admissible)} written as a skin-by-name proof (tier 1, 12 Nov 2026);
         surface: {mesh: surface-proof class} written as a surface-match proof (tier 2, 22 Nov 2026), for meshes whose
@@ -115,7 +115,8 @@ class ItemRule(unittest.TestCase):
                   admit_json=str(skin_proof) if skin_proof else None, admit_only=admit_only, admit_reviewed=admit_reviewed,
                   surface_json=str(surface_proof) if surface_proof else None, admit_rework=admit_rework,
                   package_json=str(package_proof) if package_proof else None,
-                  mask_json=str(mask_proof) if mask_proof else None, ship_masks=ship_masks, allow_mixed=allow_mixed)
+                  mask_json=str(mask_proof) if mask_proof else None, ship_masks=ship_masks, allow_mixed=allow_mixed,
+                  **({'holds': holds} if holds is not None else {}))
         self.out_assets = json.loads(out.read_text(encoding='utf-8'))
         return json.loads(out.read_text(encoding='utf-8'))['s12BodyTypePreview']
 
@@ -423,6 +424,63 @@ class ItemRule(unittest.TestCase):
         self.assertNotIn(path(self.TEE), meta['effective'])
         self.assertEqual(list(meta['mixedItemExceptions']), [self.TEE_ITEM])
 
+    # Holds (tier 2, 27 Nov 2026): a hold wins over every proof and list, and a list that names a held mesh stops the
+    # build. After C1 went live nothing held the cropped tee's item any more, and the batch B review list re-admitted it.
+    HOLD_ITEMS = {'tee-item': ['Tee', 'Neck'], 'neck': ['Neck']}
+    HOLD_PROOF = {'Tee': ('refused', {'medium_female': {'maxCm': 1.0, 'verticesChanged': 4}}, ['WEIGHTS_0 differs']),
+                  'Neck': ('morph-only', {'medium_female': {'maxCm': 3.0, 'verticesChanged': 10}}, None)}
+
+    def hold_morphs(self):
+        return {'Tee': self.SHAPED, 'Neck': self.SHAPED}
+
+    def test_a_held_mesh_on_an_admission_list_stops_the_build(self):
+        admit = {'Tee': ('weights', False)}
+        # Without the hold the review list repoints the tee, since nothing in its item holds it.
+        meta = self.build(self.HOLD_ITEMS, self.HOLD_PROOF, self.hold_morphs(), admit=admit, admit_reviewed=['Tee'])
+        self.assertIn(path('Tee'), meta['swapped'])
+        for flag in ('admit_reviewed', 'admit_only', 'admit_rework'):
+            with self.subTest(flag=flag), self.assertRaisesRegex(SystemExit, 'Held meshes are named for Season 12'):
+                self.build(self.HOLD_ITEMS, self.HOLD_PROOF, self.hold_morphs(), admit=admit,
+                           holds={'Tee': 'held: a review found a wedge'}, **{flag: ['Tee']})
+
+    def test_a_held_mesh_on_the_ship_list_stops_the_build(self):
+        with self.assertRaisesRegex(SystemExit, 'Held meshes are named for Season 12.*--ship-s12-masks Tee'):
+            self.build(self.HOLD_ITEMS, self.HOLD_PROOF, self.hold_morphs(), holds={'Tee': 'held'},
+                       ship_masks={'Tee': '../cov/Tee.bodymask.png'})
+
+    def test_a_hold_on_a_mesh_the_index_lacks_stops_the_build(self):
+        with self.assertRaisesRegex(SystemExit, 'does not hold'):
+            self.build(self.HOLD_ITEMS, self.HOLD_PROOF, self.hold_morphs(), holds={'Nope': 'held'})
+
+    def test_a_held_mesh_stays_live_whatever_proves_it(self):
+        items = {'outfit': ['Top', 'Skirt'], 'skirt': ['Skirt']}
+        proof = {'Top': ('morph-only', self.CHANGED, None), 'Skirt': ('morph-only', self.CHANGED, None)}
+        morphs = {'Top': self.SHAPED, 'Skirt': self.SHAPED}
+        self.assertEqual(set(self.build(items, proof, morphs)['swapped']), {path('Top'), path('Skirt')})
+        # Held by name with changed morphs: the live Top is pre-S12, so the outfit holds the skirt too.
+        meta = self.build(items, proof, morphs, holds={'Top': 'held: defective weights'})
+        self.assertEqual(meta['swapped'], {})
+        self.assertEqual(meta['holds'], {'Top': {'source': path('Top'), 'reason': 'held: defective weights'}})
+        self.assertEqual(meta['held'][path('Skirt')]['items'], ['outfit'])
+        # With unchanged morphs the live file already has the S12 shape: it stays live and holds nothing.
+        meta = self.build(items, {**proof, 'Top': ('morph-only', {}, None)}, morphs, holds={'Top': 'held'})
+        self.assertEqual(set(meta['swapped']), {path('Skirt')})
+        self.assertIn(path('Top'), meta['keptUnchanged'])
+        # Admitted without being named (a re-encoded mesh the skin proof admits by default): the hold still wins.
+        refused = {**proof, 'Top': ('refused', self.CHANGED, ['JOINTS_0 differs'])}
+        self.assertIn(path('Top'), self.build(items, refused, morphs, admit={'Top': ('re-encoded', True)})['swapped'])
+        meta = self.build(items, refused, morphs, admit={'Top': ('re-encoded', True)}, holds={'Top': 'held'})
+        self.assertEqual(meta['swapped'], {})
+        self.assertNotIn(path('Top'), meta['admitted'])
+
+    def test_a_held_tee_still_goes_mixed_by_its_exception(self):
+        items = {self.TEE_ITEM: [self.TEE, self.NECK], 'necklace': [self.NECK]}
+        morphs = {self.TEE: self.SHAPED, self.NECK: self.SHAPED}
+        proof = {self.TEE: ('refused', self.CHANGED, ['WEIGHTS_0 differs']), self.NECK: ('morph-only', self.CHANGED, None)}
+        meta = self.build(items, proof, morphs, holds={self.TEE: 'held: wedge'}, allow_mixed=[self.TEE_ITEM])
+        self.assertEqual(set(meta['swapped']), {path(self.NECK)})
+        self.assertEqual(list(meta['mixedItemExceptions']), [self.TEE_ITEM])
+
     def test_a_census_from_another_index_is_refused(self):
         tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, tmp)
@@ -471,6 +529,24 @@ class MixedItemException(unittest.TestCase):
         effective, held = tool.settle(proven, set(), set(), self.users, BODY, excused)
         self.assertEqual(effective, proven)
         self.assertNotIn(path(self.TEE), effective)
+
+
+class ParseArgs(unittest.TestCase):
+    def test_holds_repeat_and_keep_their_reason_whole(self):
+        positional, keywords = tool.parse_args(
+            ['a', 'b', 'c', 'd', '--hold', "SK_A_M=held: the game's own weights, see x=y", '--admit-reviewed', 'X,Y',
+             '--hold', 'SK_B_M=why', '--changed-only'])
+        self.assertEqual(positional, ['a', 'b', 'c', 'd'])
+        self.assertEqual(keywords['holds'], {'SK_A_M': "held: the game's own weights, see x=y", 'SK_B_M': 'why'})
+        self.assertEqual(keywords['admit_reviewed'], ['X', 'Y'])
+        self.assertTrue(keywords['changed_only'])
+        self.assertNotIn('holds', tool.parse_args(['a', 'b', 'c', 'd'])[1])
+
+    def test_a_hold_without_a_reason_or_named_twice_is_refused(self):
+        for argv in (['--hold', 'SK_A_M'], ['--hold', 'SK_A_M= '], ['--hold'],
+                     ['--hold', 'SK_A_M=x', '--hold', 'SK_A_M=y']):
+            with self.subTest(argv=argv), self.assertRaises(SystemExit):
+                tool.parse_args(['a', 'b', 'c', 'd', *argv])
 
 
 if __name__ == '__main__':

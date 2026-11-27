@@ -1,0 +1,8 @@
+# Tier-2 S12 holds: meshes no wave may repoint, one NAME=REASON per line (replan.sh passes each as --hold).
+# A held mesh named on an admission or ship list stops the build; lift the hold here, with the reason, to admit it.
+# The same five are the planner's --hold set (batchC-plan-v11/plan.json "holds").
+SK_Streetwear_CropTopHoodie_M=held: the game's own S12 weights are defective
+SK_Streetwear_PopGothShoes_M=held: the game's own S12 weights are defective
+SK_FancyDress_SuitJacket_M=held: w161 part-hide mask needs tooling
+SK_Traditional_LunarDressTop_M=held: legacy mask with no generation record
+SK_Streetwear_CroppedTshirtOversize_M=held: S12 underarm wedge in the arms-out pose (C1 gap check); its one item goes mixed (option c)

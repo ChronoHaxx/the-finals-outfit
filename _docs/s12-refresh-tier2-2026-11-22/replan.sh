@@ -12,6 +12,9 @@
 #   LISTS  prefix of the admission lists, LISTS-admit-{only,reviewed,rework}.txt in O (default v9)
 #   MASKS  mask proofs, comma-separated paths (default batch A's and batch B's)
 #   SHIP   file holding the --ship-s12-masks value (default O/ship-masks-v9.txt)
+#   HOLDS  NAME=REASON lines, each passed as --hold (default holds.txt beside this script). A held mesh is never
+#          repointed, and one named on an admission or ship list stops the build (27 Nov: an old review list
+#          re-admitted the held cropped tee after C1 went live).
 set -euo pipefail
 N=${1:?usage: replan.sh SUFFIX}
 W=${W:-.claude/worktrees/angry-darwin-c51aab}
@@ -20,6 +23,8 @@ TOOLS=${TOOLS:-$W/scripts/body-types}
 LISTS=${LISTS:-v9}
 MASKS=${MASKS:-$O/mask-proof-batchA-v1.json,$O/mask-proof-batchB-v1.json}
 SHIP=${SHIP:-$O/ship-masks-v9.txt}
+HOLDS=${HOLDS:-$(dirname "${BASH_SOURCE[0]}")/holds.txt}
+test -f "$HOLDS" || { echo "no holds file: $HOLDS" >&2; exit 2; }
 # The filtered lists are written as SUFFIX-admit-*.txt; the same name as LISTS would overwrite the inputs.
 if [ "$LISTS" = "$N" ]; then echo "LISTS must differ from the suffix ($N)" >&2; exit 2; fi
 A=public/models/reconstructed-assemblies-v1
@@ -58,6 +63,13 @@ for kind in only reviewed rework; do
 done
 v=$(cat $SHIP)
 if [ -n "$v" ]; then LIST_ARGS+=(--ship-s12-masks "$v"); fi
+HELD=0
+while IFS= read -r line || [ -n "$line" ]; do
+  line=${line%$'\r'}
+  case "$line" in ''|'#'*) continue ;; esac
+  LIST_ARGS+=(--hold "$line"); HELD=$((HELD + 1))
+done < "$HOLDS"
+echo "holds: $HELD from $HOLDS"
 $PY $TOOLS/build-preview-index.py $A/assets.json $O/morph-only-proof-$R.json $P/meshes $O/index-$N/assets.json \
     public/models/reconstructed-assembly-v2/customization.json --census $O/morph-census-$R.json --changed-only \
     --admit $O/skin-by-name-proof-$R.json --admit-surface $O/surface-match-proof-$R.json \

@@ -20,6 +20,14 @@ index records its class and hashes.
 With CUSTOMIZATION_JSON (reconstructed-assembly-v2/customization.json) a mesh is swapped only when every supported
 item that can show it is proven whole (see item consistency below); without it, every proven mesh is swapped.
 
+--hold NAME=REASON (repeatable; tier 2, 27 Nov 2026) keeps a mesh on its live file whatever the proofs say: a hold
+wins. A held mesh is never repointed, nor is its mask, and it counts as Season 12 only when its live file already has
+the S12 body-type shape (morph-only with unchanged morphs, or kept). Naming a held mesh in --admit-only,
+--admit-reviewed, --admit-rework or --ship-s12-masks is a conflict and stops the build, as does a hold on a mesh the
+index does not hold. A held mesh admitted or proven without being named is simply not repointed, and the output records
+every hold with its reason. (After C1 went live, nothing held the cropped tee's item any more, and the batch B review
+list re-admitted the tee that the coordinator held.)
+
 --allow-mixed-item ITEM,... (tier 2 C1, 26 Nov 2026) names approved exceptions from MIXED_ITEM_EXCEPTIONS only: the
 item may go mixed because its one listed mesh stays live, so that mesh no longer holds the item's other meshes. Any
 other item, a listed mesh that is admitted or proven, or an item that does not show it is refused. The output records
@@ -270,6 +278,20 @@ def mixed_item_excuses(items, by_name, live_sources, users):
     return excused
 
 
+def held_meshes(holds, by_name, named):
+    """The sources of the held meshes ({name: reason}), refusing a hold on a mesh the index does not hold and any held
+    mesh that a list ({flag: names}) names for Season 12: a conflict stops the build, never a silent drop."""
+    unknown = sorted(n for n in holds if n not in by_name)
+    if unknown:
+        raise SystemExit(f'--hold names meshes the index does not hold: {unknown}')
+    conflicts = {flag: sorted(set(names or ()) & set(holds)) for flag, names in named.items()}
+    conflicts = {flag: names for flag, names in conflicts.items() if names}
+    if conflicts:
+        raise SystemExit('Held meshes are named for Season 12 (a hold wins; take them off the list or lift the hold): '
+                         + '; '.join(f'{flag} {", ".join(names)}' for flag, names in sorted(conflicts.items())))
+    return {by_name[n] for n in holds}
+
+
 def settle(proven, kept, unchanged, users, body, excused=frozenset()):
     """The item rule to its fixpoint: (effective S12 set, held {source: reason}).
 
@@ -297,7 +319,7 @@ def settle(proven, kept, unchanged, users, body, excused=frozenset()):
 
 def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None, census_json=None, changed_only=False,
          admit_json=None, admit_only=None, admit_reviewed=None, surface_json=None, admit_rework=None, package_json=None,
-         mask_json=None, ship_masks=None, allow_mixed=None):
+         mask_json=None, ship_masks=None, allow_mixed=None, holds=None):
     out = Path(out_json)
     if out.exists():
         raise SystemExit(f'Preserve existing {out}')
@@ -308,13 +330,19 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     swapped, held, mask_repoints = {}, {}, {}
     mask_rows = load_mask_proof(mask_json) if mask_json else None
     ship_masks = dict(ship_masks or {})
+    by_name = {source.rsplit('.', 1)[-1]: source for source in assets['meshes']}
+    holds = dict(holds or {})
+    hold_sources = held_meshes(holds, by_name, {'--admit-only': admit_only, '--admit-reviewed': admit_reviewed,
+                                                '--admit-rework': admit_rework, '--ship-s12-masks': ship_masks})
     if ship_masks and mask_rows is None:
         raise SystemExit('--ship-s12-masks needs --mask-proof')
     admitted = admitted_meshes(admit_json, admit_only, admit_reviewed, proof, assets, served_from, rebuilt_dir,
                                surface_json, admit_rework, mask_rows, ship_masks)
     stale = stale_packages(package_json, proof) if package_json else set()
-    admitted = {source: row for source, row in admitted.items() if source not in stale}
-    proven = ({row['source'] for row in proof.values() if row.get('status') == 'morph-only'} | set(admitted)) - stale
+    # A hold wins over every admission and proof (none of these names it: held_meshes refused that above).
+    admitted = {source: row for source, row in admitted.items() if source not in stale and source not in hold_sources}
+    proven = ({row['source'] for row in proof.values() if row.get('status') == 'morph-only'} | set(admitted)) - stale \
+        - hold_sources
     body = assets.get('attachmentBody', {}).get('source')
     # Item consistency (review-v1 short dress, 6 Nov 2026): a Season 12 undershirt under the dress's pre-S12 shell grew
     # its fuller S12 chest straight through the dress. So a garment mesh is swapped only when every supported item that
@@ -348,14 +376,16 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
     # shape when its morphs equal the read's, so it is as consistent with its item partners as before: keep it. With
     # changed morphs it is a pre-S12 mesh and holds them (tier 2, 23 Nov 2026).
     kept |= stale & unchanged
+    # A held mesh stays on its live file like a stale one: with unchanged morphs that file already has the S12 shape.
+    kept |= hold_sources & unchanged
     assert not set(admitted) & unchanged
-    by_name = {source.rsplit('.', 1)[-1]: source for source in assets['meshes']}
     # Live means neither proven nor kept: a kept mesh already counts as Season 12, so its item is not mixed.
     excused = mixed_item_excuses(allow_mixed or [], by_name, set(assets['meshes']) - proven - kept, users)
     effective, held = settle(proven, kept, unchanged, users, body, excused)
     for name, row in sorted(proof.items()):
         admission = admitted.get(row.get('source'))
-        if (row.get('status') != 'morph-only' and not admission) or row['source'] in held or row['source'] in stale:
+        if (row.get('status') != 'morph-only' and not admission) or row['source'] in held or row['source'] in stale \
+                or row['source'] in hold_sources:
             continue
         if changed_only and not admission and not row['morphsChanged'] and row['source'] != body:
             # Identical to the live GLB in everything the proof compares, morphs included: repointing it changes
@@ -421,17 +451,31 @@ def main(active_json, proof_json, rebuilt_dir, out_json, customization_json=None
         **({'maskProofSha256': {f: hashlib.sha256(Path(f).read_bytes()).hexdigest() for f in mask_json.split(',')},
             'maskRepoints': mask_repoints, **({'maskHeld': mask_held} if mask_held else {})} if mask_json else {}),
         **({'mixedItemExceptions': {item: MIXED_ITEM_EXCEPTIONS[item] for item, _ in sorted(excused)}} if excused else {}),
+        **({'holds': {name: {'source': by_name[name], 'reason': holds[name]} for name in sorted(holds)}} if holds else {}),
         'swapped': swapped, 'held': held,
         'keptUnchanged': sorted(kept),
         'effective': sorted(effective)}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(assets, indent=1) + '\n', encoding='utf-8')
     print(json.dumps({'swapped': len(swapped), 'stale': len(stale), 'held': {k.rsplit('.', 1)[-1]: v['itemCount'] for k, v in held.items()},
-                      'out': str(out)}))
+                      **({'holds': sorted(holds)} if holds else {}), 'out': str(out)}))
 
 
-if __name__ == '__main__':
-    argv = sys.argv[1:]
+def parse_args(argv):
+    """(positional arguments, keyword options) from the command line; see the module docstring."""
+    argv = list(argv)
+    holds = {}
+    while '--hold' in argv:
+        i = argv.index('--hold')
+        if i + 1 >= len(argv):
+            raise SystemExit('--hold NAME=REASON')
+        name, _, reason = argv[i + 1].partition('=')
+        if not name or not reason.strip():
+            raise SystemExit(f'--hold NAME=REASON, not {argv[i + 1]!r}')
+        if name in holds:
+            raise SystemExit(f'--hold names {name} twice')
+        holds[name] = reason
+        del argv[i:i + 2]
     census = None
     if '--census' in argv:
         i = argv.index('--census')
@@ -452,4 +496,11 @@ if __name__ == '__main__':
             del argv[i:i + 2]
     if 'ship_masks' in options:
         options['ship_masks'] = dict(pair.split('=', 1) for pair in options['ship_masks'])
-    main(*argv[:5], census_json=census, changed_only=changed, **options)
+    if holds:
+        options['holds'] = holds
+    return argv, {'census_json': census, 'changed_only': changed, **options}
+
+
+if __name__ == '__main__':
+    positional, keywords = parse_args(sys.argv[1:])
+    main(*positional[:5], **keywords)
