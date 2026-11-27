@@ -1,0 +1,4088 @@
+{
+  "shard": "reconstruction-000",
+  "dir": "E:\\Coding\\the-finals-outfit\\scripts\\generated\\release-2026-11-27\\_assets-upload\\v19-release-20261127-reconstruction-000",
+  "checkedAt": "2026-11-27T21:38:23.307Z",
+  "files": 20000,
+  "sizesChecked": 19997,
+  "fresh": 650,
+  "linkedSampled": 25,
+  "gzipRows": 1061,
+  "headers": "/*\n  Access-Control-Allow-Origin: *\n  Cache-Control: public, max-age=31536000, immutable\n",
+  "rows": [
+    {
+      "path": "models/reconstructed-archetypes-v1/coverage/SK_Casual_BasicTshirt_L.bodymask.png",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_ActionHero_SentinelBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_ActionHero_SentinelGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_ActionHero_SentinelPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_ActionHero_SentinelTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_AlfaActa_SigilRing_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_AlienAntenna_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Attachments_BycocketHat_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Attachments_EagleHeadFeathers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Attachments_EagleHead_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Attachments_KnifeBandolierItems_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Ballerina_BallerinaShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Ballerina_BallerinaTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Ballerina_Tiara_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_BubbleBraids_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_BandagedTankTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_Bangles_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_BasicTshirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_BikerVest_02_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_BikerVest_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_BomberJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_ChristmasLights_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_CowboyBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_CozySweater_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_DragonHoodie_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_Durag_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_FrontTieCropTopStraps_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_FrontTieCropTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HalterTopUnderShirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HalterTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HawaiiShirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HikingBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HikingHatAccessories_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HikingHat_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HippieNecklaceChainCylinders_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HippieNecklaceChainLong_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HippieNecklaceChainRing_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HippieNecklace_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_HoodieZipup_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_LargePants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_LongSleevedShirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_LooseJeans_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_LowWedgeAnkle_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_LowWedgeHeels_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_NecklaceWithRing_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_OneStrapOveralls_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_OpenArmSweater_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_OversizeTrackJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_OversizedCargoPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_OversizedSweater_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_PunkCropTshirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_PunkTshirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_PunkWristbandSpikes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_PunkWristband_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_RainBootArmor_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_RubberGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_SandalsWithSocks_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_ShirtRolledUpSleeves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_SlimTankTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_StrappedBootsStraps_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_StrappedBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_SweatPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_TallSneakers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_ThighHighDetailed_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_TightJeans_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_Tights_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_TubeTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_TurtleNeck_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Casual_WideTankTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Christmas_ElfBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_CowMascotHead_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_BandolierCowboy_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_BasicChaps_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_Belt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_Boots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_CasualJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_CrossBandolier_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_DrifterBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_DrifterGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_DrifterMedallions_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_DrifterPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_DrifterUpper_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_Eyepatch_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_HandCloth_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_Jeans_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_Pants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_SeaBandolierRight_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_SpurBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cowboy_WranglerBracelet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_CrossPromo_NRFaceMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_CrossPromo_NRHarness_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_CrossPromo_NRSuitBelts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_AnimeArcherSkirtDecor_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_AnimeArcherSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_AnimeArcherThights_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_AnimeArcherTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_BareShoulderSweater_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_BunnyGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_CatBag_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_CatMouseBandolier_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_CuteHeadphones_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_FrogCostume_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_ORFBag_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_PandaBandolier_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Cute_TigerTail_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_DiscoBallHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_DivingHelmet_01_A_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_ArmGuard_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_Bolero_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_Boots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_BroochBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_GlovePearls_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_GloveTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_GlovesUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_GothicDressTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_LawyerSuitJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_MilitaryDressSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_MilitaryDress_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_Necklace_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_Revolver_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_Rings_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_SuitPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_TacticalDress_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_UltimateBroochBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FancyDress_UltimateNecklace_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FromTencent_AsianSpiritPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FromTencent_MonkJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FromTencent_MonkShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_FromTencent_OperaClothingBoot_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_GasMaskWrap_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_Boots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_Boots_NoSpikes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_ChainmailSideSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_CowboyBootsDeco_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_CowboyBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_LooseJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_PantsPunkAccessoriesUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_PantsPunkAccessories_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_Pants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_SkirtNoSocks_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Gothic_Skirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_BellSleeves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_Boots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_DemonMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_DragonSlayerHat_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_HighHeelsTights_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_LowHeelsFlowers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_LowHeelsTights_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_OpenTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_ScarecrowMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_Socks_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_ThighBelts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_VampireBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_VampireDress_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_VampireSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Halloween_WitchDressTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_AnubisCollar_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_AnubisJewelry_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_AnubisMaskRegular_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_EmpressArmor_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_EmpressCrown_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_EmpressDress_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_EmpressFaceMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_EmpressShoulderPads_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_EmpressWristguard_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_MonkBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_MonkTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_SimpleBracelet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_SimpleRings_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_TogaLower_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_TogaUpper_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_VikingBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_VikingEyepatch_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_VikingHood_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_VikingPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_VikingTrinkets_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Historic_VikingTunic_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_AlfaActaHatHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_AlfaActaPantsRHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_AlfaActaTorsoHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_CombatVestSamuraiHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_DissunJacketHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_EngimoFacewearHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_EngimoJacketHologram02_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_EngimoPantsHologram02_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_EngimoPantsHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_GlovesHologram01_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_HoltowJacketHologramS8_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_HoltowPantsHologramS8_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_HoltowPantsHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_HoltowShoesHologramS8_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_IseultMaskHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_IseultPufferJacketHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_IseultSkiPantsHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_KneeHologram01_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_LeftSleeveHologram03_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_TrackSuitPantsHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_TrentilaGlovesHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_TrentilaJacketHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_TrentilaPantsHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_TrentilaShoesHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Hologram_VaiiyaPantsHologram_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_LeanFlag_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_DemonBracers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_DemonShoulderpads_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_DemonTail_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_DragonSlayerBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_DragonSlayerTorso_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElegantKnightBelts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElegantKnightGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElegantKnightHood_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElegantKnightShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElegantKnightSpikes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElegantKnightTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElegantKnightWrap_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfPrincessBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfPrincessLegCovers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfPrincessMaskUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfPrincessRings_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfPrincessShorts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfPrincessTorsoUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfPrincessTunic_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfPrincessWristCoversUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfPrincessWristCovers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfQuiver_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_ElfSkirtBelt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_FloatingSkullNeck_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_GladiatorKnightHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_JesterGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_JesterNeckCape_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_JesterPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_JesterShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_JesterSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KingFur_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightGlovesSpikesL_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightHelmet_03_Mantling_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightLeftPauldronUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightNeckCloth_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightTopLeftPauldron_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_KnightshoesArmor_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_PeasantBlouse_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_PeasantSkirtTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_PirateKnightHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_RoyalGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_RoyalHood_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_RoyalSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_RoyalTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_SkeletonWarriorBracers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_SkeletonWarriorChainmailSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_SkeletonWarriorPantsLow_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_SkeletonWarriorPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_SkeletonWarriorPauldron_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_SkeletonWarriorTorso_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_StrawBoaterHatLaces_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_StrawBoaterHat_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_TacticalKnightShoulderpads_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_TechKnightTorso_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_WizardBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_WizardHat_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_WizardPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_WizardSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Medieval_WizardTunic_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_AncientBracelet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_AncientNecklace_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_AncientTrouserCharm_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_MariachiJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_MariachiPantsButtons_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_MariachiPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_MariachiShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_RancheroFringes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_RancheroHolster_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_RancheroJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_VaqueroCape_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Mexico_VaqueroJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_AcePilotPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_AcePilotTopOneShoulderPad_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_AcePilotTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_BackpackHarness_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_BaseUndershirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_Beret_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_BombSuitVest_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_Cape_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_CardboardHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_CombatBootsNoTape_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_CombatBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_CombatGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_CombatVestSamurai_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_CombatVestWithBackpack_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_DedeHeadphones_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_DedeTights_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_DogTagChain_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_DoubleBeltParts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_DoubleBelt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_HoodedCape_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_LightJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_MarineBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_MarineVestNoPouches_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_MarineVest_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_MilitaryMechanicBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_MilitaryMechanicPantsPouches_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_MilitaryMechanicPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_OperatorHarness_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_PantsWithHolsterPouch_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_PantsWithPockets_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_RiotMedievalJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_RiotMedievalLowerJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_RiotMedievalShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_RiotMedievalStrap_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_SWATShirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_SciFiBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_SciFiTacticalPantsStraps_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_SciFiTacticalPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_SciFiTorso_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_ScytheBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_ScytheGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_SidePouch_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_SniperBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_SniperPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_SniperTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_SpecialistHarness_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalBootsPouch_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalHarness_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalHeadClothChainmail_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalHeadCloth_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalHelmetBase_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalPouches_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalSocks_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalTrousersNoPouch_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalVestMagBandolier_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalVestSeparated_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TacticalVestWithMags_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_TigerWarriorVest_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Military_UrbanAssaultPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_BigFootCostumeFeet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_BigFootCostumeHandsScales_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_EasternDemonBelt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_EasternDemonHooves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_EasternDemonPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_EasternDemonSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_EasternDemonTorso_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_KaijuFeet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_SwampulaFeet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_SwampulaGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_SwampulaLegs_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_SwampulaTorsoBackTubes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_SwampulaTorso_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Monsters_TopKnotCrown_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Municipal_Boots_l.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Municipal_FaceWrappedCloth_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Municipal_Gloves_l.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Municipal_Pants_l.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Municipal_Torso_l.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Nails_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Ninja_ShinobiCowl_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Ninja_ShinobiJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Ninja_ShinobiPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Ninja_ShinobiShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Performer_BellBottomPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Performer_DiscoShirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Performer_PlainBellBottomPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Performer_PlainDiscoShirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Performer_TuxedoAnkleBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Pirate_Bandana_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Pirate_PirateBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Pirate_PirateGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Pirate_ScallywagPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_RabbitEarsPunk_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_RabbitEars_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Racing_BikerLoosePants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Racing_BikerShirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Racing_Gloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Racing_Shoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_Boots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_ConicalHatSciFi_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_DiscoBotGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_DiscoShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_HoodieKeyboard_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_JapaneseRobotHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_RetroRobotHead_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_RetroRobotLegs_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_RetroRobotTorso_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_RobotHands_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_RobotVest_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_RobotWarriorLegs_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_RobotWristCovers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_SportyRobotHead_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_SportyRobotTorso_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_SynthGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_SynthHelmetScreen_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Robots_SynthHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Samurai_Gloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Samurai_LoosePants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Samurai_Shoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Samurai_UpperBody02_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SantaHat_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_ArcadeFighterBomberJacketStraps_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_ArcadeFighterBomberJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_ArcadeFighterJeans_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_ArcadeFighterRobotGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_ArcadeFighterShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_ArcadeFighterTankTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_ArmBandages_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_Boots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_CamoCombatVestArms_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_CamoCombatVestPouches_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_CamoCombatVest_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_ChunkyBootsPouches_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_ChunkyBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_CyberJacketUnderCloth_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_CyberJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_CyberShortsUnderCloth_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_CyberShorts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_EnforcerTorso_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_Gloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_Jacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_KneepadsV2_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_Kneepads_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_MuscleSuitUpperNoSleeves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_MuscleSuitUpper_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_PaddedTechPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_PhantomMaskTranslucent_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_PhantomMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_SciFiKnightBottomArmor_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_SciFiKnightCape_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_SciFiKnightTopArmor_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_SciFiKnightTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_SmallCamoCape_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TacticalArcheryGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TacticalGlovesUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TechBomberJacketBadges_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TechConsole_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TigerRobotBomberJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TigerRobotFeet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TigerRobotHands_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TigerRobotLegsAnkle_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TigerRobotLegsBag_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TigerRobotLegsCanister_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SciFi_TigerRobotLegs_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_SideShavedMedium_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AlienBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AlienHead_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotArmRadio_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotArms_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotCape1_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotCape2_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotChestScreen_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotGun_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotRadioScreen_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstroPilotUpper_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstronautBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstronautGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_AstronautHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_BountyHunterHelmetNeck_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_BountyHunterShoulderpad_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_BountyHunterTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_EngineerCableBandolier_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_PaddedLeggings_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_PioneerPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_RaiderTechHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceBeltUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceBelt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceBracersUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceBracers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceCapeUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceCombatBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceGorget_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceHeroineBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceHeroineBracers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceHeroineCape_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceHeroineGauntlet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceHeroineGunHolster_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceHeroineLeggings_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceHeroineShorts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceHeroineTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceSoldierJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceSoldierPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceSuitTopUltimateChestScreen_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceSuitTopUltimate_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Space_SpaceSuitTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_ArcheryGlove_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_ArcheryJersey_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_ArmBands_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_BaseballJersey_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_BaseballPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_BoxingShorts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_ChestGuard_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_Cleats_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_ClimbingBandolier_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_ClimbingShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_CowMascotPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_CowMascotShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_CowMascotSleeves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_ElbowPadsInsideJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_ElbowPads_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FencerJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FencerMaskLED_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FencerMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FencerPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FencerShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FootballGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FootballHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FootballHoodiePlain_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FootballHoodie_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FootballJersey_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_FootballPaddedShorts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_HandWraps_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_Helmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_HoodedRobe_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_LargeWristband_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_LuchadorBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_LuchadorCape_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_LuchadorPantsForSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_LuchadorPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_LuchadorUpperBody_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_PaddedPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_PaddedShirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_RollerDerbyHandGuards_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_RollerDerbyPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_RollerDerbyTanktop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_ShoulderPads_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_SingleSleeve_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_TacticalHipBag_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_UmpireBrokenHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_UmpireMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Sport_WrestlingBandolier_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_StarterSet_ShortsNoTights_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_StarterSet_Shorts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Steampunk_PantsWithSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Steampunk_SkirtBelt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Steampunk_Skirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Steampunk_Tunic_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Steampunk_WaistBelts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_ArmSleeves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_AviatorJacketShellMaterial_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_AviatorJacketSleeveUp_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_AviatorJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Balaclava_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_BoilerSuitGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_BoilerSuitPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_CargoPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_ChainPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_ChromeJacketFabric_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_CommandoJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_CommandoVest_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_ConsoleBackpack_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_CropHoodie_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Crown_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_CuteJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_DadJeans_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_DemonLedMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Dogtag_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_DragonJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_DrivingGlove_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_FaceMaskFull_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_FaceMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_FingerGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_FingerTapes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_FrontPouchBandolier_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_GothLeggingsLace_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_GothLeggings_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_HalfFingerGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Headband_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_HeistHelmet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_HeistPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_HipBag_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Hood_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_JacketShort_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_JeansShorts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_KandiBracelet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_LargeSneakers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_LedMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_LowShoes_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_MultipocketSling_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_OpenJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_OversizedBomberJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_OversizedCargoPantsBelt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Pants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_PinBadge_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_PleatedSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_PuffyPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_PunkBootsSafetyPins_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_PunkBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_PushedUpPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_ShoePhone_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_ShoulderBag_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_SingleGlove_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_SkeletalFingers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_SkirtShorts_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_SleeveChainmail_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_SlingBag_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_SneakersUntiedShader_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_SneakersUntied_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_SportsJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TacticalBandolierBase_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TacticalBandolier_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TallBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TankTop_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TechHoodie_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TechJoggersPouch_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TechJoggers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TechShinobiJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TechShinobiVest_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TechTrousers_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TightSingletSportEvent_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TightSinglet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Tights_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_TwistedBraceletSet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_UncappedOversizedJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_UrbanFaceMask_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Walkman_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_WideWristband_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Streetwear_Wristband_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_GeishaGothBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_GeishaGothDress_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_GeishaGothGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_GeishaGothSkirtFront_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_UrbanWarriorBelt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_UrbanWarriorHoodie_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_UrbanWarriorPants_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_UrbanWarriorSkirtLong_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_UrbanWarriorSkirtShortPocket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_UrbanWarriorSkirtShortStraps_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Traditional_UrbanWarriorUpperBody_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_ValentinesHeadband2025_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_ValentinesHeadband_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Winter_BigBoots_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Winter_CroppedPufferJacket_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Winter_FingerlessGlovesFishnet_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Winter_FingerlessGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Winter_HoodWrap_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Winter_PenguinHat_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Winter_PomPomBeanie_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_Winter_PomPom_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_WorkUniforms_CatEarsMaid_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_WorkUniforms_CuteDressSkirt_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_WorkUniforms_CuteGloves_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_WorkUniforms_MaidHeadBand_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-archetypes-v1/meshes/SK_WorkUniforms_ShoulderHolster_L.glb",
+      "kind": "fresh",
+      "encoding": "gzip",
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assemblies-v1/assets.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assemblies-v1/face-cosmetics.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assemblies-v1/skin-pairs.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assemblies-v1/supported-items.json",
+      "kind": "fresh",
+      "encoding": null,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-scalp-only-v1/materials/hair-a00e6849e0262a343c41b193.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assembly-v2/items/cowboy-eyepatch-leather-black.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-batch02-v1/materials/hair-138e6fd80de8a7dc562e38df.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-bulk-ordinary-v1/materials/hair-519f68bfa995d74d35ec982f.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assembly-v2/items/attachments-roundglasses-plastic.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-eyebrows-v2/materials/skin-a910ef452e5e651848d66c86.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-attached-v6/materials/mi-head-face-17-base-head-v5fdaf50939.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-attached-v6/materials/86a5a4b94527076b.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-w91-eyebrows-v2/materials/skin-8990f9ee7880f2aac6e8bd5a.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-scalp-only-v1/materials/hair-ec8f5570366fb37e2aa7c2f0.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-batch03-v1/materials/hair-f8b569897b9a873fc3362a33.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assembly-v2/items/hairs-cornrows.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-batch03-v1/materials/hair-b67e1338ac2e43028e762ca7.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-bulk-ordinary-v1/materials/hair-9a271c24c04d60023b5e4ba8.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-batch02-v1/materials/hair-841f0b6cb704a793ac7cfdec.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-assembly-v2/items/casual-tubetop-cotton-whiteplain.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-face-batch02-qualified-v1/materials/skin-29ce419dda8d3548fca2c375.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-attached-v6/materials/mi-head-face-03-base-head-v1ce76e043d.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-neutral-batch-v1/materials/hair-8ba7abf2dc82006b5b6af7c8.coverage.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-attached-b1p1-v1/materials/mi-attachment-holtowhalo-gold.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-attached-b1p1-v1/materials/3f06704e7ed98f2c.rgba.gz.bin",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-bulk-ordinary-v1/materials/hair-aa4fbdd3a2da641157ce6bfb.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-scalp-only-v1/materials/hair-a7fa4f1b77277f7e9696442d.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-hair-attached-v6/materials/mi-updocurly-black-v8fc8cb99ea.json",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    },
+    {
+      "path": "models/reconstructed-face-batch02-qualified-v1/materials/skin-e3b356be0f8c979ddbc7b113.glsl",
+      "kind": "linked",
+      "encoding": null,
+      "freshEncodeMatches": true,
+      "ok": true
+    }
+  ]
+}

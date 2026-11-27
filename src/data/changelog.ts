@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-27-season-12-refit-2",
+    date: "2026-11-27",
+    title: "74 more garments in their Season 12 shape",
+    notes: [
+      "Another 74 garments now use the game's Season 12 versions, every colour of them, with the materials Season 12 gave them where those changed: biker and gothic jackets, punk tees, loose jeans and the long coat, jester and tactical knight pieces, vampire and geisha dresses, ski and assault pants, necklaces, the tall sneakers and the starter sneakers among them. Several also hide the body beneath them with masks remade for Season 12.",
+      "Two more items are now in 3D: the Biobrace Hoodie and the Spectral Intruders glasses, whose patterns pan across them as they do in the game.",
+    ],
+    items: ["light-heavy", "red-items"],
+  },
+  {
     id: "2026-11-23-season-12-refit",
     date: "2026-11-23",
     title: "115 more garments in their Season 12 shape",

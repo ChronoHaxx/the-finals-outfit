@@ -1,0 +1,12 @@
+# tests 1185
+# pass 1171
+# fail 8
+# skipped 6
+not ok 617 - the known ski-blade GLB really reuses one material across mesh nodes
+not ok 1075 - a socketed origin-authored static passes and records the convention
+not ok 1076 - a socketed body-authored static passes too — both conventions are valid
+not ok 1077 - an oversized socketed accessory fails — wrapper scale lost
+not ok 1078 - a skinned socketed mesh is n/a — bind pose spans the skeleton, not the object
+not ok 1079 - a large headwear static passes within its own bound
+not ok 1082 - the base body passes geometry
+not ok 1083 - the base body passes UV

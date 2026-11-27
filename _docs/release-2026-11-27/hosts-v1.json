@@ -1,0 +1,23 @@
+{
+  "planSha256": "de1e8c31b626581dd8802f97581c5cf55b3b1d2efa036354a448d25e73583d66",
+  "shards": {
+    "reconstruction-000": {
+      "immutable": true,
+      "baseUrl": "https://4a0f9a72.the-finals-outfit-assets.pages.dev/",
+      "manifestSha256": "22709bdd5fbc95402caa22face3265c78537cb0046d7139338e3a861e955c716",
+      "recordedAt": "2026-11-27T21:42:07.840Z"
+    },
+    "reconstruction-001": {
+      "immutable": true,
+      "baseUrl": "https://e1f6dd73.the-finals-outfit-assets.pages.dev/",
+      "manifestSha256": "57a0c64eb7dc20160015c01c8f1885eac636b52e42f88e928458ba81b82279e2",
+      "recordedAt": "2026-11-27T21:37:54.506Z"
+    },
+    "reconstruction-002": {
+      "immutable": true,
+      "baseUrl": "https://c18435c2.the-finals-outfit-assets.pages.dev/",
+      "manifestSha256": "ee03f75599cdda3f186cc2a30bdaf36365be1d8f673829d77a3ffad54eb838e7",
+      "recordedAt": "2026-11-27T21:37:54.506Z"
+    }
+  }
+}
