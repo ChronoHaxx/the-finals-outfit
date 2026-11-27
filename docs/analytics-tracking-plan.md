@@ -193,8 +193,12 @@ in 2–4 requests. Workers Free allows 100,000 Analytics Engine data points a da
 Worker requests a day, which the share-preview Worker uses too, and so will the site Worker after the migration. Near
 either limit, send exposures as one summary row per page load.
 
-Analytics Engine samples heavy traffic. Counts are `SUM(_sample_interval)`. The report script stops and says so if a
-period it reports was sampled, because distinct visitor counts are not reliable then.
+Analytics Engine samples at write time per index value, so it can sample even light traffic when one request writes
+a burst of rows. Counts are `SUM(_sample_interval)`. Page loads (`app_loaded`, which carries the visitor hash) are
+written under an index of their own, one row per page load, so they stay unsampled. The report script stops and says
+so if a period's page loads were sampled, because distinct visitor counts are only minimums then. If other events
+were sampled, it reports them as weighted estimates and says so. Until the visit index was deployed (date in
+`workers/usage-counter/README.md`, "Sampling"), page loads shared the app's index and were sampled on the first day.
 
 ## Retention and the metrics snapshot
 

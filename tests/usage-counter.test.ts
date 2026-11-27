@@ -38,7 +38,8 @@ test("a batch becomes one row per event in fixed columns; only app_loaded carrie
   assert.equal(res.status, 204);
   assert.equal(e.EVENTS.rows.length, 3);
   const [loaded, item, share] = e.EVENTS.rows;
-  assert.deepEqual(loaded.indexes, ["outfit"]);
+  assert.deepEqual(loaded.indexes, ["outfit:app_loaded"]);
+  assert.deepEqual([item.indexes, share.indexes], [["outfit"], ["outfit"]]);
   assert.match(loaded.blobs![3], /^[0-9a-f]{16}$/, "64-bit visitor hash");
   assert.deepEqual(item.blobs, ["item_equipped", "phone", "abc1234", "", "upperBody", "knight-tunic"]);
   assert.deepEqual(share.blobs, ["share_link_created", "phone", "abc1234", "", "preview", "true", "false", "false"]);
@@ -173,7 +174,7 @@ test("a minimal-envelope app may leave out form factor and build, and names its 
     const res = await collect(new Request("https://x.example/e", { method: "POST", body,
       headers: { Origin: ORIGIN, "User-Agent": CHROME, "CF-Connecting-IP": "203.0.113.7" } }), e, NOON);
     assert.equal(res.status, 204);
-    assert.deepEqual(e.EVENTS.rows.map(r => r.indexes![0]), ["test-site", "test-site"]);
+    assert.deepEqual(e.EVENTS.rows.map(r => r.indexes![0]), ["test-site:page_viewed", "test-site"]);
     assert.match(e.EVENTS.rows[0].blobs![3], /^[0-9a-f]{16}$/);
     assert.deepEqual(e.EVENTS.rows[1].blobs, ["guide_section_reached", "", "", "", "install", "en"]);
     // The outfit builder's full envelope stays required for it.
@@ -190,8 +191,34 @@ test("an app with no visitor event never gets a hash, and no salt is even made f
     await collect(new Request("https://x.example/e", { method: "POST", body,
       headers: { Origin: ORIGIN, "User-Agent": CHROME, "CF-Connecting-IP": "203.0.113.7" } }), e, NOON);
     assert.equal(e.EVENTS.rows[0].blobs![3], "");
+    assert.deepEqual(e.EVENTS.rows[0].indexes, ["no-hash"], "no visitor event, so no visit index either");
     assert.equal(e.SALTS.values.size, 0);
   } finally { delete apps["no-hash"]; }
+});
+
+test("each page load's app_loaded gets an index of its own, so the burst of exposures beside it cannot sample it away", async () => {
+  // A real page load's first request: app_loaded plus a run of exposures, all written in the same instant.
+  const burst = [{ e: "app_loaded" }, ...["emotes", "camera", "lighting", "video-mov", "hide-ui", "share"].map(feature =>
+    ({ e: "feature_exposed", p: { feature, via: "guided" } }))];
+  const e = env();
+  for (const ip of ["203.0.113.7", "203.0.113.8", "203.0.113.9"]) await collect(post(burst, { ip }), e, NOON);
+  const visits = e.EVENTS.rows.filter(r => r.indexes![0] === "outfit:app_loaded");
+  assert.equal(visits.length, 3, "one visit row per page load");
+  assert.ok(visits.every(r => r.blobs![0] === "app_loaded" && /^[0-9a-f]{16}$/.test(r.blobs![3])), "every visit row carries its hash");
+  assert.equal(new Set(visits.map(r => r.blobs![3])).size, 3);
+  const rest = e.EVENTS.rows.filter(r => r.indexes![0] !== "outfit:app_loaded");
+  assert.equal(rest.length, 18);
+  assert.ok(rest.every(r => r.indexes![0] === "outfit" && r.blobs![0] === "feature_exposed" && r.blobs![3] === ""));
+});
+
+test("the report reads page loads from every app's visit index, and the old app index too", async () => {
+  const { visitIndex } = await import("../workers/usage-counter/src/index");
+  const { VISIT_EVENT, appIndexes } = await import("../scripts/lib/usage-report.mjs");
+  for (const [app, config] of Object.entries(APPS)) {
+    // The report names one visitor event for every app; an app with another would have its page loads missed.
+    assert.equal(config.visitorEvent, VISIT_EVENT, app);
+    assert.deepEqual(appIndexes(app), [app, visitIndex(app, VISIT_EVENT)], app);
+  }
 });
 
 test("WuWa VR's events are accepted in its column layout, and its hash differs from the outfit builder's", async () => {

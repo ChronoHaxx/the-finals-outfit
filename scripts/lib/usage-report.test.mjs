@@ -1,9 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { reportQueries, snapshotMarkdown, summarise } from './usage-report.mjs';
+import { appIndexes, reportQueries, snapshotMarkdown, summarise } from './usage-report.mjs';
 
 const rows = {
-  sampling: [{ sample: 1 }],
+  visitSampling: [{ sample: 1 }],
+  eventSampling: [{ sample: 1 }],
   daily: [
     { day: '2026-12-01 00:00:00', page_loads: '40', visitors: '30' },
     { day: '2026-12-02 00:00:00', page_loads: '60', visitors: '50' },
@@ -42,8 +43,22 @@ test('features rank by use per page load, and a feature nobody used still appear
   assert.equal(camera.useRate, 5);
 });
 
-test('a sampled period is refused rather than reported', () => {
-  assert.throws(() => summarise({ ...rows, sampling: [{ sample: 10 }] }, []), /sampled/);
+test('a period whose page loads were sampled is refused, because its visitor counts would be minimums', () => {
+  // As on 26 Nov 2026, when app_loaded still shared the app's index: one stored row stood for 4 page loads.
+  assert.throws(() => summarise({ ...rows, visitSampling: [{ sample: 4 }] }, []), /page loads \(1 row in 4\).*minimums/s);
+});
+
+test('sampled exposures alone still report, weighted, and the snapshot says which figures are estimates', () => {
+  const s = summarise({ ...rows, eventSampling: [{ sample: 4 }] }, ['emotes']);
+  assert.equal(s.pageLoads, 100, 'page loads are exact: their rows were not sampled');
+  assert.equal(s.visitorDays, 80);
+  const md = snapshotMarkdown('outfit', '2026-12-01', '2027-01-01', s);
+  assert.match(md, /Page loads and visitors are unsampled\. Analytics Engine sampled other events \(up to 1 row in 4\)/);
+  assert.match(md, /weighted estimates/);
+  assert.doesNotMatch(md, /Unsampled\./);
+  // Unsampled throughout, and a period with no other events at all: the plain wording.
+  assert.match(snapshotMarkdown('outfit', '2026-12-01', '2027-01-01', summarise(rows, [])), /Unsampled\./);
+  assert.equal(summarise({ ...rows, eventSampling: [] }, []).eventSample, 1);
 });
 
 test('the snapshot never calls visitor-days unique visitors, and says there is no monthly unique figure', () => {
@@ -55,8 +70,12 @@ test('the snapshot never calls visitor-days unique visitors, and says there is n
 
 test('queries accept only a plain app id and real dates, so nothing can be injected into the SQL', () => {
   const q = reportQueries('outfit', '2026-12-01', '2027-01-01');
-  assert.match(q.daily, /index1 = 'outfit'/);
   assert.match(q.daily, /count\(DISTINCT blob4\)/);
+  // Every query reads both index values, so page loads from before and after the visit index are all found.
+  assert.ok(Object.values(q).every(sql => sql.includes("index1 IN ('outfit', 'outfit:app_loaded')")));
+  assert.deepEqual(appIndexes('wuwa-vr'), ['wuwa-vr', 'wuwa-vr:app_loaded']);
+  assert.match(q.visitSampling, /blob1 = 'app_loaded'/);
+  assert.match(q.eventSampling, /blob1 != 'app_loaded'/);
   assert.ok(Object.values(q).every(sql => sql.includes('_sample_interval') || sql.includes('max(')));
   for (const [app, from, to] of [["outfit' OR 1=1 --", '2026-12-01', '2027-01-01'], ['outfit', '2026-12-1', '2027-01-01'],
     ['outfit', '2027-01-01', '2026-12-01']])
