@@ -66,6 +66,13 @@ bash $C/run-v1.sh > $C/run-v1.out 2>&1; echo "c1 v1 exit $?"; cat $C/run-v1.out
 | gpu | exit 0; 52 materials, 0 failed |
 | index | exit 0; `public/models/reconstructed-s12-c1-preview-v1/preview.json` lists 52 `reboundMaterials`, 52 implemented (all readvertised), `addedMeshes` 0 |
 
+**Run on 26 Nov (`RUN-RESULT-2026-11-26.md`):** two of these expectations were wrong; nothing drifted.
+- "Nothing unresolved": the source stage resolves every default material of every part, and its guard refuses the
+  two `MI_FloatingHologram_SponsorTrack*` hologram programs on other-part hologram meshes. The index keeps their
+  live bindings.
+- "Built 52": the build covers other parts' choice materials too (68). The index rebinds only the 52.
+Accepted by the coordinator; details in `../C1.md`, "After the run".
+
 If `activeAssetsSha256` in step 3 is not `e7cd0b2f…`, that is expected when an apply has moved the index (Light 3′
 → `9f5dd6d2…`). The counts must still match. If a number differs, stop there and send the tier-2 session the step's
 `.out` file; don't adjust and rerun.

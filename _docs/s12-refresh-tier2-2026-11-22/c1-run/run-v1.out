@@ -1,0 +1,6 @@
+source exit 0: Source: 52 choices, 70 default materials (70 extracted, 0 reused), 0 reused packages, 0 meshes extracted, 223 textures (223 extracted); unresolved: ['MI_FloatingHologram_SponsorTrackS6', 'MI_FloatingHologram_SponsorTrackSeason5']
+build exit 0: }
+gpu attempt 1 exit 0: GPU: 68 materials matched 2112 cases, max error 9.54e-06; 0 failed (exit 0)
+index exit 0: {"candidates": 52, "implemented": 52, "addedMeshes": 0, "addedMaterials": 52, "supportedItems": 2955}
+s12-c1 v1 done: see public/models/reconstructed-s12-c1-preview-v1/preview.json (reboundMaterials) and scripts/generated/shader-probe/s12-c1-v1/cohort-report.json
+c1 v1 exit 0
