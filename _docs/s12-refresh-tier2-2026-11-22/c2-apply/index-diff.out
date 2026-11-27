@@ -1,0 +1,110 @@
+{
+ "activeSha256": "32f5b3814520004833731697d440389fbd1bbcaad6961ac4b1173db3db27aa10",
+ "patchedSha256": "d84f89ae91da10aae5e47c587263c61929fa38e8293d1339f639d975505abd28",
+ "skinPairsSha256": "f15a73a2a5dfc2f61c3bbd20bf1ea4b9c9e735a64f856ba12310f1e50e1c00a4",
+ "counts": {
+  "mode": "garments-only",
+  "meshesRepointed": 5,
+  "bodyMasksRepointed": 3,
+  "itemBodyMasksRepointed": 3,
+  "materialsRepointed": 100,
+  "skinPairsRewritten": 0,
+  "assetsFormat": "compact"
+ },
+ "diffs": 116,
+ "byTopKey": {
+  "meshes changed": 13,
+  "itemBodyMasks changed": 3,
+  "materials changed": 100
+ },
+ "meshFieldsChanged": {
+  "url": 5,
+  "sha256": 5,
+  "bodyMaskUrl": 3
+ },
+ "meshesChanged": [
+  "SK_Military_AssaultPants_M",
+  "SK_Pants_M",
+  "SK_Shirt_M",
+  "SK_Socks_Quarter_M",
+  "SK_Streetwear_TightTechPants_M"
+ ],
+ "meshesOutsideSpec": [],
+ "targetsNotAsSpec": [],
+ "itemMasksChanged": [
+  "Discovery/Content/Discovery/Characters/Military/Assets/AssaultPants/Skins/Polyester_AlfaActa/DA_Military_AssaultPants_Polyester_AlfaActa.uasset//Game/Discovery/Characters/Military/Assets/AssaultPants/SK_Military_AssaultPants_M.SK_Military_AssaultPants_M/url",
+  "Discovery/Content/Discovery/Characters/Streetwear/Assets/TightTechPants/Skins/Polyester_EsportDRG/DA_Streetwear_TightTechPants_Polyester_EsportDRG.uasset//Game/Discovery/Characters/Streetwear/Assets/TightTechPants/SK_Streetwear_TightTechPants_M.SK_Streetwear_TightTechPants_M/url",
+  "Discovery/Content/Discovery/Characters/Streetwear/Assets/TightTechPants/Skins/Polyester_ISEULT/DA_Streetwear_TightTechPants_Polyester_ISEULT.uasset//Game/Discovery/Characters/Streetwear/Assets/TightTechPants/SK_Streetwear_TightTechPants_M.SK_Streetwear_TightTechPants_M/url"
+ ],
+ "itemMasksNotAsSpec": [],
+ "materialsChanged": 100,
+ "materialsEqualRebinds": true,
+ "materialFromsWereLive": true,
+ "lightEntriesTouched": [],
+ "heldMeshesMoved": [],
+ "holds": 5,
+ "extras": {
+  "manifestsInRunFolder": 100,
+  "rebindManifests": 100,
+  "extraManifests": 0,
+  "extraManifestsInPublishList": [],
+  "extraManifestsNamedInPatch": []
+ },
+ "previewPathRewrites": {
+  "MI_Casual_BandagedTankTop_Cotton": {
+   "sameFile": true,
+   "inPatch": false,
+   "candidateIsLive": true
+  },
+  "MI_Casual_LongCoat_Leather_Black": {
+   "sameFile": true,
+   "inPatch": false,
+   "candidateIsLive": true
+  },
+  "MI_Casual_LongCoat_Leather_Camo": {
+   "sameFile": true,
+   "inPatch": false,
+   "candidateIsLive": true
+  },
+  "MI_Casual_LongCoat_Satin": {
+   "sameFile": true,
+   "inPatch": false,
+   "candidateIsLive": true
+  },
+  "MI_FancyDress_LawyerSuitJacket_Velvet": {
+   "sameFile": true,
+   "inPatch": false,
+   "candidateIsLive": true
+  },
+  "MI_Medieval_TacticalKnightBracers_Metal": {
+   "sameFile": true,
+   "inPatch": false,
+   "candidateIsLive": true
+  },
+  "MI_Medieval_TacticalKnightShoulderpads_Metal": {
+   "sameFile": true,
+   "inPatch": false,
+   "candidateIsLive": true
+  }
+ },
+ "sourceStageGaps": {
+  "MI_FloatingHologram_SponsorTrackS6": {
+   "active": "../reconstructed-attached-b22-v1/materials/mi-floatinghologram-sponsortracks6.json",
+   "candidateIsLive": true,
+   "inPatch": false
+  },
+  "MI_FloatingHologram_EngimoS4": {
+   "active": "../reconstructed-g100-reuse-b14-cowboy-casual-pants-v1-v1/materials/mi-floatinghologram-engimos4.json",
+   "candidateIsLive": true,
+   "inPatch": false
+  }
+ },
+ "publishFiles": 347,
+ "publishOutsideRunAndCoverage": [
+  "public/models/s12-bodytype-refresh-v1/meshes/SK_Military_AssaultPants_M.glb",
+  "public/models/s12-bodytype-refresh-v1/meshes/SK_Pants_M.glb",
+  "public/models/s12-bodytype-refresh-v1/meshes/SK_Shirt_M.glb",
+  "public/models/s12-bodytype-refresh-v1/meshes/SK_Socks_Quarter_M.glb",
+  "public/models/s12-bodytype-refresh-v1/meshes/SK_Streetwear_TightTechPants_M.glb"
+ ]
+}

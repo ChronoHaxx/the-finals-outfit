@@ -1,0 +1,12 @@
+{
+ "mode": "garments-only",
+ "meshesRepointed": 5,
+ "bodyMasksRepointed": 3,
+ "itemBodyMasksRepointed": 3,
+ "materialsRepointed": 100,
+ "skinPairsRewritten": 0,
+ "assetsFormat": "compact",
+ "out": "public\\models\\s12-refresh-tier2-v1\\merge-out-c2-applied",
+ "assetsSha256": "d84f89ae91da10aae5e47c587263c61929fa38e8293d1339f639d975505abd28",
+ "skinPairsSha256": "f15a73a2a5dfc2f61c3bbd20bf1ea4b9c9e735a64f856ba12310f1e50e1c00a4"
+}
