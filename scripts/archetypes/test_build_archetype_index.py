@@ -1133,5 +1133,234 @@ class LiveEqualOnARealReconvert(unittest.TestCase):
         self.assertEqual(detail['morphs'], {'changedCm': {}, 'onlyStaged': [], 'onlyLive': []})
 
 
+def write_islands_glb(file, name, scale=1.0, shift=0, residual=0.0, straddle=False, reweight=0.0, move=0.0,
+                      uv1_shift=0.0, slot='Main', reorder=False, extra_joint=None, weighted_extra=False):
+    """Two UV islands of one quad each, as a skinned GLB, for the own-weights route (28 Nov 2026): island A at UV0 tile 0,
+    island B at tile 2 (as SK_Sneakers_M reads tiles -2..2). On the class side `shift` moves island A by whole tiles in U
+    (+2 lands on the tile island B reads, +5 on one the Medium never reads); `residual` adds a sub-tile error to island
+    A's U; `straddle` shifts only one of its vertices; `reweight` moves spine weight onto island A's vertices (the
+    game's own reweight); `move` displaces a vertex; `uv1_shift` moves one UV1; `slot` renames the material slot; `reorder`
+    swaps two vertices (indices remapped, the same surface in another order); `extra_joint` lists one more joint on this
+    side, weighted with vertex 0's spine weight when `weighted_extra`."""
+    quad = np.array([[0, 0], [1, 0], [1, 1], [0, 1]], dtype=np.float64)
+    pos = np.zeros((8, 3))
+    pos[:4, :2] = quad * 0.02 + [0.0, 0.4]
+    pos[4:, :2] = quad * 0.02 + [0.1, 0.4]
+    pos *= scale
+    pos[5, 0] += move
+    uv0 = np.concatenate([quad * 0.3 + [0.1, 0.1], quad * 0.3 + [2.1, 0.1]])
+    uv1 = np.concatenate([quad * 0.2 + [0.1, 0.1], quad * 0.2 + [0.5, 0.1]])
+    uv1[6, 0] += uv1_shift
+    uv0[:4, 0] += shift + residual
+    if straddle:
+        uv0[0, 0] += 2
+    normals = np.tile([0.0, 0.0, 1.0], (8, 1))
+    spine = np.full(8, 0.25)
+    spine[:4] += reweight
+    weights = np.stack([1 - spine, spine, np.zeros(8), np.zeros(8)], axis=1)
+    joints = np.tile([0, 1, 0, 0], (8, 1))
+    if weighted_extra:
+        joints[0, 1] = 2
+    tris = np.array([[0, 1, 2], [0, 2, 3], [4, 5, 6], [4, 6, 7]])
+    arrays = [pos, uv0, uv1, normals, joints, weights]
+    if reorder:
+        order = np.array([1, 0, 2, 3, 4, 5, 6, 7])
+        new_id = np.empty(8, dtype=np.int64)
+        new_id[order] = np.arange(8)
+        arrays = [x[order] for x in arrays]
+        tris = new_id[tris]
+    pos, uv0, uv1_, normals, joints, weights = arrays
+    names = ['root', 'spine'] + ([extra_joint] if extra_joint else [])
+    jpos = [[0.0, 0.0, 0.0], [0.0, 0.5 * scale, 0.0]] + ([[0.1 * scale, 0.5 * scale, 0.0]] if extra_joint else [])
+    ibm = np.stack([np.eye(4, dtype=np.float32) for _ in names])
+    for m, p in zip(ibm, jpos):
+        m[:3, 3] = -np.array(p)
+    chunks = [pos.astype('<f4').tobytes(), uv0.astype('<f4').tobytes(), uv1_.astype('<f4').tobytes(),
+              normals.astype('<f4').tobytes(), joints.astype('u1').tobytes(), weights.astype('<f4').tobytes(),
+              tris.astype('<u2').tobytes(), ibm.transpose(0, 2, 1).tobytes()]
+    views, offset = [], 0
+    for c in chunks:
+        views.append({'buffer': 0, 'byteOffset': offset, 'byteLength': len(c)})
+        offset += len(c) + (-len(c) % 4)
+    body = b''.join(c + b'\0' * (-len(c) % 4) for c in chunks)
+    types = [('VEC3', 5126, 8), ('VEC2', 5126, 8), ('VEC2', 5126, 8), ('VEC3', 5126, 8), ('VEC4', 5121, 8),
+             ('VEC4', 5126, 8), ('SCALAR', 5123, tris.size), ('MAT4', 5126, len(names))]
+    nodes = [{'name': nm, 'translation': p} for nm, p in zip(names, jpos)] + [{'name': name, 'mesh': 0, 'skin': 0}]
+    j = {'asset': {'version': '2.0'}, 'extras': {'source': tool.package_of(path(name))},
+         'buffers': [{'byteLength': offset}], 'bufferViews': views,
+         'accessors': [{'bufferView': k, 'componentType': ct, 'count': cnt, 'type': t}
+                       for k, (t, ct, cnt) in enumerate(types)],
+         'materials': [{'extras': {'sourceSlot': {'MaterialSlotName': slot}, 'sourceMaterial': 'MI_Main'}}],
+         'meshes': [{'primitives': [
+             {'attributes': {'POSITION': 0, 'TEXCOORD_0': 1, 'TEXCOORD_1': 2, 'NORMAL': 3, 'JOINTS_0': 4,
+                             'WEIGHTS_0': 5}, 'indices': 6, 'material': 0}]}],
+         'nodes': nodes, 'skins': [{'joints': list(range(len(names))), 'inverseBindMatrices': 7}]}
+    js = json.dumps(j).encode()
+    js += b' ' * (-len(js) % 4)
+    out = (struct.pack('<III', 0x46546C67, 2, 12 + 8 + len(js) + 8 + len(body))
+           + struct.pack('<I', len(js)) + b'JSON' + js + struct.pack('<I', len(body)) + b'BIN\0' + body)
+    file.parent.mkdir(parents=True, exist_ok=True)
+    file.write_bytes(out)
+    return hashlib.sha256(out).hexdigest()
+
+
+class OwnWeightsRule(unittest.TestCase):
+    """The own-weights route's surface proof (the user's yes, 28 Nov 2026): the Medium surface at the class scale in the
+    same vertex order, whose UV0 islands sit whole tiles away (within one half-float step) and whose weights are the
+    game's own, passes with the shift and the reweight recorded. A sub-tile UV0 error, a triangle across two shifts, a
+    tile the Medium never reads, a moved vertex, another vertex order, UV1 over 1/1024, a renamed slot, a weighted joint
+    the Medium does not list or a non-body joint on one side fails."""
+    BODY_BONES = {'root', 'spine', 'clavicle_l'}
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp()).resolve()
+        self.addCleanup(shutil.rmtree, self.tmp)
+
+    def compare(self, **light):
+        m, c = self.tmp / 'SK_Shoe_M.glb', self.tmp / 'SK_Shoe_L.glb'
+        write_islands_glb(m, 'SK_Shoe_M')
+        write_islands_glb(c, 'SK_Shoe_L', scale=SCALES['L'], **light)
+        return tool.own_weights_surface(m, c, SCALES['L'], self.BODY_BONES)
+
+    def test_an_island_moved_by_whole_tiles_and_reweighted_passes_with_both_recorded(self):
+        ok, why, detail = self.compare(shift=2, reweight=0.05)
+        self.assertTrue(ok, (why, detail))
+        self.assertEqual((detail['verticesShifted'], detail['islandsShifted'], detail['shifts']), (4, 1, {'+2,+0': 4}))
+        self.assertEqual(detail['verticesReweighted'], 4)
+        self.assertAlmostEqual(detail['weightMaxU8Steps'], 12.8, places=1)
+        self.assertEqual((detail['tilesMedium'], detail['tilesClass']), ([(0, 0), (2, 0)], [(2, 0)]))
+
+    def test_the_same_mesh_passes_with_nothing_shifted_or_reweighted(self):
+        ok, why, detail = self.compare()
+        self.assertTrue(ok, (why, detail))
+        self.assertEqual((detail['verticesShifted'], detail['verticesReweighted']), (0, 0))
+
+    def test_a_residual_within_one_half_float_step_passes_and_one_beyond_fails(self):
+        # At |u| in [2, 4) a half float steps by 2^-9 = 0.00195.
+        ok, why, detail = self.compare(shift=2, residual=0.0019)
+        self.assertTrue(ok, (why, detail))
+        self.assertGreater(detail['uv0ResidualStepsMax'], 0.9)
+        ok, why, _ = self.compare(shift=2, residual=0.003)
+        self.assertFalse(ok)
+        self.assertTrue(why.startswith('UV0 is not a whole-tile shift'), why)
+
+    def test_a_triangle_across_two_shifts_fails(self):
+        self.assertEqual(self.compare(straddle=True)[:2], (False, 'a triangle spans two tile shifts'))
+
+    def test_a_tile_the_medium_never_reads_fails(self):
+        ok, why, _ = self.compare(shift=5)
+        self.assertEqual((ok, why), (False, 'the class reads UV tiles the Medium does not: [(5, 0)]'))
+
+    def test_a_moved_vertex_another_vertex_order_uv1_or_a_renamed_slot_fails(self):
+        ok, why, _ = self.compare(shift=2, move=0.001)
+        self.assertFalse(ok)
+        self.assertIn("positions are not the x0.85 Medium's", why)
+        self.assertEqual(self.compare(shift=2, reorder=True)[:2],
+                         (False, 'indices differ (the same vertex order is required)'))
+        ok, why, _ = self.compare(shift=2, uv1_shift=0.002)
+        self.assertFalse(ok)
+        self.assertTrue(why.startswith('UV1 differs'), why)
+        self.assertEqual(self.compare(shift=2, slot='Trim')[:2], (False, 'material slots differ'))
+
+    def test_an_unweighted_body_bone_on_one_side_passes_other_joints_fail(self):
+        ok, why, detail = self.compare(shift=2, extra_joint='clavicle_l')
+        self.assertTrue(ok, (why, detail))
+        ok, why, detail = self.compare(shift=2, extra_joint='cape_jjr')
+        self.assertEqual((ok, why, detail['joints']),
+                         (False, 'joints listed on one side only are not body-skeleton bones', ['cape_jjr']))
+        ok, why, detail = self.compare(shift=2, extra_joint='clavicle_l', weighted_extra=True)
+        self.assertEqual((ok, why, detail['joints']),
+                         (False, 'weighted class joints the Medium skin does not list', ['clavicle_l']))
+
+
+class OwnWeightsInTheBuilder(unittest.TestCase):
+    """--own-weights end to end, on an index where Light is applied: a listed tile-shifted, reweighted Light mesh that
+    proofs 3 and 3' refuse joins, served as the game wrote it and keeping the Medium's body masks (its bodyMaskUrl and
+    every item mask the Medium carries), with the route's record; an unlisted one, and a listed one a side registry
+    names, stay refused; a mesh listed for both routes stops the build."""
+
+    def setUp(self):
+        self.tmp = tmp = Path(tempfile.mkdtemp()).resolve()
+        self.addCleanup(shutil.rmtree, tmp)
+        self.models = models = tmp / 'models'
+        s11 = models / STAGING / 'source-glb'
+        meshes, parts = {}, []
+        meshes[path('SK_Body_M')] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/SK_Body_M.glb',
+                                     'sha256': write_glb(s11 / 'SK_Body_M.glb', 'SK_Body_M'), 'slots': [{'slot': 'Main'}]}
+        meshes[path('SK_Body_L')] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/SK_Body_L.glb',
+                                     'sha256': write_glb(s11 / 'SK_Body_L.glb', 'SK_Body_L', scale=SCALES['L']),
+                                     'slots': [{'slot': 'Main'}]}
+        parts.append({'SkeletalMesh': {'AssetPathName': path('SK_Body_M')}, 'TagOverrides': [
+            {'MatchingTags': ['Customization.Archetype.Light'], 'bOverrideMesh': True,
+             'ReplacementSkeletalMesh': {'AssetPathName': path('SK_Body_L')}}]})
+        for medium in ('SK_Shoe_M', 'SK_Unlisted_M', 'SK_Named_M'):
+            light = medium[:-2] + '_L'
+            sha = write_islands_glb(s11 / f'{medium}.glb', medium)
+            write_islands_glb(s11 / f'{light}.glb', light, scale=SCALES['L'], shift=2, reweight=0.05)
+            meshes[path(medium)] = {'kind': 'skeletal', 'url': f'../{STAGING}/source-glb/{medium}.glb', 'sha256': sha,
+                                    'slots': [{'slot': 'Main'}], 'bodyMaskUrl': f'../coverage/{medium}.bodymask.png',
+                                    'bodyMaskUvTiles': [2, 1], 'coverageSource': 'derived-projection'}
+            parts.append({'SkeletalMesh': {'AssetPathName': path(medium)}, 'TagOverrides': [
+                {'MatchingTags': ['Customization.Archetype.Light'], 'bOverrideMesh': True,
+                 'ReplacementSkeletalMesh': {'AssetPathName': path(light)}}]})
+        index = models / 'reconstructed-assemblies-v1'
+        index.mkdir(parents=True)
+        assets = {'attachmentBody': {'source': path('SK_Body_M')}, 'meshes': meshes,
+                  'archetypes': {'light': {'body': path('SK_Body_L'), 'skeletonScale': 0.85, 'boundsOrigin': [0.0, 0.0, 0.85]}},
+                  'attachmentFrames': {path('SK_Named_M'): {'socket': 'spine'}},
+                  'itemBodyMasks': {'DA_Shoe_RedPanda': {path('SK_Shoe_M'): {'url': '../coverage/redpanda.png',
+                                                                             'uvTiles': [2, 1]}}}}
+        (index / 'assets.json').write_text(json.dumps(assets), encoding='utf-8')
+        pairs = {'items': {'Face_1': {'body': {'sourceMesh': path('SK_Body_M'), 'boundsOrigin': [0.0, 0.0, 1.0]}}}}
+        (index / 'skin-pairs.json').write_text(json.dumps(pairs), encoding='utf-8')
+        items = models / 'reconstructed-assembly-v2' / 'items'
+        items.mkdir(parents=True)
+        (items / 'DA_Test.json').write_text(json.dumps({'properties': {'VisualParts': parts}}), encoding='utf-8')
+        self.listed = ['--own-weights', 'SK_Shoe_L,SK_Named_L', '--same-surface-permuted']
+
+    def build(self, *flags):
+        out = self.tmp / f'out-{len(list(self.tmp.glob("out-*")))}'
+        with mock.patch.object(sys, 'argv', ['build', '--models', str(self.models), '--out', str(out), *flags]), \
+                contextlib.redirect_stdout(io.StringIO()):
+            tool.main()
+        return out, json.loads((out / 'report.json').read_text(encoding='utf-8'))
+
+    def test_without_the_flag_the_row_stays_refused_by_proofs_3_and_3_prime(self):
+        _, report = self.build('--same-surface-permuted')
+        self.assertEqual(report['refused'][path('SK_Shoe_L')],
+                         ['primitive 0: UVs differ', "proof 3': no vertex bijection on UV0"])
+        self.assertEqual(report['ownWeights'], {})
+
+    def test_listed_it_joins_as_the_game_wrote_it_with_the_medium_masks_and_its_record(self):
+        out, report = self.build(*self.listed, '--publish-dir', 'reconstructed-archetypes-v1')
+        self.assertEqual(report['added']['light'], [path('SK_Shoe_L')])
+        result = json.loads((out / 'assets.json').read_text(encoding='utf-8'))
+        entry = result['meshes'][path('SK_Shoe_L')]
+        self.assertEqual((entry['url'], entry['bodyMaskUrl'], entry['bodyMaskUvTiles']),
+                         ('../reconstructed-archetypes-v1/meshes/SK_Shoe_L.glb', '../coverage/SK_Shoe_M.bodymask.png',
+                          [2, 1]))
+        self.assertEqual(entry['sha256'], tool.sha256(self.models / STAGING / 'source-glb' / 'SK_Shoe_L.glb'))
+        self.assertEqual(result['itemBodyMasks']['DA_Shoe_RedPanda'][path('SK_Shoe_L')],
+                         {'url': '../coverage/redpanda.png', 'uvTiles': [2, 1]})
+        row = report['meshes'][path('SK_Shoe_L')]
+        self.assertEqual((row['proof3'], row['ownWeights']['verticesReweighted'], row['ownWeights']['shifts']),
+                         ('own weights', 4, {'+2,+0': 4}))
+        self.assertEqual(row['inOrderProblems'], ['primitive 0: UVs differ', "proof 3': no vertex bijection on UV0"])
+        self.assertEqual(report['refused'][path('SK_Unlisted_L')],
+                         ['primitive 0: UVs differ', "proof 3': no vertex bijection on UV0"])
+        self.assertEqual(report['refused'][path('SK_Named_L')][-1],
+                         'own-weights route: named in a side registry: assets.json attachmentFrames')
+        self.assertEqual(report['ownWeightsRules']['listed'], ['SK_Named_L', 'SK_Shoe_L'])
+        tsv = (out / 'own-weights.tsv').read_text(encoding='utf-8').splitlines()
+        self.assertEqual(len(tsv), 1 + 2)
+        publish = [line.split('\t') for line in (out / 'publish-list.tsv').read_text(encoding='utf-8').splitlines()]
+        self.assertEqual([p[1] for p in publish], ['reconstructed-archetypes-v1/meshes/SK_Shoe_L.glb'])
+
+    def test_a_mesh_listed_for_both_routes_stops_the_build(self):
+        with self.assertRaises(SystemExit) as stop:
+            self.build('--own-weights', 'SK_Shoe_L', '--reshaped', 'SK_Shoe_L')
+        self.assertIn('both the reshaped and the own-weights route', str(stop.exception))
+
+
 if __name__ == '__main__':
     unittest.main()
