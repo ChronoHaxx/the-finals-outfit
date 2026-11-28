@@ -50,6 +50,15 @@ reshaped-preview/assets.json, an index for the mask generator only (scripts/shad
 byte> it joins with its own bodyMaskUrl, published beside the meshes under <publish dir>/coverage/. report.json
 "reshaped" and reshaped.tsv record every attempt.
 
+The own-weights route (--own-weights NAME[,NAME], the user's yes on 28 Nov 2026 for SK_Sneakers_L/_H and
+SK_StarterSet_TShirt_L/_H, the rows the 26 Nov UV-tile census held): a class mesh that is its Medium sibling's surface at
+the class scale in the same vertex order, but whose UV0 islands sit whole tiles away and whose skin is the game's own
+reweight, fails proof 3 on its UVs (and its joint list) and proof 3' on UV0. Only the listed class meshes may take this
+route, never automatically. For them proof 3 becomes own_weights_surface (whole-tile UV0 shifts within one half-float
+step, no triangle across two shifts, only tiles the Medium reads; positions, normals, indices and UV1 as tight as
+proof 3'); the weights are recorded, not gated. The GLB is served with its raw tiles, and the row keeps the Medium's body
+masks, as proof 3 and 3' rows do. report.json "ownWeights" and own-weights.tsv record every attempt.
+
 A class mesh joins the index only with proof, never by approximation:
   1. Same build: its Medium sibling's staged GLB is byte-identical (sha256) to the mesh the active index serves, so the
      staged Light/Heavy GLBs come from the same extraction as the live Medium mesh.
@@ -340,6 +349,144 @@ RESHAPED = {
 # What the reshaped route may replace: proof 3's in-order problems, the pure-scale bind and the proof 3' refusal.
 RESHAPED_REPLACES = PERMUTABLE + ("proof 3':",)
 RESHAPED_BIND = "bind is not a pure"
+# The own-weights route (the user's yes, 28 Nov 2026, for the four rows the 26 Nov UV-tile census held: SK_Sneakers_L/_H
+# and SK_StarterSet_TShirt_L/_H): the Medium surface at the class scale in the same vertex order, with UV0 islands whole
+# tiles away and the game's own skin weights. Only listed rows, never automatic. The weights are recorded, not gated.
+OWN_WEIGHTS = {
+    "positionM": 1e-5,          # class vertex vs the class-scaled Medium vertex, same index (proof 5, as in proof 3')
+    "normal": 1e-4,             # unit normals, per component
+    "uv0Steps": 1.0,            # UV0 residual after a whole-tile shift, in stored half-float steps at its magnitude
+    "uv1": 1 / 1024,            # UV1 (it drives body-hide masks): the census bound, stricter than proof 3''s 1/128
+    "uv": 1e-6,                 # UV sets after UV1
+    "jointM": 1e-4,             # weighted joints at the class scale of the Medium skin's (proof 4)
+}
+# What the own-weights route may replace: proof 3's UV and joint-list problems and the proof 3' refusal. Indices must
+# match (the same vertex order), so "indices differ" stays a refusal.
+OWN_WEIGHTS_REPLACES = ("UVs differ", "skin joints differ")
+
+
+def fp16_step(u):
+    """The spacing of half floats around |u| (normal range): 2^(floor(log2|u|) - 10); 2^-24 below the normal range."""
+    a = np.abs(np.asarray(u, dtype=np.float64))
+    out = np.full(a.shape, 2.0 ** -24)
+    normal = a >= 2.0 ** -14
+    out[normal] = np.exp2(np.floor(np.log2(a[normal])) - 10)
+    return out
+
+
+def own_weights_surface(medium_path, cls_path, scale, body_bones):
+    """The own-weights route's surface proof (the user's yes, 28 Nov 2026), in place of proofs 3 and 3' for a listed class
+    mesh: its Medium sibling's surface at the class scale in the same vertex order, whose UV0 islands sit whole tiles from
+    the Medium's and whose skin weights are the game's own. In detail:
+      the same primitives, vertex counts, indices and material slots in order; every vertex within 1e-5 m of the
+      class-scaled Medium vertex of the same index, its normal within 1e-4;
+      UV0 the Medium's plus a whole-tile shift per vertex, within one stored half-float step at that magnitude (the game
+      stores UVs as fp16, so the same coordinate four tiles away rounds on a coarser grid); no triangle across two
+      shifts (each island moves as one); every tile the class reads is one the Medium reads (the runtime samples no tile
+      the Medium is not drawn on already);
+      UV1 within 1/1024, other UV sets within 1e-6;
+      every joint listed on one side only is a body-skeleton bone; every weighted class joint is listed by the Medium
+      skin, at the class scale (proof 4).
+    The class GLB is served as the game wrote it, raw tiles included (as S12 C0b serves the Medium's). Its weights are
+    recorded (vertices reweighted, the largest difference in u8 steps), not gated. Returns (ok, reason, detail)."""
+    T = OWN_WEIGHTS
+    a, c = mesh_data(medium_path), mesh_data(cls_path)
+    da, dc = skin_detail(medium_path), skin_detail(cls_path)
+    detail = {"vertices": 0, "positionMaxM": 0.0, "normalMax": 0.0, "uv0ResidualMax": 0.0, "uv0ResidualStepsMax": 0.0,
+              "verticesShifted": 0, "islandsShifted": 0, "shifts": {}, "tilesMedium": [], "tilesClass": [],
+              "uv1MaxDiff": 0.0, "verticesReweighted": 0, "weightMaxU8Steps": 0.0}
+
+    def fail(why, **extra):
+        return False, why, {**detail, **extra}
+    pa, pc = a["prims"], c["prims"]
+    if len(pa) != len(pc) or any(len(x["pos"]) != len(y["pos"]) for x, y in zip(pa, pc)):
+        return fail("primitives or vertex counts differ")
+    if [(x["slot"], x["material"]) for x in pa] != [(y["slot"], y["material"]) for y in pc]:
+        return fail("material slots differ")
+    shifts, tiles_m, tiles_c = Counter(), set(), set()
+    weighted_a, weighted_c = set(), set()
+    for i, (x, y, nx, ny) in enumerate(zip(pa, pc, da["prims"], dc["prims"])):
+        if x["idx"] is None or y["idx"] is None or not np.array_equal(x["idx"], y["idx"]):
+            return fail("indices differ (the same vertex order is required)", primitive=i)
+        if not x["uvs"] or len(x["uvs"]) != len(y["uvs"]):
+            return fail("UV sets missing or differ in number", primitive=i)
+        detail["vertices"] += len(x["pos"])
+        off = np.linalg.norm(y["pos"] - x["pos"] * scale, axis=1)
+        detail["positionMaxM"] = max(detail["positionMaxM"], float(off.max()))
+        if off.max() > T["positionM"]:
+            return fail(f"positions are not the x{scale} Medium's (max {off.max():.2e} m)", primitive=i)
+        if (nx["normals"] is None) != (ny["normals"] is None):
+            return fail("normals present on one side only", primitive=i)
+        if nx["normals"] is not None:
+            dn = float(np.abs(ny["normals"] - nx["normals"]).max())
+            detail["normalMax"] = max(detail["normalMax"], dn)
+            if dn > T["normal"]:
+                return fail(f"normals differ (max {dn:.6f})", primitive=i)
+        um, uc = x["uvs"][0], y["uvs"][0]
+        d = uc - um
+        shift = np.rint(d).astype(np.int64)
+        residual = np.abs(d - shift)
+        steps = residual / fp16_step(np.maximum(np.abs(uc), np.abs(um)))
+        detail["uv0ResidualMax"] = max(detail["uv0ResidualMax"], float(residual.max()))
+        detail["uv0ResidualStepsMax"] = max(detail["uv0ResidualStepsMax"], float(steps.max()))
+        if steps.max() > T["uv0Steps"] + 1e-9:
+            return fail(f"UV0 is not a whole-tile shift of the Medium's (residual {steps.max():.2f} half-float steps)",
+                        primitive=i)
+        tri = y["idx"].reshape(-1, 3).astype(np.int64)
+        ts = shift[tri]
+        if np.any(ts != ts[:, :1, :]):
+            return fail("a triangle spans two tile shifts", primitive=i)
+        moved = np.any(shift != 0, axis=1)
+        detail["verticesShifted"] += int(moved.sum())
+        shifts.update(f"{s[0]:+d},{s[1]:+d}" for s in shift[moved].tolist())
+        # Islands: triangles joined through shared vertices (a small union-find); count those that moved.
+        parent = list(range(len(x["pos"])))
+
+        def find(v):
+            while parent[v] != v:
+                parent[v] = parent[parent[v]]
+                v = parent[v]
+            return v
+        for t in tri.tolist():
+            r0 = find(t[0])
+            for v in t[1:]:
+                rv = find(v)
+                if rv != r0:
+                    parent[rv] = r0
+        detail["islandsShifted"] += len({find(v) for v in np.unique(tri).tolist() if moved[v]})
+        tiles_m |= {tuple(t) for t in np.floor(um).astype(np.int64).tolist()}
+        tiles_c |= {tuple(t) for t in np.floor(uc).astype(np.int64).tolist()}
+        for k in range(1, len(x["uvs"])):
+            dk = float(np.abs(y["uvs"][k] - x["uvs"][k]).max())
+            if k == 1:
+                detail["uv1MaxDiff"] = max(detail["uv1MaxDiff"], dk)
+            if dk > (T["uv1"] if k == 1 else T["uv"]):
+                return fail(f"UV{k} differs (max {dk:.6f})", primitive=i)
+        wa, wc = _weights_by_name(da, i), _weights_by_name(dc, i)
+        for ea, ec in zip(wa, wc):
+            if ea != ec:
+                detail["verticesReweighted"] += 1
+                worst = max(abs(ec.get(k, 0) - ea.get(k, 0)) for k in set(ea) | set(ec))
+                detail["weightMaxU8Steps"] = max(detail["weightMaxU8Steps"], round(worst / 257, 1))
+            weighted_a |= set(ea)
+            weighted_c |= set(ec)
+    detail.update({"shifts": dict(sorted(shifts.items())), "tilesMedium": sorted(tiles_m), "tilesClass": sorted(tiles_c),
+                   "weightedOnlyMedium": sorted(weighted_a - weighted_c),
+                   "weightedOnlyClass": sorted(weighted_c - weighted_a)})
+    if not tiles_c <= tiles_m:
+        return fail(f"the class reads UV tiles the Medium does not: {sorted(tiles_c - tiles_m)}")
+    ja, jc = a["joints"] or {}, c["joints"] or {}
+    one_side = sorted(n for n in set(ja) ^ set(jc) if n not in body_bones)
+    if one_side:
+        return fail("joints listed on one side only are not body-skeleton bones", joints=one_side)
+    unlisted = sorted(n for n in weighted_c if n not in ja or n not in jc)
+    if unlisted:
+        return fail("weighted class joints the Medium skin does not list", joints=unlisted)
+    residual = max((float(np.linalg.norm(jc[n] - scale * ja[n])) for n in weighted_c), default=0.0)
+    detail["jointResidualMaxM"] = residual
+    if residual > T["jointM"]:
+        return fail(f"weighted joints are not at the x{scale} skeleton (max {residual:.5f} m)")
+    return True, None, detail
 
 
 def _rotation(t):
@@ -715,8 +862,15 @@ def main():
     ap.add_argument("--reshaped", action="append", default=[])
     ap.add_argument("--reshaped-masks")
     ap.add_argument("--reshaped-mask-check")
+    # --own-weights NAME[,NAME] (repeatable): class meshes (short names) that may take the own-weights route (see
+    # own_weights_surface): the user's yes, 28 Nov 2026, for SK_Sneakers_L/_H and SK_StarterSet_TShirt_L/_H. Never
+    # automatic: only listed rows. They keep the Medium's body masks, as proof 3 and 3' rows do.
+    ap.add_argument("--own-weights", action="append", default=[])
     args = ap.parse_args()
     reshaped_names = {n.strip() for arg in args.reshaped for n in arg.split(",") if n.strip()}
+    own_weights_names = {n.strip() for arg in args.own_weights for n in arg.split(",") if n.strip()}
+    if reshaped_names & own_weights_names:
+        sys.exit(f"listed for both the reshaped and the own-weights route: {sorted(reshaped_names & own_weights_names)}")
     if (args.reshaped_masks or args.reshaped_mask_check) and not reshaped_names:
         sys.exit("--reshaped-masks and --reshaped-mask-check need --reshaped")
     if bool(args.reshaped_masks) != bool(args.reshaped_mask_check):
@@ -742,7 +896,7 @@ def main():
     report = {"activeSha256": sha256(index_dir / "assets.json"), "skinPairsSha256": sha256(index_dir / "skin-pairs.json"),
               "currentProof": {k: current[k] for k in ("file", "sha256", "containers")} if current else None,
               "classes": {}, "meshes": {}, "refused": {}, "skipped": {}, "proof1Prime": {}, "proof3Prime": {},
-              "reshaped": {}, "freshPair": {}}
+              "reshaped": {}, "freshPair": {}, "ownWeights": {}}
 
     # The Archetype mesh swaps the definitions author: Medium skeletal mesh -> class mesh. Every class mesh named here
     # ends in exactly one of report["meshes"] (added), report["refused"] (a proof failed) or report["skipped"] (never
@@ -843,8 +997,8 @@ def main():
     masks_added, preview = {}, {}  # reshaped rows: their own mask (png, publish path, sha); preview entries (no mask yet)
     medium_body = assets["attachmentBody"]["source"]
     body_bones, registries = set(), {}
-    if args.same_surface_permuted or reshaped_names:
-        # Proof 3' and the reshaped route need the body skeleton's bone names (joints a skin lists on one side only must
+    if args.same_surface_permuted or reshaped_names or own_weights_names:
+        # Proof 3', the reshaped and the own-weights route need the body skeleton's bone names (joints a skin lists on one side only must
         # be among them) and the side registries (a mesh they name is refused).
         body_glb = [f for f in staged.get(medium_body.rsplit(".", 1)[-1] + ".glb", [])
                     if staged_sha(f) == assets["meshes"][medium_body]["sha256"]]
@@ -941,6 +1095,28 @@ def main():
                     proof["inOrderProblems"], proof["problems"] = proof["problems"], []
                 else:
                     proof["problems"] = proof["problems"] + [f"proof 3': {why3}"]
+            if not ok and target.rsplit(".", 1)[-1] in own_weights_names:
+                # The own-weights route (the user's yes, 28 Nov 2026), only for listed rows: the Medium surface in the
+                # same vertex order with UV0 islands whole tiles away and the game's own weights (own_weights_surface).
+                # Every other proof problem, and a side registry naming either mesh, keeps the row refused.
+                other = [p for p in proof["problems"] if not (p.endswith(OWN_WEIGHTS_REPLACES) or p.startswith("proof 3':"))]
+                names = re.compile("|".join(rf"(?<![\w/]){re.escape(p.rsplit('.', 1)[-1])}(?![\w])"
+                                            for p in (medium_path, target)))
+                named_in = sorted(r for r, text in registries.items() if names.search(text))
+                detail_w = {}
+                if other:
+                    why_w = "; ".join(other)
+                elif named_in:
+                    why_w = f"named in a side registry: {', '.join(named_in)}"
+                else:
+                    _, why_w, detail_w = own_weights_surface(pair_glb, file, scale, body_bones)
+                report["ownWeights"][target] = {"verdict": why_w or "pass", "class": cls, "medium": medium_path,
+                                                "inOrderProblems": proof["problems"], **detail_w}
+                if why_w is None:
+                    ok, proof["proof3"], proof["ownWeights"] = True, "own weights", detail_w
+                    proof["inOrderProblems"], proof["problems"] = proof["problems"], []
+                else:
+                    proof["problems"] = proof["problems"] + [f"own-weights route: {why_w}"]
             if not ok and target.rsplit(".", 1)[-1] in reshaped_names:
                 # The reshaped route (approved 26 Nov 2026), only for listed rows: proof 3 becomes "the materials apply",
                 # proof 5 the mesh's own body mask. Every other proof problem keeps the row refused.
@@ -1112,6 +1288,10 @@ def main():
                                    "maskPolicy": {k: (coverage or {}).get(k) for k in ("method", "sharedUvPolicy",
                                                                                       "generatorSha256")},
                                    "notTried": sorted(reshaped_names - {k.rsplit(".", 1)[-1] for k in report["reshaped"]})}
+    if own_weights_names:
+        report["ownWeightsRules"] = {"tolerances": OWN_WEIGHTS, "listed": sorted(own_weights_names),
+                                     "notTried": sorted(own_weights_names
+                                                        - {k.rsplit(".", 1)[-1] for k in report["ownWeights"]})}
     (out / "report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     # source (models-relative) <TAB> where the index expects it <TAB> sha256: the apply copies, then checks the sha256.
     # A reshaped row's own body mask follows its mesh.
@@ -1167,6 +1347,22 @@ def main():
         if report["reshapedRules"]["notTried"]:
             print("  reshaped route: not tried (no failing proof row reached it): "
                   + ", ".join(report["reshapedRules"]["notTried"]))
+    # Every own-weights attempt: the tile shifts it allowed and the reweight it recorded.
+    if own_weights_names:
+        cols = ["vertices", "verticesShifted", "islandsShifted", "shifts", "uv0ResidualStepsMax", "tilesMedium",
+                "tilesClass", "uv1MaxDiff", "positionMaxM", "normalMax", "verticesReweighted", "weightMaxU8Steps",
+                "jointResidualMaxM"]
+        (out / "own-weights.tsv").write_text(
+            tab.join(["class mesh", "class", "medium", "verdict", *cols]) + "\n" + "".join(
+                tab.join([k, v["class"], v["medium"], v["verdict"], *(str(v.get(c, "")) for c in cols)]) + "\n"
+                for k, v in sorted(report["ownWeights"].items())), encoding="utf-8")
+        for k, v in sorted(report["ownWeights"].items()):
+            print(f"  own-weights route: {k.rsplit('.', 1)[-1]}: {v['verdict']}"
+                  + (f" ({v['verticesReweighted']} of {v['vertices']} vertices reweighted, max {v['weightMaxU8Steps']}"
+                     f" u8 steps; {v['verticesShifted']} shifted)" if v["verdict"] == "pass" else ""))
+        if report["ownWeightsRules"]["notTried"]:
+            print("  own-weights route: not tried (no failing proof row reached it): "
+                  + ", ".join(report["ownWeightsRules"]["notTried"]))
     # Every fresh-pair attempt: which stale sibling it replaced, and whether the fresh Medium stood in.
     if report["freshPair"]:
         cols = ["verdict", "byteMatchedMedium", "staleSibling", "freshMedium", "freshMediumSha256", "liveSha256"]
