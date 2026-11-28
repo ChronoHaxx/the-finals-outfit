@@ -39,6 +39,7 @@ export default function OutfitBar() {
   const { workedOn, state } = useReconstructionProgress();
   const [locked, setLocked] = useState<ReadonlySet<Slot>>(new Set());
   const [includeUntouched, setIncludeUntouched] = useState(false);
+  const classFeature = useFeature("class");
   const randomiseFeature = useFeature("randomise", "Random outfit (rules-based); locked pieces are kept");
 
   const equipped = SLOTS.map((slot) => ({
@@ -96,9 +97,10 @@ export default function OutfitBar() {
           (src/lib/body-type.ts). A body type this list does not offer shows as the Masculine it renders as. */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
       {archetypeChoices.length > 1 && (
-        // Archetype: part of the outfit (saved and shared with it). Light and Heavy are a preview: items without their
-        // class meshes yet are left off the contestant, and the viewer names them.
-        <div role="radiogroup" aria-label="Archetype" className="flex items-center gap-2.5">
+        // Archetype: part of the outfit (saved and shared with it). Light is offered to everyone and Heavy only in the
+        // preview (lib/archetype.ts). Items without their class meshes yet are left off the contestant, and the viewer
+        // names them.
+        <div role="radiogroup" aria-label="Archetype" className="flex items-center gap-2.5" {...classFeature}>
           <span aria-hidden="true" className="hud text-fg-dim">Class</span>
           <div className="flex border border-line">
             {archetypeChoices.map(id => {

@@ -14,6 +14,17 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: "2026-11-28-light-contestants",
+    date: "2026-11-28",
+    title: "Light contestants",
+    notes: [
+      "Pick Light under Class to dress the game's smallest contestant. Each garment takes the shape the game made for Light, not a shrunk Medium one, while the head and hair scale with the body, as they do in the game. The starting outfit is whole on Light.",
+      "A piece without its Light version yet is left off the Light contestant, and the builder names it. The outfit keeps it, so it is back when you switch to Medium. Androgynous is Medium only, as in the game. Links and saved outfits keep the class, and every older link opens on Medium as before.",
+      "Heavy follows once its clothing is ready.",
+    ],
+    items: ["light-heavy"],
+  },
+  {
     id: "2026-11-27-season-12-refit-2",
     date: "2026-11-27",
     title: "74 more garments in their Season 12 shape",

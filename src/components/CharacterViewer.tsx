@@ -6,7 +6,7 @@ import { CharacterRig } from "../rig/CharacterRig";
 import { SURFACE_VIEWS } from "../rig/ReconstructedMaterial";
 import { loadSourceAssemblyAssets, type SourceOutfit } from "../rig/SourceAssembly";
 import { indexClass, type RigArchetype } from "../rig/Archetype";
-import { ARCHETYPE_LABELS, archetypeOf, archetypePreviewEnabled, type ArchetypeId } from "../lib/archetype";
+import { ARCHETYPE_LABELS, archetypeAccess, archetypeOf, archetypesFor, type ArchetypeId } from "../lib/archetype";
 import { newOutfitPassState, runOutfitPass, type OutfitPassControl } from "../rig/OutfitPass";
 import { setPlayerNumber } from "../rig/PlayerNumber";
 import { DEV } from "../lib/viewer-dev-params";
@@ -52,8 +52,9 @@ import { IS_TOUCH, SHADOWS, StageLights, TONE_MAPPING } from "./ViewerStage";
 import { trackError } from "../lib/track";
 
 const BODY_URL = modelUrl("models/body/SK_Body_M.glb");
-// (22 Nov 2026) The archetype picker is a preview behind a flag (lib/archetype.ts); with it off every outfit is Medium.
-const ARCHETYPES = archetypePreviewEnabled();
+// (28 Nov 2026) The classes this visitor may see (lib/archetype.ts): Light and Medium by default, Heavy in the preview,
+// Medium only with `?archetypes=off`. An outfit whose class is not among them renders as Medium.
+const ARCHETYPES = archetypesFor(archetypeAccess());
 const NAIL_MASK_URL = modelUrl("models/decals/_shared/nailmask.webp");
 
 // Browser harness contract (visual-diff and shader-probe checks): `__rigIdle` is false while
@@ -249,10 +250,11 @@ export default function CharacterViewer({ immersive, hideUi, mode = "global" }: 
   // (rig/PlayerNumber.ts), so a change re-uploads two uniforms and reloads nothing.
   const outfitPlayerNumber = useBuildStore((s) => s.playerNumber);
   useEffect(() => { setPlayerNumber(outfitPlayerNumber); }, [outfitPlayerNumber]);
-  // The outfit's archetype (lib/archetype.ts) as stored, and the class the body is built for: the stored one while the
-  // archetype preview is on, else Medium. A class the index cannot build falls back to Medium with a notice.
+  // The outfit's archetype (lib/archetype.ts) as stored, and the class the body is built for: the stored one when this
+  // visitor's access allows it, else Medium. A class the index cannot build falls back to Medium with a notice.
   const outfitArchetype = useBuildStore((s) => s.archetype);
-  const requestedArchetype: ArchetypeId = ARCHETYPES ? archetypeOf(outfitArchetype) : "medium";
+  const requestedArchetype: ArchetypeId = ARCHETYPES.includes(archetypeOf(outfitArchetype))
+    ? archetypeOf(outfitArchetype) : "medium";
   const [bodyArchetype, setBodyArchetype] = useState<ArchetypeId>("medium");
   // A class the index lacks (the body load owns it) and the selected items the class cannot build yet (each outfit pass
   // owns it: rig/OutfitPass.ts classUnavailableItems). Two owners, two states, so neither clears the other.

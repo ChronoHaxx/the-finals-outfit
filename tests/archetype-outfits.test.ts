@@ -7,7 +7,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import './helpers/load-catalog';
 import {
-  archetypeFromShareCode, archetypeOf, archetypeShareCode, ARCHETYPE_TAGS, bodyTypeSupportsArchetype,
+  archetypeFromShareCode, archetypeOf, archetypeShareCode, archetypesFor, ARCHETYPE_TAGS, bodyTypeSupportsArchetype,
+  readArchetypeAccess,
 } from '../src/lib/archetype';
 import { encodeOutfit } from '../src/lib/outfit';
 import { buildShareUrl, readOutfitLink } from '../src/lib/share-url';
@@ -59,6 +60,44 @@ test('which body types each archetype supports is the Season 12 assets\' own Sup
     }
   assert.equal(bodyTypeSupportsArchetype('androgynous', 'light'), false, 'Androgynous is Medium-only');
   assert.equal(bodyTypeSupportsArchetype('from-a-newer-site', 'heavy'), true, 'an unknown body type renders as Masculine');
+});
+
+// ------------------------------------------------------------------ which classes a visitor sees (28 Nov 2026)
+
+test('Light is offered by default, Heavy only in the preview, Medium only when turned off; each choice is remembered', () => {
+  const store = () => {
+    const data = new Map<string, string>();
+    return { data, getItem: (k: string) => data.get(k) ?? null, setItem: (k: string, v: string) => { data.set(k, v); },
+      removeItem: (k: string) => { data.delete(k); } };
+  };
+  const at = (search = '', hash = '') => ({ search, hash });
+  assert.deepEqual(archetypesFor('public'), ['light', 'medium'], 'Heavy is not public until it is built and hosted');
+  assert.deepEqual(archetypesFor('preview'), ['light', 'medium', 'heavy']);
+  assert.deepEqual(archetypesFor('off'), ['medium']);
+
+  const s = store();
+  assert.equal(readArchetypeAccess(at(), s), 'public', 'a first visit sees the public classes');
+  assert.equal(s.data.size, 0, 'and stores nothing');
+  assert.equal(readArchetypeAccess(at('?archetypes=off'), s), 'off');
+  assert.equal(readArchetypeAccess(at(), s), 'off', 'off is remembered: the next visit stays Medium only');
+  assert.equal(readArchetypeAccess(at('', '#/squad?archetypes=on'), s), 'preview', 'the hash carries it too');
+  assert.equal(readArchetypeAccess(at(), s), 'preview', 'the preview is remembered');
+  assert.equal(readArchetypeAccess(at('?archetypes=maybe'), s), 'preview', 'an unknown value changes nothing');
+  assert.equal(readArchetypeAccess(at('?archetypes=default'), s), 'public', 'default forgets the choice');
+  assert.equal(s.data.size, 0);
+
+  const before = store();
+  before.data.set('finals-archetypes:preview', '1');
+  assert.equal(readArchetypeAccess(at(), before), 'preview', 'a browser that opted in before 28 Nov stays in the preview');
+
+  const blocked = { getItem(): never { throw new Error('blocked'); }, setItem(): never { throw new Error('blocked'); },
+    removeItem(): never { throw new Error('blocked'); } };
+  assert.equal(readArchetypeAccess(at('?archetypes=off'), blocked), 'off', 'blocked storage: the address decides the page');
+  assert.equal(readArchetypeAccess(at(), blocked), 'public', 'and without one, the default');
+  assert.equal(readArchetypeAccess(at(), null), 'public');
+
+  assert.equal(readArchetypeAccess(at(), store(), true), 'preview', 'development builds start in the preview');
+  assert.equal(readArchetypeAccess(at('?archetypes=off'), store(), true), 'off');
 });
 
 // ------------------------------------------------------------------ links

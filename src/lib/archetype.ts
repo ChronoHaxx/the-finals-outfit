@@ -72,22 +72,57 @@ export function bodyTypeSupportsArchetype(bodyType: string, archetype: Archetype
   return (BODY_TYPE_ARCHETYPES[bodyType] ?? ARCHETYPE_IDS).includes(archetype);
 }
 
-// The picker is a preview behind a flag until every item has its Light and Heavy meshes (the bulk extraction,
-// _docs/archetypes-2026-11-22/README.md): on in development, or once `?archetypes=on` has been opened in this browser
-// (`?archetypes=off` turns it off again). Even with the flag on, the picker offers a class only when the index the site
-// loads carries that class's body (rig/Archetype.ts archetypeBodies).
+// Which classes the picker offers (28 Nov 2026). Light is public: its starting outfit is whole on Light, and the user said
+// yes to showing it. Heavy stays a preview until its meshes are built and hosted. A visitor can change that in their own
+// browser, which remembers it:
+// - `?archetypes=on` is the preview: every class, Heavy included (development builds start here);
+// - `?archetypes=off` offers Medium only, and every outfit renders as Medium, as the site did before archetypes;
+// - `?archetypes=default` forgets either choice.
+// Whatever the access, the picker offers a class only when the index the site loads carries that class's body
+// (rig/Archetype.ts indexClass), so an index without a Heavy body never offers Heavy.
+export type ArchetypeAccess = "public" | "preview" | "off";
+
+/** The classes every visitor sees without opting in, in picker order. Adding "heavy" here is the Heavy unflag. */
+export const PUBLIC_ARCHETYPES: readonly ArchetypeId[] = ["light", "medium"];
+
+// "1" is the preview (the value this key has held since 22 Nov 2026, so a browser that opted in stays in), "0" is off.
+// No value is the public default.
 const FLAG_KEY = "finals-archetypes:preview";
 
-/** Reads `?archetypes=on|off` from the address once (remembering it) and returns whether the preview is on. */
-export function archetypePreviewEnabled(): boolean {
-  if (typeof window === "undefined") return false;
+/** The classes an access allows, in picker order. Medium is always one of them. */
+export function archetypesFor(access: ArchetypeAccess): readonly ArchetypeId[] {
+  return access === "preview" ? ARCHETYPE_IDS : access === "off" ? ["medium"] : PUBLIC_ARCHETYPES;
+}
+
+type FlagStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
+
+/** The access an address and this browser's remembered choice give. `?archetypes=on|off|default` in the query or the
+ *  hash is remembered first. Storage that fails leaves the address to decide this page, and the default otherwise. */
+export function readArchetypeAccess(location: { search: string; hash: string }, storage: FlagStorage | null,
+  dev = false): ArchetypeAccess {
+  let param: string | null = null;
   try {
-    const param = new URLSearchParams(window.location.search).get("archetypes")
-      ?? new URLSearchParams(window.location.hash.replace(/^#[^?]*\??/, "")).get("archetypes");
-    if (param === "on") window.localStorage.setItem(FLAG_KEY, "1");
-    else if (param === "off") window.localStorage.removeItem(FLAG_KEY);
-    if (param === "off") return false;
-  } catch { /* storage blocked: the flag stays as it was */ }
-  if (import.meta.env?.DEV) return true;
-  try { return window.localStorage.getItem(FLAG_KEY) === "1"; } catch { return false; }
+    param = new URLSearchParams(location.search).get("archetypes")
+      ?? new URLSearchParams(location.hash.replace(/^#[^?]*\??/, "")).get("archetypes");
+  } catch { /* an address this cannot parse names no access */ }
+  try {
+    if (param === "on") storage?.setItem(FLAG_KEY, "1");
+    else if (param === "off") storage?.setItem(FLAG_KEY, "0");
+    else if (param === "default") storage?.removeItem(FLAG_KEY);
+  } catch { /* storage blocked: the address still decides this page */ }
+  if (param === "on") return "preview";
+  if (param === "off") return "off";
+  let stored: string | null = null;
+  if (param !== "default") try { stored = storage?.getItem(FLAG_KEY) ?? null; } catch { /* blocked: the default */ }
+  if (stored === "1") return "preview";
+  if (stored === "0") return "off";
+  return dev ? "preview" : "public";
+}
+
+/** This page's access, read from its address and this browser's storage. */
+export function archetypeAccess(): ArchetypeAccess {
+  if (typeof window === "undefined") return readArchetypeAccess({ search: "", hash: "" }, null);
+  let storage: FlagStorage | null = null;
+  try { storage = window.localStorage; } catch { /* blocked */ }
+  return readArchetypeAccess(window.location, storage, Boolean(import.meta.env?.DEV));
 }

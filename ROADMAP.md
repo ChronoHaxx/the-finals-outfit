@@ -25,10 +25,10 @@ developer-only tools such as the 3D export. Comments like this one are not shown
 
 # Roadmap
 
-Last reviewed: 2026-11-27
-Reviewed after patch note: 2026-11-27-season-12-refit-2
+Last reviewed: 2026-11-28
+Reviewed after patch note: 2026-11-28-light-contestants
 
-The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium comes first; Light and Heavy follow.
+The goal is every cosmetic in THE FINALS looking right in the 3D preview, in any outfit. Medium came first and Light is in; Heavy follows.
 
 These are plans, not dated promises. Item counts are live and use the same statuses as the item picker.
 
@@ -68,10 +68,10 @@ An item that looks right alone can break another: a helmet that hides a beard, o
 ### Light and Heavy contestants
 <!-- id: light-heavy -->
 
-The preview shows the Medium contestant. Its Masculine and Androgynous body types can already be picked. Feminine follows once the Season 12 clothing has been refitted, then the Light and Heavy bodies with their own body types.
+The builder dresses the Light and the Medium contestant. Masculine can be picked on both and Androgynous on Medium only, as in the game. A piece without its Light version yet is left off the Light contestant and named. Heavy follows, and Feminine once the Season 12 clothing has been refitted.
 
 - Refit clothing that changed in Season 12, so it fits the body it was made for.
-- Fit every garment and accessory to each body, using the game's own fitting data.
+- Bring the remaining pieces to Light in their own Light versions, then build Heavy the same way.
 - Report each item's status per body, so blue on Medium does not imply blue on Heavy.
 
 ## Waiting on a decision

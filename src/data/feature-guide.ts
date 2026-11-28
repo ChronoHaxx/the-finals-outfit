@@ -46,6 +46,7 @@ export const FEATURES = [
   { id: "items", group: "build", name: "Items", hint: "Pick a slot, then a piece to put it on.", noMark: true },
   { id: "in-game-outfits", group: "build", name: "In-game outfits", hint: "Wear one of the game's own outfits in one go." },
   { id: "saved-outfits", group: "build", name: "Saved outfits", hint: "Switch, rename or duplicate outfits. Every change saves itself." },
+  { id: "class", group: "build", name: "Class", hint: "Dress a Light or a Medium contestant. Pieces not on Light yet are left off." },
   { id: "player-number", group: "build", name: "Number", hint: "Wear a number from 0 to 99 on every piece that prints one. Own keeps theirs.", noMark: true },
   { id: "randomise", group: "build", name: "Randomise", hint: "Roll a whole outfit. Lock a piece to keep it through every roll." },
   { id: "share", group: "build", name: "Share outfit", hint: "Copy a link with the outfit, your camera, lighting and pose.", noMark: true },
