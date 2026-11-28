@@ -41,7 +41,9 @@ if (flag("--help") || !values("--source").length) {
 
 const normalize = (base) => base.trim().replace(/\/*$/, "/");
 const workflow = readFileSync(join(ROOT, ".github/workflows/deploy.yml"), "utf8");
-const envFromWorkflow = (name) => workflow.match(new RegExp(`^\\s*${name}:\\s*(\\S+)\\s*$`, "m"))?.[1] ?? "";
+// A value may be YAML-quoted (EVENTS_URL is): drop one matching pair of quotes, or the build gets them in the URL.
+const envFromWorkflow = (name) =>
+  (workflow.match(new RegExp(`^\\s*${name}:\\s*(\\S+)\\s*$`, "m"))?.[1] ?? "").replace(/^(['"])(.*)\1$/, "$2");
 const production = {
   ASSETS_BASE: envFromWorkflow("ASSETS_BASE"), MODELS_BASE: envFromWorkflow("MODELS_BASE"),
   RECONSTRUCTION_BASE: envFromWorkflow("RECONSTRUCTION_BASE"), RECONSTRUCTION_ROUTES_FILE: envFromWorkflow("RECONSTRUCTION_ROUTES_FILE"),
@@ -54,6 +56,19 @@ if (!production.ASSETS_BASE) throw new Error("deploy.yml has no ASSETS_BASE");
 const viteFromWorkflow = {};
 for (const [, key, name] of workflow.matchAll(/^\s*(VITE_\w+):\s*\$\{\{\s*env\.(\w+)\s*\}\}\s*$/gm))
   if (!(key in viteFromWorkflow)) viteFromWorkflow[key] = envFromWorkflow(name);
+// `${{ github.sha }}` (VITE_BUILD, the deployed commit sent with analytics batches) is the commit this script builds.
+for (const [, key] of workflow.matchAll(/^\s*(VITE_\w+):\s*\$\{\{\s*github\.sha\s*\}\}\s*$/gm)) {
+  if (key in viteFromWorkflow) continue;
+  const head = spawnSync("git", ["rev-parse", "HEAD"], { cwd: ROOT, encoding: "utf8" });
+  if (head.status !== 0) throw new Error(`${key} needs the built commit, and git rev-parse HEAD failed`);
+  viteFromWorkflow[key] = head.stdout.trim();
+}
+// Settings the gated build deliberately does not copy, each with its reason. A VITE_* missing from both lists stops below.
+// VITE_EVENTS_URL: the usage-counter collector accepts batches only from the origins it lists
+// (workers/usage-counter/src/schema.ts: https://chronohaxx.github.io), so every event from the Worker's origin would be
+// refused, and test visits must not count as product use. Add the Worker's origin there before copying it here.
+const GATED_OVERRIDES = { VITE_EVENTS_URL: "" };
+for (const key of Object.keys(GATED_OVERRIDES)) if (key in viteFromWorkflow) viteFromWorkflow[key] = GATED_OVERRIDES[key];
 // A VITE_* line in another form would be dropped; stop instead (VITE_BASE is replaced below).
 const unmapped = [...new Set([...workflow.matchAll(/^\s*(VITE_\w+):/gm)].map(m => m[1]))]
   .filter(key => key !== "VITE_BASE" && !(key in viteFromWorkflow));
